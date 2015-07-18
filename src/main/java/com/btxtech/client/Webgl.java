@@ -6,6 +6,7 @@ import com.btxtech.client.terrain.Terrain;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.ioc.client.api.EntryPoint;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -15,11 +16,9 @@ import java.util.logging.Logger;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-@org.jboss.errai.ioc.client.api.EntryPoint
+@EntryPoint
 public class Webgl /*implements EntryPoint*/ {
     public static Webgl instance;
-    public static final int TEX_IMAGE_WIDTH = 512;
-    public static final int TEX_IMAGE_HEIGHT = 512;
     @Inject
     private Logger logger;
     @Inject
@@ -42,9 +41,9 @@ public class Webgl /*implements EntryPoint*/ {
 
             HorizontalPanel horizontalPanel = new HorizontalPanel();
 
-            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getPlateau(), Terrain.ROCK_2_IMAGE);
-            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getPlateauTop(), Terrain.GRASS_IMAGE);
-            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getGround(), Terrain.GRASS_IMAGE);
+            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getPlateau(), Terrain.SAND_1);
+            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getPlateauTop(), Terrain.SAND_1);
+            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getGround(), Terrain.SAND_1);
 
             Control control = new Control(triangleRenderManager);
             horizontalPanel.add(viewField.getCanvas());

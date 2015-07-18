@@ -18,6 +18,7 @@ public class Terrain {
     public static final ImageDescriptor ROCK_1_IMAGE = new ImageDescriptor("Rock1.png", 128, 128);
     public static final ImageDescriptor ROCK_2_IMAGE = new ImageDescriptor("Rock2.png", 256, 256);
     public static final ImageDescriptor GRASS_IMAGE = new ImageDescriptor("grass.jpg", 512, 512);
+    public static final ImageDescriptor SAND_1 = new ImageDescriptor("sand1.png", 256, 256);
 
     // public static List<Index> corners = Arrays.asList(new Index(364, 120), new Index(177, 190), new Index(160, 307), new Index(170, 525), new Index(270, 610), new Index(385, 650), new Index(610, 660), new Index(708, 603), new Index(808, 438), new Index(726, 240), new Index(483, 93));
     // public static List<Index> corners = Arrays.asList(new Index(44, 58), new Index(178, 516), new Index(954, 114));

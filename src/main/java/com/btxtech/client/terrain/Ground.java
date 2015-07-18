@@ -1,7 +1,6 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.Webgl;
 import com.btxtech.client.math3d.TextureCoordinate;
 import com.btxtech.client.math3d.Triangle;
 import com.btxtech.client.math3d.Vertex;
@@ -30,22 +29,21 @@ public class Ground implements VertexListProvider {
     public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
         VertexList vertexList = new VertexList();
         Vertex pointA = new Vertex(x, y, z);
-        Vertex pointB = new Vertex(x, y + height, z);
-        Vertex pointC = new Vertex(x + width, y + height, z);
-        Vertex pointD = new Vertex(x + width, y, z);
+        Vertex pointB = new Vertex(x + width, y, z);
+        Vertex pointC = new Vertex(x, y + height, z);
+        Vertex pointD = new Vertex(x + width, y + height, z);
 
-        double textureWidth = (double) width / (double) Webgl.TEX_IMAGE_WIDTH;
-        double textureHeight = (double) height / (double) Webgl.TEX_IMAGE_HEIGHT;
+        double textureWidth = (double) width / imageDescriptor.getWidth();
+        double textureHeight = (double) height / imageDescriptor.getHeight();
 
-        vertexList.add(Triangle.createTriangleWithNorm(pointA, new TextureCoordinate(0, textureHeight),
-                pointB, new TextureCoordinate(0, 0),
-                pointC, new TextureCoordinate(textureWidth, 0),
-                new Vertex(0, 0, 1)));
+        vertexList.add(new Triangle(pointA, new TextureCoordinate(0, 0),
+                pointB, new TextureCoordinate(textureWidth, 0),
+                pointC, new TextureCoordinate(0, textureHeight)));
 
-        vertexList.add(Triangle.createTriangleWithNorm(pointA, new TextureCoordinate(0, textureHeight),
-                pointC, new TextureCoordinate(textureWidth, 0),
-                pointD, new TextureCoordinate(textureWidth, textureHeight),
-                new Vertex(0, 0, 1)));
+        vertexList.add(new Triangle(pointD, new TextureCoordinate(textureWidth, textureHeight),
+                pointC, new TextureCoordinate(0, textureHeight),
+                pointB, new TextureCoordinate(textureWidth, 0)));
+
         return vertexList;
     }
 }

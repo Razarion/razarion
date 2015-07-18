@@ -1,7 +1,5 @@
 package com.btxtech.client.math3d;
 
-import com.btxtech.client.Webgl;
-
 import java.util.List;
 
 /**
@@ -69,37 +67,6 @@ public class Triangle {
         textureCoordinates.add(textureCoordinateB);
         textureCoordinates.add(textureCoordinateC);
         return textureCoordinates;
-    }
-
-    public static int getMinXIfSameZ(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
-        if (vertexA.getZ() != vertexB.getZ() || vertexB.getZ() != vertexC.getZ()) {
-            throw new IllegalArgumentException("z os not the same");
-        }
-        int minX = (int) Math.min(vertexA.getX(), vertexB.getX());
-        return (int) Math.min(minX, vertexC.getX());
-    }
-
-    public static int getMinYIfSameZ(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
-        if (vertexA.getZ() != vertexB.getZ() || vertexB.getZ() != vertexC.getZ()) {
-            throw new IllegalArgumentException("z is not the same");
-        }
-        int minY = (int) Math.min(vertexA.getY(), vertexB.getY());
-        return (int) Math.min(minY, vertexC.getY());
-    }
-
-    public static TextureCoordinate createTextureCoordinateIfSameZ(Vertex vertexA, Vertex vertexB, Vertex vertexC, Vertex vertex) {
-        if (vertexA.getZ() != vertexB.getZ() || vertexB.getZ() != vertexC.getZ()) {
-            throw new IllegalArgumentException("z is not the same");
-        }
-
-        int deltaX = (int) vertex.getX() - getMinXIfSameZ(vertexA, vertexB, vertexC);
-        double s = (double) deltaX / (double) Webgl.TEX_IMAGE_WIDTH;
-
-        int deltaY = (int) vertex.getY() - getMinYIfSameZ(vertexA, vertexB, vertexC);
-        double t = (double) deltaY / (double) Webgl.TEX_IMAGE_HEIGHT;
-
-        return new TextureCoordinate(s, t);
-
     }
 
     public static Triangle createTriangleWithNorm(Vertex vertex1, TextureCoordinate textureCoordinate1,
