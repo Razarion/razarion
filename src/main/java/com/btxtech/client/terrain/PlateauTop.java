@@ -28,10 +28,12 @@ public class PlateauTop implements VertexListProvider {
 
         List<Vertex> vertices = plateau.getHillSideMesh().getTopVertices();
         List<Index> corners2d = new ArrayList<>();
+        Index smallestPoint = new Index(Integer.MAX_VALUE, Integer.MAX_VALUE);
         for (Vertex vertex : vertices) {
-            Index index = new Index((int)vertex.getX(), (int)vertex.getY());
+            Index index = new Index((int) vertex.getX(), (int) vertex.getY());
             if (corners2d.isEmpty() || !index.equals(corners2d.get(corners2d.size() - 1))) {
                 corners2d.add(index);
+                smallestPoint = smallestPoint.getSmallestPoint(index);
             }
         }
 
@@ -49,12 +51,17 @@ public class PlateauTop implements VertexListProvider {
             Vertex vertexA = new Vertex(triangle2d.getPointA().getX(), triangle2d.getPointA().getY(), height);
             Vertex vertexB = new Vertex(triangle2d.getPointB().getX(), triangle2d.getPointB().getY(), height);
             Vertex vertexC = new Vertex(triangle2d.getPointC().getX(), triangle2d.getPointC().getY(), height);
-            vertexList.add(Triangle.createTriangleWithNorm(vertexA, new TextureCoordinate(0, 0),
-                    vertexB, new TextureCoordinate(0, 1),
-                    vertexC, new TextureCoordinate(1, 0),
+            vertexList.add(Triangle.createTriangleWithNorm(vertexA, createTextureCoordinate(triangle2d.getPointA(), smallestPoint, imageDescriptor),
+                    vertexB, createTextureCoordinate(triangle2d.getPointB(), smallestPoint, imageDescriptor),
+                    vertexC, createTextureCoordinate(triangle2d.getPointC(), smallestPoint, imageDescriptor),
                     new Vertex(0, 0, 1.0)));
         }
 
         return vertexList;
+    }
+
+    private TextureCoordinate createTextureCoordinate(Index position, Index smallestPoint, ImageDescriptor imageDescriptor) {
+        return new TextureCoordinate((double)(position.getX() - smallestPoint.getX()) / (double)imageDescriptor.getWidth(),
+                (double)(position.getY() - smallestPoint.getY()) / (double)imageDescriptor.getHeight());
     }
 }
