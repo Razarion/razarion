@@ -1,0 +1,102 @@
+package com.btxtech.client.math3d;
+
+import com.btxtech.client.GameCanvas;
+import com.btxtech.client.ImageDescriptor;
+import elemental.html.WebGLRenderingContext;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Created by Beat
+ * 20.05.2015.
+ */
+@Singleton
+public class TriangleRenderManager {
+    public enum Mode {
+        NORMAL,
+        LIGHT,
+        WIRE_08,
+        WIRE_32,
+        DEV_TEX_08,
+        DEV_TEX_32
+    }
+
+    private List<TriangleRenderHolder> renderers = new ArrayList<>();
+    private Logger logger = Logger.getLogger(TriangleRenderManager.class.getName());
+    private Mode mode = Mode.NORMAL;
+    @Inject
+    private GameCanvas viewField;
+    @Inject
+    private ViewTransformation viewTransformation;
+    @Inject
+    private ModelTransformation modelTransformation;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
+    @Inject
+    private Lighting lighting;
+
+    public ModelTransformation getModelTransformation() {
+        return modelTransformation;
+    }
+
+    public ViewTransformation getViewTransformation() {
+        return viewTransformation;
+    }
+
+    public ProjectionTransformation getProjectionTransformation() {
+        return projectionTransformation;
+    }
+
+    public Lighting getLighting() {
+        return lighting;
+    }
+
+    public WebGLRenderingContext getCtx3d() {
+        return viewField.getCtx3d();
+    }
+
+    public void createTriangleRenderUnit(VertexListProvider vertexListProvider, ImageDescriptor imageDescriptor) {
+        TriangleRenderHolder triangleRenderHolder = new TriangleRenderHolder(this, mode, vertexListProvider, imageDescriptor);
+        renderers.add(triangleRenderHolder);
+    }
+
+    public void draw() {
+        for (TriangleRenderHolder renderDescriptor : renderers) {
+            try {
+                renderDescriptor.draw(this);
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "draw failed", t);
+            }
+        }
+    }
+
+    public void fillBuffers() {
+        for (TriangleRenderHolder renderDescriptor : renderers) {
+            try {
+                renderDescriptor.fillBuffers(this);
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "fillBuffers failed", t);
+            }
+        }
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+        for (TriangleRenderHolder renderDescriptor : renderers) {
+            try {
+                renderDescriptor.createTriangleRenderUnit(this, mode);
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "fillBuffers failed", t);
+            }
+        }
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+}

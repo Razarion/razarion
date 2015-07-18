@@ -1,0 +1,74 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:p1='urn:import:com.btxtech.client.dialogs'>
+    <ui:style>
+        .numberInput {
+            width: 50px;
+        }
+    </ui:style>
+
+    <g:Grid cellPadding="5" cellSpacing="5">
+        <g:row>
+            <g:customCell>
+                <g:Grid cellPadding="0" cellSpacing="5">
+                    <g:row>
+                        <g:customCell>
+                            <g:HorizontalPanel>
+                                <g:Cell verticalAlignment="ALIGN_MIDDLE">
+                                    <g:InlineHTML text="Scale x"/>
+                                </g:Cell>
+                                <p1:InputNumber styleName="{style.numberInput}" step="0.01" ui:field="scaleX"/>
+                            </g:HorizontalPanel>
+                        </g:customCell>
+                    </g:row>
+                    <g:row>
+                        <g:customCell>
+                            <g:HorizontalPanel>
+                                <g:Cell verticalAlignment="ALIGN_MIDDLE">
+                                    <g:InlineHTML text="Scale y"/>
+                                </g:Cell>
+                                <p1:InputNumber styleName="{style.numberInput}" step="0.01" ui:field="scaleY"/>
+                            </g:HorizontalPanel>
+                        </g:customCell>
+                    </g:row>
+                    <g:row>
+                        <g:customCell>
+                            <g:HorizontalPanel>
+                                <g:Cell verticalAlignment="ALIGN_MIDDLE">
+                                    <g:InlineHTML text="Scale z"/>
+                                </g:Cell>
+                                <p1:InputNumber styleName="{style.numberInput}" step="0.01" ui:field="scaleZ"/>
+                            </g:HorizontalPanel>
+                        </g:customCell>
+                    </g:row>
+                    <g:row>
+                        <g:customCell>
+                            <g:Grid cellPadding="0" cellSpacing="5">
+                                <g:row>
+                                    <g:customCell>
+                                        <g:InlineHTML text="Translate x"/>
+                                    </g:customCell>
+                                    <g:customCell>
+                                        <p1:InputNumber styleName="{style.numberInput}" ui:field="translateX"/>
+                                    </g:customCell>
+                                    <g:customCell>
+                                        <g:InlineHTML text="Translate y"/>
+                                    </g:customCell>
+                                    <g:customCell>
+                                        <p1:InputNumber styleName="{style.numberInput}" step="10" ui:field="translateY"/>
+                                    </g:customCell>
+                                    <g:customCell>
+                                        <g:InlineHTML text="Translate z"/>
+                                    </g:customCell>
+                                    <g:customCell>
+                                        <p1:InputNumber styleName="{style.numberInput}" ui:field="translateZ"/>
+                                    </g:customCell>
+                                </g:row>
+                            </g:Grid>
+                        </g:customCell>
+                    </g:row>
+                </g:Grid>
+            </g:customCell>
+        </g:row>
+    </g:Grid>
+</ui:UiBinder>

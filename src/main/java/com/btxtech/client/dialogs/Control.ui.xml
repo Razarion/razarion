@@ -1,0 +1,66 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:p1='urn:import:com.btxtech.client.dialogs'>
+
+    <ui:style>
+        .title {
+            font-size: x-large;
+        }
+    </ui:style>
+
+
+    <g:Grid cellPadding="5" cellSpacing="5">
+        <g:row>
+            <g:customCell>
+                <g:DisclosurePanel>
+                    <g:header>Lighting control</g:header>
+                    <p1:LightingControl ui:field="lightingControl"/>
+                </g:DisclosurePanel>
+            </g:customCell>
+        </g:row>
+        <g:row>
+            <g:customCell>
+                <g:DisclosurePanel>
+                    <g:header>Terrain</g:header>
+                    <g:VerticalPanel>
+                        <g:Button text="Plateau Editor" ui:field="plateauEditorButton"/>
+                        <g:Button text="Shape Shape" ui:field="shapeEditorButton"/>
+                        <p1:HorizontalInputRangeNumber min="0" max="100" ui:field="roughness"/>
+                    </g:VerticalPanel>
+                </g:DisclosurePanel>
+            </g:customCell>
+        </g:row>
+        <g:row>
+            <g:customCell>
+                <g:DisclosurePanel>
+                    <g:header>Render</g:header>
+                    <g:ListBox ui:field="renderMode"/>
+                </g:DisclosurePanel>
+            </g:customCell>
+        </g:row>
+        <g:row>
+            <g:customCell>
+                <g:DisclosurePanel>
+                    <g:header>Model Matrix</g:header>
+                    <p1:ModelControl ui:field="modelControl"/>
+                </g:DisclosurePanel>
+            </g:customCell>
+        </g:row>
+        <g:row>
+            <g:customCell>
+                <g:DisclosurePanel>
+                    <g:header>View Matrix</g:header>
+                    <p1:ViewControl ui:field="viewControl"/>
+                </g:DisclosurePanel>
+            </g:customCell>
+        </g:row>
+        <g:row>
+            <g:customCell>
+                <g:DisclosurePanel>
+                    <g:header>Projection Matrix</g:header>
+                    <p1:ProjectionControl ui:field="projectionControl"/>
+                </g:DisclosurePanel>
+            </g:customCell>
+        </g:row>
+    </g:Grid>
+</ui:UiBinder>

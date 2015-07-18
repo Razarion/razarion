@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='webgl'>
+    <source path="client"/>
+    <source path="game"/>
+    <!-- Inherit the core Web Toolkit stuff.                        -->
+    <inherits name='com.google.gwt.user.User'/>
+    <!-- GWT Issue 5691: Logging mus be at the beginning otherwise log are lost in onModuleLoad() method-->
+    <inherits name="com.google.gwt.logging.Logging"/>
+    <!-- Inherit the default GWT style sheet.  You can change       -->
+    <!-- the theme of your GWT application by uncommenting          -->
+    <!-- any one of the following lines.                            -->
+    <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+    <inherits name="elemental.Elemental"/>
+    <inherits name='org.vectomatic.libgwtsvg'/>
+    <inherits name='com.btxtech.game.jsre.Jser'/>
+
+    <inherits name="org.jboss.errai.enterprise.All" />
+    <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+    <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+    <!-- Other module inherits                                      -->
+
+    <!-- Specify the app entry point class.                         -->
+    <!-- done with Errai entry-point class='com.btxtech.client.Webgl'/ -->
+
+    <!-- Level not working, only server -->
+    <set-property name="gwt.logging.logLevel" value="FINEST"/>
+    <set-property name="gwt.logging.simpleRemoteHandler" value="ENABLED" />
+
+    <!-- Specify the paths for translatable code                    -->
+    <source path='client'/>
+    <source path='shared'/>
+
+</module>

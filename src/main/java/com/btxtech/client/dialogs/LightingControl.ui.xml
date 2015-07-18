@@ -1,0 +1,40 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:p1='urn:import:com.btxtech.client.dialogs'>
+    <ui:style>
+        .numberInput {
+            width: 50px;
+        }
+    </ui:style>
+    <g:Grid cellPadding="5" cellSpacing="5">
+        <g:row>
+            <g:customCell>
+                <g:VerticalPanel>
+                    <g:InlineHTML text="Altitude:"/>
+                    <g:InlineHTML text="0&#176; horizon, 90&#176; zenith"/>
+                    <p1:VerticalInputRangeNumber step="1" min="0" max="90" ui:field="altitude"/>
+                </g:VerticalPanel>
+            </g:customCell>
+            <g:customCell>
+                <g:VerticalPanel>
+                    <g:InlineHTML text="Azimuth:"/>
+                    <g:InlineHTML text="0&#176; east, 90&#176; north"/>
+                    <g:InlineHTML text="180&#176; west, 270&#176; south"/>
+                    <p1:HorizontalInputRangeNumber step="1" min="0" max="359" ui:field="azimuth"/>
+                </g:VerticalPanel>
+            </g:customCell>
+            <g:customCell>
+                <g:VerticalPanel>
+                    <g:InlineHTML text="Color:"/>
+                    <p1:InputColor ui:field="directionalColor"/>
+                </g:VerticalPanel>
+            </g:customCell>
+            <g:customCell>
+                <g:VerticalPanel>
+                    <g:InlineHTML text="Ambient color:"/>
+                    <p1:InputColor ui:field="ambientColor"/>
+                </g:VerticalPanel>
+            </g:customCell>
+        </g:row>
+    </g:Grid>
+</ui:UiBinder>
