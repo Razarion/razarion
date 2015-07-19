@@ -3,13 +3,12 @@ package com.btxtech.client.math3d;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.terrain.VertexList;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.game.jsre.common.MathHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -19,7 +18,7 @@ public class Mesh {
     private int maxX;
     private int maxZ;
     private Map<Index, Vertex> grid = new HashMap<>();
-    private Logger logger = Logger.getLogger(Math.class.getName());
+    // private Logger logger = Logger.getLogger(Math.class.getName());
 
     public Mesh() {
     }
@@ -75,31 +74,40 @@ public class Mesh {
 
     private TextureCoordinate[][] setupTextureCoordinates() {
         TextureCoordinate[][] textures = new TextureCoordinate[getX()][getZ()];
-        for (int x = 0; x < getX(); x++) {
-            for (int z = 0; z < getZ(); z++) {
-                Vertex bottomLeft = getVertex(x, z);
 
-                TextureCoordinate textureCoordinate;
-                if (x == 0 && z == 0) {
-                    textureCoordinate = new TextureCoordinate(0, 0);
-                } else if (x == 0) {
-                    Vertex previousBottomLeft = getVertex(0, z - 1);
-                    TextureCoordinate previousTexBottomLeft = getTextureCoordinate(textures, 0, z - 1);
-                    double t = previousTexBottomLeft.getT() + bottomLeft.distance(previousBottomLeft);
-                    textureCoordinate = new TextureCoordinate(0, t);
-                } else if (z == 0) {
-                    Vertex previousBottomLeft = getVertex(x - 1, 0);
-                    TextureCoordinate previousTexBottomLeft = getTextureCoordinate(textures, x - 1, 0);
-                    double s = previousTexBottomLeft.getS() + bottomLeft.distance(previousBottomLeft);
-                    textureCoordinate = new TextureCoordinate(s, 0);
-                } else {
-                    Vertex sPreviousBottomLeft = getVertex(x - 1, z);
-                    Vertex tPreviousBottomLeft = getVertex(x, z - 1);
-                    double s = getTextureCoordinate(textures, x - 1, z).getS() + bottomLeft.distance(sPreviousBottomLeft);
-                    double t = getTextureCoordinate(textures, x, z - 1).getT() + bottomLeft.distance(tPreviousBottomLeft);
-                    textureCoordinate = new TextureCoordinate(s, t);
-                }
-                textures[x][z] = textureCoordinate;
+        Vertex bottomLeft = getVertex(0, 0);
+        Vertex bottomRight = getVertex(1, 0);
+
+        // Fill originating bottom left
+        textures[0][0] = new TextureCoordinate(0, 0);
+
+        // Fill most bottom horizontal edge x with z = 0
+        // Bottom line is origin line
+        for (int x = 1; x < getX(); x++) {
+            Vertex vertex = getVertex(x, 0);
+            double s = bottomLeft.projection(bottomRight, vertex);
+            double distance = bottomLeft.distance(vertex);
+            double t = MathHelper.getPythagorasA(distance, s);
+            textures[x][0] = new TextureCoordinate(s, t);
+        }
+
+        // Fill most left vertical edge z with x = 0
+        for (int z = 1; z < getZ(); z++) {
+            Vertex vertex = getVertex(0, z);
+            double s = bottomLeft.projection(bottomRight, vertex);
+            double distance = bottomLeft.distance(vertex);
+            double t = MathHelper.getPythagorasA(distance, s);
+            textures[0][z] = new TextureCoordinate(s, t);
+        }
+
+        // Fill remaining
+        for (int x = 1; x < getX(); x++) {
+            for (int z = 1; z < getZ(); z++) {
+                Vertex vertex = getVertex(x, z);
+                double s = bottomLeft.projection(bottomRight, vertex);
+                double distance = bottomLeft.distance(vertex);
+                double t = MathHelper.getPythagorasA(distance, s);
+                textures[x][z] = new TextureCoordinate(s, t);
             }
         }
         return textures;
@@ -125,8 +133,8 @@ public class Mesh {
     }
 
     public List<Vertex> getTopVertices() {
-        List<Vertex>  vertices = new ArrayList<>();
-        for(int x = 0; x < maxX; x++) {
+        List<Vertex> vertices = new ArrayList<>();
+        for (int x = 0; x < maxX; x++) {
             vertices.add(getVertex(x, maxZ));
         }
         return vertices;

@@ -19,7 +19,8 @@ public class ViewTransformation {
     }
 
     public ViewTransformation() {
-        setGame();
+        //setGame();
+        setTop();
     }
 
     public double getTranslateX() {

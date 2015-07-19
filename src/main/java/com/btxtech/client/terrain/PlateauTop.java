@@ -61,7 +61,7 @@ public class PlateauTop implements VertexListProvider {
     }
 
     private TextureCoordinate createTextureCoordinate(Index position, Index smallestPoint, ImageDescriptor imageDescriptor) {
-        return new TextureCoordinate((double)(position.getX() - smallestPoint.getX()) / (double)imageDescriptor.getWidth(),
-                (double)(position.getY() - smallestPoint.getY()) / (double)imageDescriptor.getHeight());
+        return new TextureCoordinate((double)(position.getX() - smallestPoint.getX()) / (double)imageDescriptor.getQuadraticEdge(),
+                (double)(position.getY() - smallestPoint.getY()) / (double)imageDescriptor.getQuadraticEdge());
     }
 }

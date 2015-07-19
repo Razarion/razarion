@@ -33,8 +33,8 @@ public class Ground implements VertexListProvider {
         Vertex pointC = new Vertex(x, y + height, z);
         Vertex pointD = new Vertex(x + width, y + height, z);
 
-        double textureWidth = (double) width / imageDescriptor.getWidth();
-        double textureHeight = (double) height / imageDescriptor.getHeight();
+        double textureWidth = (double) width / imageDescriptor.getQuadraticEdge();
+        double textureHeight = (double) height / imageDescriptor.getQuadraticEdge();
 
         vertexList.add(new Triangle(pointA, new TextureCoordinate(0, 0),
                 pointB, new TextureCoordinate(textureWidth, 0),

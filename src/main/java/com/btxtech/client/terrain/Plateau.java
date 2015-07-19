@@ -25,10 +25,11 @@ public class Plateau implements VertexListProvider {
     // public static List<Vertex> shape = Arrays.asList(new Vertex(50, 0, 2), new Vertex(20, 0, 4), new Vertex(5, 0, 21), new Vertex(4, 0, 171), new Vertex(-18, 0, 174));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(30, 0, 0), new Vertex(-8, 0, 180));
     public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1), new Vertex(6, 0, 173), new Vertex(23, 0, 198), new Vertex(11, 0, 211));
+    // public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1));
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
     private TerrainPolygon<PlateauCorner, TerrainPolygonLine> polygon;
     private Mesh hillSideMesh;
-    private double roughness = 20;
+    private double roughness = 0;
 
     public Plateau(List<Index> points) {
         updateCorners(points);

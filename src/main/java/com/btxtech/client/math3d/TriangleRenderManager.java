@@ -28,7 +28,7 @@ public class TriangleRenderManager {
 
     private List<TriangleRenderHolder> renderers = new ArrayList<>();
     private Logger logger = Logger.getLogger(TriangleRenderManager.class.getName());
-    private Mode mode = Mode.NORMAL;
+    private Mode mode = Mode.WIRE_08;
     @Inject
     private GameCanvas viewField;
     @Inject
