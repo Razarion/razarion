@@ -78,31 +78,8 @@ public class Mesh {
         Vertex bottomLeft = getVertex(0, 0);
         Vertex bottomRight = getVertex(1, 0);
 
-        // Fill originating bottom left
-        textures[0][0] = new TextureCoordinate(0, 0);
-
-        // Fill most bottom horizontal edge x with z = 0
-        // Bottom line is origin line
-        for (int x = 1; x < getX(); x++) {
-            Vertex vertex = getVertex(x, 0);
-            double s = bottomLeft.projection(bottomRight, vertex);
-            double distance = bottomLeft.distance(vertex);
-            double t = MathHelper.getPythagorasA(distance, s);
-            textures[x][0] = new TextureCoordinate(s, t);
-        }
-
-        // Fill most left vertical edge z with x = 0
-        for (int z = 1; z < getZ(); z++) {
-            Vertex vertex = getVertex(0, z);
-            double s = bottomLeft.projection(bottomRight, vertex);
-            double distance = bottomLeft.distance(vertex);
-            double t = MathHelper.getPythagorasA(distance, s);
-            textures[0][z] = new TextureCoordinate(s, t);
-        }
-
-        // Fill remaining
-        for (int x = 1; x < getX(); x++) {
-            for (int z = 1; z < getZ(); z++) {
+        for (int x = 0; x < getX(); x++) {
+            for (int z = 0; z < getZ(); z++) {
                 Vertex vertex = getVertex(x, z);
                 double s = bottomLeft.projection(bottomRight, vertex);
                 double distance = bottomLeft.distance(vertex);
