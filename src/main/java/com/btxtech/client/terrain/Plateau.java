@@ -24,8 +24,8 @@ public class Plateau implements VertexListProvider {
     // public static List<Vertex> shape = Arrays.asList(new Vertex(50, 0, 2), new Vertex(20, 0, 4), new Vertex(5, 0, 21), new Vertex(4, 0, 171), new Vertex(-5, 0, 199), new Vertex(-22, 0, 206), new Vertex(-37, 0, 197), new Vertex(-58, 0, 197));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(50, 0, 2), new Vertex(20, 0, 4), new Vertex(5, 0, 21), new Vertex(4, 0, 171), new Vertex(-18, 0, 174));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(30, 0, 0), new Vertex(-8, 0, 180));
-    public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1), new Vertex(6, 0, 173), new Vertex(23, 0, 198), new Vertex(11, 0, 211));
-    // public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1));
+    // public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1), new Vertex(6, 0, 173), new Vertex(23, 0, 198), new Vertex(11, 0, 211));
+    public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 200));
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
     private TerrainPolygon<PlateauCorner, TerrainPolygonLine> polygon;
     private Mesh hillSideMesh;
