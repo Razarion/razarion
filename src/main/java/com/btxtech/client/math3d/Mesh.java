@@ -1,6 +1,7 @@
 package com.btxtech.client.math3d;
 
 import com.btxtech.client.ImageDescriptor;
+import com.btxtech.client.terrain.Ground;
 import com.btxtech.client.terrain.VertexList;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
@@ -37,8 +38,8 @@ public class Mesh {
         return vertex;
     }
 
-    public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor) {
-        TextureCoordinate[][] textures = setupTextureCoordinates();
+    public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor, Ground ground) {
+        TextureCoordinate[][] textures = setupTextureCoordinates(ground);
         for (int z = 0; z < maxZ; z++) {
             for (int x = 0; x < maxX; x++) {
                 Vertex bottomLeft = getVertex(x, z);
@@ -58,9 +59,9 @@ public class Mesh {
         }
     }
 
-    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+    public VertexList provideVertexList(ImageDescriptor imageDescriptor, Ground ground) {
         VertexList vertexList = new VertexList();
-        appendVertexList(vertexList, imageDescriptor);
+        appendVertexList(vertexList, imageDescriptor, ground);
         return vertexList;
     }
 
@@ -72,7 +73,7 @@ public class Mesh {
         return maxZ + 1;
     }
 
-    private TextureCoordinate[][] setupTextureCoordinates() {
+    private TextureCoordinate[][] setupTextureCoordinates(Ground ground) {
         TextureCoordinate[][] textures = new TextureCoordinate[getX()][getZ()];
 
         Vertex bottomLeft = getVertex(0, 0);
@@ -81,10 +82,7 @@ public class Mesh {
         for (int x = 0; x < getX(); x++) {
             for (int z = 0; z < getZ(); z++) {
                 Vertex vertex = getVertex(x, z);
-                double s = bottomLeft.projection(bottomRight, vertex);
-                double distance = bottomLeft.distance(vertex);
-                double t = MathHelper.getPythagorasA(distance, s);
-                textures[x][z] = new TextureCoordinate(s, t);
+                textures[x][z] = new TextureCoordinate(ground.calculateS(vertex), ground.calculateT(vertex));
             }
         }
         return textures;

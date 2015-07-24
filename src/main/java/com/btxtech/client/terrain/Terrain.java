@@ -25,8 +25,8 @@ public class Terrain {
     // public static List<Index> corners = Arrays.asList(new Index(256, 396), new Index(677, 396), new Index(557, 66));
     // public static List<Index> corners = Arrays.asList(new Index(256, 396), new Index(677, 396), new Index(508, 200));
     // public static List<Index> corners = Arrays.asList(new Index(253, 421), new Index(677, 396), new Index(508, 200));
-    // private List<Index> corners = Arrays.asList(new Index(259, 289), new Index(716, 289), new Index(536, 552));
-    private List<Index> corners = Arrays.asList(new Index(572, 504), new Index(381, 628), new Index(177, 372), new Index(249, 328), new Index(368, 365), new Index(438, 323), new Index(574, 321), new Index(596, 442));
+    private List<Index> corners = Arrays.asList(new Index(259, 289), new Index(716, 289), new Index(536, 552));
+    // private List<Index> corners = Arrays.asList(new Index(572, 504), new Index(381, 628), new Index(177, 372), new Index(249, 328), new Index(368, 365), new Index(438, 323), new Index(574, 321), new Index(596, 442));
     private Plateau plateau;
     private Ground ground = new Ground(0, 0, 0, 1000, 1000);
 
@@ -35,7 +35,7 @@ public class Terrain {
     }
 
     public Terrain() {
-        plateau = new Plateau(corners);
+        plateau = new Plateau(corners, ground);
     }
 
     public List<Index> getCorners() {

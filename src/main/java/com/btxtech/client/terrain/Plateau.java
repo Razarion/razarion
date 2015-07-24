@@ -26,12 +26,14 @@ public class Plateau implements VertexListProvider {
     // public static List<Vertex> shape = Arrays.asList(new Vertex(30, 0, 0), new Vertex(-8, 0, 180));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1), new Vertex(6, 0, 173), new Vertex(23, 0, 198), new Vertex(11, 0, 211));
     public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 200));
+    private final Ground ground;
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
     private TerrainPolygon<PlateauCorner, TerrainPolygonLine> polygon;
     private Mesh hillSideMesh;
     private double roughness = 0;
 
-    public Plateau(List<Index> points) {
+    public Plateau(List<Index> points, Ground ground) {
+        this.ground = ground;
         updateCorners(points);
     }
 
@@ -98,7 +100,7 @@ public class Plateau implements VertexListProvider {
         }
 
         VertexList vertexList = new VertexList();
-        hillSideMesh.appendVertexList(vertexList, imageDescriptor);
+        hillSideMesh.appendVertexList(vertexList, imageDescriptor, ground);
         return vertexList;
     }
 

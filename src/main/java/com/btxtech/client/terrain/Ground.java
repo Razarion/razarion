@@ -16,6 +16,9 @@ public class Ground implements VertexListProvider {
     private final int z;
     private final int width;
     private final int height;
+    private Vertex origin;
+    private Vertex xAxis;
+    private Vertex yAxis;
 
     public Ground(int x, int y, int z, int width, int height) {
         this.x = x;
@@ -23,6 +26,9 @@ public class Ground implements VertexListProvider {
         this.z = z;
         this.width = width;
         this.height = height;
+        origin = new Vertex(x, y, z);
+        xAxis = new Vertex(x + width, y, z);
+        yAxis = new Vertex(x, y + height, z);
     }
 
     @Override
@@ -45,5 +51,13 @@ public class Ground implements VertexListProvider {
                 pointB, new TextureCoordinate(textureWidth, 0)));
 
         return vertexList;
+    }
+
+    public double calculateS(Vertex point) {
+        return origin.projection(xAxis, point);
+    }
+
+    public double calculateT(Vertex point) {
+        return origin.projection(yAxis, point);
     }
 }
