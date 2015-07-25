@@ -43,10 +43,10 @@ public class Sphere implements VertexListProvider {
                 double u = 1 - (longNumber / longitudeBands);
                 double v = 1 - (latNumber / latitudeBands);
 
-                mesh.setVertex(longNumber, latNumber, new Vertex(x, y, z).multiply(radius));
+                mesh.setVertex(longNumber, latNumber, new Vertex(x, y, z).multiply(radius), 0, null);
                 textureCoordData.add(new TextureCoordinate(u, v));
             }
         }
-        return mesh.provideVertexList(imageDescriptor);
+        return mesh.provideVertexList(imageDescriptor, null);
     }
 }

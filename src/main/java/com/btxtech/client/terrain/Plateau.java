@@ -25,7 +25,9 @@ public class Plateau implements VertexListProvider {
     // public static List<Vertex> shape = Arrays.asList(new Vertex(50, 0, 2), new Vertex(20, 0, 4), new Vertex(5, 0, 21), new Vertex(4, 0, 171), new Vertex(-18, 0, 174));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(30, 0, 0), new Vertex(-8, 0, 180));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1), new Vertex(6, 0, 173), new Vertex(23, 0, 198), new Vertex(11, 0, 211));
-    public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 200));
+    // public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1));
+    // public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(0, 0, 200));
+    public static List<Vertex> shape = Arrays.asList(new Vertex(118, 0, 1), new Vertex(-134, 0, 156));
     private final Ground ground;
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
     private TerrainPolygon<PlateauCorner, TerrainPolygonLine> polygon;
@@ -60,6 +62,7 @@ public class Plateau implements VertexListProvider {
             for (int verticalIndex = 0; verticalIndex < verticalCount; verticalIndex++) {
                 PlateauCorner plateauCorner = polygon.getTerrainPolygonCornerSafe(horizontalIndex);
                 PlateauCorner plateauCornerSuccessor = polygon.getTerrainPolygonCornerSafe(horizontalIndex + 1);
+                double segmentAngle = plateauCorner.getPoint().getAngleToNord(plateauCornerSuccessor.getPoint());
                 Vertex shapeVertex = shape.get(verticalIndex);
                 Vertex nextShapeVertex = shape.get(verticalIndex + 1);
 
@@ -81,7 +84,7 @@ public class Plateau implements VertexListProvider {
                     verticalTileCount = verticalTileCounts.get(verticalIndex);
                 }
 
-                Segment segment = new Segment(bottomLeft, topLeft, bottomRight, topRight);
+                Segment segment = new Segment(bottomLeft, topLeft, bottomRight, topRight, segmentAngle);
                 segment.rasterize(hillSideMesh, TRIANGLE_SIDE_LENGTH, lastX, lastZ, horizontalTileCount, verticalTileCount, verticalIndex == verticalCount - 1);
                 if (horizontalIndex == 0) {
                     verticalTileCounts.add(segment.getVerticalCount());

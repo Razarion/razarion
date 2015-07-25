@@ -34,6 +34,10 @@ public class TextureCoordinate {
         return new TextureCoordinate(s / pixels, t / pixels);
     }
 
+    public TextureCoordinate add(double s, double t) {
+        return new TextureCoordinate(this.s + s, this.t + t);
+    }
+
     public static int getComponentCount() {
         return 2;
     }
