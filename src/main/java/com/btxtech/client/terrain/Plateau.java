@@ -5,8 +5,10 @@ import com.btxtech.client.math3d.Mesh;
 import com.btxtech.client.math3d.Vertex;
 import com.btxtech.client.math3d.VertexListProvider;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygon;
 import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygonLine;
+import com.google.gwt.core.client.GWT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +29,8 @@ public class Plateau implements VertexListProvider {
     // public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1), new Vertex(6, 0, 173), new Vertex(23, 0, 198), new Vertex(11, 0, 211));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(89, 0, 1), new Vertex(28, 0, 1));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(0, 0, 200));
-    public static List<Vertex> shape = Arrays.asList(new Vertex(118, 0, 1), new Vertex(-134, 0, 156));
+    //public static List<Vertex> shape = Arrays.asList(new Vertex(118, 0, 1), new Vertex(-134, 0, 156));
+    public static List<Vertex> shape = Arrays.asList(new Vertex(50, 0, 0), new Vertex(0, 0, 100));
     private final Ground ground;
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
     private TerrainPolygon<PlateauCorner, TerrainPolygonLine> polygon;
@@ -66,10 +69,18 @@ public class Plateau implements VertexListProvider {
                 Vertex shapeVertex = shape.get(verticalIndex);
                 Vertex nextShapeVertex = shape.get(verticalIndex + 1);
 
-                Index bL = plateauCorner.getOutsideNormal(shapeVertex.getX());
-                Index tL = plateauCorner.getOutsideNormal(nextShapeVertex.getX());
-                Index bR = plateauCornerSuccessor.getOutsideNormal(shapeVertex.getX());
-                Index tR = plateauCornerSuccessor.getOutsideNormal(nextShapeVertex.getX());
+                double angle = plateauCorner.getOuterAngle() / 2.0 - MathHelper.QUARTER_RADIANT;
+                double angleSuccessor = plateauCornerSuccessor.getOuterAngle() / 2.0 - MathHelper.QUARTER_RADIANT;
+
+                Index bL = plateauCorner.getOutsideNormal(calculateNormDistance(angle, shapeVertex.getX()));
+                Index tL = plateauCorner.getOutsideNormal(calculateNormDistance(angle, nextShapeVertex.getX()));
+                Index bR = plateauCornerSuccessor.getOutsideNormal(calculateNormDistance(angleSuccessor, shapeVertex.getX()));
+                Index tR = plateauCornerSuccessor.getOutsideNormal(calculateNormDistance(angleSuccessor, nextShapeVertex.getX()));
+                GWT.log("-------------------------------------------");
+                GWT.log("bL: " + bL);
+                GWT.log("tL: " + tL);
+                GWT.log("bR: " + bR);
+                GWT.log("tR: " + tR);
 
                 double zBottom = shapeVertex.getZ();
                 double zTop = nextShapeVertex.getZ();
@@ -85,6 +96,7 @@ public class Plateau implements VertexListProvider {
                 }
 
                 Segment segment = new Segment(bottomLeft, topLeft, bottomRight, topRight, segmentAngle);
+                GWT.log("segment: " + segment);
                 segment.rasterize(hillSideMesh, TRIANGLE_SIDE_LENGTH, lastX, lastZ, horizontalTileCount, verticalTileCount, verticalIndex == verticalCount - 1);
                 if (horizontalIndex == 0) {
                     verticalTileCounts.add(segment.getVerticalCount());
@@ -105,6 +117,10 @@ public class Plateau implements VertexListProvider {
         VertexList vertexList = new VertexList();
         hillSideMesh.appendVertexList(vertexList, imageDescriptor, ground);
         return vertexList;
+    }
+
+    private double calculateNormDistance(double angle, double distance) {
+        return distance / Math.cos(angle);
     }
 
     public Mesh getHillSideMesh() {

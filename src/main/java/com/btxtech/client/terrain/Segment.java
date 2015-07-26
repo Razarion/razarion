@@ -73,4 +73,14 @@ public class Segment {
         double distance = vertex1.distance(vertex2);
         return distance / count;
     }
+
+    @Override
+    public String toString() {
+        return "Segment{" +
+                "bottomLeft=" + bottomLeft +
+                ", topLeft=" + topLeft +
+                ", bottomRight=" + bottomRight +
+                ", topRight=" + topRight +
+                '}';
+    }
 }
