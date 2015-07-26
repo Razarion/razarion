@@ -76,11 +76,6 @@ public class Plateau implements VertexListProvider {
                 Index tL = plateauCorner.getOutsideNormal(calculateNormDistance(angle, nextShapeVertex.getX()));
                 Index bR = plateauCornerSuccessor.getOutsideNormal(calculateNormDistance(angleSuccessor, shapeVertex.getX()));
                 Index tR = plateauCornerSuccessor.getOutsideNormal(calculateNormDistance(angleSuccessor, nextShapeVertex.getX()));
-                GWT.log("-------------------------------------------");
-                GWT.log("bL: " + bL);
-                GWT.log("tL: " + tL);
-                GWT.log("bR: " + bR);
-                GWT.log("tR: " + tR);
 
                 double zBottom = shapeVertex.getZ();
                 double zTop = nextShapeVertex.getZ();
@@ -96,7 +91,6 @@ public class Plateau implements VertexListProvider {
                 }
 
                 Segment segment = new Segment(bottomLeft, topLeft, bottomRight, topRight, segmentAngle);
-                GWT.log("segment: " + segment);
                 segment.rasterize(hillSideMesh, TRIANGLE_SIDE_LENGTH, lastX, lastZ, horizontalTileCount, verticalTileCount, verticalIndex == verticalCount - 1);
                 if (horizontalIndex == 0) {
                     verticalTileCounts.add(segment.getVerticalCount());
