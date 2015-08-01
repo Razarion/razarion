@@ -37,7 +37,7 @@ public class Terrain {
     }
 
     public Terrain() {
-        plateau = new Plateau(corners, ground);
+        plateau = new Plateau(corners);
     }
 
     public List<Index> getCorners() {

@@ -1,9 +1,7 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.math3d.Mesh;
-import com.btxtech.client.math3d.TextureCoordinate;
 import com.btxtech.client.math3d.Vertex;
-import com.btxtech.game.jsre.common.MathHelper;
 
 /**
  * Created by Beat
@@ -14,16 +12,14 @@ public class Segment {
     private final Vertex topLeft;
     private final Vertex bottomRight;
     private final Vertex topRight;
-    private double segmentAngle;
     private int horizontalCount;
     private int verticalCount;
 
-    public Segment(Vertex bottomLeft, Vertex topLeft, Vertex bottomRight, Vertex topRight, double segmentAngle) {
+    public Segment(Vertex bottomLeft, Vertex topLeft, Vertex bottomRight, Vertex topRight) {
         this.bottomLeft = bottomLeft;
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
         this.topRight = topRight;
-        this.segmentAngle = segmentAngle;
     }
 
     public void rasterize(Mesh mesh, int length, int lastX, int lastZ, Integer horizontalCount, Integer verticalCount, boolean topmost) {
@@ -44,7 +40,7 @@ public class Segment {
             double verticalLength = calculateLength(verticalCount, bottom, top);
             for (int z = 0; z < verticalCount + (topmost ? 1 : 0); z++) {
                 Vertex position = bottom.interpolate((double) z * verticalLength, top);
-                mesh.setVertex(x + lastX, z + lastZ, position, segmentAngle, this);
+                mesh.setVertex(x + lastX, z + lastZ, position);
             }
         }
     }
@@ -55,13 +51,6 @@ public class Segment {
 
     public int getHorizontalCount() {
         return horizontalCount;
-    }
-
-    public TextureCoordinate createTextureCoordinate(Vertex vertex) {
-        double s = bottomLeft.projection(bottomRight, vertex);
-        double distance = bottomLeft.distance(vertex);
-        double t = MathHelper.getPythagorasA(distance, s);
-        return new TextureCoordinate(s, t);
     }
 
     private int calculateCount(int length, Vertex vertex1, Vertex vertex2) {

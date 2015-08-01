@@ -8,7 +8,6 @@ import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygon;
 import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygonLine;
-import com.google.gwt.core.client.GWT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +18,7 @@ import java.util.List;
  * 11.04.2015.
  */
 public class Plateau implements VertexListProvider {
-    public static int TRIANGLE_SIDE_LENGTH = 80;
+    public static int TRIANGLE_SIDE_LENGTH = 20;
     //public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(0, 0, 90));
     //public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(-2, 0, 43), new Vertex(-18, 0, 94), new Vertex(-25, 0, 117), new Vertex(-38, 0, 133), new Vertex(-54, 0, 147), new Vertex(-68, 0, 131));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(140, 0, 101));
@@ -31,14 +30,12 @@ public class Plateau implements VertexListProvider {
     // public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(0, 0, 200));
     //public static List<Vertex> shape = Arrays.asList(new Vertex(118, 0, 1), new Vertex(-134, 0, 156));
     public static List<Vertex> shape = Arrays.asList(new Vertex(50, 0, 0), new Vertex(0, 0, 100));
-    private final Ground ground;
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
     private TerrainPolygon<PlateauCorner, TerrainPolygonLine> polygon;
     private Mesh hillSideMesh;
     private double roughness = 0;
 
-    public Plateau(List<Index> points, Ground ground) {
-        this.ground = ground;
+    public Plateau(List<Index> points) {
         updateCorners(points);
     }
 
@@ -65,7 +62,6 @@ public class Plateau implements VertexListProvider {
             for (int verticalIndex = 0; verticalIndex < verticalCount; verticalIndex++) {
                 PlateauCorner plateauCorner = polygon.getTerrainPolygonCornerSafe(horizontalIndex);
                 PlateauCorner plateauCornerSuccessor = polygon.getTerrainPolygonCornerSafe(horizontalIndex + 1);
-                double segmentAngle = plateauCorner.getPoint().getAngleToNord(plateauCornerSuccessor.getPoint());
                 Vertex shapeVertex = shape.get(verticalIndex);
                 Vertex nextShapeVertex = shape.get(verticalIndex + 1);
 
@@ -90,7 +86,7 @@ public class Plateau implements VertexListProvider {
                     verticalTileCount = verticalTileCounts.get(verticalIndex);
                 }
 
-                Segment segment = new Segment(bottomLeft, topLeft, bottomRight, topRight, segmentAngle);
+                Segment segment = new Segment(bottomLeft, topLeft, bottomRight, topRight);
                 segment.rasterize(hillSideMesh, TRIANGLE_SIDE_LENGTH, lastX, lastZ, horizontalTileCount, verticalTileCount, verticalIndex == verticalCount - 1);
                 if (horizontalIndex == 0) {
                     verticalTileCounts.add(segment.getVerticalCount());
@@ -101,7 +97,6 @@ public class Plateau implements VertexListProvider {
             lastX += horizontalTileCount != null ? horizontalTileCount : 0;
         }
 
-
         for (int x = 0; x < hillSideMesh.getX(); x++) {
             for (int z = 0; z < hillSideMesh.getZ(); z++) {
                 hillSideMesh.randomNorm(x, z, roughness);
@@ -109,7 +104,8 @@ public class Plateau implements VertexListProvider {
         }
 
         VertexList vertexList = new VertexList();
-        hillSideMesh.appendVertexList(vertexList, imageDescriptor, ground);
+        hillSideMesh.appendVertexList(vertexList, imageDescriptor);
+        hillSideMesh.appendConnectedVertexList(vertexList, imageDescriptor);
         return vertexList;
     }
 
