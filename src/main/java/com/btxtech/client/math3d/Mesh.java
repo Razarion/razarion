@@ -5,6 +5,7 @@ import com.btxtech.client.terrain.Ground;
 import com.btxtech.client.terrain.Segment;
 import com.btxtech.client.terrain.VertexList;
 import com.btxtech.game.jsre.client.common.Index;
+import com.google.gwt.core.client.GWT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +47,14 @@ public class Mesh {
         public Segment getSegment() {
             return segment;
         }
+
+        @Override
+        public String toString() {
+            return "VertexData{" +
+                    "vertex=" + vertex +
+                    ", textureCoordinate=" + textureCoordinate +
+                    '}';
+        }
     }
 
     public void setVertex(int x, int z, Vertex vertex, double segmentAngle, Segment segment) {
@@ -71,13 +80,14 @@ public class Mesh {
                 VertexData topLeft = getVertex(x, z + 1);
                 VertexData topRight = getVertex(x + 1, z + 1);
 
-                vertexList.add(new Triangle(bottomLeft.getVertex(), bottomLeft.getTextureCoordinate().divide(imageDescriptor.getQuadraticEdge()),
-                        bottomRight.getVertex(), bottomRight.getTextureCoordinate().divide(imageDescriptor.getQuadraticEdge()),
-                        topLeft.getVertex(), topLeft.getTextureCoordinate().divide(imageDescriptor.getQuadraticEdge())));
+                // TODO  bottomLeft.getTextureCoordinate().divide(imageDescriptor.getQuadraticEdge())
+                Triangle triangle = new Triangle(bottomLeft.getVertex(), bottomRight.getVertex(),topLeft.getVertex());
+                triangle.setupTexture(imageDescriptor.getQuadraticEdge());
+                vertexList.add(triangle);
 
-                vertexList.add(new Triangle(topRight.getVertex(), topRight.getTextureCoordinate().divide(imageDescriptor.getQuadraticEdge()),
-                        topLeft.getVertex(), topLeft.getTextureCoordinate().divide(imageDescriptor.getQuadraticEdge()),
-                        bottomRight.getVertex(), bottomRight.getTextureCoordinate().divide(imageDescriptor.getQuadraticEdge())));
+                triangle = new Triangle(topRight.getVertex(), topLeft.getVertex(), bottomRight.getVertex());
+                triangle.setupTexture(imageDescriptor.getQuadraticEdge());
+                vertexList.add(triangle);
             }
         }
     }
@@ -97,13 +107,57 @@ public class Mesh {
     }
 
     private void setupTextureCoordinates(Ground ground) {
+        // Fill most bottom horizontal edge x with z = 0
+        // Bottom line is origin line
+        VertexData lastVertexData = getVertex(0, 0);
+        lastVertexData.setTextureCoordinate(new TextureCoordinate(0, 0));
+        GWT.log("vertexData 1: 0: " + lastVertexData);
+        for (int x = 1; x < getX(); x++) {
+            VertexData vertexData = getVertex(x, 0);
+            vertexData.setTextureCoordinate(lastVertexData.getTextureCoordinate().add(lastVertexData.getVertex().distance(vertexData.getVertex()), 0));
+            GWT.log("vertexData 1: " + x + ":0 " + vertexData);
+            lastVertexData = vertexData;
+        }
+
         for (int x = 0; x < getX(); x++) {
-            for (int z = 0; z < getZ(); z++) {
+            for (int z = 1; z < getZ(); z++) {
                 VertexData vertexData = getVertex(x, z);
-                vertexData.setTextureCoordinate(vertexData.getSegment().createTextureCoordinate(vertexData.getVertex()));
+                VertexData vertexDataBottom = getVertex(x, z - 1);
+                double s;
+                if (x + 1 < getX()) {
+                    VertexData vertexDataBottomRight = getVertex(x + 1, z - 1);
+                    vertexData.setTextureCoordinate(calculateTexture(vertexDataBottom, vertexDataBottomRight.getVertex(), vertexData.getVertex()));
+                } else {
+                    // TODO
+                    vertexData.setTextureCoordinate(new TextureCoordinate(0, 0));
+                }
             }
         }
     }
+
+    private TextureCoordinate calculateTexture(VertexData dataA, Vertex pointB, Vertex pointC) {
+        Vertex planeA = dataA.getVertex();
+        Vertex normPlane = planeA.cross(pointB, pointC).normalize(1);
+        Vertex normGround = new Vertex(0, 0, 1);
+        Vertex planeGroundSideNorm = normGround.cross(normPlane);
+        Vertex planeHeightSideNorm = normPlane.cross(planeGroundSideNorm);
+
+        double s = planeA.projection(planeA.add(planeGroundSideNorm), pointC);
+        double t = planeA.projection(planeA.add(planeHeightSideNorm), pointC);
+
+        return dataA.getTextureCoordinate().add(s, t);
+    }
+
+//    private TextureCoordinate calculateTexture(VertexData dataA, VertexData dataB, Vertex pointC) {
+//        double distanceC = dataA.getVertex().distance(dataB.getVertex());
+//        double angleGroundAB = Math.asin((dataB.getVertex().getZ() - dataA.getVertex().getZ()) / distanceC);
+//        double angleA = dataA.getVertex().unsignedAngle(pointC, dataB.getVertex());
+//        double angle = angleA + angleGroundAB;
+//        double distanceB = dataA.getVertex().distance(pointC);
+//        double s = Math.cos(angle) * distanceB;
+//        double t = Math.sin(angle) * distanceB;
+//        return dataA.getTextureCoordinate().add(s, t);
+//    }
 
 //    private TextureCoordinate createTextureCoordinate(VertexData vertexData, VertexData prevVertexData) {
 //        Vertex inputVertex = vertexData.getVertex();

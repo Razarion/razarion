@@ -49,4 +49,12 @@ public class TextureCoordinate {
     public double getT() {
         return t;
     }
+
+    @Override
+    public String toString() {
+        return "TextureCoordinate{" +
+                "s=" + s +
+                ", t=" + t +
+                '}';
+    }
 }

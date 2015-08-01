@@ -1,5 +1,7 @@
 package com.btxtech.client.math3d;
 
+import com.btxtech.game.jsre.client.common.DecimalPosition;
+
 import java.util.List;
 
 /**
@@ -71,8 +73,8 @@ public class Vertex {
                 x * vertexB.y - y * vertexB.x);
     }
 
-    public Vertex cross(Vertex vertexA, Vertex vertexB) {
-        return vertexA.sub(this).cross(vertexB.sub(this));
+    public Vertex cross(Vertex vertexB, Vertex vertexC) {
+        return vertexB.sub(this).cross(vertexC.sub(this));
     }
 
     /**
@@ -115,6 +117,10 @@ public class Vertex {
         doubleList.add(y);
         doubleList.add(z);
         return doubleList;
+    }
+
+    public DecimalPosition toXY() {
+        return new DecimalPosition(x, y);
     }
 
     @Override

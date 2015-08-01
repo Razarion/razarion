@@ -35,6 +35,7 @@
             </g:row>
         </g:Grid>
         <p1:VerticalInputRangeNumber min="0" max="90" ui:field="rotateX"/>
+        <p1:HorizontalInputRangeNumber min="0" max="360" ui:field="rotateZ"/>
         <g:VerticalPanel spacing="5">
             <g:Button text="Top" ui:field="topButton"/>
             <g:Button text="Front" ui:field="frontButton"/>

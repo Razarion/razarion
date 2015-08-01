@@ -29,6 +29,8 @@ public class ViewControl extends Composite implements ViewTransformation.ViewTra
     @UiField
     VerticalInputRangeNumber rotateX;
     @UiField
+    HorizontalInputRangeNumber rotateZ;
+    @UiField
     Button topButton;
     @UiField
     Button frontButton;
@@ -48,6 +50,7 @@ public class ViewControl extends Composite implements ViewTransformation.ViewTra
         translateY.setValue(viewTransformation.getTranslateY());
         translateZ.setValue(viewTransformation.getTranslateZ());
         rotateX.setValue(Math.toDegrees(viewTransformation.getRotateX()));
+        rotateZ.setValue(Math.toDegrees(viewTransformation.getRotateZ()));
     }
 
     @UiHandler("translateX")
@@ -68,6 +71,11 @@ public class ViewControl extends Composite implements ViewTransformation.ViewTra
     @UiHandler("rotateX")
     void onRotateXChanged(ValueChangeEvent<Double> valueChangeEvent) {
         viewTransformation.setRotateX(Math.toRadians(valueChangeEvent.getValue()));
+    }
+
+    @UiHandler("rotateZ")
+    void onRotateZChanged(ValueChangeEvent<Double> valueChangeEvent) {
+        viewTransformation.setRotateZ(Math.toRadians(valueChangeEvent.getValue()));
     }
 
     @UiHandler("topButton")

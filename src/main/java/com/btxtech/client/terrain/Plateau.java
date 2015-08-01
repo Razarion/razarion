@@ -19,7 +19,7 @@ import java.util.List;
  * 11.04.2015.
  */
 public class Plateau implements VertexListProvider {
-    public static int TRIANGLE_SIDE_LENGTH = 20;
+    public static int TRIANGLE_SIDE_LENGTH = 80;
     //public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(0, 0, 90));
     //public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(-2, 0, 43), new Vertex(-18, 0, 94), new Vertex(-25, 0, 117), new Vertex(-38, 0, 133), new Vertex(-54, 0, 147), new Vertex(-68, 0, 131));
     // public static List<Vertex> shape = Arrays.asList(new Vertex(0, 0, 0), new Vertex(140, 0, 101));

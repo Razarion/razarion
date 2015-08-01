@@ -14,7 +14,6 @@ public class Triangle {
     private Vertex vertexC;
     private TextureCoordinate textureCoordinateC;
 
-
     public Triangle(Vertex vertexA, TextureCoordinate textureCoordinateA,
                     Vertex vertexB, TextureCoordinate textureCoordinateB,
                     Vertex vertexC, TextureCoordinate textureCoordinateC) {
@@ -26,11 +25,34 @@ public class Triangle {
         this.textureCoordinateC = textureCoordinateC;
     }
 
+    public Triangle(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
+        this.vertexA = vertexA;
+        this.vertexB = vertexB;
+        this.vertexC = vertexC;
+    }
+
     public List<Vertex> appendBarycentricTo(List<Vertex> vertices) {
         vertices.add(new Vertex(1, 0, 0));
         vertices.add(new Vertex(0, 1, 0));
         vertices.add(new Vertex(0, 0, 1));
         return vertices;
+    }
+
+    public void setupTexture(double imageSize) {
+        Vertex planeA = vertexA;
+        Vertex normPlane = planeA.cross(vertexB, vertexC).normalize(1);
+        Vertex normGround = new Vertex(0, 0, 1);
+        Vertex planeGroundSideNorm = normGround.cross(normPlane);
+        Vertex planeHeightSideNorm = normPlane.cross(planeGroundSideNorm);
+
+        double sB = planeA.projection(planeA.add(planeGroundSideNorm), vertexB) / imageSize;
+        double tB = planeA.projection(planeA.add(planeHeightSideNorm), vertexB) / imageSize;
+        double sC = planeA.projection(planeA.add(planeGroundSideNorm), vertexC) / imageSize;
+        double tC = planeA.projection(planeA.add(planeHeightSideNorm), vertexC) / imageSize;
+
+        textureCoordinateA = new TextureCoordinate(0, 0);
+        textureCoordinateB = new TextureCoordinate(sB, tB);
+        textureCoordinateC = new TextureCoordinate(sC, tC);
     }
 
     public List<Vertex> appendVertexTo(List<Vertex> vertices) {
