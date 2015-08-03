@@ -9,6 +9,7 @@ import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygonLi
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -17,16 +18,31 @@ import java.util.List;
  * http://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf
  */
 public class Triangulator {
-    List<Triangle2d> triangles = new ArrayList<>();
+    private Logger logger = Logger.getLogger(Triangulator.class.getName());
+
+    private List<Triangle2d> triangles = new ArrayList<>();
+    private TerrainPolygon<TerrainPolygonCorner, TerrainPolygonLine> lastKnownGoodPolygon;
 
     public List<Triangle2d> calculate(List<Index> positions) {
-        triangles.clear();
-        List<Index> positionCopy = new ArrayList<>(positions);
-        extractTriangle(positionCopy);
+        try {
+            triangles.clear();
+            List<Index> positionCopy = new ArrayList<>(positions);
+            extractTriangle(positionCopy);
+            return triangles;
+        } catch(RuntimeException re) {
+            logger.severe(Index.testString(positions));
+            throw re;
+        }
+    }
+
+    public List<Triangle2d> getTriangles() {
         return triangles;
     }
 
     private void extractTriangle(List<Index> positions) {
+        System.out.println(Index.testString(positions));
+
+
         if(positions.size() < 3) {
             throw new IllegalStateException("Polygon with less then  3 vertices: " + positions);
         }
@@ -37,6 +53,7 @@ public class Triangulator {
         }
 
         TerrainPolygon<TerrainPolygonCorner, TerrainPolygonLine> terrainPolygon = new TerrainPolygon<>(positions);
+        lastKnownGoodPolygon = terrainPolygon;
 
         // Setup convex & reflex vertices list
         // Interior angle is smaller than 180 degrees.
@@ -92,5 +109,9 @@ public class Triangulator {
         triangles.add(new Triangle2d(corner.getPoint(), previousCorner.getPoint(), nextCorner.getPoint()));
 
         extractTriangle(positions);
+    }
+
+    public TerrainPolygon<TerrainPolygonCorner, TerrainPolygonLine> getLastKnownGoodPolygon() {
+        return lastKnownGoodPolygon;
     }
 }
