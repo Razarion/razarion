@@ -50,20 +50,28 @@ public class Mesh {
     }
 
     public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor) {
+        TextureCoordinate lineStart = new TextureCoordinate(0, 0);
         for (int z = 0; z < maxZ; z++) {
+            TextureCoordinate squareStart = lineStart;
             for (int x = 0; x < maxX; x++) {
                 Vertex bottomLeft = getVertex(x, z);
                 Vertex bottomRight = getVertex(x + 1, z);
                 Vertex topLeft = getVertex(x, z + 1);
                 Vertex topRight = getVertex(x + 1, z + 1);
 
-                Triangle triangle = new Triangle(bottomLeft, bottomRight, topLeft);
-                triangle.setupTexture(imageDescriptor.getQuadraticEdge());
-                vertexList.add(triangle);
+                Triangle triangle1 = new Triangle(bottomLeft, bottomRight, topLeft);
+                triangle1.setupTexture(imageDescriptor.getQuadraticEdge(), squareStart);
+                vertexList.add(triangle1);
 
-                triangle = new Triangle(topRight, topLeft, bottomRight);
-                triangle.setupTexture(imageDescriptor.getQuadraticEdge());
-                vertexList.add(triangle);
+                if (x == 0) {
+                    lineStart = triangle1.getTextureCoordinateC();
+                }
+
+                Triangle triangle2 = new Triangle(bottomRight, topRight, topLeft);
+                triangle2.setupTexture(imageDescriptor.getQuadraticEdge(), triangle1.getTextureCoordinateB());
+                vertexList.add(triangle2);
+
+                squareStart = triangle1.getTextureCoordinateB();
             }
         }
     }
@@ -76,11 +84,11 @@ public class Mesh {
             Vertex topRight = getVertex(0, z + 1);
 
             Triangle triangle = new Triangle(bottomLeft, bottomRight, topLeft);
-            triangle.setupTexture(imageDescriptor.getQuadraticEdge());
+            triangle.setupTexture(imageDescriptor.getQuadraticEdge(), new TextureCoordinate(0, 0));
             vertexList.add(triangle);
 
-            triangle = new Triangle(topRight, topLeft, bottomRight);
-            triangle.setupTexture(imageDescriptor.getQuadraticEdge());
+            triangle = new Triangle(bottomRight, topRight, topLeft);
+            triangle.setupTexture(imageDescriptor.getQuadraticEdge(), new TextureCoordinate(0, 0));
             vertexList.add(triangle);
         }
     }

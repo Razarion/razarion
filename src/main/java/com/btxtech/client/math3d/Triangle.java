@@ -38,7 +38,7 @@ public class Triangle {
         return vertices;
     }
 
-    public void setupTexture(double imageSize) {
+    public void setupTexture(double imageSize, TextureCoordinate start) {
         Vertex planeA = vertexA;
         Vertex normPlane = planeA.cross(vertexB, vertexC).normalize(1);
         Vertex normGround = new Vertex(0, 0, 1);
@@ -58,9 +58,9 @@ public class Triangle {
         double sC = planeA.projection(planeA.add(planeGroundSideNorm), vertexC) / imageSize;
         double tC = planeA.projection(planeA.add(planeHeightSideNorm), vertexC) / imageSize;
 
-        textureCoordinateA = new TextureCoordinate(0, 0);
-        textureCoordinateB = new TextureCoordinate(sB, tB);
-        textureCoordinateC = new TextureCoordinate(sC, tC);
+        textureCoordinateA = start;
+        textureCoordinateB = start.add(sB, tB);
+        textureCoordinateC = start.add(sC, tC);
     }
 
     public List<Vertex> appendVertexTo(List<Vertex> vertices) {
@@ -99,6 +99,18 @@ public class Triangle {
         return textureCoordinates;
     }
 
+    public TextureCoordinate getTextureCoordinateA() {
+        return textureCoordinateA;
+    }
+
+    public TextureCoordinate getTextureCoordinateB() {
+        return textureCoordinateB;
+    }
+
+    public TextureCoordinate getTextureCoordinateC() {
+        return textureCoordinateC;
+    }
+
     public static Triangle createTriangleWithNorm(Vertex vertex1, TextureCoordinate textureCoordinate1,
                                                   Vertex vertex2, TextureCoordinate textureCoordinate2,
                                                   Vertex vertex3, TextureCoordinate textureCoordinate3,
@@ -112,5 +124,17 @@ public class Triangle {
             return triangle2;
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return "Triangle{" +
+                "vertexA=" + vertexA +
+                ", textureCoordinateA=" + textureCoordinateA +
+                ", vertexB=" + vertexB +
+                ", textureCoordinateB=" + textureCoordinateB +
+                ", vertexC=" + vertexC +
+                ", textureCoordinateC=" + textureCoordinateC +
+                '}';
     }
 }
