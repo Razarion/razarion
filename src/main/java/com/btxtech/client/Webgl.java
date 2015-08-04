@@ -3,6 +3,7 @@ package com.btxtech.client;
 import com.btxtech.client.dialogs.Control;
 import com.btxtech.client.math3d.TriangleRenderManager;
 import com.btxtech.client.terrain.Terrain;
+import com.btxtech.client.terrain.Terrain2;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -27,6 +28,8 @@ public class Webgl /*implements EntryPoint*/ {
     private TriangleRenderManager triangleRenderManager;
     @Inject
     private ViewFieldMover viewFieldMover;
+    @Inject
+    private Terrain2 terrain;
 
     @PostConstruct
     public void init() {
@@ -41,9 +44,9 @@ public class Webgl /*implements EntryPoint*/ {
 
             HorizontalPanel horizontalPanel = new HorizontalPanel();
 
-            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getPlateau(), Terrain.SAND_1);
-            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getPlateauTop(), Terrain.GRASS_IMAGE);
-            triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getGround(), Terrain.GRASS_IMAGE);
+            triangleRenderManager.createTriangleRenderUnit(terrain, Terrain.SAND_1);
+            // triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getPlateauTop(), Terrain.GRASS_IMAGE);
+            // triangleRenderManager.createTriangleRenderUnit(Terrain.getInstance().getGround(), Terrain.GRASS_IMAGE);
 
             Control control = new Control(triangleRenderManager);
             horizontalPanel.add(viewField.getCanvas());

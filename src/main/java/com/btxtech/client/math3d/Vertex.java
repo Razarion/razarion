@@ -86,7 +86,7 @@ public class Vertex {
      */
     public double projection(Vertex canvas, Vertex source) {
         if (canvas.magnitude() == 0.0) {
-            throw new IllegalArgumentException("canvas is not allowed to be null");
+            throw new IllegalArgumentException("Magnitude of canvas is not allowed to be 0");
         }
 
         Vertex shiftCanvas = canvas.sub(this);

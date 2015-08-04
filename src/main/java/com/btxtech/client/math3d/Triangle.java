@@ -43,7 +43,15 @@ public class Triangle {
         Vertex normPlane = planeA.cross(vertexB, vertexC).normalize(1);
         Vertex normGround = new Vertex(0, 0, 1);
         Vertex planeGroundSideNorm = normGround.cross(normPlane);
-        Vertex planeHeightSideNorm = normPlane.cross(planeGroundSideNorm);
+        Vertex planeHeightSideNorm;
+
+        if (planeGroundSideNorm.magnitude() == 0.0) {
+            // Triangle is flat on the ground
+            planeGroundSideNorm = new Vertex(1, 0, 0);
+            planeHeightSideNorm = new Vertex(0, 1, 0);
+        } else {
+            planeHeightSideNorm = normPlane.cross(planeGroundSideNorm);
+        }
 
         double sB = planeA.projection(planeA.add(planeGroundSideNorm), vertexB) / imageSize;
         double tB = planeA.projection(planeA.add(planeHeightSideNorm), vertexB) / imageSize;

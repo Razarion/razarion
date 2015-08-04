@@ -21,6 +21,20 @@ public class Mesh {
     private Map<Index, Vertex> grid = new HashMap<>();
     private Logger logger = Logger.getLogger(Math.class.getName());
 
+    public interface Visitor {
+        void onVisit(int x, int z, Vertex vertex);
+    }
+
+    public void fill(int xSize, int ySize, int edgeLength) {
+        int xCount = xSize / edgeLength + 1;
+        int yCount = ySize / edgeLength + 1;
+        for (int x = 0; x < xCount; x++) {
+            for (int y = 0; y < yCount; y++) {
+                setVertex(x, y, new Vertex(x * edgeLength, y * edgeLength, 0));
+            }
+        }
+    }
+
     public void setVertex(int x, int z, Vertex vertex) {
         grid.put(new Index(x, z), vertex);
         maxX = Math.max(x, maxX);
@@ -112,5 +126,13 @@ public class Mesh {
             vertices.add(getVertex(x, maxZ));
         }
         return vertices;
+    }
+
+    public void iterate(Visitor visitor) {
+        for (int z = 0; z < getZ(); z++) {
+            for (int x = 0; x < getX(); x++) {
+                visitor.onVisit(x, z, getVertex(x, z));
+            }
+        }
     }
 }
