@@ -40,7 +40,11 @@ public class Control extends Composite {
     @UiField(provided = true)
     LightingControl lightingControl;
     @UiField
-    HorizontalInputRangeNumber roughness;
+    HorizontalInputRangeNumber roughnessTop;
+    @UiField
+    HorizontalInputRangeNumber roughnessHillside;
+    @UiField
+    HorizontalInputRangeNumber roughnessGround;
     private TriangleRenderManager triangleRenderManager;
 
     public Control(final TriangleRenderManager triangleRenderManager) {
@@ -54,7 +58,9 @@ public class Control extends Composite {
             renderMode.addItem(mode.name());
         }
         renderMode.setSelectedIndex(triangleRenderManager.getMode().ordinal());
-        roughness.setValue(Terrain2.getInstance().getRoughness());
+        roughnessTop.setValue(Terrain2.getInstance().getRoughnessTop());
+        roughnessHillside.setValue(Terrain2.getInstance().getRoughnessHillside());
+        roughnessGround.setValue(Terrain2.getInstance().getRoughnessGround());
     }
 
     @UiHandler("shapeEditorButton")
@@ -70,12 +76,28 @@ public class Control extends Composite {
     @UiHandler("renderMode")
     void onRenderModeChanged(ChangeEvent changeEvent) {
         triangleRenderManager.setMode(TriangleRenderManager.Mode.values()[renderMode.getSelectedIndex()]);
+        Terrain2.getInstance().setupTerrain();
         triangleRenderManager.fillBuffers();
     }
 
-    @UiHandler("roughness")
-    void onRoughnessChanged(ValueChangeEvent<Double> valueChangeEvent) {
-        Terrain2.getInstance().setRoughness(valueChangeEvent.getValue());
+    @UiHandler("roughnessTop")
+    void onRoughnessTopsChanged(ValueChangeEvent<Double> valueChangeEvent) {
+        Terrain2.getInstance().setRoughnessTop(valueChangeEvent.getValue());
+        Terrain2.getInstance().setupTerrain();
+        triangleRenderManager.fillBuffers();
+    }
+
+    @UiHandler("roughnessHillside")
+    void onRoughnessHillsideChanged(ValueChangeEvent<Double> valueChangeEvent) {
+        Terrain2.getInstance().setRoughnessHillside(valueChangeEvent.getValue());
+        Terrain2.getInstance().setupTerrain();
+        triangleRenderManager.fillBuffers();
+    }
+
+    @UiHandler("roughnessGround")
+    void onRoughnessGroundChanged(ValueChangeEvent<Double> valueChangeEvent) {
+        Terrain2.getInstance().setRoughnessGround(valueChangeEvent.getValue());
+        Terrain2.getInstance().setupTerrain();
         triangleRenderManager.fillBuffers();
     }
 

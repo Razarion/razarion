@@ -71,6 +71,7 @@ public class Webgl /*implements EntryPoint*/ {
     }
 
     public void fillBuffers() {
+        terrain.setupTerrain();
         triangleRenderManager.fillBuffers();
     }
 

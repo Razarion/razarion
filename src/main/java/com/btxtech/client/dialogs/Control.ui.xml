@@ -25,7 +25,9 @@
                     <g:VerticalPanel>
                         <g:Button text="Plateau Editor" ui:field="plateauEditorButton"/>
                         <g:Button text="Shape Shape" ui:field="shapeEditorButton"/>
-                        <p1:HorizontalInputRangeNumber min="0" max="100" ui:field="roughness"/>
+                        <p1:HorizontalInputRangeNumber min="0" max="100" ui:field="roughnessTop"/>
+                        <p1:HorizontalInputRangeNumber min="0" max="100" ui:field="roughnessHillside"/>
+                        <p1:HorizontalInputRangeNumber min="0" max="100" ui:field="roughnessGround"/>
                     </g:VerticalPanel>
                 </g:DisclosurePanel>
             </g:customCell>
