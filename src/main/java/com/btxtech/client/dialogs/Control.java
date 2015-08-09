@@ -3,7 +3,7 @@ package com.btxtech.client.dialogs;
 import com.btxtech.client.editor.PlateauEditor;
 import com.btxtech.client.editor.ShapeEditor;
 import com.btxtech.client.math3d.TriangleRenderManager;
-import com.btxtech.client.terrain.Terrain;
+import com.btxtech.client.terrain.Terrain2;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,7 +54,7 @@ public class Control extends Composite {
             renderMode.addItem(mode.name());
         }
         renderMode.setSelectedIndex(triangleRenderManager.getMode().ordinal());
-        roughness.setValue(Terrain.getInstance().getRoughness());
+        roughness.setValue(Terrain2.getInstance().getRoughness());
     }
 
     @UiHandler("shapeEditorButton")
@@ -75,7 +75,7 @@ public class Control extends Composite {
 
     @UiHandler("roughness")
     void onRoughnessChanged(ValueChangeEvent<Double> valueChangeEvent) {
-        Terrain.getInstance().setRoughness(valueChangeEvent.getValue());
+        Terrain2.getInstance().setRoughness(valueChangeEvent.getValue());
         triangleRenderManager.fillBuffers();
     }
 

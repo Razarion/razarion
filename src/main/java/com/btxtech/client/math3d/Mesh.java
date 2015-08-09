@@ -65,6 +65,7 @@ public class Mesh {
     }
 
     public void fill(int xSize, int ySize, int edgeLength) {
+        grid.clear();
         int xCount = xSize / edgeLength + 1;
         int yCount = ySize / edgeLength + 1;
         for (int x = 0; x < xCount; x++) {
@@ -90,6 +91,14 @@ public class Mesh {
 
     private VertexData getVertexData(Index index) {
         return grid.get(index);
+    }
+
+    private Vertex getVertex(Index index) {
+        VertexData vertexData = getVertexData(index);
+        if (vertexData == null) {
+            return null;
+        }
+        return vertexData.getVertex();
     }
 
     private Vertex getVertexSafe(Index index) {
@@ -199,58 +208,6 @@ public class Mesh {
         }
     }
 
-//    private void setupTriangleTexture(boolean triangle1, Type type, ImageDescriptor imageDescriptor, Index index, Triangle triangle) {
-//        TextureCoordinate startTextureCoordinate = getLeftTextureCoordinate(triangle1, type, index);
-//        if (startTextureCoordinate == null) {
-//            startTextureCoordinate = getBottomTextureCoordinate(triangle1, type, index);
-//        }
-//        if (startTextureCoordinate == null) {
-//            startTextureCoordinate = new TextureCoordinate(0, 0);
-//        }
-//
-//        triangle.setupTexture(imageDescriptor.getQuadraticEdge(), startTextureCoordinate);
-//    }
-
-//    private Triangle getLeftTriangle(boolean triangle1Index, Type type, Index index) {
-//        if (triangle1Index) {
-//            VertexData vertexData = getVertexData(index.sub(1, 0));
-//            if (vertexData == null) {
-//                return null;
-//            }
-//            Triangle triangle2 = vertexData.getTriangle2();
-//            if (triangle2.getType() == type) {
-//                return triangle2;
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            VertexData vertexData = getVertexData(index);
-//            Triangle triangle1 = vertexData.getTriangle1();
-//            if (triangle1.getType() == type) {
-//                return triangle1.getTextureCoordinateB();
-//            } else {
-//                return null;
-//            }
-//        }
-//    }
-
-//    private TextureCoordinate getBottomTextureCoordinate(boolean triangle1Index, Type type, Index index) {
-//        if (triangle1Index) {
-//            VertexData vertexData = getVertexData(index.sub(0, 1));
-//            if (vertexData == null) {
-//                return null;
-//            }
-//            Triangle triangle2 = vertexData.getTriangle2();
-//            if (triangle2.getType() == type) {
-//                return triangle2.getTextureCoordinateC();
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
-
     public VertexList provideVertexList(ImageDescriptor imageDescriptor, Type type) {
         VertexList vertexList = new VertexList();
         appendVertexList(vertexList, imageDescriptor, type);
@@ -265,26 +222,30 @@ public class Mesh {
         return maxY + 1;
     }
 
-//    public void randomNorm(int x, int z, double maxShift) {
-//        try {
-//            Vertex vertexA = getVertexSafe(x, z);
-//            Vertex vertexB;
-//            if (x + 1 < maxX) {
-//                vertexB = getVertexSafe(x + 1, z);
-//            } else {
-//                vertexB = getVertexSafe(0, z);
-//            }
-//            Vertex vertexC;
-//            if (z + 1 < maxY) {
-//                vertexC = getVertexSafe(x, z + 1);
-//            } else {
-//                vertexC = getVertexSafe(x, 0);
-//            }
-//            setVertex(x, z, vertexA.add(vertexA.cross(vertexB, vertexC).normalize(Math.random() * maxShift)), Type.PLANE);
-//        } catch (IndexOutOfBoundsException e) {
-//            logger.log(Level.SEVERE, "", e);
-//        }
-//    }
+    public void randomNorm(Index index, double maxShift) {
+        VertexData vertexData = getVertexDataSafe(index);
+        Vertex vertex = vertexData.getVertex();
+        Vertex vertexNorth = getVertex(index.add(0, 1));
+        Vertex vertexEast = getVertex(index.add(1, 0));
+        Vertex vertexSouth = getVertex(index.sub(0, 1));
+        Vertex vertexWest = getVertex(index.sub(1, 0));
+
+        Vertex sum = new Vertex(0, 0, 0);
+        if(vertexNorth != null && vertexEast != null) {
+            sum = sum.add(vertex.cross(vertexEast, vertexNorth));
+        }
+        if(vertexEast != null && vertexSouth != null) {
+            sum = sum.add(vertex.cross(vertexSouth, vertexEast));
+        }
+        if(vertexSouth != null && vertexWest != null) {
+            sum = sum.add(vertex.cross(vertexWest, vertexSouth));
+        }
+        if(vertexWest != null && vertexNorth != null) {
+            sum = sum.add(vertex.cross(vertexNorth, vertexWest));
+        }
+
+        setVertex(index, vertex.add(sum.normalize(Math.random() * maxShift)), vertexData.getType());
+    }
 
     public List<Vertex> getTopVertices() {
         List<Vertex> vertices = new ArrayList<>();

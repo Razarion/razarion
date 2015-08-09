@@ -13,7 +13,9 @@ import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygonCo
 import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygonLine;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,8 +30,11 @@ public class Terrain2 {
     private Rectangle innerRect = new Rectangle(new Index(200, 300), new Index(600, 600));
     private Rectangle outerRect;
     private Mesh mesh;
+    private static Terrain2 INSTANCE;
+    private double roughness;
 
     public Terrain2() {
+        INSTANCE = this;
         mesh = new Mesh();
         mesh.fill(1000, 1000, 20);
 
@@ -38,24 +43,25 @@ public class Terrain2 {
         outerRect.growNorth(SLOPE_WIDTH);
         outerRect.growSouth(SLOPE_WIDTH);
         outerRect.growWest(SLOPE_WIDTH);
+    }
 
-        TerrainPolygon<TerrainPolygonCorner, TerrainPolygonLine> terrainPolygon = new TerrainPolygon<>(corners);
-        for (TerrainPolygonCorner terrainPolygonCorner : terrainPolygon.getTerrainPolygonCorners()) {
-            terrainPolygonCorner.getOutsideNormal(SLOPE_WIDTH);
-        }
-
-
-        final Triangle2d triangle2d = new Triangle2d(corners.get(0), corners.get(1), corners.get(2));
+    private void setupTerrain() {
+        mesh.fill(1000, 1000, 20);
+        final Collection<Index> hillsideIndices = new ArrayList<>();
         mesh.iterate(new Mesh.Visitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
                 // Index index = vertex.toXY().getPosition();
-                setupVertex(vertex, mesh, index);
+                setupVertex(vertex, mesh, index, hillsideIndices);
             }
         });
+
+        for (Index hillsideIndex : hillsideIndices) {
+            mesh.randomNorm(hillsideIndex, roughness);
+        }
     }
 
-    private void setupVertex(Vertex vertex, Mesh mesh, Index index) {
+    private void setupVertex(Vertex vertex, Mesh mesh, Index index, Collection<Index> hillsideIndices) {
         DecimalPosition position2d = vertex.toXY();
         if (outerRect.contains(position2d.getPosition()) && !innerRect.contains(position2d.getPosition())) {
             DecimalPosition pointOnInner = innerRect.getNearestPoint(position2d);
@@ -64,6 +70,7 @@ public class Terrain2 {
                 mesh.setVertex(index, vertex, Mesh.Type.PLANE);
             } else {
                 double factor = 1.0 - distance / SLOPE_WIDTH;
+                hillsideIndices.add(index);
                 mesh.setVertex(index, new Vertex(vertex.getX(), vertex.getY(), HEIGHT * factor), Mesh.Type.SLOPE);
             }
         } else if (innerRect.contains(position2d.getPosition())) {
@@ -77,6 +84,7 @@ public class Terrain2 {
         return new VertexListProvider() {
             @Override
             public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+                setupTerrain();
                 return mesh.provideVertexList(imageDescriptor, Mesh.Type.PLANE);
             }
         };
@@ -86,8 +94,21 @@ public class Terrain2 {
         return new VertexListProvider() {
             @Override
             public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+                setupTerrain();
                 return mesh.provideVertexList(imageDescriptor, Mesh.Type.SLOPE);
             }
         };
+    }
+
+    public static Terrain2 getInstance() {
+        return INSTANCE;
+    }
+
+    public double getRoughness() {
+        return roughness;
+    }
+
+    public void setRoughness(double roughness) {
+        this.roughness = roughness;
     }
 }

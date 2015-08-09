@@ -26,17 +26,20 @@ public class SimpleTerrain {
 //        mesh.setVertex(new Index(1,1), new Vertex(100, 100, 0), Mesh.Type.SLOPE);
 
 
-        mesh.iterate(new Mesh.Visitor() {
-            @Override
-            public void onVisit(Index index, Vertex vertex) {
-                if(index.equals(new Index(2,2))) {
-                    //mesh.setVertex(index, vertex, Mesh.Type.SLOPE);
-                    mesh.setVertex(index, new Vertex(vertex.getX(), vertex.getX(), 100), Mesh.Type.SLOPE);
-                } else {
-                    mesh.setVertex(index, vertex, Mesh.Type.PLANE);
-                }
-            }
-        });
+//        mesh.iterate(new Mesh.Visitor() {
+//            @Override
+//            public void onVisit(Index index, Vertex vertex) {
+//                if(index.equals(new Index(2,2))) {
+//                    //mesh.setVertex(index, vertex, Mesh.Type.SLOPE);
+//                    mesh.setVertex(index, new Vertex(vertex.getX(), vertex.getX(), 100), Mesh.Type.SLOPE);
+//                } else {
+//                    mesh.setVertex(index, vertex, Mesh.Type.PLANE);
+//                }
+//            }
+//        });
+
+        mesh.randomNorm(new Index(1, 1), 100);
+
 
     }
 
