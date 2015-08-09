@@ -98,14 +98,14 @@ public class Plateau implements VertexListProvider {
         }
 
         for (int x = 0; x < hillSideMesh.getX(); x++) {
-            for (int z = 0; z < hillSideMesh.getZ(); z++) {
-                hillSideMesh.randomNorm(x, z, roughness);
+            for (int z = 0; z < hillSideMesh.getY(); z++) {
+                // hillSideMesh.randomNorm(x, z, roughness);
             }
         }
 
         VertexList vertexList = new VertexList();
-        hillSideMesh.appendVertexList(vertexList, imageDescriptor);
-        hillSideMesh.appendConnectedVertexList(vertexList, imageDescriptor);
+        hillSideMesh.appendVertexList(vertexList, imageDescriptor, null);
+        // hillSideMesh.appendConnectedVertexList(vertexList, imageDescriptor);
         return vertexList;
     }
 

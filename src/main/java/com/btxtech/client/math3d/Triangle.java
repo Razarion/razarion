@@ -1,5 +1,8 @@
 package com.btxtech.client.math3d;
 
+import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.common.MathHelper;
+
 import java.util.List;
 
 /**
@@ -13,6 +16,7 @@ public class Triangle {
     private TextureCoordinate textureCoordinateB;
     private Vertex vertexC;
     private TextureCoordinate textureCoordinateC;
+    private Mesh.Type type;
 
     public Triangle(Vertex vertexA, TextureCoordinate textureCoordinateA,
                     Vertex vertexB, TextureCoordinate textureCoordinateB,
@@ -38,7 +42,7 @@ public class Triangle {
         return vertices;
     }
 
-    public void setupTexture(double imageSize, TextureCoordinate start) {
+    public void setupTexture() {
         Vertex planeA = vertexA;
         Vertex normPlane = planeA.cross(vertexB, vertexC).normalize(1);
         Vertex normGround = new Vertex(0, 0, 1);
@@ -53,14 +57,39 @@ public class Triangle {
             planeHeightSideNorm = normPlane.cross(planeGroundSideNorm);
         }
 
-        double sB = planeA.projection(planeA.add(planeGroundSideNorm), vertexB) / imageSize;
-        double tB = planeA.projection(planeA.add(planeHeightSideNorm), vertexB) / imageSize;
-        double sC = planeA.projection(planeA.add(planeGroundSideNorm), vertexC) / imageSize;
-        double tC = planeA.projection(planeA.add(planeHeightSideNorm), vertexC) / imageSize;
+        double sB = planeA.projection(planeA.add(planeGroundSideNorm), vertexB);
+        double tB = planeA.projection(planeA.add(planeHeightSideNorm), vertexB);
+        double sC = planeA.projection(planeA.add(planeGroundSideNorm), vertexC);
+        double tC = planeA.projection(planeA.add(planeHeightSideNorm), vertexC);
 
-        textureCoordinateA = start;
-        textureCoordinateB = start.add(sB, tB);
-        textureCoordinateC = start.add(sC, tC);
+        textureCoordinateA = new TextureCoordinate(0, 0);
+        textureCoordinateB = new TextureCoordinate(sB, tB);
+        textureCoordinateC = new TextureCoordinate(sC, tC);
+    }
+
+
+    public void setupTextureAC(TextureCoordinate textureCoordinateA, TextureCoordinate textureCoordinateC) {
+        DecimalPosition positionA = textureCoordinateA.toDecimalPosition();
+        DecimalPosition positionC = textureCoordinateC.toDecimalPosition();
+        double baseAngle = positionC.getAngleToNorth(positionA);
+        double angleC = angelC();
+        double angle = MathHelper.normaliseAngel(baseAngle + angleC);
+        DecimalPosition pointB = positionC.getPointFromAngelToNord(angle, sideA());
+        this.textureCoordinateA = textureCoordinateA;
+        this.textureCoordinateB = new TextureCoordinate(pointB.getX(), pointB.getY());
+        this.textureCoordinateC = textureCoordinateC;
+    }
+
+    public void setupTextureAB(TextureCoordinate textureCoordinateA, TextureCoordinate textureCoordinateB) {
+        DecimalPosition positionA = textureCoordinateA.toDecimalPosition();
+        DecimalPosition positionB = textureCoordinateB.toDecimalPosition();
+        double baseAngle = positionA.getAngleToNorth(positionB);
+        double angleA = angelA();
+        double angle = MathHelper.normaliseAngel(baseAngle + angleA);
+        DecimalPosition pointC = positionA.getPointFromAngelToNord(angle, sideB());
+        this.textureCoordinateA = textureCoordinateA;
+        this.textureCoordinateB = textureCoordinateB;
+        this.textureCoordinateC = new TextureCoordinate(pointC.getX(), pointC.getY());
     }
 
     public List<Vertex> appendVertexTo(List<Vertex> vertices) {
@@ -111,6 +140,41 @@ public class Triangle {
         return textureCoordinateC;
     }
 
+    public double angelA() {
+        return vertexA.unsignedAngle(vertexB, vertexC);
+    }
+
+    public double angelB() {
+        return vertexB.unsignedAngle(vertexC, vertexA);
+    }
+
+    public double angelC() {
+        return vertexC.unsignedAngle(vertexA, vertexB);
+    }
+
+    public double sideA() {
+        return vertexB.distance(vertexC);
+    }
+
+    public double sideB() {
+        return vertexC.distance(vertexA);
+    }
+
+    public double sideC() {
+        return vertexA.distance(vertexB);
+    }
+
+    public Mesh.Type getType() {
+        if (type == null) {
+            throw new IllegalStateException("Type nt set for triangle: " + toString());
+        }
+        return type;
+    }
+
+    public void setType(Mesh.Type type) {
+        this.type = type;
+    }
+
     public static Triangle createTriangleWithNorm(Vertex vertex1, TextureCoordinate textureCoordinate1,
                                                   Vertex vertex2, TextureCoordinate textureCoordinate2,
                                                   Vertex vertex3, TextureCoordinate textureCoordinate3,
@@ -135,6 +199,7 @@ public class Triangle {
                 ", textureCoordinateB=" + textureCoordinateB +
                 ", vertexC=" + vertexC +
                 ", textureCoordinateC=" + textureCoordinateC +
+                ", type=" + type +
                 '}';
     }
 }

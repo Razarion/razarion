@@ -1,5 +1,6 @@
 package com.btxtech.client.terrain;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.math3d.Color;
 import com.btxtech.client.math3d.Line3d;
 import com.btxtech.client.math3d.TextureCoordinate;
@@ -78,5 +79,13 @@ public class VertexList {
             color.appendToColorRGBA(doubleList);
         }
         return doubleList;
+    }
+
+    public void normalize(ImageDescriptor imageDescriptor) {
+        List<TextureCoordinate> normalized = new ArrayList<>();
+        for (TextureCoordinate textureCoordinate : textureCoordinates) {
+            normalized.add(textureCoordinate.divide(imageDescriptor.getQuadraticEdge()));
+        }
+        textureCoordinates = normalized;
     }
 }

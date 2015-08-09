@@ -21,7 +21,7 @@ import java.util.List;
  * 03.08.2015.
  */
 @Singleton
-public class Terrain2 implements VertexListProvider {
+public class Terrain2 {
     public List<Index> corners = Arrays.asList(new Index(200, 290), new Index(600, 290), new Index(307, 461));
     private static final int HEIGHT = 100;
     private static final int SLOPE_WIDTH = 100;
@@ -48,38 +48,46 @@ public class Terrain2 implements VertexListProvider {
         final Triangle2d triangle2d = new Triangle2d(corners.get(0), corners.get(1), corners.get(2));
         mesh.iterate(new Mesh.Visitor() {
             @Override
-            public void onVisit(int x, int z, Vertex vertex) {
+            public void onVisit(Index index, Vertex vertex) {
                 // Index index = vertex.toXY().getPosition();
-                mesh.setVertex(x, z, setupVertex(vertex));
-//
-//
-//                if (triangle2d.isInside(index)) {
-//                    mesh.setVertex(x, z, new Vertex(vertex.getX(), vertex.getY(), 100));
-//                }
+                setupVertex(vertex, mesh, index);
             }
         });
     }
 
-    private Vertex setupVertex(Vertex vertex) {
+    private void setupVertex(Vertex vertex, Mesh mesh, Index index) {
         DecimalPosition position2d = vertex.toXY();
         if (outerRect.contains(position2d.getPosition()) && !innerRect.contains(position2d.getPosition())) {
             DecimalPosition pointOnInner = innerRect.getNearestPoint(position2d);
             double distance = pointOnInner.getDistance(position2d);
             if (distance > SLOPE_WIDTH) {
-                return vertex;
+                mesh.setVertex(index, vertex, Mesh.Type.PLANE);
             } else {
                 double factor = 1.0 - distance / SLOPE_WIDTH;
-                return new Vertex(vertex.getX(), vertex.getY(), HEIGHT * factor);
+                mesh.setVertex(index, new Vertex(vertex.getX(), vertex.getY(), HEIGHT * factor), Mesh.Type.SLOPE);
             }
         } else if (innerRect.contains(position2d.getPosition())) {
-            return new Vertex(vertex.getX(), vertex.getY(), HEIGHT);
+            mesh.setVertex(index, new Vertex(vertex.getX(), vertex.getY(), HEIGHT), Mesh.Type.PLANE);
         } else {
-            return vertex;
+            mesh.setVertex(index, vertex, Mesh.Type.PLANE);
         }
     }
 
-    @Override
-    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
-        return mesh.provideVertexList(imageDescriptor);
+    public VertexListProvider getPlainProvider() {
+        return new VertexListProvider() {
+            @Override
+            public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+                return mesh.provideVertexList(imageDescriptor, Mesh.Type.PLANE);
+            }
+        };
+    }
+
+    public VertexListProvider getSlopeProvider() {
+        return new VertexListProvider() {
+            @Override
+            public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+                return mesh.provideVertexList(imageDescriptor, Mesh.Type.SLOPE);
+            }
+        };
     }
 }

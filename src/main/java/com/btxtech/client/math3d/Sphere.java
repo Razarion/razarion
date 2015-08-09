@@ -2,6 +2,7 @@ package com.btxtech.client.math3d;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.terrain.VertexList;
+import com.btxtech.game.jsre.client.common.Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +44,10 @@ public class Sphere implements VertexListProvider {
                 double u = 1 - (longNumber / longitudeBands);
                 double v = 1 - (latNumber / latitudeBands);
 
-                mesh.setVertex(longNumber, latNumber, new Vertex(x, y, z).multiply(radius));
+                mesh.setVertex(new Index(longNumber, latNumber), new Vertex(x, y, z).multiply(radius), Mesh.Type.PLANE);
                 textureCoordData.add(new TextureCoordinate(u, v));
             }
         }
-        return mesh.provideVertexList(imageDescriptor);
+        return mesh.provideVertexList(imageDescriptor, null);
     }
 }

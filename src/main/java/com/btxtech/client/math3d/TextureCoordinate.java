@@ -50,6 +50,10 @@ public class TextureCoordinate {
         return t;
     }
 
+    public DecimalPosition toDecimalPosition() {
+        return new DecimalPosition(s, t);
+    }
+
     @Override
     public String toString() {
         return "TextureCoordinate{" +

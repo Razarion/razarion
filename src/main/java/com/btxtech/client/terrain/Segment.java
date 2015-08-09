@@ -2,6 +2,7 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.math3d.Mesh;
 import com.btxtech.client.math3d.Vertex;
+import com.btxtech.game.jsre.client.common.Index;
 
 /**
  * Created by Beat
@@ -40,7 +41,7 @@ public class Segment {
             double verticalLength = calculateLength(verticalCount, bottom, top);
             for (int z = 0; z < verticalCount + (topmost ? 1 : 0); z++) {
                 Vertex position = bottom.interpolate((double) z * verticalLength, top);
-                mesh.setVertex(x + lastX, z + lastZ, position);
+                mesh.setVertex(new Index(x + lastX, z + lastZ), position, Mesh.Type.PLANE);
             }
         }
     }

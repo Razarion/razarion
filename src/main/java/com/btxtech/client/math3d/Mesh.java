@@ -8,21 +8,60 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 27.06.2015.
  */
 public class Mesh {
+    public enum Type {
+        PLANE,
+        SLOPE
+    }
+
     private int maxX;
-    private int maxZ;
-    private Map<Index, Vertex> grid = new HashMap<>();
-    private Logger logger = Logger.getLogger(Math.class.getName());
+    private int maxY;
+    private Map<Index, VertexData> grid = new HashMap<>();
+    // private Logger logger = Logger.getLogger(Math.class.getName());
+
+    private class VertexData {
+        private Vertex vertex;
+        private Type type;
+        private Triangle triangle1;
+        private Triangle triangle2;
+
+        public VertexData(Vertex vertex, Type type) {
+            this.vertex = vertex;
+            this.type = type;
+        }
+
+        public Vertex getVertex() {
+            return vertex;
+        }
+
+        public Type getType() {
+            return type;
+        }
+
+        public Triangle getTriangle1() {
+            return triangle1;
+        }
+
+        public void setTriangle1(Triangle triangle1) {
+            this.triangle1 = triangle1;
+        }
+
+        public Triangle getTriangle2() {
+            return triangle2;
+        }
+
+        public void setTriangle2(Triangle triangle2) {
+            this.triangle2 = triangle2;
+        }
+    }
 
     public interface Visitor {
-        void onVisit(int x, int z, Vertex vertex);
+        void onVisit(Index index, Vertex vertex);
     }
 
     public void fill(int xSize, int ySize, int edgeLength) {
@@ -30,72 +69,191 @@ public class Mesh {
         int yCount = ySize / edgeLength + 1;
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount; y++) {
-                setVertex(x, y, new Vertex(x * edgeLength, y * edgeLength, 0));
+                setVertex(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, 0), Type.PLANE);
             }
         }
     }
 
-    public void setVertex(int x, int z, Vertex vertex) {
-        grid.put(new Index(x, z), vertex);
-        maxX = Math.max(x, maxX);
-        maxZ = Math.max(z, maxZ);
+    public void setVertex(Index index, Vertex vertex, Type type) {
+        grid.put(index, new VertexData(vertex, type));
+        maxX = Math.max(index.getX(), maxX);
+        maxY = Math.max(index.getY(), maxY);
     }
 
-    private Vertex getVertex(int x, int z) {
-        Vertex vertex = grid.get(new Index(x, z));
-        if (vertex == null) {
-            throw new IndexOutOfBoundsException("No VertexData for x: " + x + " z: " + z + " maxX: " + maxX + " maxZ: " + maxZ);
+    private VertexData getVertexDataSafe(Index index) {
+        VertexData vertexData = getVertexData(index);
+        if (vertexData == null) {
+            throw new IndexOutOfBoundsException("No VertexData for: " + index + " maxX: " + maxX + " maxY: " + maxY);
         }
-        return vertex;
+        return vertexData;
     }
 
-    public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor) {
-        TextureCoordinate lineStart = new TextureCoordinate(0, 0);
-        for (int z = 0; z < maxZ; z++) {
-            TextureCoordinate squareStart = lineStart;
+    private VertexData getVertexData(Index index) {
+        return grid.get(index);
+    }
+
+    private Vertex getVertexSafe(Index index) {
+        return getVertexDataSafe(index).getVertex();
+    }
+
+    public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor, Type type) {
+        for (int y = 0; y < maxY; y++) {
             for (int x = 0; x < maxX; x++) {
-                Vertex bottomLeft = getVertex(x, z);
-                Vertex bottomRight = getVertex(x + 1, z);
-                Vertex topLeft = getVertex(x, z + 1);
-                Vertex topRight = getVertex(x + 1, z + 1);
+                Index index = new Index(x, y);
 
-                Triangle triangle1 = new Triangle(bottomLeft, bottomRight, topLeft);
-                triangle1.setupTexture(imageDescriptor.getQuadraticEdge(), squareStart);
-                vertexList.add(triangle1);
+                VertexData bottomLeft = getVertexDataSafe(index);
 
-                if (x == 0) {
-                    lineStart = triangle1.getTextureCoordinateC();
+                Triangle triangle1 = generateTriangle(true, index);
+                bottomLeft.setTriangle1(triangle1);
+                Triangle triangle2 = generateTriangle(false, index);
+                bottomLeft.setTriangle2(triangle2);
+
+                // Triangle 1
+                if (triangle1.getType() == type) {
+                    setupTriangleTexture1(type, index, triangle1);
+                    vertexList.add(triangle1);
                 }
-
-                Triangle triangle2 = new Triangle(bottomRight, topRight, topLeft);
-                triangle2.setupTexture(imageDescriptor.getQuadraticEdge(), triangle1.getTextureCoordinateB());
-                vertexList.add(triangle2);
-
-                squareStart = triangle1.getTextureCoordinateB();
+                // Triangle 2
+                if (triangle2.getType() == type) {
+                    setupTriangleTexture2(type, index, triangle2);
+                    vertexList.add(triangle2);
+                }
             }
         }
+        vertexList.normalize(imageDescriptor);
     }
 
-    public void appendConnectedVertexList(VertexList vertexList, ImageDescriptor imageDescriptor) {
-        for (int z = 0; z < maxZ; z++) {
-            Vertex bottomLeft = getVertex(maxX, z);
-            Vertex bottomRight = getVertex(0, z);
-            Vertex topLeft = getVertex(maxX, z + 1);
-            Vertex topRight = getVertex(0, z + 1);
+    private Triangle generateTriangle(boolean triangle1, Index bottomLeftIndex) {
+        VertexData bottomLeft = getVertexDataSafe(bottomLeftIndex);
+        VertexData bottomRight = getVertexDataSafe(bottomLeftIndex.add(1, 0));
+        VertexData topLeft = getVertexDataSafe(bottomLeftIndex.add(0, 1));
+        VertexData topRight = getVertexDataSafe(bottomLeftIndex.add(1, 1));
 
-            Triangle triangle = new Triangle(bottomLeft, bottomRight, topLeft);
-            triangle.setupTexture(imageDescriptor.getQuadraticEdge(), new TextureCoordinate(0, 0));
-            vertexList.add(triangle);
+        Triangle triangle;
+        if (triangle1) {
+            triangle = new Triangle(bottomLeft.getVertex(), bottomRight.getVertex(), topLeft.getVertex());
+            triangle.setType(bottomLeft.getType() == Type.SLOPE || bottomRight.getType() == Type.SLOPE || topLeft.getType() == Type.SLOPE ? Type.SLOPE : Type.PLANE);
+        } else {
+            triangle = new Triangle(bottomRight.getVertex(), topRight.getVertex(), topLeft.getVertex());
+            triangle.setType(bottomRight.getType() == Type.SLOPE || topRight.getType() == Type.SLOPE || topLeft.getType() == Type.SLOPE ? Type.SLOPE : Type.PLANE);
+        }
+        return triangle;
+    }
 
-            triangle = new Triangle(bottomRight, topRight, topLeft);
-            triangle.setupTexture(imageDescriptor.getQuadraticEdge(), new TextureCoordinate(0, 0));
-            vertexList.add(triangle);
+    private void setupTriangleTexture1(Type type, Index index, Triangle triangle1) {
+        Triangle leftTriangle = getLeftTriangle2(type, index);
+        Triangle bottomTriangle = getBottomTriangle2(type, index);
+
+        if (leftTriangle != null) {
+            triangle1.setupTextureAC(leftTriangle.getTextureCoordinateA(), leftTriangle.getTextureCoordinateB());
+        } else if (bottomTriangle != null) {
+            triangle1.setupTextureAB(bottomTriangle.getTextureCoordinateC(), bottomTriangle.getTextureCoordinateB());
+        } else {
+            triangle1.setupTexture();
         }
     }
 
-    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+    private Triangle getLeftTriangle2(Type type, Index index) {
+        VertexData vertexData = getVertexData(index.sub(1, 0));
+        if (vertexData == null) {
+            return null;
+        }
+        Triangle triangle2 = vertexData.getTriangle2();
+        if (triangle2.getType() == type) {
+            return triangle2;
+        } else {
+            return null;
+        }
+    }
+
+    private Triangle getBottomTriangle2(Type type, Index index) {
+        VertexData vertexData = getVertexData(index.sub(0, 1));
+        if (vertexData == null) {
+            return null;
+        }
+        Triangle triangle2 = vertexData.getTriangle2();
+        if (triangle2.getType() == type) {
+            return triangle2;
+        } else {
+            return null;
+        }
+    }
+
+    private void setupTriangleTexture2(Type type, Index index, Triangle triangle2) {
+        Triangle leftTriangle = getLeftTriangle1(type, index);
+
+        if (leftTriangle != null) {
+            triangle2.setupTextureAC(leftTriangle.getTextureCoordinateB(), leftTriangle.getTextureCoordinateC());
+        } else {
+            triangle2.setupTexture();
+        }
+    }
+
+    private Triangle getLeftTriangle1(Type type, Index index) {
+        VertexData vertexData = getVertexData(index.sub(0, 0));
+        Triangle triangle1 = vertexData.getTriangle1();
+        if (triangle1.getType() == type) {
+            return triangle1;
+        } else {
+            return null;
+        }
+    }
+
+//    private void setupTriangleTexture(boolean triangle1, Type type, ImageDescriptor imageDescriptor, Index index, Triangle triangle) {
+//        TextureCoordinate startTextureCoordinate = getLeftTextureCoordinate(triangle1, type, index);
+//        if (startTextureCoordinate == null) {
+//            startTextureCoordinate = getBottomTextureCoordinate(triangle1, type, index);
+//        }
+//        if (startTextureCoordinate == null) {
+//            startTextureCoordinate = new TextureCoordinate(0, 0);
+//        }
+//
+//        triangle.setupTexture(imageDescriptor.getQuadraticEdge(), startTextureCoordinate);
+//    }
+
+//    private Triangle getLeftTriangle(boolean triangle1Index, Type type, Index index) {
+//        if (triangle1Index) {
+//            VertexData vertexData = getVertexData(index.sub(1, 0));
+//            if (vertexData == null) {
+//                return null;
+//            }
+//            Triangle triangle2 = vertexData.getTriangle2();
+//            if (triangle2.getType() == type) {
+//                return triangle2;
+//            } else {
+//                return null;
+//            }
+//        } else {
+//            VertexData vertexData = getVertexData(index);
+//            Triangle triangle1 = vertexData.getTriangle1();
+//            if (triangle1.getType() == type) {
+//                return triangle1.getTextureCoordinateB();
+//            } else {
+//                return null;
+//            }
+//        }
+//    }
+
+//    private TextureCoordinate getBottomTextureCoordinate(boolean triangle1Index, Type type, Index index) {
+//        if (triangle1Index) {
+//            VertexData vertexData = getVertexData(index.sub(0, 1));
+//            if (vertexData == null) {
+//                return null;
+//            }
+//            Triangle triangle2 = vertexData.getTriangle2();
+//            if (triangle2.getType() == type) {
+//                return triangle2.getTextureCoordinateC();
+//            } else {
+//                return null;
+//            }
+//        } else {
+//            return null;
+//        }
+//    }
+
+    public VertexList provideVertexList(ImageDescriptor imageDescriptor, Type type) {
         VertexList vertexList = new VertexList();
-        appendVertexList(vertexList, imageDescriptor);
+        appendVertexList(vertexList, imageDescriptor, type);
         return vertexList;
     }
 
@@ -103,43 +261,44 @@ public class Mesh {
         return maxX + 1;
     }
 
-    public int getZ() {
-        return maxZ + 1;
+    public int getY() {
+        return maxY + 1;
     }
 
-    public void randomNorm(int x, int z, double maxShift) {
-        try {
-            Vertex vertexA = getVertex(x, z);
-            Vertex vertexB;
-            if (x + 1 < maxX) {
-                vertexB = getVertex(x + 1, z);
-            } else {
-                vertexB = getVertex(0, z);
-            }
-            Vertex vertexC;
-            if (z + 1 < maxZ) {
-                vertexC = getVertex(x, z + 1);
-            } else {
-                vertexC = getVertex(x, 0);
-            }
-            setVertex(x, z, vertexA.add(vertexA.cross(vertexB, vertexC).normalize(Math.random() * maxShift)));
-        } catch (IndexOutOfBoundsException e) {
-            logger.log(Level.SEVERE, "", e);
-        }
-    }
+//    public void randomNorm(int x, int z, double maxShift) {
+//        try {
+//            Vertex vertexA = getVertexSafe(x, z);
+//            Vertex vertexB;
+//            if (x + 1 < maxX) {
+//                vertexB = getVertexSafe(x + 1, z);
+//            } else {
+//                vertexB = getVertexSafe(0, z);
+//            }
+//            Vertex vertexC;
+//            if (z + 1 < maxY) {
+//                vertexC = getVertexSafe(x, z + 1);
+//            } else {
+//                vertexC = getVertexSafe(x, 0);
+//            }
+//            setVertex(x, z, vertexA.add(vertexA.cross(vertexB, vertexC).normalize(Math.random() * maxShift)), Type.PLANE);
+//        } catch (IndexOutOfBoundsException e) {
+//            logger.log(Level.SEVERE, "", e);
+//        }
+//    }
 
     public List<Vertex> getTopVertices() {
         List<Vertex> vertices = new ArrayList<>();
         for (int x = 0; x < getX(); x++) {
-            vertices.add(getVertex(x, maxZ));
+            vertices.add(getVertexSafe(new Index(x, maxY)));
         }
         return vertices;
     }
 
     public void iterate(Visitor visitor) {
-        for (int z = 0; z < getZ(); z++) {
+        for (int y = 0; y < getY(); y++) {
             for (int x = 0; x < getX(); x++) {
-                visitor.onVisit(x, z, getVertex(x, z));
+                Index index = new Index(x, y);
+                visitor.onVisit(index, getVertexSafe(index));
             }
         }
     }
