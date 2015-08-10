@@ -2,7 +2,7 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.math3d.Mesh;
-import com.btxtech.client.math3d.Vertex;
+import com.btxtech.client.math3d.Triangle;
 import com.btxtech.client.math3d.VertexListProvider;
 import com.btxtech.game.jsre.client.common.Index;
 
@@ -47,7 +47,7 @@ public class SimpleTerrain {
         return new VertexListProvider() {
             @Override
             public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
-                return mesh.provideVertexList(imageDescriptor, Mesh.Type.PLANE);
+                return mesh.provideVertexList(imageDescriptor, Triangle.Type.PLAIN);
             }
         };
     }
@@ -56,7 +56,7 @@ public class SimpleTerrain {
         return new VertexListProvider() {
             @Override
             public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
-                return mesh.provideVertexList(imageDescriptor, Mesh.Type.SLOPE);
+                return mesh.provideVertexList(imageDescriptor, Triangle.Type.SLOPE);
             }
         };
     }

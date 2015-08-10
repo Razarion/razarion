@@ -41,7 +41,7 @@ public class Segment {
             double verticalLength = calculateLength(verticalCount, bottom, top);
             for (int z = 0; z < verticalCount + (topmost ? 1 : 0); z++) {
                 Vertex position = bottom.interpolate((double) z * verticalLength, top);
-                mesh.setVertex(new Index(x + lastX, z + lastZ), position, Mesh.Type.PLANE);
+                // mesh.setVertex(new Index(x + lastX, z + lastZ), position, Mesh.Type.PLANE);
             }
         }
     }

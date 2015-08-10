@@ -10,13 +10,18 @@ import java.util.List;
  * 11.04.2015.
  */
 public class Triangle {
+    public enum Type {
+        PLAIN,
+        SLOPE
+    }
+
     private Vertex vertexA;
     private TextureCoordinate textureCoordinateA;
     private Vertex vertexB;
     private TextureCoordinate textureCoordinateB;
     private Vertex vertexC;
     private TextureCoordinate textureCoordinateC;
-    private Mesh.Type type;
+    private Type type;
 
     public Triangle(Vertex vertexA, TextureCoordinate textureCoordinateA,
                     Vertex vertexB, TextureCoordinate textureCoordinateB,
@@ -164,14 +169,14 @@ public class Triangle {
         return vertexA.distance(vertexB);
     }
 
-    public Mesh.Type getType() {
+    public Type getType() {
         if (type == null) {
             throw new IllegalStateException("Type nt set for triangle: " + toString());
         }
         return type;
     }
 
-    public void setType(Mesh.Type type) {
+    public void setType(Type type) {
         this.type = type;
     }
 

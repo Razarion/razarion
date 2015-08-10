@@ -14,9 +14,12 @@ import java.util.Map;
  * 27.06.2015.
  */
 public class Mesh {
+
+
     public enum Type {
-        PLANE,
-        SLOPE
+        PLANE_TOP,
+        SLOPE,
+        PLANE_BOTTOM
     }
 
     private int maxX;
@@ -24,9 +27,10 @@ public class Mesh {
     private Map<Index, VertexData> grid = new HashMap<>();
     // private Logger logger = Logger.getLogger(Math.class.getName());
 
-    private class VertexData {
+    public class VertexData {
         private Vertex vertex;
         private Type type;
+        private Integer slopeIndex;
         private Triangle triangle1;
         private Triangle triangle2;
 
@@ -39,8 +43,16 @@ public class Mesh {
             return vertex;
         }
 
+        public void setVertex(Vertex vertex) {
+            this.vertex = vertex;
+        }
+
         public Type getType() {
             return type;
+        }
+
+        public void setType(Type type) {
+            this.type = type;
         }
 
         public Triangle getTriangle1() {
@@ -58,6 +70,14 @@ public class Mesh {
         public void setTriangle2(Triangle triangle2) {
             this.triangle2 = triangle2;
         }
+
+        public Integer getSlopeIndex() {
+            return slopeIndex;
+        }
+
+        public void setSlopeIndex(Integer slopeIndex) {
+            this.slopeIndex = slopeIndex;
+        }
     }
 
     public interface Visitor {
@@ -70,8 +90,51 @@ public class Mesh {
         int yCount = ySize / edgeLength + 1;
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount; y++) {
-                setVertex(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, 0), Type.PLANE);
+                setVertex(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, 0), Type.PLANE_BOTTOM);
             }
+        }
+    }
+
+    public boolean hasPlaneTopAsNeighbour(Index index) {
+        VertexData vertexNorth = getVertexData(index.add(0, 1));
+        VertexData vertexEast = getVertexData(index.add(1, 0));
+        VertexData vertexSouth = getVertexData(index.sub(0, 1));
+        VertexData vertexWest = getVertexData(index.sub(1, 0));
+
+        return vertexNorth != null && vertexNorth.getType() == Type.PLANE_TOP
+                || vertexEast != null && vertexEast.getType() == Type.PLANE_TOP
+                || vertexSouth != null && vertexSouth.getType() == Type.PLANE_TOP
+                || vertexWest != null && vertexWest.getType() == Type.PLANE_TOP;
+    }
+
+    public Integer getHighestNeighbourSlopeIndex(Index index) {
+        VertexData vertexNorth = getVertexData(index.add(0, 1));
+        VertexData vertexEast = getVertexData(index.add(1, 0));
+        VertexData vertexSouth = getVertexData(index.sub(0, 1));
+        VertexData vertexWest = getVertexData(index.sub(1, 0));
+
+        int highestIndex = Integer.MAX_VALUE;
+        boolean isSet = false;
+        if (vertexNorth != null && vertexNorth.getSlopeIndex() != null) {
+            isSet = true;
+            highestIndex = Math.min(highestIndex, vertexNorth.getSlopeIndex());
+        }
+        if (vertexEast != null && vertexEast.getSlopeIndex() != null) {
+            isSet = true;
+            highestIndex = Math.min(highestIndex, vertexEast.getSlopeIndex());
+        }
+        if (vertexSouth != null && vertexSouth.getSlopeIndex() != null) {
+            isSet = true;
+            highestIndex = Math.min(highestIndex, vertexSouth.getSlopeIndex());
+        }
+        if (vertexWest != null && vertexWest.getSlopeIndex() != null) {
+            isSet = true;
+            highestIndex = Math.min(highestIndex, vertexWest.getSlopeIndex());
+        }
+        if (isSet) {
+            return highestIndex;
+        } else {
+            return null;
         }
     }
 
@@ -81,7 +144,7 @@ public class Mesh {
         maxY = Math.max(index.getY(), maxY);
     }
 
-    private VertexData getVertexDataSafe(Index index) {
+    public VertexData getVertexDataSafe(Index index) {
         VertexData vertexData = getVertexData(index);
         if (vertexData == null) {
             throw new IndexOutOfBoundsException("No VertexData for: " + index + " maxX: " + maxX + " maxY: " + maxY);
@@ -105,7 +168,7 @@ public class Mesh {
         return getVertexDataSafe(index).getVertex();
     }
 
-    public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor, Type type) {
+    public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor, Triangle.Type type) {
         for (int y = 0; y < maxY; y++) {
             for (int x = 0; x < maxX; x++) {
                 Index index = new Index(x, y);
@@ -141,15 +204,15 @@ public class Mesh {
         Triangle triangle;
         if (triangle1) {
             triangle = new Triangle(bottomLeft.getVertex(), bottomRight.getVertex(), topLeft.getVertex());
-            triangle.setType(bottomLeft.getType() == Type.SLOPE || bottomRight.getType() == Type.SLOPE || topLeft.getType() == Type.SLOPE ? Type.SLOPE : Type.PLANE);
+            triangle.setType(bottomLeft.getType() == Type.SLOPE || bottomRight.getType() == Type.SLOPE || topLeft.getType() == Type.SLOPE ? Triangle.Type.SLOPE : Triangle.Type.PLAIN);
         } else {
             triangle = new Triangle(bottomRight.getVertex(), topRight.getVertex(), topLeft.getVertex());
-            triangle.setType(bottomRight.getType() == Type.SLOPE || topRight.getType() == Type.SLOPE || topLeft.getType() == Type.SLOPE ? Type.SLOPE : Type.PLANE);
+            triangle.setType(bottomRight.getType() == Type.SLOPE || topRight.getType() == Type.SLOPE || topLeft.getType() == Type.SLOPE ? Triangle.Type.SLOPE : Triangle.Type.PLAIN);
         }
         return triangle;
     }
 
-    private void setupTriangleTexture1(Type type, Index index, Triangle triangle1) {
+    private void setupTriangleTexture1(Triangle.Type type, Index index, Triangle triangle1) {
         Triangle leftTriangle = getLeftTriangle2(type, index);
         Triangle bottomTriangle = getBottomTriangle2(type, index);
 
@@ -162,7 +225,7 @@ public class Mesh {
         }
     }
 
-    private Triangle getLeftTriangle2(Type type, Index index) {
+    private Triangle getLeftTriangle2(Triangle.Type type, Index index) {
         VertexData vertexData = getVertexData(index.sub(1, 0));
         if (vertexData == null) {
             return null;
@@ -175,7 +238,7 @@ public class Mesh {
         }
     }
 
-    private Triangle getBottomTriangle2(Type type, Index index) {
+    private Triangle getBottomTriangle2(Triangle.Type type, Index index) {
         VertexData vertexData = getVertexData(index.sub(0, 1));
         if (vertexData == null) {
             return null;
@@ -188,7 +251,7 @@ public class Mesh {
         }
     }
 
-    private void setupTriangleTexture2(Type type, Index index, Triangle triangle2) {
+    private void setupTriangleTexture2(Triangle.Type type, Index index, Triangle triangle2) {
         Triangle leftTriangle = getLeftTriangle1(type, index);
 
         if (leftTriangle != null) {
@@ -198,7 +261,7 @@ public class Mesh {
         }
     }
 
-    private Triangle getLeftTriangle1(Type type, Index index) {
+    private Triangle getLeftTriangle1(Triangle.Type type, Index index) {
         VertexData vertexData = getVertexData(index.sub(0, 0));
         Triangle triangle1 = vertexData.getTriangle1();
         if (triangle1.getType() == type) {
@@ -208,7 +271,7 @@ public class Mesh {
         }
     }
 
-    public VertexList provideVertexList(ImageDescriptor imageDescriptor, Type type) {
+    public VertexList provideVertexList(ImageDescriptor imageDescriptor, Triangle.Type type) {
         VertexList vertexList = new VertexList();
         appendVertexList(vertexList, imageDescriptor, type);
         return vertexList;
@@ -231,16 +294,16 @@ public class Mesh {
         Vertex vertexWest = getVertex(index.sub(1, 0));
 
         Vertex sum = new Vertex(0, 0, 0);
-        if(vertexNorth != null && vertexEast != null) {
+        if (vertexNorth != null && vertexEast != null) {
             sum = sum.add(vertex.cross(vertexEast, vertexNorth));
         }
-        if(vertexEast != null && vertexSouth != null) {
+        if (vertexEast != null && vertexSouth != null) {
             sum = sum.add(vertex.cross(vertexSouth, vertexEast));
         }
-        if(vertexSouth != null && vertexWest != null) {
+        if (vertexSouth != null && vertexWest != null) {
             sum = sum.add(vertex.cross(vertexWest, vertexSouth));
         }
-        if(vertexWest != null && vertexNorth != null) {
+        if (vertexWest != null && vertexNorth != null) {
             sum = sum.add(vertex.cross(vertexNorth, vertexWest));
         }
 

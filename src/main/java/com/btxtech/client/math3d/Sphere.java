@@ -44,7 +44,7 @@ public class Sphere implements VertexListProvider {
                 double u = 1 - (longNumber / longitudeBands);
                 double v = 1 - (latNumber / latitudeBands);
 
-                mesh.setVertex(new Index(longNumber, latNumber), new Vertex(x, y, z).multiply(radius), Mesh.Type.PLANE);
+                // mesh.setVertex(new Index(longNumber, latNumber), new Vertex(x, y, z).multiply(radius), Mesh.Type.PLANE);
                 textureCoordData.add(new TextureCoordinate(u, v));
             }
         }
