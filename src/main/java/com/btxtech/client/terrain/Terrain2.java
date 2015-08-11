@@ -23,7 +23,7 @@ public class Terrain2 {
     // public List<Index> corners = Arrays.asList(new Index(200, 290), new Index(600, 290), new Index(307, 461));
     private static final int EDGE_LENGTH = 20;
     private static final int PLANE_TOP_HEIGHT = 100;
-    private static final List<Integer> SLOPE_INDICES = Arrays.asList(PLANE_TOP_HEIGHT, 99, 75, 50, 25, 0);
+    private static final List<Integer> SLOPE_INDICES = Arrays.asList(PLANE_TOP_HEIGHT, 99, 60, 30, 0);
     private static final int LOWEST_SLOPE_INDEX = SLOPE_INDICES.size() - 1;
     private Rectangle innerRect = new Rectangle(new Index(200, 300), new Index(600, 600));
     private Mesh mesh;
