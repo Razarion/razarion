@@ -49,8 +49,7 @@ public class Webgl /*implements EntryPoint*/ {
 
             triangleRenderManager.createTriangleRenderUnit(terrain.getPlainProvider(), Terrain.GRASS_IMAGE);
             triangleRenderManager.createTriangleRenderUnit(terrain.getSlopeProvider(), Terrain.SAND_1);
-            // triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getPlainProvider(), Terrain.GRASS_IMAGE);
-            // triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getSlopeProvider(), Terrain.SAND_1);
+            // triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getPlainProvider(), Terrain.SAND_1);
 
             Control control = new Control(triangleRenderManager);
             horizontalPanel.add(viewField.getCanvas());

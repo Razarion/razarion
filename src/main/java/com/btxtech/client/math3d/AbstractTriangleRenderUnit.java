@@ -1,5 +1,6 @@
 package com.btxtech.client.math3d;
 
+import com.btxtech.client.GameCanvas;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.terrain.VertexList;
 import com.btxtech.game.jsre.common.ImageLoader;
@@ -9,6 +10,9 @@ import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Map;
 
@@ -24,43 +28,53 @@ public abstract class AbstractTriangleRenderUnit {
     private int vertexPositionAttribute;
     private WebGlProgram webGlProgram;
     private int elementCount;
+    @Inject
+    private Instance<WebGlProgram> webGlProgramInstance;
+    @Inject
+    private GameCanvas gameCanvas;
+    @Inject
+    private ViewTransformation viewTransformation;
+    @Inject
+    private ModelTransformation modelTransformation;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
 
-    protected void createProgram(WebGLRenderingContext ctx3d, String vertexShaderCode, String fragmentShaderCode) {
-        webGlProgram = new WebGlProgram(ctx3d);
+    protected void createProgram(String vertexShaderCode, String fragmentShaderCode) {
+        webGlProgram = webGlProgramInstance.get();
         webGlProgram.createProgram(vertexShaderCode, fragmentShaderCode);
         vertexPositionAttribute = webGlProgram.getAndEnableAttributeLocation(A_VERTEX_POSITION);
-        verticesBuffer = ctx3d.createBuffer();
+        verticesBuffer = gameCanvas.getCtx3d().createBuffer();
     }
 
-    protected abstract void customDraw(WebGLRenderingContext ctx3d, Lighting lighting);
+    protected abstract void customDraw();
 
-    protected abstract void fillCustomBuffers(WebGLRenderingContext ctx3d, VertexList vertexList);
+    protected abstract void fillCustomBuffers(VertexList vertexList);
 
-    public void fillBuffers(WebGLRenderingContext ctx3d, VertexList vertexList ) {
-        ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
-        ctx3d.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
+    public void fillBuffers(VertexList vertexList) {
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
+        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
 
-        fillCustomBuffers(ctx3d, vertexList);
+        fillCustomBuffers(vertexList);
 
         elementCount = vertexList.getVerticesCount();
     }
 
-    public void draw(WebGLRenderingContext ctx3d, ProjectionTransformation projectionTransformation, ModelTransformation modelTransformation, ViewTransformation viewTransformation, Lighting lighting) {
+    public void draw() {
         webGlProgram.useProgram();
         // Projection uniform
         WebGLUniformLocation pUniform = webGlProgram.getUniformLocation(PERSPECTIVE_UNIFORM_NAME);
-        ctx3d.uniformMatrix4fv(pUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(pUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
         // Model model transformation uniform
         WebGLUniformLocation mVUniform = webGlProgram.getUniformLocation(MODEL_VIEW_UNIFORM_NAME);
-        ctx3d.uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().multiply(modelTransformation.createMatrix()).toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().multiply(modelTransformation.createMatrix()).toWebGlArray()));
         // set vertices position
-        ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
-        ctx3d.vertexAttribPointer(vertexPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
+        gameCanvas.getCtx3d().vertexAttribPointer(vertexPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
 
-        customDraw(ctx3d, lighting);
+        customDraw();
 
-        ctx3d.drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", ctx3d);
+        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
+        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
     }
 
     public void destroy() {
@@ -73,8 +87,8 @@ public abstract class AbstractTriangleRenderUnit {
         return webGlProgram;
     }
 
-    protected WebGLTexture setupTexture(final WebGLRenderingContext ctx3d, ImageDescriptor imageDescriptor) {
-        final WebGLTexture webGLTexture = ctx3d.createTexture();
+    protected WebGLTexture setupTexture(ImageDescriptor imageDescriptor) {
+        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
         ImageLoader<WebGLTexture> textureLoader = new ImageLoader<>();
         textureLoader.addImageUrl(imageDescriptor.getUrl(), webGLTexture);
         textureLoader.startLoading(new ImageLoader.Listener<WebGLTexture>() {
@@ -88,12 +102,12 @@ public abstract class AbstractTriangleRenderUnit {
                     throw new IllegalStateException("Failed loading texture");
                 }
 
-                ctx3d.bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
-                ctx3d.pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
-                ctx3d.texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) WebGlUtil.castElementToElement(imageElement));
-                ctx3d.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
-                ctx3d.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.NEAREST);
-                ctx3d.bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
+                gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
+                gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
+                gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) WebGlUtil.castElementToElement(imageElement));
+                gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
+                gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.NEAREST);
+                gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
             }
         });
         return webGLTexture;

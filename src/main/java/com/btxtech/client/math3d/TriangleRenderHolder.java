@@ -3,74 +3,87 @@ package com.btxtech.client.math3d;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.shaders.Shaders;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
 /**
  * Created by Beat
  * 20.05.2015.
  */
+@Dependent // Why is dependent needed???
 public class TriangleRenderHolder {
     private static final ImageDescriptor CHESS_TEXTURE_32 = new ImageDescriptor("chess32.jpg", 512, 512);
     private static final ImageDescriptor CHESS_TEXTURE_08 = new ImageDescriptor("chess08.jpg", 512, 512);
     private AbstractTriangleRenderUnit triangleRenderUnit;
-    private final ImageDescriptor imageDescriptor;
+    private ImageDescriptor imageDescriptor;
     private ImageDescriptor currentImageDescriptor;
-    private final VertexListProvider vertexListProvider;
+    private VertexListProvider vertexListProvider;
+    @Inject
+    private Instance<AbstractTriangleRenderUnit> renderUnitsInstance;
 
-    public TriangleRenderHolder(TriangleRenderManager triangleRenderManager, TriangleRenderManager.Mode mode, VertexListProvider vertexListProvider, ImageDescriptor imageDescriptor) {
+    public void setVertexListProvider(VertexListProvider vertexListProvider) {
         this.vertexListProvider = vertexListProvider;
-        this.imageDescriptor = imageDescriptor;
-        createTriangleRenderUnit(triangleRenderManager, mode);
     }
 
-    public void createTriangleRenderUnit(TriangleRenderManager manager, TriangleRenderManager.Mode mode) {
+    public void setImageDescriptor(ImageDescriptor imageDescriptor) {
+        this.imageDescriptor = imageDescriptor;
+    }
+
+    public void createTriangleRenderUnit(TriangleRenderManager.Mode mode) {
         if (triangleRenderUnit != null) {
             triangleRenderUnit.destroy();
         }
         switch (mode) {
             case NORMAL:
-                triangleRenderUnit = createTextureRenderer(manager, imageDescriptor);
+                triangleRenderUnit = createTextureRenderer(imageDescriptor);
                 break;
             case LIGHT:
-                triangleRenderUnit = createLightRenderer(manager);
+                triangleRenderUnit = createLightRenderer();
                 break;
             case WIRE_08:
-                triangleRenderUnit = createWireRenderer(manager, CHESS_TEXTURE_08);
+                triangleRenderUnit = createWireRenderer(CHESS_TEXTURE_08);
                 break;
             case WIRE_32:
-                triangleRenderUnit = createWireRenderer(manager, CHESS_TEXTURE_32);
+                triangleRenderUnit = createWireRenderer(CHESS_TEXTURE_32);
                 break;
             case DEV_TEX_08:
-                triangleRenderUnit = createTextureRenderer(manager, CHESS_TEXTURE_08);
+                triangleRenderUnit = createTextureRenderer(CHESS_TEXTURE_08);
                 break;
             case DEV_TEX_32:
-                triangleRenderUnit = createTextureRenderer(manager, CHESS_TEXTURE_32);
+                triangleRenderUnit = createTextureRenderer(CHESS_TEXTURE_32);
                 break;
         }
     }
 
-    public void fillBuffers(TriangleRenderManager manager) {
-        triangleRenderUnit.fillBuffers(manager.getCtx3d(), vertexListProvider.provideVertexList(currentImageDescriptor));
+    public void fillBuffers() {
+        triangleRenderUnit.fillBuffers(vertexListProvider.provideVertexList(currentImageDescriptor));
     }
 
-    public void draw(TriangleRenderManager manager) {
-        triangleRenderUnit.draw(manager.getCtx3d(), manager.getProjectionTransformation(), manager.getModelTransformation(), manager.getViewTransformation(), manager.getLighting());
+    public void draw() {
+        triangleRenderUnit.draw();
     }
 
-    private NormalTriangleRenderUnit createTextureRenderer(TriangleRenderManager manager, ImageDescriptor imageDescriptor) {
+    private NormalTriangleRenderUnit createTextureRenderer(ImageDescriptor imageDescriptor) {
         currentImageDescriptor = imageDescriptor;
-        NormalTriangleRenderUnit normalTriangleRenderUnit = new NormalTriangleRenderUnit(manager.getCtx3d(), Shaders.INSTANCE.normalVertexShader().getText(), Shaders.INSTANCE.normalFragmentShader().getText());
-        normalTriangleRenderUnit.createTexture(manager.getCtx3d(), currentImageDescriptor);
+        NormalTriangleRenderUnit normalTriangleRenderUnit = renderUnitsInstance.select(NormalTriangleRenderUnit.class).get();
+        normalTriangleRenderUnit.init(Shaders.INSTANCE.normalVertexShader().getText(), Shaders.INSTANCE.normalFragmentShader().getText());
+        normalTriangleRenderUnit.createTexture(currentImageDescriptor);
         return normalTriangleRenderUnit;
     }
 
-    private LightTriangleRenderUnit createLightRenderer(TriangleRenderManager manager) {
+    private LightTriangleRenderUnit createLightRenderer() {
         currentImageDescriptor = CHESS_TEXTURE_32; // Prevent NPE
-        return new LightTriangleRenderUnit(manager.getCtx3d(), Shaders.INSTANCE.LightVertexShader().getText(), Shaders.INSTANCE.LightFragmentShader().getText(), new Color(1.0, 1.0, 1.0));
+        LightTriangleRenderUnit lightTriangleRenderUnit = renderUnitsInstance.select(LightTriangleRenderUnit.class).get();
+        lightTriangleRenderUnit.init(Shaders.INSTANCE.LightVertexShader().getText(), Shaders.INSTANCE.LightFragmentShader().getText(), new Color(1.0, 1.0, 1.0));
+        return lightTriangleRenderUnit;
     }
 
-    private WireTriangleRenderUnit createWireRenderer(TriangleRenderManager manager, ImageDescriptor imageDescriptor) {
+    private WireTriangleRenderUnit createWireRenderer(ImageDescriptor imageDescriptor) {
         currentImageDescriptor = imageDescriptor;
-        WireTriangleRenderUnit wireTriangleRenderUnit = new WireTriangleRenderUnit(manager.getCtx3d(), Shaders.INSTANCE.wireVertexShader().getText(), Shaders.INSTANCE.wireFragmentShader().getText());
-        wireTriangleRenderUnit.createTexture(manager.getCtx3d(), imageDescriptor);
+        WireTriangleRenderUnit wireTriangleRenderUnit = renderUnitsInstance.select(WireTriangleRenderUnit.class).get();
+        wireTriangleRenderUnit.init(Shaders.INSTANCE.wireVertexShader().getText(), Shaders.INSTANCE.wireFragmentShader().getText());
+        wireTriangleRenderUnit.createTexture(imageDescriptor);
         return wireTriangleRenderUnit;
     }
 
