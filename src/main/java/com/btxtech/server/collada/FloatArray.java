@@ -1,0 +1,53 @@
+package com.btxtech.server.collada;
+
+import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Beat
+ * 14.08.2015.
+ */
+public class FloatArray extends ColladaXml {
+    private String id;
+    private int count;
+    private List<Double> floatArray = new ArrayList<>();
+
+    public FloatArray(Node node) {
+        id = getAttributeAsStringSafe(node, ATTRIBUTE_ID);
+        count = getAttributeAsInt(node, ATTRIBUTE_COUNT);
+        String[] floatsStrings = node.getFirstChild().getNodeValue().split(" ");
+        for (String floatsString : floatsStrings) {
+            try {
+                floatArray.add(Double.parseDouble(floatsString));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                throw new ColladaRuntimeException("Error parsing float " + floatsString + " of node " + node, e);
+            }
+        }
+        if (count != floatArray.size()) {
+            throw new ColladaRuntimeException("Count and parsed float array count are not the same");
+        }
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<Double> getFloatArray() {
+        return floatArray;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    @Override
+    public String toString() {
+        return "FloatArray{" +
+                "count=" + count +
+                ", floatArray=" + floatArray +
+                "} " + super.toString();
+    }
+}
