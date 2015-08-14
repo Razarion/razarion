@@ -1,6 +1,7 @@
 package com.btxtech.client.math3d;
 
 import com.btxtech.client.GameCanvas;
+import com.btxtech.client.shaders.Shaders;
 import com.btxtech.client.terrain.VertexList;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
@@ -28,9 +29,9 @@ public class LightTriangleRenderUnit extends AbstractTriangleRenderUnit {
     @Inject
     private Lighting lighting;
 
-    public void init(String vertexShaderCode, String fragmentShaderCode, Color color) {
+    public void init(Color color) {
         this.color = color;
-        createProgram(vertexShaderCode, fragmentShaderCode);
+        createProgram(Shaders.INSTANCE.LightVertexShader(), Shaders.INSTANCE.LightFragmentShader());
         aVertexNormal = gameCanvas.getCtx3d().createBuffer();
         normalPositionAttribute = getWebGlProgram().getAndEnableAttributeLocation(A_VERTEX_NORMAL);
     }

@@ -5,6 +5,8 @@ import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.terrain.VertexList;
 import com.btxtech.game.jsre.common.ImageLoader;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.TextResource;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
@@ -39,9 +41,9 @@ public abstract class AbstractTriangleRenderUnit {
     @Inject
     private ProjectionTransformation projectionTransformation;
 
-    protected void createProgram(String vertexShaderCode, String fragmentShaderCode) {
+    protected void createProgram(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
         webGlProgram = webGlProgramInstance.get();
-        webGlProgram.createProgram(vertexShaderCode, fragmentShaderCode);
+        webGlProgram.createProgram(vertexShaderCode.getText(), fragmentShaderCode.getText());
         vertexPositionAttribute = webGlProgram.getAndEnableAttributeLocation(A_VERTEX_POSITION);
         verticesBuffer = gameCanvas.getCtx3d().createBuffer();
     }

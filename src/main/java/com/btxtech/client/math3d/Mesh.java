@@ -33,6 +33,7 @@ public class Mesh {
         private Integer slopeIndex;
         private Triangle triangle1;
         private Triangle triangle2;
+        private double edge;
 
         public VertexData(Vertex vertex, Type type) {
             this.vertex = vertex;
@@ -77,6 +78,14 @@ public class Mesh {
 
         public void setSlopeIndex(Integer slopeIndex) {
             this.slopeIndex = slopeIndex;
+        }
+
+        public double getEdge() {
+            return edge;
+        }
+
+        public void setEdge(double edge) {
+            this.edge = edge;
         }
     }
 
@@ -204,9 +213,15 @@ public class Mesh {
         Triangle triangle;
         if (triangle1) {
             triangle = new Triangle(bottomLeft.getVertex(), bottomRight.getVertex(), topLeft.getVertex());
+            triangle.setEdgeA(bottomLeft.getEdge());
+            triangle.setEdgeB(bottomRight.getEdge());
+            triangle.setEdgeC(topLeft.getEdge());
             triangle.setType(bottomLeft.getType() == Type.SLOPE || bottomRight.getType() == Type.SLOPE || topLeft.getType() == Type.SLOPE ? Triangle.Type.SLOPE : Triangle.Type.PLAIN);
         } else {
             triangle = new Triangle(bottomRight.getVertex(), topRight.getVertex(), topLeft.getVertex());
+            triangle.setEdgeA(bottomRight.getEdge());
+            triangle.setEdgeB(topRight.getEdge());
+            triangle.setEdgeC(topLeft.getEdge());
             triangle.setType(bottomRight.getType() == Type.SLOPE || topRight.getType() == Type.SLOPE || topLeft.getType() == Type.SLOPE ? Triangle.Type.SLOPE : Triangle.Type.PLAIN);
         }
         return triangle;

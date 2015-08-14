@@ -20,6 +20,7 @@ public class VertexList {
     List<Vertex> barycentric = new ArrayList<>();
     List<TextureCoordinate> textureCoordinates = new ArrayList<>();
     List<Color> colors = new ArrayList<>();
+    List<Double> edges = new ArrayList<>();
 
     public void add(Triangle triangle) {
         triangle.appendVertexTo(vertices);
@@ -27,6 +28,7 @@ public class VertexList {
         triangle.appendBarycentricTo(barycentric);
         triangle.appendColorsTo(colors);
         triangle.appendTextureCoordinateTo(textureCoordinates);
+        triangle.appendEdgesTo(edges);
     }
 
     public void add(Line3d line3d) {
@@ -55,6 +57,10 @@ public class VertexList {
             vertex.appendTo(doubleList);
         }
         return doubleList;
+    }
+
+    public List<Double> createEdgeDoubles() {
+        return new ArrayList<>(edges);
     }
 
     public List<Double> createBarycentricDoubles() {

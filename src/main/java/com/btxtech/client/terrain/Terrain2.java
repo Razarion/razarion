@@ -31,6 +31,7 @@ public class Terrain2 {
     private double roughnessTop;
     private double roughnessHillside;
     private double roughnessGround;
+    private float edgeDistance = 0.2f;
     private boolean changed = true;
 
     public Terrain2() {
@@ -161,5 +162,13 @@ public class Terrain2 {
 
     public void setRoughnessGround(double roughnessGround) {
         this.roughnessGround = roughnessGround;
+    }
+
+    public float getEdgeDistance() {
+        return edgeDistance;
+    }
+
+    public void setEdgeDistance(float edgeDistance) {
+        this.edgeDistance = edgeDistance;
     }
 }

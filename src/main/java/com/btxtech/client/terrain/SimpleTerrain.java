@@ -19,7 +19,7 @@ public class SimpleTerrain {
 
     public SimpleTerrain() {
         mesh = new Mesh();
-        mesh.fill(400, 400, 100);
+        mesh.fill(4000, 4000, 100);
 
         mesh.iterate(new Mesh.Visitor() {
             @Override
@@ -27,6 +27,18 @@ public class SimpleTerrain {
                 mesh.setVertex(index, vertex, Mesh.Type.PLANE_BOTTOM);
             }
         });
+
+
+        final FractalField fractalField = new FractalField(FractalField.nearestPossibleNumber(mesh.getX(), mesh.getY()), 1);
+        fractalField.normalize();
+        mesh.iterate(new Mesh.Visitor() {
+            @Override
+            public void onVisit(Index index, Vertex vertex) {
+                Mesh.VertexData vertexData = mesh.getVertexDataSafe(index);
+                vertexData.setEdge(fractalField.get(index));
+            }
+        });
+
     }
 
     public VertexListProvider getPlainProvider() {

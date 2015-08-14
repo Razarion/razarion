@@ -28,4 +28,11 @@ public interface Shaders extends ClientBundle {
 
     @Source("LightFragmentShader.shd")
     TextResource LightFragmentShader();
+
+    @Source("MultiTextureVertexShader.shd")
+    TextResource multiTextureVertexShader();
+
+    @Source("MultiTextureFragmentShader.shd")
+    TextResource multiTextureFragmentShader();
+
 }

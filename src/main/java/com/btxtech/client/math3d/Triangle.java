@@ -17,10 +17,13 @@ public class Triangle {
 
     private Vertex vertexA;
     private TextureCoordinate textureCoordinateA;
+    private double edgeA;
     private Vertex vertexB;
     private TextureCoordinate textureCoordinateB;
+    private double edgeB;
     private Vertex vertexC;
     private TextureCoordinate textureCoordinateC;
+    private double edgeC;
     private Type type;
 
     public Triangle(Vertex vertexA, TextureCoordinate textureCoordinateA,
@@ -112,6 +115,13 @@ public class Triangle {
         return normVertices;
     }
 
+    public void appendEdgesTo(List<Double> edges) {
+        edges.add(edgeA);
+        edges.add(edgeB);
+        edges.add(edgeC);
+    }
+
+
     public Vertex calculateNorm() {
         return vertexA.cross(vertexB, vertexC).normalize(1.0);
     }
@@ -143,6 +153,30 @@ public class Triangle {
 
     public TextureCoordinate getTextureCoordinateC() {
         return textureCoordinateC;
+    }
+
+    public double getEdgeC() {
+        return edgeC;
+    }
+
+    public void setEdgeC(double edgeC) {
+        this.edgeC = edgeC;
+    }
+
+    public double getEdgeB() {
+        return edgeB;
+    }
+
+    public void setEdgeB(double edgeB) {
+        this.edgeB = edgeB;
+    }
+
+    public double getEdgeA() {
+        return edgeA;
+    }
+
+    public void setEdgeA(double edgeA) {
+        this.edgeA = edgeA;
     }
 
     public double angelA() {

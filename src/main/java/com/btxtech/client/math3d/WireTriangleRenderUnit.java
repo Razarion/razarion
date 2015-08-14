@@ -2,6 +2,7 @@ package com.btxtech.client.math3d;
 
 import com.btxtech.client.GameCanvas;
 import com.btxtech.client.ImageDescriptor;
+import com.btxtech.client.shaders.Shaders;
 import com.btxtech.client.terrain.VertexList;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
@@ -28,16 +29,13 @@ public class WireTriangleRenderUnit extends AbstractTriangleRenderUnit {
     @Inject
     private GameCanvas gameCanvas;
 
-    public void init(String vertexShaderCode, String fragmentShaderCode) {
+    public void init(ImageDescriptor imageDescriptor) {
         gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
-        createProgram(vertexShaderCode, fragmentShaderCode);
+        createProgram(Shaders.INSTANCE.wireVertexShader(), Shaders.INSTANCE.wireFragmentShader());
         barycentricBuffer = gameCanvas.getCtx3d().createBuffer();
         barycentricPositionAttribute = getWebGlProgram().getAndEnableAttributeLocation(BARYCENTRIC_ATTRIBUTE_NAME);
         textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
         textureCoordinatePositionAttribute = getWebGlProgram().getAndEnableAttributeLocation(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
-    }
-
-    public void createTexture(ImageDescriptor imageDescriptor) {
         webGLTexture = setupTexture(imageDescriptor);
     }
 

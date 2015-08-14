@@ -45,6 +45,8 @@ public class Control extends Composite {
     HorizontalInputRangeNumber roughnessHillside;
     @UiField
     HorizontalInputRangeNumber roughnessGround;
+    @UiField
+    HorizontalInputRangeNumber edgeDistance;
     private TriangleRenderManager triangleRenderManager;
 
     public Control(final TriangleRenderManager triangleRenderManager) {
@@ -61,6 +63,7 @@ public class Control extends Composite {
         roughnessTop.setValue(Terrain2.getInstance().getRoughnessTop());
         roughnessHillside.setValue(Terrain2.getInstance().getRoughnessHillside());
         roughnessGround.setValue(Terrain2.getInstance().getRoughnessGround());
+        edgeDistance.setValue(Terrain2.getInstance().getEdgeDistance() * 100);
     }
 
     @UiHandler("shapeEditorButton")
@@ -99,6 +102,11 @@ public class Control extends Composite {
         Terrain2.getInstance().setRoughnessGround(valueChangeEvent.getValue());
         Terrain2.getInstance().setupTerrain();
         triangleRenderManager.fillBuffers();
+    }
+
+    @UiHandler("edgeDistance")
+    void onEdge1Changed(ValueChangeEvent<Double> valueChangeEvent) {
+        Terrain2.getInstance().setEdgeDistance(valueChangeEvent.getValue().floatValue() / 100f);
     }
 
 }

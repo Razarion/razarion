@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class TriangleRenderManager {
     public enum Mode {
         NORMAL,
+        MULTI_TEX,
         LIGHT,
         WIRE_08,
         WIRE_32,
@@ -27,7 +28,7 @@ public class TriangleRenderManager {
 
     private List<TriangleRenderHolder> renderers = new ArrayList<>();
     private Logger logger = Logger.getLogger(TriangleRenderManager.class.getName());
-    private Mode mode = Mode.NORMAL;
+    private Mode mode = Mode.MULTI_TEX;
     @Inject
     private ViewTransformation viewTransformation;
     @Inject

@@ -1,5 +1,6 @@
 package com.btxtech.client.terrain;
 
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 
 import java.util.Random;
@@ -91,6 +92,10 @@ public class FractalField {
         return terrain[x][y];
     }
 
+    public double get(Index index) {
+        return terrain[index.getX()][index.getY()];
+    }
+
     public int addOffset(int x, int y, double zBase) {
         return (int) (terrain[x][y] * zBase);
     }
@@ -105,6 +110,27 @@ public class FractalField {
                 terrain[x][y] = 0;
             }
         }
+    }
+
+    public void normalize() {
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+
+        for (double[] aTerrain : terrain) {
+            for (double anATerrain : aTerrain) {
+                min = Math.min(anATerrain, min);
+                max = Math.max(anATerrain, max);
+            }
+        }
+
+        double factor = max - min;
+        for (int x = 0; x < terrain.length; x++) {
+            for (int y = 0; y < terrain[x].length; y++) {
+                double value = terrain[x][y] - min;
+                terrain[x][y] = value / factor;
+            }
+        }
+
     }
 
     public static int nearestPossibleNumber(int number1, int number2) {
