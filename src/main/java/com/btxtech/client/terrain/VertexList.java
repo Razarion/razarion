@@ -39,6 +39,18 @@ public class VertexList {
         line3d.appendTextureCoordinateTo(textureCoordinates);
     }
 
+    public void add(Vertex vertexA, Vertex normA, Vertex vertexB, Vertex normB, Vertex vertexC, Vertex normC) {
+        vertices.add(vertexA);
+        vertices.add(vertexB);
+        vertices.add(vertexC);
+        normVertices.add(normA);
+        normVertices.add(normB);
+        normVertices.add(normC);
+        vertices.add(new Vertex(1, 0, 0));
+        vertices.add(new Vertex(0, 1, 0));
+        vertices.add(new Vertex(0, 0, 1));
+    }
+
     public int getVerticesCount() {
         return vertices.size();
     }
@@ -93,5 +105,17 @@ public class VertexList {
             normalized.add(textureCoordinate.divide(imageDescriptor.getQuadraticEdge()));
         }
         textureCoordinates = normalized;
+    }
+
+    @Override
+    public String toString() {
+        return "VertexList{" +
+                "vertices=" + vertices +
+                ", normVertices=" + normVertices +
+                ", barycentric=" + barycentric +
+                ", textureCoordinates=" + textureCoordinates +
+                ", colors=" + colors +
+                ", edges=" + edges +
+                '}';
     }
 }

@@ -11,9 +11,7 @@ public class Geometry extends NameIdColladaXml {
 
     public Geometry(Node node) {
         super(node);
-        for (Node childMeshNode : getChildren(node, ELEMENT_MESH)) {
-            mesh = new Mesh(childMeshNode);
-        }
+        mesh = new Mesh(getChild(node, ELEMENT_MESH));
     }
 
     @Override

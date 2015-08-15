@@ -1,6 +1,5 @@
 package com.btxtech.server.collada;
 
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -21,16 +20,25 @@ public class ColladaXml {
     public static final String ELEMENT_TECHNIQUE_ACCESSOR = "accessor";
     public static final String ELEMENT_PARAM = "param";
     public static final String ELEMENT_VERTICES = "vertices";
+    public static final String ELEMENT_POLYLIST = "polylist";
     public static final String ELEMENT_INPUT = "input";
+    public static final String ELEMENT_VCOUNT = "vcount";
+    public static final String ELEMENT_P = "p";
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
     public static final String ATTRIBUTE_TYPE = "type";
     public static final String ATTRIBUTE_DIGITS = "digits";
     public static final String ATTRIBUTE_MAGNITUDE = "magnitude";
     public static final String ATTRIBUTE_COUNT = "count";
-    public static final String ATTRIBUTE_STRIDE ="stride";
-    public static final String ATTRIBUTE_SOURCE ="source";
-    public static final String ATTRIBUTE_SEMANTIC ="semantic";
+    public static final String ATTRIBUTE_STRIDE = "stride";
+    public static final String ATTRIBUTE_SOURCE = "source";
+    public static final String ATTRIBUTE_SEMANTIC = "semantic";
+    public static final String ATTRIBUTE_OFFSET = "offset";
+    public static final String SEMANTIC_POSITION = "POSITION";
+    public static final String SEMANTIC_VERTEX = "VERTEX";
+    public static final String SEMANTIC_NORMAL = "NORMAL";
+
+    private static final String DELIMITER = " ";
 
     protected List<Node> getChildren(Node node, String elementName) {
         List<Node> childNodes = new ArrayList<>();
@@ -55,9 +63,37 @@ public class ColladaXml {
         throw new ColladaRuntimeException("No child " + elementName + " found in: " + node);
     }
 
+    protected List<Double> getElementAsDoubleList(Node node) {
+        List<Double> doubles = new ArrayList<>();
+        String[] floatsStrings = node.getFirstChild().getNodeValue().split(DELIMITER);
+        for (String floatsString : floatsStrings) {
+            try {
+                doubles.add(Double.parseDouble(floatsString));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                throw new ColladaRuntimeException("Error parsing float " + floatsString + " of node " + node, e);
+            }
+        }
+        return doubles;
+    }
+
+    protected List<Integer> getElementAsIntegerList(Node node) {
+        List<Integer> integers = new ArrayList<>();
+        String[] integerStrings = node.getFirstChild().getNodeValue().split(DELIMITER);
+        for (String integerString : integerStrings) {
+            try {
+                integers.add(Integer.parseInt(integerString));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                throw new ColladaRuntimeException("Error parsing integer " + integerString + " of node " + node, e);
+            }
+        }
+        return integers;
+    }
+
     protected String getAttributeAsString(Node node, String attributeId) {
         Node attributeNode = node.getAttributes().getNamedItem(attributeId);
-        if(attributeNode != null) {
+        if (attributeNode != null) {
             return attributeNode.getNodeValue();
         } else {
             return null;
@@ -66,7 +102,7 @@ public class ColladaXml {
 
     protected String getAttributeAsStringSafe(Node node, String attributeId) {
         Node attributeNode = node.getAttributes().getNamedItem(attributeId);
-        if(attributeNode != null) {
+        if (attributeNode != null) {
             return attributeNode.getNodeValue();
         } else {
             throw new ColladaRuntimeException("No such attribute " + attributeId + " in node: " + node);
@@ -75,7 +111,7 @@ public class ColladaXml {
 
     protected int getAttributeAsInt(Node node, String attributeName) {
         String stringValue = getAttributeAsString(node, attributeName);
-        if(stringValue == null) {
+        if (stringValue == null) {
             throw new ColladaRuntimeException("No attribute for name: " + attributeName + " in " + node);
         }
         try {
@@ -87,7 +123,7 @@ public class ColladaXml {
 
     protected int getAttributeAsInt(Node node, String attributeName, int defaultValue) {
         String stringValue = getAttributeAsString(node, attributeName);
-        if(stringValue == null) {
+        if (stringValue == null) {
             return defaultValue;
         }
         try {
@@ -97,5 +133,19 @@ public class ColladaXml {
             return defaultValue;
         }
     }
+
+    protected Integer getAttributeAsInteger(Node node, String attributeName) {
+        String stringValue = getAttributeAsString(node, attributeName);
+        if (stringValue == null) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(stringValue);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 }

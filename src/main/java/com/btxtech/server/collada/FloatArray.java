@@ -17,15 +17,9 @@ public class FloatArray extends ColladaXml {
     public FloatArray(Node node) {
         id = getAttributeAsStringSafe(node, ATTRIBUTE_ID);
         count = getAttributeAsInt(node, ATTRIBUTE_COUNT);
-        String[] floatsStrings = node.getFirstChild().getNodeValue().split(" ");
-        for (String floatsString : floatsStrings) {
-            try {
-                floatArray.add(Double.parseDouble(floatsString));
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-                throw new ColladaRuntimeException("Error parsing float " + floatsString + " of node " + node, e);
-            }
-        }
+
+        floatArray = getElementAsDoubleList(node);
+
         if (count != floatArray.size()) {
             throw new ColladaRuntimeException("Count and parsed float array count are not the same");
         }
