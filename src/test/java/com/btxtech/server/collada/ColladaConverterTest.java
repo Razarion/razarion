@@ -11,6 +11,6 @@ public class ColladaConverterTest {
     @Test
     public void testRead() throws Exception {
         ColladaConverter colladaConverter = new ColladaConverter();
-        colladaConverter.read();
+        System.out.println(colladaConverter.read());
     }
 }

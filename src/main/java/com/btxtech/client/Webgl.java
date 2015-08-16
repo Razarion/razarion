@@ -1,13 +1,19 @@
 package com.btxtech.client;
 
 import com.btxtech.client.dialogs.Control;
+import com.btxtech.client.math3d.Triangle;
 import com.btxtech.client.math3d.TriangleRenderManager;
+import com.btxtech.client.math3d.VertexListProvider;
 import com.btxtech.client.terrain.SimpleTerrain;
 import com.btxtech.client.terrain.Terrain;
 import com.btxtech.client.terrain.Terrain2;
+import com.btxtech.client.terrain.VertexList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 
@@ -34,6 +40,8 @@ public class Webgl /*implements EntryPoint*/ {
     private Terrain2 terrain;
     @Inject
     private SimpleTerrain simpleTerrain;
+    @Inject
+    private Caller<VertexListService> serviceCaller;
 
     @PostConstruct
     public void init() {
@@ -72,7 +80,26 @@ public class Webgl /*implements EntryPoint*/ {
 
     @AfterInitialization
     public void afterInitialization() {
-        triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getTerrainObject(), Terrain.SAND_1);
+        serviceCaller.call(new RemoteCallback<VertexList>() {
+            @Override
+            public void callback(final VertexList vertexList) {
+                GWT.log("VertexList: " + vertexList);
+                triangleRenderManager.createTriangleRenderUnit(new VertexListProvider() {
+                    @Override
+                    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+                        return vertexList;
+                    }
+                }, Terrain.GRASS_IMAGE);
+            }
+        }, new ErrorCallback() {
+
+            @Override
+            public boolean error(Object message, Throwable throwable) {
+                logger.log(Level.SEVERE, "message: " + message, throwable);
+                return false;
+            }
+
+        }).getVertexList();
     }
 
     public void fillBuffers() {

@@ -1,5 +1,6 @@
 package com.btxtech.client;
 
+import com.btxtech.client.terrain.VertexList;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 /**
@@ -8,5 +9,5 @@ import org.jboss.errai.bus.server.annotations.Remote;
  */
 @Remote
 public interface VertexListService {
-    String getVertexList();
+    VertexList getVertexList();
 }

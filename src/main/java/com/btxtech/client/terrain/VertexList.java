@@ -6,6 +6,7 @@ import com.btxtech.client.math3d.Line3d;
 import com.btxtech.client.math3d.TextureCoordinate;
 import com.btxtech.client.math3d.Triangle;
 import com.btxtech.client.math3d.Vertex;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * Created by Beat
  * 11.04.2015.
  */
+@Portable
 public class VertexList {
     List<Vertex> vertices = new ArrayList<>();
     List<Vertex> normVertices = new ArrayList<>();

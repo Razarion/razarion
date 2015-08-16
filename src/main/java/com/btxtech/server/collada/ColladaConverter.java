@@ -1,5 +1,6 @@
 package com.btxtech.server.collada;
 
+import com.btxtech.client.terrain.VertexList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 public class ColladaConverter {
 
-    public void read() throws ParserConfigurationException, IOException, SAXException, ColladaException {
+    public VertexList read() throws ParserConfigurationException, IOException, SAXException, ColladaException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new File("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\cube1.dae"));
@@ -30,15 +31,14 @@ public class ColladaConverter {
         }
 
         NodeList geometryNodeList = geometryLibraryNodeList.item(0).getChildNodes();
-        List<Geometry> geometries = new ArrayList<>();
         for (int i = 0; i < geometryNodeList.getLength(); i++) {
             Node node = geometryNodeList.item(i);
             if (node.getNodeName().toUpperCase().equals(ColladaXml.ELEMENT_GEOMETRY.toUpperCase())) {
-                // geometries.add(new Geometry(node));
-                System.out.println("Geometry: " + new Geometry(node));
+                Geometry geometry = new Geometry(node);
+                return geometry.getMesh().getVertexList();
             }
         }
-
+        throw new ColladaException("No geometry found");
     }
 
     class TreeDumper {

@@ -1,6 +1,7 @@
 package com.btxtech.client.math3d;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,10 +10,15 @@ import java.util.List;
  * Created by Beat
  * 05.04.2015.
  */
+@Portable
 public class Vertex {
     private double x;
     private double y;
     private double z;
+
+    // Used by Errai
+    public Vertex() {
+    }
 
     public Vertex(double x, double y, double z) {
         this.x = x;

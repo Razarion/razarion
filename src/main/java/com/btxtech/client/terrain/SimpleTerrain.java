@@ -27,8 +27,6 @@ public class SimpleTerrain {
     private Mesh mesh;
 
     @Inject
-    private Caller<VertexListService> serviceCaller;
-    @Inject
     private Logger logger;
 
     public SimpleTerrain() {
@@ -72,38 +70,4 @@ public class SimpleTerrain {
             }
         };
     }
-
-    public VertexListProvider getTerrainObject() {
-        MessageBuilder.createCall(new RemoteCallback<String>() {
-
-            public void callback(String s) {
-                GWT.log("MessageBuilder.createCall returned: " + s);
-            }
-
-        }, VertexListService.class).getVertexList();
-
-
-        serviceCaller.call(new RemoteCallback<String>() {
-            @Override
-            public void callback(String s) {
-                GWT.log("String returned: " + s);
-            }
-        }, new ErrorCallback() {
-
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "message: " + message, throwable);
-                return false;
-            }
-
-        }).getVertexList();
-
-        return new VertexListProvider() {
-            @Override
-            public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
-                return mesh.provideVertexList(imageDescriptor, Triangle.Type.SLOPE);
-            }
-        };
-    }
-
 }

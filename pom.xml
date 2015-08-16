@@ -123,7 +123,7 @@
                 <!-- Plugin configuration. There are many available options, see
                   gwt-maven-plugin documentation at codehaus.org -->
                 <configuration>
-                    <extraJvmArgs>-Xmx4096m -Djava.util.logging.config.file=C:\dev\projects\razarion\code\experimental-webgl\src\main\resources\logging.properties -Derrai.jboss.home=C:\dev\tech\wildfly-9.0.1.Final -Derrai.jboss.javaagent.path=${settings.localRepository}/org/jboss/errai/errai-client-local-class-hider/3.2.0.FINAL/errai-client-local-class-hider-3.2.0.FINAL.jar</extraJvmArgs>
+                    <extraJvmArgs>-Derrai.jboss.javaopts="-XX:MaxPermSize=2048M" -Djava.util.logging.config.file=C:\dev\projects\razarion\code\experimental-webgl\src\main\resources\logging.properties -Derrai.jboss.home=C:\dev\tech\wildfly-9.0.1.Final -Derrai.jboss.javaagent.path=${settings.localRepository}/org/jboss/errai/errai-client-local-class-hider/3.2.0.FINAL/errai-client-local-class-hider-3.2.0.FINAL.jar</extraJvmArgs>
                     <noServer>false</noServer>
                     <server>org.jboss.errai.cdi.server.gwt.JBossLauncher</server>
                     <runTarget>webgl.html</runTarget>

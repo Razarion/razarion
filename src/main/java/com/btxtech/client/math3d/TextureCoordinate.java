@@ -1,6 +1,7 @@
 package com.btxtech.client.math3d;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
 
@@ -8,11 +9,16 @@ import java.util.List;
  * Created by Beat
  * 12.04.2015.
  */
+@Portable
 public class TextureCoordinate {
     // x Axis
     private double s;
     // y Axis
     private double t;
+
+    // Used by Errai
+    public TextureCoordinate() {
+    }
 
     public TextureCoordinate(DecimalPosition decimalPosition) {
         s = decimalPosition.getX();

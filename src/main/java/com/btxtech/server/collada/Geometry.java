@@ -14,6 +14,10 @@ public class Geometry extends NameIdColladaXml {
         mesh = new Mesh(getChild(node, ELEMENT_MESH));
     }
 
+    public Mesh getMesh() {
+        return mesh;
+    }
+
     @Override
     public String toString() {
         return "Geometry{" +

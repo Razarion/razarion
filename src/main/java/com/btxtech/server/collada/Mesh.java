@@ -44,6 +44,10 @@ public class Mesh extends ColladaXml {
         vertexList = polylist.toTriangleVertexList(sources, vertices);
     }
 
+    public VertexList getVertexList() {
+        return vertexList;
+    }
+
     @Override
     public String toString() {
         return "Mesh{" +

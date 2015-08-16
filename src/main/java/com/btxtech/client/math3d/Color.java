@@ -1,16 +1,23 @@
 package com.btxtech.client.math3d;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.List;
 
 /**
  * Created by Beat
  * 11.04.2015.
  */
+@Portable
 public class Color {
     private double r;
     private double g;
     private double b;
     private double a;
+
+    // Used by Errai
+    public Color() {
+    }
 
     public Color(double r, double g, double b, double a) {
         this.r = r;
