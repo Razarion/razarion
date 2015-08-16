@@ -3,13 +3,34 @@ package com.btxtech.server;
 import com.btxtech.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import java.util.logging.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  * The server side implementation of the RPC service.
  */
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet {
+     private Logger logger = Logger.getLogger(GreetingServiceImpl.class.getName());
+    private final org.slf4j.Logger log = getLogger(GreetingServiceImpl.class);
 
-  public String greetServer(String input) throws IllegalArgumentException {
+    public GreetingServiceImpl() {
+        System.out.println("------ GreetingServiceImpl -------------");
+        logger.finest("--- finest");
+        logger.finer("--- finer");
+        logger.fine("--- fine");
+        logger.info("--- info");
+        logger.warning("--- warning");
+        logger.severe("--- severe");
+
+        log.debug("++++ debug");
+        log.info("++++ info");
+        log.warn("++++ warn");
+        log.error("++++ error");
+    }
+
+    public String greetServer(String input) throws IllegalArgumentException {
     // Verify that the input is valid.
     if (!FieldVerifier.isValidName(input)) {
       // If the input is not valid, throw an IllegalArgumentException back to

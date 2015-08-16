@@ -8,6 +8,7 @@ import com.btxtech.client.terrain.Terrain2;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 
 import javax.annotation.PostConstruct;
@@ -67,6 +68,11 @@ public class Webgl /*implements EntryPoint*/ {
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "WebGl.onModuleLoad()", t);
         }
+    }
+
+    @AfterInitialization
+    public void afterInitialization() {
+        triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getTerrainObject(), Terrain.SAND_1);
     }
 
     public void fillBuffers() {

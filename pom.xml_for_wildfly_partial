@@ -14,14 +14,15 @@
     <properties>
         <!-- Convenience property to set the GWT version -->
         <gwtVersion>2.7.0</gwtVersion>
-        <erraiVersion>3.2.0.FINAL</erraiVersion>
-
 
         <!-- GWT needs at least java 1.6 -->
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <errai.jboss.home>${project.build.directory}/wildfly-9.0.1.Final</errai.jboss.home>
+
     </properties>
 
     <dependencyManagement>
@@ -37,12 +38,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <!-- slf4j to JUL bridge -->
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.12</version>
-        </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
@@ -72,10 +67,10 @@
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-javaee-all</artifactId>
-            <version>${erraiVersion}</version>
+            <version>3.2.0.Final</version>
         </dependency>
         <dependency>
-            <!--Boss launcher -->
+            <!-- Used for EmbeddedWildFlyLauncher -->
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-cdi-jboss</artifactId>
             <version>3.2.0.Final</version>
@@ -90,7 +85,8 @@
             <artifactId>collisiontest</artifactId>
             <version>1.0-SNAPSHOT</version>
             <classifier>sources</classifier>
-            <scope>provided</scope><!-- use for compilation only -->
+            <scope>provided</scope>
+            <!-- use for compilation only -->
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -105,7 +101,38 @@
         <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wildfly</groupId>
+                                    <artifactId>wildfly-dist</artifactId>
+                                    <version>9.0.1.Final</version>
+                                    <type>zip</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>1.0.2.Final</version>
+                <extensions>false</extensions>
+            </plugin>
             <!-- GWT Maven Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -123,14 +150,12 @@
                 <!-- Plugin configuration. There are many available options, see
                   gwt-maven-plugin documentation at codehaus.org -->
                 <configuration>
-                    <extraJvmArgs>-Xmx4096m -Djava.util.logging.config.file=C:\dev\projects\razarion\code\experimental-webgl\src\main\resources\logging.properties -Derrai.jboss.home=C:\dev\tech\wildfly-9.0.1.Final -Derrai.jboss.javaagent.path=${settings.localRepository}/org/jboss/errai/errai-client-local-class-hider/3.2.0.FINAL/errai-client-local-class-hider-3.2.0.FINAL.jar</extraJvmArgs>
-                    <noServer>false</noServer>
-                    <server>org.jboss.errai.cdi.server.gwt.JBossLauncher</server>
+                    <extraJvmArgs>-Xmx2048m -Derrai.jboss.home=${errai.jboss.home}</extraJvmArgs>
                     <runTarget>webgl.html</runTarget>
-                    <modules>
+                    <!-- modules>
                         <module>com.btxtech.webgl</module>
-                    </modules>
-                    <!-- logLevel>ALL</logLevel -->
+                    </modules -->
+                    <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
                 </configuration>
             </plugin>
         </plugins>
