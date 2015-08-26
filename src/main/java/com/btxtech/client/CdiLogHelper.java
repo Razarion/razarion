@@ -1,6 +1,7 @@
 package com.btxtech.client;
 
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
 import java.util.logging.Logger;
 
 /**
@@ -10,7 +11,8 @@ import java.util.logging.Logger;
 public class CdiLogHelper {
 
     @Produces
-    public Logger createLogger() {
-        return Logger.getLogger("xxx");
+    public Logger createLogger(/*InjectionPoint injectionPoint*/) {
+        // return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
+        return Logger.getLogger("client");
     }
 }

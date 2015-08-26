@@ -6,17 +6,12 @@ import org.w3c.dom.Node;
  * Created by Beat
  * 14.08.2015.
  */
-public class Vertices extends ColladaXml {
-    private String id;
+public class Vertices extends NameIdColladaXml {
     private Input input;
 
     public Vertices(Node node) {
-        id = getAttributeAsStringSafe(node, ATTRIBUTE_ID);
+        super(node);
         input = new Input(getChild(node, ELEMENT_INPUT));
-    }
-
-    public String getId() {
-        return id;
     }
 
     public Input getInput() {
@@ -26,7 +21,6 @@ public class Vertices extends ColladaXml {
     @Override
     public String toString() {
         return "Vertices{" +
-                "id=" + id +
                 "input=" + input +
                 '}';
     }

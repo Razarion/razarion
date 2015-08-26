@@ -12,11 +12,7 @@ public class Input extends ColladaXml {
     private Integer offset;
 
     public Input(Node node) {
-        String sourceId = getAttributeAsStringSafe(node, ATTRIBUTE_SOURCE);
-        if (sourceId.charAt(0) != '#') {
-            throw new ColladaRuntimeException("First character in the source id (URIFragmentType) must be '#' but is " + sourceId + " for node: " + node);
-        }
-        this.sourceId = sourceId.substring(1);
+        this.sourceId = getUrl(node, ATTRIBUTE_SOURCE);
 
         semantic = getAttributeAsStringSafe(node, ATTRIBUTE_SEMANTIC);
         offset = getAttributeAsInteger(node, ATTRIBUTE_OFFSET);
@@ -31,7 +27,7 @@ public class Input extends ColladaXml {
     }
 
     public int getOffset() {
-        if(offset == null) {
+        if (offset == null) {
             throw new ColladaRuntimeException("Offset not available");
         }
         return offset;

@@ -15,6 +15,7 @@
         <!-- Convenience property to set the GWT version -->
         <gwtVersion>2.7.0</gwtVersion>
         <erraiVersion>3.2.0.FINAL</erraiVersion>
+        <wildflyHome>C:\dev\tech\wildfly-9.0.1.Final</wildflyHome>
 
 
         <!-- GWT needs at least java 1.6 -->
@@ -75,10 +76,14 @@
             <version>${erraiVersion}</version>
         </dependency>
         <dependency>
-            <!--Boss launcher -->
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-jboss-as-support</artifactId>
+            <version>${erraiVersion}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-cdi-jboss</artifactId>
-            <version>3.2.0.Final</version>
+            <version>${erraiVersion}</version>
         </dependency>
         <dependency>
             <groupId>com.razarion</groupId>
@@ -90,7 +95,8 @@
             <artifactId>collisiontest</artifactId>
             <version>1.0-SNAPSHOT</version>
             <classifier>sources</classifier>
-            <scope>provided</scope><!-- use for compilation only -->
+            <scope>provided</scope>
+            <!-- use for compilation only -->
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -102,10 +108,21 @@
 
     <build>
         <!-- Output classes directly into the webapp, so that IDEs and "mvn process-classes" update them in DevMode -->
-        <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+        <!-- outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory -->
 
         <plugins>
-
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>1.0.2.Final</version>
+                <configuration>
+                    <jbossHome>C:\dev\tech\wildfly-9.0.1.Final</jbossHome>
+                    <!--<jvmArgs>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000</jvmArgs>-->
+                    <!--<version>8.2.1.Final</version>-->
+                    <username>admin</username>
+                    <password>admin</password>
+                </configuration>
+            </plugin>
             <!-- GWT Maven Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -123,13 +140,17 @@
                 <!-- Plugin configuration. There are many available options, see
                   gwt-maven-plugin documentation at codehaus.org -->
                 <configuration>
-                    <extraJvmArgs>-Derrai.jboss.javaopts="-XX:MaxPermSize=2048M" -Djava.util.logging.config.file=C:\dev\projects\razarion\code\experimental-webgl\src\main\resources\logging.properties -Derrai.jboss.home=C:\dev\tech\wildfly-9.0.1.Final -Derrai.jboss.javaagent.path=${settings.localRepository}/org/jboss/errai/errai-client-local-class-hider/3.2.0.FINAL/errai-client-local-class-hider-3.2.0.FINAL.jar</extraJvmArgs>
-                    <noServer>false</noServer>
+                    <!--<extraJvmArgs>-Xmx2048m</extraJvmArgs>-->
+                    <extraJvmArgs>-Derrai.jboss.javaopts="-XX:MaxPermSize=2048M" -Djava.util.logging.config.file=C:\dev\projects\razarion\code\experimental-webgl\src\main\resources\logging.properties -Derrai.jboss.home=${wildflyHome} -Derrai.jboss.javaagent.path=${settings.localRepository}/org/jboss/errai/errai-client-local-class-hider/${erraiVersion}/errai-client-local-class-hider-${erraiVersion}.jar</extraJvmArgs>
+                    <!--<noServer>true</noServer>-->
+                    <!--<server>org.jboss.errai.cdi.server.gwt.JBossLauncher</server>-->
                     <server>org.jboss.errai.cdi.server.gwt.JBossLauncher</server>
                     <runTarget>webgl.html</runTarget>
                     <modules>
                         <module>com.btxtech.webgl</module>
                     </modules>
+                    <!--<superDevMode>false</superDevMode>-->
+                    <!--<style>DETAILED</style>-->
                     <!-- logLevel>ALL</logLevel -->
                 </configuration>
             </plugin>

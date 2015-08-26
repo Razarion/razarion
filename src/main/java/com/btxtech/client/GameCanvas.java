@@ -3,11 +3,11 @@ package com.btxtech.client;
 import com.btxtech.client.math3d.WebGlUtil;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.core.client.GWT;
 import elemental.client.Browser;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,8 +21,8 @@ public class GameCanvas {
     private Canvas canvas;
     private WebGLRenderingContext ctx3d;
     private double lastTimestamp = 0;
-    @Inject
-    private Logger logger;
+    // @Inject does not work
+    private Logger logger = Logger.getLogger(GameCanvas.class.getName());
 
     public interface RenderCallback {
         void doRender();
@@ -52,7 +52,7 @@ public class GameCanvas {
         ctx3d.viewport(0, 0, 640, 480);
         ctx3d.enable(WebGLRenderingContext.DEPTH_TEST);
         ctx3d.depthFunc(WebGLRenderingContext.LEQUAL);
-        logger.severe("ViewField initialized");
+        logger.severe("GameCanvas initialized");
     }
 
     public void startRenderLoop(final RenderCallback renderCallback) {

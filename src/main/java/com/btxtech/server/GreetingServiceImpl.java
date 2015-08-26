@@ -16,7 +16,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet {
     private final org.slf4j.Logger log = getLogger(GreetingServiceImpl.class);
 
     public GreetingServiceImpl() {
-        System.out.println("------ GreetingServiceImpl -------------");
+        System.out.println("------ GreetingServiceImpl 2 -------------");
         logger.finest("--- finest");
         logger.finer("--- finer");
         logger.fine("--- fine");

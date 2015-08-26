@@ -9,13 +9,12 @@ import java.util.List;
  * Created by Beat
  * 14.08.2015.
  */
-public class FloatArray extends ColladaXml {
-    private String id;
+public class FloatArray extends NameIdColladaXml {
     private int count;
     private List<Double> floatArray = new ArrayList<>();
 
     public FloatArray(Node node) {
-        id = getAttributeAsStringSafe(node, ATTRIBUTE_ID);
+        super(node);
         count = getAttributeAsInt(node, ATTRIBUTE_COUNT);
 
         floatArray = getElementAsDoubleList(node);
@@ -23,10 +22,6 @@ public class FloatArray extends ColladaXml {
         if (count != floatArray.size()) {
             throw new ColladaRuntimeException("Count and parsed float array count are not the same");
         }
-    }
-
-    public String getId() {
-        return id;
     }
 
     public List<Double> getFloatArray() {

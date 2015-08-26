@@ -12,7 +12,7 @@ public class NameIdColladaXml extends ColladaXml {
 
     public NameIdColladaXml(Node node) {
         id = getAttributeAsStringSafe(node, ATTRIBUTE_ID);
-        name = getAttributeAsStringSafe(node, ATTRIBUTE_NAME);
+        name = getAttributeAsString(node, ATTRIBUTE_NAME);
     }
 
     public String getName() {

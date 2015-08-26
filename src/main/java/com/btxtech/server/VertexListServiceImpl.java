@@ -6,6 +6,7 @@ import com.btxtech.server.collada.ColladaConverter;
 import org.jboss.errai.bus.server.annotations.Service;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.io.FileInputStream;
 
 /**
  * Created by Beat
@@ -16,9 +17,9 @@ import javax.enterprise.context.ApplicationScoped;
 public class VertexListServiceImpl implements VertexListService {
     @Override
     public VertexList getVertexList() {
-        ColladaConverter colladaConverter = new ColladaConverter();
         try {
-            return colladaConverter.read();
+            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\cube1.dae");
+            return ColladaConverter.read(fileInputStream);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

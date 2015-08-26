@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.75.0 commit date:2015-07-07, commit time:14:56, hash:c27589e</authoring_tool>
     </contributor>
-    <created>2015-08-14T13:26:14</created>
-    <modified>2015-08-14T13:26:14</modified>
+    <created>2015-08-17T22:55:53</created>
+    <modified>2015-08-17T22:55:53</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -182,7 +182,7 @@
         <instance_light url="#Lamp-light"/>
       </node>
       <node id="XXX_beat_Cube" name="XXX_beat_Cube" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 2.675784 0 1 0 3.617447 0 0 1 4.883841 0 0 0 1</matrix>
         <instance_geometry url="#Cube-mesh" name="XXX_beat_Cube">
           <bind_material>
             <technique_common>

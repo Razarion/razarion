@@ -46,8 +46,6 @@ public class Polylist extends ColladaXml {
                 throw new ColladaRuntimeException("Only polygon with 3 vertices supported (triangle). Given vertices: " + polygonPrimitiveCount);
             }
         }
-        VertexList vertexList = new VertexList();
-
         int vertexOffset = vertexInput.getOffset();
         int normOffset = normInput.getOffset();
         if (!positionVertex.getId().equals(vertexInput.getSourceId())) {
@@ -55,6 +53,9 @@ public class Polylist extends ColladaXml {
         }
         List<Vertex> vertices = sources.get(positionVertex.getInput().getSourceId()).getVertices();
         List<Vertex> norms = sources.get(normInput.getSourceId()).getVertices();
+
+        VertexList vertexList = new VertexList();
+
         for (int i = 0; i < primitiveIndices.size() / 6; i++) {
             int baseIndex = i * 6;
             vertexList.add(vertices.get(primitiveIndices.get(baseIndex + vertexOffset)),

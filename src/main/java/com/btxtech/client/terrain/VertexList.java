@@ -6,6 +6,7 @@ import com.btxtech.client.math3d.Line3d;
 import com.btxtech.client.math3d.TextureCoordinate;
 import com.btxtech.client.math3d.Triangle;
 import com.btxtech.client.math3d.Vertex;
+import com.btxtech.server.collada.Matrix;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.ArrayList;
@@ -107,6 +108,23 @@ public class VertexList {
             normalized.add(textureCoordinate.divide(imageDescriptor.getQuadraticEdge()));
         }
         textureCoordinates = normalized;
+    }
+
+
+    public void multiply(Matrix matrix) {
+        for (int i = 0; i < vertices.size(); i++) {
+            Vertex vertex = vertices.get(i);
+            vertices.set(i, matrix.getMatrix4().multiply(vertex, 1.0));
+        }
+    }
+
+    public void append(VertexList vertexList) {
+       vertices.addAll(vertexList.vertices);
+        normVertices.addAll(vertexList.normVertices);
+        barycentric.addAll(vertexList.barycentric);
+        textureCoordinates.addAll(vertexList.textureCoordinates);
+        colors.addAll(vertexList.colors);
+        edges.addAll(vertexList.edges);
     }
 
     @Override

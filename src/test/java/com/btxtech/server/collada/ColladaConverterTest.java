@@ -1,5 +1,6 @@
 package com.btxtech.server.collada;
 
+import com.btxtech.client.terrain.VertexList;
 import org.junit.Test;
 
 /**
@@ -10,7 +11,8 @@ public class ColladaConverterTest {
 
     @Test
     public void testRead() throws Exception {
-        ColladaConverter colladaConverter = new ColladaConverter();
-        System.out.println(colladaConverter.read());
+        VertexList vertexList = ColladaConverter.read(getClass().getResourceAsStream("/collada/cube1.dae"));
+        System.out.println(vertexList.getVerticesCount());
+        System.out.println(vertexList);
     }
 }

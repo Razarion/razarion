@@ -151,11 +151,11 @@
                   gwt-maven-plugin documentation at codehaus.org -->
                 <configuration>
                     <extraJvmArgs>-Xmx2048m -Derrai.jboss.home=${errai.jboss.home}</extraJvmArgs>
+                    <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
                     <runTarget>webgl.html</runTarget>
                     <!-- modules>
                         <module>com.btxtech.webgl</module>
                     </modules -->
-                    <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,5 +1,6 @@
 package com.btxtech.server.collada;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -11,7 +12,14 @@ import java.util.List;
  * 14.08.2015.
  */
 public class ColladaXml {
+
+    public static final String ELEMENT_COLLADA = "COLLADA";
+    public static final String ELEMENT_SCENE = "scene";
+    public static final String ELEMENT_INSTANCE_VISUAL_SCENE = "instance_visual_scene";
+    public static final String ELEMENT_LIBRARY_VISUAL_SCENES = "library_visual_scenes";
+    public static final String ELEMENT_VISUAL_SCENE = "visual_scene";
     public static final String ELEMENT_LIBRARY_GEOMETRIES = "library_geometries";
+    public static final String ELEMENT_INSTANCE_GEOMETRIES = "instance_geometry";
     public static final String ELEMENT_GEOMETRY = "geometry";
     public static final String ELEMENT_MESH = "mesh";
     public static final String ELEMENT_SOURCE = "source";
@@ -23,7 +31,10 @@ public class ColladaXml {
     public static final String ELEMENT_POLYLIST = "polylist";
     public static final String ELEMENT_INPUT = "input";
     public static final String ELEMENT_VCOUNT = "vcount";
+    public static final String ELEMENT_NODE = "node";
     public static final String ELEMENT_P = "p";
+    public static final String ELEMENT_MATRIX = "matrix";
+    public static final String ATTRIBUTE_VERSION = "version";
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
     public static final String ATTRIBUTE_TYPE = "type";
@@ -34,11 +45,20 @@ public class ColladaXml {
     public static final String ATTRIBUTE_SOURCE = "source";
     public static final String ATTRIBUTE_SEMANTIC = "semantic";
     public static final String ATTRIBUTE_OFFSET = "offset";
+    public static final String ATTRIBUTE_URL = "url";
     public static final String SEMANTIC_POSITION = "POSITION";
     public static final String SEMANTIC_VERTEX = "VERTEX";
     public static final String SEMANTIC_NORMAL = "NORMAL";
 
     private static final String DELIMITER = " ";
+
+    protected Node getSingleTopLevelNode(Document doc, String elementName) {
+        NodeList geometryLibraryNodeList = doc.getElementsByTagName(elementName);
+        if (geometryLibraryNodeList.getLength() != 1) {
+            throw new ColladaRuntimeException("Exactly one " + elementName + " in collada file expected. Found: " + geometryLibraryNodeList.getLength());
+        }
+        return geometryLibraryNodeList.item(0);
+    }
 
     protected List<Node> getChildren(Node node, String elementName) {
         List<Node> childNodes = new ArrayList<>();
@@ -60,7 +80,7 @@ public class ColladaXml {
                 return child;
             }
         }
-        throw new ColladaRuntimeException("No child " + elementName + " found in: " + node);
+        throw new ColladaRuntimeException("No child '" + elementName + "' found in: " + node);
     }
 
     protected List<Double> getElementAsDoubleList(Node node) {
@@ -147,5 +167,12 @@ public class ColladaXml {
         }
     }
 
+    protected String getUrl(Node node, String attributeName) {
+        String urlString = getAttributeAsStringSafe(node, attributeName);
+        if (urlString.charAt(0) != '#') {
+            throw new ColladaRuntimeException("First character in the url id must be '#' but is " + urlString + " for node: " + node + " and attribute name: " + attributeName);
+        }
+        return urlString.substring(1);
+    }
 
 }

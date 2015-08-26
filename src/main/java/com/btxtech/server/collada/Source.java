@@ -9,21 +9,16 @@ import java.util.List;
  * Created by Beat
  * 14.08.2015.
  */
-public class Source extends ColladaXml {
-    private String id;
+public class Source extends NameIdColladaXml {
     List<Vertex> vertices;
 
     public Source(Node node) {
-        id = getAttributeAsStringSafe(node, ATTRIBUTE_ID);
+        super(node);
 
         TechniqueCommon techniqueCommon = new TechniqueCommon(getChild(node, ELEMENT_TECHNIQUE_COMMON));
         FloatArray floatArray = new FloatArray(getChild(node, ELEMENT_FLOAT_ARRAY));
 
         vertices = techniqueCommon.getAccessor().convertToVertex(floatArray.getFloatArray(), floatArray.getCount());
-    }
-
-    public String getId() {
-        return id;
     }
 
     public List<Vertex> getVertices() {

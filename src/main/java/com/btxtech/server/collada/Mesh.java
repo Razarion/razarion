@@ -13,8 +13,6 @@ import java.util.Map;
  * 14.08.2015.
  */
 public class Mesh extends ColladaXml {
-    // private List<Vertex> positions;
-    // private List<Vertex> norms;
     private VertexList vertexList;
 
     public Mesh(Node node) {
@@ -31,14 +29,6 @@ public class Mesh extends ColladaXml {
         if (!vertices.getInput().getSemantic().equals(SEMANTIC_POSITION)) {
             throw new ColladaRuntimeException("Semantics must be POSITION. " + node);
         }
-//
-//        if (sources.get(0).getId().equals(vertices.getInput().getSourceId())) {
-//            positions = sources.get(0).getVertices();
-//            norms = sources.get(1).getVertices();
-//        } else {
-//            positions = sources.get(1).getVertices();
-//            norms = sources.get(0).getVertices();
-//        }
 
         Polylist polylist = new Polylist(getChild(node, ELEMENT_POLYLIST));
         vertexList = polylist.toTriangleVertexList(sources, vertices);
@@ -48,10 +38,4 @@ public class Mesh extends ColladaXml {
         return vertexList;
     }
 
-    @Override
-    public String toString() {
-        return "Mesh{" +
-                "vertexList=" + vertexList +
-                '}';
-    }
 }
