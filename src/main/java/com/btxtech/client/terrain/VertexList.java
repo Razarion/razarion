@@ -3,6 +3,7 @@ package com.btxtech.client.terrain;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.math3d.Color;
 import com.btxtech.client.math3d.Line3d;
+import com.btxtech.client.math3d.Matrix4;
 import com.btxtech.client.math3d.TextureCoordinate;
 import com.btxtech.client.math3d.Triangle;
 import com.btxtech.client.math3d.Vertex;
@@ -111,10 +112,10 @@ public class VertexList {
     }
 
 
-    public void multiply(Matrix matrix) {
+    public void multiply(Matrix4 matrix) {
         for (int i = 0; i < vertices.size(); i++) {
             Vertex vertex = vertices.get(i);
-            vertices.set(i, matrix.getMatrix4().multiply(vertex, 1.0));
+            vertices.set(i, matrix.multiply(vertex, 1.0));
         }
     }
 

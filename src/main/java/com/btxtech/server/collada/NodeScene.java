@@ -34,7 +34,7 @@ public class NodeScene extends ColladaXml {
             }
             VertexList meshVertex = geometry.getMesh().getVertexList();
             for (Matrix matrix : matrices) {
-                meshVertex.multiply(matrix);
+                meshVertex.multiply(matrix.getMatrix4());
                 vertexList.append(meshVertex);
             }
         }

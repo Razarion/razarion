@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE web-app
-        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-        "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0"
-         xmlns="http://java.sun.com/xml/ns/javaee">
-
-    <servlet>
+<servlet>
         <!-- NOTE: the integration-test profile uses this web.xml. Integration
           tests only work properly with the DefaultBlockingServlet. If you change this
           setting, make a backup of this web.xml (perhaps under src/integration-test-settings/web.xml
@@ -39,14 +34,14 @@
         <url-pattern>/webgl/greet</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>remoteLogging</servlet-name>
-        <servlet-class>com.btxtech.server.GwtSuperDevModeLoggingServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>remoteLogging</servlet-name>
-        <url-pattern>/webgl/remote_logging</url-pattern>
-    </servlet-mapping>
+    <!--<servlet>-->
+        <!--<servlet-name>remoteLogging</servlet-name>-->
+        <!--<servlet-class>com.btxtech.server.GwtSuperDevModeLoggingServlet</servlet-class>-->
+    <!--</servlet>-->
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>remoteLogging</servlet-name>-->
+        <!--<url-pattern>/webgl/remote_logging</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <!-- Default page to serve -->
     <welcome-file-list>
