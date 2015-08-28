@@ -4,7 +4,7 @@
 
 <module rename-to="app">
     <inherits name="org.jboss.errai.enterprise.All" />
-    <inherits name="org.jboss.errai.ui.Cordova" />
+    <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
     <inherits name="elemental.Elemental"/>
     <inherits name='org.vectomatic.libgwtsvg'/>
     <inherits name='com.btxtech.game.jsre.Jser'/>
@@ -13,8 +13,8 @@
         <!--<when-type-is class="org.jboss.errai.bus.client.framework.Configuration" />-->
     <!--</replace-with>-->
 
-    <set-property name="phonegap.logging.consoleHandler"
-                  value="DISABLED" />
+    <!--<set-property name="phonegap.logging.consoleHandler"-->
+                  <!--value="DISABLED" />-->
 
     <set-property name="gwt.logging.enabled" value="TRUE"/>
     <set-property name="gwt.logging.logLevel" value="FINEST"/>

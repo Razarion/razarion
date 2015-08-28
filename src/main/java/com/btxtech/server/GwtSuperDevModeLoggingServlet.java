@@ -19,18 +19,7 @@ public class GwtSuperDevModeLoggingServlet extends RemoteLoggingServiceImpl {
     private final static String MODULE_NAME = "com.btxtech.Webgl";
     // private final static String SIMPLE_MODULE_NAME = "webgl";
     private final static String SIMPLE_MODULE_NAME = "app";
-
     private String path = null;
-
-    public GwtSuperDevModeLoggingServlet() {
-        System.out.println("------ GwtSuperDevModeLoggingServlet -------------");
-    }
-
-    @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
-        System.out.println("------ GwtSuperDevModeLoggingServlet.init -------------: " + servletConfig.getServletContext().getContextPath());
-        super.init(servletConfig);
-    }
 
     @Override
     public String processCall(String payload) throws SerializationException {
