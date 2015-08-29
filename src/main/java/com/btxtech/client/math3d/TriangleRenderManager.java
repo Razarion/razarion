@@ -28,7 +28,7 @@ public class TriangleRenderManager {
 
     private List<TriangleRenderHolder> renderers = new ArrayList<>();
     private Logger logger = Logger.getLogger(TriangleRenderManager.class.getName());
-    private Mode mode = Mode.MULTI_TEX;
+    private Mode mode = Mode.LIGHT;
     @Inject
     private ViewTransformation viewTransformation;
     @Inject

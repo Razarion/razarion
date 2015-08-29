@@ -7,7 +7,6 @@ import com.btxtech.client.math3d.Matrix4;
 import com.btxtech.client.math3d.TextureCoordinate;
 import com.btxtech.client.math3d.Triangle;
 import com.btxtech.client.math3d.Vertex;
-import com.btxtech.server.collada.Matrix;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.ArrayList;
@@ -50,9 +49,9 @@ public class VertexList {
         normVertices.add(normA);
         normVertices.add(normB);
         normVertices.add(normC);
-        vertices.add(new Vertex(1, 0, 0));
-        vertices.add(new Vertex(0, 1, 0));
-        vertices.add(new Vertex(0, 0, 1));
+        barycentric.add(new Vertex(1, 0, 0));
+        barycentric.add(new Vertex(0, 1, 0));
+        barycentric.add(new Vertex(0, 0, 1));
     }
 
     public int getVerticesCount() {
@@ -120,7 +119,7 @@ public class VertexList {
     }
 
     public void append(VertexList vertexList) {
-       vertices.addAll(vertexList.vertices);
+        vertices.addAll(vertexList.vertices);
         normVertices.addAll(vertexList.normVertices);
         barycentric.addAll(vertexList.barycentric);
         textureCoordinates.addAll(vertexList.textureCoordinates);

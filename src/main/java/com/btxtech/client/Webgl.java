@@ -95,6 +95,7 @@ public class Webgl /*implements EntryPoint*/ {
                         return vertexList;
                     }
                 }, Terrain.GRASS_IMAGE);
+                triangleRenderManager.fillBuffers();
             }
         }, new ErrorCallback() {
 
