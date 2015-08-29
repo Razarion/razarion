@@ -1,5 +1,6 @@
 package com.btxtech.server.collada;
 
+import com.btxtech.client.math3d.TextureCoordinate;
 import com.btxtech.client.math3d.Vertex;
 import com.btxtech.client.terrain.VertexList;
 import org.w3c.dom.Node;
@@ -15,6 +16,7 @@ public class Polylist extends ColladaXml {
     private int count;
     private Input vertexInput;
     private Input normInput;
+    private Input textcoordInput;
     private List<Integer> polygonPrimitiveCounts;
     private List<Integer> primitiveIndices;
 
@@ -23,10 +25,16 @@ public class Polylist extends ColladaXml {
 
         for (Node inputNode : getChildren(node, ELEMENT_INPUT)) {
             Input input = new Input(inputNode);
-            if (input.getSemantic().equals(SEMANTIC_VERTEX)) {
-                vertexInput = input;
-            } else if (input.getSemantic().equals(SEMANTIC_NORMAL)) {
-                normInput = input;
+            switch (input.getSemantic()) {
+                case SEMANTIC_VERTEX:
+                    vertexInput = input;
+                    break;
+                case SEMANTIC_NORMAL:
+                    normInput = input;
+                    break;
+                case SEMANTIC_TEXCOORD:
+                    textcoordInput = input;
+                    break;
             }
         }
         if (vertexInput == null) {
@@ -51,20 +59,41 @@ public class Polylist extends ColladaXml {
         if (!positionVertex.getId().equals(vertexInput.getSourceId())) {
             throw new ColladaRuntimeException("Vertices id and input source with vertex semantic do not match. Vertices id: " + positionVertex.getId() + " vertex input source: " + vertexInput.getSourceId());
         }
-        List<Vertex> vertices = sources.get(positionVertex.getInput().getSourceId()).getVertices();
-        List<Vertex> norms = sources.get(normInput.getSourceId()).getVertices();
+        List<Vertex> vertices = sources.get(positionVertex.getInput().getSourceId()).setupVertices();
+        List<Vertex> norms = sources.get(normInput.getSourceId()).setupVertices();
+        List<TextureCoordinate> textureCoordinates = null;
+        int step = 6;
+        int textureOffset = 0;
+        if(textcoordInput != null) {
+            textureCoordinates = sources.get(textcoordInput.getSourceId()).setupTextureCoordinates();
+            step = 9;
+            textureOffset = textcoordInput.getOffset();
+        }
 
         VertexList vertexList = new VertexList();
 
-        for (int i = 0; i < primitiveIndices.size() / 6; i++) {
-            int baseIndex = i * 6;
-            vertexList.add(vertices.get(primitiveIndices.get(baseIndex + vertexOffset)),
-                    norms.get(primitiveIndices.get(baseIndex + normOffset)),
-                    vertices.get(primitiveIndices.get(baseIndex + 2 + vertexOffset)),
-                    norms.get(primitiveIndices.get(baseIndex + 2 + normOffset)),
-                    vertices.get(primitiveIndices.get(baseIndex + 4 + vertexOffset)),
-                    norms.get(primitiveIndices.get(baseIndex + 4 + normOffset))
-            );
+        for (int i = 0; i < primitiveIndices.size() / step; i++) {
+            int baseIndex = i * step;
+            if(textureCoordinates != null) {
+                vertexList.add(vertices.get(primitiveIndices.get(baseIndex + vertexOffset)),
+                        norms.get(primitiveIndices.get(baseIndex + normOffset)),
+                        textureCoordinates.get(primitiveIndices.get(baseIndex + textureOffset)),
+                        vertices.get(primitiveIndices.get(baseIndex + 3 + vertexOffset)),
+                        norms.get(primitiveIndices.get(baseIndex + 3 + normOffset)),
+                        textureCoordinates.get(primitiveIndices.get(baseIndex +3+ textureOffset)),
+                        vertices.get(primitiveIndices.get(baseIndex + 6 + vertexOffset)),
+                        norms.get(primitiveIndices.get(baseIndex + 6 + normOffset)),
+                        textureCoordinates.get(primitiveIndices.get(baseIndex +6+ textureOffset))
+                        );
+            }else{
+                vertexList.add(vertices.get(primitiveIndices.get(baseIndex + vertexOffset)),
+                        norms.get(primitiveIndices.get(baseIndex + normOffset)),
+                        vertices.get(primitiveIndices.get(baseIndex + 2 + vertexOffset)),
+                        norms.get(primitiveIndices.get(baseIndex + 2 + normOffset)),
+                        vertices.get(primitiveIndices.get(baseIndex + 4 + vertexOffset)),
+                        norms.get(primitiveIndices.get(baseIndex + 4 + normOffset))
+                );
+            }
         }
 
         return vertexList;

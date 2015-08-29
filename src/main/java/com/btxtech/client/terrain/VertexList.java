@@ -54,6 +54,21 @@ public class VertexList {
         barycentric.add(new Vertex(0, 0, 1));
     }
 
+    public void add(Vertex vertexA, Vertex normA, TextureCoordinate textureA, Vertex vertexB, Vertex normB, TextureCoordinate textureB, Vertex vertexC, Vertex normC, TextureCoordinate textureC) {
+        vertices.add(vertexA);
+        vertices.add(vertexB);
+        vertices.add(vertexC);
+        normVertices.add(normA);
+        normVertices.add(normB);
+        normVertices.add(normC);
+        textureCoordinates.add(textureA);
+        textureCoordinates.add(textureB);
+        textureCoordinates.add(textureC);
+        barycentric.add(new Vertex(1, 0, 0));
+        barycentric.add(new Vertex(0, 1, 0));
+        barycentric.add(new Vertex(0, 0, 1));
+    }
+
     public int getVerticesCount() {
         return vertices.size();
     }

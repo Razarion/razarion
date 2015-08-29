@@ -1,5 +1,6 @@
 package com.btxtech.server.collada;
 
+import com.btxtech.client.math3d.TextureCoordinate;
 import com.btxtech.client.math3d.Vertex;
 import org.w3c.dom.Node;
 
@@ -29,28 +30,47 @@ public class Accessor extends ColladaXml {
         if (params.size() != 3) {
             throw new ColladaRuntimeException("Parameter count mismatch. Parameter count must be 3 to convert to a vertex. Current parameter count is: " + params.size());
         }
-
         if (count % 3 != 0) {
-            throw new ColladaRuntimeException("Doubles count mismatch. Must be a multipe of 3. Received: " + count);
+            throw new ColladaRuntimeException("Doubles count mismatch. Must be a multiple of 3. Received: " + count);
         }
-
         if (!params.get(0).getName().equals("X") || !params.get(0).getType().equals("float")) {
-            throw new ColladaRuntimeException("Parameter count mismatch. Expected X as float. Received: " + params.get(0));
+            throw new ColladaRuntimeException("Parameter mismatch. Expected X as float. Received: " + params.get(0));
         }
-
         if (!params.get(1).getName().equals("Y") || !params.get(1).getType().equals("float")) {
-            throw new ColladaRuntimeException("Parameter count mismatch. Expected Y as float. Received: " + params.get(1));
+            throw new ColladaRuntimeException("Parameter mismatch. Expected Y as float. Received: " + params.get(1));
         }
-
         if (!params.get(2).getName().equals("Z") || !params.get(2).getType().equals("float")) {
-            throw new ColladaRuntimeException("Parameter count mismatch. Expected Z as float. Received: " + params.get(2));
+            throw new ColladaRuntimeException("Parameter mismatch. Expected Z as float. Received: " + params.get(2));
         }
-
         List<Vertex> vertices = new ArrayList<>();
         for (int i = 0; i < doubles.size(); i = i + 3) {
             vertices.add(new Vertex(doubles.get(i), doubles.get(i + 1), doubles.get(i + 2)));
         }
         return vertices;
+    }
+
+
+    public List<TextureCoordinate> convertToTextureCoordinate(List<Double> doubles, int count) {
+        if (stride != 2) {
+            throw new ColladaRuntimeException("Stride mismatch. Stride must be 2 to convert to a TextureCoordinate. Current stride is: " + stride);
+        }
+        if (params.size() != 2) {
+            throw new ColladaRuntimeException("Parameter count mismatch. Parameter count must be 2 to convert to a TextureCoordinate. Current parameter count is: " + params.size());
+        }
+        if (count % 2 != 0) {
+            throw new ColladaRuntimeException("Doubles count mismatch. Must be a multiple of 2. Received: " + count);
+        }
+        if (!params.get(0).getName().equals("S") || !params.get(0).getType().equals("float")) {
+            throw new ColladaRuntimeException("Parameter mismatch. Expected S as float. Received: " + params.get(0));
+        }
+        if (!params.get(1).getName().equals("T") || !params.get(1).getType().equals("float")) {
+            throw new ColladaRuntimeException("Parameter mismatch. Expected T as float. Received: " + params.get(1));
+        }
+        List<TextureCoordinate> vetextureCoordinatestices = new ArrayList<>();
+        for (int i = 0; i < doubles.size(); i = i + 2) {
+            vetextureCoordinatestices.add(new TextureCoordinate(doubles.get(i), doubles.get(i + 1)));
+        }
+        return vetextureCoordinatestices;
     }
 
     @Override

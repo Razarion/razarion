@@ -49,6 +49,7 @@ public class ColladaXml {
     public static final String SEMANTIC_POSITION = "POSITION";
     public static final String SEMANTIC_VERTEX = "VERTEX";
     public static final String SEMANTIC_NORMAL = "NORMAL";
+    public static final String SEMANTIC_TEXCOORD = "TEXCOORD";
 
     private static final String DELIMITER = " ";
 

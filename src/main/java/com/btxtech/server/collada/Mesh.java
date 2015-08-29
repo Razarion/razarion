@@ -21,9 +21,6 @@ public class Mesh extends ColladaXml {
             Source source = new Source(sourceNode);
             sources.put(source.getId(), source);
         }
-        if (sources.size() != 2) {
-            throw new ColladaRuntimeException("2 sources expected. Actual: " + sources.size());
-        }
 
         Vertices vertices = new Vertices(getChild(node, ELEMENT_VERTICES));
         if (!vertices.getInput().getSemantic().equals(SEMANTIC_POSITION)) {
