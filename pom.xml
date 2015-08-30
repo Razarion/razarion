@@ -5,18 +5,17 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.jboss.errai.demo</groupId>
-    <artifactId>errai-tutorial</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <groupId>com.btxtech</groupId>
+    <artifactId>razarion</artifactId>
     <packaging>war</packaging>
-    <name>Errai::Tutorial</name>
+    <version>1.0-SNAPSHOT</version>
+    <name>Experimantal WebGL</name>
 
     <properties>
         <errai.version>3.2.0.Final</errai.version>
         <gwt.version>2.7.0</gwt.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaee.version>1.0.2.Final</javaee.version>
-        <errai.dev.context>${project.artifactId}</errai.dev.context>
         <as.version>8.1.0.Final</as.version>
         <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
         <errai.jboss.home>${project.build.directory}/wildfly-${as.version}</errai.jboss.home>
@@ -156,11 +155,11 @@
                       To configure an alternative package filter for client-only classes, specify:
                       -Derrai.client.local.class.pattern=.*/myproject/client/.* -->
                     <!-- -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -->
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Derrai.jboss.home=${errai.jboss.home} -D_errai.dev.context=${errai.dev.context}</extraJvmArgs>
+                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Derrai.jboss.home=${errai.jboss.home}</extraJvmArgs>
                     <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
                     <disableCastChecking>true</disableCastChecking>
                     <runTarget>webgl.html</runTarget>
-                    <soyc>false</soyc>
+                    <!--<soyc>false</soyc>-->
                     <hostedWebapp>src/main/webapp</hostedWebapp>
                     <strict>true</strict>
                 </configuration>
