@@ -18,7 +18,7 @@ public class VertexListServiceImpl implements VertexListService {
     @Override
     public VertexList getVertexList() {
         try {
-            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\cube1.dae");
+            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\bush1.dae");
             return ColladaConverter.read(fileInputStream);
         } catch (Exception e) {
             e.printStackTrace();

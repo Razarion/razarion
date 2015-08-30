@@ -24,4 +24,10 @@ public class ColladaConverterTest {
         VertexList vertexList = ColladaConverter.read(getClass().getResourceAsStream("/collada/stone1.dae"));
         System.out.println("vertexList: " + vertexList);
     }
+
+    @Test
+    public void testReadBush1() throws Exception {
+        VertexList vertexList = ColladaConverter.read(getClass().getResourceAsStream("/collada/bush1.dae"));
+        System.out.println("vertexList: " + vertexList);
+    }
 }
