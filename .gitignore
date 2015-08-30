@@ -32,6 +32,6 @@ src/main/webapp/WEB-INF/lib/jgroups-3.2.13.Final.jar
 src/main/webapp/WEB-INF/lib/mvel2-2.1.7.Final.jar
 src/main/webapp/WEB-INF/lib/reflections-3.2.0.Final.jar
 src/main/webapp/WEB-INF/lib/slf4j-api-1.7.2.jar
-src/main/webapp/app/01E82FAF2BCBC4BC215E6E574EC22593.gwt.rpc
-src/main/webapp/app/app.nocache.js
-src/main/webapp/app/clear.cache.gif
+src/main/webapp/webgl/01E82FAF2BCBC4BC215E6E574EC22593.gwt.rpc
+src/main/webapp/webgl/clear.cache.gif
+src/main/webapp/webgl/webgl.nocache.js
