@@ -5,14 +5,12 @@ import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.terrain.VertexList;
 import com.btxtech.game.jsre.common.ImageLoader;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Collection;

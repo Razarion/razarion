@@ -7,6 +7,7 @@ import com.btxtech.client.terrain.Terrain;
 import com.btxtech.client.terrain.Terrain2;
 import com.btxtech.client.terrain.VertexList;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -28,15 +29,9 @@ public class Webgl /*implements EntryPoint*/ {
     // @Inject
     private Logger logger = Logger.getLogger(Webgl.class.getName());
     @Inject
-    private GameCanvas viewField;
-    @Inject
     private TriangleRenderManager triangleRenderManager;
     @Inject
-    private ViewFieldMover viewFieldMover;
-    @Inject
     private Terrain2 terrain;
-    @Inject
-    private SimpleTerrain simpleTerrain;
     @Inject
     private Caller<VertexListService> serviceCaller;
 
@@ -51,36 +46,6 @@ public class Webgl /*implements EntryPoint*/ {
                 }
             }
         });
-    }
-
-    @PostConstruct
-    public void init() {
-        instance = this;
-        try {
-
-//            HorizontalPanel horizontalPanel = new HorizontalPanel();
-
-            // triangleRenderManager.createTriangleRenderUnit(terrain.getPlainProvider(), Terrain.GRASS_IMAGE);
-            // triangleRenderManager.createTriangleRenderUnit(terrain.getSlopeProvider(), Terrain.SAND_1);
-            triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getPlainProvider(), Terrain.SAND_1);
-
-//            Control control = new Control(triangleRenderManager);
-//            Control control = new Control(null);
-//            horizontalPanel.add(viewField.getCanvas());
-//            horizontalPanel.add(control);
-            RootPanel.get().add(viewField.getCanvas());
-            RootPanel.get().getElement().getStyle().setProperty("userSelect", "none");
-            triangleRenderManager.fillBuffers();
-            viewField.startRenderLoop(new GameCanvas.RenderCallback() {
-                @Override
-                public void doRender() {
-                    triangleRenderManager.draw();
-                }
-            });
-            viewFieldMover.activate();
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, "WebGl.onModuleLoad()", t);
-        }
     }
 
     @AfterInitialization

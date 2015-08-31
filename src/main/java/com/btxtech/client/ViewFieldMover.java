@@ -2,6 +2,7 @@ package com.btxtech.client;
 
 import com.btxtech.client.math3d.ViewTransformation;
 import com.btxtech.game.jsre.client.common.Index;
+import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -20,14 +21,12 @@ import javax.inject.Singleton;
 @Singleton
 public class ViewFieldMover {
     @Inject
-    private GameCanvas gameCanvas;
-    @Inject
     private ViewTransformation viewTransformation;
     private Index startMove;
     private double factor = 0.5;
 
-    public void activate() {
-        gameCanvas.getCanvas().addMouseMoveHandler(new MouseMoveHandler() {
+    public void activate(Canvas canvas) {
+        canvas.addMouseMoveHandler(new MouseMoveHandler() {
             @Override
             public void onMouseMove(MouseMoveEvent event) {
                 if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_LEFT) == NativeEvent.BUTTON_LEFT) {
@@ -46,13 +45,13 @@ public class ViewFieldMover {
                 }
             }
         });
-        gameCanvas.getCanvas().addMouseDownHandler(new MouseDownHandler() {
+        canvas.addMouseDownHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
                 startMove = new Index(event.getX(), event.getY());
             }
         });
-        gameCanvas.getCanvas().addMouseWheelHandler(new MouseWheelHandler() {
+        canvas.addMouseWheelHandler(new MouseWheelHandler() {
             @Override
             public void onMouseWheel(MouseWheelEvent event) {
                 viewTransformation.setTranslateZ(viewTransformation.getTranslateZ() + event.getDeltaY());

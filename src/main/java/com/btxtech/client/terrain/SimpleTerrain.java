@@ -31,7 +31,7 @@ public class SimpleTerrain {
 
     public SimpleTerrain() {
         mesh = new Mesh();
-        mesh.fill(4000, 4000, 100);
+        mesh.fill(256, 256, 64);
 
         mesh.iterate(new Mesh.Visitor() {
             @Override
