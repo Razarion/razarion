@@ -94,12 +94,16 @@ public class Mesh {
     }
 
     public void fill(int xSize, int ySize, int edgeLength) {
+        fill(xSize, ySize, edgeLength, 0);
+    }
+
+    public void fill(int xSize, int ySize, int edgeLength, int z) {
         grid.clear();
         int xCount = xSize / edgeLength + 1;
         int yCount = ySize / edgeLength + 1;
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount; y++) {
-                setVertex(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, 0), Type.PLANE_BOTTOM);
+                setVertex(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, z), Type.PLANE_BOTTOM);
             }
         }
     }

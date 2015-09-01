@@ -22,16 +22,16 @@ import java.util.logging.Logger;
  * Created by Beat
  * 09.08.2015.
  */
-@Singleton
+// @Singleton
 public class SimpleTerrain {
     private Mesh mesh;
 
     @Inject
     private Logger logger;
 
-    public SimpleTerrain() {
+    public SimpleTerrain(int z) {
         mesh = new Mesh();
-        mesh.fill(256, 256, 64);
+        mesh.fill(1024, 1024, 64, z);
 
         mesh.iterate(new Mesh.Visitor() {
             @Override

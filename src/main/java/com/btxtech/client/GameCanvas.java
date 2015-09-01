@@ -32,8 +32,8 @@ public class GameCanvas {
     private TriangleRenderManager triangleRenderManager;
     @Inject
     private ViewFieldMover viewFieldMover;
-    @Inject
-    private SimpleTerrain simpleTerrain;
+    //@Inject
+    //private SimpleTerrain simpleTerrain;
     @Inject
     private ProjectionTransformation projectionTransformation;
 
@@ -56,7 +56,15 @@ public class GameCanvas {
             }
         });
         viewFieldMover.activate(canvas);
+
+        SimpleTerrain simpleTerrain = new SimpleTerrain(0);
         triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getPlainProvider(), Terrain.SAND_1);
+
+        // simpleTerrain = new SimpleTerrain(10);
+        // triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getPlainProvider(), Terrain.BUSH_1);
+
+
+
         Window.addResizeHandler(new ResizeHandler() {
             @Override
             public void onResize(ResizeEvent event) {
@@ -86,8 +94,9 @@ public class GameCanvas {
         // Configure context
         ctx3d.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
         ctx3d.clearDepth(1.0f);
-        ctx3d.enable(WebGLRenderingContext.DEPTH_TEST);
-        ctx3d.depthFunc(WebGLRenderingContext.LEQUAL);
+        ctx3d.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+        ctx3d.enable(WebGLRenderingContext.BLEND);
+        ctx3d.disable(WebGLRenderingContext.DEPTH_TEST);
         logger.severe("GameCanvas initialized");
     }
 

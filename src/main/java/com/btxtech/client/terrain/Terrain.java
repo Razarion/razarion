@@ -22,6 +22,7 @@ public class Terrain {
     public static final ImageDescriptor SAND_2 = new ImageDescriptor("sand2.png", 512, 512);
     public static final ImageDescriptor BLEND_1 = new ImageDescriptor("blend1.png", 512, 512);
     public static final ImageDescriptor BLEND_2 = new ImageDescriptor("blend2.png", 512, 512);
+    public static final ImageDescriptor BUSH_1 = new ImageDescriptor("bush-texture.png", 1024, 1024);
 
     // public static List<Index> corners = Arrays.asList(new Index(364, 120), new Index(177, 190), new Index(160, 307), new Index(170, 525), new Index(270, 610), new Index(385, 650), new Index(610, 660), new Index(708, 603), new Index(808, 438), new Index(726, 240), new Index(483, 93));
     // public static List<Index> corners = Arrays.asList(new Index(44, 58), new Index(178, 516), new Index(954, 114));

@@ -59,7 +59,7 @@ public class Webgl /*implements EntryPoint*/ {
                     public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
                         return vertexList;
                     }
-                }, Terrain.SAND_2);
+                }, Terrain.BUSH_1);
                 triangleRenderManager.fillBuffers();
             }
         }, new ErrorCallback() {
