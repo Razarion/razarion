@@ -2,6 +2,7 @@ package com.btxtech.client;
 
 import com.btxtech.client.math3d.ViewTransformation;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.game.jsre.common.MathHelper;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -54,8 +55,26 @@ public class ViewFieldMover {
         canvas.addMouseWheelHandler(new MouseWheelHandler() {
             @Override
             public void onMouseWheel(MouseWheelEvent event) {
-                viewTransformation.setTranslateZ(viewTransformation.getTranslateZ() + event.getDeltaY());
-                event.preventDefault();
+                if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_LEFT) == NativeEvent.BUTTON_LEFT) {
+                    double newAngleX = viewTransformation.getRotateX() + Math.toRadians(event.getDeltaY());
+                    if (newAngleX < 0) {
+                        newAngleX = 0;
+                    } else if (newAngleX > MathHelper.QUARTER_RADIANT) {
+                        newAngleX = MathHelper.QUARTER_RADIANT;
+                    }
+                    viewTransformation.setRotateX(newAngleX);
+                } else if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
+                    double newAngleZ = viewTransformation.getRotateZ() + Math.toRadians(event.getDeltaY());
+                    if (newAngleZ < 0) {
+                        newAngleZ = 0;
+                    } else if (newAngleZ > MathHelper.ONE_RADIANT) {
+                        newAngleZ = MathHelper.ONE_RADIANT;
+                    }
+                    viewTransformation.setRotateZ(newAngleZ);
+                } else {
+                    viewTransformation.setTranslateZ(viewTransformation.getTranslateZ() + event.getDeltaY());
+                    event.preventDefault();
+                }
             }
         });
     }
