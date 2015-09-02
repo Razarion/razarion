@@ -64,7 +64,6 @@ public class GameCanvas {
         // triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getPlainProvider(), Terrain.BUSH_1);
 
 
-
         Window.addResizeHandler(new ResizeHandler() {
             @Override
             public void onResize(ResizeEvent event) {
@@ -84,9 +83,10 @@ public class GameCanvas {
 
     private void initCanvas(Canvas canvas) {
         // Create 3d context
-        ctx3d = (WebGLRenderingContext) canvas.getContext("experimental-webgl");
+
+        ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "experimental-webgl");
         if (ctx3d == null) {
-            ctx3d = (WebGLRenderingContext) canvas.getContext("webgl");
+            ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "webgl");
         }
         if (ctx3d == null) {
             Browser.getWindow().alert("WebGL not supported ?!?!?!");

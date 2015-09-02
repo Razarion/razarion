@@ -1,5 +1,6 @@
 package com.btxtech.client.math3d;
 
+import com.google.gwt.dom.client.CanvasElement;
 import elemental.html.Float32Array;
 import elemental.html.WebGLRenderingContext;
 import elemental.js.util.JsArrayOfNumber;
@@ -50,4 +51,9 @@ public class WebGlUtil {
         return e;
     }-*/;
 
+    // http://in2gpu.com/2014/04/11/webgl-transparency/
+    // {alpha:false}
+    public native static WebGLRenderingContext getContext(CanvasElement canvasElement, String contextId) /*-{
+        return canvasElement.getContext(contextId, {alpha:false});
+    }-*/;
 }
