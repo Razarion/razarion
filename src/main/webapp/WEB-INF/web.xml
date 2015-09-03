@@ -23,16 +23,6 @@
     </servlet-mapping>
 
     <!-- Servlets -->
-    <servlet>
-        <servlet-name>greetServlet</servlet-name>
-        <servlet-class>com.btxtech.server.GreetingServiceImpl</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>greetServlet</servlet-name>
-        <url-pattern>/webgl/greet</url-pattern>
-    </servlet-mapping>
 
     <!--<servlet>-->
         <!--<servlet-name>remoteLogging</servlet-name>-->
