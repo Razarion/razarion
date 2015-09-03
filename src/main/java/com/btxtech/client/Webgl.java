@@ -1,21 +1,17 @@
 package com.btxtech.client;
 
-import com.btxtech.client.math3d.TriangleRenderManager;
-import com.btxtech.client.math3d.VertexListProvider;
-import com.btxtech.client.terrain.SimpleTerrain;
+import com.btxtech.client.renderer.engine.TriangleRenderManager;
+import com.btxtech.client.renderer.model.VertexListProvider;
 import com.btxtech.client.terrain.Terrain;
 import com.btxtech.client.terrain.Terrain2;
-import com.btxtech.client.terrain.VertexList;
+import com.btxtech.shared.VertexList;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -1,6 +1,6 @@
 package com.btxtech.client.dialogs;
 
-import com.btxtech.client.math3d.ViewTransformation;
+import com.btxtech.client.renderer.model.ViewTransformation;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;

@@ -1,6 +1,7 @@
 package com.btxtech.client.math3d;
 
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.primitives.Triangulator;
 import org.junit.Test;
 
 import java.util.Arrays;

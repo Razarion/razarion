@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.client.math3d.ViewTransformation;
+import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.google.gwt.canvas.client.Canvas;

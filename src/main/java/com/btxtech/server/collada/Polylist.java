@@ -1,8 +1,8 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.client.math3d.TextureCoordinate;
-import com.btxtech.client.math3d.Vertex;
-import com.btxtech.client.terrain.VertexList;
+import com.btxtech.shared.primitives.TextureCoordinate;
+import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.VertexList;
 import org.w3c.dom.Node;
 
 import java.util.List;

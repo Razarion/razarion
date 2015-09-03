@@ -1,14 +1,12 @@
 package com.btxtech.client.dialogs;
 
-import com.btxtech.client.math3d.Color;
+import com.btxtech.shared.primitives.Color;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.text.shared.AbstractRenderer;
 import com.google.gwt.text.shared.Parser;
-import com.google.gwt.text.shared.Renderer;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ValueBoxBase;
 
-import java.io.IOException;
 import java.text.ParseException;
 
 /**

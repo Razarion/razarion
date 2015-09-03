@@ -1,7 +1,7 @@
 package com.btxtech.client.dialogs;
 
-import com.btxtech.client.math3d.Matrix4;
-import com.btxtech.client.math3d.Matrix4Builder;
+import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Matrix4Builder;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;

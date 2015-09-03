@@ -1,8 +1,8 @@
 package com.btxtech.client;
 
-import com.btxtech.client.math3d.ProjectionTransformation;
-import com.btxtech.client.math3d.TriangleRenderManager;
-import com.btxtech.client.math3d.WebGlUtil;
+import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.renderer.engine.TriangleRenderManager;
+import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.SimpleTerrain;
 import com.btxtech.client.terrain.Terrain;
 import com.google.gwt.animation.client.AnimationScheduler;

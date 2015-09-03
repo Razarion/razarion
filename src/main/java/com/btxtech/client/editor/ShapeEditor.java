@@ -1,7 +1,7 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.Webgl;
-import com.btxtech.client.math3d.Vertex;
+import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.client.terrain.Plateau;
 import com.btxtech.game.jsre.client.common.Index;
 import org.vectomatic.dom.svg.OMSVGGElement;

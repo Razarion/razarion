@@ -2,7 +2,7 @@ package com.btxtech.client.dialogs;
 
 import com.btxtech.client.editor.PlateauEditor;
 import com.btxtech.client.editor.ShapeEditor;
-import com.btxtech.client.math3d.TriangleRenderManager;
+import com.btxtech.client.renderer.engine.TriangleRenderManager;
 import com.btxtech.client.terrain.Terrain2;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;

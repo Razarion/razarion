@@ -1,6 +1,6 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.client.math3d.Matrix4;
+import com.btxtech.shared.primitives.Matrix4;
 import org.w3c.dom.Node;
 
 import java.util.List;

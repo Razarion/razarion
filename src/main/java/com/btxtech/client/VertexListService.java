@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.client.terrain.VertexList;
+import com.btxtech.shared.VertexList;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 /**

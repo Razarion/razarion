@@ -1,7 +1,7 @@
 package com.btxtech.server;
 
 import com.btxtech.client.VertexListService;
-import com.btxtech.client.terrain.VertexList;
+import com.btxtech.shared.VertexList;
 import com.btxtech.server.collada.ColladaConverter;
 import org.jboss.errai.bus.server.annotations.Service;
 

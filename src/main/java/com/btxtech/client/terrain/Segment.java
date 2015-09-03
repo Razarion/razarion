@@ -1,8 +1,7 @@
 package com.btxtech.client.terrain;
 
-import com.btxtech.client.math3d.Mesh;
-import com.btxtech.client.math3d.Vertex;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.client.renderer.model.Mesh;
+import com.btxtech.shared.primitives.Vertex;
 
 /**
  * Created by Beat

@@ -3,6 +3,9 @@
         "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 
 <module rename-to="webgl">
+    <source path="client" />
+    <source path="shared" />
+
     <inherits name="org.jboss.errai.enterprise.All" />
     <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
     <inherits name="elemental.Elemental"/>

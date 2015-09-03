@@ -1,5 +1,7 @@
 package com.btxtech.client.math3d;
 
+import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.shared.primitives.Matrix4;
 import org.junit.Assert;
 import org.junit.Test;
 

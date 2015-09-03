@@ -1,6 +1,6 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.client.terrain.VertexList;
+import com.btxtech.shared.VertexList;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;

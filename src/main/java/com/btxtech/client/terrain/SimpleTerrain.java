@@ -1,21 +1,14 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.VertexListService;
-import com.btxtech.client.math3d.Mesh;
-import com.btxtech.client.math3d.Triangle;
-import com.btxtech.client.math3d.Vertex;
-import com.btxtech.client.math3d.VertexListProvider;
+import com.btxtech.client.renderer.model.Mesh;
+import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Triangle;
+import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.client.renderer.model.VertexListProvider;
 import com.btxtech.game.jsre.client.common.Index;
-import com.google.gwt.core.client.GWT;
-import org.jboss.errai.bus.client.api.base.MessageBuilder;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

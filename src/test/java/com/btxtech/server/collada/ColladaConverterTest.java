@@ -1,6 +1,6 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.client.terrain.VertexList;
+import com.btxtech.shared.VertexList;
 import com.google.common.primitives.Doubles;
 import org.junit.Assert;
 import org.junit.Test;

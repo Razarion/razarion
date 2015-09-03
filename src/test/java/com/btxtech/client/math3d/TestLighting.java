@@ -1,6 +1,8 @@
 package com.btxtech.client.math3d;
 
+import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.primitives.Vertex;
 import org.junit.Assert;
 import org.junit.Test;
 

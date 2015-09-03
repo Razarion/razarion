@@ -1,10 +1,11 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.math3d.TextureCoordinate;
-import com.btxtech.client.math3d.Triangle;
-import com.btxtech.client.math3d.Vertex;
-import com.btxtech.client.math3d.VertexListProvider;
+import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.TextureCoordinate;
+import com.btxtech.shared.primitives.Triangle;
+import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.client.renderer.model.VertexListProvider;
 
 /**
  * Created by Beat

@@ -1,5 +1,6 @@
 package com.btxtech.client.math3d;
 
+import com.btxtech.shared.primitives.Color;
 import org.junit.Assert;
 import org.junit.Test;
 

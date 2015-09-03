@@ -1,11 +1,9 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.client.math3d.Triangle;
-import com.btxtech.client.terrain.VertexList;
+import com.btxtech.shared.VertexList;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

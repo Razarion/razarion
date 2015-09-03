@@ -1,6 +1,8 @@
 package com.btxtech.client.math3d;
 
 
+import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Vertex;
 import org.junit.Assert;
 import org.junit.Test;
 

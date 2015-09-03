@@ -1,7 +1,7 @@
 package com.btxtech.client.dialogs;
 
-import com.btxtech.client.math3d.Color;
-import com.btxtech.client.math3d.Lighting;
+import com.btxtech.shared.primitives.Color;
+import com.btxtech.client.renderer.model.Lighting;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
