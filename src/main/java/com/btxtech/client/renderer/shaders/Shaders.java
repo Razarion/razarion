@@ -23,12 +23,6 @@ public interface Shaders extends ClientBundle {
     @Source("TerrainSurfaceWireFragmentShader.shd")
     TextResource terrainSurfaceWireFragmentShader();
 
-    @Source("MultiTextureVertexShader.shd")
-    TextResource multiTextureVertexShader();
-
-    @Source("MultiTextureFragmentShader.shd")
-    TextResource multiTextureFragmentShader();
-
     @Source("TerrainObjectVertexShader.shd")
     TextResource terrainObjectVertexShader();
 

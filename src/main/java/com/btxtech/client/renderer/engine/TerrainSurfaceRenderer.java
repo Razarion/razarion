@@ -28,20 +28,28 @@ import javax.inject.Inject;
 public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String A_VERTEX_NORMAL = "aVertexNormal";
+    private static final String EDGE_POSITION_ATTRIBUTE_NAME = "aEdgePosition";
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String MODEL_VIEW_UNIFORM_NAME = "uMVMatrix";
     private static final String UNIFORM_AMBIENT_COLOR = "uAmbientColor";
-    private static final String TEXTURE_SAMPLER_UNIFORM_NAME = "uSampler";
+    private static final String TOP_SAMPLER_UNIFORM_NAME = "uSamplerTop";
+    private static final String BLEND_SAMPLER_UNIFORM_NAME = "uSamplerBlend";
+    private static final String BOTTOM_SAMPLER_UNIFORM_NAME = "uSamplerBottom";
     private static final String UNIFORM_LIGHTING_DIRECTION = "uLightingDirection";
     private static final String UNIFORM_DIRECTIONAL_COLOR = "uDirectionalColor";
+    private static final String UNIFORM_EDGE_DISTANCE = "uEdgeDistance";
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
     private WebGLBuffer normalBuffer;
     private int normalPositionAttribute;
     private WebGLBuffer textureCoordinateBuffer;
     private int textureCoordinatePositionAttribute;
-    private WebGLTexture webGLTexture;
+    private int edgePositionAttribute;
+    private WebGLBuffer edgeBuffer;
+    private WebGLTexture topWebGLTexture;
+    private WebGLTexture blendWebGLTexture;
+    private WebGLTexture bottomWebGLTexture;
     private int elementCount;
     @Inject
     private TerrainSurface terrainSurface;
@@ -63,10 +71,14 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);
         normalBuffer = gameCanvas.getCtx3d().createBuffer();
         normalPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_NORMAL);
+        edgeBuffer = gameCanvas.getCtx3d().createBuffer();
+        edgePositionAttribute = getAndEnableAttributeLocation(EDGE_POSITION_ATTRIBUTE_NAME);
         textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
         textureCoordinatePositionAttribute = getAndEnableAttributeLocation(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
 
-        webGLTexture = setupTexture(terrainSurface.getImageDescriptor());
+        topWebGLTexture = setupTexture(terrainSurface.getTopImageDescriptor());
+        blendWebGLTexture = setupTexture(terrainSurface.getBlendImageDescriptor());
+        bottomWebGLTexture = setupTexture(terrainSurface.getBottomImageDescriptor());
     }
 
     @Override
@@ -88,16 +100,18 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createTextureDoubles()), WebGLRenderingContext.STATIC_DRAW);
         WebGlUtil.checkLastWebGlError("bufferData", gameCanvas.getCtx3d());
 
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, edgeBuffer);
+        WebGlUtil.checkLastWebGlError("bindBuffer", gameCanvas.getCtx3d());
+        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createEdgeDoubles()), WebGLRenderingContext.STATIC_DRAW);
+        WebGlUtil.checkLastWebGlError("bufferData", gameCanvas.getCtx3d());
+
         elementCount = vertexList.getVerticesCount();
     }
 
     @Override
     public void draw() {
         useProgram();
-
-        //ctx3d.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
-        //ctx3d.disable(WebGLRenderingContext.DEPTH_TEST);
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         // Projection uniform
@@ -117,6 +131,9 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         // Lighting color uniform
         WebGLUniformLocation pLightingColorUniformColor = getUniformLocation(UNIFORM_DIRECTIONAL_COLOR);
         gameCanvas.getCtx3d().uniform3f(pLightingColorUniformColor, (float) lighting.getColor().getR(), (float) lighting.getColor().getG(), (float) lighting.getColor().getB());
+        // Edges
+        WebGLUniformLocation edgeDistanceUniform = getUniformLocation(UNIFORM_EDGE_DISTANCE);
+        gameCanvas.getCtx3d().uniform1f(edgeDistanceUniform, 0.50f); // TODO
 
         // Positions
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
@@ -127,11 +144,24 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         // set vertices texture coordinates
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(textureCoordinatePositionAttribute, TextureCoordinate.getComponentCount(), WebGLRenderingContext.FLOAT, false, 0, 0);
+        // Edges
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, edgeBuffer);
+        gameCanvas.getCtx3d().vertexAttribPointer(edgePositionAttribute, 1, WebGLRenderingContext.FLOAT, false, 0, 0);
         // Textures
-        WebGLUniformLocation textureUniform = getUniformLocation(TEXTURE_SAMPLER_UNIFORM_NAME);
+        WebGLUniformLocation tTopUniform = getUniformLocation(TOP_SAMPLER_UNIFORM_NAME);
         gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0);
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
-        gameCanvas.getCtx3d().uniform1i(textureUniform, 0);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, topWebGLTexture);
+        gameCanvas.getCtx3d().uniform1i(tTopUniform, 0);
+
+        WebGLUniformLocation tBlendUniform = getUniformLocation(BLEND_SAMPLER_UNIFORM_NAME);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE1);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, blendWebGLTexture);
+        gameCanvas.getCtx3d().uniform1i(tBlendUniform, 1);
+
+        WebGLUniformLocation tBottomUniform = getUniformLocation(BOTTOM_SAMPLER_UNIFORM_NAME);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE2);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, bottomWebGLTexture);
+        gameCanvas.getCtx3d().uniform1i(tBottomUniform, 2);
         // Draw
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());

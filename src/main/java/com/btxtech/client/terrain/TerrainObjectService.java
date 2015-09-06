@@ -70,7 +70,6 @@ public class TerrainObjectService {
         serviceCaller.call(new RemoteCallback<VertexList>() {
             @Override
             public void callback(final VertexList vertexList) {
-                logger.log(Level.SEVERE, "vertexList: " + vertexList);
                 TerrainObjectService.this.vertexList = vertexList;
                 renderService.fillBuffers();
             }

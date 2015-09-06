@@ -18,14 +18,16 @@ import java.util.logging.Logger;
 @Singleton
 public class TerrainSurface {
     private Mesh mesh;
-    private ImageDescriptor imageDescriptor = Terrain.SAND_1;
+    private ImageDescriptor topImageDescriptor = Terrain.GRASS_IMAGE;
+    private ImageDescriptor blendImageDescriptor = Terrain.BLEND_2;
+    private ImageDescriptor bottomImageDescriptor = Terrain.SAND_2;
 
     @Inject
     private Logger logger;
 
     public TerrainSurface() {
         mesh = new Mesh();
-        mesh.fill(4000, 4000, 4000);
+        mesh.fill(4000, 4000, 100);
 
         mesh.iterate(new Mesh.Visitor() {
             @Override
@@ -48,10 +50,18 @@ public class TerrainSurface {
     }
 
     public VertexList getVertexList() {
-        return mesh.provideVertexList(imageDescriptor, Triangle.Type.PLAIN);
+        return mesh.provideVertexList(topImageDescriptor, Triangle.Type.PLAIN);
     }
 
-    public ImageDescriptor getImageDescriptor() {
-        return imageDescriptor;
+    public ImageDescriptor getTopImageDescriptor() {
+        return topImageDescriptor;
+    }
+
+    public ImageDescriptor getBlendImageDescriptor() {
+        return blendImageDescriptor;
+    }
+
+    public ImageDescriptor getBottomImageDescriptor() {
+        return bottomImageDescriptor;
     }
 }
