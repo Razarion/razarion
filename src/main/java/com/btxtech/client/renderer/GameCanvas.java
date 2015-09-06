@@ -75,10 +75,7 @@ public class GameCanvas {
         // Configure context
         ctx3d.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
         ctx3d.clearDepth(1.0f);
-        ctx3d.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
-        ctx3d.enable(WebGLRenderingContext.BLEND);
-        ctx3d.disable(WebGLRenderingContext.DEPTH_TEST);
-        // ctx3d.enable(WebGLRenderingContext.DEPTH_TEST);
+        ctx3d.enable(WebGLRenderingContext.DEPTH_TEST);
         logger.severe("GameCanvas initialized");
     }
 

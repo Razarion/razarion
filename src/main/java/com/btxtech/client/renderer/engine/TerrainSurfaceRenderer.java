@@ -95,6 +95,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     public void draw() {
         useProgram();
 
+        //ctx3d.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+        gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
+        //ctx3d.disable(WebGLRenderingContext.DEPTH_TEST);
+        gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
+
         // Projection uniform
         WebGLUniformLocation pUniform = getUniformLocation(PERSPECTIVE_UNIFORM_NAME);
         gameCanvas.getCtx3d().uniformMatrix4fv(pUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
