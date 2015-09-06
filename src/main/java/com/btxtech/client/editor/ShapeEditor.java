@@ -51,7 +51,7 @@ public class ShapeEditor extends SvgEditor {
     @Override
     protected void setIndexes(List<Index> indexes) {
         Plateau.shape = toShapeVector(indexes);
-        Webgl.instance.fillBuffers();
+        // TODO Webgl.instance.fillBuffers();
     }
 
     private List<Vertex> toShapeVector(List<Index> indexes) {

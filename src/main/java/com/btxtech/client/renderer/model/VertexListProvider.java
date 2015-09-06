@@ -7,6 +7,7 @@ import com.btxtech.shared.VertexList;
  * Created by Beat
  * 29.06.2015.
  */
+@Deprecated
 public interface VertexListProvider {
     VertexList provideVertexList(ImageDescriptor imageDescriptor);
 }

@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.webgl;
 
-import com.btxtech.client.GameCanvas;
+import com.btxtech.client.renderer.GameCanvas;
 import elemental.html.WebGLProgram;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLShader;

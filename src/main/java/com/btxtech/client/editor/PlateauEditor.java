@@ -33,7 +33,7 @@ public class PlateauEditor extends SvgEditor {
     @Override
     protected void setIndexes(List<Index> indexes) {
         Terrain.getInstance().setCorners(indexes);
-        Webgl.instance.fillBuffers();
+        // TODO Webgl.instance.fillBuffers();
     }
 
     @Override

@@ -1,10 +1,9 @@
-package com.btxtech.client;
+package com.btxtech.client.renderer;
 
+import com.btxtech.client.ViewFieldMover;
+import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.engine.TriangleRenderManager;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.terrain.SimpleTerrain;
-import com.btxtech.client.terrain.Terrain;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -29,11 +28,9 @@ public class GameCanvas {
     // @Inject does not work
     private Logger logger = Logger.getLogger(GameCanvas.class.getName());
     @Inject
-    private TriangleRenderManager triangleRenderManager;
+    private RenderService renderService;
     @Inject
     private ViewFieldMover viewFieldMover;
-    //@Inject
-    //private SimpleTerrain simpleTerrain;
     @Inject
     private ProjectionTransformation projectionTransformation;
 
@@ -41,28 +38,13 @@ public class GameCanvas {
         logger.severe("GameCanvas <init>");
     }
 
-    public interface RenderCallback {
-        void doRender();
-    }
-
     public void init(final Canvas canvas) {
         initCanvas(canvas);
         resizeCanvas(canvas);
-        triangleRenderManager.fillBuffers();
-        startRenderLoop(canvas, new GameCanvas.RenderCallback() {
-            @Override
-            public void doRender() {
-                triangleRenderManager.draw();
-            }
-        });
+        renderService.init();
+        renderService.fillBuffers();
+        startRenderLoop(canvas);
         viewFieldMover.activate(canvas);
-
-        SimpleTerrain simpleTerrain = new SimpleTerrain(0);
-        triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getPlainProvider(), Terrain.SAND_1);
-
-        // simpleTerrain = new SimpleTerrain(10);
-        // triangleRenderManager.createTriangleRenderUnit(simpleTerrain.getPlainProvider(), Terrain.BUSH_1);
-
 
         Window.addResizeHandler(new ResizeHandler() {
             @Override
@@ -83,7 +65,6 @@ public class GameCanvas {
 
     private void initCanvas(Canvas canvas) {
         // Create 3d context
-
         ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "experimental-webgl");
         if (ctx3d == null) {
             ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "webgl");
@@ -97,10 +78,11 @@ public class GameCanvas {
         ctx3d.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         ctx3d.enable(WebGLRenderingContext.BLEND);
         ctx3d.disable(WebGLRenderingContext.DEPTH_TEST);
+        // ctx3d.enable(WebGLRenderingContext.DEPTH_TEST);
         logger.severe("GameCanvas initialized");
     }
 
-    private void startRenderLoop(Canvas canvas, final RenderCallback renderCallback) {
+    private void startRenderLoop(Canvas canvas) {
         // Start render loop
         AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
             @Override
@@ -109,7 +91,7 @@ public class GameCanvas {
                     if (lastTimestamp != 0) {
                         ctx3d.clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
                         WebGlUtil.checkLastWebGlError("clear", ctx3d);
-                        renderCallback.doRender();
+                        renderService.draw();
                     }
                     lastTimestamp = timestamp;
                 } catch (Throwable t) {

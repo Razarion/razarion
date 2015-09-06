@@ -11,28 +11,34 @@ import com.google.gwt.resources.client.TextResource;
 public interface Shaders extends ClientBundle {
     Shaders INSTANCE = GWT.create(Shaders.class);
 
-    @Source("NormalVertexShader.shd")
-    TextResource normalVertexShader();
+    @Source("TerrainSurfaceVertexShader.shd")
+    TextResource terrainSurfaceVertexShader();
 
-    @Source("NormalFragmentShader.shd")
-    TextResource normalFragmentShader();
+    @Source("TerrainSurfaceFragmentShader.shd")
+    TextResource terrainSurfaceFragmentShader();
 
-    @Source("WireVertexShader.shd")
-    TextResource wireVertexShader();
+    @Source("TerrainSurfaceWireVertexShader.shd")
+    TextResource terrainSurfaceWireVertexShader();
 
-    @Source("WireFragmentShader.shd")
-    TextResource wireFragmentShader();
-
-    @Source("LightVertexShader.shd")
-    TextResource LightVertexShader();
-
-    @Source("LightFragmentShader.shd")
-    TextResource LightFragmentShader();
+    @Source("TerrainSurfaceWireFragmentShader.shd")
+    TextResource terrainSurfaceWireFragmentShader();
 
     @Source("MultiTextureVertexShader.shd")
     TextResource multiTextureVertexShader();
 
     @Source("MultiTextureFragmentShader.shd")
     TextResource multiTextureFragmentShader();
+
+    @Source("TerrainObjectVertexShader.shd")
+    TextResource terrainObjectVertexShader();
+
+    @Source("TerrainObjectFragmentShader.shd")
+    TextResource terrainObjectFragmentShader();
+
+    @Source("TerrainObjectWireVertexShader.shd")
+    TextResource terrainObjectWireVertexShader();
+
+    @Source("TerrainObjectWireFragmentShader.shd")
+    TextResource terrainObjectWireFragmentShader();
 
 }

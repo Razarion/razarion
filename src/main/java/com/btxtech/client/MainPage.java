@@ -1,9 +1,7 @@
 package com.btxtech.client;
 
+import com.btxtech.client.renderer.GameCanvas;
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
 import org.jboss.errai.ui.nav.client.local.Page;

@@ -15,6 +15,6 @@ float edgeFactor(){
 
 void main(void) {
    vec4 texColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-   gl_FragColor.rgb = mix(vec3(1.0, 0.0, 0.0), texColor.rgb, edgeFactor());
+   gl_FragColor = vec4(mix(vec3(1.0, 0.0, 0.0), texColor.rgb, edgeFactor()), 1);
 }
 

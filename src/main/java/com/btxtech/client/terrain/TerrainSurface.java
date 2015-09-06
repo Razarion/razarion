@@ -2,29 +2,30 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.Mesh;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.client.renderer.model.VertexListProvider;
-import com.btxtech.game.jsre.client.common.Index;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 09.08.2015.
  */
-// @Singleton
-public class SimpleTerrain {
+@Singleton
+public class TerrainSurface {
     private Mesh mesh;
+    private ImageDescriptor imageDescriptor = Terrain.SAND_1;
 
     @Inject
     private Logger logger;
 
-    public SimpleTerrain(int z) {
+    public TerrainSurface() {
         mesh = new Mesh();
-        mesh.fill(1024, 1024, 64, z);
+        mesh.fill(4000, 4000, 4000);
 
         mesh.iterate(new Mesh.Visitor() {
             @Override
@@ -46,21 +47,11 @@ public class SimpleTerrain {
 
     }
 
-    public VertexListProvider getPlainProvider() {
-        return new VertexListProvider() {
-            @Override
-            public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
-                return mesh.provideVertexList(imageDescriptor, Triangle.Type.PLAIN);
-            }
-        };
+    public VertexList getVertexList() {
+        return mesh.provideVertexList(imageDescriptor, Triangle.Type.PLAIN);
     }
 
-    public VertexListProvider getSlopeProvider() {
-        return new VertexListProvider() {
-            @Override
-            public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
-                return mesh.provideVertexList(imageDescriptor, Triangle.Type.SLOPE);
-            }
-        };
+    public ImageDescriptor getImageDescriptor() {
+        return imageDescriptor;
     }
 }

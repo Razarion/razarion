@@ -1,0 +1,11 @@
+package com.btxtech.client.renderer.engine;
+
+/**
+ * Created by Beat
+ * 03.09.2015.
+ */
+public interface Renderer {
+    void draw();
+
+    void fillBuffers();
+}

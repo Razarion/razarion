@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.model;
 import com.btxtech.shared.primitives.Matrix4;
 
 import javax.inject.Singleton;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -15,15 +16,12 @@ public class ViewTransformation {
     private double translateZ;
     private double rotateX;
     private double rotateZ;
-    private ViewTransformationObserver viewTransformationObserver;
-
-    public interface ViewTransformationObserver{
-        void onChanged();
-    }
+    private Logger logger = Logger.getLogger(ViewTransformation.class.getName());
 
     public ViewTransformation() {
-        //setGame();
-        setTop();
+        setGame();
+        // setTop();
+        // setCustom();
     }
 
     public double getTranslateX() {
@@ -42,7 +40,7 @@ public class ViewTransformation {
     public void setTranslateY(double translateY) {
         this.translateY = translateY;
         fireChanged();
-   }
+    }
 
     public double getTranslateZ() {
         return translateZ;
@@ -104,13 +102,19 @@ public class ViewTransformation {
         fireChanged();
     }
 
-    public void setViewTransformationObserver(ViewTransformationObserver viewTransformationObserver) {
-        this.viewTransformationObserver = viewTransformationObserver;
+    public void setCustom() {
+        translateX = -6.5;
+        translateY = 51;
+        translateZ = -6;
+        rotateX = Math.toRadians(87.00000000000001);
+        rotateZ = Math.toRadians(0);
     }
 
     private void fireChanged() {
-        if(viewTransformationObserver != null) {
-            viewTransformationObserver.onChanged();
-        }
+        testPrint();
+    }
+
+    private void testPrint() {
+        // logger.severe("translateX = " + translateX + "; translateY = " + translateY + "; translateZ = " + translateZ + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
     }
 }
