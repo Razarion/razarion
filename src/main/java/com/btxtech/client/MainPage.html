@@ -2,20 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../../../webapp/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <script src="../../../../webapp/jquery/jquery-1.11.3.min.js"></script>
+    <script src="../../../../webapp/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
     <title></title>
 </head>
 <body>
 <div id="app-template">
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
-            <div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="#">Page 1</a></li>
-                    <li><a href="#">Page 2</a></li>
-                    <li><a href="#">Page 3</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">Terrain <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>Gras / Sand</li>
+                            <li><input id="surfaceSlider" type="range" name="points" min="0" max="1" step="0.01"></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>

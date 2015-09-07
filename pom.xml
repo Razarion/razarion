@@ -155,7 +155,7 @@
                       To configure an alternative package filter for client-only classes, specify:
                       -Derrai.client.local.class.pattern=.*/myproject/client/.* -->
                     <!-- -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -->
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Derrai.jboss.home=${errai.jboss.home}</extraJvmArgs>
+                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Derrai.jboss.home=${errai.jboss.home} -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</extraJvmArgs>
                     <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
                     <disableCastChecking>true</disableCastChecking>
                     <runTarget>webgl.html</runTarget>

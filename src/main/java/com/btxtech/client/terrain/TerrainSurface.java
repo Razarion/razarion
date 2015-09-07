@@ -21,6 +21,7 @@ public class TerrainSurface {
     private ImageDescriptor topImageDescriptor = Terrain.GRASS_IMAGE;
     private ImageDescriptor blendImageDescriptor = Terrain.BLEND_2;
     private ImageDescriptor bottomImageDescriptor = Terrain.SAND_2;
+    private double edgeDistance = 0.5;
 
     @Inject
     private Logger logger;
@@ -63,5 +64,13 @@ public class TerrainSurface {
 
     public ImageDescriptor getBottomImageDescriptor() {
         return bottomImageDescriptor;
+    }
+
+    public double getEdgeDistance() {
+        return edgeDistance;
+    }
+
+    public void setEdgeDistance(double edgeDistance) {
+        this.edgeDistance = edgeDistance;
     }
 }

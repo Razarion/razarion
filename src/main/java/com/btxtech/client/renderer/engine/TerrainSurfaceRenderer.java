@@ -133,7 +133,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniform3f(pLightingColorUniformColor, (float) lighting.getColor().getR(), (float) lighting.getColor().getG(), (float) lighting.getColor().getB());
         // Edges
         WebGLUniformLocation edgeDistanceUniform = getUniformLocation(UNIFORM_EDGE_DISTANCE);
-        gameCanvas.getCtx3d().uniform1f(edgeDistanceUniform, 0.50f); // TODO
+        gameCanvas.getCtx3d().uniform1f(edgeDistanceUniform, (float)terrainSurface.getEdgeDistance());
 
         // Positions
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
