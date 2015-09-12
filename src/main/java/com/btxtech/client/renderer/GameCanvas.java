@@ -33,6 +33,8 @@ public class GameCanvas {
     private ViewFieldMover viewFieldMover;
     @Inject
     private ProjectionTransformation projectionTransformation;
+    private int width;
+    private int height;
 
     public GameCanvas() {
         logger.severe("GameCanvas <init>");
@@ -55,12 +57,11 @@ public class GameCanvas {
     }
 
     private void resizeCanvas(Canvas canvas) {
-        int width = Window.getClientWidth();
-        int height = Window.getClientHeight();
+        width = Window.getClientWidth();
+        height = Window.getClientHeight();
         canvas.setCoordinateSpaceWidth(width);
         canvas.setCoordinateSpaceHeight(height);
         projectionTransformation.setAspectRatio((double) width / (double) height);
-        ctx3d.viewport(0, 0, width, height);
     }
 
     private void initCanvas(Canvas canvas) {
@@ -86,7 +87,6 @@ public class GameCanvas {
             public void execute(double timestamp) {
                 try {
                     if (lastTimestamp != 0) {
-                        ctx3d.clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
                         WebGlUtil.checkLastWebGlError("clear", ctx3d);
                         renderService.draw();
                     }
@@ -102,5 +102,13 @@ public class GameCanvas {
 
     public WebGLRenderingContext getCtx3d() {
         return ctx3d;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

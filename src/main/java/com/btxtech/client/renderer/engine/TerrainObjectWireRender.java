@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.shared.VertexList;
@@ -52,7 +53,11 @@ public class TerrainObjectWireRender extends AbstractRenderer {
 
     @PostConstruct
     public void init() {
-        gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
+        Object extension = gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
+        if(extension == null) {
+            throw new WebGlException("OES_standard_derivatives is no supported");
+        }
+
         createProgram(Shaders.INSTANCE.terrainObjectWireVertexShader(), Shaders.INSTANCE.terrainObjectWireFragmentShader());
         verticesBuffer = gameCanvas.getCtx3d().createBuffer();
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);

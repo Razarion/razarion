@@ -14,6 +14,8 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -22,6 +24,7 @@ import javax.inject.Inject;
 @Page(role = DefaultPage.class)
 @Templated("MainPage.html#app-template")
 public class MainPage extends Composite {
+    private Logger logger = Logger.getLogger(MainPage.class.getName());
     @DataField
     private Canvas canvas = Canvas.createIfSupported();
     @Inject
@@ -34,10 +37,14 @@ public class MainPage extends Composite {
 
     @PostConstruct
     public void init() {
-        if (canvas == null) {
-            throw new IllegalStateException("Canvas is not supported");
+        try {
+            if (canvas == null) {
+                throw new IllegalStateException("Canvas is not supported");
+            }
+            gameCanvas.init(canvas);
+        } catch (Throwable throwable) {
+            logger.log(Level.SEVERE, "MainPage init failed", throwable);
         }
-        gameCanvas.init(canvas);
     }
 
     @EventHandler("surfaceSlider")

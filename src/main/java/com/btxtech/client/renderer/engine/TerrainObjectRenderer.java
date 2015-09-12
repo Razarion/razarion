@@ -90,9 +90,11 @@ public class TerrainObjectRenderer extends AbstractRenderer {
 
     @Override
     public void draw() {
-        gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
-        gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
-        gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
+        // gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+        // gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
+        // gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
+        gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
+        gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
         // Projection uniform

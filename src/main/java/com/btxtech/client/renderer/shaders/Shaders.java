@@ -35,4 +35,9 @@ public interface Shaders extends ClientBundle {
     @Source("TerrainObjectWireFragmentShader.shd")
     TextResource terrainObjectWireFragmentShader();
 
+    @Source("MonitorVertexShader.shd")
+    TextResource monitorVertexShader();
+
+    @Source("MonitorFragmentShader.shd")
+    TextResource monitorFragmentShader();
 }

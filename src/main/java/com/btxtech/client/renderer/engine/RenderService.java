@@ -1,5 +1,13 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.renderer.webgl.WebGlException;
+import elemental.html.WebGLFramebuffer;
+import elemental.html.WebGLRenderbuffer;
+import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLTexture;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -16,19 +24,46 @@ import java.util.logging.Logger;
 public class RenderService {
     @Inject
     private Instance<Renderer> renderInstance;
+    @Inject
+    private GameCanvas gameCanvas;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
     private List<RenderSwitch> renderQueue = new ArrayList<>();
     private boolean wire;
+    private WebGLFramebuffer shadowFrameBuffer;
+    private WebGLTexture colorTexture;
+    private WebGLTexture depthTexture;
     private Logger logger = Logger.getLogger(RenderService.class.getName());
 
     public void init() {
-        renderQueue.add(new RenderSwitch(renderInstance.select(TerrainSurfaceRenderer.class).get(), renderInstance.select(TerrainSurfaceWireRender.class).get(), wire));
-        renderQueue.add(new RenderSwitch(renderInstance.select(TerrainObjectRenderer.class).get(), renderInstance.select(TerrainObjectWireRender.class).get(), wire));
+        initFrameBuffer();
+        renderQueue.add(new RenderSwitch(renderInstance.select(TerrainSurfaceRenderer.class).get(), renderInstance.select(TerrainSurfaceWireRender.class).get(), wire, true));
+        renderQueue.add(new RenderSwitch(renderInstance.select(TerrainObjectRenderer.class).get(), renderInstance.select(TerrainObjectWireRender.class).get(), wire, true));
+        renderQueue.add(new RenderSwitch(renderInstance.select(MonitorRenderer.class).get(), null, wire, false));
     }
 
     public void draw() {
+        projectionTransformation.setAspectRatio(1.0);
+        gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, shadowFrameBuffer);
+        gameCanvas.getCtx3d().viewport(0, 0, MonitorRenderer.WIDTH, MonitorRenderer.HEIGHT);
+        gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
+        for (RenderSwitch renderSwitch : renderQueue) {
+            if (!renderSwitch.isShadow()) {
+                continue;
+            }
+            try {
+                renderSwitch.draw();
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "draw failed", t);
+            }
+        }
+        projectionTransformation.setAspectRatio((double) gameCanvas.getWidth() / (double) gameCanvas.getHeight());
+        gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
+        gameCanvas.getCtx3d().viewport(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
+        gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
         for (RenderSwitch renderSwitch : renderQueue) {
             try {
-                renderSwitch.getRenderer().draw();
+                renderSwitch.draw();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "draw failed", t);
             }
@@ -38,7 +73,7 @@ public class RenderService {
     public void fillBuffers() {
         for (RenderSwitch renderSwitch : renderQueue) {
             try {
-                renderSwitch.getRenderer().fillBuffers();
+                renderSwitch.fillBuffers();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "fillBuffers failed", t);
             }
@@ -56,4 +91,47 @@ public class RenderService {
         }
     }
 
+    private void initFrameBuffer() {
+        Object extension = gameCanvas.getCtx3d().getExtension("WEBGL_depth_texture");
+        if (extension == null) {
+            throw new WebGlException("WEBGL_depth_texture is no supported");
+        }
+
+        colorTexture = gameCanvas.getCtx3d().createTexture();
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, colorTexture);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.NEAREST);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_WRAP_S, WebGLRenderingContext.CLAMP_TO_EDGE);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_WRAP_T, WebGLRenderingContext.CLAMP_TO_EDGE);
+        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, MonitorRenderer.WIDTH, MonitorRenderer.HEIGHT, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, null);
+
+        depthTexture = gameCanvas.getCtx3d().createTexture();
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, depthTexture);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.NEAREST);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_WRAP_S, WebGLRenderingContext.CLAMP_TO_EDGE);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_WRAP_T, WebGLRenderingContext.CLAMP_TO_EDGE);
+        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.DEPTH_COMPONENT, MonitorRenderer.WIDTH, MonitorRenderer.HEIGHT, 0, WebGLRenderingContext.DEPTH_COMPONENT, WebGLRenderingContext.UNSIGNED_SHORT, null);
+
+        shadowFrameBuffer = gameCanvas.getCtx3d().createFramebuffer();
+        gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, shadowFrameBuffer);
+        gameCanvas.getCtx3d().framebufferTexture2D(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.COLOR_ATTACHMENT0, WebGLRenderingContext.TEXTURE_2D, colorTexture, 0);
+        gameCanvas.getCtx3d().framebufferTexture2D(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.DEPTH_ATTACHMENT, WebGLRenderingContext.TEXTURE_2D, depthTexture, 0);
+
+//        WebGLRenderbuffer renderBuffer = gameCanvas.getCtx3d().createRenderbuffer();
+//        gameCanvas.getCtx3d().bindRenderbuffer(WebGLRenderingContext.RENDERBUFFER, renderBuffer);
+//        gameCanvas.getCtx3d().renderbufferStorage(WebGLRenderingContext.RENDERBUFFER, WebGLRenderingContext.DEPTH_COMPONENT16, MonitorRenderer.WIDTH, MonitorRenderer.HEIGHT);
+
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
+        gameCanvas.getCtx3d().bindRenderbuffer(WebGLRenderingContext.RENDERBUFFER, null);
+        gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
+    }
+
+    public WebGLTexture getColorTexture() {
+        return colorTexture;
+    }
+
+    public WebGLTexture getDepthTexture() {
+        return depthTexture;
+    }
 }
