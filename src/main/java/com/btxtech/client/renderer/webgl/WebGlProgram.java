@@ -53,7 +53,15 @@ public class WebGlProgram {
         gameCanvas.getCtx3d().shaderSource(shader, code);
         gameCanvas.getCtx3d().compileShader(shader);
         if (!Boolean.valueOf(gameCanvas.getCtx3d().getShaderParameter(shader, WebGLRenderingContext.COMPILE_STATUS).toString())) {
-            throw new IllegalArgumentException("Shader compilation failed: " + gameCanvas.getCtx3d().getShaderInfoLog(shader));
+            String shaderType;
+            if(type == WebGLRenderingContext.VERTEX_SHADER) {
+                shaderType = "Vertex shader";
+            } else if(type == WebGLRenderingContext.FRAGMENT_SHADER) {
+                shaderType = "Fragment shader";
+            } else {
+                shaderType = "Unknown shader";
+            }
+            throw new IllegalArgumentException(shaderType + " compilation failed: " + gameCanvas.getCtx3d().getShaderInfoLog(shader));
         }
         return shader;
     }

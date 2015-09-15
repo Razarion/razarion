@@ -5,16 +5,19 @@ attribute float aEdgePosition;
 
 uniform highp mat4 uMVMatrix;
 uniform highp mat4 uPMatrix;
+uniform highp mat4 uMVPDepthBias;
 uniform vec3 uAmbientColor;
 uniform vec3 uLightingDirection;
 uniform vec3 uDirectionalColor;
 
 varying vec2 vTextureCoord;
 varying vec3 vLightWeighting;
+varying vec4 vShadowCoord;
 varying float vEdgePosition;
 
 void main(void) {
     gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    vShadowCoord = uMVPDepthBias * vec4(aVertexPosition, 1.0);
     vTextureCoord = aTextureCoord;
     vEdgePosition = aEdgePosition;
 

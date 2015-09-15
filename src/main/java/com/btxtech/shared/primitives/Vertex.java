@@ -3,6 +3,7 @@ package com.btxtech.shared.primitives;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

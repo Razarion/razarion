@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.ModelTransformation;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.renderer.model.Shadowing;
 import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -39,6 +40,9 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String UNIFORM_LIGHTING_DIRECTION = "uLightingDirection";
     private static final String UNIFORM_DIRECTIONAL_COLOR = "uDirectionalColor";
     private static final String UNIFORM_EDGE_DISTANCE = "uEdgeDistance";
+    private static final String UNIFORM_MVP_SHADOW_BIAS = "uMVPDepthBias";
+    private static final String UNIFORM_SHADOW_MAP_SAMPLER = "uSamplerShadow";
+
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
     private WebGLBuffer normalBuffer;
@@ -63,6 +67,10 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private ViewTransformation viewTransformation;
     @Inject
     private ModelTransformation modelTransformation;
+    @Inject
+    private RenderService renderService;
+    @Inject
+    private Shadowing shadowing;
 
     @PostConstruct
     public void init() {
@@ -133,7 +141,15 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniform3f(pLightingColorUniformColor, (float) lighting.getColor().getR(), (float) lighting.getColor().getG(), (float) lighting.getColor().getB());
         // Edges
         WebGLUniformLocation edgeDistanceUniform = getUniformLocation(UNIFORM_EDGE_DISTANCE);
-        gameCanvas.getCtx3d().uniform1f(edgeDistanceUniform, (float)terrainSurface.getEdgeDistance());
+        gameCanvas.getCtx3d().uniform1f(edgeDistanceUniform, (float) terrainSurface.getEdgeDistance());
+
+        // Shadow
+        WebGLUniformLocation shadowMvpUniform = getUniformLocation(UNIFORM_MVP_SHADOW_BIAS);
+        gameCanvas.getCtx3d().uniformMatrix4fv(shadowMvpUniform, false, WebGlUtil.createArrayBufferOfFloat32(shadowing.createMvpShadowBias().toWebGlArray()));
+        WebGLUniformLocation shadowMapUniform = getUniformLocation(UNIFORM_SHADOW_MAP_SAMPLER);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE4);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
+        gameCanvas.getCtx3d().uniform1i(shadowMapUniform, 4);
 
         // Positions
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);

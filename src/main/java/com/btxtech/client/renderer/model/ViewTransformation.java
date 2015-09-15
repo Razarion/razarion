@@ -16,6 +16,12 @@ public class ViewTransformation {
     private double translateZ;
     private double rotateX;
     private double rotateZ;
+    private double saveTranslateX;
+    private double saveTranslateY;
+    private double saveTranslateZ;
+    private double saveRotateX;
+    private double saveRotateZ;
+
     private Logger logger = Logger.getLogger(ViewTransformation.class.getName());
 
     public ViewTransformation() {
@@ -110,11 +116,27 @@ public class ViewTransformation {
         rotateZ = Math.toRadians(0);
     }
 
+    public void restore() {
+        translateX = saveTranslateX;
+        translateY = saveTranslateY;
+        translateZ = saveTranslateZ;
+        rotateX = saveRotateX;
+        rotateZ = saveRotateZ;
+    }
+
+    public void save() {
+        saveTranslateX = translateX;
+        saveTranslateY = translateY;
+        saveTranslateZ = translateZ;
+        saveRotateX = rotateX;
+        saveRotateZ = rotateZ;
+    }
+
     private void fireChanged() {
         testPrint();
     }
 
     private void testPrint() {
-        // logger.severe("translateX = " + translateX + "; translateY = " + translateY + "; translateZ = " + translateZ + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
+      // logger.severe("translateX = " + translateX + "; translateY = " + translateY + "; translateZ = " + translateZ + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
     }
 }

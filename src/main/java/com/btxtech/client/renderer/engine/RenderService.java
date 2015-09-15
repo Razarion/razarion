@@ -2,9 +2,10 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.renderer.model.Shadowing;
+import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import elemental.html.WebGLFramebuffer;
-import elemental.html.WebGLRenderbuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
 
@@ -28,6 +29,10 @@ public class RenderService {
     private GameCanvas gameCanvas;
     @Inject
     private ProjectionTransformation projectionTransformation;
+    @Inject
+    private ViewTransformation viewTransformation;
+    @Inject
+    private Shadowing shadowing;
     private List<RenderSwitch> renderQueue = new ArrayList<>();
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
@@ -37,12 +42,14 @@ public class RenderService {
 
     public void init() {
         initFrameBuffer();
-        renderQueue.add(new RenderSwitch(renderInstance.select(TerrainSurfaceRenderer.class).get(), renderInstance.select(TerrainSurfaceWireRender.class).get(), wire, true));
+        renderQueue.add(new RenderSwitch(renderInstance.select(TerrainSurfaceRenderer.class).get(), renderInstance.select(TerrainSurfaceWireRender.class).get(), wire, false));
         renderQueue.add(new RenderSwitch(renderInstance.select(TerrainObjectRenderer.class).get(), renderInstance.select(TerrainObjectWireRender.class).get(), wire, true));
         renderQueue.add(new RenderSwitch(renderInstance.select(MonitorRenderer.class).get(), null, wire, false));
     }
 
     public void draw() {
+        viewTransformation.save();
+        shadowing.setupViewTransformation();
         projectionTransformation.setAspectRatio(1.0);
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, shadowFrameBuffer);
         gameCanvas.getCtx3d().viewport(0, 0, MonitorRenderer.WIDTH, MonitorRenderer.HEIGHT);
@@ -57,6 +64,7 @@ public class RenderService {
                 logger.log(Level.SEVERE, "draw failed", t);
             }
         }
+        viewTransformation.restore();
         projectionTransformation.setAspectRatio((double) gameCanvas.getWidth() / (double) gameCanvas.getHeight());
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
         gameCanvas.getCtx3d().viewport(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
@@ -117,10 +125,6 @@ public class RenderService {
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, shadowFrameBuffer);
         gameCanvas.getCtx3d().framebufferTexture2D(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.COLOR_ATTACHMENT0, WebGLRenderingContext.TEXTURE_2D, colorTexture, 0);
         gameCanvas.getCtx3d().framebufferTexture2D(WebGLRenderingContext.FRAMEBUFFER, WebGLRenderingContext.DEPTH_ATTACHMENT, WebGLRenderingContext.TEXTURE_2D, depthTexture, 0);
-
-//        WebGLRenderbuffer renderBuffer = gameCanvas.getCtx3d().createRenderbuffer();
-//        gameCanvas.getCtx3d().bindRenderbuffer(WebGLRenderingContext.RENDERBUFFER, renderBuffer);
-//        gameCanvas.getCtx3d().renderbufferStorage(WebGLRenderingContext.RENDERBUFFER, WebGLRenderingContext.DEPTH_COMPONENT16, MonitorRenderer.WIDTH, MonitorRenderer.HEIGHT);
 
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
         gameCanvas.getCtx3d().bindRenderbuffer(WebGLRenderingContext.RENDERBUFFER, null);

@@ -37,20 +37,24 @@ public class TerrainObjectService {
     public TerrainObjectService() {
         Matrix4 base = Matrix4.createScale(0.1, 0.1, 0.1).multiply(Matrix4.createTranslation(200, 200, -90));
 
-        for (int x = 0; x < 30; x++) {
-            for (int y = 0; y < 30; y++) {
-                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
-                double scale = Math.random() * 0.5 + 0.5;
-                double translateX = Math.random() * 50;
-                double translateY = Math.random() * 50;
-                Matrix4 matrix4 = Matrix4.createTranslation(x * 130, y * 130, 0);
-                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
-                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
-                matrix4 = matrix4.multiply(Matrix4.createTranslation(translateX, translateY, 0));
-                matrix4 = base.multiply(matrix4);
-                positions.add(matrix4);
-            }
-        }
+//        for (int x = 0; x < 30; x++) {
+//            for (int y = 0; y < 30; y++) {
+//                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
+//                double scale = Math.random() * 0.5 + 0.5;
+//                double translateX = Math.random() * 50;
+//                double translateY = Math.random() * 50;
+//                Matrix4 matrix4 = Matrix4.createTranslation(x * 130, y * 130, 0);
+//                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
+//                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
+//                matrix4 = matrix4.multiply(Matrix4.createTranslation(translateX, translateY, 0));
+//                matrix4 = base.multiply(matrix4);
+//                positions.add(matrix4);
+//            }
+//        }
+
+        positions.add(base.multiply(Matrix4.createTranslation(50, 300, 0)));
+        positions.add(base.multiply(Matrix4.createTranslation(600, 200, 0)));
+
     }
 
     public VertexList getVertexList() {
