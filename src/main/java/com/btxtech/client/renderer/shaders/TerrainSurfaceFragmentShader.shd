@@ -20,10 +20,11 @@ void main(void) {
                                  0.5, 0.5, 0.5, 1.0);
     vec4 coordShadowMap = coordCorrectionMatrix * vShadowCoord;
     float z = texture2D(uSamplerShadow, coordShadowMap.st / coordShadowMap.w).r;
-    if(z > 0.9999) {
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    float shadowFactor;
+    if(z > 0.999) {
+        shadowFactor = 1.0;
     } else {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        shadowFactor = 0.5;
     }
 
 
@@ -47,6 +48,6 @@ void main(void) {
     textureColorBlend = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, textureColorBlend);
     vec4 textureColorBottom = texture2D(uSamplerBottom, vec2(vTextureCoord.s, vTextureCoord.t));
     vec4 texture = mix(textureColorTop, textureColorBottom, textureColorBlend);
-    // gl_FragColor = vec4(texture.rgb * vLightWeighting * shadowFactor, 1.0);
+    gl_FragColor = vec4(texture.rgb * vLightWeighting * shadowFactor, 1.0);
 }
 
