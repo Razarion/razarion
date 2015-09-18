@@ -31,6 +31,7 @@
                             <li><input id="shadowLightZ" type="number" step="1"></li>
                             <li><input id="rotateX" type="range" max="90" min="-90" step="1"></li>
                             <li><input id="rotateZ" type="range" max="90" min="-90" step="1"></li>
+                            <li><button id="dumpShadowPositionButton">Dump position</button></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -42,6 +43,13 @@
                             <li><button id="gameButton">Game</button></li>
                             <li><button id="customButton">Custom</button></li>
                             <li><button id="dumpPositionButton">Dump position</button></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">Monitor<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><input type="checkbox" value="Deepmap" id="showDeepMap">Show deep map</li>
                         </ul>
                     </li>
                 </ul>

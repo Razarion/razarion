@@ -27,6 +27,7 @@ public class MonitorRenderer extends AbstractRenderer {
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String COLOR_SAMPLER_UNIFORM_NAME = "uColorSampler";
     private static final String DEEP_SAMPLER_UNIFORM_NAME = "uDeepSampler";
+    private static final String UNIFORM_DEEP_MAP = "uDeepMap";
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
     private WebGLBuffer textureCoordinateBuffer;
@@ -81,6 +82,9 @@ public class MonitorRenderer extends AbstractRenderer {
         // set vertices texture coordinates
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(textureCoordinatePositionAttribute, TextureCoordinate.getComponentCount(), WebGLRenderingContext.FLOAT, false, 0, 0);
+
+        WebGLUniformLocation deepMapUniform = getUniformLocation(UNIFORM_DEEP_MAP);
+        gameCanvas.getCtx3d().uniform1i(deepMapUniform, renderService.isShowDeep() ? 1 : 0);
 
         // Color Texture
         WebGLUniformLocation tColorUniform = getUniformLocation(COLOR_SAMPLER_UNIFORM_NAME);

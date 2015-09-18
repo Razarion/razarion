@@ -39,6 +39,7 @@ public class RenderService {
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
     private Logger logger = Logger.getLogger(RenderService.class.getName());
+    private boolean showDeep = false;
 
     public void init() {
         initFrameBuffer();
@@ -138,5 +139,13 @@ public class RenderService {
 
     public WebGLTexture getDepthTexture() {
         return depthTexture;
+    }
+
+    public boolean isShowDeep() {
+        return showDeep;
+    }
+
+    public void setShowDeep(boolean showDeep) {
+        this.showDeep = showDeep;
     }
 }

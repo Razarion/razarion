@@ -17,7 +17,6 @@ import elemental.html.WebGLUniformLocation;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -29,7 +28,7 @@ public class DebugRenderer extends AbstractRenderer {
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
     private static final String MODEL_UNIFORM_NAME = "uMMatrix";
-    private Logger logger = Logger.getLogger(DebugRenderer.class.getName());
+    // private Logger logger = Logger.getLogger(DebugRenderer.class.getName());
     @Inject
     private GameCanvas gameCanvas;
     @Inject

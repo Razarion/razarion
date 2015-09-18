@@ -26,7 +26,7 @@ public class Shadowing {
     private double z = 15;
     private double rotateX = -Math.toRadians(45);
     private double rotateZ = -Math.toRadians(90);
-    // private Logger logger = Logger.getLogger(Shadowing.class.getName());
+    private Logger logger = Logger.getLogger(Shadowing.class.getName());
 
     public double getX() {
         return x;
@@ -83,4 +83,7 @@ public class Shadowing {
         return projectionTransformation.createMatrix().multiply(lightViewMatrix.multiply(modelTransformation.createMatrix()));
     }
 
+    public void testPrint() {
+        logger.severe("x = " + x + "; y = " + y + "; z = " + z + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
+    }
 }

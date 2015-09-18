@@ -1,10 +1,10 @@
 package com.btxtech.client;
 
+import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.Shadowing;
 import com.btxtech.client.terrain.TerrainSurface;
 import org.jboss.errai.databinding.client.api.Bindable;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -17,6 +17,8 @@ public class MenuModel {
     private Shadowing shadowing;
     @Inject
     private TerrainSurface terrainSurface;
+    @Inject
+    private RenderService renderService;
 
     public double getSurfaceSlider() {
         if (terrainSurface == null) {
@@ -100,5 +102,16 @@ public class MenuModel {
             return;
         }
         shadowing.setRotateZ(shadowLightRotateZ);
+    }
+
+    public boolean getShowDeepMap() {
+        return renderService != null && renderService.isShowDeep();
+    }
+
+    public void setShowDeepMap(boolean showDeepMap) {
+        if (renderService == null) {
+            return;
+        }
+        renderService.setShowDeep(showDeepMap);
     }
 }
