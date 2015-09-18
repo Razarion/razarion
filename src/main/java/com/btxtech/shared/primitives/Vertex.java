@@ -1,9 +1,9 @@
 package com.btxtech.shared.primitives;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.common.MathHelper;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -110,9 +110,22 @@ public class Vertex {
     }
 
     public double unsignedAngle(Vertex start, Vertex end) {
+        if(start.equals(this)) {
+            throw new IllegalArgumentException("Start is equals to this vertex: " + start);
+        }
+        if(end.equals(this)) {
+            throw new IllegalArgumentException("End is equals to this vertex: " + end);
+        }
+
         Vertex normStart = start.sub(this);
         Vertex normEnd = end.sub(this);
-        return Math.acos(normEnd.dot(normStart) / (normEnd.magnitude() * normStart.magnitude()));
+        double cos = normEnd.dot(normStart) / (normEnd.magnitude() * normStart.magnitude());
+        if (cos > 1.0) {
+            return 0;
+        } else if (cos < -1.0) {
+            return MathHelper.HALF_RADIANT;
+        }
+        return Math.acos(cos);
     }
 
     public Vertex interpolate(double distance, Vertex directionTo) {

@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Sphere;
 import org.jboss.errai.bus.client.api.UncaughtException;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -52,8 +53,10 @@ public class TerrainObjectService {
 //            }
 //        }
 
-        positions.add(base.multiply(Matrix4.createTranslation(50, 300, 0)));
-        positions.add(base.multiply(Matrix4.createTranslation(600, 200, 0)));
+        vertexList = new Sphere(30, 10, 10).provideVertexList(Terrain.BUSH_1);
+
+        positions.add(base.multiply(Matrix4.createTranslation(50, 300, 5)));
+       // positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
 
     }
 
@@ -69,7 +72,7 @@ public class TerrainObjectService {
         return imageDescriptor;
     }
 
-    @AfterInitialization
+    // @AfterInitialization
     public void afterInitialization() {
         serviceCaller.call(new RemoteCallback<VertexList>() {
             @Override

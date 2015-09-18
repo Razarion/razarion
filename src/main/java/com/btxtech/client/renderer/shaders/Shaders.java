@@ -40,4 +40,11 @@ public interface Shaders extends ClientBundle {
 
     @Source("MonitorFragmentShader.shd")
     TextResource monitorFragmentShader();
+
+    @Source("DebugVertexShader.shd")
+    TextResource debugVertexShader();
+
+    @Source("DebugFragmentShader.shd")
+    TextResource debugFragmentShader();
+
 }

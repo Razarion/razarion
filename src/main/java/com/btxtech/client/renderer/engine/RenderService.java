@@ -44,6 +44,7 @@ public class RenderService {
         initFrameBuffer();
         renderQueue.add(new RenderSwitch(renderInstance.select(TerrainSurfaceRenderer.class).get(), renderInstance.select(TerrainSurfaceWireRender.class).get(), wire, false));
         renderQueue.add(new RenderSwitch(renderInstance.select(TerrainObjectRenderer.class).get(), renderInstance.select(TerrainObjectWireRender.class).get(), wire, true));
+        renderQueue.add(new RenderSwitch(renderInstance.select(DebugRenderer.class).get(), null, wire, false));
         renderQueue.add(new RenderSwitch(renderInstance.select(MonitorRenderer.class).get(), null, wire, false));
     }
 

@@ -133,10 +133,10 @@ public class ViewTransformation {
     }
 
     private void fireChanged() {
-        testPrint();
+        // testPrint();
     }
 
-    private void testPrint() {
-      // logger.severe("translateX = " + translateX + "; translateY = " + translateY + "; translateZ = " + translateZ + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
+    public void testPrint() {
+        logger.severe("translateX = " + translateX + "; translateY = " + translateY + "; translateZ = " + translateZ + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
     }
 }

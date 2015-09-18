@@ -25,7 +25,8 @@ public class MonitorRenderer extends AbstractRenderer {
     public static final int HEIGHT = WIDTH;
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
-    private static final String SAMPLER_UNIFORM_NAME = "uSampler";
+    private static final String COLOR_SAMPLER_UNIFORM_NAME = "uColorSampler";
+    private static final String DEEP_SAMPLER_UNIFORM_NAME = "uDeepSampler";
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
     private WebGLBuffer textureCoordinateBuffer;
@@ -81,12 +82,16 @@ public class MonitorRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(textureCoordinatePositionAttribute, TextureCoordinate.getComponentCount(), WebGLRenderingContext.FLOAT, false, 0, 0);
 
-        // Texture
-        WebGLUniformLocation tUniform = getUniformLocation(SAMPLER_UNIFORM_NAME);
+        // Color Texture
+        WebGLUniformLocation tColorUniform = getUniformLocation(COLOR_SAMPLER_UNIFORM_NAME);
         gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getColorTexture());
+        gameCanvas.getCtx3d().uniform1i(tColorUniform, 0);
+        // Deep Texture
+        WebGLUniformLocation tUniform = getUniformLocation(DEEP_SAMPLER_UNIFORM_NAME);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE1);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
-        // gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getColorTexture());
-        gameCanvas.getCtx3d().uniform1i(tUniform, 0);
+        gameCanvas.getCtx3d().uniform1i(tUniform, 1);
 
         // Draw
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);

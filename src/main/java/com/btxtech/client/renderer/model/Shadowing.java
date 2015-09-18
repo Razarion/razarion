@@ -26,7 +26,7 @@ public class Shadowing {
     private double z = 15;
     private double rotateX = -Math.toRadians(45);
     private double rotateZ = -Math.toRadians(90);
-    private Logger logger = Logger.getLogger(Shadowing.class.getName());
+    // private Logger logger = Logger.getLogger(Shadowing.class.getName());
 
     public double getX() {
         return x;
@@ -34,7 +34,6 @@ public class Shadowing {
 
     public void setX(double x) {
         this.x = x;
-        logger.severe("x: " + x);
     }
 
     public double getY() {
@@ -43,7 +42,6 @@ public class Shadowing {
 
     public void setY(double y) {
         this.y = y;
-        logger.severe("y: " + y);
     }
 
     public double getZ() {
@@ -52,7 +50,6 @@ public class Shadowing {
 
     public void setZ(double z) {
         this.z = z;
-        logger.severe("z: " + z);
     }
 
     public double getRotateX() {
