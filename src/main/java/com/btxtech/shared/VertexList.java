@@ -133,6 +133,10 @@ public class VertexList {
         edges.addAll(vertexList.edges);
     }
 
+    public List<Vertex> getVertices() {
+        return vertices;
+    }
+
     @Override
     public String toString() {
         return "VertexList{" +

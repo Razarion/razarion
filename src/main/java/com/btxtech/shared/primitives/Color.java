@@ -132,4 +132,8 @@ public class Color {
         }
         return aDouble;
     }
+
+    public static int getComponentsPerColorAlpha() {
+        return 4;
+    }
 }

@@ -21,11 +21,11 @@ public class Shadowing {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private ModelTransformation modelTransformation;
-    private double x = -8;
-    private double y = 49;
+    private double x = 20;
+    private double y = 48;
     private double z = 15;
-    private double rotateX = -Math.toRadians(45);
-    private double rotateZ = -Math.toRadians(90);
+    private double rotateX = -Math.toRadians(0);
+    private double rotateZ = -Math.toRadians(0);
     private Logger logger = Logger.getLogger(Shadowing.class.getName());
 
     public double getX() {

@@ -7,6 +7,8 @@ import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Color;
+import com.btxtech.shared.primitives.Cuboid;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Sphere;
 import com.btxtech.shared.primitives.Vertex;
@@ -25,6 +27,7 @@ import javax.inject.Inject;
 @Dependent
 public class DebugRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
+    private static final String A_COLOR = "aColor";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
     private static final String MODEL_UNIFORM_NAME = "uMMatrix";
@@ -39,6 +42,8 @@ public class DebugRenderer extends AbstractRenderer {
     private Shadowing shadowing;
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
+    private WebGLBuffer colorBuffer;
+    private int colorAttribute;
     private int elementCount;
 
     @PostConstruct
@@ -46,16 +51,21 @@ public class DebugRenderer extends AbstractRenderer {
         createProgram(Shaders.INSTANCE.debugVertexShader(), Shaders.INSTANCE.debugFragmentShader());
         verticesBuffer = gameCanvas.getCtx3d().createBuffer();
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);
+        colorBuffer = gameCanvas.getCtx3d().createBuffer();
+        colorAttribute = getAndEnableAttributeLocation(A_COLOR);
     }
 
     @Override
     public void fillBuffers() {
-        Sphere sphere = new Sphere(0.1, 10, 10);
-        VertexList vertexList = sphere.provideVertexList(CHESS_TEXTURE_08);
+        Cuboid cuboid = new Cuboid(0.1, 0.1, 0.1);
+        VertexList vertexList = cuboid.provideVertexList();
 
         // vertices
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
+
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, colorBuffer);
+        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createColorDoubles()), WebGLRenderingContext.STATIC_DRAW);
 
         elementCount = vertexList.getVerticesCount();
     }
@@ -74,11 +84,14 @@ public class DebugRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().toWebGlArray()));
         // Model transformation uniform
         WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
-        Matrix4 modelMatrix4 = Matrix4.createTranslation(shadowing.getX(), shadowing.getY(), shadowing.getZ());
+        Matrix4 modelMatrix4 = Matrix4.createXRotation(shadowing.getRotateX()).multiply(Matrix4.createZRotation(shadowing.getRotateZ()));
+        modelMatrix4 = modelMatrix4.multiply(Matrix4.createTranslation(shadowing.getX(), shadowing.getY(), shadowing.getZ()));
         gameCanvas.getCtx3d().uniformMatrix4fv(modelUniform, false, WebGlUtil.createArrayBufferOfFloat32(modelMatrix4.toWebGlArray()));
         // set vertices position
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(vertexPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, colorBuffer);
+        gameCanvas.getCtx3d().vertexAttribPointer(colorAttribute, Color.getComponentsPerColorAlpha(), WebGLRenderingContext.FLOAT, false, 0, 0);
 
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());

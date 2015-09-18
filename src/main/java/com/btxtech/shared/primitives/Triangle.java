@@ -25,6 +25,7 @@ public class Triangle {
     private TextureCoordinate textureCoordinateC;
     private double edgeC;
     private Type type;
+    private Color color = new Color(1.0, 1.0, 1.0, 1.0);
 
     public Triangle(Vertex vertexA, TextureCoordinate textureCoordinateA,
                     Vertex vertexB, TextureCoordinate textureCoordinateB,
@@ -128,11 +129,11 @@ public class Triangle {
 
     public List<Color> appendColorsTo(List<Color> colors) {
         // vertexA
-        colors.add(new Color(1.0, 1.0, 10.));
+        colors.add(color);
         // vertexB
-        colors.add(new Color(1.0, 1.0, 10.));
+        colors.add(color);
         // vertexC
-        colors.add(new Color(1.0, 1.0, 10.));
+        colors.add(color);
         return colors;
     }
 
@@ -201,6 +202,10 @@ public class Triangle {
 
     public double sideC() {
         return vertexA.distance(vertexB);
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     public Type getType() {

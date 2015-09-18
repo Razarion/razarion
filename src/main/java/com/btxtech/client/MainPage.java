@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Shadowing;
 import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.client.utils.GradToRadConverter;
+import com.btxtech.client.utils.RadToStringGradConverter;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -11,6 +12,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
+import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
 import org.jboss.errai.ui.nav.client.local.Page;
@@ -68,9 +70,17 @@ public class MainPage extends Composite {
     @DataField("rotateX")
     private DoubleBox shadowLightRotateX;
     @Inject
+    @Bound(property = "shadowLightRotateX", converter = RadToStringGradConverter.class)
+    @DataField("rotateXDisplay")
+    private Label rotateXDisplay;
+    @Inject
     @Bound(converter = GradToRadConverter.class)
     @DataField("rotateZ")
     private DoubleBox shadowLightRotateZ;
+    @Inject
+    @Bound(property = "shadowLightRotateZ", converter = RadToStringGradConverter.class)
+    @DataField("rotateZDisplay")
+    private Label rotateZDisplay;
     @Inject
     @DataField("topButton")
     private Button topButton;
