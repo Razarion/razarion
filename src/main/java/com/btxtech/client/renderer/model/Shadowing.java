@@ -68,19 +68,18 @@ public class Shadowing {
         this.rotateZ = rotateZ;
     }
 
-    public void setupViewTransformation() {
-        viewTransformation.setTranslateX(-x);
-        viewTransformation.setTranslateY(-y);
-        viewTransformation.setTranslateZ(-z);
-        viewTransformation.setRotateX(-rotateX);
-        viewTransformation.setRotateZ(-rotateZ);
+    @Deprecated
+    public Matrix4 createMvpShadowBias_UNKNWON() {
+        Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
+        lightViewMatrix = lightViewMatrix.multiply(Matrix4.createZRotation(-rotateZ));
+        lightViewMatrix = lightViewMatrix.multiply(Matrix4.createTranslation(-x, -y, -z));
+        return projectionTransformation.createMatrix().multiply(lightViewMatrix.multiply(modelTransformation.createMatrix()));
     }
 
     public Matrix4 createMvpShadowBias() {
         Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
         lightViewMatrix = lightViewMatrix.multiply(Matrix4.createZRotation(-rotateZ));
-        lightViewMatrix = lightViewMatrix.multiply(Matrix4.createTranslation(-x, -y, -z));
-        return projectionTransformation.createMatrix().multiply(lightViewMatrix.multiply(modelTransformation.createMatrix()));
+        return lightViewMatrix.multiply(Matrix4.createTranslation(-x, -y, -z));
     }
 
     public void testPrint() {

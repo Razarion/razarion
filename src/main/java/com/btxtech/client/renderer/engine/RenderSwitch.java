@@ -7,13 +7,13 @@ package com.btxtech.client.renderer.engine;
 public class RenderSwitch {
     private Renderer current;
     private Renderer normalRenderer;
+    private Renderer depthBufferRenderer;
     private Renderer wireRenderer;
-    private boolean shadow;
 
-    public RenderSwitch(Renderer normalRenderer, Renderer wireRenderer, boolean wire, boolean shadow) {
+    public RenderSwitch(Renderer normalRenderer, Renderer depthBufferRenderer, Renderer wireRenderer, boolean wire) {
         this.normalRenderer = normalRenderer;
+        this.depthBufferRenderer = depthBufferRenderer;
         this.wireRenderer = wireRenderer;
-        this.shadow = shadow;
         setRenderable(wire);
     }
 
@@ -23,9 +23,18 @@ public class RenderSwitch {
         }
     }
 
+    public void drawDepthBuffer() {
+        if(depthBufferRenderer != null) {
+            depthBufferRenderer.draw();
+        }
+    }
+
     public void fillBuffers() {
         if(current != null) {
             current.fillBuffers();
+        }
+        if(depthBufferRenderer != null) {
+            depthBufferRenderer.fillBuffers();
         }
     }
 
@@ -40,9 +49,5 @@ public class RenderSwitch {
         } else {
             current = normalRenderer;
         }
-    }
-
-    public boolean isShadow() {
-        return shadow;
     }
 }
