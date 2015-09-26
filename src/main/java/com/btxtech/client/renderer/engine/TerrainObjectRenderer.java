@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
@@ -50,6 +51,7 @@ public class TerrainObjectRenderer extends AbstractRenderer {
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject
+    @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
     private ViewTransformation viewTransformation;

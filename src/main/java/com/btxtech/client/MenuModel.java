@@ -2,8 +2,15 @@ package com.btxtech.client;
 
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.Shadowing;
+import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.utils.GradToRadConverter;
+import com.btxtech.client.utils.RadToStringGradConverter;
+import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 
 import javax.inject.Inject;
 
@@ -19,6 +26,8 @@ public class MenuModel {
     private TerrainSurface terrainSurface;
     @Inject
     private RenderService renderService;
+    @Inject
+    private ViewTransformation viewTransformation;
 
     public double getSurfaceSlider() {
         if (terrainSurface == null) {
@@ -113,5 +122,75 @@ public class MenuModel {
             return;
         }
         renderService.setShowDeep(showDeepMap);
+    }
+
+    public double getViewTransformationX() {
+        if (viewTransformation == null) {
+            return 0;
+        }
+        return viewTransformation.getTranslateX();
+    }
+
+    public void setViewTransformationX(double viewTransformationX) {
+        if (viewTransformation == null) {
+            return;
+        }
+        viewTransformation.setTranslateX(viewTransformationX);
+    }
+
+    public double getViewTransformationY() {
+        if (viewTransformation == null) {
+            return 0;
+        }
+        return viewTransformation.getTranslateY();
+    }
+
+    public void setViewTransformationY(double viewTransformationY) {
+        if (viewTransformation == null) {
+            return;
+        }
+        viewTransformation.setTranslateY(viewTransformationY);
+    }
+
+    public double getViewTransformationZ() {
+        if (viewTransformation == null) {
+            return 0;
+        }
+        return viewTransformation.getTranslateZ();
+    }
+
+    public void setViewTransformationZ(double viewTransformationZ) {
+        if (viewTransformation == null) {
+            return;
+        }
+        viewTransformation.setTranslateZ(viewTransformationZ);
+    }
+
+    public double getViewTransformationRotateX() {
+        if (viewTransformation == null) {
+            return 0;
+        }
+        return viewTransformation.getRotateX();
+    }
+
+    public void setViewTransformationRotateX(double viewTransformationRotateX) {
+        if (viewTransformation == null) {
+            return;
+        }
+        viewTransformation.setRotateX(viewTransformationRotateX);
+    }
+
+    public double getViewTransformationRotateZ() {
+        if (viewTransformation == null) {
+            return 0;
+        }
+        return viewTransformation.getRotateZ();
+    }
+
+    public void setViewTransformationRotateZ(double viewTransformationRotateZ) {
+        if (viewTransformation == null) {
+            return;
+        }
+        viewTransformation.setRotateZ(viewTransformationRotateZ);
     }
 }

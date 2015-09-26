@@ -47,10 +47,10 @@ public interface Shaders extends ClientBundle {
     @Source("DebugFragmentShader.shd")
     TextResource debugFragmentShader();
 
-    @Source("TerrainObjectDepthBufferVertexShader.shd")
-    TextResource terrainObjectDepthBufferVertexShader();
+    @Source("DepthBufferVertexShader.shd")
+    TextResource depthBufferVertexShader();
 
-    @Source("TerrainObjectDepthBufferFragmentShader.shd")
-    TextResource terrainObjectDepthBufferFragmentShader();
+    @Source("DepthBufferFragmentShader.shd")
+    TextResource depthBufferFragmentShader();
 
 }

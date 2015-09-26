@@ -101,6 +101,34 @@ public class MainPage extends Composite {
     private Button dumpShadowPositionButton;
     @Inject
     @Bound
+    @DataField("viewTransformationX")
+    private DoubleBox viewTransformationX;
+    @Inject
+    @Bound
+    @DataField("viewTransformationY")
+    private DoubleBox viewTransformationY;
+    @Inject
+    @Bound
+    @DataField("viewTransformationZ")
+    private DoubleBox viewTransformationZ;
+    @Inject
+    @Bound(property = "viewTransformationRotateX", converter = RadToStringGradConverter.class)
+    @DataField("viewTransformationRotateXDisplay")
+    private Label viewTransformationRotateXDisplay;
+    @Inject
+    @Bound(converter = GradToRadConverter.class)
+    @DataField("viewTransformationRotateX")
+    private DoubleBox viewTransformationRotateX;
+    @Inject
+    @Bound(property = "viewTransformationRotateZ", converter = RadToStringGradConverter.class)
+    @DataField("viewTransformationRotateZDisplay")
+    private Label viewTransformationRotateZDisplay;
+    @Inject
+    @Bound(converter = GradToRadConverter.class)
+    @DataField("viewTransformationRotateZ")
+    private DoubleBox viewTransformationRotateZ;
+    @Inject
+    @Bound
     @DataField("showDeepMap")
     private CheckBox showDeepMap;
 

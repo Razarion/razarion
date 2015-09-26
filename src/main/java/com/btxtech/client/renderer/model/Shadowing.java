@@ -18,12 +18,11 @@ public class Shadowing {
     @Inject
     private ViewTransformation viewTransformation;
     @Inject
+    @Shadow
     private ProjectionTransformation projectionTransformation;
-    @Inject
-    private ModelTransformation modelTransformation;
-    private double x = 20;
-    private double y = 48;
-    private double z = 15;
+    private double x = 60;
+    private double y = 150;
+    private double z = 40;
     private double rotateX = -Math.toRadians(0);
     private double rotateZ = -Math.toRadians(0);
     private Logger logger = Logger.getLogger(Shadowing.class.getName());
@@ -73,7 +72,7 @@ public class Shadowing {
         Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
         lightViewMatrix = lightViewMatrix.multiply(Matrix4.createZRotation(-rotateZ));
         lightViewMatrix = lightViewMatrix.multiply(Matrix4.createTranslation(-x, -y, -z));
-        return projectionTransformation.createMatrix().multiply(lightViewMatrix.multiply(modelTransformation.createMatrix()));
+        return projectionTransformation.createMatrix().multiply(lightViewMatrix);
     }
 
     public Matrix4 createMvpShadowBias() {

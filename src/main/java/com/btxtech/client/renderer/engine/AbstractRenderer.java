@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public abstract class AbstractRenderer implements Renderer {
     // protected static final ImageDescriptor CHESS_TEXTURE_32 = new ImageDescriptor("chess32.jpg", 512, 512);
-    protected static final ImageDescriptor CHESS_TEXTURE_08 = new ImageDescriptor("chess08.jpg", 512, 512);
+    public static final ImageDescriptor CHESS_TEXTURE_08 = new ImageDescriptor("chess08.jpg", 512, 512);
     private WebGlProgram webGlProgram;
     @Inject
     private Instance<WebGlProgram> webGlProgramInstance;

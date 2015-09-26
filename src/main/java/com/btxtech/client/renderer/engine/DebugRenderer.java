@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.Shadowing;
 import com.btxtech.client.renderer.model.ViewTransformation;
@@ -35,6 +36,7 @@ public class DebugRenderer extends AbstractRenderer {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
+    @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
     private ViewTransformation viewTransformation;
@@ -57,7 +59,7 @@ public class DebugRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        Cuboid cuboid = new Cuboid(1.1, 1.1, 1.1);
+        Cuboid cuboid = new Cuboid(1.0, 1.0, 3.0);
         VertexList vertexList = cuboid.provideVertexList();
 
         // vertices
@@ -84,8 +86,8 @@ public class DebugRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().toWebGlArray()));
         // Model transformation uniform
         WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
-        Matrix4 modelMatrix4 = Matrix4.createXRotation(shadowing.getRotateX()).multiply(Matrix4.createZRotation(shadowing.getRotateZ()));
-        modelMatrix4 = modelMatrix4.multiply(Matrix4.createTranslation(shadowing.getX(), shadowing.getY(), shadowing.getZ()));
+        Matrix4 modelMatrix4 = Matrix4.createTranslation(shadowing.getX(), shadowing.getY(), shadowing.getZ());
+        modelMatrix4 = modelMatrix4.multiply(Matrix4.createZRotation(shadowing.getRotateZ()).multiply(Matrix4.createXRotation(shadowing.getRotateX())));
         gameCanvas.getCtx3d().uniformMatrix4fv(modelUniform, false, WebGlUtil.createArrayBufferOfFloat32(modelMatrix4.toWebGlArray()));
         // set vertices position
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);

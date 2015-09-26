@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.ModelTransformation;
+import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.ViewTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
@@ -31,7 +32,7 @@ public class TerrainSurfaceWireRender extends AbstractRenderer {
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String SAMPLER_UNIFORM_NAME = "uSampler";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
-    private static final String MODEL_VIEW_UNIFORM_NAME = "uMVMatrix";
+    private static final String VIEW_UNIFORM_NAME = "uVMatrix";
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
     private WebGLBuffer barycentricBuffer;
@@ -46,6 +47,7 @@ public class TerrainSurfaceWireRender extends AbstractRenderer {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
+    @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
     private ViewTransformation viewTransformation;
@@ -92,8 +94,8 @@ public class TerrainSurfaceWireRender extends AbstractRenderer {
         WebGLUniformLocation pUniform = getUniformLocation(PERSPECTIVE_UNIFORM_NAME);
         gameCanvas.getCtx3d().uniformMatrix4fv(pUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
         // Model model transformation uniform
-        WebGLUniformLocation mVUniform = getUniformLocation(MODEL_VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().multiply(modelTransformation.createMatrix()).toWebGlArray()));
+        WebGLUniformLocation mVUniform = getUniformLocation(VIEW_UNIFORM_NAME);
+        gameCanvas.getCtx3d().uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().toWebGlArray()));
         // set vertices position
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(vertexPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);

@@ -2,6 +2,7 @@ package com.btxtech.client.renderer;
 
 import com.btxtech.client.ViewFieldMover;
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.google.gwt.animation.client.AnimationScheduler;
@@ -32,6 +33,7 @@ public class GameCanvas {
     @Inject
     private ViewFieldMover viewFieldMover;
     @Inject
+    @Normal
     private ProjectionTransformation projectionTransformation;
     private int width;
     private int height;

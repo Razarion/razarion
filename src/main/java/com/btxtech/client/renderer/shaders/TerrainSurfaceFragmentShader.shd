@@ -14,14 +14,16 @@ uniform float uEdgeDistance;
 void main(void) {
     // Shadow
     // float actualDistance = length(vShadowCoord.xyz) / vShadowCoord.w;
+    float ndcZ = vShadowCoord.z / vShadowCoord.w;
     mat4 coordCorrectionMatrix = mat4(0.5, 0.0, 0.0, 0.0,
                                  0.0, 0.5, 0.0, 0.0,
                                  0.0, 0.0, 0.5, 0.0,
                                  0.5, 0.5, 0.5, 1.0);
     vec4 coordShadowMap = coordCorrectionMatrix * vShadowCoord;
     float z = texture2D(uSamplerShadow, coordShadowMap.st / coordShadowMap.w).r;
+    vec4 shadowMapColor = vec4(z, z, z, 1.0);
     float shadowFactor;
-    if(z > 0.999) {
+    if(z > ndcZ) {
         shadowFactor = 1.0;
     } else {
         shadowFactor = 0.5;
@@ -49,5 +51,7 @@ void main(void) {
     vec4 textureColorBottom = texture2D(uSamplerBottom, vec2(vTextureCoord.s, vTextureCoord.t));
     vec4 texture = mix(textureColorTop, textureColorBottom, textureColorBlend);
     gl_FragColor = vec4(texture.rgb * vLightWeighting * shadowFactor, 1.0);
+    // vec4 result = vec4(texture.rgb * vLightWeighting * shadowFactor, 1.0);
+    // gl_FragColor = mix(shadowMapColor, result, 0.5);
 }
 

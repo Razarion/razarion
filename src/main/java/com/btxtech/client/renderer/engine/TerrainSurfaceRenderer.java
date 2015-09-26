@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.ModelTransformation;
+import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.Shadowing;
 import com.btxtech.client.renderer.model.ViewTransformation;
@@ -32,7 +33,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String EDGE_POSITION_ATTRIBUTE_NAME = "aEdgePosition";
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
-    private static final String MODEL_VIEW_UNIFORM_NAME = "uMVMatrix";
+    private static final String VIEW_UNIFORM_NAME = "uVMatrix";
     private static final String UNIFORM_AMBIENT_COLOR = "uAmbientColor";
     private static final String TOP_SAMPLER_UNIFORM_NAME = "uSamplerTop";
     private static final String BLEND_SAMPLER_UNIFORM_NAME = "uSamplerBlend";
@@ -62,11 +63,10 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     @Inject
     private Lighting lighting;
     @Inject
+    @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
     private ViewTransformation viewTransformation;
-    @Inject
-    private ModelTransformation modelTransformation;
     @Inject
     private RenderService renderService;
     @Inject
@@ -126,8 +126,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         WebGLUniformLocation pUniform = getUniformLocation(PERSPECTIVE_UNIFORM_NAME);
         gameCanvas.getCtx3d().uniformMatrix4fv(pUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
         // Model model transformation uniform
-        WebGLUniformLocation mVUniform = getUniformLocation(MODEL_VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().multiply(modelTransformation.createMatrix()).toWebGlArray()));
+        WebGLUniformLocation mVUniform = getUniformLocation(VIEW_UNIFORM_NAME);
+        gameCanvas.getCtx3d().uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().toWebGlArray()));
 
         // Ambient color uniform
         WebGLUniformLocation pAmbientUniformColor = getUniformLocation(UNIFORM_AMBIENT_COLOR);

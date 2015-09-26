@@ -82,9 +82,9 @@ public class ViewTransformation {
     }
 
     public void setTop() {
-        translateX = -40;
-        translateY = -50;
-        translateZ = -30;
+        translateX = 0;
+        translateY = 0;
+        translateZ = -1000;
         rotateX = Math.toRadians(0);
         rotateZ = Math.toRadians(0);
         fireChanged();
@@ -100,9 +100,9 @@ public class ViewTransformation {
     }
 
     public void setGame() {
-        translateX = -50;
-        translateY = 50;
-        translateZ = -70;
+        translateX = -300;
+        translateY = 60;
+        translateZ = -500;
         rotateX = Math.toRadians(40);
         rotateZ = Math.toRadians(0);
         fireChanged();

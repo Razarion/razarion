@@ -2,10 +2,12 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.VertexListService;
+import com.btxtech.client.renderer.engine.AbstractRenderer;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Plane;
 import com.btxtech.shared.primitives.Sphere;
 import org.jboss.errai.bus.client.api.UncaughtException;
 import org.jboss.errai.common.client.api.Caller;
@@ -36,7 +38,7 @@ public class TerrainObjectService {
     private ImageDescriptor imageDescriptor = Terrain.BUSH_1;
 
     public TerrainObjectService() {
-        Matrix4 base = Matrix4.createScale(0.1, 0.1, 0.1).multiply(Matrix4.createTranslation(200, 200, -90));
+       // flasch Matrix4 base = Matrix4.createScale(0.1, 0.1, 0.1).multiply(Matrix4.createTranslation(200, 200, -90));
 
 //        for (int x = 0; x < 30; x++) {
 //            for (int y = 0; y < 30; y++) {
@@ -53,10 +55,11 @@ public class TerrainObjectService {
 //            }
 //        }
 
-        vertexList = new Sphere(30, 10, 10).provideVertexList(Terrain.BUSH_1);
+        // vertexList = new Sphere(30, 10, 10).provideVertexList(Terrain.BUSH_1);
+        vertexList = new Plane(100).provideVertexList(AbstractRenderer.CHESS_TEXTURE_08);
 
-        positions.add(base.multiply(Matrix4.createTranslation(50, 300, 5)));
-       // positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
+        positions.add(Matrix4.createTranslation(100, 150, 0));
+    //    positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
 
     }
 

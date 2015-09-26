@@ -106,16 +106,21 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.12</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-cdi-jboss</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-weld-integration</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.jboss.errai</groupId>-->
+            <!--<artifactId>errai-weld-integration</artifactId>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.jglue.cdi-unit</groupId>
@@ -400,11 +405,11 @@
                     <artifactId>weld-servlet-core</artifactId>
                     <scope>provided</scope>
                 </dependency>
-                <dependency>
-                    <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-core</artifactId>
-                    <scope>provided</scope>
-                </dependency>
+                <!--<dependency>-->
+                    <!--<groupId>org.jboss.weld</groupId>-->
+                    <!--<artifactId>weld-core</artifactId>-->
+                    <!--<scope>provided</scope>-->
+                <!--</dependency>-->
                 <dependency>
                     <groupId>xml-apis</groupId>
                     <artifactId>xml-apis</artifactId>

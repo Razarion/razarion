@@ -9,6 +9,7 @@ import javax.inject.Singleton;
  * 24.04.2015.
  */
 @Singleton
+@Deprecated
 public class ModelTransformation {
     private double scaleX;
     private double scaleY;
