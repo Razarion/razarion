@@ -1,6 +1,7 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Matrix4;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -23,7 +24,9 @@ public class ColladaConverter {
 
         Collada collada = new Collada(doc);
 
-        return collada.generateVertexList();
+        VertexList vertexList = collada.generateVertexList();
+        vertexList.multiply(Matrix4.createScale(0.1, 0.1, 0.1));
+        return vertexList;
     }
 
 }

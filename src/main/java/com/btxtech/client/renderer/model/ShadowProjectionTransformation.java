@@ -10,9 +10,9 @@ import javax.inject.Singleton;
 @Shadow
 public class ShadowProjectionTransformation extends AbstractProjectionTransformation implements ProjectionTransformation {
     public ShadowProjectionTransformation() {
-        setFovY(Math.toRadians(170));
+        setFovY(Math.toRadians(111));
         setAspectRatio(1.0);
-        setZNear(20);
-        setZFar(50);
+        setZNear(150);
+        setZFar(201);
     }
 }

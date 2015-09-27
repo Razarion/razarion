@@ -20,9 +20,9 @@ public class Shadowing {
     @Inject
     @Shadow
     private ProjectionTransformation projectionTransformation;
-    private double x = 60;
-    private double y = 150;
-    private double z = 40;
+    private double x = 300;
+    private double y = 300;
+    private double z = 200;
     private double rotateX = -Math.toRadians(0);
     private double rotateZ = -Math.toRadians(0);
     private Logger logger = Logger.getLogger(Shadowing.class.getName());

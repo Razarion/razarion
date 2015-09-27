@@ -2,13 +2,10 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.VertexListService;
-import com.btxtech.client.renderer.engine.AbstractRenderer;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Plane;
-import com.btxtech.shared.primitives.Sphere;
 import org.jboss.errai.bus.client.api.UncaughtException;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -38,28 +35,25 @@ public class TerrainObjectService {
     private ImageDescriptor imageDescriptor = Terrain.BUSH_1;
 
     public TerrainObjectService() {
-       // flasch Matrix4 base = Matrix4.createScale(0.1, 0.1, 0.1).multiply(Matrix4.createTranslation(200, 200, -90));
-
-//        for (int x = 0; x < 30; x++) {
-//            for (int y = 0; y < 30; y++) {
-//                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
-//                double scale = Math.random() * 0.5 + 0.5;
-//                double translateX = Math.random() * 50;
-//                double translateY = Math.random() * 50;
-//                Matrix4 matrix4 = Matrix4.createTranslation(x * 130, y * 130, 0);
-//                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
-//                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
-//                matrix4 = matrix4.multiply(Matrix4.createTranslation(translateX, translateY, 0));
-//                matrix4 = base.multiply(matrix4);
-//                positions.add(matrix4);
-//            }
-//        }
+        for (int x = 0; x < 30; x++) {
+            for (int y = 0; y < 30; y++) {
+                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
+                double translateX = Math.random() * 130;
+                double translateY = Math.random() * 130;
+                Matrix4 matrix4 = Matrix4.createTranslation(x * 130 + translateX, y * 130 + translateY, 0);
+                double scale = Math.random() * 2.0 + 4.0;
+                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
+                // matrix4 = base.multiply(matrix4);
+                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
+                positions.add(matrix4);
+            }
+        }
 
         // vertexList = new Sphere(30, 10, 10).provideVertexList(Terrain.BUSH_1);
-        vertexList = new Plane(100).provideVertexList(AbstractRenderer.CHESS_TEXTURE_08);
+        // vertexList = new Plane(100).provideVertexList(AbstractRenderer.CHESS_TEXTURE_08);
 
-        positions.add(Matrix4.createTranslation(100, 150, 0));
-    //    positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
+        // positions.add(Matrix4.createTranslation(100, 150, 0));
+        //    positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
 
     }
 
@@ -75,7 +69,7 @@ public class TerrainObjectService {
         return imageDescriptor;
     }
 
-    // @AfterInitialization
+    @AfterInitialization
     public void afterInitialization() {
         serviceCaller.call(new RemoteCallback<VertexList>() {
             @Override

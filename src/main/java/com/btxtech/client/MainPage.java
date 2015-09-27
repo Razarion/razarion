@@ -78,6 +78,22 @@ public class MainPage extends Composite {
     @DataField("rotateZ")
     private DoubleBox shadowLightRotateZ;
     @Inject
+    @Bound(property = "shadowProjectionTransformationZoom", converter = RadToStringGradConverter.class)
+    @DataField("shadowProjectionTransformationZoomDisplay")
+    private Label shadowProjectionTransformationZoomDisplay;
+    @Inject
+    @Bound(converter = GradToRadConverter.class)
+    @DataField("shadowProjectionTransformationZoom")
+    private DoubleBox shadowProjectionTransformationZoom;
+    @Inject
+    @Bound
+    @DataField("shadowProjectionTransformationZNear")
+    private DoubleBox shadowProjectionTransformationZNear;
+    @Inject
+    @Bound
+    @DataField("shadowProjectionTransformationZFar")
+    private DoubleBox shadowProjectionTransformationZFar;
+    @Inject
     @Bound(property = "shadowLightRotateZ", converter = RadToStringGradConverter.class)
     @DataField("rotateZDisplay")
     private Label rotateZDisplay;
@@ -127,6 +143,14 @@ public class MainPage extends Composite {
     @Bound(converter = GradToRadConverter.class)
     @DataField("viewTransformationRotateZ")
     private DoubleBox viewTransformationRotateZ;
+    @Inject
+    @Bound(property = "projectionTransformationZoom", converter = RadToStringGradConverter.class)
+    @DataField("projectionTransformationZoomDisplay")
+    private Label projectionTransformationZoomDisplay;
+    @Inject
+    @Bound(converter = GradToRadConverter.class)
+    @DataField("projectionTransformationZoom")
+    private DoubleBox projectionTransformationZoom;
     @Inject
     @Bound
     @DataField("showDeepMap")
