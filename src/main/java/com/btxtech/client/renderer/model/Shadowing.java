@@ -5,7 +5,6 @@ import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -16,32 +15,16 @@ import java.util.logging.Logger;
 @Bindable
 public class Shadowing {
     @Inject
-    private ViewTransformation viewTransformation;
+    private Camera camera;
     @Inject
-    @Shadow
-    private ProjectionTransformation projectionTransformation;
-    private double x = 300;
-    private double y = 300;
+    @Normal
+    private ProjectionTransformation normalProjectionTransformation;
     private double z = 200;
     private double rotateX = -Math.toRadians(0);
     private double rotateZ = -Math.toRadians(0);
     private Logger logger = Logger.getLogger(Shadowing.class.getName());
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
+    private double zNear = 150;
+    private double zFar = 201;
 
     public double getZ() {
         return z;
@@ -67,21 +50,54 @@ public class Shadowing {
         this.rotateZ = rotateZ;
     }
 
-    @Deprecated
-    public Matrix4 createMvpShadowBias_UNKNWON() {
-        Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
-        lightViewMatrix = lightViewMatrix.multiply(Matrix4.createZRotation(-rotateZ));
-        lightViewMatrix = lightViewMatrix.multiply(Matrix4.createTranslation(-x, -y, -z));
-        return projectionTransformation.createMatrix().multiply(lightViewMatrix);
+    public double getZNear() {
+        return zNear;
     }
 
-    public Matrix4 createMvpShadowBias() {
+    public void setZNear(double zNear) {
+        this.zNear = zNear;
+    }
+
+    public double getZFar() {
+        return zFar;
+    }
+
+    public void setZFar(double zFar) {
+        this.zFar = zFar;
+    }
+
+    public Matrix4 createProjectionTransformation() {
+        YViewField yViewField = calculateYViewField();
+        double sideLength = Math.abs(yViewField.yDistance1 - yViewField.yDistance2) / 2.0;
+        return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(sideLength, sideLength, zNear, zFar);
+    }
+
+    public Matrix4 createModelViewProjectionTransformation() {
+        return createProjectionTransformation().multiply(createModelViewTransformation());
+    }
+
+    public Matrix4 createModelViewTransformation() {
         Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
         lightViewMatrix = lightViewMatrix.multiply(Matrix4.createZRotation(-rotateZ));
-        return lightViewMatrix.multiply(Matrix4.createTranslation(-x, -y, -z));
+        YViewField yViewField = calculateYViewField();
+        double yDistance = (yViewField.yDistance2 + yViewField.yDistance1) / 2.0;
+        double y = camera.getTranslateY() + yDistance;
+        return lightViewMatrix.multiply(Matrix4.createTranslation(-camera.getTranslateX(), -y, -z));
+    }
+
+    private YViewField calculateYViewField() {
+        YViewField yViewField = new YViewField();
+        yViewField.yDistance1 = Math.tan(camera.getRotateX() - normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
+        yViewField.yDistance2 = Math.tan(camera.getRotateX() + normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
+        return yViewField;
     }
 
     public void testPrint() {
-        logger.severe("x = " + x + "; y = " + y + "; z = " + z + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
+        logger.severe("x = " + "--" + "; y = " + "--" + "; z = " + z + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
+    }
+
+    private class YViewField {
+        double yDistance1;
+        double yDistance2;
     }
 }

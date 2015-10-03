@@ -2,11 +2,10 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Lighting;
-import com.btxtech.client.renderer.model.ModelTransformation;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.Shadowing;
-import com.btxtech.client.renderer.model.ViewTransformation;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
@@ -66,7 +65,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
-    private ViewTransformation viewTransformation;
+    private Camera camera;
     @Inject
     private RenderService renderService;
     @Inject
@@ -127,7 +126,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniformMatrix4fv(pUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
         // Model model transformation uniform
         WebGLUniformLocation mVUniform = getUniformLocation(VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(camera.createMatrix().toWebGlArray()));
 
         // Ambient color uniform
         WebGLUniformLocation pAmbientUniformColor = getUniformLocation(UNIFORM_AMBIENT_COLOR);
@@ -145,7 +144,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
         // Shadow
         WebGLUniformLocation shadowMvpUniform = getUniformLocation(UNIFORM_MVP_SHADOW_BIAS);
-        gameCanvas.getCtx3d().uniformMatrix4fv(shadowMvpUniform, false, WebGlUtil.createArrayBufferOfFloat32(shadowing.createMvpShadowBias_UNKNWON().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(shadowMvpUniform, false, WebGlUtil.createArrayBufferOfFloat32(shadowing.createModelViewProjectionTransformation().toWebGlArray()));
         WebGLUniformLocation shadowMapUniform = getUniformLocation(UNIFORM_SHADOW_MAP_SAMPLER);
         gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE4);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());

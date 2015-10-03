@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.model.ViewTransformation;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
@@ -26,7 +26,7 @@ public class RenderService {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ViewTransformation viewTransformation;
+    private Camera camera;
     private List<RenderSwitch> renderQueue = new ArrayList<>();
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
@@ -39,7 +39,6 @@ public class RenderService {
         initFrameBuffer();
         renderQueue.add(new RenderSwitch(renderInstance.select(TerrainSurfaceRenderer.class).get(), renderInstance.select(TerrainSurfaceDepthBufferRenderer.class).get(), renderInstance.select(TerrainSurfaceWireRender.class).get(), wire));
         renderQueue.add(new RenderSwitch(renderInstance.select(TerrainObjectRenderer.class).get(), renderInstance.select(TerrainObjectDepthBufferRenderer.class).get(), renderInstance.select(TerrainObjectWireRender.class).get(), wire));
-        renderQueue.add(new RenderSwitch(renderInstance.select(DebugRenderer.class).get(), null, null, wire));
         renderQueue.add(new RenderSwitch(renderInstance.select(MonitorRenderer.class).get(), null, null, wire));
     }
 

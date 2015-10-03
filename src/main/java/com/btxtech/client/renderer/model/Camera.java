@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  * 25.04.2015.
  */
 @Singleton
-public class ViewTransformation {
+public class Camera {
     private double translateX;
     private double translateY;
     private double translateZ;
@@ -22,9 +22,9 @@ public class ViewTransformation {
     private double saveRotateX;
     private double saveRotateZ;
 
-    private Logger logger = Logger.getLogger(ViewTransformation.class.getName());
+    private Logger logger = Logger.getLogger(Camera.class.getName());
 
-    public ViewTransformation() {
+    public Camera() {
         setGame();
         // setTop();
         // setCustom();
@@ -78,40 +78,40 @@ public class ViewTransformation {
     public Matrix4 createMatrix() {
         Matrix4 matrix4 = Matrix4.createXRotation(rotateX);
         matrix4 = matrix4.multiply(Matrix4.createZRotation(rotateZ));
-        return matrix4.multiply(Matrix4.createTranslation(translateX, translateY, translateZ));
+        return matrix4.multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
     }
 
     public void setTop() {
         translateX = 0;
         translateY = 0;
-        translateZ = -1000;
+        translateZ = 1000;
         rotateX = Math.toRadians(0);
         rotateZ = Math.toRadians(0);
         fireChanged();
     }
 
     public void setFront() {
-        translateX = -50;
-        translateY = 20;
-        translateZ = 10;
+        translateX = 50;
+        translateY = -20;
+        translateZ = -10;
         rotateX = Math.toRadians(90);
         rotateZ = Math.toRadians(0);
         fireChanged();
     }
 
     public void setGame() {
-        translateX = -300;
-        translateY = 60;
-        translateZ = -500;
+        translateX = 300;
+        translateY = -60;
+        translateZ = 500;
         rotateX = Math.toRadians(40);
         rotateZ = Math.toRadians(0);
         fireChanged();
     }
 
     public void setCustom() {
-        translateX = -6.5;
-        translateY = 51;
-        translateZ = -6;
+        translateX = 6.5;
+        translateY = -51;
+        translateZ = 6;
         rotateX = Math.toRadians(87.00000000000001);
         rotateZ = Math.toRadians(0);
     }

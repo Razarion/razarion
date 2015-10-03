@@ -11,7 +11,7 @@ import javax.inject.Singleton;
 public class NormalProjectionTransformation extends AbstractProjectionTransformation {
     public NormalProjectionTransformation() {
         setFovY(Math.toRadians(45));
-        setZNear(400);
-        setZFar(1000);
+        setZNear(300);
+        setZFar(1200);
     }
 }

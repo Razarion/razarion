@@ -2,7 +2,7 @@ package com.btxtech.client;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Shadowing;
-import com.btxtech.client.renderer.model.ViewTransformation;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.client.utils.RadToStringGradConverter;
 import com.google.gwt.canvas.client.Canvas;
@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
@@ -23,7 +22,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +39,7 @@ public class MainPage extends Composite {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ViewTransformation viewTransformation;
+    private Camera camera;
     @Inject
     private Shadowing shadowing;
     @Inject
@@ -53,14 +51,6 @@ public class MainPage extends Composite {
     @Bound
     @DataField("surfaceSlider")
     private DoubleBox surfaceSlider;
-    @Inject
-    @Bound
-    @DataField("shadowLightX")
-    private DoubleBox shadowLightPosX;
-    @Inject
-    @Bound
-    @DataField("shadowLightY")
-    private DoubleBox shadowLightPosY;
     @Inject
     @Bound
     @DataField("shadowLightZ")
@@ -77,14 +67,6 @@ public class MainPage extends Composite {
     @Bound(converter = GradToRadConverter.class)
     @DataField("rotateZ")
     private DoubleBox shadowLightRotateZ;
-    @Inject
-    @Bound(property = "shadowProjectionTransformationZoom", converter = RadToStringGradConverter.class)
-    @DataField("shadowProjectionTransformationZoomDisplay")
-    private Label shadowProjectionTransformationZoomDisplay;
-    @Inject
-    @Bound(converter = GradToRadConverter.class)
-    @DataField("shadowProjectionTransformationZoom")
-    private DoubleBox shadowProjectionTransformationZoom;
     @Inject
     @Bound
     @DataField("shadowProjectionTransformationZNear")
@@ -171,27 +153,27 @@ public class MainPage extends Composite {
 
     @EventHandler("topButton")
     private void handleTtopButtonClick(ClickEvent event) {
-        viewTransformation.setTop();
+        camera.setTop();
     }
 
     @EventHandler("frontButton")
     private void handleFrontButtonClick(ClickEvent event) {
-        viewTransformation.setFront();
+        camera.setFront();
     }
 
     @EventHandler("gameButton")
     private void handleGameButtonClick(ClickEvent event) {
-        viewTransformation.setGame();
+        camera.setGame();
     }
 
     @EventHandler("customButton")
     private void handleCustomButtonnClick(ClickEvent event) {
-        viewTransformation.setCustom();
+        camera.setCustom();
     }
 
     @EventHandler("dumpPositionButton")
     private void handleDumpPositionButtonClick(ClickEvent event) {
-        viewTransformation.testPrint();
+        camera.testPrint();
     }
 
     @EventHandler("dumpShadowPositionButton")

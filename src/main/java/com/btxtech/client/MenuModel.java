@@ -3,15 +3,10 @@ package com.btxtech.client;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.model.Shadow;
 import com.btxtech.client.renderer.model.Shadowing;
-import com.btxtech.client.renderer.model.ViewTransformation;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.utils.GradToRadConverter;
-import com.google.gwt.user.client.ui.DoubleBox;
 import org.jboss.errai.databinding.client.api.Bindable;
-import org.jboss.errai.ui.shared.api.annotations.Bound;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;
@@ -30,13 +25,10 @@ public class MenuModel {
     @Inject
     private RenderService renderService;
     @Inject
-    private ViewTransformation viewTransformation;
+    private Camera camera;
     @Inject
     @Normal
     private ProjectionTransformation normalProjectionTransformation;
-    @Inject
-    @Shadow
-    private ProjectionTransformation shadowProjectionTransformation;
 
     public double getSurfaceSlider() {
         if (terrainSurface == null) {
@@ -50,34 +42,6 @@ public class MenuModel {
             return;
         }
         terrainSurface.setEdgeDistance(surfaceSlider);
-    }
-
-    public double getShadowLightPosX() {
-        if (shadowing == null) {
-            return 0;
-        }
-        return shadowing.getX();
-    }
-
-    public void setShadowLightPosX(double shadowLightPosX) {
-        if (shadowing == null) {
-            return;
-        }
-        shadowing.setX(shadowLightPosX);
-    }
-
-    public double getShadowLightPosY() {
-        if (shadowing == null) {
-            return 0;
-        }
-        return shadowing.getY();
-    }
-
-    public void setShadowLightPosY(double shadowLightPosY) {
-        if (shadowing == null) {
-            return;
-        }
-        shadowing.setY(shadowLightPosY);
     }
 
     public double getShadowLightPosZ() {
@@ -134,73 +98,73 @@ public class MenuModel {
     }
 
     public double getViewTransformationX() {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return 0;
         }
-        return viewTransformation.getTranslateX();
+        return camera.getTranslateX();
     }
 
     public void setViewTransformationX(double viewTransformationX) {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return;
         }
-        viewTransformation.setTranslateX(viewTransformationX);
+        camera.setTranslateX(viewTransformationX);
     }
 
     public double getViewTransformationY() {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return 0;
         }
-        return viewTransformation.getTranslateY();
+        return camera.getTranslateY();
     }
 
     public void setViewTransformationY(double viewTransformationY) {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return;
         }
-        viewTransformation.setTranslateY(viewTransformationY);
+        camera.setTranslateY(viewTransformationY);
     }
 
     public double getViewTransformationZ() {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return 0;
         }
-        return viewTransformation.getTranslateZ();
+        return camera.getTranslateZ();
     }
 
     public void setViewTransformationZ(double viewTransformationZ) {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return;
         }
-        viewTransformation.setTranslateZ(viewTransformationZ);
+        camera.setTranslateZ(viewTransformationZ);
     }
 
     public double getViewTransformationRotateX() {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return 0;
         }
-        return viewTransformation.getRotateX();
+        return camera.getRotateX();
     }
 
     public void setViewTransformationRotateX(double viewTransformationRotateX) {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return;
         }
-        viewTransformation.setRotateX(viewTransformationRotateX);
+        camera.setRotateX(viewTransformationRotateX);
     }
 
     public double getViewTransformationRotateZ() {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return 0;
         }
-        return viewTransformation.getRotateZ();
+        return camera.getRotateZ();
     }
 
     public void setViewTransformationRotateZ(double viewTransformationRotateZ) {
-        if (viewTransformation == null) {
+        if (camera == null) {
             return;
         }
-        viewTransformation.setRotateZ(viewTransformationRotateZ);
+        camera.setRotateZ(viewTransformationRotateZ);
     }
 
     public double getProjectionTransformationZoom() {
@@ -217,47 +181,32 @@ public class MenuModel {
         normalProjectionTransformation.setFovY(fovY);
     }
 
-    public double getShadowProjectionTransformationZoom() {
-        if (shadowProjectionTransformation == null) {
-            return 0;
-        }
-        return shadowProjectionTransformation.getFovY();
-    }
-
-    public void setShadowProjectionTransformationZoom(double fovY) {
-        if (shadowProjectionTransformation == null) {
-            return;
-        }
-        shadowProjectionTransformation.setFovY(fovY);
-    }
-
     public double getShadowProjectionTransformationZNear() {
-        if (shadowProjectionTransformation == null) {
+        if (shadowing == null) {
             return 0;
         }
-        logger.severe("getShadowProjectionTransformationZNear: " + shadowProjectionTransformation.getZNear());
-        return shadowProjectionTransformation.getZNear();
+        return shadowing.getZNear();
     }
 
     public void setShadowProjectionTransformationZNear(double zNear) {
-        if (shadowProjectionTransformation == null) {
+        if (shadowing == null) {
             return;
         }
         logger.severe("setShadowProjectionTransformationZNear: " + zNear);
-        shadowProjectionTransformation.setZNear(zNear);
+        shadowing.setZNear(zNear);
     }
 
     public double getShadowProjectionTransformationZFar() {
-        if (shadowProjectionTransformation == null) {
+        if (shadowing == null) {
             return 0;
         }
-        return shadowProjectionTransformation.getZFar();
+        return shadowing.getZFar();
     }
 
     public void setShadowProjectionTransformationZFar(double zFar) {
-        if (shadowProjectionTransformation == null) {
+        if (shadowing == null) {
             return;
         }
-        shadowProjectionTransformation.setZFar(zFar);
+        shadowing.setZFar(zFar);
     }
 }

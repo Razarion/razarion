@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.client.renderer.model.ViewTransformation;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.google.gwt.canvas.client.Canvas;
@@ -22,7 +22,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ViewFieldMover {
     @Inject
-    private ViewTransformation viewTransformation;
+    private Camera camera;
     private Index startMove;
     private double factor = 0.5;
 
@@ -37,8 +37,8 @@ public class ViewFieldMover {
                         if (delta.isNull()) {
                             return;
                         }
-                        viewTransformation.setTranslateX(viewTransformation.getTranslateX() + factor * (double) delta.getX());
-                        viewTransformation.setTranslateY(viewTransformation.getTranslateY() + factor * (double) -delta.getY());
+                        camera.setTranslateX(camera.getTranslateX() + factor * (double) -delta.getX());
+                        camera.setTranslateY(camera.getTranslateY() + factor * (double) delta.getY());
                         startMove = endMove;
                     }
                 } else {
@@ -56,23 +56,23 @@ public class ViewFieldMover {
             @Override
             public void onMouseWheel(MouseWheelEvent event) {
                 if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_LEFT) == NativeEvent.BUTTON_LEFT) {
-                    double newAngleX = viewTransformation.getRotateX() + Math.toRadians(event.getDeltaY());
+                    double newAngleX = camera.getRotateX() + Math.toRadians(event.getDeltaY());
                     if (newAngleX < 0) {
                         newAngleX = 0;
                     } else if (newAngleX > MathHelper.QUARTER_RADIANT) {
                         newAngleX = MathHelper.QUARTER_RADIANT;
                     }
-                    viewTransformation.setRotateX(newAngleX);
+                    camera.setRotateX(newAngleX);
                 } else if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
-                    double newAngleZ = viewTransformation.getRotateZ() + Math.toRadians(event.getDeltaY());
+                    double newAngleZ = camera.getRotateZ() + Math.toRadians(event.getDeltaY());
                     if (newAngleZ < 0) {
                         newAngleZ = 0;
                     } else if (newAngleZ > MathHelper.ONE_RADIANT) {
                         newAngleZ = MathHelper.ONE_RADIANT;
                     }
-                    viewTransformation.setRotateZ(newAngleZ);
+                    camera.setRotateZ(newAngleZ);
                 } else {
-                    viewTransformation.setTranslateZ(viewTransformation.getTranslateZ() + event.getDeltaY());
+                    camera.setTranslateZ(camera.getTranslateZ() + event.getDeltaY());
                     event.preventDefault();
                 }
             }

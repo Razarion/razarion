@@ -3,7 +3,7 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.model.ViewTransformation;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -51,7 +51,7 @@ public class TerrainObjectWireRender extends AbstractRenderer {
     @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
-    private ViewTransformation viewTransformation;
+    private Camera camera;
 
     @PostConstruct
     public void init() {
@@ -98,7 +98,7 @@ public class TerrainObjectWireRender extends AbstractRenderer {
         gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
         // View transformation uniform
         WebGLUniformLocation viewUniform = getUniformLocation(VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(camera.createMatrix().toWebGlArray()));
         // Model transformation uniform
         WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
         // set vertices position

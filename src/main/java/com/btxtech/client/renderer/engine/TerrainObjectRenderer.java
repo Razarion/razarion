@@ -4,7 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.model.ViewTransformation;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
@@ -54,7 +54,7 @@ public class TerrainObjectRenderer extends AbstractRenderer {
     @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
-    private ViewTransformation viewTransformation;
+    private Camera camera;
     @Inject
     private Lighting lighting;
 
@@ -92,11 +92,11 @@ public class TerrainObjectRenderer extends AbstractRenderer {
 
     @Override
     public void draw() {
-        // gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
-        // gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
-        // gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
-        gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
-        gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
+        gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+        gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
+        gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
+        // gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
+        // gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
         // Projection uniform
@@ -104,7 +104,7 @@ public class TerrainObjectRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
         // View transformation uniform
         WebGLUniformLocation viewUniform = getUniformLocation(VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(viewTransformation.createMatrix().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(camera.createMatrix().toWebGlArray()));
         // Model transformation uniform
         WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
         // set vertices position

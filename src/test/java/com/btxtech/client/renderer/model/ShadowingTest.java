@@ -2,10 +2,7 @@ package com.btxtech.client.renderer.model;
 
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
-import org.jglue.cdiunit.CdiRunner;
 import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
@@ -21,7 +18,7 @@ public class ShadowingTest {
 
     // @Test errai and vetoed problem
     public void testCreateMvpShadowBias() throws Exception {
-        Matrix4 mvpShadowBias = shadowing.createMvpShadowBias_UNKNWON();
+        Matrix4 mvpShadowBias = shadowing.createModelViewProjectionTransformation();
         Vertex vertex = mvpShadowBias.multiply(new Vertex(0, 0, 0), 1.0);
         System.out.println(vertex);
         double w = mvpShadowBias.multiplyW(new Vertex(0, 0, 0), 1.0);

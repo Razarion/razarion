@@ -15,7 +15,7 @@ public class TestProjectionTransformation {
 
     @Test
     public void makePerspective() {
-        Matrix4 actual = AbstractProjectionTransformation.makePerspective(Math.toRadians(45), 480.0 / 480.0, 0.1, 100.0);
+        Matrix4 actual = AbstractProjectionTransformation.makePerspectiveFrustum(Math.toRadians(45), 480.0 / 480.0, 0.1, 100.0);
         Matrix4 expected = new Matrix4(new double[][]{
                 {2.4142135623730954, 0.0, 0.0, 0.0},
                 {0.0, 2.4142135623730954, 0.0, 0.0},
@@ -23,7 +23,7 @@ public class TestProjectionTransformation {
                 {0.0, 0.0, -1.0, 0.0}
         });
         Assert.assertEquals(expected, actual);
-        actual = AbstractProjectionTransformation.makePerspective(Math.toRadians(90), 640.0 / 640.0, 0.1, 100.0);
+        actual = AbstractProjectionTransformation.makePerspectiveFrustum(Math.toRadians(90), 640.0 / 640.0, 0.1, 100.0);
         expected = new Matrix4(new double[][]{
                 {1.0000000000000002, 0.0, 0.0, 0.0},
                 {0.0, 1.0000000000000002, 0.0, 0.0},
@@ -35,7 +35,7 @@ public class TestProjectionTransformation {
 
     @Test
     public void makeBalancedFrustumToGetRight() {
-        Matrix4 actual = AbstractProjectionTransformation.makeBalancedFrustum(12, 56, 0.1, 100);
+        Matrix4 actual = AbstractProjectionTransformation.makeBalancedPerspectiveFrustum(12, 56, 0.1, 100);
         Matrix4 expected = new Matrix4(new double[][]{
                 {0.008333333333333333, 0.0, 0.0, 0.0},
                 {0.0, 0.0017857142857142859, 0.0, 0.0},
