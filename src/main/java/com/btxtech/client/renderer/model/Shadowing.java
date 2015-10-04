@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 @Singleton
 @Bindable
 public class Shadowing {
+    public static final int TEXTURE_SIZE = 1024;
     @Inject
     private Camera camera;
     @Inject
@@ -68,8 +69,8 @@ public class Shadowing {
 
     public Matrix4 createProjectionTransformation() {
         YViewField yViewField = calculateYViewField();
-        double sideLength = Math.abs(yViewField.yDistance1 - yViewField.yDistance2) / 2.0;
-        return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(sideLength, sideLength, zNear, zFar);
+        double halfSideLength = Math.abs(yViewField.yDistance1 - yViewField.yDistance2) / 2.0;
+        return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(halfSideLength, halfSideLength, zNear, zFar);
     }
 
     public Matrix4 createModelViewProjectionTransformation() {
@@ -93,7 +94,10 @@ public class Shadowing {
     }
 
     public void testPrint() {
-        logger.severe("x = " + "--" + "; y = " + "--" + "; z = " + z + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
+        YViewField yViewField = calculateYViewField();
+        double sideLength = Math.abs(yViewField.yDistance1 - yViewField.yDistance2);
+        logger.severe("yViewField: " + (yViewField.yDistance1 + z) + ":" + (yViewField.yDistance2 + z) + " sideLength = " + sideLength);
+        logger.severe("z = " + z + "; zNear = " + zNear + "; zFar = " + zFar + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
     }
 
     private class YViewField {

@@ -21,8 +21,7 @@ import javax.inject.Inject;
  */
 @Dependent
 public class MonitorRenderer extends AbstractRenderer {
-    public static final int WIDTH = 256;
-    public static final int HEIGHT = WIDTH;
+    private static final int SIDE_LENGTH = 256;
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String COLOR_SAMPLER_UNIFORM_NAME = "uColorSampler";
@@ -50,8 +49,8 @@ public class MonitorRenderer extends AbstractRenderer {
     @Override
     public void fillBuffers() {
         VertexList vertexList = new VertexList();
-        double monitorWidth = 2.0 * WIDTH / (double) gameCanvas.getWidth();
-        double monitorHeight = 2.0 * HEIGHT / (double) gameCanvas.getHeight();
+        double monitorWidth = 2.0 * SIDE_LENGTH / (double) gameCanvas.getWidth();
+        double monitorHeight = 2.0 * SIDE_LENGTH / (double) gameCanvas.getHeight();
         Triangle triangle = new Triangle(new Vertex(0, 0, 0), new TextureCoordinate(0, 0),
                 new Vertex(monitorWidth, 0, 0), new TextureCoordinate(1, 0),
                 new Vertex(0, monitorHeight, 0), new TextureCoordinate(0, 1));
