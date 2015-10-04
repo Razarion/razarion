@@ -95,6 +95,10 @@ public class MainPage extends Composite {
     @DataField("dumpPositionButton")
     private Button dumpPositionButton;
     @Inject
+    @Bound
+    @DataField("shadowAlpha")
+    private DoubleBox shadowAlpha;
+    @Inject
     @DataField("dumpShadowPositionButton")
     private Button dumpShadowPositionButton;
     @Inject

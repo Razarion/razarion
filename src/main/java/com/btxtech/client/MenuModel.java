@@ -209,4 +209,22 @@ public class MenuModel {
         }
         shadowing.setZFar(zFar);
     }
+
+    public double getShadowAlpha() {
+        if (shadowing == null) {
+            return 0;
+        }
+        return shadowing.getShadowAlpha();
+    }
+
+    public void setShadowAlpha(double shadowAlpha) {
+        if (shadowing == null) {
+            return;
+        }
+        shadowing.setShadowAlpha(shadowAlpha);
+    }
+
+
+
+
 }

@@ -26,6 +26,7 @@ public class Shadowing {
     private Logger logger = Logger.getLogger(Shadowing.class.getName());
     private double zNear = 150;
     private double zFar = 201;
+    private double shadowAlpha = 0.5;
 
     public double getZ() {
         return z;
@@ -98,6 +99,14 @@ public class Shadowing {
         double sideLength = Math.abs(yViewField.yDistance1 - yViewField.yDistance2);
         logger.severe("yViewField: " + (yViewField.yDistance1 + z) + ":" + (yViewField.yDistance2 + z) + " sideLength = " + sideLength);
         logger.severe("z = " + z + "; zNear = " + zNear + "; zFar = " + zFar + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
+    }
+
+    public double getShadowAlpha() {
+        return shadowAlpha;
+    }
+
+    public void setShadowAlpha(double shadowAlpha) {
+        this.shadowAlpha = shadowAlpha;
     }
 
     private class YViewField {

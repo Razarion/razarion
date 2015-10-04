@@ -1,11 +1,11 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.Shadowing;
-import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
@@ -42,6 +42,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String UNIFORM_EDGE_DISTANCE = "uEdgeDistance";
     private static final String UNIFORM_MVP_SHADOW_BIAS = "uMVPDepthBias";
     private static final String UNIFORM_SHADOW_MAP_SAMPLER = "uSamplerShadow";
+    private static final String UNIFORM_SHADOW_ALPHA = "uShadowAlpha";
 
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
@@ -149,6 +150,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE4);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
         gameCanvas.getCtx3d().uniform1i(shadowMapUniform, 4);
+        WebGLUniformLocation uniformShadowAlpha = getUniformLocation(UNIFORM_SHADOW_ALPHA);
+        gameCanvas.getCtx3d().uniform1f(uniformShadowAlpha, (float) shadowing.getShadowAlpha());
 
         // Positions
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
