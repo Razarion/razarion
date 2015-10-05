@@ -18,7 +18,7 @@ public class ShadowingTest {
 
     // @Test errai and vetoed problem
     public void testCreateMvpShadowBias() throws Exception {
-        Matrix4 mvpShadowBias = shadowing.createModelViewProjectionTransformation();
+        Matrix4 mvpShadowBias = shadowing.createViewProjectionTransformation();
         Vertex vertex = mvpShadowBias.multiply(new Vertex(0, 0, 0), 1.0);
         System.out.println(vertex);
         double w = mvpShadowBias.multiplyW(new Vertex(0, 0, 0), 1.0);

@@ -74,17 +74,17 @@ public class Shadowing {
         return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(halfSideLength, halfSideLength, zNear, zFar);
     }
 
-    public Matrix4 createModelViewProjectionTransformation() {
-        return createProjectionTransformation().multiply(createModelViewTransformation());
-    }
-
-    public Matrix4 createModelViewTransformation() {
+    public Matrix4 createViewTransformation() {
         Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
         lightViewMatrix = lightViewMatrix.multiply(Matrix4.createZRotation(-rotateZ));
         YViewField yViewField = calculateYViewField();
         double yDistance = (yViewField.yDistance2 + yViewField.yDistance1) / 2.0;
         double y = camera.getTranslateY() + yDistance;
         return lightViewMatrix.multiply(Matrix4.createTranslation(-camera.getTranslateX(), -y, -z));
+    }
+
+    public Matrix4 createViewProjectionTransformation() {
+        return createProjectionTransformation().multiply(createViewTransformation());
     }
 
     private YViewField calculateYViewField() {

@@ -94,7 +94,7 @@ public class TerrainSurfaceDepthBufferRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveUniform, false, WebGlUtil.createArrayBufferOfFloat32(shadowing.createProjectionTransformation().toWebGlArray()));
         // View transformation uniform
         WebGLUniformLocation viewUniform = getUniformLocation(VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(shadowing.createModelViewTransformation().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(shadowing.createViewTransformation().toWebGlArray()));
         // Model transformation uniform
         WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
         gameCanvas.getCtx3d().uniformMatrix4fv(modelUniform, false, WebGlUtil.createArrayBufferOfFloat32(Matrix4.createIdentity().toWebGlArray()));
