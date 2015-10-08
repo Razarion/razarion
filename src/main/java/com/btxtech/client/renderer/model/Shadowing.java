@@ -20,12 +20,12 @@ public class Shadowing {
     @Inject
     @Normal
     private ProjectionTransformation normalProjectionTransformation;
-    private double z = 200;
+    private double z = 400;
     private double rotateX = -Math.toRadians(0);
     private double rotateZ = -Math.toRadians(0);
     private Logger logger = Logger.getLogger(Shadowing.class.getName());
-    private double zNear = 150;
-    private double zFar = 201;
+    private double zNear = 1;
+    private double zFar = 500;
     private double shadowAlpha = 0.5;
 
     public double getZ() {
@@ -70,17 +70,20 @@ public class Shadowing {
 
     public Matrix4 createProjectionTransformation() {
         YViewField yViewField = calculateYViewField();
-        double halfSideLength = Math.abs(yViewField.yDistance1 - yViewField.yDistance2) / 2.0;
-        return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(halfSideLength, halfSideLength, zNear, zFar);
+        double halfSideLength = Math.abs(yViewField.yBottom - yViewField.yTop) / 2.0;
+        double correctedHalfSideLength = Math.cos(rotateX) * halfSideLength;
+        return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(correctedHalfSideLength, correctedHalfSideLength, zNear, zFar);
     }
 
     public Matrix4 createViewTransformation() {
+        YViewField yViewField = calculateYViewField();
+        double yDistance = (yViewField.yTop + yViewField.yBottom) / 2.0;
+        double lightNormal = camera.getTranslateY() + yDistance;
+        double actualLightPos = lightNormal + Math.tan(rotateX) * z;
+
         Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
         lightViewMatrix = lightViewMatrix.multiply(Matrix4.createZRotation(-rotateZ));
-        YViewField yViewField = calculateYViewField();
-        double yDistance = (yViewField.yDistance2 + yViewField.yDistance1) / 2.0;
-        double y = camera.getTranslateY() + yDistance;
-        return lightViewMatrix.multiply(Matrix4.createTranslation(-camera.getTranslateX(), -y, -z));
+        return lightViewMatrix.multiply(Matrix4.createTranslation(-camera.getTranslateX(), -actualLightPos, -z));
     }
 
     public Matrix4 createViewProjectionTransformation() {
@@ -89,15 +92,15 @@ public class Shadowing {
 
     private YViewField calculateYViewField() {
         YViewField yViewField = new YViewField();
-        yViewField.yDistance1 = Math.tan(camera.getRotateX() - normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
-        yViewField.yDistance2 = Math.tan(camera.getRotateX() + normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
+        yViewField.yBottom = Math.tan(camera.getRotateX() - normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
+        yViewField.yTop = Math.tan(camera.getRotateX() + normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
         return yViewField;
     }
 
     public void testPrint() {
         YViewField yViewField = calculateYViewField();
-        double sideLength = Math.abs(yViewField.yDistance1 - yViewField.yDistance2);
-        logger.severe("yViewField: " + (yViewField.yDistance1 + z) + ":" + (yViewField.yDistance2 + z) + " sideLength = " + sideLength);
+        double sideLength = Math.abs(yViewField.yBottom - yViewField.yTop);
+        logger.severe("yViewField: " + (yViewField.yBottom + z) + ":" + (yViewField.yTop + z) + " sideLength = " + sideLength);
         logger.severe("z = " + z + "; zNear = " + zNear + "; zFar = " + zFar + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
     }
 
@@ -110,7 +113,7 @@ public class Shadowing {
     }
 
     private class YViewField {
-        double yDistance1;
-        double yDistance2;
+        double yBottom;
+        double yTop;
     }
 }

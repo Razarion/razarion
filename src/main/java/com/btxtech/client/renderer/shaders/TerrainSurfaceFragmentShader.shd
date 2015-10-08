@@ -22,7 +22,8 @@ void main(void) {
     vec4 coordShadowMap = coordCorrectionMatrix * vShadowCoord;
     float zMap = texture2D(uSamplerShadow, coordShadowMap.st / coordShadowMap.w).r;
     float shadowFactor;
-    if(zMap > zNdc + 0.001) {
+    zNdc = zNdc * 0.5 + 0.5;
+    if(zMap > zNdc - 0.0001) {
         shadowFactor = 1.0;
     } else {
         shadowFactor = uShadowAlpha;
