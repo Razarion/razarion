@@ -101,6 +101,15 @@ public abstract class AbstractProjectionTransformation implements ProjectionTran
 //        return makeBalancedOrthographicFrustum(right, top, zNear, zFar);
 //    }
 
+    /**
+     * http://www.songho.ca/opengl/gl_projectionmatrix.html
+     *
+     * @param right
+     * @param top
+     * @param zNear
+     * @param zFar
+     * @return
+     */
     public static Matrix4 makeBalancedOrthographicFrustum(double right, double top, double zNear, double zFar) {
         double a = -2.0 / (zFar - zNear);
         double b = -(zFar + zNear) / (zFar - zNear);

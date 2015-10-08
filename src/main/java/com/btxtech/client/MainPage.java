@@ -52,10 +52,6 @@ public class MainPage extends Composite {
     @DataField("surfaceSlider")
     private DoubleBox surfaceSlider;
     @Inject
-    @Bound
-    @DataField("shadowLightZ")
-    private DoubleBox shadowLightPosZ;
-    @Inject
     @Bound(converter = GradToRadConverter.class)
     @DataField("rotateX")
     private DoubleBox shadowLightRotateX;
@@ -71,10 +67,6 @@ public class MainPage extends Composite {
     @Bound
     @DataField("shadowProjectionTransformationZNear")
     private DoubleBox shadowProjectionTransformationZNear;
-    @Inject
-    @Bound
-    @DataField("shadowProjectionTransformationZFar")
-    private DoubleBox shadowProjectionTransformationZFar;
     @Inject
     @Bound(property = "shadowLightRotateZ", converter = RadToStringGradConverter.class)
     @DataField("rotateZDisplay")

@@ -44,20 +44,6 @@ public class MenuModel {
         terrainSurface.setEdgeDistance(surfaceSlider);
     }
 
-    public double getShadowLightPosZ() {
-        if (shadowing == null) {
-            return 0;
-        }
-        return shadowing.getZ();
-    }
-
-    public void setShadowLightPosZ(double shadowLightPosZ) {
-        if (shadowing == null) {
-            return;
-        }
-        shadowing.setZ(shadowLightPosZ);
-    }
-
     public double getShadowLightRotateX() {
         if (shadowing == null) {
             return 0;
@@ -194,20 +180,6 @@ public class MenuModel {
         }
         logger.severe("setShadowProjectionTransformationZNear: " + zNear);
         shadowing.setZNear(zNear);
-    }
-
-    public double getShadowProjectionTransformationZFar() {
-        if (shadowing == null) {
-            return 0;
-        }
-        return shadowing.getZFar();
-    }
-
-    public void setShadowProjectionTransformationZFar(double zFar) {
-        if (shadowing == null) {
-            return;
-        }
-        shadowing.setZFar(zFar);
     }
 
     public double getShadowAlpha() {
