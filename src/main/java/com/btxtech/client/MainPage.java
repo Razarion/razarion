@@ -61,16 +61,16 @@ public class MainPage extends Composite {
     private Label rotateXDisplay;
     @Inject
     @Bound(converter = GradToRadConverter.class)
-    @DataField("rotateZ")
-    private DoubleBox shadowLightRotateZ;
+    @DataField("rotateY")
+    private DoubleBox shadowLightRotateY;
+    @Inject
+    @Bound(property = "shadowLightRotateY", converter = RadToStringGradConverter.class)
+    @DataField("rotateYDisplay")
+    private Label rotateYDisplay;
     @Inject
     @Bound
     @DataField("shadowProjectionTransformationZNear")
     private DoubleBox shadowProjectionTransformationZNear;
-    @Inject
-    @Bound(property = "shadowLightRotateZ", converter = RadToStringGradConverter.class)
-    @DataField("rotateZDisplay")
-    private Label rotateZDisplay;
     @Inject
     @DataField("topButton")
     private Button topButton;

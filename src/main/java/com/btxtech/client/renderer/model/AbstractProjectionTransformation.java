@@ -23,10 +23,18 @@ public abstract class AbstractProjectionTransformation implements ProjectionTran
     }
 
     @Override
+    public double calculateFovX() {
+        double top = zNear * Math.tan(fovY / 2.0);
+        double right = top * aspectRatio;
+        return Math.atan(right / zNear) * 2.0;
+    }
+
+    @Override
     public double getAspectRatio() {
         return aspectRatio;
     }
 
+    @Override
     public void setAspectRatio(double aspectRatio) {
         this.aspectRatio = aspectRatio;
     }

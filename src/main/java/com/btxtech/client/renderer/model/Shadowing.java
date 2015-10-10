@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.model;
 
+import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Matrix4;
 import org.jboss.errai.databinding.client.api.Bindable;
 
@@ -20,8 +21,8 @@ public class Shadowing {
     @Inject
     @Normal
     private ProjectionTransformation normalProjectionTransformation;
-    private double rotateX = -Math.toRadians(0);
-    private double rotateZ = -Math.toRadians(0);
+    private double rotateX = -Math.toRadians(80);
+    private double rotateY = -Math.toRadians(0);
     private Logger logger = Logger.getLogger(Shadowing.class.getName());
     private double zNear = 10;
     private double highestPoint = 20;
@@ -36,12 +37,12 @@ public class Shadowing {
         this.rotateX = rotateX;
     }
 
-    public double getRotateZ() {
-        return rotateZ;
+    public double getRotateY() {
+        return rotateY;
     }
 
-    public void setRotateZ(double rotateZ) {
-        this.rotateZ = rotateZ;
+    public void setRotateY(double rotateY) {
+        this.rotateY = rotateY;
     }
 
     public double getZNear() {
@@ -69,34 +70,34 @@ public class Shadowing {
     }
 
     public Matrix4 createProjectionTransformation() {
-        double top = calculateTop();
-        return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(top, top, zNear, calculateZFar());
+        return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(calculateRight(), calculateTop(), zNear, calculateZFar());
     }
 
     public Matrix4 createViewTransformation() {
-        YViewField yViewField = calculateYViewField();
-        double yDistance = (yViewField.yTop + yViewField.yBottom) / 2.0;
-        double lightNormal = camera.getTranslateY() + yDistance;
-        double actualLightPos = lightNormal + Math.tan(rotateX) * calculateZ();
+        double actualLightPosX = camera.getTranslateX() + Math.tan(rotateY) * calculateZ();
+
+        double lightNormalY = camera.getTranslateY() + calculateYViewField().calculateAverage();
+        double actualLightPosY = lightNormalY + Math.tan(rotateX) * calculateZ();
 
         Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
-        lightViewMatrix = lightViewMatrix.multiply(Matrix4.createZRotation(-rotateZ));
-        return lightViewMatrix.multiply(Matrix4.createTranslation(-camera.getTranslateX(), -actualLightPos, -calculateZ()));
+        lightViewMatrix = lightViewMatrix.multiply(Matrix4.createYRotation(-rotateY));
+        return lightViewMatrix.multiply(Matrix4.createTranslation(-actualLightPosX, -actualLightPosY, -calculateZ()));
     }
 
     public Matrix4 createViewProjectionTransformation() {
         return createProjectionTransformation().multiply(createViewTransformation());
     }
 
-    private YViewField calculateYViewField() {
-        YViewField yViewField = new YViewField();
-        yViewField.yBottom = Math.tan(camera.getRotateX() - normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
-        yViewField.yTop = Math.tan(camera.getRotateX() + normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
+    private ViewField calculateYViewField() {
+        ViewField yViewField = new ViewField();
+        yViewField.start = Math.tan(camera.getRotateX() - normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
+        yViewField.end = Math.tan(camera.getRotateX() + normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
         return yViewField;
     }
 
     public void testPrint() {
-        logger.severe("calculated Z = " + calculateZ() + "; zNear = " + zNear + "; calculated ZFar = " + calculateZFar() + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
+        logger.severe("calculateRight() = " + calculateRight() + "; calculateTop() = " + calculateTop());
+        logger.severe("calculated Z = " + calculateZ() + "; zNear = " + zNear + "; calculated ZFar = " + calculateZFar() + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateY = Math.toRadians(" + Math.toDegrees(rotateY) + ");");
     }
 
     public double getShadowAlpha() {
@@ -107,23 +108,48 @@ public class Shadowing {
         this.shadowAlpha = shadowAlpha;
     }
 
+    private double calculateRight() {
+        double maxY = calculateYViewField().calculateMx();
+        double z = MathHelper.getPythagorasC(maxY, camera.getTranslateZ());
+        double xHalfViewFiled = Math.tan(normalProjectionTransformation.calculateFovX() / 2.0) * z;
+        return Math.cos(rotateY) * xHalfViewFiled;
+    }
+
     private double calculateTop() {
-        YViewField yViewField = calculateYViewField();
-        double halfSideLength = Math.abs(yViewField.yBottom - yViewField.yTop) / 2.0;
-        return Math.cos(rotateX) * halfSideLength;
+        return Math.cos(rotateX) * calculateYViewField().calculateHalfDifference();
     }
 
     private double calculateZ() {
-        return highestPoint + Math.abs(Math.sin(rotateX) * calculateTop()) + Math.abs(zNear / Math.cos(rotateX));
+        double xZ = highestPoint + Math.abs(Math.sin(rotateY) * calculateRight()) + Math.abs(Math.cos(rotateY) * zNear);
+        double yZ = highestPoint + Math.abs(Math.sin(rotateX) * calculateTop()) + Math.abs(Math.cos(rotateX) * zNear);
+        return Math.max(xZ, yZ);
     }
 
     private double calculateZFar() {
-        double norm = Math.abs(2.0 * Math.sin(rotateX) * calculateTop()) + highestPoint - lowestPoint;
-        return zNear + Math.abs(norm / Math.cos(rotateX));
+        double normX = Math.abs(2.0 * Math.sin(rotateY) * calculateRight()) + highestPoint - lowestPoint;
+        double zFarX = zNear + Math.abs(normX / Math.cos(rotateY));
+
+        double normY = Math.abs(2.0 * Math.sin(rotateX) * calculateTop()) + highestPoint - lowestPoint;
+        double zFarY = zNear + Math.abs(normY / Math.cos(rotateX));
+
+        return Math.max(zFarX, zFarY);
     }
 
-    private class YViewField {
-        double yBottom;
-        double yTop;
+    private class ViewField {
+        double start;
+        double end;
+
+        public double calculateAverage() {
+            return (end + start) / 2.0;
+        }
+
+        public double calculateHalfDifference() {
+            return Math.abs(start - end) / 2.0;
+        }
+
+        public double calculateMx() {
+            return Math.max(Math.abs(start), Math.abs(end));
+        }
+
     }
 }

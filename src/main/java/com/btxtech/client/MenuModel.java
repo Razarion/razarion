@@ -58,18 +58,18 @@ public class MenuModel {
         shadowing.setRotateX(shadowLightRotateX);
     }
 
-    public double getShadowLightRotateZ() {
+    public double getShadowLightRotateY() {
         if (shadowing == null) {
             return 0;
         }
-        return shadowing.getRotateZ();
+        return shadowing.getRotateY();
     }
 
-    public void setShadowLightRotateZ(double shadowLightRotateZ) {
+    public void setShadowLightRotateY(double shadowLightRotateY) {
         if (shadowing == null) {
             return;
         }
-        shadowing.setRotateZ(shadowLightRotateZ);
+        shadowing.setRotateY(shadowLightRotateY);
     }
 
     public boolean getShowDeepMap() {

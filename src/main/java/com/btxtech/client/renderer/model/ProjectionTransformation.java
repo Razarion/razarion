@@ -23,6 +23,8 @@ public interface ProjectionTransformation {
 
     void setFovY(double fovY);
 
+    double calculateFovX();
+
     double getAspectRatio();
 
     void setAspectRatio(double aspectRatio);
