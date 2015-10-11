@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.model;
 
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Vertex;
 import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.inject.Inject;
@@ -96,8 +97,9 @@ public class Shadowing {
     }
 
     public void testPrint() {
+        logger.severe("calculateAngle() = " + Math.toDegrees(calculateAngle()));
         logger.severe("calculateRight() = " + calculateRight() + "; calculateTop() = " + calculateTop());
-        logger.severe("calculated Z = " + calculateZ() + "; zNear = " + zNear + "; calculated ZFar = " + calculateZFar() + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateY = Math.toRadians(" + Math.toDegrees(rotateY) + ");");
+        logger.severe("calculated Z = " + calculateZ() + "; zNear = " + zNear + "; calculated ZFar = " + calculateZFar() + "; rotateX = " + Math.toDegrees(rotateX) + "; rotateY = " + Math.toDegrees(rotateY) + "");
     }
 
     public double getShadowAlpha() {
@@ -120,19 +122,20 @@ public class Shadowing {
     }
 
     private double calculateZ() {
-        double xZ = highestPoint + Math.abs(Math.sin(rotateY) * calculateRight()) + Math.abs(Math.cos(rotateY) * zNear);
-        double yZ = highestPoint + Math.abs(Math.sin(rotateX) * calculateTop()) + Math.abs(Math.cos(rotateX) * zNear);
-        return Math.max(xZ, yZ);
+        double angle = calculateAngle();
+        double z = Math.cos(angle) * MathHelper.getPythagorasC(calculateRight(), calculateTop());
+        return z + highestPoint + Math.cos(angle) * zNear;
     }
 
     private double calculateZFar() {
-        double normX = Math.abs(2.0 * Math.sin(rotateY) * calculateRight()) + highestPoint - lowestPoint;
-        double zFarX = zNear + Math.abs(normX / Math.cos(rotateY));
+        double angle = calculateAngle();
+        double norm = Math.abs(2.0 * Math.cos(angle) * MathHelper.getPythagorasC(calculateRight(), calculateTop())) + highestPoint - lowestPoint;
+        return zNear + Math.abs(norm / Math.cos(angle));
+    }
 
-        double normY = Math.abs(2.0 * Math.sin(rotateX) * calculateTop()) + highestPoint - lowestPoint;
-        double zFarY = zNear + Math.abs(normY / Math.cos(rotateX));
-
-        return Math.max(zFarX, zFarY);
+    private double calculateAngle() {
+        Vertex planeNorm = Matrix4.createXRotation(rotateX).multiply(Matrix4.createYRotation(rotateY)).multiply(new Vertex(0, 0, 1), 1);
+        return planeNorm.unsignedAngle(new Vertex(0, 0, 1));
     }
 
     private class ViewField {
