@@ -22,13 +22,13 @@ public class Shadowing {
     @Inject
     @Normal
     private ProjectionTransformation normalProjectionTransformation;
-    private double rotateX = -Math.toRadians(80);
-    private double rotateY = -Math.toRadians(0);
+    private double rotateX = -Math.toRadians(0);
+    private double rotateY = -Math.toRadians(45);
     private Logger logger = Logger.getLogger(Shadowing.class.getName());
     private double zNear = 10;
     private double highestPoint = 20;
     private double lowestPoint = -1;
-    private double shadowAlpha = 0.5;
+    private double shadowAlpha = 0.6;
 
     public double getRotateX() {
         return rotateX;
@@ -111,7 +111,7 @@ public class Shadowing {
     }
 
     private double calculateRight() {
-        double maxY = calculateYViewField().calculateMx();
+        double maxY = calculateYViewField().calculateMax();
         double z = MathHelper.getPythagorasC(maxY, camera.getTranslateZ());
         double xHalfViewFiled = Math.tan(normalProjectionTransformation.calculateFovX() / 2.0) * z;
         return Math.cos(rotateY) * xHalfViewFiled;
@@ -150,7 +150,7 @@ public class Shadowing {
             return Math.abs(start - end) / 2.0;
         }
 
-        public double calculateMx() {
+        public double calculateMax() {
             return Math.max(Math.abs(start), Math.abs(end));
         }
 
