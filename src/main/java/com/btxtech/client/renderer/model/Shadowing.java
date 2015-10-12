@@ -26,7 +26,7 @@ public class Shadowing {
     private double rotateY = -Math.toRadians(45);
     private Logger logger = Logger.getLogger(Shadowing.class.getName());
     private double zNear = 10;
-    private double highestPoint = 20;
+    private double highestPoint = 120;
     private double lowestPoint = -1;
     private double shadowAlpha = 0.6;
 

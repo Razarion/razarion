@@ -32,7 +32,7 @@ public class TerrainObjectService {
     private RenderService renderService;
     private VertexList vertexList;
     private List<Matrix4> positions = new ArrayList<>();
-    private ImageDescriptor imageDescriptor = Terrain.BUSH_1;
+    private ImageDescriptor imageDescriptor = ImageDescriptor.BUSH_1;
 
     public TerrainObjectService() {
         for (int x = 0; x < 30; x++) {

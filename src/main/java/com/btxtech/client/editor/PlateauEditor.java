@@ -11,6 +11,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 12.05.2015.
  */
+@Deprecated
 public class PlateauEditor extends SvgEditor {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 800;

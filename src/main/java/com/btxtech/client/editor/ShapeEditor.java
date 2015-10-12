@@ -16,6 +16,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 02.05.2015.
  */
+@Deprecated
 public class ShapeEditor extends SvgEditor {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 400;

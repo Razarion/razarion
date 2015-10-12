@@ -25,8 +25,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 01.05.2015.
  */
-@Dependent
-public class TerrainSurfaceRenderer extends AbstractRenderer {
+public abstract class AbstractTerrainSurfaceRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String A_VERTEX_NORMAL = "aVertexNormal";
     private static final String EDGE_POSITION_ATTRIBUTE_NAME = "aEdgePosition";
@@ -72,6 +71,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     @Inject
     private Shadowing shadowing;
 
+    protected abstract VertexList provideVertexList();
+
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.terrainSurfaceVertexShader(), Shaders.INSTANCE.terrainSurfaceFragmentShader());
@@ -91,7 +92,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = terrainSurface.getVertexList();
+        VertexList vertexList = provideVertexList();
 
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
         WebGlUtil.checkLastWebGlError("bindBuffer", gameCanvas.getCtx3d());
