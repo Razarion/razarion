@@ -11,7 +11,7 @@ import javax.inject.Inject;
  * 12.10.2015.
  */
 @Dependent
-public class PlainTerrainSurfaceDepthBufferRenderer extends AbstractTerrainSurfaceRenderer {
+public class PlainTerrainSurfaceDepthBufferRenderer extends AbstractTerrainSurfaceDepthBufferRenderer {
     @Inject
     private TerrainSurface terrainSurface;
 
