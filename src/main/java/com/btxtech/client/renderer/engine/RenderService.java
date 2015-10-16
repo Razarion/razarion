@@ -94,6 +94,10 @@ public class RenderService {
         }
     }
 
+    public boolean isWire() {
+        return wire;
+    }
+
     private void initFrameBuffer() {
         Object extension = gameCanvas.getCtx3d().getExtension("WEBGL_depth_texture");
         if (extension == null) {

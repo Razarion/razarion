@@ -141,6 +141,10 @@ public class MainPage extends Composite {
     @Bound
     @DataField("showDeepMap")
     private CheckBox showDeepMap;
+    @Inject
+    @Bound
+    @DataField("wireMode")
+    private CheckBox wireMode;
 
     @PostConstruct
     public void init() {

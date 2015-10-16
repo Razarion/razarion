@@ -75,6 +75,17 @@ public class MenuModel {
         shadowing.setRotateY(shadowLightRotateY);
     }
 
+    public void setWireMode(boolean wireMode) {
+        if (renderService == null) {
+            return;
+        }
+        renderService.showWire(wireMode);
+    }
+
+    public boolean getWireMode() {
+        return renderService != null && renderService.isWire();
+    }
+
     public void setShowMonitor(boolean showMonitor) {
         if (renderService == null) {
             return;
