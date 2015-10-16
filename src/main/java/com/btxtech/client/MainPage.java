@@ -135,6 +135,10 @@ public class MainPage extends Composite {
     private DoubleBox projectionTransformationZoom;
     @Inject
     @Bound
+    @DataField("showMonitor")
+    private CheckBox showMonitor;
+    @Inject
+    @Bound
     @DataField("showDeepMap")
     private CheckBox showDeepMap;
 

@@ -75,6 +75,17 @@ public class MenuModel {
         shadowing.setRotateY(shadowLightRotateY);
     }
 
+    public void setShowMonitor(boolean showMonitor) {
+        if (renderService == null) {
+            return;
+        }
+        renderService.setShowMonitor(showMonitor);
+    }
+
+    public boolean getShowMonitor() {
+        return renderService != null && renderService.isShowMonitor();
+    }
+
     public boolean getShowDeepMap() {
         return renderService != null && renderService.isShowDeep();
     }

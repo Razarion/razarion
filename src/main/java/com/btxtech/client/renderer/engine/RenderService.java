@@ -34,14 +34,17 @@ public class RenderService {
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
     private Logger logger = Logger.getLogger(RenderService.class.getName());
+    private boolean showMonitor = false;
     private boolean showDeep = false;
+    private RenderSwitch monitor;
 
     public void init() {
         initFrameBuffer();
         renderQueue.add(new RenderSwitch(renderInstance.select(PlainTerrainSurfaceRenderer.class).get(), renderInstance.select(PlainTerrainSurfaceDepthBufferRenderer.class).get(), renderInstance.select(PlainTerrainSurfaceWireRender.class).get(), wire));
         renderQueue.add(new RenderSwitch(renderInstance.select(SlopeTerrainSurfaceRenderer.class).get(), renderInstance.select(SlopeTerrainSurfaceDepthBufferRenderer.class).get(), renderInstance.select(SlopeTerrainSurfaceWireRender.class).get(), wire));
         renderQueue.add(new RenderSwitch(renderInstance.select(TerrainObjectRenderer.class).get(), renderInstance.select(TerrainObjectDepthBufferRenderer.class).get(), renderInstance.select(TerrainObjectWireRender.class).get(), wire));
-        renderQueue.add(new RenderSwitch(renderInstance.select(MonitorRenderer.class).get(), null, null, wire));
+        monitor = new RenderSwitch(renderInstance.select(MonitorRenderer.class).get(), null, null, wire);
+        renderQueue.add(monitor);
     }
 
     public void draw() {
@@ -59,6 +62,9 @@ public class RenderService {
         gameCanvas.getCtx3d().viewport(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
         for (RenderSwitch renderSwitch : renderQueue) {
+            if(!showMonitor && renderSwitch == monitor) {
+                continue;
+            }
             try {
                 renderSwitch.draw();
             } catch (Throwable t) {
@@ -126,6 +132,15 @@ public class RenderService {
 
     public WebGLTexture getDepthTexture() {
         return depthTexture;
+    }
+
+    public boolean isShowMonitor() {
+        return showMonitor;
+    }
+
+    public void setShowMonitor(boolean showMonitor) {
+        this.showMonitor = showMonitor;
+        logger.severe("setShowMonitor: " + this.showMonitor);
     }
 
     public boolean isShowDeep() {
