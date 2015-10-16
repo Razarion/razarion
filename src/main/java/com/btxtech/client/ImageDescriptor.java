@@ -14,6 +14,10 @@ public class ImageDescriptor {
     public static final ImageDescriptor BLEND_1 = new ImageDescriptor("blend1.png", 512, 512);
     public static final ImageDescriptor BLEND_2 = new ImageDescriptor("blend2.png", 512, 512);
     public static final ImageDescriptor BUSH_1 = new ImageDescriptor("bush-texture.png", 1024, 1024);
+    public static final ImageDescriptor CHESS_TEXTURE_32 = new ImageDescriptor("chess32.jpg", 512, 512);
+    public static final ImageDescriptor CHESS_TEXTURE_08 = new ImageDescriptor("chess08.jpg", 512, 512);
+    public static final ImageDescriptor TEX_DEV_1 = new ImageDescriptor("texdev1.jpg", 256, 256);
+    public static final ImageDescriptor TEX_DEV_2 = new ImageDescriptor("texdev2.jpg", 256, 256);
     private String url;
     private int width;
     private int height;

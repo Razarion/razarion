@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Shadowing;
@@ -17,7 +18,6 @@ import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -65,7 +65,7 @@ public abstract class AbstractTerrainSurfaceDepthBufferRenderer extends Abstract
         barycentricPositionAttribute = getAndEnableAttributeLocation(BARYCENTRIC_ATTRIBUTE_NAME);
         textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
         textureCoordinatePositionAttribute = getAndEnableAttributeLocation(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
-        webGLTexture = setupTexture(CHESS_TEXTURE_08);
+        webGLTexture = setupTexture(ImageDescriptor.CHESS_TEXTURE_08);
     }
 
     @Override

@@ -3,7 +3,9 @@ package com.btxtech.client.renderer.model;
 import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Vertex;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -13,15 +15,17 @@ import javax.inject.Singleton;
 public class Lighting {
     private Color ambientColor;
     private Color color;
-    private double altitude;
-    private double azimuth;
+    @Inject
+    private Shadowing shadowing;
+    private double bumpMapDepth = 10;
+    // private Logger logger = Logger.getLogger(Lighting.class.getName());
 
     public Lighting() {
         setGame();
     }
 
     public Color getColor() {
-        return color;
+        return new Color(0.2, 0.2, 0.2);
     }
 
     public void setColor(Color color) {
@@ -36,36 +40,12 @@ public class Lighting {
         this.ambientColor = ambientColor;
     }
 
-    public double getAltitude() {
-        return altitude;
+    public double getBumpMapDepth() {
+        return bumpMapDepth;
     }
 
-    /**
-     * Altitude or height. 0 means the sun is at the horizon
-     * PI / 2 (90dec) means the sun is at the zenith
-     *
-     * @param altitude altitude in radians
-     */
-    public void setAltitude(double altitude) {
-        this.altitude = altitude;
-    }
-
-    public double getAzimuth() {
-        return azimuth;
-    }
-
-    /**
-     * Azimuth or directions
-     * 0 means the sun is coming from the east
-     * 90 means sun is comming from the north
-     * 180 means sun is comming from the west
-     * 270 means sun is comming from the south
-     * counter clock
-     *
-     * @param azimuth azimuth in radians
-     */
-    public void setAzimuth(double azimuth) {
-        this.azimuth = azimuth;
+    public void setBumpMapDepth(double bumpMapDepth) {
+        this.bumpMapDepth = bumpMapDepth;
     }
 
     /**
@@ -74,16 +54,10 @@ public class Lighting {
      * @return direction normalized
      */
     public Vertex getLightDirection() {
-        double z = Math.sin(altitude);
-        double adjacentSide = Math.cos(altitude);
-        double y = adjacentSide * Math.sin(azimuth);
-        double x = adjacentSide * Math.cos(azimuth);
-        return new Vertex(x, y, z);
+        return shadowing.createRotationMatrix().multiply(new Vertex(0, 0, 1), 1.0);
     }
 
     public void setGame() {
-        azimuth = Math.toRadians(270);
-        altitude = Math.toRadians(60);
         color = new Color(0.6, 0.6, 0.6);
         ambientColor = new Color(0.5, 0.5, 0.5);
     }

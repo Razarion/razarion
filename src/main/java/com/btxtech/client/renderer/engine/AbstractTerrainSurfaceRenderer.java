@@ -7,6 +7,7 @@ import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.Shadowing;
 import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
@@ -18,7 +19,6 @@ import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -32,6 +32,7 @@ public abstract class AbstractTerrainSurfaceRenderer extends AbstractRenderer {
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
+    private static final String NORM_UNIFORM_NAME = "uNMatrix";
     private static final String UNIFORM_AMBIENT_COLOR = "uAmbientColor";
     private static final String TOP_SAMPLER_UNIFORM_NAME = "uSamplerTop";
     private static final String BLEND_SAMPLER_UNIFORM_NAME = "uSamplerBlend";
@@ -42,6 +43,7 @@ public abstract class AbstractTerrainSurfaceRenderer extends AbstractRenderer {
     private static final String UNIFORM_MVP_SHADOW_BIAS = "uMVPDepthBias";
     private static final String UNIFORM_SHADOW_MAP_SAMPLER = "uSamplerShadow";
     private static final String UNIFORM_SHADOW_ALPHA = "uShadowAlpha";
+    private static final String UNIFORM_BUMP_MAP_DEPTH = "bumpMapDepth";
 
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
@@ -75,6 +77,11 @@ public abstract class AbstractTerrainSurfaceRenderer extends AbstractRenderer {
 
     @PostConstruct
     public void init() {
+        Object extension = gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
+        if (extension == null) {
+            throw new WebGlException("OES_standard_derivatives is no supported");
+        }
+
         createProgram(Shaders.INSTANCE.terrainSurfaceVertexShader(), Shaders.INSTANCE.terrainSurfaceFragmentShader());
         verticesBuffer = gameCanvas.getCtx3d().createBuffer();
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);
@@ -129,6 +136,9 @@ public abstract class AbstractTerrainSurfaceRenderer extends AbstractRenderer {
         // Model model transformation uniform
         WebGLUniformLocation mVUniform = getUniformLocation(VIEW_UNIFORM_NAME);
         gameCanvas.getCtx3d().uniformMatrix4fv(mVUniform, false, WebGlUtil.createArrayBufferOfFloat32(camera.createMatrix().toWebGlArray()));
+        // Norm matrix transformation uniform
+        WebGLUniformLocation mNUniform = getUniformLocation(NORM_UNIFORM_NAME);
+        gameCanvas.getCtx3d().uniformMatrix4fv(mNUniform, false, WebGlUtil.createArrayBufferOfFloat32(camera.createNormMatrix().toWebGlArray()));
 
         // Ambient color uniform
         WebGLUniformLocation pAmbientUniformColor = getUniformLocation(UNIFORM_AMBIENT_COLOR);
@@ -143,6 +153,10 @@ public abstract class AbstractTerrainSurfaceRenderer extends AbstractRenderer {
         // Edges
         WebGLUniformLocation edgeDistanceUniform = getUniformLocation(UNIFORM_EDGE_DISTANCE);
         gameCanvas.getCtx3d().uniform1f(edgeDistanceUniform, (float) terrainSurface.getEdgeDistance());
+
+        // Bump mapping
+        WebGLUniformLocation bumpMapDepthUniform = getUniformLocation(UNIFORM_BUMP_MAP_DEPTH);
+        gameCanvas.getCtx3d().uniform1f(bumpMapDepthUniform, (float) lighting.getBumpMapDepth());
 
         // Shadow
         WebGLUniformLocation shadowMvpUniform = getUniformLocation(UNIFORM_MVP_SHADOW_BIAS);

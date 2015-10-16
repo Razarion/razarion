@@ -16,11 +16,6 @@ public class Camera {
     private double translateZ;
     private double rotateX;
     private double rotateZ;
-    private double saveTranslateX;
-    private double saveTranslateY;
-    private double saveTranslateZ;
-    private double saveRotateX;
-    private double saveRotateZ;
 
     private Logger logger = Logger.getLogger(Camera.class.getName());
 
@@ -81,6 +76,11 @@ public class Camera {
         return matrix4.multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
     }
 
+    public Matrix4 createNormMatrix() {
+        Matrix4 matrix4 = Matrix4.createXRotation(rotateX);
+        return matrix4.multiply(Matrix4.createZRotation(rotateZ));
+    }
+
     public void setTop() {
         translateX = 0;
         translateY = 0;
@@ -114,22 +114,6 @@ public class Camera {
         translateZ = 6;
         rotateX = Math.toRadians(87.00000000000001);
         rotateZ = Math.toRadians(0);
-    }
-
-    public void restore() {
-        translateX = saveTranslateX;
-        translateY = saveTranslateY;
-        translateZ = saveTranslateZ;
-        rotateX = saveRotateX;
-        rotateZ = saveRotateZ;
-    }
-
-    public void save() {
-        saveTranslateX = translateX;
-        saveTranslateY = translateY;
-        saveTranslateZ = translateZ;
-        saveRotateX = rotateX;
-        saveRotateZ = rotateZ;
     }
 
     private void fireChanged() {

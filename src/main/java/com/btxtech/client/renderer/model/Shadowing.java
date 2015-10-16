@@ -80,9 +80,12 @@ public class Shadowing {
         double lightNormalY = camera.getTranslateY() + calculateYViewField().calculateAverage();
         double actualLightPosY = lightNormalY + Math.tan(rotateX) * calculateZ();
 
-        Matrix4 lightViewMatrix = Matrix4.createXRotation(-rotateX);
-        lightViewMatrix = lightViewMatrix.multiply(Matrix4.createYRotation(-rotateY));
-        return lightViewMatrix.multiply(Matrix4.createTranslation(-actualLightPosX, -actualLightPosY, -calculateZ()));
+        return createRotationMatrix().multiply(Matrix4.createTranslation(-actualLightPosX, -actualLightPosY, -calculateZ()));
+    }
+
+    public Matrix4 createRotationMatrix() {
+        Matrix4 rotationMatrix = Matrix4.createXRotation(-rotateX);
+        return rotationMatrix.multiply(Matrix4.createYRotation(-rotateY));
     }
 
     public Matrix4 createViewProjectionTransformation() {

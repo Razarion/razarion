@@ -11,40 +11,40 @@ import com.google.gwt.resources.client.TextResource;
 public interface Shaders extends ClientBundle {
     Shaders INSTANCE = GWT.create(Shaders.class);
 
-    @Source("TerrainSurfaceVertexShader.shd")
+    @Source("TerrainSurface.vert")
     TextResource terrainSurfaceVertexShader();
 
-    @Source("TerrainSurfaceFragmentShader.shd")
+    @Source("TerrainSurface.frag")
     TextResource terrainSurfaceFragmentShader();
 
-    @Source("TerrainSurfaceWireVertexShader.shd")
+    @Source("TerrainSurfaceWire.vert")
     TextResource terrainSurfaceWireVertexShader();
 
-    @Source("TerrainSurfaceWireFragmentShader.shd")
+    @Source("TerrainSurfaceWire.frag")
     TextResource terrainSurfaceWireFragmentShader();
 
-    @Source("TerrainObjectVertexShader.shd")
+    @Source("TerrainObject.vert")
     TextResource terrainObjectVertexShader();
 
-    @Source("TerrainObjectFragmentShader.shd")
+    @Source("TerrainObject.frag")
     TextResource terrainObjectFragmentShader();
 
-    @Source("TerrainObjectWireVertexShader.shd")
+    @Source("TerrainObjectWire.vert")
     TextResource terrainObjectWireVertexShader();
 
-    @Source("TerrainObjectWireFragmentShader.shd")
+    @Source("TerrainObjectWire.frag")
     TextResource terrainObjectWireFragmentShader();
 
-    @Source("MonitorVertexShader.shd")
+    @Source("Monitor.vert")
     TextResource monitorVertexShader();
 
-    @Source("MonitorFragmentShader.shd")
+    @Source("Monitor.frag")
     TextResource monitorFragmentShader();
 
-    @Source("DepthBufferVertexShader.shd")
+    @Source("DepthBuffer.vert")
     TextResource depthBufferVertexShader();
 
-    @Source("DepthBufferFragmentShader.shd")
+    @Source("DepthBuffer.frag")
     TextResource depthBufferFragmentShader();
 
 }

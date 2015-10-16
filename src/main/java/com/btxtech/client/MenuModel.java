@@ -1,10 +1,11 @@
 package com.btxtech.client;
 
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.model.Camera;
+import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.Shadowing;
-import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.terrain.TerrainSurface;
 import org.jboss.errai.databinding.client.api.Bindable;
 
@@ -29,6 +30,8 @@ public class MenuModel {
     @Inject
     @Normal
     private ProjectionTransformation normalProjectionTransformation;
+    @Inject
+    private Lighting lighting;
 
     public double getSurfaceSlider() {
         if (terrainSurface == null) {
@@ -196,7 +199,17 @@ public class MenuModel {
         shadowing.setShadowAlpha(shadowAlpha);
     }
 
+    public double getBumpMapDepth() {
+        if (lighting == null) {
+            return 0;
+        }
+        return lighting.getBumpMapDepth();
+    }
 
-
-
+    public void setBumpMapDepth(double bumpMapDepth) {
+        if (lighting == null) {
+            return;
+        }
+        lighting.setBumpMapDepth(bumpMapDepth);
+    }
 }

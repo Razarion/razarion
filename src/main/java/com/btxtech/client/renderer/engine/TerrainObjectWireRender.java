@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
@@ -67,7 +68,7 @@ public class TerrainObjectWireRender extends AbstractRenderer {
         barycentricPositionAttribute = getAndEnableAttributeLocation(BARYCENTRIC_ATTRIBUTE_NAME);
         textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
         textureCoordinatePositionAttribute = getAndEnableAttributeLocation(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
-        webGLTexture = setupTexture(CHESS_TEXTURE_08);
+        webGLTexture = setupTexture(ImageDescriptor.CHESS_TEXTURE_08);
     }
 
     @Override

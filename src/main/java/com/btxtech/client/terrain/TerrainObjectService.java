@@ -35,19 +35,19 @@ public class TerrainObjectService {
     private ImageDescriptor imageDescriptor = ImageDescriptor.BUSH_1;
 
     public TerrainObjectService() {
-        for (int x = 0; x < 30; x++) {
-            for (int y = 0; y < 30; y++) {
-                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
-                double translateX = Math.random() * 130;
-                double translateY = Math.random() * 130;
-                Matrix4 matrix4 = Matrix4.createTranslation(x * 130 + translateX, y * 130 + translateY, 0);
-                double scale = Math.random() * 2.0 + 4.0;
-                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
-                // matrix4 = base.multiply(matrix4);
-                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
-                positions.add(matrix4);
-            }
-        }
+//        for (int x = 0; x < 30; x++) {
+//            for (int y = 0; y < 30; y++) {
+//                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
+//                double translateX = Math.random() * 130;
+//                double translateY = Math.random() * 130;
+//                Matrix4 matrix4 = Matrix4.createTranslation(x * 130 + translateX, y * 130 + translateY, 0);
+//                double scale = Math.random() * 2.0 + 4.0;
+//                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
+//                // matrix4 = base.multiply(matrix4);
+//                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
+//                positions.add(matrix4);
+//            }
+//        }
 
         // vertexList = new Sphere(30, 10, 10).provideVertexList(Terrain.BUSH_1);
         // vertexList = new Plane(100).provideVertexList(AbstractRenderer.CHESS_TEXTURE_08);
