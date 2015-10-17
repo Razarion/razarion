@@ -1,8 +1,6 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.Webgl;
 import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.client.terrain.Plateau;
 import com.btxtech.game.jsre.client.common.Index;
 import org.vectomatic.dom.svg.OMSVGGElement;
 import org.vectomatic.dom.svg.OMSVGLineElement;
@@ -43,15 +41,15 @@ public class ShapeEditor extends SvgEditor {
     @Override
     protected List<Index> getIndexes() {
         List<Index> indexes = new ArrayList<>();
-        for (Vertex vertex : Plateau.shape) {
-            indexes.add(new Index((int) vertex.getX(), (int) vertex.getZ()));
-        }
+//        for (Vertex vertex : Plateau.shape) {
+//            indexes.add(new Index((int) vertex.getX(), (int) vertex.getZ()));
+//        }
         return indexes;
     }
 
     @Override
     protected void setIndexes(List<Index> indexes) {
-        Plateau.shape = toShapeVector(indexes);
+        // Plateau.shape = toShapeVector(indexes);
         // TODO Webgl.instance.fillBuffers();
     }
 

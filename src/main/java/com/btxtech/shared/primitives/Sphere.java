@@ -36,9 +36,9 @@ public class Sphere {
 
                 double x = distanceToX * zFactor;
                 double y = distanceToY * zFactor;
-                mesh.setVertex(new Index(longNumber, latNumber), new Vertex(x, y, z).multiply(radius), Mesh.Type.PLANE_BOTTOM);
+                mesh.setVertex(new Index(longNumber, latNumber), new Vertex(x, y, z).multiply(radius));
             }
         }
-        return mesh.provideVertexList(imageDescriptor, Triangle.Type.PLAIN);
+        return mesh.provideVertexList(imageDescriptor);
     }
 }

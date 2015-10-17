@@ -105,15 +105,27 @@ public class Vertex {
         return dotProduct / shiftCanvas.magnitude();
     }
 
+    /**
+     * Project the source to this vector. This vertex is the origin.
+     *
+     * @param source the source of the projection
+     * @return distance positive if in the same direction as canvas
+     */
+    public double projection(Vertex source) {
+        double dotProduct = dot(source);
+
+        return dotProduct / magnitude();
+    }
+
     public double unsignedAngle(Vertex other) {
         return Math.acos(dot(other) / (magnitude() * other.magnitude()));
     }
 
     public double unsignedAngle(Vertex start, Vertex end) {
-        if(start.equals(this)) {
+        if (start.equals(this)) {
             throw new IllegalArgumentException("Start is equals to this vertex: " + start);
         }
-        if(end.equals(this)) {
+        if (end.equals(this)) {
             throw new IllegalArgumentException("End is equals to this vertex: " + end);
         }
 

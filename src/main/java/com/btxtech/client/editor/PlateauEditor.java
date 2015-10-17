@@ -1,7 +1,5 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.Webgl;
-import com.btxtech.client.terrain.Terrain;
 import com.btxtech.game.jsre.client.common.Index;
 
 import java.util.List;
@@ -28,12 +26,13 @@ public class PlateauEditor extends SvgEditor {
 
     @Override
     protected List<Index> getIndexes() {
-        return Terrain.getInstance().getCorners();
+        //return Terrain.getInstance().getCorners();
+        return null;
     }
 
     @Override
     protected void setIndexes(List<Index> indexes) {
-        Terrain.getInstance().setCorners(indexes);
+       // Terrain.getInstance().setCorners(indexes);
         // TODO Webgl.instance.fillBuffers();
     }
 

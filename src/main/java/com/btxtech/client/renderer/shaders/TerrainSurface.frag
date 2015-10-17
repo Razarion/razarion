@@ -79,11 +79,11 @@ void main(void) {
     // gl_FragColor = vec4(vec3(directionalLightWeighting), 1.0);
     // gl_FragColor = vec4(dDepthdx, dDepthdx, dDepthdx, 1.0);
     vec3 color = textureColorTop.rgb * directionalLightWeighting;
-    gl_FragColor = vec4(color, 1.0);
+    // gl_FragColor = vec4(color, 1.0);
     // gl_FragColor = textureColorBottom;
 
 
-
+    gl_FragColor = vec4(textureColorBottom);
 
     // gl_FragColor = vec4(dPositiondx.xyz * 0.5 + 0.5, 1.0);
     // gl_FragColor = vec4(dDepthdx, 1.0);

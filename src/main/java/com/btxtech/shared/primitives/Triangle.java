@@ -10,11 +10,6 @@ import java.util.List;
  * 11.04.2015.
  */
 public class Triangle {
-    public enum Type {
-        PLAIN,
-        SLOPE
-    }
-
     private Vertex vertexA;
     private TextureCoordinate textureCoordinateA;
     private double edgeA;
@@ -24,7 +19,6 @@ public class Triangle {
     private Vertex vertexC;
     private TextureCoordinate textureCoordinateC;
     private double edgeC;
-    private Type type;
     private Color color = new Color(1.0, 1.0, 1.0, 1.0);
 
     public Triangle(Vertex vertexA, TextureCoordinate textureCoordinateA,
@@ -99,6 +93,12 @@ public class Triangle {
         this.textureCoordinateA = textureCoordinateA;
         this.textureCoordinateB = textureCoordinateB;
         this.textureCoordinateC = new TextureCoordinate(pointC.getX(), pointC.getY());
+    }
+
+    public void setupTextureProjection(Vertex sAxis, Vertex tAxis) {
+        textureCoordinateA = new TextureCoordinate(sAxis.projection(vertexA), tAxis.projection(vertexA));
+        textureCoordinateB = new TextureCoordinate(sAxis.projection(vertexB), tAxis.projection(vertexB));
+        textureCoordinateC = new TextureCoordinate(sAxis.projection(vertexC), tAxis.projection(vertexC));
     }
 
     public List<Vertex> appendVertexTo(List<Vertex> vertices) {
@@ -208,17 +208,6 @@ public class Triangle {
         this.color = color;
     }
 
-    public Type getType() {
-        if (type == null) {
-            throw new IllegalStateException("Type nt set for triangle: " + toString());
-        }
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
     public static Triangle createTriangleWithNorm(Vertex vertex1, TextureCoordinate textureCoordinate1,
                                                   Vertex vertex2, TextureCoordinate textureCoordinate2,
                                                   Vertex vertex3, TextureCoordinate textureCoordinate3,
@@ -243,7 +232,6 @@ public class Triangle {
                 ", textureCoordinateB=" + textureCoordinateB +
                 ", vertexC=" + vertexC +
                 ", textureCoordinateC=" + textureCoordinateC +
-                ", type=" + type +
                 '}';
     }
 }

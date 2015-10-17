@@ -2,10 +2,10 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.Mesh;
+import com.btxtech.client.renderer.model.MeshGroup;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Rectangle;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Plane;
 import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -22,95 +22,50 @@ import java.util.List;
  */
 @Singleton
 public class TerrainSurface {
-    private static final int MESH_EDGE_LENGTH = 100;
+    private static final int MESH_EDGE_LENGTH = 32;
     private static final int PLANE_TOP_HEIGHT = 100;
+    private static final int SLOPE_LEVEL_COUNT = 4;
+    private static final int SLOPE_DISTANCE = MESH_EDGE_LENGTH * SLOPE_LEVEL_COUNT;
     private static final Rectangle INNER_RECT = new Rectangle(new Index(200, 300), new Index(600, 600));
+    private static final Rectangle OUTER_RECT = INNER_RECT.grow(SLOPE_DISTANCE);
     private static final List<Integer> SLOPE_INDICES = Arrays.asList(PLANE_TOP_HEIGHT, 99, 60, 30, 0);
     private static final int LOWEST_SLOPE_INDEX = SLOPE_INDICES.size() - 1;
     private Mesh mesh = new Mesh();
-    private ImageDescriptor topImageDescriptor = ImageDescriptor.GRASS_IMAGE;
-    private ImageDescriptor blendImageDescriptor = ImageDescriptor.BLEND_2;
-    private ImageDescriptor bottomImageDescriptor = ImageDescriptor.BLEND_2;
+    private ImageDescriptor topImageDescriptor = ImageDescriptor.TEX_DEV_2;
+    private ImageDescriptor blendImageDescriptor = ImageDescriptor.TEX_DEV_2;
+    private ImageDescriptor bottomImageDescriptor = ImageDescriptor.TEX_DEV_2;
     private double edgeDistance = 0.5;
-    private boolean changed = true;
     private double roughnessTop;
     private double roughnessHillside;
     private double roughnessGround;
-    private Plane plane;
+    private MeshGroup planeMeshGroup;
+    private MeshGroup slopMeshGroup;
+
     // private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
 
     @PostConstruct
     public void init() {
-        mesh.fill(1000, 1000, MESH_EDGE_LENGTH);
-//        final Collection<Index> topIndices = new ArrayList<>();
-//        // Mark top vertices
-//        mesh.iterate(new Mesh.Visitor() {
-//            @Override
-//            public void onVisit(Index index, Vertex vertex) {
-//                if (INNER_RECT.contains2(vertex.toXY())) {
-//                    Mesh.VertexData vertexData = mesh.getVertexDataSafe(index);
-//                    vertexData.setType(Mesh.Type.PLANE_TOP);
-//                    vertexData.setVertex(new Vertex(vertex.getX(), vertex.getY(), PLANE_TOP_HEIGHT));
-//                    topIndices.add(index);
-//                }
-//            }
-//        });
-//
-//        // Calculate distance to top index
-//        changed = true;
-//        while (changed) {
-//            changed = false;
-//            mesh.iterate(new Mesh.Visitor() {
-//                @Override
-//                public void onVisit(Index index, Vertex vertex) {
-//                    Mesh.VertexData vertexData = mesh.getVertexDataSafe(index);
-//                    if (vertexData.getType() == Mesh.Type.PLANE_TOP || vertexData.getSlopeIndex() != null) {
-//                        return;
-//                    }
-//                    if (mesh.hasPlaneTopAsNeighbour(index)) {
-//                        vertexData.setSlopeIndex(1);
-//                        changed = true;
-//                        return;
-//                    }
-//                    Integer slopeIndex = mesh.getHighestNeighbourSlopeIndex(index);
-//                    if (slopeIndex != null) {
-//                        vertexData.setSlopeIndex(slopeIndex + 1);
-//                        changed = true;
-//                    }
-//                }
-//            });
-//        }
-//
-//        // Mark bottom vertices
-//        final Collection<Index> hillsideIndices = new ArrayList<>();
-//        final Collection<Index> groundIndices = new ArrayList<>();
-//        mesh.iterate(new Mesh.Visitor() {
-//            @Override
-//            public void onVisit(Index index, Vertex vertex) {
-//                Mesh.VertexData vertexData = mesh.getVertexDataSafe(index);
-//                if (vertexData.getSlopeIndex() == null) {
-//                    return;
-//                }
-//
-//                int slopIndex = vertexData.getSlopeIndex();
-//                if (slopIndex > LOWEST_SLOPE_INDEX) {
-//                    vertexData.setType(Mesh.Type.PLANE_BOTTOM);
-//                    vertexData.setSlopeIndex(null);
-//                    groundIndices.add(index);
-//                } else {
-//                    vertexData.setType(Mesh.Type.SLOPE);
-//                    vertexData.setVertex(new Vertex(vertex.getX(), vertex.getY(), SLOPE_INDICES.get(slopIndex)));
-//                    hillsideIndices.add(index);
-//                }
-//            }
-//        });
-//
-//        randomize(topIndices, roughnessTop);
-//        randomize(hillsideIndices, roughnessHillside);
-//        randomize(groundIndices, roughnessGround);
-
-         plane = new Plane(1000);
-
+        mesh.fill(1024, 1024, MESH_EDGE_LENGTH);
+        final Collection<Index> topIndices = new ArrayList<>();
+        // Mark top vertices
+        planeMeshGroup = mesh.createMeshGroup();
+        slopMeshGroup = mesh.createMeshGroup();
+        mesh.iterate(new Mesh.Visitor() {
+            @Override
+            public void onVisit(Index index, Vertex vertex) {
+                if (INNER_RECT.contains2(vertex.toXY())) {
+                    planeMeshGroup.add(index);
+                    mesh.setVertex(index, vertex.add(0, 0, PLANE_TOP_HEIGHT));
+                } else if (OUTER_RECT.contains2(vertex.toXY())) {
+                    double distance = INNER_RECT.getNearestPointInclusive(vertex.toXY()).getDistance(vertex.toXY());
+                    int slopeLevel = SLOPE_LEVEL_COUNT - (int) (distance / MESH_EDGE_LENGTH);
+                    slopMeshGroup.add(index);
+                    mesh.setVertex(index, vertex.add(0, 0, PLANE_TOP_HEIGHT * slopeLevel / SLOPE_LEVEL_COUNT));
+                } else {
+                    planeMeshGroup.add(index);
+                }
+            }
+        });
     }
 
     private void randomize(Collection<Index> indices, double roughness) {
@@ -120,13 +75,11 @@ public class TerrainSurface {
     }
 
     public VertexList getPlainVertexList() {
-        // return mesh.provideVertexList(topImageDescriptor, Triangle.Type.PLAIN);
-        return plane.provideVertexList(bottomImageDescriptor);
+        return planeMeshGroup.provideVertexList(topImageDescriptor);
     }
 
     public VertexList getSlopeVertexList() {
-        return new VertexList();
-        // return mesh.provideVertexList(topImageDescriptor, Triangle.Type.SLOPE);
+        return slopMeshGroup.provideVertexList(topImageDescriptor);
     }
 
     public ImageDescriptor getTopImageDescriptor() {
