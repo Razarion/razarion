@@ -25,7 +25,7 @@ public class MeshGroup {
         members.add(index);
     }
 
-    public VertexList provideVertexList(ImageDescriptor topImageDescriptor) {
+    public VertexList provideVertexListPlain(ImageDescriptor topImageDescriptor, final boolean inclusive) {
         final VertexList vertexList = new VertexList();
         final Vertex sAxis = new Vertex(1, 0, 0);
         final Vertex tAxis = new Vertex(0, 1, 0);
@@ -33,9 +33,16 @@ public class MeshGroup {
         mesh.iterateExclude(new Mesh.Visitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                if (!members.contains(index)) {
-                    return;
+                if (inclusive) {
+                    if (!members.contains(index) && !members.contains(index.add(1, 0)) && !members.contains(index.add(0, 1)) && !members.contains(index.add(1, 1))) {
+                        return;
+                    }
+                } else {
+                    if (!members.contains(index) || !members.contains(index.add(1, 0)) || !members.contains(index.add(0, 1)) || !members.contains(index.add(1, 1))) {
+                        return;
+                    }
                 }
+
                 Triangle triangle1 = mesh.generateTriangle(true, index);
                 Triangle triangle2 = mesh.generateTriangle(false, index);
                 triangle1.setupTextureProjection(sAxis, tAxis);
