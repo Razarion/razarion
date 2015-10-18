@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
@@ -75,6 +76,12 @@ public abstract class AbstractTerrainSurfaceRenderer extends AbstractRenderer {
 
     protected abstract VertexList provideVertexList();
 
+    protected abstract ImageDescriptor getBottomImageDescriptor();
+
+    protected abstract ImageDescriptor getBlendImageDescriptor();
+
+    protected abstract ImageDescriptor getTopImageDescriptor();
+
     @PostConstruct
     public void init() {
         Object extension = gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
@@ -92,9 +99,9 @@ public abstract class AbstractTerrainSurfaceRenderer extends AbstractRenderer {
         textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
         textureCoordinatePositionAttribute = getAndEnableAttributeLocation(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
 
-        topWebGLTexture = setupTexture(terrainSurface.getTopImageDescriptor());
-        blendWebGLTexture = setupTexture(terrainSurface.getBlendImageDescriptor());
-        bottomWebGLTexture = setupTexture(terrainSurface.getBottomImageDescriptor());
+        topWebGLTexture = setupTexture(getTopImageDescriptor());
+        blendWebGLTexture = setupTexture(getBlendImageDescriptor());
+        bottomWebGLTexture = setupTexture(getBottomImageDescriptor());
     }
 
     @Override

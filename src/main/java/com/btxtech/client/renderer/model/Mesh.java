@@ -137,7 +137,7 @@ public class Mesh {
         vertexList.normalize(imageDescriptor);
     }
 
-    Triangle generateTriangle(boolean triangle1, Index bottomLeftIndex) {
+    public Triangle generateTriangle(boolean triangle1, Index bottomLeftIndex) {
         VertexData bottomLeft = getVertexDataSafe(bottomLeftIndex);
         VertexData bottomRight = getVertexDataSafe(bottomLeftIndex.add(1, 0));
         VertexData topLeft = getVertexDataSafe(bottomLeftIndex.add(0, 1));

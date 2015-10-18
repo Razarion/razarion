@@ -25,7 +25,7 @@ public class MeshGroup {
         members.add(index);
     }
 
-    public VertexList provideVertexListPlain(ImageDescriptor topImageDescriptor, final boolean inclusive) {
+    public VertexList provideVertexListPlain(final boolean inclusive, ImageDescriptor topImageDescriptor) {
         final VertexList vertexList = new VertexList();
         final Vertex sAxis = new Vertex(1, 0, 0);
         final Vertex tAxis = new Vertex(0, 1, 0);
@@ -34,11 +34,11 @@ public class MeshGroup {
             @Override
             public void onVisit(Index index, Vertex vertex) {
                 if (inclusive) {
-                    if (!members.contains(index) && !members.contains(index.add(1, 0)) && !members.contains(index.add(0, 1)) && !members.contains(index.add(1, 1))) {
+                    if (isNoneOfSquadContained(index)) {
                         return;
                     }
                 } else {
-                    if (!members.contains(index) || !members.contains(index.add(1, 0)) || !members.contains(index.add(0, 1)) || !members.contains(index.add(1, 1))) {
+                    if (isAllOfSquadContained(index)) {
                         return;
                     }
                 }
@@ -53,5 +53,13 @@ public class MeshGroup {
         });
         vertexList.normalize(topImageDescriptor);
         return vertexList;
+    }
+
+    public boolean isNoneOfSquadContained(Index bottomLeft) {
+        return !members.contains(bottomLeft) && !members.contains(bottomLeft.add(1, 0)) && !members.contains(bottomLeft.add(0, 1)) && !members.contains(bottomLeft.add(1, 1));
+    }
+
+    public boolean isAllOfSquadContained(Index bottomLeft) {
+        return !members.contains(bottomLeft) || !members.contains(bottomLeft.add(1, 0)) || !members.contains(bottomLeft.add(0, 1)) || !members.contains(bottomLeft.add(1, 1));
     }
 }

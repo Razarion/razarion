@@ -4,16 +4,12 @@ import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.Mesh;
 import com.btxtech.client.renderer.model.MeshGroup;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.client.common.Rectangle;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Vertex;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -23,9 +19,12 @@ import java.util.List;
 public class TerrainSurface {
     public static final int MESH_EDGE_LENGTH = 32;
     private Mesh mesh = new Mesh();
-    private ImageDescriptor topImageDescriptor = ImageDescriptor.TEX_DEV_2;
-    private ImageDescriptor blendImageDescriptor = ImageDescriptor.TEX_DEV_2;
-    private ImageDescriptor bottomImageDescriptor = ImageDescriptor.TEX_DEV_2;
+    private ImageDescriptor topImageDescriptor = ImageDescriptor.GRASS_IMAGE;
+    private ImageDescriptor blendImageDescriptor = ImageDescriptor.GRASS_IMAGE;
+    private ImageDescriptor bottomImageDescriptor = ImageDescriptor.GRASS_IMAGE;
+    private ImageDescriptor slopeTopImageDescriptor = ImageDescriptor.SAND_2;
+    private ImageDescriptor slopeBlendImageDescriptor = ImageDescriptor.SAND_2;
+    private ImageDescriptor slopeBottomImageDescriptor = ImageDescriptor.SAND_2;
     private double edgeDistance = 0.5;
     private double roughnessTop;
     private double roughnessHillside;
@@ -52,11 +51,11 @@ public class TerrainSurface {
     }
 
     public VertexList getPlainVertexList() {
-        return planeMeshGroup.provideVertexListPlain(topImageDescriptor, false);
+       return planeMeshGroup.provideVertexListPlain(false, topImageDescriptor);
     }
 
     public VertexList getSlopeVertexList() {
-        return plateau.provideVertexListSlope(topImageDescriptor);
+        return plateau.provideVertexListSlope(slopeBottomImageDescriptor);
     }
 
     public ImageDescriptor getTopImageDescriptor() {
@@ -101,5 +100,17 @@ public class TerrainSurface {
 
     public void setRoughnessGround(double roughnessGround) {
         this.roughnessGround = roughnessGround;
+    }
+
+    public ImageDescriptor getSlopeTopImageDescriptor() {
+        return slopeTopImageDescriptor;
+    }
+
+    public ImageDescriptor getSlopeBlendImageDescriptor() {
+        return slopeBlendImageDescriptor;
+    }
+
+    public ImageDescriptor getSlopeBottomImageDescriptor() {
+        return slopeBottomImageDescriptor;
     }
 }

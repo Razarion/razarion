@@ -180,6 +180,18 @@ public class Triangle {
         this.edgeA = edgeA;
     }
 
+    public Vertex getVertexA() {
+        return vertexA;
+    }
+
+    public Vertex getVertexB() {
+        return vertexB;
+    }
+
+    public Vertex getVertexC() {
+        return vertexC;
+    }
+
     public double angelA() {
         return vertexA.unsignedAngle(vertexB, vertexC);
     }

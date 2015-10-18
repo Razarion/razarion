@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
 
@@ -18,5 +19,20 @@ public class PlainTerrainSurfaceRenderer extends AbstractTerrainSurfaceRenderer 
     @Override
     protected VertexList provideVertexList() {
         return terrainSurface.getPlainVertexList();
+    }
+
+    @Override
+    protected ImageDescriptor getBottomImageDescriptor() {
+        return terrainSurface.getTopImageDescriptor();
+    }
+
+    @Override
+    protected ImageDescriptor getBlendImageDescriptor() {
+        return terrainSurface.getBlendImageDescriptor();
+    }
+
+    @Override
+    protected ImageDescriptor getTopImageDescriptor() {
+        return terrainSurface.getBottomImageDescriptor();
     }
 }

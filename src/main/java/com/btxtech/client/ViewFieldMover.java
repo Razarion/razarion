@@ -65,8 +65,8 @@ public class ViewFieldMover {
                     camera.setRotateX(newAngleX);
                 } else if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
                     double newAngleZ = camera.getRotateZ() + Math.toRadians(event.getDeltaY());
-                    if (newAngleZ < 0) {
-                        newAngleZ = 0;
+                    if (newAngleZ < -MathHelper.ONE_RADIANT) {
+                        newAngleZ = -MathHelper.ONE_RADIANT;
                     } else if (newAngleZ > MathHelper.ONE_RADIANT) {
                         newAngleZ = MathHelper.ONE_RADIANT;
                     }
