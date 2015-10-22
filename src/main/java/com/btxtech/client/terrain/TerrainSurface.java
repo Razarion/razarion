@@ -22,9 +22,9 @@ public class TerrainSurface {
     private ImageDescriptor topImageDescriptor = ImageDescriptor.GRASS_IMAGE;
     private ImageDescriptor blendImageDescriptor = ImageDescriptor.GRASS_IMAGE;
     private ImageDescriptor bottomImageDescriptor = ImageDescriptor.GRASS_IMAGE;
-    private ImageDescriptor slopeTopImageDescriptor = ImageDescriptor.SAND_2;
-    private ImageDescriptor slopeBlendImageDescriptor = ImageDescriptor.SAND_2;
-    private ImageDescriptor slopeBottomImageDescriptor = ImageDescriptor.SAND_2;
+    private ImageDescriptor slopeTopImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
+    private ImageDescriptor slopeBlendImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
+    private ImageDescriptor slopeBottomImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
     private double edgeDistance = 0.5;
     private double roughnessTop;
     private double roughnessHillside;
@@ -51,7 +51,7 @@ public class TerrainSurface {
     }
 
     public VertexList getPlainVertexList() {
-       return planeMeshGroup.provideVertexListPlain(false, topImageDescriptor);
+       return planeMeshGroup.provideVertexListPlain(topImageDescriptor);
     }
 
     public VertexList getSlopeVertexList() {

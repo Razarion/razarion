@@ -1,5 +1,6 @@
 package com.btxtech.shared.primitives;
 
+import com.btxtech.client.terrain.TextureCoordinateCalculator;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
 
@@ -95,10 +96,10 @@ public class Triangle {
         this.textureCoordinateC = new TextureCoordinate(pointC.getX(), pointC.getY());
     }
 
-    public void setupTextureProjection(Vertex sAxis, Vertex tAxis) {
-        textureCoordinateA = new TextureCoordinate(sAxis.projection(vertexA), tAxis.projection(vertexA));
-        textureCoordinateB = new TextureCoordinate(sAxis.projection(vertexB), tAxis.projection(vertexB));
-        textureCoordinateC = new TextureCoordinate(sAxis.projection(vertexC), tAxis.projection(vertexC));
+    public void setupTextureProjection(TextureCoordinateCalculator textureCoordinateCalculator) {
+        textureCoordinateA = new TextureCoordinate(textureCoordinateCalculator.getSAxis().projection(vertexA), textureCoordinateCalculator.getTAxis().projection(vertexA));
+        textureCoordinateB = new TextureCoordinate(textureCoordinateCalculator.getSAxis().projection(vertexB), textureCoordinateCalculator.getTAxis().projection(vertexB));
+        textureCoordinateC = new TextureCoordinate(textureCoordinateCalculator.getSAxis().projection(vertexC), textureCoordinateCalculator.getTAxis().projection(vertexC));
     }
 
     public List<Vertex> appendVertexTo(List<Vertex> vertices) {
@@ -218,6 +219,15 @@ public class Triangle {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public void zeroTexture() {
+        double minS = Math.min(textureCoordinateA.getS(), Math.min(textureCoordinateB.getS(), textureCoordinateC.getS()));
+        double minT = Math.min(textureCoordinateA.getT(), Math.min(textureCoordinateB.getT(), textureCoordinateC.getT()));
+        textureCoordinateA = textureCoordinateA.sub(minS, minT);
+        textureCoordinateB = textureCoordinateB.sub(minS, minT);
+        textureCoordinateC = textureCoordinateC.sub(minS, minT);
+
     }
 
     public static Triangle createTriangleWithNorm(Vertex vertex1, TextureCoordinate textureCoordinate1,

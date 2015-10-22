@@ -101,7 +101,7 @@ public class Mesh {
         return grid.get(index);
     }
 
-    private Vertex getVertex(Index index) {
+    public Vertex getVertex(Index index) {
         VertexData vertexData = getVertexData(index);
         if (vertexData == null) {
             return null;

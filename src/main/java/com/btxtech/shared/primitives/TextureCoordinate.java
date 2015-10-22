@@ -26,6 +26,12 @@ public class TextureCoordinate {
     }
 
     public TextureCoordinate(double s, double t) {
+        if (Double.isInfinite(s) || Double.isNaN(s)) {
+            throw new IllegalArgumentException("Can not set s value in DecimalPosition: " + s);
+        }
+        if (Double.isInfinite(t) || Double.isNaN(t)) {
+            throw new IllegalArgumentException("Can not set t value in DecimalPosition: " + t);
+        }
         this.s = s;
         this.t = t;
     }
@@ -42,6 +48,10 @@ public class TextureCoordinate {
 
     public TextureCoordinate add(double s, double t) {
         return new TextureCoordinate(this.s + s, this.t + t);
+    }
+
+    public TextureCoordinate sub(double s, double t) {
+        return new TextureCoordinate(this.s - s, this.t - t);
     }
 
     public static int getComponentCount() {

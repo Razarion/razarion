@@ -18,6 +18,9 @@ public class ImageDescriptor {
     public static final ImageDescriptor CHESS_TEXTURE_08 = new ImageDescriptor("chess08.jpg", 512, 512);
     public static final ImageDescriptor TEX_DEV_1 = new ImageDescriptor("texdev1.jpg", 256, 256);
     public static final ImageDescriptor TEX_DEV_2 = new ImageDescriptor("texdev2.jpg", 256, 256);
+    public static final ImageDescriptor PICTURE_1 = new ImageDescriptor("Picture1.png", 512, 512);
+    public static final ImageDescriptor PICTURE_2 = new ImageDescriptor("Picture2.png", 512, 512);
+    public static final ImageDescriptor PICTURE_3 = new ImageDescriptor("Picture3.jpg", 128, 128);
     private String url;
     private int width;
     private int height;
