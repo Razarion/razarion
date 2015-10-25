@@ -50,6 +50,10 @@ public class TextureCoordinate {
         return new TextureCoordinate(this.s + s, this.t + t);
     }
 
+    public TextureCoordinate add(TextureCoordinate textureCoordinate) {
+        return new TextureCoordinate(this.s + textureCoordinate.s, this.t + textureCoordinate.t);
+    }
+
     public TextureCoordinate sub(double s, double t) {
         return new TextureCoordinate(this.s - s, this.t - t);
     }

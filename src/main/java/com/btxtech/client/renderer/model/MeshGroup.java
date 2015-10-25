@@ -53,6 +53,10 @@ public class MeshGroup {
         return vertexList;
     }
 
+    public boolean isNoneOfSquadContained(Index bottomLeft) {
+        return !members.contains(bottomLeft) && !members.contains(bottomLeft.add(1, 0)) && !members.contains(bottomLeft.add(0, 1)) && !members.contains(bottomLeft.add(1, 1));
+    }
+
     public boolean isNoneOfTriangleContained(boolean isTriangle1, Index bottomLeft) {
         if (isTriangle1) {
             return !members.contains(bottomLeft) && !members.contains(bottomLeft.add(1, 0)) && !members.contains(bottomLeft.add(0, 1));

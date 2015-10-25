@@ -154,6 +154,18 @@ public class Triangle {
         return textureCoordinates;
     }
 
+    public void setTextureCoordinateA(TextureCoordinate textureCoordinateA) {
+        this.textureCoordinateA = textureCoordinateA;
+    }
+
+    public void setTextureCoordinateB(TextureCoordinate textureCoordinateB) {
+        this.textureCoordinateB = textureCoordinateB;
+    }
+
+    public void setTextureCoordinateC(TextureCoordinate textureCoordinateC) {
+        this.textureCoordinateC = textureCoordinateC;
+    }
+
     public TextureCoordinate getTextureCoordinateA() {
         return textureCoordinateA;
     }
@@ -231,24 +243,12 @@ public class Triangle {
     }
 
 
-    public void adjustTextureCoordinate(TextureCoordinate predecessorTextureCoordinate) {
+    public void adjustTextureCoordinate() {
         double minS = Math.min(textureCoordinateA.getS(), Math.min(textureCoordinateB.getS(), textureCoordinateC.getS()));
         double minT = Math.min(textureCoordinateA.getT(), Math.min(textureCoordinateB.getT(), textureCoordinateC.getT()));
         textureCoordinateA = textureCoordinateA.sub(minS, minT);
         textureCoordinateB = textureCoordinateB.sub(minS, minT);
         textureCoordinateC = textureCoordinateC.sub(minS, minT);
-
-        if (predecessorTextureCoordinate != null) {
-            System.out.println("textureCoordinateA: " + textureCoordinateA);
-            System.out.println("textureCoordinateB: " + textureCoordinateB);
-            System.out.println("textureCoordinateC: " + textureCoordinateC);
-            System.out.println("predecessorTextureCoordinate: " + predecessorTextureCoordinate);
-            textureCoordinateA = textureCoordinateA.add(predecessorTextureCoordinate.getS(), predecessorTextureCoordinate.getT());
-            System.out.println("textureCoordinateA result: " + textureCoordinateA);
-            //logger.severe("textureCoordinateA 6: " + textureCoordinateA);
-            textureCoordinateB = textureCoordinateB.add(predecessorTextureCoordinate.getS(), predecessorTextureCoordinate.getT());
-            textureCoordinateC = textureCoordinateC.add(predecessorTextureCoordinate.getS(), predecessorTextureCoordinate.getT());
-        }
     }
 
     public static Triangle createTriangleWithNorm(Vertex vertex1, TextureCoordinate textureCoordinate1,

@@ -111,7 +111,7 @@ public class Mesh {
         return getVertexDataSafe(index).getVertex();
     }
 
-    private VertexData getVertexData(Index index) {
+    public VertexData getVertexData(Index index) {
         return grid.get(index);
     }
 
