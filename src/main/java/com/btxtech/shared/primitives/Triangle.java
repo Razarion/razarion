@@ -5,12 +5,14 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 11.04.2015.
  */
 public class Triangle {
+    private Logger logger = Logger.getLogger(Triangle.class.getName());
     private Vertex vertexA;
     private TextureCoordinate textureCoordinateA;
     private double edgeA;
@@ -27,6 +29,7 @@ public class Triangle {
                     Vertex vertexC, TextureCoordinate textureCoordinateC) {
         this.vertexA = vertexA;
         this.textureCoordinateA = textureCoordinateA;
+        //logger.severe("textureCoordinateA 5: " + textureCoordinateA);
         this.vertexB = vertexB;
         this.textureCoordinateB = textureCoordinateB;
         this.vertexC = vertexC;
@@ -67,6 +70,7 @@ public class Triangle {
         double tC = planeA.projection(planeA.add(planeHeightSideNorm), vertexC);
 
         textureCoordinateA = new TextureCoordinate(0, 0);
+        //logger.severe("textureCoordinateA 1: " + textureCoordinateA);
         textureCoordinateB = new TextureCoordinate(sB, tB);
         textureCoordinateC = new TextureCoordinate(sC, tC);
     }
@@ -80,6 +84,7 @@ public class Triangle {
         double angle = MathHelper.normaliseAngel(baseAngle + angleC);
         DecimalPosition pointB = positionC.getPointFromAngelToNord(angle, sideA());
         this.textureCoordinateA = textureCoordinateA;
+        //logger.severe("textureCoordinateA 3: " + textureCoordinateA);
         this.textureCoordinateB = new TextureCoordinate(pointB.getX(), pointB.getY());
         this.textureCoordinateC = textureCoordinateC;
     }
@@ -92,14 +97,18 @@ public class Triangle {
         double angle = MathHelper.normaliseAngel(baseAngle + angleA);
         DecimalPosition pointC = positionA.getPointFromAngelToNord(angle, sideB());
         this.textureCoordinateA = textureCoordinateA;
+        //logger.severe("textureCoordinateA 2: " + textureCoordinateA);
         this.textureCoordinateB = textureCoordinateB;
         this.textureCoordinateC = new TextureCoordinate(pointC.getX(), pointC.getY());
     }
 
     public void setupTextureProjection(TextureCoordinateCalculator textureCoordinateCalculator) {
-        textureCoordinateA = new TextureCoordinate(textureCoordinateCalculator.getSAxis().projection(vertexA), textureCoordinateCalculator.getTAxis().projection(vertexA));
-        textureCoordinateB = new TextureCoordinate(textureCoordinateCalculator.getSAxis().projection(vertexB), textureCoordinateCalculator.getTAxis().projection(vertexB));
-        textureCoordinateC = new TextureCoordinate(textureCoordinateCalculator.getSAxis().projection(vertexC), textureCoordinateCalculator.getTAxis().projection(vertexC));
+        textureCoordinateA = textureCoordinateCalculator.setupTextureCoordinate(vertexA);
+        //logger.severe("textureCoordinateA 4: " + textureCoordinateA);
+        textureCoordinateB = textureCoordinateCalculator.setupTextureCoordinate(vertexB);
+        //logger.severe("textureCoordinateB: " + textureCoordinateB);
+        textureCoordinateC = textureCoordinateCalculator.setupTextureCoordinate(vertexC);
+        //logger.severe("textureCoordinateC: " + textureCoordinateC);
     }
 
     public List<Vertex> appendVertexTo(List<Vertex> vertices) {
@@ -221,13 +230,25 @@ public class Triangle {
         this.color = color;
     }
 
-    public void zeroTexture() {
+
+    public void adjustTextureCoordinate(TextureCoordinate predecessorTextureCoordinate) {
         double minS = Math.min(textureCoordinateA.getS(), Math.min(textureCoordinateB.getS(), textureCoordinateC.getS()));
         double minT = Math.min(textureCoordinateA.getT(), Math.min(textureCoordinateB.getT(), textureCoordinateC.getT()));
         textureCoordinateA = textureCoordinateA.sub(minS, minT);
         textureCoordinateB = textureCoordinateB.sub(minS, minT);
         textureCoordinateC = textureCoordinateC.sub(minS, minT);
 
+        if (predecessorTextureCoordinate != null) {
+            System.out.println("textureCoordinateA: " + textureCoordinateA);
+            System.out.println("textureCoordinateB: " + textureCoordinateB);
+            System.out.println("textureCoordinateC: " + textureCoordinateC);
+            System.out.println("predecessorTextureCoordinate: " + predecessorTextureCoordinate);
+            textureCoordinateA = textureCoordinateA.add(predecessorTextureCoordinate.getS(), predecessorTextureCoordinate.getT());
+            System.out.println("textureCoordinateA result: " + textureCoordinateA);
+            //logger.severe("textureCoordinateA 6: " + textureCoordinateA);
+            textureCoordinateB = textureCoordinateB.add(predecessorTextureCoordinate.getS(), predecessorTextureCoordinate.getT());
+            textureCoordinateC = textureCoordinateC.add(predecessorTextureCoordinate.getS(), predecessorTextureCoordinate.getT());
+        }
     }
 
     public static Triangle createTriangleWithNorm(Vertex vertex1, TextureCoordinate textureCoordinate1,
@@ -248,11 +269,11 @@ public class Triangle {
     @Override
     public String toString() {
         return "Triangle{" +
-                "vertexA=" + vertexA +
+                //"vertexA=" + vertexA +
                 ", textureCoordinateA=" + textureCoordinateA +
-                ", vertexB=" + vertexB +
+                //", vertexB=" + vertexB +
                 ", textureCoordinateB=" + textureCoordinateB +
-                ", vertexC=" + vertexC +
+                //", vertexC=" + vertexC +
                 ", textureCoordinateC=" + textureCoordinateC +
                 '}';
     }

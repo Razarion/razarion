@@ -39,6 +39,8 @@ public class Sphere {
                 mesh.setVertex(new Index(longNumber, latNumber), new Vertex(x, y, z).multiply(radius));
             }
         }
-        return mesh.provideVertexList(imageDescriptor);
+        // TODO triangles are may not produced here. This is done in the fill method now!!!
+        // return mesh.provideVertexList(imageDescriptor);
+        throw new UnsupportedOperationException();
     }
 }

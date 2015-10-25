@@ -5,7 +5,6 @@ import com.btxtech.client.renderer.model.Mesh;
 import com.btxtech.client.renderer.model.MeshGroup;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Vertex;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -22,9 +21,9 @@ public class TerrainSurface {
     private ImageDescriptor topImageDescriptor = ImageDescriptor.GRASS_IMAGE;
     private ImageDescriptor blendImageDescriptor = ImageDescriptor.GRASS_IMAGE;
     private ImageDescriptor bottomImageDescriptor = ImageDescriptor.GRASS_IMAGE;
-    private ImageDescriptor slopeTopImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
-    private ImageDescriptor slopeBlendImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
-    private ImageDescriptor slopeBottomImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
+    private ImageDescriptor slopeTopImageDescriptor = ImageDescriptor.PICTURE_3;
+    private ImageDescriptor slopeBlendImageDescriptor = ImageDescriptor.PICTURE_3;
+    private ImageDescriptor slopeBottomImageDescriptor = ImageDescriptor.PICTURE_3;
     private double edgeDistance = 0.5;
     private double roughnessTop;
     private double roughnessHillside;
@@ -41,7 +40,8 @@ public class TerrainSurface {
         planeMeshGroup = mesh.createMeshGroup();
 
         plateau = new Plateau(mesh);
-        plateau.assignVertices(planeMeshGroup);
+        plateau.sculpt(planeMeshGroup);
+        mesh.generateAllTriangle();
     }
 
     private void randomize(Collection<Index> indices, double roughness) {

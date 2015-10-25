@@ -1,14 +1,10 @@
 package com.btxtech.client.renderer.model;
 
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,10 +58,24 @@ public class Mesh {
         public void setEdge(double edge) {
             this.edge = edge;
         }
+
+        @Override
+        public String toString() {
+            return "VertexData{" +
+                    "vertex=" + vertex +
+                    ", triangle1=" + triangle1 +
+                    ", triangle2=" + triangle2 +
+                    ", edge=" + edge +
+                    '}';
+        }
     }
 
-    public interface Visitor {
+    public interface VertexVisitor {
         void onVisit(Index index, Vertex vertex);
+    }
+
+    public interface TriangleVisitor {
+        void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2);
     }
 
     public void fill(int xSize, int ySize, int edgeLength) {
@@ -89,7 +99,7 @@ public class Mesh {
         maxY = Math.max(index.getY(), maxY);
     }
 
-    private VertexData getVertexDataSafe(Index index) {
+    public VertexData getVertexDataSafe(Index index) {
         VertexData vertexData = getVertexData(index);
         if (vertexData == null) {
             throw new IndexOutOfBoundsException("No VertexData for: " + index + " maxX: " + maxX + " maxY: " + maxY);
@@ -97,11 +107,15 @@ public class Mesh {
         return vertexData;
     }
 
+    public Vertex getVertexSafe(Index index) {
+        return getVertexDataSafe(index).getVertex();
+    }
+
     private VertexData getVertexData(Index index) {
         return grid.get(index);
     }
 
-    public Vertex getVertex(Index index) {
+    private Vertex getVertex(Index index) {
         VertexData vertexData = getVertexData(index);
         if (vertexData == null) {
             return null;
@@ -109,35 +123,41 @@ public class Mesh {
         return vertexData.getVertex();
     }
 
-    private Vertex getVertexSafe(Index index) {
-        return getVertexDataSafe(index).getVertex();
-    }
+//    public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor) {
+//        for (int y = 0; y < maxY; y++) {
+//            for (int x = 0; x < maxX; x++) {
+//                Index index = new Index(x, y);
+//
+//                VertexData bottomLeft = getVertexDataSafe(index);
+//
+//                Triangle triangle1 = generateTriangle(true, index);
+//                bottomLeft.setTriangle1(triangle1);
+//                Triangle triangle2 = generateTriangle(false, index);
+//                bottomLeft.setTriangle2(triangle2);
+//
+//                // Triangle 1
+//                setupTriangleTexture1(index, triangle1);
+//                vertexList.add(triangle1);
+//
+//                // Triangle 2
+//                setupTriangleTexture2(index, triangle2);
+//                vertexList.add(triangle2);
+//            }
+//        }
+//        vertexList.normalize(imageDescriptor);
+//    }
 
-    public void appendVertexList(VertexList vertexList, ImageDescriptor imageDescriptor) {
-        for (int y = 0; y < maxY; y++) {
-            for (int x = 0; x < maxX; x++) {
-                Index index = new Index(x, y);
-
-                VertexData bottomLeft = getVertexDataSafe(index);
-
-                Triangle triangle1 = generateTriangle(true, index);
-                bottomLeft.setTriangle1(triangle1);
-                Triangle triangle2 = generateTriangle(false, index);
-                bottomLeft.setTriangle2(triangle2);
-
-                // Triangle 1
-                setupTriangleTexture1(index, triangle1);
-                vertexList.add(triangle1);
-
-                // Triangle 2
-                setupTriangleTexture2(index, triangle2);
-                vertexList.add(triangle2);
+    public void generateAllTriangle() {
+        iterateExclude(new VertexVisitor() {
+            @Override
+            public void onVisit(Index index, Vertex vertex) {
+                getVertexDataSafe(index).setTriangle1(generateTriangle(true, index));
+                getVertexDataSafe(index).setTriangle2(generateTriangle(false, index));
             }
-        }
-        vertexList.normalize(imageDescriptor);
+        });
     }
 
-    public Triangle generateTriangle(boolean triangle1, Index bottomLeftIndex) {
+    private Triangle generateTriangle(boolean triangle1, Index bottomLeftIndex) {
         VertexData bottomLeft = getVertexDataSafe(bottomLeftIndex);
         VertexData bottomRight = getVertexDataSafe(bottomLeftIndex.add(1, 0));
         VertexData topLeft = getVertexDataSafe(bottomLeftIndex.add(0, 1));
@@ -202,11 +222,19 @@ public class Mesh {
         return vertexData.getTriangle1();
     }
 
-    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
-        VertexList vertexList = new VertexList();
-        appendVertexList(vertexList, imageDescriptor);
-        return vertexList;
+    public Index getPredecessorIndex(boolean triangle1, Index bottomLeftIndex) {
+        if (triangle1) {
+            return bottomLeftIndex.sub(1, 0);
+        } else {
+            return bottomLeftIndex;
+        }
     }
+
+//    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+//        VertexList vertexList = new VertexList();
+//        appendVertexList(vertexList, imageDescriptor);
+//        return vertexList;
+//    }
 
     public int getX() {
         return maxX + 1;
@@ -241,20 +269,30 @@ public class Mesh {
         setVertex(index, vertex.add(sum.normalize(Math.random() * maxShift)));
     }
 
-    public void iterate(Visitor visitor) {
+    public void iterate(VertexVisitor vertexVisitor) {
         for (int y = 0; y < getY(); y++) {
             for (int x = 0; x < getX(); x++) {
                 Index index = new Index(x, y);
-                visitor.onVisit(index, getVertexSafe(index));
+                vertexVisitor.onVisit(index, getVertexSafe(index));
             }
         }
     }
 
-    public void iterateExclude(Visitor visitor) {
+    public void iterateExclude(VertexVisitor vertexVisitor) {
         for (int y = 0; y < maxY; y++) {
             for (int x = 0; x < maxX; x++) {
                 Index index = new Index(x, y);
-                visitor.onVisit(index, getVertexSafe(index));
+                vertexVisitor.onVisit(index, getVertexSafe(index));
+            }
+        }
+    }
+
+    public void iterateOverTriangles(TriangleVisitor triangleVisitor) {
+        for (int y = 0; y < maxY; y++) {
+            for (int x = 0; x < maxX; x++) {
+                Index index = new Index(x, y);
+                VertexData vertexData = getVertexData(index);
+                triangleVisitor.onVisit(index, vertexData.getVertex(), vertexData.getTriangle1(), vertexData.getTriangle2());
             }
         }
     }

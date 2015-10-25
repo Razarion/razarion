@@ -9,6 +9,7 @@ import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -17,6 +18,7 @@ import java.util.Collection;
 public class MeshGroup {
     private Collection<Index> members = new ArrayList<>();
     private Mesh mesh;
+    private Logger logger = Logger.getLogger(MeshGroup.class.getName());
 
     public MeshGroup(Mesh mesh) {
         this.mesh = mesh;
@@ -30,22 +32,23 @@ public class MeshGroup {
         final VertexList vertexList = new VertexList();
         final TextureCoordinateCalculator textureCoordinateCalculator = new TextureCoordinateCalculator(new Vertex(1, 0, 0), new Vertex(0, 1, 0));
 
-        mesh.iterateExclude(new Mesh.Visitor() {
+        mesh.iterateOverTriangles(new Mesh.TriangleVisitor() {
             @Override
-            public void onVisit(Index index, Vertex vertex) {
-                if (isAllOfTriangleContained(true, index)) {
-                    Triangle triangle1 = mesh.generateTriangle(true, index);
+            public void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2) {
+                if (isAllOfTriangleContained(true, bottomLeftIndex)) {
+                    // logger.severe("MeshGroup 1: " + bottomLeftIndex);
                     triangle1.setupTextureProjection(textureCoordinateCalculator);
                     vertexList.add(triangle1);
                 }
 
-                if (isAllOfTriangleContained(false, index)) {
-                    Triangle triangle2 = mesh.generateTriangle(false, index);
+                if (isAllOfTriangleContained(false, bottomLeftIndex)) {
+                    // logger.severe("MeshGroup 2: " + bottomLeftIndex);
                     triangle2.setupTextureProjection(textureCoordinateCalculator);
                     vertexList.add(triangle2);
                 }
             }
         });
+
         vertexList.normalize(topImageDescriptor);
         return vertexList;
     }

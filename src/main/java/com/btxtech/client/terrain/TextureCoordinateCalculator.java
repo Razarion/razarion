@@ -1,5 +1,6 @@
 package com.btxtech.client.terrain;
 
+import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -35,11 +36,7 @@ public class TextureCoordinateCalculator {
         this.tAxis = tAxis;
     }
 
-    public Vertex getSAxis() {
-        return sAxis;
-    }
-
-    public Vertex getTAxis() {
-        return tAxis;
+    public TextureCoordinate setupTextureCoordinate(Vertex vertex) {
+        return new TextureCoordinate(sAxis.projection(vertex), tAxis.projection(vertex));
     }
 }
