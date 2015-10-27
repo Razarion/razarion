@@ -21,9 +21,9 @@ public class TerrainSurface {
     private ImageDescriptor topImageDescriptor = ImageDescriptor.GRASS_IMAGE;
     private ImageDescriptor blendImageDescriptor = ImageDescriptor.GRASS_IMAGE;
     private ImageDescriptor bottomImageDescriptor = ImageDescriptor.GRASS_IMAGE;
-    private ImageDescriptor slopeTopImageDescriptor = ImageDescriptor.PICTURE_3;
-    private ImageDescriptor slopeBlendImageDescriptor = ImageDescriptor.PICTURE_3;
-    private ImageDescriptor slopeBottomImageDescriptor = ImageDescriptor.PICTURE_3;
+    private ImageDescriptor slopeTopImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
+    private ImageDescriptor slopeBlendImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
+    private ImageDescriptor slopeBottomImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
     private double edgeDistance = 0.5;
     private double roughnessTop;
     private double roughnessHillside;
