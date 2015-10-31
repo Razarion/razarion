@@ -7,6 +7,7 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Rectangle;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -19,8 +20,7 @@ import java.util.logging.Logger;
 public class Plateau {
     private static final int PLANE_TOP_HEIGHT = 100;
     private static final int SLOPE_WIDTH = 3;
-    private static final Rectangle INNER_RECT = new Rectangle(7, 9, 11, 8);
-    private static final Rectangle OUTER_RECT = INNER_RECT.grow(SLOPE_WIDTH);
+    private static final Rectangle INDEX_RECT = new Rectangle(7, 9, 11, 8);
     private Mesh mesh;
     private MeshGroup slopMeshGroup;
     private Logger logger = Logger.getLogger(Plateau.class.getName());
@@ -30,19 +30,20 @@ public class Plateau {
     }
 
     public void sculpt(final MeshGroup planeMeshGroup) {
+
         slopMeshGroup = mesh.createMeshGroup();
         // Mark top vertices
         mesh.iterate(new Mesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                if (INNER_RECT.contains2(new DecimalPosition(index))) {
+                if (INDEX_RECT.contains2(new DecimalPosition(index))) {
                     planeMeshGroup.add(index);
                     mesh.setVertex(index, vertex.add(0, 0, PLANE_TOP_HEIGHT));
                 } else {
-                    double distance = INNER_RECT.getNearestPointInclusive(new DecimalPosition(index)).getDistance(new DecimalPosition(index));
+                    double distance = INDEX_RECT.getNearestPointInclusive(new DecimalPosition(index)).getDistance(new DecimalPosition(index));
                     if (distance < SLOPE_WIDTH) {
                         slopMeshGroup.add(index);
-                        mesh.setVertex(index, vertex.add(0, 0, PLANE_TOP_HEIGHT - PLANE_TOP_HEIGHT * distance / (double)SLOPE_WIDTH));
+                        mesh.setVertex(index, vertex.add(0, 0, PLANE_TOP_HEIGHT - PLANE_TOP_HEIGHT * distance / (double) SLOPE_WIDTH));
                     } else {
                         planeMeshGroup.add(index);
                     }
@@ -116,5 +117,75 @@ public class Plateau {
         }
         vertexList.normalize(imageDescriptor);
         return vertexList;
+    }
+
+    public VertexList provideVertexListSlope2(ImageDescriptor imageDescriptor) {
+        final Rectangle rect = new Rectangle(mesh.getVertexData(INDEX_RECT.getStart()).getVertex().toXY().getPosition(), mesh.getVertexData(INDEX_RECT.getEnd()).getVertex().toXY().getPosition());
+        final VertexList vertexList = new VertexList();
+        final double slopeAngle = Math.tan((double) PLANE_TOP_HEIGHT / (double) (SLOPE_WIDTH * TerrainSurface.MESH_EDGE_LENGTH));
+
+        mesh.iterateOverTriangles(new Mesh.TriangleVisitor() {
+            @Override
+            public void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2) {
+                Mesh.VertexData vertexData = mesh.getVertexDataSafe(bottomLeftIndex);
+                if (!slopMeshGroup.isNoneOfTriangleContained(true, bottomLeftIndex)) {
+                    Triangle triangle = vertexData.getTriangle1();
+                    Vertex startTriangle = getStartVertex(triangle);
+                    DecimalPosition positionOnRect = rect.getNearestPoint(startTriangle.toXY());
+                    Vertex topVertex = new Vertex(positionOnRect.getX(), positionOnRect.getY(), PLANE_TOP_HEIGHT);
+                    logger.severe("bottomLeftIndex: " + bottomLeftIndex + " topVertex: " + topVertex);
+                    Matrix4 rotationMatrix = Matrix4.createYRotation(-slopeAngle);
+                    rotationMatrix = rotationMatrix.multiply(Matrix4.createZRotation(topVertex.toXY().getAngleToNorth(startTriangle.toXY())));
+                    Vertex tDirection = rotationMatrix.multiply(new Vertex(1, 0, 0), 1.0);
+                    Vertex groundIntersection = calculateGroundIntersection(topVertex, tDirection);
+
+
+                    triangle.setTextureCoordinate(groundIntersection, groundIntersection.add(new Vertex(1, 0, 0)), groundIntersection.add(tDirection));
+
+                    vertexList.add(triangle);
+                }
+            }
+        });
+
+        vertexList.normalize(imageDescriptor);
+        return vertexList;
+    }
+
+    private Vertex calculateGroundIntersection(Vertex start, Vertex direction) {
+        // http://www.rither.de/a/mathematik/lineare-algebra-und-analytische-geometrie/schnittprobleme/gerade-schneidet-ebene/
+        // Koordinatenform
+        // Plane Cartesian equation
+        // a x + b y + c z = d
+        // Ground plane
+        // a = 0, b = 0, c = 1, d = 0
+        // Line
+        // start + d * direction
+        // resolve to d (distance)
+
+        double d = -start.getZ() / direction.getZ();
+        return start.add(direction.multiply(d));
+    }
+
+    private Vertex getStartVertex(Triangle triangle) {
+        Vertex normal = triangle.calculateNorm().normalize(1.0);
+        Vertex sAxis = new Vertex(0, 0, 1).cross(normal);
+        if (sAxis.magnitude() == 0.0) {
+            logger.severe("sAxis.magnitude() == 0.0");
+            logger.severe("triangle: " + triangle);
+        }
+
+        if (sAxis.projection(triangle.getVertexA()) < sAxis.projection(triangle.getVertexB())) {
+            if (sAxis.projection(triangle.getVertexA()) < sAxis.projection(triangle.getVertexC())) {
+                return triangle.getVertexA();
+            } else {
+                return triangle.getVertexC();
+            }
+        } else {
+            if (sAxis.projection(triangle.getVertexB()) < sAxis.projection(triangle.getVertexC())) {
+                return triangle.getVertexB();
+            } else {
+                return triangle.getVertexC();
+            }
+        }
     }
 }

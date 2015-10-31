@@ -162,6 +162,12 @@ public class Triangle {
         this.textureCoordinateB = textureCoordinateB;
     }
 
+    public void setTextureCoordinate(Vertex origin, Vertex sDirection, Vertex tDirection) {
+        textureCoordinateA = new TextureCoordinate(origin.projection(sDirection, vertexA), origin.projection(tDirection, vertexA));
+        textureCoordinateB = new TextureCoordinate(origin.projection(sDirection, vertexB), origin.projection(tDirection, vertexB));
+        textureCoordinateC = new TextureCoordinate(origin.projection(sDirection, vertexC), origin.projection(tDirection, vertexC));
+    }
+
     public void setTextureCoordinateC(TextureCoordinate textureCoordinateC) {
         this.textureCoordinateC = textureCoordinateC;
     }
