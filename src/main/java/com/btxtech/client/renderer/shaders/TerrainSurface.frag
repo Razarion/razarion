@@ -7,6 +7,8 @@ varying vec4 vShadowCoord;
 varying vec3 vVertexNormal;
 varying vec4 vVertexPosition;
 varying float vEdgePosition;
+varying vec3 vVertexPositionCoord;
+varying vec3 vVertexNormCoord;
 
 uniform sampler2D uSamplerTop;
 uniform sampler2D uSamplerBlend;
@@ -57,13 +59,15 @@ void main(void) {
     // Surface
     vec4 textureColorTop = texture2D(uSamplerTop, vec2(vTextureCoord.s, vTextureCoord.t));
     vec4 textureColorBlend = texture2D(uSamplerBlend, vec2(vTextureCoord.s, vTextureCoord.t));
-    textureColorBlend = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, textureColorBlend);
+    float tmUEdgeDistance = uEdgeDistance;
+    // textureColorBlend = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, textureColorBlend);
     vec4 textureColorBottom = texture2D(uSamplerBottom, vec2(vTextureCoord.s, vTextureCoord.t));
     vec4 texture = mix(textureColorTop, textureColorBottom, textureColorBlend);
     // TODO gl_FragColor = vec4(texture.rgb * vLightWeighting * shadowFactor, 1.0);
 //////////////////////////
 
-  // Differentiate the position vector
+    // Bump map
+    // Differentiate the position vector
     vec3 dPositiondx = dFdx(vVertexPosition.xyz);
     vec3 dPositiondy = dFdy(vVertexPosition.xyz);
     float depth = texture2D(uSamplerBottom, vTextureCoord.st).b;
@@ -82,10 +86,57 @@ void main(void) {
     // gl_FragColor = vec4(color, 1.0);
     // gl_FragColor = textureColorBottom;
 
+    // Tri-Planar Texture Mapping
+    // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
+    vec3 blending = abs(vVertexNormCoord);
+    blending = normalize(max(blending, 0.00001)); // Force weights to sum to 1.0
+    float b = (blending.x + blending.y + blending.z);
+    blending /= vec3(b, b, b);
+    vec4 xAxisTop = texture2D(uSamplerTop, vVertexPositionCoord.yz / 512.0);
+    vec4 yAxisTop = texture2D(uSamplerTop, vVertexPositionCoord.xz / 512.0);
+    vec4 zAxisTop = texture2D(uSamplerTop, vVertexPositionCoord.xy / 512.0);
+    // blend the results of the 3 planar projections.
+    vec4 colorTop = xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
 
-    gl_FragColor = vec4(textureColorBottom);
+    vec4 xAxisBottom = texture2D(uSamplerBottom, vVertexPositionCoord.yz / 512.0);
+    vec4 yAxisBottom = texture2D(uSamplerBottom, vVertexPositionCoord.xz / 512.0);
+    vec4 zAxisBottom = texture2D(uSamplerBottom, vVertexPositionCoord.xy / 512.0);
+    vec4 colorBottom = xAxisBottom * blending.x + yAxisBottom * blending.y + zAxisBottom * blending.z;
 
-    // gl_FragColor = vec4(dPositiondx.xyz * 0.5 + 0.5, 1.0);
+    vec4 xAxisPassage = texture2D(uSamplerBlend, vVertexPositionCoord.yz / 512.0);
+    vec4 yAxisPassage = texture2D(uSamplerBlend, vVertexPositionCoord.xz / 512.0);
+    vec4 zAxisPassage = texture2D(uSamplerBlend, vVertexPositionCoord.xy / 512.0);
+    vec4 colorPassage = xAxisPassage * blending.x + yAxisPassage * blending.y + zAxisPassage * blending.z;
+
+
+    vec3 correctedZenith = (uNMatrix * vec4(vec3(0,0,1), 1.0)).xyz;
+    vec4 textureColor;
+    float slope = dot(vVertexNormal.xyz, correctedZenith);
+    if(slope >= 0.8) {
+      textureColor = colorTop;
+      // gl_FragColor = vec4(0.0, 0.7, 0.0, 1.0);
+    } else if(slope < 0.8 && slope > 0.4) {
+      textureColor = colorPassage;
+      // gl_FragColor = vec4(0.1, 0.1, 0.1, 1.0);
+      // gl_FragColor = colorTop;
+   } else {
+      textureColor = colorBottom;
+      // gl_FragColor = vec4(0.2, 0.2, 0.2, 1.0);
+   }
+
+
+    // Diffuse light
+    float diffuselightWeight = max(dot(normalize(vVertexNormal), correctedLigtDirection), 0.0);
+    vec4 ambientDiffuseFactor = vec4(uDirectionalColor * diffuselightWeight + uAmbientColor, 1.0);
+    gl_FragColor = textureColor * ambientDiffuseFactor, 1.0;
+
+    // gl_FragColor = vec4(vVertexNormCoord * 0.5 + 0.5, 1.0);
+
+   //gl_FragColor =  texture2D(uSamplerTop, vVertexPositionCoord.xz / 512.0);
+    // gl_FragColor = vec4(slope, slope, slope, 1.0);
+
+
+    // gl_FragColor = vec4(vVertexPositionCoord.xyz * 0.001, 1.0);
     // gl_FragColor = vec4(dDepthdx, 1.0);
    // gl_FragColor = vec4(vVertexNormal, 1.0);
 
@@ -95,7 +146,6 @@ void main(void) {
   // The normal is the cross product of the differentials
   // return normalize(cross(dPositiondx, dPositiondy));
 
- //   float lightWeight = max(dot(normalize(vVertexNormal), uLightingDirection), 0.0);
  //   gl_FragColor = vec4(normalize(vVertexNormal), 1.0);
 }
 

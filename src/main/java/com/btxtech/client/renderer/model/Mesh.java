@@ -1,9 +1,14 @@
 package com.btxtech.client.renderer.model;
 
+import com.btxtech.client.ImageDescriptor;
+import com.btxtech.client.terrain.TextureCoordinateCalculator;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +38,10 @@ public class Mesh {
 
         public void setVertex(Vertex vertex) {
             this.vertex = vertex;
+        }
+
+        public void addZValue(double value) {
+            vertex = vertex.add(0, 0, value);
         }
 
         public Triangle getTriangle1() {
@@ -157,6 +166,72 @@ public class Mesh {
         });
     }
 
+    public void adjustNorm() {
+        iterate(new VertexVisitor() {
+            @Override
+            public void onVisit(Index index, Vertex vertex) {
+                Collection<Vertex> norms = new ArrayList<>();
+                VertexData vertexData = getVertexDataSafe(index);
+                if (vertexData.getTriangle1() != null) {
+                    norms.add(vertexData.getTriangle1().calculateNorm().multiply(vertexData.getTriangle1().area()));
+                }
+                if (index.getX() > 0) {
+                    VertexData vertexDataWest = getVertexDataSafe(index.sub(1, 0));
+                    if (vertexDataWest.getTriangle1() != null) {
+                        norms.add(vertexDataWest.getTriangle1().calculateNorm().multiply(vertexDataWest.getTriangle1().area()));
+                    }
+                    if (vertexDataWest.getTriangle2() != null) {
+                        norms.add(vertexDataWest.getTriangle2().calculateNorm().multiply(vertexDataWest.getTriangle2().area()));
+                    }
+                }
+                if (index.getY() > 0) {
+                    VertexData vertexDataSouth = getVertexDataSafe(index.sub(0, 1));
+                    if (vertexDataSouth.getTriangle1() != null) {
+                        norms.add(vertexDataSouth.getTriangle1().calculateNorm().multiply(vertexDataSouth.getTriangle1().area()));
+                    }
+                    if (vertexDataSouth.getTriangle2() != null) {
+                        norms.add(vertexDataSouth.getTriangle2().calculateNorm().multiply(vertexDataSouth.getTriangle2().area()));
+                    }
+                }
+                if (index.getX() > 0 && index.getY() > 0) {
+                    VertexData vertexDataSouthWest = getVertexDataSafe(index.sub(1, 1));
+                    norms.add(vertexDataSouthWest.getTriangle2().calculateNorm().multiply(vertexDataSouthWest.getTriangle2().area()));
+                }
+                Vertex totalNorm = new Vertex(0, 0, 0);
+                for (Vertex norm : norms) {
+                    totalNorm = totalNorm.add(norm);
+                }
+                totalNorm = totalNorm.normalize(1.0);
+
+                if (vertexData.getTriangle1() != null) {
+                    vertexData.getTriangle1().setVertexNormA(totalNorm);
+                }
+                if (index.getX() > 0) {
+                    VertexData vertexDataWest = getVertexDataSafe(index.sub(1, 0));
+                    if (vertexDataWest.getTriangle1() != null) {
+                        vertexDataWest.getTriangle1().setVertexNormB(totalNorm);
+                    }
+                    if (vertexDataWest.getTriangle1() != null) {
+                        vertexDataWest.getTriangle2().setVertexNormA(totalNorm);
+                    }
+                }
+                if (index.getY() > 0) {
+                    VertexData vertexDataSouth = getVertexDataSafe(index.sub(0, 1));
+                    if (vertexDataSouth.getTriangle1() != null) {
+                        vertexDataSouth.getTriangle1().setVertexNormC(totalNorm);
+                    }
+                    if (vertexDataSouth.getTriangle2() != null) {
+                        vertexDataSouth.getTriangle2().setVertexNormC(totalNorm);
+                    }
+                }
+                if (index.getX() > 0 && index.getY() > 0) {
+                    VertexData vertexDataSouthWest = getVertexDataSafe(index.sub(1, 1));
+                    vertexDataSouthWest.getTriangle2().setVertexNormB(totalNorm);
+                }
+            }
+        });
+    }
+
     private Triangle generateTriangle(boolean triangle1, Index bottomLeftIndex) {
         VertexData bottomLeft = getVertexDataSafe(bottomLeftIndex);
         VertexData bottomRight = getVertexDataSafe(bottomLeftIndex.add(1, 0));
@@ -242,6 +317,24 @@ public class Mesh {
 
     public int getY() {
         return maxY + 1;
+    }
+
+    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+        final VertexList vertexList = new VertexList();
+        final TextureCoordinateCalculator textureCoordinateCalculator = new TextureCoordinateCalculator(new Vertex(1, 0, 0), new Vertex(0, 1, 0));
+
+        iterateOverTriangles(new Mesh.TriangleVisitor() {
+            @Override
+            public void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2) {
+                triangle1.setupTextureProjection(textureCoordinateCalculator);
+                vertexList.add(triangle1);
+                triangle2.setupTextureProjection(textureCoordinateCalculator);
+                vertexList.add(triangle2);
+            }
+        });
+
+        vertexList.normalize(imageDescriptor);
+        return vertexList;
     }
 
     public void randomNorm(Index index, double maxShift) {

@@ -2,7 +2,6 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.Mesh;
-import com.btxtech.client.renderer.model.MeshGroup;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
 
@@ -16,19 +15,15 @@ import java.util.Collection;
  */
 @Singleton
 public class TerrainSurface {
-    public static final int MESH_EDGE_LENGTH = 32;
+    public static final int MESH_EDGE_LENGTH = 8;
     private Mesh mesh = new Mesh();
     private ImageDescriptor topImageDescriptor = ImageDescriptor.GRASS_IMAGE;
-    private ImageDescriptor blendImageDescriptor = ImageDescriptor.GRASS_IMAGE;
-    private ImageDescriptor bottomImageDescriptor = ImageDescriptor.GRASS_IMAGE;
-    private ImageDescriptor slopeTopImageDescriptor = ImageDescriptor.PICTURE_3;
-    private ImageDescriptor slopeBlendImageDescriptor = ImageDescriptor.PICTURE_3;
-    private ImageDescriptor slopeBottomImageDescriptor = ImageDescriptor.PICTURE_3;
+    private ImageDescriptor blendImageDescriptor = ImageDescriptor.SAND_2;
+    private ImageDescriptor bottomImageDescriptor = ImageDescriptor.SAND_2;
     private double edgeDistance = 0.5;
     private double roughnessTop;
     private double roughnessHillside;
     private double roughnessGround;
-    private MeshGroup planeMeshGroup;
     private Plateau plateau;
 
     // private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
@@ -37,11 +32,10 @@ public class TerrainSurface {
     public void init() {
         mesh.fill(1024, 1024, MESH_EDGE_LENGTH);
 
-        planeMeshGroup = mesh.createMeshGroup();
-
         plateau = new Plateau(mesh);
-        plateau.sculpt(planeMeshGroup);
+        plateau.sculpt();
         mesh.generateAllTriangle();
+        mesh.adjustNorm();
     }
 
     private void randomize(Collection<Index> indices, double roughness) {
@@ -50,12 +44,8 @@ public class TerrainSurface {
         }
     }
 
-    public VertexList getPlainVertexList() {
-       return planeMeshGroup.provideVertexListPlain(topImageDescriptor);
-    }
-
-    public VertexList getSlopeVertexList() {
-        return plateau.provideVertexListSlope(slopeBottomImageDescriptor);
+    public VertexList getVertexList() {
+        return mesh.provideVertexList(topImageDescriptor);
     }
 
     public ImageDescriptor getTopImageDescriptor() {
@@ -100,17 +90,5 @@ public class TerrainSurface {
 
     public void setRoughnessGround(double roughnessGround) {
         this.roughnessGround = roughnessGround;
-    }
-
-    public ImageDescriptor getSlopeTopImageDescriptor() {
-        return slopeTopImageDescriptor;
-    }
-
-    public ImageDescriptor getSlopeBlendImageDescriptor() {
-        return slopeBlendImageDescriptor;
-    }
-
-    public ImageDescriptor getSlopeBottomImageDescriptor() {
-        return slopeBottomImageDescriptor;
     }
 }

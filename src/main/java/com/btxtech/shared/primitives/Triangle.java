@@ -14,12 +14,15 @@ import java.util.logging.Logger;
 public class Triangle {
     private Logger logger = Logger.getLogger(Triangle.class.getName());
     private Vertex vertexA;
+    private Vertex vertexNormA;
     private TextureCoordinate textureCoordinateA;
     private double edgeA;
     private Vertex vertexB;
+    private Vertex vertexNormB;
     private TextureCoordinate textureCoordinateB;
     private double edgeB;
     private Vertex vertexC;
+    private Vertex vertexNormC;
     private TextureCoordinate textureCoordinateC;
     private double edgeC;
     private Color color = new Color(1.0, 1.0, 1.0, 1.0);
@@ -120,9 +123,21 @@ public class Triangle {
 
     public List<Vertex> appendNormVertexTo(List<Vertex> normVertices) {
         Vertex vertexNorm = calculateNorm();
-        normVertices.add(vertexNorm);
-        normVertices.add(vertexNorm);
-        normVertices.add(vertexNorm);
+        if(vertexNormA != null) {
+            normVertices.add(vertexNormA);
+        } else {
+            normVertices.add(vertexNorm);
+        }
+        if(vertexNormB != null) {
+            normVertices.add(vertexNormB);
+        } else {
+            normVertices.add(vertexNorm);
+        }
+        if(vertexNormC != null) {
+            normVertices.add(vertexNormC);
+        } else {
+            normVertices.add(vertexNorm);
+        }
         return normVertices;
     }
 
@@ -135,6 +150,10 @@ public class Triangle {
 
     public Vertex calculateNorm() {
         return vertexA.cross(vertexB, vertexC).normalize(1.0);
+    }
+
+    public double area() {
+        return vertexA.cross(vertexB, vertexC).magnitude() / 2;
     }
 
     public List<Color> appendColorsTo(List<Color> colors) {
@@ -218,6 +237,30 @@ public class Triangle {
 
     public Vertex getVertexC() {
         return vertexC;
+    }
+
+    public Vertex getVertexNormA() {
+        return vertexNormA;
+    }
+
+    public void setVertexNormA(Vertex vertexNormA) {
+        this.vertexNormA = vertexNormA;
+    }
+
+    public Vertex getVertexNormB() {
+        return vertexNormB;
+    }
+
+    public void setVertexNormB(Vertex vertexNormB) {
+        this.vertexNormB = vertexNormB;
+    }
+
+    public Vertex getVertexNormC() {
+        return vertexNormC;
+    }
+
+    public void setVertexNormC(Vertex vertexNormC) {
+        this.vertexNormC = vertexNormC;
     }
 
     public double angelA() {

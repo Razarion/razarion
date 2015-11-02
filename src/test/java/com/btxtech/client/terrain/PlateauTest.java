@@ -22,9 +22,7 @@ public class PlateauTest {
         MeshGroup planeMeshGroup = mesh.createMeshGroup();
 
         Plateau plateau = new Plateau(mesh);
-        plateau.sculpt(planeMeshGroup);
+        plateau.sculpt();
         mesh.generateAllTriangle();
-
-        plateau.provideVertexListSlope(new ImageDescriptor("chess08.jpg", 512, 512));
     }
 }

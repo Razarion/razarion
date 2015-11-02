@@ -17,6 +17,6 @@ public class PlainTerrainSurfaceWireRender extends AbstractTerrainSurfaceWireRen
 
     @Override
     protected VertexList provideVertexList() {
-        return terrainSurface.getPlainVertexList();
+        return terrainSurface.getVertexList();
     }
 }

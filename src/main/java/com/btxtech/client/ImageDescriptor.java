@@ -11,6 +11,8 @@ public class ImageDescriptor {
     public static final ImageDescriptor GRASS_IMAGE = new ImageDescriptor("grass.jpg", 512, 512);
     public static final ImageDescriptor SAND_1 = new ImageDescriptor("sand1.png", 256, 256);
     public static final ImageDescriptor SAND_2 = new ImageDescriptor("sand2.png", 512, 512);
+    public static final ImageDescriptor ROCK_2 = new ImageDescriptor("rock02.png", 512, 512);
+    public static final ImageDescriptor GRASS_ROCK_1 = new ImageDescriptor("GrassRock01.png", 512, 512);
     public static final ImageDescriptor BLEND_1 = new ImageDescriptor("blend1.png", 512, 512);
     public static final ImageDescriptor BLEND_2 = new ImageDescriptor("blend2.png", 512, 512);
     public static final ImageDescriptor BUSH_1 = new ImageDescriptor("bush-texture.png", 1024, 1024);

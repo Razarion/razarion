@@ -112,22 +112,22 @@ public class FractalField {
         }
     }
 
-    public void normalize() {
-        double min = Double.MAX_VALUE;
-        double max = Double.MIN_VALUE;
+    public void normalize(double max, double min) {
+        double minFound = Double.MAX_VALUE;
+        double maxFound = Double.MIN_VALUE;
 
         for (double[] aTerrain : terrain) {
             for (double anATerrain : aTerrain) {
-                min = Math.min(anATerrain, min);
-                max = Math.max(anATerrain, max);
+                minFound = Math.min(anATerrain, minFound);
+                maxFound = Math.max(anATerrain, maxFound);
             }
         }
 
-        double factor = max - min;
+        double factor = maxFound - minFound;
         for (int x = 0; x < terrain.length; x++) {
             for (int y = 0; y < terrain[x].length; y++) {
-                double value = terrain[x][y] - min;
-                terrain[x][y] = value / factor;
+                double value = terrain[x][y] - minFound;
+                terrain[x][y] = (max - min) * (value / factor) + min;
             }
         }
 
@@ -135,5 +135,11 @@ public class FractalField {
 
     public static int nearestPossibleNumber(int number1, int number2) {
         return MathHelper.nearestPowerOf2Number(Math.max(number1, number2)) + 1;
+    }
+
+    public static FractalField createSaveFractalField(int size1, int size2, double max, double min, double roughness) {
+        FractalField fractalField = new FractalField(nearestPossibleNumber(size1, size2), roughness);
+        fractalField.normalize(max, min);
+        return fractalField;
     }
 }

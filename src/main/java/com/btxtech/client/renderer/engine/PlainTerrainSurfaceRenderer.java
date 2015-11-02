@@ -18,21 +18,21 @@ public class PlainTerrainSurfaceRenderer extends AbstractTerrainSurfaceRenderer 
 
     @Override
     protected VertexList provideVertexList() {
-        return terrainSurface.getPlainVertexList();
+        return terrainSurface.getVertexList();
+    }
+
+    @Override
+    protected ImageDescriptor getTopImageDescriptor() {
+        return terrainSurface.getTopImageDescriptor();
     }
 
     @Override
     protected ImageDescriptor getBottomImageDescriptor() {
-        return terrainSurface.getTopImageDescriptor();
+        return terrainSurface.getBottomImageDescriptor();
     }
 
     @Override
     protected ImageDescriptor getBlendImageDescriptor() {
         return terrainSurface.getBlendImageDescriptor();
-    }
-
-    @Override
-    protected ImageDescriptor getTopImageDescriptor() {
-        return terrainSurface.getBottomImageDescriptor();
     }
 }

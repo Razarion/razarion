@@ -17,6 +17,6 @@ public class PlainTerrainSurfaceDepthBufferRenderer extends AbstractTerrainSurfa
 
     @Override
     protected VertexList provideVertexList() {
-        return terrainSurface.getPlainVertexList();
+        return terrainSurface.getVertexList();
     }
 }
