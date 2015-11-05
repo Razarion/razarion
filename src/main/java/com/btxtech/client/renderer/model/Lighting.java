@@ -25,7 +25,7 @@ public class Lighting {
     }
 
     public Color getColor() {
-        return new Color(0.2, 0.2, 0.2);
+        return color;
     }
 
     public void setColor(Color color) {
@@ -54,11 +54,11 @@ public class Lighting {
      * @return direction normalized
      */
     public Vertex getLightDirection() {
-        return shadowing.createRotationMatrix().multiply(new Vertex(0, 0, 1), 1.0);
+        return shadowing.createInverseRotationMatrix().multiply(new Vertex(0, 0, 1), 1.0);
     }
 
     public void setGame() {
         color = new Color(0.6, 0.6, 0.6);
-        ambientColor = new Color(0.5, 0.5, 0.5);
+        ambientColor = new Color(0.4, 0.4, 0.4);
     }
 }

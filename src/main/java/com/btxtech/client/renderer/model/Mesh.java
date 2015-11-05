@@ -40,6 +40,10 @@ public class Mesh {
             this.vertex = vertex;
         }
 
+        public void add(Vertex vertex) {
+            this.vertex = this.vertex.add(vertex);
+        }
+
         public void addZValue(double value) {
             vertex = vertex.add(0, 0, value);
         }
@@ -118,6 +122,31 @@ public class Mesh {
 
     public Vertex getVertexSafe(Index index) {
         return getVertexDataSafe(index).getVertex();
+    }
+
+    public Vertex getVertexNormSafe(Index index) {
+        VertexData vertexData = getVertexDataSafe(index);
+        Vertex vertex = vertexData.getVertex();
+        Vertex vertexNorth = getVertex(index.add(0, 1));
+        Vertex vertexEast = getVertex(index.add(1, 0));
+        Vertex vertexSouth = getVertex(index.sub(0, 1));
+        Vertex vertexWest = getVertex(index.sub(1, 0));
+
+        Vertex sum = new Vertex(0, 0, 0);
+        if (vertexNorth != null && vertexEast != null) {
+            sum = sum.add(vertex.cross(vertexEast, vertexNorth));
+        }
+        if (vertexEast != null && vertexSouth != null) {
+            sum = sum.add(vertex.cross(vertexSouth, vertexEast));
+        }
+        if (vertexSouth != null && vertexWest != null) {
+            sum = sum.add(vertex.cross(vertexWest, vertexSouth));
+        }
+        if (vertexWest != null && vertexNorth != null) {
+            sum = sum.add(vertex.cross(vertexNorth, vertexWest));
+        }
+
+        return sum.normalize(1.0);
     }
 
     public VertexData getVertexData(Index index) {
@@ -335,31 +364,6 @@ public class Mesh {
 
         vertexList.normalize(imageDescriptor);
         return vertexList;
-    }
-
-    public void randomNorm(Index index, double maxShift) {
-        VertexData vertexData = getVertexDataSafe(index);
-        Vertex vertex = vertexData.getVertex();
-        Vertex vertexNorth = getVertex(index.add(0, 1));
-        Vertex vertexEast = getVertex(index.add(1, 0));
-        Vertex vertexSouth = getVertex(index.sub(0, 1));
-        Vertex vertexWest = getVertex(index.sub(1, 0));
-
-        Vertex sum = new Vertex(0, 0, 0);
-        if (vertexNorth != null && vertexEast != null) {
-            sum = sum.add(vertex.cross(vertexEast, vertexNorth));
-        }
-        if (vertexEast != null && vertexSouth != null) {
-            sum = sum.add(vertex.cross(vertexSouth, vertexEast));
-        }
-        if (vertexSouth != null && vertexWest != null) {
-            sum = sum.add(vertex.cross(vertexWest, vertexSouth));
-        }
-        if (vertexWest != null && vertexNorth != null) {
-            sum = sum.add(vertex.cross(vertexNorth, vertexWest));
-        }
-
-        setVertex(index, vertex.add(sum.normalize(Math.random() * maxShift)));
     }
 
     public void iterate(VertexVisitor vertexVisitor) {

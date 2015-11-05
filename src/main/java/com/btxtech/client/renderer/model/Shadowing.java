@@ -88,6 +88,11 @@ public class Shadowing {
         return rotationMatrix.multiply(Matrix4.createYRotation(-rotateY));
     }
 
+    public Matrix4 createInverseRotationMatrix() {
+        Matrix4 rotationMatrix = Matrix4.createXRotation(rotateX);
+        return rotationMatrix.multiply(Matrix4.createYRotation(rotateY));
+    }
+
     public Matrix4 createViewProjectionTransformation() {
         return createProjectionTransformation().multiply(createViewTransformation());
     }

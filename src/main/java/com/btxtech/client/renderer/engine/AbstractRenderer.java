@@ -69,11 +69,33 @@ public abstract class AbstractRenderer implements Renderer {
                 gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
                 gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) WebGlUtil.castElementToElement(imageElement));
                 gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
-                // For bump map
-                // gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.LINEAR);
                 gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR_MIPMAP_NEAREST);
-                // For bump map
-                // gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR);
+                gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
+                gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
+            }
+        });
+        return webGLTexture;
+    }
+    protected WebGLTexture setupTextureForBumpMap(ImageDescriptor imageDescriptor) {
+        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
+        ImageLoader<WebGLTexture> textureLoader = new ImageLoader<>();
+        textureLoader.addImageUrl(imageDescriptor.getUrl(), webGLTexture);
+        textureLoader.startLoading(new ImageLoader.Listener<WebGLTexture>() {
+            @Override
+            public void onLoaded(Map<WebGLTexture, ImageElement> loadedImageElements, Collection<WebGLTexture> failed) {
+                if (!failed.isEmpty()) {
+                    throw new IllegalStateException("Failed loading texture");
+                }
+                ImageElement imageElement = loadedImageElements.get(webGLTexture);
+                if (imageElement == null) {
+                    throw new IllegalStateException("Failed loading texture");
+                }
+
+                gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
+                gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
+                gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) WebGlUtil.castElementToElement(imageElement));
+                gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.LINEAR);
+                gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR);
                 gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
                 gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
             }
