@@ -22,7 +22,6 @@ public class Camera {
     public Camera() {
         setGame();
         // setTop();
-        // setCustom();
     }
 
     public double getTranslateX() {
@@ -106,14 +105,6 @@ public class Camera {
         rotateX = Math.toRadians(40);
         rotateZ = Math.toRadians(0);
         fireChanged();
-    }
-
-    public void setCustom() {
-        translateX = 6.5;
-        translateY = -51;
-        translateZ = 6;
-        rotateX = Math.toRadians(87.00000000000001);
-        rotateZ = Math.toRadians(0);
     }
 
     private void fireChanged() {

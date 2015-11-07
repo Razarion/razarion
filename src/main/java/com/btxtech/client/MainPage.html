@@ -12,53 +12,6 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">Terrain <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li>Gras / Sand</li>
-                            <li><input id="surfaceSlider" type="range" name="points" min="0" max="1" step="0.01"></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">Shadow<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li>Shadow light position</li>
-                            <li><label id="rotateXDisplay">90</label></li>
-                            <li><input id="rotateX" type="range" max="90" min="-90" step="1"></li>
-                            <li><label id="rotateYDisplay">180</label></li>
-                            <li><input id="rotateY" type="range" max="90" min="-90" step="1"></li>
-                            <li>Z Near</li>
-                            <li><input id="shadowProjectionTransformationZNear" type="number" step="1"></li>
-                            <li>Shadow Alpha</li>
-                            <li><input id="shadowAlpha" type="range" max="1.0" min="0.0" step="0.01"></li>
-                            <li>Bump Map Depth</li>
-                            <li><input id="bumpMapDepth" type="range" max="50.0" min="0.0" step="0.01"></li>
-                            <li><button id="dumpShadowPositionButton">Dump position</button></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">Camera<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><button id="topButton">Top</button></li>
-                            <li><button id="frontButton">Front</button></li>
-                            <li><button id="gameButton">Game</button></li>
-                            <li><button id="customButton">Custom</button></li>
-                            <li><button id="dumpPositionButton">Dump position</button></li>
-                            <li><input id="viewTransformationX" type="number" step="10"></li>
-                            <li><input id="viewTransformationY" type="number" step="10"></li>
-                            <li><input id="viewTransformationZ" type="number" step="10"></li>
-                            <li><label id="viewTransformationRotateXDisplay">90</label></li>
-                            <li><input id="viewTransformationRotateX" type="range" max="90" min="-90" step="1"></li>
-                            <li><label id="viewTransformationRotateZDisplay">180</label></li>
-                            <li><input id="viewTransformationRotateZ" type="range" max="90" min="-90" step="1"></li>
-                            <li><label id="projectionTransformationZoomDisplay">180</label></li>
-                            <li><input id="projectionTransformationZoom" type="range" max="180" min="0" step="1"></li>
-                        </ul>
-                    </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false">Render Engine<span class="caret"></span></a>
@@ -72,6 +25,7 @@
             </div>
         </div>
     </nav>
+    <div id="menu"></div>
     <canvas id="canvas" style="position:absolute; width:100%; height:100%"></canvas>
 </div>
 

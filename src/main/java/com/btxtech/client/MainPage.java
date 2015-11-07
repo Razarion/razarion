@@ -1,7 +1,8 @@
 package com.btxtech.client;
 
+import com.btxtech.client.menu.Menu;
+import com.btxtech.client.menu.MenuModel;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.model.Shadowing;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.client.utils.RadToStringGradConverter;
@@ -39,100 +40,18 @@ public class MainPage extends Composite {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private Camera camera;
-    @Inject
-    private Shadowing shadowing;
+    @DataField
+    private Menu menu;
     @Inject
     @AutoBound
     private DataBinder<MenuModel> dataBinder;
-    @Inject
-    private MenuModel menuModel;
-    @Inject
-    @Bound
-    @DataField("surfaceSlider")
-    private DoubleBox surfaceSlider;
-    @Inject
-    @Bound(converter = GradToRadConverter.class)
-    @DataField("rotateX")
-    private DoubleBox shadowLightRotateX;
-    @Inject
-    @Bound(property = "shadowLightRotateX", converter = RadToStringGradConverter.class)
-    @DataField("rotateXDisplay")
-    private Label rotateXDisplay;
-    @Inject
-    @Bound(converter = GradToRadConverter.class)
-    @DataField("rotateY")
-    private DoubleBox shadowLightRotateY;
-    @Inject
-    @Bound(property = "shadowLightRotateY", converter = RadToStringGradConverter.class)
-    @DataField("rotateYDisplay")
-    private Label rotateYDisplay;
-    @Inject
-    @Bound
-    @DataField("shadowProjectionTransformationZNear")
-    private DoubleBox shadowProjectionTransformationZNear;
-    @Inject
-    @DataField("topButton")
-    private Button topButton;
-    @Inject
-    @DataField("frontButton")
-    private Button frontButton;
-    @Inject
-    @DataField("gameButton")
-    private Button gameButton;
-    @Inject
-    @DataField("customButton")
-    private Button customButton;
-    @Inject
-    @DataField("dumpPositionButton")
-    private Button dumpPositionButton;
-    @Inject
-    @Bound
-    @DataField("shadowAlpha")
-    private DoubleBox shadowAlpha;
-    @Inject
-    @Bound
-    @DataField("bumpMapDepth")
-    private DoubleBox bumpMapDepth;
-    @Inject
-    @DataField("dumpShadowPositionButton")
-    private Button dumpShadowPositionButton;
-    @Inject
-    @Bound
-    @DataField("viewTransformationX")
-    private DoubleBox viewTransformationX;
-    @Inject
-    @Bound
-    @DataField("viewTransformationY")
-    private DoubleBox viewTransformationY;
-    @Inject
-    @Bound
-    @DataField("viewTransformationZ")
-    private DoubleBox viewTransformationZ;
-    @Inject
-    @Bound(property = "viewTransformationRotateX", converter = RadToStringGradConverter.class)
-    @DataField("viewTransformationRotateXDisplay")
-    private Label viewTransformationRotateXDisplay;
-    @Inject
-    @Bound(converter = GradToRadConverter.class)
-    @DataField("viewTransformationRotateX")
-    private DoubleBox viewTransformationRotateX;
-    @Inject
-    @Bound(property = "viewTransformationRotateZ", converter = RadToStringGradConverter.class)
-    @DataField("viewTransformationRotateZDisplay")
-    private Label viewTransformationRotateZDisplay;
-    @Inject
-    @Bound(converter = GradToRadConverter.class)
-    @DataField("viewTransformationRotateZ")
-    private DoubleBox viewTransformationRotateZ;
-    @Inject
-    @Bound(property = "projectionTransformationZoom", converter = RadToStringGradConverter.class)
-    @DataField("projectionTransformationZoomDisplay")
-    private Label projectionTransformationZoomDisplay;
-    @Inject
-    @Bound(converter = GradToRadConverter.class)
-    @DataField("projectionTransformationZoom")
-    private DoubleBox projectionTransformationZoom;
+//    @Inject
+//    @Bound
+//    @DataField("bumpMapDepth")
+//    private DoubleBox bumpMapDepth;
+//    @Inject
+//    @DataField("dumpShadowPositionButton")
+//    private Button dumpShadowPositionButton;
     @Inject
     @Bound
     @DataField("showMonitor")
@@ -153,40 +72,15 @@ public class MainPage extends Composite {
                 throw new IllegalStateException("Canvas is not supported");
             }
             gameCanvas.init(canvas);
-            dataBinder.setModel(menuModel);
+            // dataBinder.setModel(menuModel);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "MainPage init failed", throwable);
         }
     }
 
-    @EventHandler("topButton")
-    private void handleTtopButtonClick(ClickEvent event) {
-        camera.setTop();
-    }
-
-    @EventHandler("frontButton")
-    private void handleFrontButtonClick(ClickEvent event) {
-        camera.setFront();
-    }
-
-    @EventHandler("gameButton")
-    private void handleGameButtonClick(ClickEvent event) {
-        camera.setGame();
-    }
-
-    @EventHandler("customButton")
-    private void handleCustomButtonnClick(ClickEvent event) {
-        camera.setCustom();
-    }
-
-    @EventHandler("dumpPositionButton")
-    private void handleDumpPositionButtonClick(ClickEvent event) {
-        camera.testPrint();
-    }
-
-    @EventHandler("dumpShadowPositionButton")
-    private void handleDumpShadowPositionButtonnClick(ClickEvent event) {
-        shadowing.testPrint();
-    }
+//    @EventHandler("dumpShadowPositionButton")
+//    private void handleDumpShadowPositionButtonnClick(ClickEvent event) {
+//        shadowing.testPrint();
+//    }
 
 }

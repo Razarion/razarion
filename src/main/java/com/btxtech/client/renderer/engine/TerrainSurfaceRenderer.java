@@ -5,7 +5,6 @@ import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.model.Shadowing;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -74,8 +73,6 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private RenderService renderService;
-    @Inject
-    private Shadowing shadowing;
 
     @PostConstruct
     public void init() {
@@ -163,13 +160,13 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
         // Shadow
         WebGLUniformLocation shadowMvpUniform = getUniformLocation(UNIFORM_MVP_SHADOW_BIAS);
-        gameCanvas.getCtx3d().uniformMatrix4fv(shadowMvpUniform, false, WebGlUtil.createArrayBufferOfFloat32(shadowing.createViewProjectionTransformation().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(shadowMvpUniform, false, WebGlUtil.createArrayBufferOfFloat32(lighting.createViewProjectionTransformation().toWebGlArray()));
         WebGLUniformLocation shadowMapUniform = getUniformLocation(UNIFORM_SHADOW_MAP_SAMPLER);
         gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE4);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
         gameCanvas.getCtx3d().uniform1i(shadowMapUniform, 4);
         WebGLUniformLocation uniformShadowAlpha = getUniformLocation(UNIFORM_SHADOW_ALPHA);
-        gameCanvas.getCtx3d().uniform1f(uniformShadowAlpha, (float) shadowing.getShadowAlpha());
+        gameCanvas.getCtx3d().uniform1f(uniformShadowAlpha, (float) lighting.getShadowAlpha());
 
         // Positions
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);

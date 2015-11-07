@@ -14,11 +14,11 @@ import javax.inject.Inject;
 @Ignore
 public class ShadowingTest {
     @Inject
-    private Shadowing shadowing;
+    private Lighting lighting;
 
     // @Test errai and vetoed problem
     public void testCreateMvpShadowBias() throws Exception {
-        Matrix4 mvpShadowBias = shadowing.createViewProjectionTransformation();
+        Matrix4 mvpShadowBias = lighting.createViewProjectionTransformation();
         Vertex vertex = mvpShadowBias.multiply(new Vertex(0, 0, 0), 1.0);
         System.out.println(vertex);
         double w = mvpShadowBias.multiplyW(new Vertex(0, 0, 0), 1.0);
