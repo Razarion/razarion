@@ -1,25 +1,12 @@
 package com.btxtech.client;
 
 import com.btxtech.client.menu.Menu;
-import com.btxtech.client.menu.MenuModel;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.utils.GradToRadConverter;
-import com.btxtech.client.utils.RadToStringGradConverter;
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.Label;
-import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
 import org.jboss.errai.ui.nav.client.local.Page;
-import org.jboss.errai.ui.shared.api.annotations.AutoBound;
-import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
@@ -42,9 +29,6 @@ public class MainPage extends Composite {
     @Inject
     @DataField
     private Menu menu;
-    @Inject
-    @AutoBound
-    private DataBinder<MenuModel> dataBinder;
 //    @Inject
 //    @Bound
 //    @DataField("bumpMapDepth")
@@ -52,18 +36,6 @@ public class MainPage extends Composite {
 //    @Inject
 //    @DataField("dumpShadowPositionButton")
 //    private Button dumpShadowPositionButton;
-    @Inject
-    @Bound
-    @DataField("showMonitor")
-    private CheckBox showMonitor;
-    @Inject
-    @Bound
-    @DataField("showDeepMap")
-    private CheckBox showDeepMap;
-    @Inject
-    @Bound
-    @DataField("wireMode")
-    private CheckBox wireMode;
 
     @PostConstruct
     public void init() {
@@ -77,10 +49,5 @@ public class MainPage extends Composite {
             logger.log(Level.SEVERE, "MainPage init failed", throwable);
         }
     }
-
-//    @EventHandler("dumpShadowPositionButton")
-//    private void handleDumpShadowPositionButtonnClick(ClickEvent event) {
-//        shadowing.testPrint();
-//    }
 
 }

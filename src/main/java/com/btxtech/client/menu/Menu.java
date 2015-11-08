@@ -21,5 +21,8 @@ public class Menu extends Composite {
     @Inject
     @DataField("menu-camera")
     private CameraMenu cameraMenu;
+    @Inject
+    @DataField("menu-debug")
+    private DebugMenu debugMenu;
 
 }
