@@ -22,6 +22,7 @@ public class Plateau {
     private static final int SLOPE_WIDTH = 4;
     private static final Rectangle INDEX_RECT = new Rectangle(30, 20, 30, 15);
     private Mesh mesh;
+    private double bumpMapDepth = 10; // TODO wrong place
     private Logger logger = Logger.getLogger(Plateau.class.getName());
 
     public Plateau(Mesh mesh) {
@@ -62,5 +63,14 @@ public class Plateau {
         }
 
     }
+
+    public double getBumpMapDepth() {
+        return bumpMapDepth;
+    }
+
+    public void setBumpMapDepth(double bumpMapDepth) {
+        this.bumpMapDepth = bumpMapDepth;
+    }
+
 
 }

@@ -119,14 +119,14 @@ public class TerrainObjectRenderer extends AbstractRenderer {
 
         // Ambient color uniform
         WebGLUniformLocation pAmbientUniformColor = getUniformLocation(UNIFORM_AMBIENT_COLOR);
-        gameCanvas.getCtx3d().uniform3f(pAmbientUniformColor, (float) lighting.getAmbientColor().getR(), (float) lighting.getAmbientColor().getG(), (float) lighting.getAmbientColor().getB());
+        gameCanvas.getCtx3d().uniform3f(pAmbientUniformColor, (float) lighting.getAmbientIntensity(), (float) lighting.getAmbientIntensity(), (float) lighting.getAmbientIntensity());
         // Lighting direction uniform
         Vertex direction = lighting.getLightDirection();
         WebGLUniformLocation pLightingDirectionUniformColor = getUniformLocation(UNIFORM_LIGHTING_DIRECTION);
         gameCanvas.getCtx3d().uniform3f(pLightingDirectionUniformColor, (float) direction.getX(), (float) direction.getY(), (float) direction.getZ());
         // Lighting color uniform
         WebGLUniformLocation pLightingColorUniformColor = getUniformLocation(UNIFORM_DIRECTIONAL_COLOR);
-        gameCanvas.getCtx3d().uniform3f(pLightingColorUniformColor, (float) lighting.getColor().getR(), (float) lighting.getColor().getG(), (float) lighting.getColor().getB());
+        gameCanvas.getCtx3d().uniform3f(pLightingColorUniformColor, (float) lighting.getDiffuseIntensity(), (float) lighting.getDiffuseIntensity(), (float) lighting.getDiffuseIntensity());
 
         // Texture
         WebGLUniformLocation tUniform = getUniformLocation(SAMPLER_UNIFORM_NAME);

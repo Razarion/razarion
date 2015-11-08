@@ -30,10 +30,6 @@ public class MainPage extends Composite {
     @DataField
     private Menu menu;
 //    @Inject
-//    @Bound
-//    @DataField("bumpMapDepth")
-//    private DoubleBox bumpMapDepth;
-//    @Inject
 //    @DataField("dumpShadowPositionButton")
 //    private Button dumpShadowPositionButton;
 

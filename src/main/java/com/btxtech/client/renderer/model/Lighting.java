@@ -20,7 +20,6 @@ public class Lighting {
     @Inject
     @Normal
     private ProjectionTransformation normalProjectionTransformation;
-    private double bumpMapDepth = 10; // TODO wrong place
     private double zNear = 10;
     private double highestPoint = 120;
     private double lowestPoint = -1;
@@ -28,35 +27,11 @@ public class Lighting {
     private Logger logger = Logger.getLogger(Lighting.class.getName());
     private double rotateX = -Math.toRadians(0);
     private double rotateY = -Math.toRadians(45);
-    private Color ambientColor;
-    private Color color;
+    private double ambientIntensity;
+    private double diffuseIntensity;
 
     public Lighting() {
         setGame();
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public Color getAmbientColor() {
-        return ambientColor;
-    }
-
-    public void setAmbientColor(Color ambientColor) {
-        this.ambientColor = ambientColor;
-    }
-
-    public double getBumpMapDepth() {
-        return bumpMapDepth;
-    }
-
-    public void setBumpMapDepth(double bumpMapDepth) {
-        this.bumpMapDepth = bumpMapDepth;
     }
 
     /**
@@ -69,8 +44,24 @@ public class Lighting {
     }
 
     public void setGame() {
-        color = new Color(0.6, 0.6, 0.6);
-        ambientColor = new Color(0.4, 0.4, 0.4);
+        diffuseIntensity = 0.6;
+        ambientIntensity = 0.4;
+    }
+
+    public double getAmbientIntensity() {
+        return ambientIntensity;
+    }
+
+    public void setAmbientIntensity(double ambientIntensity) {
+        this.ambientIntensity = ambientIntensity;
+    }
+
+    public double getDiffuseIntensity() {
+        return diffuseIntensity;
+    }
+
+    public void setDiffuseIntensity(double diffuseIntensity) {
+        this.diffuseIntensity = diffuseIntensity;
     }
 
     public double getRotateX() {

@@ -88,4 +88,8 @@ public class TerrainSurface {
     public void setRoughnessGround(double roughnessGround) {
         this.roughnessGround = roughnessGround;
     }
+
+    public Plateau getPlateau() {
+        return plateau;
+    }
 }

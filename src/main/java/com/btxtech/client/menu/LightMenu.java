@@ -34,6 +34,12 @@ public class LightMenu extends Composite {
     private Label lightRotateYDisplay;
     @Inject
     @DataField
+    private DoubleBox ambientIntensity;
+    @Inject
+    @DataField
+    private DoubleBox diffuseIntensity;
+    @Inject
+    @DataField
     private DoubleBox shadowProjectionTransformationZNear;
     @Inject
     @DataField()
@@ -47,6 +53,8 @@ public class LightMenu extends Composite {
         lightRotateYDisplay.setText(Double.toString(Math.toDegrees(lighting.getRotateY())));
         shadowProjectionTransformationZNear.setValue(lighting.getZNear());
         shadowAlpha.setValue(lighting.getShadowAlpha());
+        ambientIntensity.setValue(lighting.getAmbientIntensity());
+        diffuseIntensity.setValue(lighting.getDiffuseIntensity());
     }
 
     @EventHandler("lightRotateX")
@@ -69,6 +77,16 @@ public class LightMenu extends Composite {
     @EventHandler("shadowAlpha")
     public void shadowAlphaChanged(ChangeEvent e) {
         lighting.setShadowAlpha(shadowAlpha.getValue());
+    }
+
+    @EventHandler("ambientIntensity")
+    public void ambientIntensityChanged(ChangeEvent e) {
+        lighting.setAmbientIntensity(ambientIntensity.getValue());
+    }
+
+    @EventHandler("diffuseIntensity")
+    public void diffuseIntensityChanged(ChangeEvent e) {
+        lighting.setDiffuseIntensity(diffuseIntensity.getValue());
     }
 
 }
