@@ -28,12 +28,16 @@ public class DebugMenu extends Composite {
     @Inject
     @DataField
     private CheckBox wireMode;
+    @Inject
+    @DataField
+    private CheckBox showNorm;
 
     @PostConstruct
     public void init() {
         showMonitor.setValue(renderService.isShowMonitor());
         showDeepMap.setValue(renderService.isShowDeep());
         wireMode.setValue(renderService.isWire());
+        showNorm.setValue(renderService.isShowNorm());
     }
 
     @EventHandler("showMonitor")
@@ -49,6 +53,11 @@ public class DebugMenu extends Composite {
     @EventHandler("wireMode")
     public void wireModeChanged(ChangeEvent e) {
         renderService.showWire(wireMode.getValue());
+    }
+
+    @EventHandler("showNorm")
+    public void showNormChanged(ChangeEvent e) {
+        renderService.setShowNorm(showNorm.getValue());
     }
 
 }

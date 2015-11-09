@@ -18,13 +18,15 @@ import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 04.09.2015.
  */
-public abstract class AbstractTerrainSurfaceDepthBufferRenderer extends AbstractRenderer {
+@Dependent
+public class TerrainSurfaceDepthBufferRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String BARYCENTRIC_ATTRIBUTE_NAME = "aBarycentric";
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
@@ -50,8 +52,6 @@ public abstract class AbstractTerrainSurfaceDepthBufferRenderer extends Abstract
     @Inject
     private Lighting lighting;
 
-    protected abstract VertexList provideVertexList();
-
     @PostConstruct
     public void init() {
         Object extension = gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
@@ -70,7 +70,7 @@ public abstract class AbstractTerrainSurfaceDepthBufferRenderer extends Abstract
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = provideVertexList();
+        VertexList vertexList = terrainSurface.getVertexList();
         // vertices
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);

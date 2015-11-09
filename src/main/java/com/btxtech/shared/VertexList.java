@@ -137,6 +137,10 @@ public class VertexList {
         return vertices;
     }
 
+    public List<Vertex> getNormVertices() {
+        return normVertices;
+    }
+
     @Override
     public String toString() {
         return "VertexList{" +

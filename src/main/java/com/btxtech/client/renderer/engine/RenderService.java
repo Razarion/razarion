@@ -35,15 +35,35 @@ public class RenderService {
     private WebGLTexture depthTexture;
     private Logger logger = Logger.getLogger(RenderService.class.getName());
     private boolean showMonitor = false;
+    private boolean showNorm = false;
     private boolean showDeep = false;
     private RenderSwitch monitor;
+    private RenderSwitch norm;
 
     public void init() {
         initFrameBuffer();
-        renderQueue.add(new RenderSwitch(renderInstance.select(TerrainSurfaceRenderer.class).get(), renderInstance.select(PlainTerrainSurfaceDepthBufferRenderer.class).get(), renderInstance.select(PlainTerrainSurfaceWireRender.class).get(), wire));
-        renderQueue.add(new RenderSwitch(renderInstance.select(TerrainObjectRenderer.class).get(), renderInstance.select(TerrainObjectDepthBufferRenderer.class).get(), renderInstance.select(TerrainObjectWireRender.class).get(), wire));
-        monitor = new RenderSwitch(renderInstance.select(MonitorRenderer.class).get(), null, null, wire);
-        renderQueue.add(monitor);
+        createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class);
+        createAndAddRenderSwitch(TerrainObjectRenderer.class, TerrainObjectDepthBufferRenderer.class, TerrainObjectWireRender.class);
+        monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null);
+        norm = createAndAddRenderSwitch(NormRenderer.class, null, NormRenderer.class);
+    }
+
+    private RenderSwitch createAndAddRenderSwitch(Class<? extends Renderer> normalRendererClass, Class<? extends Renderer> depthBufferRendererClass, Class<? extends Renderer> wireRendererClass) {
+        Renderer normalRenderer = null;
+        if (normalRendererClass != null) {
+            normalRenderer = renderInstance.select(normalRendererClass).get();
+        }
+        Renderer depthBufferRenderer = null;
+        if (depthBufferRendererClass != null) {
+            depthBufferRenderer = renderInstance.select(depthBufferRendererClass).get();
+        }
+        Renderer wireRenderer = null;
+        if (wireRendererClass != null) {
+            wireRenderer = renderInstance.select(wireRendererClass).get();
+        }
+        RenderSwitch renderSwitch = new RenderSwitch(normalRenderer, depthBufferRenderer, wireRenderer, wire);
+        renderQueue.add(renderSwitch);
+        return renderSwitch;
     }
 
     public void draw() {
@@ -61,7 +81,10 @@ public class RenderService {
         gameCanvas.getCtx3d().viewport(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
         for (RenderSwitch renderSwitch : renderQueue) {
-            if(!showMonitor && renderSwitch == monitor) {
+            if (!showMonitor && renderSwitch == monitor) {
+                continue;
+            }
+            if (!showNorm && renderSwitch == norm) {
                 continue;
             }
             try {
@@ -143,7 +166,14 @@ public class RenderService {
 
     public void setShowMonitor(boolean showMonitor) {
         this.showMonitor = showMonitor;
-        logger.severe("setShowMonitor: " + this.showMonitor);
+    }
+
+    public boolean isShowNorm() {
+        return showNorm;
+    }
+
+    public void setShowNorm(boolean showNorm) {
+        this.showNorm = showNorm;
     }
 
     public boolean isShowDeep() {

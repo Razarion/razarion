@@ -2,7 +2,6 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.model.ModelTransformation;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.Camera;
@@ -19,13 +18,15 @@ import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 20.05.2015.
  */
-public abstract class AbstractTerrainSurfaceWireRender extends AbstractRenderer {
+@Dependent
+public class TerrainSurfaceWireRender extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String BARYCENTRIC_ATTRIBUTE_NAME = "aBarycentric";
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
@@ -50,10 +51,6 @@ public abstract class AbstractTerrainSurfaceWireRender extends AbstractRenderer 
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
-    @Inject
-    private ModelTransformation modelTransformation;
-
-    protected abstract VertexList provideVertexList();
 
     @PostConstruct
     public void init() {
@@ -74,7 +71,7 @@ public abstract class AbstractTerrainSurfaceWireRender extends AbstractRenderer 
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = provideVertexList();
+        VertexList vertexList = terrainSurface.getVertexList();
         // vertices
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
