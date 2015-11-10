@@ -15,6 +15,7 @@ public class ImageDescriptor {
     public static final ImageDescriptor ROCK_4 = new ImageDescriptor("rock04.png", 512, 512);
     public static final ImageDescriptor ROCK_5 = new ImageDescriptor("rock05.png", 512, 512);
     public static final ImageDescriptor BUMP_MAP_01 = new ImageDescriptor("BumpMap01.png", 512, 512);
+    public static final ImageDescriptor BUMP_MAP_02 = new ImageDescriptor("BumpMap02.png", 512, 512);
     public static final ImageDescriptor GRASS_ROCK_1 = new ImageDescriptor("GrassRock01.png", 512, 512);
     public static final ImageDescriptor BLEND_1 = new ImageDescriptor("blend1.png", 512, 512);
     public static final ImageDescriptor BLEND_2 = new ImageDescriptor("blend2.png", 512, 512);

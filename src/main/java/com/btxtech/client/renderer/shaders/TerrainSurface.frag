@@ -50,14 +50,14 @@ vec4 triPlanarTextureMapping(sampler2D sampler, float scale) {
 }
 
 vec3 bumpMapNorm(sampler2D sampler, float scale) {
-    vec3 dPositiondx = dFdx(vVertexPosition.xyz);
-    vec3 dPositiondy = dFdy(vVertexPosition.xyz);
-    float depth = triPlanarTextureMapping(sampler, scale).r;
-    float dDepthdx = dFdx(depth);
-    float dDepthdy = dFdy(depth);
-    dPositiondx -= bumpMapDepth * dDepthdx * vVertexNormal;
-    dPositiondy -= bumpMapDepth * dDepthdy * vVertexNormal;
-    return normalize(cross(dPositiondx, dPositiondy));
+      vec3 dPositiondx = dFdx(vVertexPosition.xyz);
+      vec3 dPositiondy = dFdy(vVertexPosition.xyz);
+      float depth = triPlanarTextureMapping(sampler, scale).r;
+      float dDepthdx = dFdx(depth);
+      float dDepthdy = dFdy(depth);
+
+      vec3 bumpVector = bumpMapDepth * dDepthdx * dPositiondx + bumpMapDepth * dDepthdy * dPositiondy;
+      return normalize(bumpVector + vVertexNormal);
 }
 
 void main(void) {
@@ -147,10 +147,9 @@ void main(void) {
     // gl_FragColor = vec4(dDepthdx, 1.0);
    // gl_FragColor = vec4(vVertexNormal, 1.0);
 
-    // gl_FragColor = vec4(depth, depth, depth, 1.0);
-
-
   // The normal is the cross product of the differentials
   // return normalize(cross(dPositiondx, dPositiondy));
+
+
 }
 
