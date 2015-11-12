@@ -18,7 +18,7 @@ public class TerrainSurface {
     private ImageDescriptor groundImageDescriptor = ImageDescriptor.GRASS_IMAGE;
     private ImageDescriptor bottomImageDescriptor = ImageDescriptor.SAND_2;
     private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
-    private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_01;
+    private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_05;
     private double edgeDistance = 0.5;
     private double roughnessTop;
     private double roughnessHillside;

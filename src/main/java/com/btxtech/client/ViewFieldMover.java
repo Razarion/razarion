@@ -1,6 +1,8 @@
 package com.btxtech.client;
 
 import com.btxtech.client.renderer.model.Camera;
+import com.btxtech.client.renderer.model.Normal;
+import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.google.gwt.canvas.client.Canvas;
@@ -23,6 +25,9 @@ import javax.inject.Singleton;
 public class ViewFieldMover {
     @Inject
     private Camera camera;
+    @Inject
+    @Normal
+    private ProjectionTransformation projectionTransformation;
     private Index startMove;
     private double factor = 0.5;
 
@@ -72,7 +77,7 @@ public class ViewFieldMover {
                     }
                     camera.setRotateZ(newAngleZ);
                 } else {
-                    camera.setTranslateZ(camera.getTranslateZ() + event.getDeltaY());
+                    projectionTransformation.setFovY(projectionTransformation.getFovY() + Math.toRadians(event.getDeltaY()));
                     event.preventDefault();
                 }
             }
