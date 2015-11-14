@@ -5,7 +5,10 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Rectangle;
 import com.btxtech.shared.primitives.Vertex;
+import com.google.gwt.user.client.ui.DoubleBox;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,8 +24,11 @@ public class Plateau {
     private static final int SLOPE_WIDTH = 4;
     private static final Rectangle INDEX_RECT = new Rectangle(30, 20, 30, 15);
     private Mesh mesh;
-    private double bumpMapDepth = 10; // TODO wrong place
-    private double shininess = 10; // TODO wrong place
+    private double slopeTopThreshold = 0.6;
+    private double slopeTopThresholdFading = 0.4;
+    private double bumpMapDepth = 10;
+    private double specularIntensity = 0.5;
+    private double specularHardness = 10;
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
 
     public Plateau(Mesh mesh) {
@@ -72,11 +78,35 @@ public class Plateau {
         this.bumpMapDepth = bumpMapDepth;
     }
 
-    public double getShininess() {
-        return shininess;
+    public double getSpecularHardness() {
+        return specularHardness;
     }
 
-    public void setShininess(double shininess) {
-        this.shininess = shininess;
+    public void setSpecularHardness(double specularHardness) {
+        this.specularHardness = specularHardness;
+    }
+
+    public double getSpecularIntensity() {
+        return specularIntensity;
+    }
+
+    public void setSpecularIntensity(double specularIntensity) {
+        this.specularIntensity = specularIntensity;
+    }
+
+    public double getSlopeTopThreshold() {
+        return slopeTopThreshold;
+    }
+
+    public void setSlopeTopThreshold(double slopeTopThreshold) {
+        this.slopeTopThreshold = slopeTopThreshold;
+    }
+
+    public double getSlopeTopThresholdFading() {
+        return slopeTopThresholdFading;
+    }
+
+    public void setSlopeTopThresholdFading(double slopeTopThresholdFading) {
+        this.slopeTopThresholdFading = slopeTopThresholdFading;
     }
 }

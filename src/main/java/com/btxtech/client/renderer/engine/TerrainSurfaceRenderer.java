@@ -47,7 +47,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String UNIFORM_SHADOW_MAP_SAMPLER = "uSamplerShadow";
     private static final String UNIFORM_SHADOW_ALPHA = "uShadowAlpha";
     private static final String UNIFORM_BUMP_MAP_DEPTH = "bumpMapDepth";
-    private static final String UNIFORM_SLOPE_MATERIAL_SHININESS = "uSlopeMaterialShininess";
+    private static final String UNIFORM_SLOPE_TOP_THRESHOLD = "slopeTopThreshold";
+    private static final String UNIFORM_SLOPE_TOP_THRESHOLD_FADING = "slopeTopThresholdFading";
+    private static final String UNIFORM_SLOPE_SPECULAR_HARDNESS = "uSlopeSpecularHardness";
+    private static final String UNIFORM_SLOPE_SPECULAR_INTENSITY = "uSlopeSpecularIntensity";
+
 
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
@@ -165,13 +169,21 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         WebGLUniformLocation edgeDistanceUniform = getUniformLocation(UNIFORM_EDGE_DISTANCE);
         gameCanvas.getCtx3d().uniform1f(edgeDistanceUniform, (float) terrainSurface.getEdgeDistance());
 
+        // Slope top threshold
+        WebGLUniformLocation slopeTopThreshold = getUniformLocation(UNIFORM_SLOPE_TOP_THRESHOLD);
+        gameCanvas.getCtx3d().uniform1f(slopeTopThreshold, (float) terrainSurface.getPlateau().getSlopeTopThreshold());
+        WebGLUniformLocation slopeTopThresholdFading = getUniformLocation(UNIFORM_SLOPE_TOP_THRESHOLD_FADING);
+        gameCanvas.getCtx3d().uniform1f(slopeTopThresholdFading, (float) terrainSurface.getPlateau().getSlopeTopThresholdFading());
+
         // Bump mapping
         WebGLUniformLocation bumpMapDepthUniform = getUniformLocation(UNIFORM_BUMP_MAP_DEPTH);
         gameCanvas.getCtx3d().uniform1f(bumpMapDepthUniform, (float) terrainSurface.getPlateau().getBumpMapDepth());
 
         // Specular
-        WebGLUniformLocation slopeMaterialShininess = getUniformLocation(UNIFORM_SLOPE_MATERIAL_SHININESS);
-        gameCanvas.getCtx3d().uniform1f(slopeMaterialShininess, (float) terrainSurface.getPlateau().getShininess());
+        WebGLUniformLocation slopeSpecularHardness = getUniformLocation(UNIFORM_SLOPE_SPECULAR_HARDNESS);
+        gameCanvas.getCtx3d().uniform1f(slopeSpecularHardness, (float) terrainSurface.getPlateau().getSpecularHardness());
+        WebGLUniformLocation slopeSpecularIntensity = getUniformLocation(UNIFORM_SLOPE_SPECULAR_INTENSITY);
+        gameCanvas.getCtx3d().uniform1f(slopeSpecularIntensity, (float) terrainSurface.getPlateau().getSpecularIntensity());
 
         // Shadow
         WebGLUniformLocation shadowMvpUniform = getUniformLocation(UNIFORM_MVP_SHADOW_BIAS);

@@ -16,6 +16,9 @@ public class Menu extends Composite {
     @DataField("menu-terrain")
     private TerrainMenu terrainMenu;
     @Inject
+    @DataField("menu-plateau")
+    private PlateauMenu plateauMenu;
+    @Inject
     @DataField("menu-light")
     private LightMenu lightMenu;
     @Inject
