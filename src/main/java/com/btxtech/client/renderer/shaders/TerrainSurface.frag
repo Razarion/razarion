@@ -19,13 +19,13 @@ uniform sampler2D uSamplerSlopePumpMap;
 uniform float uEdgeDistance;
 uniform float uShadowAlpha;
 uniform vec3 uLightingDirection;
-uniform vec3 uDirectionalColor;
+uniform float diffuseWeightFactor;
 uniform vec3 uAmbientColor;
 uniform highp mat4 uNMatrix;
 uniform float bumpMapDepth;
+uniform float uSlopeMaterialShininess;
 
-const float materialShininess = 200.0;
-const vec3 specularColor = vec3(1.0, 1.0, 1.0);
+const vec3 LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 
 //vec3 getNumpMapNormal() {
 //  // Differentiate the position vector
@@ -75,7 +75,7 @@ vec3 bumpMapNorm(sampler2D sampler, float scale) {
 float setupSpecularLightFactor(vec3 correctedLigtDirection, vec3 correctedNorm) {
      vec3 eyeDirection = normalize(-vVertexPosition.xyz);
      vec3 reflectionDirection = normalize(reflect(-correctedLigtDirection, correctedNorm));
-     return pow(max(dot(reflectionDirection, eyeDirection), 0.0), materialShininess);
+     return pow(max(dot(reflectionDirection, eyeDirection), 0.0), uSlopeMaterialShininess);
 }
 
 void main(void) {
@@ -141,11 +141,11 @@ void main(void) {
 
 
     // Diffuse light
-    vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * uDirectionalColor , 1.0);
+    vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * LIGHT_COLOR , 1.0);
     // vec3 uDirectionalColor_ = uDirectionalColor;
     // vec4 diffuseFactor = vec4(vec3(max(dot(correctedLigtDirection, correctedNorm), 0.0)), 1.0);
     vec4 ambientDiffuseFactor = diffuseFactor + vec4(uAmbientColor, 1.0);
-    gl_FragColor = textureColor * ambientDiffuseFactor + vec4(specularLightFactor * specularColor, 1.0);
+    gl_FragColor = textureColor * ambientDiffuseFactor + vec4(specularLightFactor * shadowFactor * LIGHT_COLOR, 1.0);
     // gl_FragColor = vec4(vec3(correctedNorm * 0.5 + 0.5), 1.0);
 
 

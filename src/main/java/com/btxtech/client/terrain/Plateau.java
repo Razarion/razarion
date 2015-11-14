@@ -22,6 +22,7 @@ public class Plateau {
     private static final Rectangle INDEX_RECT = new Rectangle(30, 20, 30, 15);
     private Mesh mesh;
     private double bumpMapDepth = 10; // TODO wrong place
+    private double shininess = 10; // TODO wrong place
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
 
     public Plateau(Mesh mesh) {
@@ -56,7 +57,7 @@ public class Plateau {
             displacements.put(slopeIndex, norm.multiply(fractalField.get(slopeIndex)));
         }
 
-        // Applay fractal
+        // Apply fractal
         for (Map.Entry<Index, Vertex> entry : displacements.entrySet()) {
             mesh.getVertexDataSafe(entry.getKey()).add(entry.getValue());
         }
@@ -71,5 +72,11 @@ public class Plateau {
         this.bumpMapDepth = bumpMapDepth;
     }
 
+    public double getShininess() {
+        return shininess;
+    }
 
+    public void setShininess(double shininess) {
+        this.shininess = shininess;
+    }
 }

@@ -25,12 +25,16 @@ public class TerrainMenu extends Composite {
     @Inject
     @DataField
     private DoubleBox bumpMapDepth;
+    @Inject
+    @DataField
+    private DoubleBox shininess;
     // private Logger logger = Logger.getLogger(TerrainMenu.class.getName());
 
     @PostConstruct
     public void init() {
         surfaceSlider.setValue(terrainSurface.getEdgeDistance());
         bumpMapDepth.setValue(terrainSurface.getPlateau().getBumpMapDepth());
+        shininess.setValue(terrainSurface.getPlateau().getShininess());
     }
 
     @EventHandler("surfaceSlider")
@@ -41,6 +45,11 @@ public class TerrainMenu extends Composite {
     @EventHandler("bumpMapDepth")
     public void bumpMapDepthChanged(ChangeEvent e) {
         terrainSurface.getPlateau().setBumpMapDepth(bumpMapDepth.getValue());
+    }
+
+    @EventHandler("shininess")
+    public void shininessChanged(ChangeEvent e) {
+        terrainSurface.getPlateau().setShininess(shininess.getValue());
     }
 
 }
