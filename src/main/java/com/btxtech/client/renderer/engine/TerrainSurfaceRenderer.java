@@ -29,6 +29,7 @@ import javax.inject.Inject;
 public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String A_VERTEX_NORMAL = "aVertexNormal";
+    private static final String A_VERTEX_TANGENT = "aVertexTangent";
     private static final String EDGE_POSITION_ATTRIBUTE_NAME = "aEdgePosition";
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
@@ -51,6 +52,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private int vertexPositionAttribute;
     private WebGLBuffer normalBuffer;
     private int normalPositionAttribute;
+    private WebGLBuffer tangentBuffer;
+    private int tangentPositionAttribute;
     private WebGLBuffer textureCoordinateBuffer;
     private int textureCoordinatePositionAttribute;
     private int edgePositionAttribute;
@@ -86,6 +89,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);
         normalBuffer = gameCanvas.getCtx3d().createBuffer();
         normalPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_NORMAL);
+        tangentBuffer = gameCanvas.getCtx3d().createBuffer();
+        tangentPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_TANGENT);
         edgeBuffer = gameCanvas.getCtx3d().createBuffer();
         edgePositionAttribute = getAndEnableAttributeLocation(EDGE_POSITION_ATTRIBUTE_NAME);
         textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
@@ -109,6 +114,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, normalBuffer);
         WebGlUtil.checkLastWebGlError("bindBuffer", gameCanvas.getCtx3d());
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createNormPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
+        WebGlUtil.checkLastWebGlError("bufferData", gameCanvas.getCtx3d());
+
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, tangentBuffer);
+        WebGlUtil.checkLastWebGlError("bindBuffer", gameCanvas.getCtx3d());
+        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createTangentPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
         WebGlUtil.checkLastWebGlError("bufferData", gameCanvas.getCtx3d());
 
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
@@ -174,6 +184,9 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         // Set the normals
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, normalBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(normalPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
+        // Set the tangent
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, tangentBuffer);
+        gameCanvas.getCtx3d().vertexAttribPointer(tangentPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
         // set vertices texture coordinates
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(textureCoordinatePositionAttribute, TextureCoordinate.getComponentCount(), WebGLRenderingContext.FLOAT, false, 0, 0);

@@ -56,13 +56,19 @@ public class NormRenderer extends AbstractRenderer {
         VertexList vertexList = terrainSurface.getVertexList();
         List<Vertex> vertices = vertexList.getVertices();
         List<Vertex> norms = vertexList.getNormVertices();
+        List<Vertex> tangents = vertexList.getTangentVertices();
 
         List<Double> doubles = new ArrayList<>();
         for (int i = 0; i < vertices.size(); i++) {
             Vertex vertex = vertices.get(i);
+            // Norm
             vertex.appendTo(doubles);
             Vertex norm = norms.get(i);
-            vertex.add(norm.multiply(10)).appendTo(doubles);
+            vertex.add(norm.multiply(5)).appendTo(doubles);
+            // Tangent
+            vertex.appendTo(doubles);
+            Vertex tangent = tangents.get(i);
+            vertex.add(tangent.multiply(5)).appendTo(doubles);
         }
 
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);

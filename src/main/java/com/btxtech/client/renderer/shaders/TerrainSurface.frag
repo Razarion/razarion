@@ -5,6 +5,7 @@ precision mediump float;
 varying vec2 vTextureCoord;
 varying vec4 vShadowCoord;
 varying vec3 vVertexNormal;
+varying vec3 vVertexTangent;
 varying vec4 vVertexPosition;
 varying float vEdgePosition;
 varying vec3 vVertexPositionCoord;
@@ -40,27 +41,35 @@ const vec3 specularColor = vec3(1.0, 1.0, 1.0);
 //  return normalize(cross(dPositiondx, dPositiondy));
 //}
 
-vec4 triPlanarTextureMapping(sampler2D sampler, float scale) {
+vec4 triPlanarTextureMapping(sampler2D sampler, float scale, vec2 addCoord) {
     vec3 blending = abs(vVertexNormCoord);
     blending = normalize(max(blending, 0.00001)); // Force weights to sum to 1.0
     float b = (blending.x + blending.y + blending.z);
     blending /= vec3(b, b, b);
-    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / scale);
-    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / scale);
-    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / scale);
+    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / scale + addCoord);
+    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / scale + addCoord);
+    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / scale + addCoord);
     // blend the results of the 3 planar projections.
     return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
 }
 
 vec3 bumpMapNorm(sampler2D sampler, float scale) {
-      vec3 dPositiondx = dFdx(vVertexPosition.xyz);
-      vec3 dPositiondy = dFdy(vVertexPosition.xyz);
-      float depth = triPlanarTextureMapping(sampler, scale).r;
-      float dDepthdx = dFdx(depth);
-      float dDepthdy = dFdy(depth);
+      vec3 normal = normalize(vVertexNormal);
+      vec3 tangent = normalize(vVertexTangent);
+      vec3 binormal = cross(normal,tangent);
 
-      vec3 bumpVector = bumpMapDepth * dDepthdx * dPositiondx + bumpMapDepth * dDepthdy * dPositiondy;
-      return normalize(bumpVector + vVertexNormal);
+
+      float bm0 = triPlanarTextureMapping(sampler, scale, vec2(0, 0)).r;
+      float bmUp = triPlanarTextureMapping(sampler, scale, vec2(0.0, 1.0/scale)).r;
+      float bmRight = triPlanarTextureMapping(sampler, scale, vec2(1.0/scale, 0.0)).r;
+
+      // float bm0 = texture2D(sampler, vVertexPositionCoord.xz / scale).r;
+      // float bmUp = texture2D(sampler, vVertexPositionCoord.xz / scale + vec2(0.0, 1.0/scale) ).r;
+      // float bmRight = texture2D(sampler, vVertexPositionCoord.xz / scale + vec2(1.0/scale, 0.0) ).r;
+      vec3 bumpVector = (bmRight - bm0)*tangent + (bmUp - bm0)*binormal;
+      normal += bumpMapDepth * bumpVector;
+      // normal = normalize(normalMatrix*normal);
+      return normalize(normal);
 }
 
 float setupSpecularLightFactor(vec3 correctedLigtDirection, vec3 correctedNorm) {
@@ -106,8 +115,8 @@ void main(void) {
 
     // Tri-Planar Texture Mapping
     // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
-    vec4 colorGround = triPlanarTextureMapping(uSamplerGround, 512.0);
-    vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0);
+    vec4 colorGround = triPlanarTextureMapping(uSamplerGround, 512.0, vec2(0,0));
+    vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
 
 
     vec3 correctedZenith = (uNMatrix * vec4(vec3(0,0,1), 1.0)).xyz;
@@ -129,7 +138,6 @@ void main(void) {
       correctedNorm = bumpMapNorm(uSamplerSlopePumpMap, 128.0);
       specularLightFactor = setupSpecularLightFactor(correctedLigtDirection, correctedNorm);
    }
-      specularLightFactor = 0.0;
 
 
     // Diffuse light

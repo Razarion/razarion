@@ -19,6 +19,7 @@ import java.util.List;
 public class VertexList {
     List<Vertex> vertices = new ArrayList<>();
     List<Vertex> normVertices = new ArrayList<>();
+    List<Vertex> tangentVertices = new ArrayList<>();
     List<Vertex> barycentric = new ArrayList<>();
     List<TextureCoordinate> textureCoordinates = new ArrayList<>();
     List<Color> colors = new ArrayList<>();
@@ -27,6 +28,7 @@ public class VertexList {
     public void add(Triangle triangle) {
         triangle.appendVertexTo(vertices);
         triangle.appendNormVertexTo(normVertices);
+        triangle.appendTangentVertexTo(tangentVertices);
         triangle.appendBarycentricTo(barycentric);
         triangle.appendColorsTo(colors);
         triangle.appendTextureCoordinateTo(textureCoordinates);
@@ -80,6 +82,14 @@ public class VertexList {
         return doubleList;
     }
 
+    public List<Double> createTangentPositionDoubles() {
+        List<Double> doubleList = new ArrayList<>();
+        for (Vertex vertex : tangentVertices) {
+            vertex.appendTo(doubleList);
+        }
+        return doubleList;
+    }
+
     public List<Double> createEdgeDoubles() {
         return new ArrayList<>(edges);
     }
@@ -127,6 +137,7 @@ public class VertexList {
     public void append(VertexList vertexList) {
         vertices.addAll(vertexList.vertices);
         normVertices.addAll(vertexList.normVertices);
+        tangentVertices.addAll(vertexList.tangentVertices);
         barycentric.addAll(vertexList.barycentric);
         textureCoordinates.addAll(vertexList.textureCoordinates);
         colors.addAll(vertexList.colors);
@@ -139,6 +150,10 @@ public class VertexList {
 
     public List<Vertex> getNormVertices() {
         return normVertices;
+    }
+
+    public List<Vertex> getTangentVertices() {
+        return tangentVertices;
     }
 
     @Override

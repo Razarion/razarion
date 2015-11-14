@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -23,7 +22,7 @@ public class Plateau {
     private static final Rectangle INDEX_RECT = new Rectangle(30, 20, 30, 15);
     private Mesh mesh;
     private double bumpMapDepth = 10; // TODO wrong place
-    private Logger logger = Logger.getLogger(Plateau.class.getName());
+    // private Logger logger = Logger.getLogger(Plateau.class.getName());
 
     public Plateau(Mesh mesh) {
         this.mesh = mesh;

@@ -15,14 +15,17 @@ public class Triangle {
     private Logger logger = Logger.getLogger(Triangle.class.getName());
     private Vertex vertexA;
     private Vertex vertexNormA;
+    private Vertex vertexTangentA;
     private TextureCoordinate textureCoordinateA;
     private double edgeA;
     private Vertex vertexB;
     private Vertex vertexNormB;
+    private Vertex vertexTangentB;
     private TextureCoordinate textureCoordinateB;
     private double edgeB;
     private Vertex vertexC;
     private Vertex vertexNormC;
+    private Vertex vertexTangentC;
     private TextureCoordinate textureCoordinateC;
     private double edgeC;
     private Color color = new Color(1.0, 1.0, 1.0, 1.0);
@@ -123,22 +126,28 @@ public class Triangle {
 
     public List<Vertex> appendNormVertexTo(List<Vertex> normVertices) {
         Vertex vertexNorm = calculateNorm();
-        if(vertexNormA != null) {
+        if (vertexNormA != null) {
             normVertices.add(vertexNormA);
         } else {
             normVertices.add(vertexNorm);
         }
-        if(vertexNormB != null) {
+        if (vertexNormB != null) {
             normVertices.add(vertexNormB);
         } else {
             normVertices.add(vertexNorm);
         }
-        if(vertexNormC != null) {
+        if (vertexNormC != null) {
             normVertices.add(vertexNormC);
         } else {
             normVertices.add(vertexNorm);
         }
         return normVertices;
+    }
+
+    public void appendTangentVertexTo(List<Vertex> tangentVertices) {
+        tangentVertices.add(vertexTangentA);
+        tangentVertices.add(vertexTangentB);
+        tangentVertices.add(vertexTangentC);
     }
 
     public void appendEdgesTo(List<Double> edges) {
@@ -150,6 +159,14 @@ public class Triangle {
 
     public Vertex calculateNorm() {
         return vertexA.cross(vertexB, vertexC).normalize(1.0);
+    }
+
+    public Vertex calculateABTangent() {
+        return vertexB.sub(vertexA).normalize(1.0);
+    }
+
+    public Vertex calculateCBTangent() {
+        return vertexB.sub(vertexC).normalize(1.0);
     }
 
     public double area() {
@@ -261,6 +278,30 @@ public class Triangle {
 
     public void setVertexNormC(Vertex vertexNormC) {
         this.vertexNormC = vertexNormC;
+    }
+
+    public Vertex getVertexTangentA() {
+        return vertexTangentA;
+    }
+
+    public void setVertexTangentA(Vertex vertexTangentA) {
+        this.vertexTangentA = vertexTangentA;
+    }
+
+    public Vertex getVertexTangentB() {
+        return vertexTangentB;
+    }
+
+    public void setVertexTangentB(Vertex vertexTangentB) {
+        this.vertexTangentB = vertexTangentB;
+    }
+
+    public Vertex getVertexTangentC() {
+        return vertexTangentC;
+    }
+
+    public void setVertexTangentC(Vertex vertexTangentC) {
+        this.vertexTangentC = vertexTangentC;
     }
 
     public double angelA() {

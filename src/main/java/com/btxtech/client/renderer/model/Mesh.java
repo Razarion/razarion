@@ -200,31 +200,44 @@ public class Mesh {
             @Override
             public void onVisit(Index index, Vertex vertex) {
                 Collection<Vertex> norms = new ArrayList<>();
+                Collection<Vertex> tangents = new ArrayList<>();
                 VertexData vertexData = getVertexDataSafe(index);
                 if (vertexData.getTriangle1() != null) {
-                    norms.add(vertexData.getTriangle1().calculateNorm().multiply(vertexData.getTriangle1().area()));
+                    double area = vertexData.getTriangle1().area();
+                    norms.add(vertexData.getTriangle1().calculateNorm().multiply(area));
+                    tangents.add(vertexData.getTriangle1().calculateABTangent().multiply(area));
                 }
                 if (index.getX() > 0) {
                     VertexData vertexDataWest = getVertexDataSafe(index.sub(1, 0));
                     if (vertexDataWest.getTriangle1() != null) {
-                        norms.add(vertexDataWest.getTriangle1().calculateNorm().multiply(vertexDataWest.getTriangle1().area()));
+                        double area = vertexDataWest.getTriangle1().area();
+                        norms.add(vertexDataWest.getTriangle1().calculateNorm().multiply(area));
+                        tangents.add(vertexDataWest.getTriangle1().calculateABTangent().multiply(area));
                     }
                     if (vertexDataWest.getTriangle2() != null) {
-                        norms.add(vertexDataWest.getTriangle2().calculateNorm().multiply(vertexDataWest.getTriangle2().area()));
+                        double area = vertexDataWest.getTriangle2().area();
+                        norms.add(vertexDataWest.getTriangle2().calculateNorm().multiply(area));
+                        tangents.add(vertexDataWest.getTriangle2().calculateCBTangent().multiply(area));
                     }
                 }
                 if (index.getY() > 0) {
                     VertexData vertexDataSouth = getVertexDataSafe(index.sub(0, 1));
                     if (vertexDataSouth.getTriangle1() != null) {
-                        norms.add(vertexDataSouth.getTriangle1().calculateNorm().multiply(vertexDataSouth.getTriangle1().area()));
+                        double area = vertexDataSouth.getTriangle1().area();
+                        norms.add(vertexDataSouth.getTriangle1().calculateNorm().multiply(area));
+                        tangents.add(vertexDataSouth.getTriangle1().calculateABTangent().multiply(area));
                     }
                     if (vertexDataSouth.getTriangle2() != null) {
-                        norms.add(vertexDataSouth.getTriangle2().calculateNorm().multiply(vertexDataSouth.getTriangle2().area()));
+                        double area = vertexDataSouth.getTriangle2().area();
+                        norms.add(vertexDataSouth.getTriangle2().calculateNorm().multiply(area));
+                        tangents.add(vertexDataSouth.getTriangle2().calculateCBTangent().multiply(area));
                     }
                 }
                 if (index.getX() > 0 && index.getY() > 0) {
                     VertexData vertexDataSouthWest = getVertexDataSafe(index.sub(1, 1));
-                    norms.add(vertexDataSouthWest.getTriangle2().calculateNorm().multiply(vertexDataSouthWest.getTriangle2().area()));
+                    double area = vertexDataSouthWest.getTriangle2().area();
+                    norms.add(vertexDataSouthWest.getTriangle2().calculateNorm().multiply(area));
+                    tangents.add(vertexDataSouthWest.getTriangle2().calculateCBTangent().multiply(area));
                 }
                 Vertex totalNorm = new Vertex(0, 0, 0);
                 for (Vertex norm : norms) {
@@ -232,30 +245,42 @@ public class Mesh {
                 }
                 totalNorm = totalNorm.normalize(1.0);
 
+                Vertex totalTangent = new Vertex(0, 0, 0);
+                for (Vertex tangent : tangents) {
+                    totalTangent = totalTangent.add(tangent);
+                }
+                totalTangent = totalTangent.normalize(1.0);
+
                 if (vertexData.getTriangle1() != null) {
                     vertexData.getTriangle1().setVertexNormA(totalNorm);
+                    vertexData.getTriangle1().setVertexTangentA(totalTangent);
                 }
                 if (index.getX() > 0) {
                     VertexData vertexDataWest = getVertexDataSafe(index.sub(1, 0));
                     if (vertexDataWest.getTriangle1() != null) {
                         vertexDataWest.getTriangle1().setVertexNormB(totalNorm);
+                        vertexDataWest.getTriangle1().setVertexTangentB(totalTangent);
                     }
-                    if (vertexDataWest.getTriangle1() != null) {
+                    if (vertexDataWest.getTriangle2() != null) {
                         vertexDataWest.getTriangle2().setVertexNormA(totalNorm);
+                        vertexDataWest.getTriangle2().setVertexTangentA(totalTangent);
                     }
                 }
                 if (index.getY() > 0) {
                     VertexData vertexDataSouth = getVertexDataSafe(index.sub(0, 1));
                     if (vertexDataSouth.getTriangle1() != null) {
                         vertexDataSouth.getTriangle1().setVertexNormC(totalNorm);
+                        vertexDataSouth.getTriangle1().setVertexTangentC(totalTangent);
                     }
                     if (vertexDataSouth.getTriangle2() != null) {
                         vertexDataSouth.getTriangle2().setVertexNormC(totalNorm);
+                        vertexDataSouth.getTriangle2().setVertexTangentC(totalTangent);
                     }
                 }
                 if (index.getX() > 0 && index.getY() > 0) {
                     VertexData vertexDataSouthWest = getVertexDataSafe(index.sub(1, 1));
                     vertexDataSouthWest.getTriangle2().setVertexNormB(totalNorm);
+                    vertexDataSouthWest.getTriangle2().setVertexTangentB(totalTangent);
                 }
             }
         });
