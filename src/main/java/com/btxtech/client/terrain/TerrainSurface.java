@@ -29,9 +29,13 @@ public class TerrainSurface {
 
     @PostConstruct
     public void init() {
+        plateau = new Plateau(mesh);
+        setup();
+    }
+
+    public void setup() {
         mesh.fill(1024, 1024, MESH_EDGE_LENGTH);
 
-        plateau = new Plateau(mesh);
         plateau.sculpt();
         mesh.generateAllTriangle();
         mesh.adjustNorm();

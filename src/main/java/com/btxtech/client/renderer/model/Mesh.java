@@ -375,19 +375,19 @@ public class Mesh {
 
     public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
         final VertexList vertexList = new VertexList();
-        final TextureCoordinateCalculator textureCoordinateCalculator = new TextureCoordinateCalculator(new Vertex(1, 0, 0), new Vertex(0, 1, 0));
+        // final TextureCoordinateCalculator textureCoordinateCalculator = new TextureCoordinateCalculator(new Vertex(1, 0, 0), new Vertex(0, 1, 0));
 
         iterateOverTriangles(new Mesh.TriangleVisitor() {
             @Override
             public void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2) {
-                triangle1.setupTextureProjection(textureCoordinateCalculator);
+                // triangle1.setupTextureProjection(textureCoordinateCalculator);
                 vertexList.add(triangle1);
-                triangle2.setupTextureProjection(textureCoordinateCalculator);
+                // triangle2.setupTextureProjection(textureCoordinateCalculator);
                 vertexList.add(triangle2);
             }
         });
 
-        vertexList.normalize(imageDescriptor);
+        // vertexList.normalize(imageDescriptor);
         return vertexList;
     }
 

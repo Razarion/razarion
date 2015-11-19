@@ -1,5 +1,6 @@
 package com.btxtech.client.menu;
 
+import com.btxtech.client.editor.EditorDialogBox;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -28,4 +29,7 @@ public class Menu extends Composite {
     @DataField("menu-debug")
     private DebugMenu debugMenu;
 
+    public void setEditorDialogBox(EditorDialogBox editorDialogBox) {
+        plateauMenu.setEditorDialogBox(editorDialogBox);
+    }
 }

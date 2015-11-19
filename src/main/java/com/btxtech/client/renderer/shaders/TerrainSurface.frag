@@ -80,14 +80,11 @@ void main(void) {
         shadowFactor = uShadowAlpha;
     }
 
-    // Surface
-    vec4 textureColorTop = texture2D(uSamplerGround, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 textureColorBlend = texture2D(uSamplerSlope, vec2(vTextureCoord.s, vTextureCoord.t));
-    float tmUEdgeDistance = uEdgeDistance;
-    // textureColorBlend = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, textureColorBlend);
-    vec4 textureColorBottom = texture2D(uSamplerBottom, vec2(vTextureCoord.s, vTextureCoord.t));
-    vec4 texture = mix(textureColorTop, textureColorBottom, textureColorBlend);
-    // TODO gl_FragColor = vec4(texture.rgb * vLightWeighting * shadowFactor, 1.0);
+
+    float uEdgeDistance_ = uEdgeDistance;
+    texture2D(uSamplerBottom, vec2(1.0, 1.0));
+
+
 //////////////////////////
     vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
 

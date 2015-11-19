@@ -2,10 +2,7 @@
 
 precision mediump float;
 
-uniform sampler2D uSampler;
-
 varying vec3 vBarycentric;
-varying vec2 vTextureCoord;
 
 float edgeFactor(){
     vec3 d = fwidth(vBarycentric);
@@ -14,6 +11,5 @@ float edgeFactor(){
 }
 
 void main(void) {
-   vec4 texColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-   gl_FragColor = vec4(mix(vec3(1.0, 0.0, 0.0), texColor.rgb, edgeFactor()), 1);
+   gl_FragColor = vec4(mix(vec3(1.0, 0.0, 0.0), vec3(0.5, 0.5, 0.5), edgeFactor()), 1.0);
 }

@@ -28,7 +28,6 @@ import javax.inject.Inject;
 public class TerrainObjectDepthBufferRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String BARYCENTRIC_ATTRIBUTE_NAME = "aBarycentric";
-    private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
     private static final String MODEL_UNIFORM_NAME = "uMMatrix";
@@ -37,9 +36,6 @@ public class TerrainObjectDepthBufferRenderer extends AbstractRenderer {
     private int vertexPositionAttribute;
     private WebGLBuffer barycentricBuffer;
     private int barycentricPositionAttribute;
-    private WebGLBuffer textureCoordinateBuffer;
-    private int textureCoordinatePositionAttribute;
-    private WebGLTexture webGLTexture;
     private int elementCount;
     // private Logger logger = Logger.getLogger(TerrainDepthBufferObjectRenderer.class.getName());
     @Inject
@@ -58,9 +54,6 @@ public class TerrainObjectDepthBufferRenderer extends AbstractRenderer {
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);
         barycentricBuffer = gameCanvas.getCtx3d().createBuffer();
         barycentricPositionAttribute = getAndEnableAttributeLocation(BARYCENTRIC_ATTRIBUTE_NAME);
-        textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
-        textureCoordinatePositionAttribute = getAndEnableAttributeLocation(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
-        webGLTexture = setupTexture(ImageDescriptor.CHESS_TEXTURE_08);
     }
 
     @Override
@@ -76,9 +69,6 @@ public class TerrainObjectDepthBufferRenderer extends AbstractRenderer {
         // barycentric
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, barycentricBuffer);
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createBarycentricDoubles()), WebGLRenderingContext.STATIC_DRAW);
-        // texture Coordinate
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
-        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createTextureDoubles()), WebGLRenderingContext.STATIC_DRAW);
 
         elementCount = vertexList.getVerticesCount();
     }
@@ -119,14 +109,6 @@ public class TerrainObjectDepthBufferRenderer extends AbstractRenderer {
         // set the barycentric coordinates
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, barycentricBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(barycentricPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
-        // set vertices texture coordinates
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
-        gameCanvas.getCtx3d().vertexAttribPointer(textureCoordinatePositionAttribute, TextureCoordinate.getComponentCount(), WebGLRenderingContext.FLOAT, false, 0, 0);
-        // Texture
-        WebGLUniformLocation tUniform = getUniformLocation(SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0);
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tUniform, 0);
 
         // Draw
         for (Matrix4 matrix4 : terrainObjectService.getPositions()) {

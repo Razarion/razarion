@@ -1,7 +1,10 @@
 package com.btxtech.client.menu;
 
+import com.btxtech.client.editor.EditorDialogBox;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -10,6 +13,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -34,6 +38,11 @@ public class PlateauMenu extends Composite {
     @Inject
     @DataField
     private DoubleBox specularHardness;
+    @Inject
+    @DataField
+    private Button slopeEditor;
+    // private Logger logger = Logger.getLogger(PlateauMenu.class.getName());
+    private EditorDialogBox editorDialogBox;
 
     @PostConstruct
     public void init() {
@@ -69,4 +78,12 @@ public class PlateauMenu extends Composite {
         terrainSurface.getPlateau().setSlopeTopThresholdFading(slopeTopThresholdFading.getValue());
     }
 
+    @EventHandler("slopeEditor")
+    private void slopeEditorButtonClick(ClickEvent event) {
+        editorDialogBox.open();
+    }
+
+    public void setEditorDialogBox(EditorDialogBox editorDialogBox) {
+        this.editorDialogBox = editorDialogBox;
+    }
 }

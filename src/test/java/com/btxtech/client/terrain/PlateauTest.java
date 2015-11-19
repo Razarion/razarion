@@ -17,9 +17,7 @@ public class PlateauTest {
     @Test
     public void testProvideVertexListSlope() throws Exception {
         Mesh mesh = new Mesh();
-        mesh.fill(128, 128, 32);
-
-        MeshGroup planeMeshGroup = mesh.createMeshGroup();
+        mesh.fill(1024, 1024, 8);
 
         Plateau plateau = new Plateau(mesh);
         plateau.sculpt();

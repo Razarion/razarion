@@ -1,5 +1,6 @@
 package com.btxtech.client;
 
+import com.btxtech.client.editor.EditorDialogBox;
 import com.btxtech.client.menu.Menu;
 import com.btxtech.client.renderer.GameCanvas;
 import com.google.gwt.canvas.client.Canvas;
@@ -29,6 +30,10 @@ public class MainPage extends Composite {
     @Inject
     @DataField
     private Menu menu;
+    @Inject
+    @DataField
+    EditorDialogBox editorDialogBox;
+
 //    @Inject
 //    @DataField("dumpShadowPositionButton")
 //    private Button dumpShadowPositionButton;
@@ -40,6 +45,7 @@ public class MainPage extends Composite {
                 throw new IllegalStateException("Canvas is not supported");
             }
             gameCanvas.init(canvas);
+            menu.setEditorDialogBox(editorDialogBox);
             // dataBinder.setModel(menuModel);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "MainPage init failed", throwable);

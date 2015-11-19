@@ -93,6 +93,12 @@ public class FractalField {
     }
 
     public double get(Index index) {
+        if (index.getX() >= terrain.length) {
+            throw new IndexOutOfBoundsException("X: " + index.getX() + " >= " + terrain.length);
+        }
+        if (index.getY() >= terrain.length) {
+            throw new IndexOutOfBoundsException("Y: " + index.getY() + " >= " + terrain.length);
+        }
         return terrain[index.getX()][index.getY()];
     }
 
