@@ -9,7 +9,6 @@
     <inherits name="org.jboss.errai.enterprise.All" />
     <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
     <inherits name="elemental.Elemental"/>
-    <inherits name='org.vectomatic.libgwtsvg'/>
     <inherits name='com.btxtech.game.jsre.Jser'/>
 
     <!--<replace-with class="org.jboss.errai.demo.client.local.Config">-->
