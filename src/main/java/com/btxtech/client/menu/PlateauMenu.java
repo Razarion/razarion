@@ -1,5 +1,7 @@
 package com.btxtech.client.menu;
 
+import com.btxtech.client.TerrainEditorService;
+import com.btxtech.client.VertexListService;
 import com.btxtech.client.editor.EditorDialogBox;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -7,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -41,6 +44,12 @@ public class PlateauMenu extends Composite {
     @Inject
     @DataField
     private Button slopeEditor;
+    @Inject
+    @DataField
+    private Button save;
+    @Inject
+    private Caller<TerrainEditorService> terrainEditorService;
+
     // private Logger logger = Logger.getLogger(PlateauMenu.class.getName());
     private EditorDialogBox editorDialogBox;
 
@@ -81,6 +90,11 @@ public class PlateauMenu extends Composite {
     @EventHandler("slopeEditor")
     private void slopeEditorButtonClick(ClickEvent event) {
         editorDialogBox.open();
+    }
+
+    @EventHandler("save")
+    private void saveButtonClick(ClickEvent event) {
+        terrainEditorService.call().save();
     }
 
     public void setEditorDialogBox(EditorDialogBox editorDialogBox) {
