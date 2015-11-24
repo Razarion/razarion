@@ -1,11 +1,9 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.game.jsre.client.common.Index;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import elemental.client.Browser;
-import elemental.dom.Document;
-import elemental.events.Event;
-import elemental.events.EventListener;
 import elemental.events.MouseEvent;
 import elemental.svg.SVGGElement;
 import elemental.svg.SVGPoint;
@@ -28,8 +26,8 @@ public abstract class SvgEditor {
     private boolean deleteMode;
     private Logger logger = Logger.getLogger(SvgEditor.class.getName());
 
-    protected void init(SVGSVGElement svg, float width, float height, boolean centerXNegateY) {
-        this.svg = svg;
+    protected void init(Element svgElement, float width, float height, boolean centerXNegateY) {
+        this.svg = (SVGSVGElement) svgElement;
         // TODO setupGrid();
 
         group = Browser.getDocument().createSVGGElement();

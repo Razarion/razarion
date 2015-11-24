@@ -1,12 +1,13 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.editor.EditorPanel;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.PlateauConfigEntity;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
+import elemental.client.Browser;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.api.InitialState;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
@@ -49,6 +50,10 @@ public class PlateauPanel extends Composite {
     @Bound
     @DataField
     private DoubleBox specularHardness;
+    @DataField
+    private Element svgElement = (Element) Browser.getDocument().createSVGElement();
+    @Inject
+    private SlopeEditor slopeEditor;
     @Inject
     @DataField
     private Button save;
@@ -57,6 +62,7 @@ public class PlateauPanel extends Composite {
     @PostConstruct
     public void init() {
         plateauConfigEntityDataBinder = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity(), InitialState.FROM_MODEL);
+        slopeEditor.init(svgElement);
     }
 
     @EventHandler("save")

@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Vertex;
+import com.google.gwt.dom.client.Element;
 import elemental.svg.SVGSVGElement;
 
 import javax.enterprise.context.Dependent;
@@ -27,8 +28,8 @@ public class SlopeEditor extends SvgEditor {
     private RenderService renderService;
     // private Logger logger = Logger.getLogger(SlopeEditor.class.getName());
 
-    public void start(SVGSVGElement svg) {
-        init(svg, WIDTH, HEIGHT, false);
+    public void init(Element svgElement) {
+        init(svgElement, WIDTH, HEIGHT, false);
     }
 
     protected void setupGrid() {
