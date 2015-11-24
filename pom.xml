@@ -92,6 +92,12 @@
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-jboss-as-support</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.hibernate</groupId>-->
+            <!--<artifactId>hibernate-jpamodelgen</artifactId>-->
+            <!--<version>5.0.4.Final</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>

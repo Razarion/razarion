@@ -161,19 +161,19 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
         // Slope top threshold
         WebGLUniformLocation slopeTopThreshold = getUniformLocation(UNIFORM_SLOPE_TOP_THRESHOLD);
-        gameCanvas.getCtx3d().uniform1f(slopeTopThreshold, (float) terrainSurface.getPlateau().getSlopeTopThreshold());
+        gameCanvas.getCtx3d().uniform1f(slopeTopThreshold, (float) terrainSurface.getPlateau().getPlateauConfigEntity().getSlopeTopThreshold());
         WebGLUniformLocation slopeTopThresholdFading = getUniformLocation(UNIFORM_SLOPE_TOP_THRESHOLD_FADING);
-        gameCanvas.getCtx3d().uniform1f(slopeTopThresholdFading, (float) terrainSurface.getPlateau().getSlopeTopThresholdFading());
+        gameCanvas.getCtx3d().uniform1f(slopeTopThresholdFading, (float) terrainSurface.getPlateau().getPlateauConfigEntity().getSlopeTopThresholdFading());
 
         // Bump mapping
         WebGLUniformLocation bumpMapDepthUniform = getUniformLocation(UNIFORM_BUMP_MAP_DEPTH);
-        gameCanvas.getCtx3d().uniform1f(bumpMapDepthUniform, (float) terrainSurface.getPlateau().getBumpMapDepth());
+        gameCanvas.getCtx3d().uniform1f(bumpMapDepthUniform, (float) terrainSurface.getPlateau().getPlateauConfigEntity().getBumpMapDepth());
 
         // Specular
         WebGLUniformLocation slopeSpecularHardness = getUniformLocation(UNIFORM_SLOPE_SPECULAR_HARDNESS);
-        gameCanvas.getCtx3d().uniform1f(slopeSpecularHardness, (float) terrainSurface.getPlateau().getSpecularHardness());
+        gameCanvas.getCtx3d().uniform1f(slopeSpecularHardness, (float) terrainSurface.getPlateau().getPlateauConfigEntity().getSpecularHardness());
         WebGLUniformLocation slopeSpecularIntensity = getUniformLocation(UNIFORM_SLOPE_SPECULAR_INTENSITY);
-        gameCanvas.getCtx3d().uniform1f(slopeSpecularIntensity, (float) terrainSurface.getPlateau().getSpecularIntensity());
+        gameCanvas.getCtx3d().uniform1f(slopeSpecularIntensity, (float) terrainSurface.getPlateau().getPlateauConfigEntity().getSpecularIntensity());
 
         // Shadow
         WebGLUniformLocation shadowMvpUniform = getUniformLocation(UNIFORM_MVP_SHADOW_BIAS);

@@ -1,5 +1,6 @@
 package com.btxtech.client;
 
+import com.btxtech.shared.PlateauConfigEntity;
 import com.btxtech.shared.VertexList;
 import org.jboss.errai.bus.server.annotations.Remote;
 
@@ -9,5 +10,6 @@ import org.jboss.errai.bus.server.annotations.Remote;
  */
 @Remote
 public interface TerrainEditorService {
-    void save();
+    PlateauConfigEntity read();
+    void save(PlateauConfigEntity plateauConfigEntity);
 }

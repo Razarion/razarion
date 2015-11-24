@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.model.Mesh;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Rectangle;
+import com.btxtech.shared.PlateauConfigEntity;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
@@ -23,11 +24,7 @@ public class Plateau {
     private static final int FRACTIONAL_FACTOR = 30;
     private static final Rectangle INDEX_RECT = new Rectangle(30, 20, 30, 15);
     private Mesh mesh;
-    private double slopeTopThreshold = 0.6;
-    private double slopeTopThresholdFading = 0.4;
-    private double bumpMapDepth = 10;
-    private double specularIntensity = 0.5;
-    private double specularHardness = 10;
+    private PlateauConfigEntity plateauConfigEntity;
     private final List<Index> SLOP_INDEX = new ArrayList<>(Arrays.asList(
             new Index(TerrainSurface.MESH_EDGE_LENGTH, PLANE_TOP_HEIGHT),
             new Index(TerrainSurface.MESH_EDGE_LENGTH * 2, 60),
@@ -98,45 +95,12 @@ public class Plateau {
         return SLOP_INDEX.get(x).getY();
     }
 
-
-    public double getBumpMapDepth() {
-        return bumpMapDepth;
+    public void setPlateauConfigEntity(PlateauConfigEntity plateauConfigEntity) {
+        this.plateauConfigEntity = plateauConfigEntity;
     }
 
-    public void setBumpMapDepth(double bumpMapDepth) {
-        this.bumpMapDepth = bumpMapDepth;
-    }
-
-    public double getSpecularHardness() {
-        return specularHardness;
-    }
-
-    public void setSpecularHardness(double specularHardness) {
-        this.specularHardness = specularHardness;
-    }
-
-    public double getSpecularIntensity() {
-        return specularIntensity;
-    }
-
-    public void setSpecularIntensity(double specularIntensity) {
-        this.specularIntensity = specularIntensity;
-    }
-
-    public double getSlopeTopThreshold() {
-        return slopeTopThreshold;
-    }
-
-    public void setSlopeTopThreshold(double slopeTopThreshold) {
-        this.slopeTopThreshold = slopeTopThreshold;
-    }
-
-    public double getSlopeTopThresholdFading() {
-        return slopeTopThresholdFading;
-    }
-
-    public void setSlopeTopThresholdFading(double slopeTopThresholdFading) {
-        this.slopeTopThresholdFading = slopeTopThresholdFading;
+    public PlateauConfigEntity getPlateauConfigEntity() {
+        return plateauConfigEntity;
     }
 
     public List<Index> getSlopeIndexes() {
