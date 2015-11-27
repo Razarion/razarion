@@ -31,7 +31,7 @@ public class EditorCorner implements EventListener {
     private String normalColor;
     private Logger logger = Logger.getLogger(EditorCorner.class.getName());
     private EventRemover onMouseMoveEventRemover;
-    private EventRemover onMouseOutEventRemover;
+    // private EventRemover onMouseOutEventRemover;
     private EventRemover onMouseUpEventRemover;
 
     public EditorCorner(Index position, EditorCorner predecessor, SvgEditor svgEditor) {
@@ -45,25 +45,25 @@ public class EditorCorner implements EventListener {
         circle.addEventListener("mousedown", new EventListener() {
             @Override
             public void handleEvent(Event event) {
-                MouseEvent mouseEvent = (MouseEvent) event;
-                onMouseMoveEventRemover = circle.addEventListener("mousemove", new EventListener() {
+
+                onMouseMoveEventRemover = Browser.getWindow().addEventListener("mousemove", new EventListener() {
                     @Override
                     public void handleEvent(Event event) {
                         move((MouseEvent) event);
                     }
-                }, false);
-                onMouseOutEventRemover = circle.addEventListener("mouseout", new EventListener() {
+                }, true);
+//                onMouseOutEventRemover = Browser.getWindow().addEventListener("mouseout", new EventListener() {
+//                    @Override
+//                    public void handleEvent(Event event) {
+//                        deselect();
+//                    }
+//                }, true);
+                onMouseUpEventRemover = Browser.getWindow().addEventListener("mouseup", new EventListener() {
                     @Override
                     public void handleEvent(Event event) {
                         deselect();
                     }
-                }, false);
-                onMouseUpEventRemover = circle.addEventListener("mouseup", new EventListener() {
-                    @Override
-                    public void handleEvent(Event event) {
-                        deselect();
-                    }
-                }, false);
+                }, true);
             }
         }, false);
         circle.getStyle().setCursor(Style.Cursor.MOVE.getCssName());
@@ -103,9 +103,9 @@ public class EditorCorner implements EventListener {
         if (onMouseMoveEventRemover != null) {
             onMouseMoveEventRemover.remove();
         }
-        if (onMouseOutEventRemover != null) {
-            onMouseOutEventRemover.remove();
-        }
+//        if (onMouseOutEventRemover != null) {
+//            onMouseOutEventRemover.remove();
+//        }
         if (onMouseUpEventRemover != null) {
             onMouseUpEventRemover.remove();
         }

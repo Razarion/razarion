@@ -49,9 +49,6 @@ public class SlopeEditor extends SvgEditor {
     @Override
     protected void setIndexes(List<Index> indexes) {
         terrainSurface.getPlateau().setSlopeIndexes(indexes);
-        terrainSurface.setup();
-        renderService.fillBuffers();
-
     }
 
     private List<Vertex> toShapeVector(List<Index> indexes) {

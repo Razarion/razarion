@@ -1,5 +1,6 @@
 package com.btxtech.client.editor;
 
+import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.PlateauConfigEntity;
 import com.google.gwt.dom.client.Element;
@@ -18,6 +19,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -27,6 +29,8 @@ import javax.inject.Inject;
 public class PlateauPanel extends Composite {
     @Inject
     private TerrainSurface terrainSurface;
+    @Inject
+    private RenderService renderService;
     @Inject
     @AutoBound
     private DataBinder<PlateauConfigEntity> plateauConfigEntityDataBinder/* = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity())*/;
@@ -55,14 +59,27 @@ public class PlateauPanel extends Composite {
     @Inject
     private SlopeEditor slopeEditor;
     @Inject
+    @Bound
+    @DataField
+    private DoubleBox fractal;
+    @Inject
+    @DataField
+    private Button fractalButton;
+    @Inject
     @DataField
     private Button save;
-    // private Logger logger = Logger.getLogger(PlateauMenu.class.getName());
+    // private Logger logger = Logger.getLogger(PlateauPanel.class.getName());
 
     @PostConstruct
     public void init() {
         plateauConfigEntityDataBinder = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity(), InitialState.FROM_MODEL);
         slopeEditor.init(svgElement);
+    }
+
+    @EventHandler("fractalButton")
+    private void fractalButtonClick(ClickEvent event) {
+        terrainSurface.setup();
+        renderService.fillBuffers();
     }
 
     @EventHandler("save")

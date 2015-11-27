@@ -25,6 +25,7 @@ public class PlateauConfigEntity {
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
+    private double fractal;
 
     public double getSlopeTopThreshold() {
         return slopeTopThreshold;
@@ -64,6 +65,14 @@ public class PlateauConfigEntity {
 
     public void setSpecularHardness(double specularHardness) {
         this.specularHardness = specularHardness;
+    }
+
+    public double getFractal() {
+        return fractal;
+    }
+
+    public void setFractal(double fractal) {
+        this.fractal = fractal;
     }
 
     @Override

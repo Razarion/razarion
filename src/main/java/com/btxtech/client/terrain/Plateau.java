@@ -21,7 +21,6 @@ import java.util.logging.Logger;
  */
 public class Plateau {
     private static final int PLANE_TOP_HEIGHT = 80;
-    private static final int FRACTIONAL_FACTOR = 30;
     private static final Rectangle INDEX_RECT = new Rectangle(30, 20, 30, 15);
     private Mesh mesh;
     private PlateauConfigEntity plateauConfigEntity;
@@ -40,7 +39,8 @@ public class Plateau {
     public void sculpt() {
         final int slopeSize = SLOP_INDEX.size();
         int doubleSlopeSize = slopeSize * 2;
-        final FractalField fractalField = FractalField.createSaveFractalField(INDEX_RECT.getWidth() + doubleSlopeSize, INDEX_RECT.getHeight() + doubleSlopeSize, FRACTIONAL_FACTOR, -FRACTIONAL_FACTOR, 1.0);
+        double fractal = plateauConfigEntity != null ? plateauConfigEntity.getFractal() : 0;
+        final FractalField fractalField = FractalField.createSaveFractalField(INDEX_RECT.getWidth() + doubleSlopeSize, INDEX_RECT.getHeight() + doubleSlopeSize, fractal, -fractal, 1.0);
 
         // Model slope
         final Collection<Index> slopeIndexes = new ArrayList<>();
