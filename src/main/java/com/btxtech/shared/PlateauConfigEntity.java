@@ -20,12 +20,21 @@ public class PlateauConfigEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private int top;
     private double slopeTopThreshold;
     private double slopeTopThresholdFading;
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
     private double fractal;
+
+    public int getTop() {
+        return top;
+    }
+
+    public void setTop(int top) {
+        this.top = top;
+    }
 
     public double getSlopeTopThreshold() {
         return slopeTopThreshold;

@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 @Service
 @ApplicationScoped
 public class TerrainEditorServiceImpl implements TerrainEditorService {
-    @Inject
-    private Logger logger;
+    // @Inject
+    // private Logger logger;
     @Inject
     private ExceptionHandler exceptionHandler;
     @PersistenceContext

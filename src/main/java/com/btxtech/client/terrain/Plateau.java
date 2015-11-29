@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.model.Mesh;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Rectangle;
+import com.btxtech.shared.MathHelper2;
 import com.btxtech.shared.PlateauConfigEntity;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -13,24 +14,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 17.10.2015.
  */
 public class Plateau {
-    private static final int PLANE_TOP_HEIGHT = 80;
     private static final Rectangle INDEX_RECT = new Rectangle(30, 20, 30, 15);
     private Mesh mesh;
     private PlateauConfigEntity plateauConfigEntity;
     private final List<Index> SLOP_INDEX = new ArrayList<>(Arrays.asList(
-            new Index(TerrainSurface.MESH_EDGE_LENGTH, PLANE_TOP_HEIGHT),
+            new Index(TerrainSurface.MESH_EDGE_LENGTH, 70),
             new Index(TerrainSurface.MESH_EDGE_LENGTH * 2, 60),
             new Index(TerrainSurface.MESH_EDGE_LENGTH * 3, 50),
             new Index(TerrainSurface.MESH_EDGE_LENGTH * 4, 40),
             new Index(TerrainSurface.MESH_EDGE_LENGTH * 5, 30)));
-    private Logger logger = Logger.getLogger(Plateau.class.getName());
+    // private Logger logger = Logger.getLogger(Plateau.class.getName());
 
     public Plateau(Mesh mesh) {
         this.mesh = mesh;
@@ -40,7 +39,14 @@ public class Plateau {
         final int slopeSize = SLOP_INDEX.size();
         int doubleSlopeSize = slopeSize * 2;
         double fractal = plateauConfigEntity != null ? plateauConfigEntity.getFractal() : 0;
-        final FractalField fractalField = FractalField.createSaveFractalField(INDEX_RECT.getWidth() + doubleSlopeSize, INDEX_RECT.getHeight() + doubleSlopeSize, fractal, -fractal, 1.0);
+
+        final int top = plateauConfigEntity != null ? plateauConfigEntity.getTop() : 100;
+        final List<Double> slopeForm = new ArrayList<>();
+        slopeForm.add((double)top);
+        for (Index index : SLOP_INDEX) {
+            slopeForm.add((double) index.getY());
+        }
+        slopeForm.add(0.0);
 
         // Model slope
         final Collection<Index> slopeIndexes = new ArrayList<>();
@@ -48,17 +54,18 @@ public class Plateau {
             @Override
             public void onVisit(Index index, Vertex vertex) {
                 if (INDEX_RECT.contains2(new DecimalPosition(index))) {
-                    mesh.setVertex(index, vertex.add(0, 0, PLANE_TOP_HEIGHT));
+                    mesh.setVertex(index, vertex.add(0, 0, top));
                 } else {
                     double distance = INDEX_RECT.getNearestPointInclusive(new DecimalPosition(index)).getDistance(new DecimalPosition(index));
-                    if (distance < slopeSize) {
-                        mesh.getVertexDataSafe(index).addZValue(interpolateHeight(distance));
+                    if (distance < slopeSize + 1) {
+                        mesh.getVertexDataSafe(index).addZValue(MathHelper2.interpolate(distance, slopeForm));
                         slopeIndexes.add(index);
                     }
                 }
             }
         });
 
+        FractalField fractalField = FractalField.createSaveFractalField(INDEX_RECT.getWidth() + doubleSlopeSize, INDEX_RECT.getHeight() + doubleSlopeSize, fractal, -fractal, 1.0);
         // Calculate fractal
         Index origin = INDEX_RECT.getStart().sub(slopeSize, slopeSize);
         Map<Index, Vertex> displacements = new HashMap<>();
@@ -69,30 +76,9 @@ public class Plateau {
 
         // Apply fractal
         for (Map.Entry<Index, Vertex> entry : displacements.entrySet()) {
-             mesh.getVertexDataSafe(entry.getKey()).add(entry.getValue());
+            mesh.getVertexDataSafe(entry.getKey()).add(entry.getValue());
         }
 
-    }
-
-    private double interpolateHeight(double distance) {
-        int x1 = (int) distance;
-        if (x1 == distance) {
-            return getSlopIndexY(x1);
-        }
-        int x2 = (int) Math.ceil(distance);
-        double y1 = getSlopIndexY(x1);
-        double y2 = getSlopIndexY(x2);
-        return (y2 - y1) / (x2 - x1) * (distance - x1) + y1;
-    }
-
-    private double getSlopIndexY(int x) {
-        if (x < 0) {
-            return PLANE_TOP_HEIGHT;
-        }
-        if (x + 1 > SLOP_INDEX.size()) {
-            return 0;
-        }
-        return SLOP_INDEX.get(x).getY();
     }
 
     public void setPlateauConfigEntity(PlateauConfigEntity plateauConfigEntity) {

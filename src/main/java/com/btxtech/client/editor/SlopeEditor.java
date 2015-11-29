@@ -1,77 +1,104 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.dom.client.Element;
+import elemental.client.Browser;
+import elemental.events.MouseEvent;
+import elemental.svg.SVGGElement;
+import elemental.svg.SVGLineElement;
+import elemental.svg.SVGPoint;
 import elemental.svg.SVGSVGElement;
+import elemental.svg.SVGTransform;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Created by Beat
- * 02.05.2015.
+ * 12.05.2015.
  */
-@Dependent
-public class SlopeEditor extends SvgEditor {
-    private static final int WIDTH = 366;
-    private static final int HEIGHT = 400;
+public class SlopeEditor {
+    @Deprecated
+    private static final int HEIGHT = 400; // This is not the real SVG element height
+    private SVGSVGElement svg;
+    private List<EditorCorner> editorCorners = new ArrayList<>();
+    private SVGGElement group;
+    private Logger logger = Logger.getLogger(SlopeEditor.class.getName());
     @Inject
     private TerrainSurface terrainSurface;
-    @Inject
-    private RenderService renderService;
-    // private Logger logger = Logger.getLogger(SlopeEditor.class.getName());
 
-    public void init(Element svgElement) {
-        init(svgElement, WIDTH, HEIGHT, false);
-    }
+    protected void init(Element svgElement) {
+        this.svg = (SVGSVGElement) svgElement;
 
-    protected void setupGrid() {
-//        OMSVGGElement gridGroup = getDoc().createSVGGElement();
-//        OMSVGLineElement xNull = getDoc().createSVGLineElement(WIDTH / 2, 0, WIDTH / 2, HEIGHT);
-//        xNull.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_PROPERTY, "red");
-//        xNull.getStyle().setSVGProperty(SVGConstants.CSS_STROKE_WIDTH_PROPERTY, Integer.toString(2));
-//        gridGroup.appendChild(xNull);
-//        getSvg().appendChild(gridGroup);
-    }
+        group = Browser.getDocument().createSVGGElement();
+        // Invert Y axis and shift to middle
+        SVGTransform transform = svg.createSVGTransform();
+        transform.setTranslate(0, HEIGHT / 2);
+        group.getAnimatedTransform().getBaseVal().appendItem(transform);
+        transform = svg.createSVGTransform();
+        transform.setScale(1, -1);
+        group.getAnimatedTransform().getBaseVal().appendItem(transform);
+        drawEnvironment();
+        svg.appendChild(group);
 
-    @Override
-    protected List<Index> getIndexes() {
-        return terrainSurface.getPlateau().getSlopeIndexes();
-    }
-
-    @Override
-    protected void setIndexes(List<Index> indexes) {
-        terrainSurface.getPlateau().setSlopeIndexes(indexes);
-    }
-
-    private List<Vertex> toShapeVector(List<Index> indexes) {
-        List<Vertex> shape = new ArrayList<>();
-        for (Index index : indexes) {
-            shape.add(new Vertex(index.getX(), 0, index.getY()));
+        for (Index index : terrainSurface.getPlateau().getSlopeIndexes()) {
+            addEditorCorner(index);
         }
-        return shape;
     }
 
+    private void drawEnvironment() {
+        SVGLineElement xAxis = Browser.getDocument().createSVGLineElement();
+        xAxis.getX1().getBaseVal().setValue(-1000);
+        xAxis.getY1().getBaseVal().setValue(0);
+        xAxis.getX2().getBaseVal().setValue(1000);
+        xAxis.getY2().getBaseVal().setValue(0);
+        xAxis.getStyle().setProperty("stroke", "#555555");
+        xAxis.getStyle().setProperty("stroke-width", "1");
+        group.appendChild(xAxis);
 
-    @Override
-    protected void onDump(List<Index> indexes, Logger logger) {
-        String string = "public static List<Vertex> shape = Arrays.asList(";
-        List<Vertex> shapeVertices = toShapeVector(indexes);
-        for (int i = 0; i < shapeVertices.size(); i++) {
-            Vertex vertex = shapeVertices.get(i);
-            string += vertex.testString();
-            if (i + 1 < shapeVertices.size()) {
-                string += ", ";
-            }
+        SVGLineElement top = Browser.getDocument().createSVGLineElement();
+        top.getX1().getBaseVal().setValue(-1000);
+        top.getY1().getBaseVal().setValue(terrainSurface.getPlateau().getPlateauConfigEntity().getTop());
+        top.getX2().getBaseVal().setValue(1000);
+        top.getY2().getBaseVal().setValue(terrainSurface.getPlateau().getPlateauConfigEntity().getTop());
+        top.getStyle().setProperty("stroke", "#888888");
+        top.getStyle().setProperty("stroke-width", "1");
+        group.appendChild(top);
+    }
+
+    private void addEditorCorner(Index position) {
+        try {
+            editorCorners.add(new EditorCorner(position, this));
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "Editor.addEditorCorner()", t);
         }
-        string += ");";
-        logger.severe(string);
+    }
+
+    public SVGGElement getGroup() {
+        return group;
+    }
+
+    public Index convertMouseToSvg(MouseEvent event) {
+        SVGPoint point = svg.createSVGPoint();
+        point.setX(event.getOffsetX());
+        point.setY(event.getOffsetY());
+        SVGPoint convertedPoint = point.matrixTransform(group.getCTM().inverse());
+        return new Index((int) convertedPoint.getX(), (int) convertedPoint.getY());
+    }
+
+    public void onChanged() {
+        terrainSurface.getPlateau().setSlopeIndexes(setupIndexes());
+    }
+
+    private List<Index> setupIndexes() {
+        List<Index> indexes = new ArrayList<>();
+        for (EditorCorner editorCorner : editorCorners) {
+            indexes.add(editorCorner.getPosition());
+        }
+        return indexes;
     }
 }

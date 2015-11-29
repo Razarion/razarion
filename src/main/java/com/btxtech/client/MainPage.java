@@ -1,6 +1,5 @@
 package com.btxtech.client;
 
-import com.btxtech.client.editor.EditorPanel;
 import com.btxtech.client.editor.EditorPanelContainer;
 import com.btxtech.client.menu.Menu;
 import com.btxtech.client.renderer.GameCanvas;
