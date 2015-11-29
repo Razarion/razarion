@@ -28,7 +28,8 @@ public class ViewFieldMover {
     @Inject
     @Normal
     private ProjectionTransformation projectionTransformation;
-    private Index startMove;
+    private Index startMoveXY;
+    private Integer startMoveZ;
     private double factor = 0.5;
 
     public void activate(Canvas canvas) {
@@ -36,25 +37,38 @@ public class ViewFieldMover {
             @Override
             public void onMouseMove(MouseMoveEvent event) {
                 if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_LEFT) == NativeEvent.BUTTON_LEFT) {
-                    if (startMove != null) {
+                    if (startMoveXY != null) {
                         Index endMove = new Index(event.getX(), event.getY());
-                        Index delta = endMove.sub(startMove);
+                        Index delta = endMove.sub(startMoveXY);
                         if (delta.isNull()) {
                             return;
                         }
                         camera.setTranslateX(camera.getTranslateX() + factor * (double) -delta.getX());
                         camera.setTranslateY(camera.getTranslateY() + factor * (double) delta.getY());
-                        startMove = endMove;
+                        startMoveXY = endMove;
                     }
                 } else {
-                    startMove = null;
+                    startMoveXY = null;
+                }
+                if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
+                    if (startMoveZ != null) {
+                        int deltaZ = event.getY() - startMoveZ;
+                        camera.setTranslateZ(camera.getTranslateZ() + factor * (double) deltaZ);
+                        startMoveZ = event.getY();
+                    }
+                } else {
+                    startMoveZ = null;
                 }
             }
         });
         canvas.addMouseDownHandler(new MouseDownHandler() {
             @Override
             public void onMouseDown(MouseDownEvent event) {
-                startMove = new Index(event.getX(), event.getY());
+                if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_LEFT) == NativeEvent.BUTTON_LEFT) {
+                    startMoveXY = new Index(event.getX(), event.getY());
+                } else if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
+                    startMoveZ = event.getY();
+                }
             }
         });
         canvas.addMouseWheelHandler(new MouseWheelHandler() {
