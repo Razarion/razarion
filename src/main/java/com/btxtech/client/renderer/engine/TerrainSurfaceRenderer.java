@@ -36,6 +36,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String NORM_UNIFORM_NAME = "uNMatrix";
     private static final String UNIFORM_AMBIENT_COLOR = "uAmbientColor";
     private static final String GROUND_SAMPLER_UNIFORM_NAME = "uSamplerGround";
+    private static final String GROUND_BM_SAMPLER_UNIFORM_NAME = "uSamplerGroundBm";
     private static final String SLOPE_SAMPLER_UNIFORM_NAME = "uSamplerSlope";
     private static final String BOTTOM_SAMPLER_UNIFORM_NAME = "uSamplerBottom";
     private static final String SLOPE_BUMP_MAP_SAMPLER_UNIFORM_NAME = "uSamplerSlopePumpMap";
@@ -61,6 +62,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private int edgePositionAttribute;
     private WebGLBuffer edgeBuffer;
     private WebGLTexture groundWebGLTexture;
+    private WebGLTexture groundBmWebGLTexture;
     private WebGLTexture slopeWebGLTexture;
     private WebGLTexture bottomWebGLTexture;
     private WebGLTexture slopeBumpMapWebGLTexture;
@@ -97,6 +99,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         edgePositionAttribute = getAndEnableAttributeLocation(EDGE_POSITION_ATTRIBUTE_NAME);
 
         groundWebGLTexture = setupTexture(terrainSurface.getGroundImageDescriptor());
+        groundBmWebGLTexture = setupTextureForBumpMap(terrainSurface.getGroundBmImageDescriptor());
         bottomWebGLTexture = setupTexture(terrainSurface.getBottomImageDescriptor());
         slopeWebGLTexture = setupTexture(terrainSurface.getSlopeImageDescriptor());
         slopeBumpMapWebGLTexture = setupTextureForBumpMap(terrainSurface.getSlopePumpMapImageDescriptor());
@@ -179,9 +182,9 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         WebGLUniformLocation shadowMvpUniform = getUniformLocation(UNIFORM_MVP_SHADOW_BIAS);
         gameCanvas.getCtx3d().uniformMatrix4fv(shadowMvpUniform, false, WebGlUtil.createArrayBufferOfFloat32(lighting.createViewProjectionTransformation().toWebGlArray()));
         WebGLUniformLocation shadowMapUniform = getUniformLocation(UNIFORM_SHADOW_MAP_SAMPLER);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE4);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
-        gameCanvas.getCtx3d().uniform1i(shadowMapUniform, 4);
+        gameCanvas.getCtx3d().uniform1i(shadowMapUniform, 0);
         WebGLUniformLocation uniformShadowAlpha = getUniformLocation(UNIFORM_SHADOW_ALPHA);
         gameCanvas.getCtx3d().uniform1f(uniformShadowAlpha, (float) lighting.getShadowAlpha());
 
@@ -198,25 +201,30 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, edgeBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(edgePositionAttribute, 1, WebGLRenderingContext.FLOAT, false, 0, 0);
         // Textures
-        WebGLUniformLocation tTopUniform = getUniformLocation(GROUND_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0);
+        WebGLUniformLocation groundSampleUniform = getUniformLocation(GROUND_SAMPLER_UNIFORM_NAME);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE1);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, groundWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tTopUniform, 0);
+        gameCanvas.getCtx3d().uniform1i(groundSampleUniform, 1);
+
+        WebGLUniformLocation groundBmSampleUniform = getUniformLocation(GROUND_BM_SAMPLER_UNIFORM_NAME);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE2);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, groundBmWebGLTexture);
+        gameCanvas.getCtx3d().uniform1i(groundBmSampleUniform, 2);
 
         WebGLUniformLocation tBlendUniform = getUniformLocation(SLOPE_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE1);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE3);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, slopeWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tBlendUniform, 1);
+        gameCanvas.getCtx3d().uniform1i(tBlendUniform, 3);
 
         WebGLUniformLocation tBottomUniform = getUniformLocation(BOTTOM_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE2);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE4);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, bottomWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tBottomUniform, 2);
+        gameCanvas.getCtx3d().uniform1i(tBottomUniform, 4);
 
         WebGLUniformLocation tBumpMapUniform = getUniformLocation(SLOPE_BUMP_MAP_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE3);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE5);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, slopeBumpMapWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tBumpMapUniform, 3);
+        gameCanvas.getCtx3d().uniform1i(tBumpMapUniform, 5);
 
         // Draw
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);

@@ -26,7 +26,8 @@ public class TerrainSurface {
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     private Mesh mesh = new Mesh();
-    private ImageDescriptor groundImageDescriptor = ImageDescriptor.GRASS_IMAGE;
+    private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_1;
+    private ImageDescriptor groundBmImageDescriptor = ImageDescriptor.BUMP_MAP_GROUND_1;
     private ImageDescriptor bottomImageDescriptor = ImageDescriptor.SAND_2;
     private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
     private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_04;
@@ -89,6 +90,10 @@ public class TerrainSurface {
 
     public ImageDescriptor getGroundImageDescriptor() {
         return groundImageDescriptor;
+    }
+
+    public ImageDescriptor getGroundBmImageDescriptor() {
+        return groundBmImageDescriptor;
     }
 
     public ImageDescriptor getSlopeImageDescriptor() {

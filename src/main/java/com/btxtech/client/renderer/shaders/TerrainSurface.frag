@@ -12,6 +12,7 @@ varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
 
 uniform sampler2D uSamplerGround;
+uniform sampler2D uSamplerGroundBm;
 uniform sampler2D uSamplerSlope;
 uniform sampler2D uSamplerBottom;
 uniform sampler2D uSamplerShadow;
@@ -53,7 +54,7 @@ vec3 bumpMapNorm(sampler2D sampler, float scale) {
       float bmRight = triPlanarTextureMapping(sampler, scale, vec2(1.0/scale, 0.0)).r;
 
       vec3 bumpVector = (bmRight - bm0)*tangent + (bmUp - bm0)*binormal;
-      normal += bumpMapDepth * bumpVector;
+      normal -= bumpMapDepth * bumpVector;
       return normalize(normal);
 }
 
@@ -63,7 +64,7 @@ float setupSpecularLightFactor(vec3 correctedLigtDirection, vec3 correctedNorm) 
      return pow(max(dot(reflectionDirection, eyeDirection), 0.0), uSlopeSpecularHardness) * uSlopeSpecularIntensity;
 }
 
-void main(void) {
+float calculateShadowFactor() {
     // Shadow
     float zNdc = vShadowCoord.z / vShadowCoord.w;
     mat4 coordCorrectionMatrix = mat4(0.5, 0.0, 0.0, 0.0,
@@ -72,31 +73,32 @@ void main(void) {
                                  0.5, 0.5, 0.5, 1.0);
     vec4 coordShadowMap = coordCorrectionMatrix * vShadowCoord;
     float zMap = texture2D(uSamplerShadow, coordShadowMap.st / coordShadowMap.w).r;
-    float shadowFactor;
     zNdc = zNdc * 0.5 + 0.5;
     if(zMap > zNdc - 0.01) {
-        shadowFactor = 1.0;
+        return 1.0;
     } else {
-        shadowFactor = uShadowAlpha;
+        return uShadowAlpha;
     }
+}
 
+void main(void) {
+    float shadowFactor = calculateShadowFactor();
 
     float uEdgeDistance_ = uEdgeDistance;
     texture2D(uSamplerBottom, vec2(1.0, 1.0));
 
-
-//////////////////////////
     vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
-
 
     vec4 colorGround = triPlanarTextureMapping(uSamplerGround, 512.0, vec2(0,0));
     vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
 
 
-    vec3 correctedZenith = (uNMatrix * vec4(vec3(0,0,1), 1.0)).xyz;
+    vec3 correctedZenith = (uNMatrix * vec4(vec3(0, 0, 1), 1.0)).xyz;
     float slope = dot(vVertexNormal.xyz, correctedZenith);
     float slopeFactor = smoothstep(slopeTopThreshold + slopeTopThresholdFading, slopeTopThreshold - slopeTopThresholdFading, slope);
-    vec3 correctedNorm = mix(vVertexNormal, bumpMapNorm(uSamplerSlopePumpMap, 128.0), slopeFactor);
+
+    vec3 correctedNorm = mix(bumpMapNorm(uSamplerGroundBm, 512.0), bumpMapNorm(uSamplerSlopePumpMap, 128.0), slopeFactor);
+
     vec4 textureColor = mix(colorGround, colorSlope, slopeFactor);;
     float specularLightFactor = mix(0.0, setupSpecularLightFactor(correctedLigtDirection, correctedNorm), slopeFactor);
 
