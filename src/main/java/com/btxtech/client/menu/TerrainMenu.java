@@ -22,15 +22,24 @@ public class TerrainMenu extends Composite {
     @Inject
     @DataField("surfaceSlider")
     private DoubleBox surfaceSlider;
+    @Inject
+    @DataField("groundBumpMap")
+    private DoubleBox groundBumpMap;
     // private Logger logger = Logger.getLogger(TerrainMenu.class.getName());
 
     @PostConstruct
     public void init() {
         surfaceSlider.setValue(terrainSurface.getEdgeDistance());
+        groundBumpMap.setValue(terrainSurface.getGroundBumpMap());
     }
 
     @EventHandler("surfaceSlider")
     public void surfaceSliderChanged(ChangeEvent e) {
         terrainSurface.setEdgeDistance(surfaceSlider.getValue());
+    }
+
+    @EventHandler("groundBumpMap")
+    public void groundBumpMapChanged(ChangeEvent e) {
+        terrainSurface.setGroundBumpMap(groundBumpMap.getValue());
     }
 }

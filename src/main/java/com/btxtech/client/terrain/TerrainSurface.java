@@ -32,6 +32,7 @@ public class TerrainSurface {
     private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
     private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_04;
     private double edgeDistance = 0.5;
+    private double groundBumpMap = 2;
     private double roughnessTop;
     private double roughnessHillside;
     private double roughnessGround;
@@ -138,6 +139,14 @@ public class TerrainSurface {
 
     public void setRoughnessGround(double roughnessGround) {
         this.roughnessGround = roughnessGround;
+    }
+
+    public double getGroundBumpMap() {
+        return groundBumpMap;
+    }
+
+    public void setGroundBumpMap(double groundBumpMap) {
+        this.groundBumpMap = groundBumpMap;
     }
 
     public Plateau getPlateau() {

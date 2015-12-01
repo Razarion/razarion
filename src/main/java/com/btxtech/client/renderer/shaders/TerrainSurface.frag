@@ -23,7 +23,8 @@ uniform vec3 uLightingDirection;
 uniform float diffuseWeightFactor;
 uniform vec3 uAmbientColor;
 uniform highp mat4 uNMatrix;
-uniform float bumpMapDepth;
+uniform float bumpMapDepthSlope;
+uniform float bumpMapDepthGround;
 uniform float uSlopeSpecularHardness;
 uniform float uSlopeSpecularIntensity;
 uniform float slopeTopThreshold;
@@ -44,7 +45,7 @@ vec4 triPlanarTextureMapping(sampler2D sampler, float scale, vec2 addCoord) {
     return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
 }
 
-vec3 bumpMapNorm(sampler2D sampler, float scale) {
+vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale) {
       vec3 normal = normalize(vVertexNormal);
       vec3 tangent = normalize(vVertexTangent);
       vec3 binormal = cross(normal,tangent);
@@ -97,7 +98,7 @@ void main(void) {
     float slope = dot(vVertexNormal.xyz, correctedZenith);
     float slopeFactor = smoothstep(slopeTopThreshold + slopeTopThresholdFading, slopeTopThreshold - slopeTopThresholdFading, slope);
 
-    vec3 correctedNorm = mix(bumpMapNorm(uSamplerGroundBm, 512.0), bumpMapNorm(uSamplerSlopePumpMap, 128.0), slopeFactor);
+    vec3 correctedNorm = mix(bumpMapNorm(uSamplerGroundBm, bumpMapDepthGround, 512.0), bumpMapNorm(uSamplerSlopePumpMap, bumpMapDepthSlope, 128.0), slopeFactor);
 
     vec4 textureColor = mix(colorGround, colorSlope, slopeFactor);;
     float specularLightFactor = mix(0.0, setupSpecularLightFactor(correctedLigtDirection, correctedNorm), slopeFactor);

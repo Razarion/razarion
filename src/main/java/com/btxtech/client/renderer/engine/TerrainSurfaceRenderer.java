@@ -10,7 +10,6 @@ import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
@@ -46,7 +45,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String UNIFORM_MVP_SHADOW_BIAS = "uMVPDepthBias";
     private static final String UNIFORM_SHADOW_MAP_SAMPLER = "uSamplerShadow";
     private static final String UNIFORM_SHADOW_ALPHA = "uShadowAlpha";
-    private static final String UNIFORM_BUMP_MAP_DEPTH = "bumpMapDepth";
+    private static final String UNIFORM_BUMP_MAP_DEPTH_SLOPE = "bumpMapDepthSlope";
+    private static final String UNIFORM_BUMP_MAP_DEPTH_GROUND = "bumpMapDepthGround";
     private static final String UNIFORM_SLOPE_TOP_THRESHOLD = "slopeTopThreshold";
     private static final String UNIFORM_SLOPE_TOP_THRESHOLD_FADING = "slopeTopThresholdFading";
     private static final String UNIFORM_SLOPE_SPECULAR_HARDNESS = "uSlopeSpecularHardness";
@@ -169,8 +169,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniform1f(slopeTopThresholdFading, (float) terrainSurface.getPlateau().getPlateauConfigEntity().getSlopeTopThresholdFading());
 
         // Bump mapping
-        WebGLUniformLocation bumpMapDepthUniform = getUniformLocation(UNIFORM_BUMP_MAP_DEPTH);
-        gameCanvas.getCtx3d().uniform1f(bumpMapDepthUniform, (float) terrainSurface.getPlateau().getPlateauConfigEntity().getBumpMapDepth());
+        WebGLUniformLocation bumpMapDepthSlopeUniform = getUniformLocation(UNIFORM_BUMP_MAP_DEPTH_SLOPE);
+        gameCanvas.getCtx3d().uniform1f(bumpMapDepthSlopeUniform, (float) terrainSurface.getPlateau().getPlateauConfigEntity().getBumpMapDepth());
+
+        WebGLUniformLocation bumpMapDepthGroundUniform = getUniformLocation(UNIFORM_BUMP_MAP_DEPTH_GROUND);
+        gameCanvas.getCtx3d().uniform1f(bumpMapDepthGroundUniform, (float) terrainSurface.getGroundBumpMap());
 
         // Specular
         WebGLUniformLocation slopeSpecularHardness = getUniformLocation(UNIFORM_SLOPE_SPECULAR_HARDNESS);
