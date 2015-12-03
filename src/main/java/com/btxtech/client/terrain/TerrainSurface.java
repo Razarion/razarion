@@ -3,8 +3,10 @@ package com.btxtech.client.terrain;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.TerrainEditorService;
 import com.btxtech.client.renderer.model.Mesh;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.PlateauConfigEntity;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Vertex;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -26,9 +28,10 @@ public class TerrainSurface {
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     private Mesh mesh = new Mesh();
-    private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_1;
+    private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_2;
+    private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
+    private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_2;
     private ImageDescriptor groundBmImageDescriptor = ImageDescriptor.BUMP_MAP_GROUND_1;
-    private ImageDescriptor bottomImageDescriptor = ImageDescriptor.SAND_2;
     private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
     private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_04;
     private double edgeDistance = 0.5;
@@ -80,6 +83,14 @@ public class TerrainSurface {
     public void setup() {
         mesh.fill(1024, 1024, MESH_EDGE_LENGTH);
 
+        final FractalField fractalField = FractalField.createSaveFractalField(1024, 1024, 2.0, -0.5, 0.9);
+        mesh.iterate(new Mesh.VertexVisitor() {
+            @Override
+            public void onVisit(Index index, Vertex vertex) {
+                mesh.getVertexDataSafe(index).setEdge(fractalField.get(index));
+            }
+        });
+
         plateau.sculpt();
         mesh.generateAllTriangle();
         mesh.adjustNorm();
@@ -101,8 +112,12 @@ public class TerrainSurface {
         return slopeImageDescriptor;
     }
 
-    public ImageDescriptor getBottomImageDescriptor() {
-        return bottomImageDescriptor;
+    public ImageDescriptor getCoverImageDescriptor() {
+        return coverImageDescriptor;
+    }
+
+    public ImageDescriptor getBlenderImageDescriptor() {
+        return blenderImageDescriptor;
     }
 
     public ImageDescriptor getSlopePumpMapImageDescriptor() {

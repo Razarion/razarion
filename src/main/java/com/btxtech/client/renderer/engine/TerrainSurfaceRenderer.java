@@ -37,7 +37,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String GROUND_SAMPLER_UNIFORM_NAME = "uSamplerGround";
     private static final String GROUND_BM_SAMPLER_UNIFORM_NAME = "uSamplerGroundBm";
     private static final String SLOPE_SAMPLER_UNIFORM_NAME = "uSamplerSlope";
-    private static final String BOTTOM_SAMPLER_UNIFORM_NAME = "uSamplerBottom";
+    private static final String COLVER_SAMPLER_UNIFORM_NAME = "uSamplerCover";
+    private static final String BLENDER_SAMPLER_UNIFORM_NAME = "uSamplerBlender";
     private static final String SLOPE_BUMP_MAP_SAMPLER_UNIFORM_NAME = "uSamplerSlopePumpMap";
     private static final String UNIFORM_LIGHTING_DIRECTION = "uLightingDirection";
     private static final String UNIFORM_DIFFUSE_WEIGHT_FACTOR = "diffuseWeightFactor";
@@ -61,10 +62,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private int tangentPositionAttribute;
     private int edgePositionAttribute;
     private WebGLBuffer edgeBuffer;
+    private WebGLTexture coverWebGLTexture;
+    private WebGLTexture blenderWebGLTexture;
     private WebGLTexture groundWebGLTexture;
     private WebGLTexture groundBmWebGLTexture;
     private WebGLTexture slopeWebGLTexture;
-    private WebGLTexture bottomWebGLTexture;
     private WebGLTexture slopeBumpMapWebGLTexture;
     private int elementCount;
     @Inject
@@ -98,9 +100,10 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         edgeBuffer = gameCanvas.getCtx3d().createBuffer();
         edgePositionAttribute = getAndEnableAttributeLocation(EDGE_POSITION_ATTRIBUTE_NAME);
 
+        coverWebGLTexture = setupTexture(terrainSurface.getCoverImageDescriptor());
+        blenderWebGLTexture = setupTexture(terrainSurface.getBlenderImageDescriptor());
         groundWebGLTexture = setupTexture(terrainSurface.getGroundImageDescriptor());
         groundBmWebGLTexture = setupTextureForBumpMap(terrainSurface.getGroundBmImageDescriptor());
-        bottomWebGLTexture = setupTexture(terrainSurface.getBottomImageDescriptor());
         slopeWebGLTexture = setupTexture(terrainSurface.getSlopeImageDescriptor());
         slopeBumpMapWebGLTexture = setupTextureForBumpMap(terrainSurface.getSlopePumpMapImageDescriptor());
     }
@@ -204,30 +207,36 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, edgeBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(edgePositionAttribute, 1, WebGLRenderingContext.FLOAT, false, 0, 0);
         // Textures
-        WebGLUniformLocation groundSampleUniform = getUniformLocation(GROUND_SAMPLER_UNIFORM_NAME);
+
+        WebGLUniformLocation coverUniform = getUniformLocation(COLVER_SAMPLER_UNIFORM_NAME);
         gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE1);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, coverWebGLTexture);
+        gameCanvas.getCtx3d().uniform1i(coverUniform, 1);
+
+        WebGLUniformLocation blenderUniform = getUniformLocation(BLENDER_SAMPLER_UNIFORM_NAME);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE2);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, blenderWebGLTexture);
+        gameCanvas.getCtx3d().uniform1i(blenderUniform, 2);
+
+        WebGLUniformLocation groundSampleUniform = getUniformLocation(GROUND_SAMPLER_UNIFORM_NAME);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE3);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, groundWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(groundSampleUniform, 1);
+        gameCanvas.getCtx3d().uniform1i(groundSampleUniform, 3);
 
         WebGLUniformLocation groundBmSampleUniform = getUniformLocation(GROUND_BM_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE2);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE4);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, groundBmWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(groundBmSampleUniform, 2);
+        gameCanvas.getCtx3d().uniform1i(groundBmSampleUniform, 4);
 
         WebGLUniformLocation tBlendUniform = getUniformLocation(SLOPE_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE3);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE5);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, slopeWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tBlendUniform, 3);
-
-        WebGLUniformLocation tBottomUniform = getUniformLocation(BOTTOM_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE4);
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, bottomWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tBottomUniform, 4);
+        gameCanvas.getCtx3d().uniform1i(tBlendUniform, 5);
 
         WebGLUniformLocation tBumpMapUniform = getUniformLocation(SLOPE_BUMP_MAP_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE5);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE6);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, slopeBumpMapWebGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tBumpMapUniform, 5);
+        gameCanvas.getCtx3d().uniform1i(tBumpMapUniform, 6);
 
         // Draw
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);

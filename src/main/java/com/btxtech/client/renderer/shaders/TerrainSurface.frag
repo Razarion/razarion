@@ -11,10 +11,11 @@ varying float vEdgePosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
 
+uniform sampler2D uSamplerCover;
+uniform sampler2D uSamplerBlender;
 uniform sampler2D uSamplerGround;
 uniform sampler2D uSamplerGroundBm;
 uniform sampler2D uSamplerSlope;
-uniform sampler2D uSamplerBottom;
 uniform sampler2D uSamplerShadow;
 uniform sampler2D uSamplerSlopePumpMap;
 uniform float uEdgeDistance;
@@ -85,12 +86,8 @@ float calculateShadowFactor() {
 void main(void) {
     float shadowFactor = calculateShadowFactor();
 
-    float uEdgeDistance_ = uEdgeDistance;
-    texture2D(uSamplerBottom, vec2(1.0, 1.0));
-
     vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
 
-    vec4 colorGround = triPlanarTextureMapping(uSamplerGround, 512.0, vec2(0,0));
     vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
 
 
@@ -100,38 +97,22 @@ void main(void) {
 
     vec3 correctedNorm = mix(bumpMapNorm(uSamplerGroundBm, bumpMapDepthGround, 512.0), bumpMapNorm(uSamplerSlopePumpMap, bumpMapDepthSlope, 128.0), slopeFactor);
 
-    vec4 textureColor = mix(colorGround, colorSlope, slopeFactor);;
-    float specularLightFactor = mix(0.0, setupSpecularLightFactor(correctedLigtDirection, correctedNorm), slopeFactor);
+    vec4 colorCover= texture2D(uSamplerCover, vVertexPositionCoord.xy / 512.0);
+    float blender = texture2D(uSamplerBlender, vVertexPositionCoord.xy / 512.0).r;
+    vec4 colorGround = texture2D(uSamplerGround, vVertexPositionCoord.xy / 512.0);
+    float coverColorFactor = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, blender);
+    vec4 splatteredColorGround = mix(colorCover, colorGround, coverColorFactor);
+    vec3 correctedNorm2 = mix(vVertexNormal, correctedNorm, coverColorFactor);
+
+    vec4 textureColor = mix(splatteredColorGround, colorSlope, slopeFactor);;
+    float specularLightFactor = mix(0.0, setupSpecularLightFactor(correctedLigtDirection, correctedNorm2), slopeFactor);
 
     // Diffuse light
-    vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * LIGHT_COLOR , 1.0);
-    // vec3 uDirectionalColor_ = uDirectionalColor;
-    // vec4 diffuseFactor = vec4(vec3(max(dot(correctedLigtDirection, correctedNorm), 0.0)), 1.0);
+    vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm2), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * LIGHT_COLOR , 1.0);
     vec4 ambientDiffuseFactor = diffuseFactor + vec4(uAmbientColor, 1.0);
     gl_FragColor = textureColor * ambientDiffuseFactor + vec4(specularLightFactor * shadowFactor * LIGHT_COLOR, 1.0);
-    // gl_FragColor = vec4(vec3(correctedNorm * 0.5 + 0.5), 1.0);
 
+    // gl_FragColor = vec4(coverColorFactor, coverColorFactor, coverColorFactor, 1.0);
 
-    // float depth = triPlanarTextureMapping(sampler, scale).r;
-    // gl_FragColor = vec4(vec3(correctedNorm * 0.5 + 0.5), 1.0);
-
-
-    // gl_FragColor = vec4(correctedNorm * 0.5 + 0.5, 1.0);
-    // gl_FragColor = vec4(shadowFactor * phongShading.rgb, phongShading.a);
-
-    // gl_FragColor = vec4(vVertexNormCoord * 0.5 + 0.5, 1.0);
-
-   //gl_FragColor =  texture2D(uSamplerTop, vVertexPositionCoord.xz / 512.0);
-    // gl_FragColor = vec4(slope, slope, slope, 1.0);
-
-
-    // gl_FragColor = vec4(vVertexPositionCoord.xyz * 0.001, 1.0);
-    // gl_FragColor = vec4(dDepthdx, 1.0);
-   // gl_FragColor = vec4(vVertexNormal, 1.0);
-
-  // The normal is the cross product of the differentials
-  // return normalize(cross(dPositiondx, dPositiondy));
-
-
+    // gl_FragColor = vec4(vEdgePosition, vEdgePosition, vEdgePosition, 1.0);
 }
-

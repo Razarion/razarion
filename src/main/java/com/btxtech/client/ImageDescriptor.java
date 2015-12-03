@@ -8,7 +8,8 @@ public class ImageDescriptor {
     public static final ImageDescriptor ROCK_IMAGE = new ImageDescriptor("rock.jpg", 512, 512);
     public static final ImageDescriptor ROCK_1_IMAGE = new ImageDescriptor("Rock1.png", 128, 128);
     public static final ImageDescriptor ROCK_2_IMAGE = new ImageDescriptor("Rock2.png", 256, 256);
-    public static final ImageDescriptor GRASS_IMAGE = new ImageDescriptor("grass.jpg", 512, 512);
+    public static final ImageDescriptor GRASS_1 = new ImageDescriptor("grass.jpg", 512, 512);
+    public static final ImageDescriptor GRASS_2 = new ImageDescriptor("Grass2.png", 512, 512);
     public static final ImageDescriptor SAND_1 = new ImageDescriptor("sand1.png", 256, 256);
     public static final ImageDescriptor SAND_2 = new ImageDescriptor("sand2.png", 512, 512);
     public static final ImageDescriptor ROCK_2 = new ImageDescriptor("rock02.png", 512, 512);
@@ -22,10 +23,13 @@ public class ImageDescriptor {
     public static final ImageDescriptor BUMP_MAP_06 = new ImageDescriptor("BumpMap06.png", 512, 512);
     public static final ImageDescriptor BUMP_MAP_07 = new ImageDescriptor("BumpMap07.png", 512, 512);
     public static final ImageDescriptor BUMP_MAP_GROUND_1 = new ImageDescriptor("GroundBM1.png", 512, 512);
+    public static final ImageDescriptor BUMP_MAP_GROUND_2 = new ImageDescriptor("BumpMap08.png", 512, 512);
     public static final ImageDescriptor GROUND_1 = new ImageDescriptor("Ground1.png", 512, 512);
+    public static final ImageDescriptor GROUND_2 = new ImageDescriptor("Ground2.png", 512, 512);
     public static final ImageDescriptor GRASS_ROCK_1 = new ImageDescriptor("GrassRock01.png", 512, 512);
     public static final ImageDescriptor BLEND_1 = new ImageDescriptor("blend1.png", 512, 512);
     public static final ImageDescriptor BLEND_2 = new ImageDescriptor("blend2.png", 512, 512);
+    public static final ImageDescriptor BLEND_3 = new ImageDescriptor("blend3.png", 512, 512);
     public static final ImageDescriptor BUSH_1 = new ImageDescriptor("bush-texture.png", 1024, 1024);
     public static final ImageDescriptor CHESS_TEXTURE_32 = new ImageDescriptor("chess32.jpg", 512, 512);
     public static final ImageDescriptor CHESS_TEXTURE_08 = new ImageDescriptor("chess08.jpg", 512, 512);
