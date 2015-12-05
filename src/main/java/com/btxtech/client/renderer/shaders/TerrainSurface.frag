@@ -110,23 +110,33 @@ void main(void) {
 
     vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
 
-
+    ////
     vec3 correctedZenith = (uNMatrix * vec4(vec3(0, 0, 1), 1.0)).xyz;
     float slope = dot(vVertexNormal.xyz, correctedZenith);
     float _slopeFactor = smoothstep(slopeTopThreshold + slopeTopThresholdFading, slopeTopThreshold - slopeTopThresholdFading, slope);
+    ////
 
     float slopeFactor = calculateGroundFactor();
 
     vec3 correctedNorm = mix(bumpMapNorm(uSamplerGroundBm, bumpMapDepthGround, 512.0), bumpMapNorm(uSamplerSlopePumpMap, bumpMapDepthSlope, 128.0), slopeFactor);
 
-    vec4 colorCover= texture2D(uSamplerCover, vVertexPositionCoord.xy / 512.0);
-    float blender = texture2D(uSamplerBlender, vVertexPositionCoord.xy / 512.0).r;
-    vec4 colorGround = texture2D(uSamplerGround, vVertexPositionCoord.xy / 512.0);
-    float coverColorFactor = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, blender);
-    vec4 splatteredColorGround = mix(colorCover, colorGround, coverColorFactor);
-    vec3 correctedNorm2 = mix(vVertexNormal, correctedNorm, coverColorFactor);
+    // float blender = texture2D(uSamplerBlender, vVertexPositionCoord.xy / 512.0).r;
+    float blender = triPlanarTextureMapping(uSamplerBlender, 512.0, vec2(0,0)).r;
+    float blendFactor = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, blender);
+    // vec4 colorCover = texture2D(uSamplerCover, vVertexPositionCoord.xy / 512.0);
+    vec4 colorCover = triPlanarTextureMapping(uSamplerCover, 512.0, vec2(0,0));
+    // vec4 colorGround = texture2D(uSamplerGround, vVertexPositionCoord.xy / 512.0);
+    vec4 colorGround = triPlanarTextureMapping(uSamplerGround, 512.0, vec2(0,0));
+    vec4 splatteredColorGround = mix(colorCover, colorGround, blendFactor);
 
-    vec4 textureColor = mix(splatteredColorGround, colorSlope, slopeFactor);;
+    vec3 correctedNorm2;
+    if(slopeFactor == 0.0) {
+        correctedNorm2 = mix(vVertexNormal, correctedNorm, blendFactor);
+    } else {
+        correctedNorm2 = correctedNorm;
+    }
+
+    vec4 textureColor = mix(splatteredColorGround, colorSlope, slopeFactor);
     float specularLightFactor = mix(0.0, setupSpecularLightFactor(correctedLigtDirection, correctedNorm2), slopeFactor);
 
     // Diffuse light
