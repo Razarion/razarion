@@ -32,6 +32,10 @@ uniform float slopeTopThreshold;
 uniform float slopeTopThresholdFading;
 
 const vec3 LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
+const float PLATEAU_GROUND = 0.0;
+const float PLATEAU_TOP = 100.0;
+const float PLATEAU_GROUND_CHANGE = 20.0;
+
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
 vec4 triPlanarTextureMapping(sampler2D sampler, float scale, vec2 addCoord) {
@@ -83,6 +87,22 @@ float calculateShadowFactor() {
     }
 }
 
+float calculateGroundFactor() {
+    if(vVertexPositionCoord.z == PLATEAU_TOP) {
+       return 0.0;
+    } else if(vVertexPositionCoord.z == PLATEAU_GROUND) {
+       return 0.0;
+    } else {
+       if(vVertexPositionCoord.z > (PLATEAU_TOP - PLATEAU_GROUND_CHANGE)) {
+           return (PLATEAU_TOP - vVertexPositionCoord.z) / PLATEAU_GROUND_CHANGE;
+       } else if(vVertexPositionCoord.z < PLATEAU_GROUND_CHANGE) {
+           return vVertexPositionCoord.z / PLATEAU_GROUND_CHANGE;
+       }  else {
+           return 1.0;
+       }
+    }
+}
+
 void main(void) {
     float shadowFactor = calculateShadowFactor();
 
@@ -93,7 +113,9 @@ void main(void) {
 
     vec3 correctedZenith = (uNMatrix * vec4(vec3(0, 0, 1), 1.0)).xyz;
     float slope = dot(vVertexNormal.xyz, correctedZenith);
-    float slopeFactor = smoothstep(slopeTopThreshold + slopeTopThresholdFading, slopeTopThreshold - slopeTopThresholdFading, slope);
+    float _slopeFactor = smoothstep(slopeTopThreshold + slopeTopThresholdFading, slopeTopThreshold - slopeTopThresholdFading, slope);
+
+    float slopeFactor = calculateGroundFactor();
 
     vec3 correctedNorm = mix(bumpMapNorm(uSamplerGroundBm, bumpMapDepthGround, 512.0), bumpMapNorm(uSamplerSlopePumpMap, bumpMapDepthSlope, 128.0), slopeFactor);
 
@@ -114,5 +136,11 @@ void main(void) {
 
     // gl_FragColor = vec4(coverColorFactor, coverColorFactor, coverColorFactor, 1.0);
 
-    // gl_FragColor = vec4(vEdgePosition, vEdgePosition, vEdgePosition, 1.0);
+
+    // float heightFactor = vVertexPositionCoord.z / 100.0;
+    // gl_FragColor = vec4(heightFactor, heightFactor, heightFactor, 1.0);
+
+//     float x = calculateGroundFactor();
+//     gl_FragColor = vec4(x, x, x, 1.0);
+
 }
