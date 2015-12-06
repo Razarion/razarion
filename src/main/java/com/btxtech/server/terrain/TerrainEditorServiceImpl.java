@@ -3,6 +3,7 @@ package com.btxtech.server.terrain;
 import com.btxtech.client.TerrainEditorService;
 import com.btxtech.server.ExceptionHandler;
 import com.btxtech.shared.PlateauConfigEntity;
+import com.btxtech.shared.TerrainMeshVertex;
 import org.jboss.errai.bus.server.annotations.Service;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -13,7 +14,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.logging.Logger;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -38,7 +39,7 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
             Root<PlateauConfigEntity> from = userQuery.from(PlateauConfigEntity.class);
             CriteriaQuery<PlateauConfigEntity> userSelect = userQuery.select(from);
             return entityManager.createQuery(userSelect).getSingleResult();
-        } catch (RuntimeException e) {
+        } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
         }
@@ -49,9 +50,39 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
     public void save(PlateauConfigEntity plateauConfigEntity) {
         try {
             entityManager.merge(plateauConfigEntity);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public Collection<TerrainMeshVertex> readTerrainMeshVertices() {
+        try {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            // Query for total row count in invitations
+            CriteriaQuery<TerrainMeshVertex> userQuery = criteriaBuilder.createQuery(TerrainMeshVertex.class);
+            Root<TerrainMeshVertex> from = userQuery.from(TerrainMeshVertex.class);
+            CriteriaQuery<TerrainMeshVertex> userSelect = userQuery.select(from);
+            return entityManager.createQuery(userSelect).getResultList();
         } catch (RuntimeException e) {
             exceptionHandler.handleException(e);
             throw e;
         }
     }
+
+    @Override
+    @Transactional
+    public void saveTerrainMeshVertices(Collection<TerrainMeshVertex> terrainMeshVertexes) {
+        try {
+            for (TerrainMeshVertex terrainMeshVertex : terrainMeshVertexes) {
+                entityManager.merge(terrainMeshVertex);
+            }
+        } catch (RuntimeException e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
 }

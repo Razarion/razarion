@@ -110,11 +110,11 @@ void main(void) {
 
     vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
 
-    ////
+    //// remove
     vec3 correctedZenith = (uNMatrix * vec4(vec3(0, 0, 1), 1.0)).xyz;
     float slope = dot(vVertexNormal.xyz, correctedZenith);
     float _slopeFactor = smoothstep(slopeTopThreshold + slopeTopThresholdFading, slopeTopThreshold - slopeTopThresholdFading, slope);
-    ////
+    //// remove ends
 
     float slopeFactor = calculateGroundFactor();
 

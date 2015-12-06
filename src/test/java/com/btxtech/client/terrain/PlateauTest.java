@@ -14,13 +14,13 @@ import java.util.logging.Logger;
 public class PlateauTest {
     // private Logger logger = Logger.getLogger(PlateauTest.class.getName());
 
-    @Test
-    public void testProvideVertexListSlope() throws Exception {
-        Mesh mesh = new Mesh();
-        mesh.fill(1024, 1024, 8);
-
-        Plateau plateau = new Plateau(mesh);
-        plateau.sculpt();
-        mesh.generateAllTriangle();
-    }
+//    @Test
+//    public void testProvideVertexListSlope() throws Exception {
+//        Mesh mesh = new Mesh();
+//        mesh.fill(1024, 1024, 8);
+//
+//        Plateau plateau = new Plateau(mesh);
+//        plateau.sculpt();
+//        mesh.generateAllTriangle();
+//    }
 }

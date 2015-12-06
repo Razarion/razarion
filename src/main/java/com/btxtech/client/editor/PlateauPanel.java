@@ -19,7 +19,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -78,7 +77,7 @@ public class PlateauPanel extends Composite {
 
     @EventHandler("fractalButton")
     private void fractalButtonClick(ClickEvent event) {
-        terrainSurface.setup();
+        terrainSurface.sculpt();
         renderService.fillBuffers();
     }
 

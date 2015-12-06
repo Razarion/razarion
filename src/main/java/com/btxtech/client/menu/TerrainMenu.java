@@ -2,6 +2,8 @@ package com.btxtech.client.menu;
 
 import com.btxtech.client.terrain.TerrainSurface;
 import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -25,6 +27,11 @@ public class TerrainMenu extends Composite {
     @Inject
     @DataField("groundBumpMap")
     private DoubleBox groundBumpMap;
+    @Inject
+    @DataField
+    private Button saveButton;
+
+
     // private Logger logger = Logger.getLogger(TerrainMenu.class.getName());
 
     @PostConstruct
@@ -41,5 +48,10 @@ public class TerrainMenu extends Composite {
     @EventHandler("groundBumpMap")
     public void groundBumpMapChanged(ChangeEvent e) {
         terrainSurface.setGroundBumpMap(groundBumpMap.getValue());
+    }
+
+    @EventHandler("saveButton")
+    private void saveButtonClick(ClickEvent event) {
+        terrainSurface.saveTerrain();
     }
 }

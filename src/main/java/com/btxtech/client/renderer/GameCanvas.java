@@ -37,28 +37,28 @@ public class GameCanvas {
     private ProjectionTransformation projectionTransformation;
     private int width;
     private int height;
+    private Canvas canvas;
 
     public GameCanvas() {
-        logger.severe("GameCanvas <init>");
+        logger.severe("GameCanvas <init> called twice????");
     }
 
-    public void init(final Canvas canvas) {
-        initCanvas(canvas);
-        resizeCanvas(canvas);
+    public void init(Canvas canvas) {
+        this.canvas = canvas;
+        initCanvas();
+        resizeCanvas();
         renderService.init();
-        renderService.fillBuffers();
-        startRenderLoop(canvas);
         viewFieldMover.activate(canvas);
 
         Window.addResizeHandler(new ResizeHandler() {
             @Override
             public void onResize(ResizeEvent event) {
-                resizeCanvas(canvas);
+                resizeCanvas();
             }
         });
     }
 
-    private void resizeCanvas(Canvas canvas) {
+    private void resizeCanvas() {
         width = Window.getClientWidth();
         height = Window.getClientHeight();
         canvas.setCoordinateSpaceWidth(width);
@@ -66,7 +66,7 @@ public class GameCanvas {
         projectionTransformation.setAspectRatio((double) width / (double) height);
     }
 
-    private void initCanvas(Canvas canvas) {
+    private void initCanvas() {
         // Create 3d context
         ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "experimental-webgl");
         if (ctx3d == null) {
@@ -82,7 +82,7 @@ public class GameCanvas {
         logger.severe("GameCanvas initialized");
     }
 
-    private void startRenderLoop(Canvas canvas) {
+    public void startRenderLoop() {
         // Start render loop
         AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
             @Override

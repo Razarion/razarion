@@ -1,8 +1,10 @@
 package com.btxtech.client;
 
+import com.btxtech.shared.TerrainMeshVertex;
 import com.btxtech.shared.PlateauConfigEntity;
-import com.btxtech.shared.VertexList;
 import org.jboss.errai.bus.server.annotations.Remote;
+
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -11,5 +13,11 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface TerrainEditorService {
     PlateauConfigEntity read();
+
     void save(PlateauConfigEntity plateauConfigEntity);
+
+    Collection<TerrainMeshVertex> readTerrainMeshVertices();
+
+    void saveTerrainMeshVertices(Collection<TerrainMeshVertex> terrainMeshVertexes);
+
 }

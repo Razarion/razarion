@@ -1,8 +1,8 @@
 package com.btxtech.client.renderer.model;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.terrain.TextureCoordinateCalculator;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.TerrainMeshVertex;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
@@ -72,6 +72,13 @@ public class Mesh {
             this.edge = edge;
         }
 
+        public void flatten() {
+            edge = 0;
+            triangle1 = null;
+            triangle2 = null;
+            vertex = new Vertex(vertex.getX(), vertex.getY(), 0);
+        }
+
         @Override
         public String toString() {
             return "VertexData{" +
@@ -91,20 +98,39 @@ public class Mesh {
         void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2);
     }
 
-    public void fill(int xSize, int ySize, int edgeLength) {
-        fill(xSize, ySize, edgeLength, 0);
+    public void flatten() {
+        iterate(new VertexVisitor() {
+            @Override
+            public void onVisit(Index index, Vertex vertex) {
+                getVertexDataSafe(index).flatten();
+            }
+        });
     }
 
-    public void fill(int xSize, int ySize, int edgeLength, int z) {
+
+    public void fill(Collection<TerrainMeshVertex> terrainMeshVertexes) {
         grid.clear();
-        int xCount = xSize / edgeLength + 1;
-        int yCount = ySize / edgeLength + 1;
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
-                setVertex(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, z));
-            }
+        for (TerrainMeshVertex terrainMeshVertex : terrainMeshVertexes) {
+            Index meshIndex = new Index(terrainMeshVertex.getMeshIndexX(), terrainMeshVertex.getMeshIndexY());
+            setVertex(meshIndex, new Vertex(terrainMeshVertex.getX(), terrainMeshVertex.getY(), terrainMeshVertex.getZ()));
+            getVertexDataSafe(meshIndex).setEdge(terrainMeshVertex.getEdge());
         }
+
     }
+
+    public Collection<TerrainMeshVertex> createTerrainMeshVertices() {
+        final Collection<TerrainMeshVertex> terrainMeshVertex = new ArrayList<>();
+
+        iterate(new VertexVisitor() {
+            @Override
+            public void onVisit(Index index, Vertex vertex) {
+                terrainMeshVertex.add(new TerrainMeshVertex(index, vertex, getVertexDataSafe(index).getEdge()));
+            }
+        });
+
+        return terrainMeshVertex;
+    }
+
 
     public void setVertex(Index index, Vertex vertex) {
         grid.put(index, new VertexData(vertex));
