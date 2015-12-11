@@ -99,9 +99,9 @@ public class Camera {
     }
 
     public void setGame() {
-        translateX = 300;
-        translateY = -60;
-        translateZ = 500;
+        translateX = 500;
+        translateY = -140;
+        translateZ = 720;
         rotateX = Math.toRadians(40);
         rotateZ = Math.toRadians(0);
         fireChanged();
