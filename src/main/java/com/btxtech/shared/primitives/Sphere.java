@@ -36,11 +36,18 @@ public class Sphere {
 
                 double x = distanceToX * zFactor;
                 double y = distanceToY * zFactor;
-                mesh.setVertex(new Index(longNumber, latNumber), new Vertex(x, y, z).multiply(radius));
+                Index meshIndex = new Index(longNumber, latNumber);
+                mesh.setVertex(meshIndex, new Vertex(x, y, z).multiply(radius));
             }
         }
-        // TODO triangles are may not produced here. This is done in the fill method now!!!
-        // return mesh.provideVertexList(imageDescriptor);
-        throw new UnsupportedOperationException();
+        mesh.generateAllTriangle();
+        mesh.iterateOverTriangles(new Mesh.TriangleVisitor() {
+            @Override
+            public void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2) {
+                triangle1.setupTexture();
+                triangle2.setupTexture();
+            }
+        });
+        return mesh.provideVertexList(imageDescriptor);
     }
 }
