@@ -1,5 +1,6 @@
 package com.btxtech.shared;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ public class MathHelper2 {
     /**
      * Interpolate a value according to a list
      *
-     * @param distance y axis. 0 ist the most left part
+     * @param distance   y axis. 0 ist the most left part
      * @param references the reference list
      * @return interpolated value
      */
@@ -34,5 +35,27 @@ public class MathHelper2 {
             return references.get(references.size() - 1);
         }
         return references.get(x);
+    }
+
+    public static double getMax(Collection<Double> values) {
+        if (values == null || values.isEmpty()) {
+            throw new IllegalArgumentException("values not allowed to be null or empty");
+        }
+        double last = Double.MIN_VALUE;
+        for (Double value : values) {
+            last = Math.max(last, value);
+        }
+        return last;
+    }
+
+    public static double getMin(Collection<Double> values) {
+        if (values == null || values.isEmpty()) {
+            throw new IllegalArgumentException("values not allowed to be null or empty");
+        }
+        double last = Double.MAX_VALUE;
+        for (Double value : values) {
+            last = Math.min(last, value);
+        }
+        return last;
     }
 }
