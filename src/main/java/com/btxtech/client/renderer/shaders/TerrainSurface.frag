@@ -10,6 +10,7 @@ varying vec4 vVertexPosition;
 varying float vEdgePosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
+varying float vSlopeFactor;
 
 uniform sampler2D uSamplerCover;
 uniform sampler2D uSamplerBlender;
@@ -88,19 +89,20 @@ float calculateShadowFactor() {
 }
 
 float calculateGroundFactor() {
-    if(vVertexPositionCoord.z == PLATEAU_TOP) {
-       return 0.0;
-    } else if(vVertexPositionCoord.z == PLATEAU_GROUND) {
-       return 0.0;
-    } else {
-       if(vVertexPositionCoord.z > (PLATEAU_TOP - PLATEAU_GROUND_CHANGE)) {
-           return (PLATEAU_TOP - vVertexPositionCoord.z) / PLATEAU_GROUND_CHANGE;
-       } else if(vVertexPositionCoord.z < PLATEAU_GROUND_CHANGE) {
-           return vVertexPositionCoord.z / PLATEAU_GROUND_CHANGE;
-       }  else {
-           return 1.0;
-       }
-    }
+  return vSlopeFactor;
+//    if(vVertexPositionCoord.z == PLATEAU_TOP) {
+//       return 0.0;
+//    } else if(vVertexPositionCoord.z == PLATEAU_GROUND) {
+//       return 0.0;
+//    } else {
+//       if(vVertexPositionCoord.z > (PLATEAU_TOP - PLATEAU_GROUND_CHANGE)) {
+//           return (PLATEAU_TOP - vVertexPositionCoord.z) / PLATEAU_GROUND_CHANGE;
+//       } else if(vVertexPositionCoord.z < PLATEAU_GROUND_CHANGE) {
+//           return vVertexPositionCoord.z / PLATEAU_GROUND_CHANGE;
+//       }  else {
+//           return 1.0;
+//       }
+//    }
 }
 
 void main(void) {
@@ -150,7 +152,7 @@ void main(void) {
     // float heightFactor = vVertexPositionCoord.z / 100.0;
     // gl_FragColor = vec4(heightFactor, heightFactor, heightFactor, 1.0);
 
-//     float x = calculateGroundFactor();
-//     gl_FragColor = vec4(x, x, x, 1.0);
-
+     // float x = calculateGroundFactor();
+     // gl_FragColor = vec4(x, x, x, 1.0);// TODO 2
+     // gl_FragColor = vec4(vSlopeFactor, vSlopeFactor, vSlopeFactor, 1.0);// TODO 2
 }

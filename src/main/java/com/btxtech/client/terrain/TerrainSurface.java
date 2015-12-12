@@ -19,7 +19,6 @@ import org.jboss.errai.ioc.client.api.AfterInitialization;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +30,7 @@ import java.util.logging.Logger;
 @Singleton
 public class TerrainSurface {
     public static final int MESH_EDGE_LENGTH = 8;
+    public static final int MESH_EDGE_NODE_COUNT = 1024;
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
@@ -92,7 +92,7 @@ public class TerrainSurface {
                     mesh.adjustNorm();
                     meshRead = true;
                     checkState();
-                } catch(Throwable t) {
+                } catch (Throwable t) {
                     logger.log(Level.SEVERE, "readTerrain failed", t);
                 }
             }
@@ -147,19 +147,23 @@ public class TerrainSurface {
     }
 
     public void sculpt() {
-        mesh.flatten();
+        mesh.reset(MESH_EDGE_LENGTH, MESH_EDGE_NODE_COUNT, MESH_EDGE_NODE_COUNT, 0);
 
-        final FractalField fractalField = FractalField.createSaveFractalField(1024, 1024, 2.0, -0.5, 0.9);
+        final FractalField fractalField = FractalField.createSaveFractalField(MESH_EDGE_NODE_COUNT, MESH_EDGE_NODE_COUNT, 2.0, -0.5, 0.9);
         mesh.iterate(new Mesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                mesh.getVertexDataSafe(index).setEdge(fractalField.get(index));
+                double value = fractalField.get(index);
+                mesh.getVertexDataSafe(index).setEdge(value);
             }
+
         });
+
 
         plateau.sculpt();
         mesh.generateAllTriangle();
         mesh.adjustNorm();
+
     }
 
     public VertexList getVertexList() {

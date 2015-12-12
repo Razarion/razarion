@@ -26,6 +26,7 @@ public class TerrainMeshVertex {
     private double y;
     private double z;
     private double edge;
+    private double slopeFactor;
 
     /**
      * Used by JPA & errai
@@ -34,13 +35,14 @@ public class TerrainMeshVertex {
     public TerrainMeshVertex() {
     }
 
-    public TerrainMeshVertex(Index meshIndex, Vertex vertex, double edge) {
+    public TerrainMeshVertex(Index meshIndex, Vertex vertex, double edge, double slopeFactor) {
         meshIndexX = meshIndex.getX();
         meshIndexY = meshIndex.getY();
         x = vertex.getX();
         y = vertex.getY();
         z = vertex.getZ();
         this.edge = edge;
+        this.slopeFactor = slopeFactor;
     }
 
     public int getMeshIndexX() {
@@ -89,6 +91,14 @@ public class TerrainMeshVertex {
 
     public void setEdge(double edge) {
         this.edge = edge;
+    }
+
+    public double getSlopeFactor() {
+        return slopeFactor;
+    }
+
+    public void setSlopeFactor(double slopeFactor) {
+        this.slopeFactor = slopeFactor;
     }
 
     @Override

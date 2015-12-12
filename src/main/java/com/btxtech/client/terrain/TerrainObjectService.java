@@ -3,9 +3,9 @@ package com.btxtech.client.terrain;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.VertexListService;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Sphere;
 import org.jboss.errai.bus.client.api.UncaughtException;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -49,10 +49,10 @@ public class TerrainObjectService {
 //            }
 //        }
 
-        // vertexList = new Sphere(30, 10, 10).provideVertexListPlain(Terrain.BUSH_1);
+        vertexList = new Sphere(15, 10, 10).provideVertexList(ImageDescriptor.BUSH_1);
         // vertexList = new Plane(100).provideVertexListPlain(AbstractRenderer.CHESS_TEXTURE_08);
 
-        // positions.add(Matrix4.createTranslation(100, 150, 0));
+        positions.add(Matrix4.createTranslation(450, 400, 0));
         //    positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
 
     }
@@ -74,8 +74,8 @@ public class TerrainObjectService {
         serviceCaller.call(new RemoteCallback<VertexList>() {
             @Override
             public void callback(final VertexList vertexList) {
-                TerrainObjectService.this.vertexList = vertexList;
-                renderService.fillBuffers();
+                // TerrainObjectService.this.vertexList = vertexList;
+                // renderService.fillBuffers();
             }
         }, new ErrorCallback() {
             @Override

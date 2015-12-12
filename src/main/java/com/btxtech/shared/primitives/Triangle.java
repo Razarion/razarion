@@ -18,16 +18,19 @@ public class Triangle {
     private Vertex vertexTangentA;
     private TextureCoordinate textureCoordinateA;
     private double edgeA;
+    private double slopeFactorA;
     private Vertex vertexB;
     private Vertex vertexNormB;
     private Vertex vertexTangentB;
     private TextureCoordinate textureCoordinateB;
     private double edgeB;
+    private double slopeFactorB;
     private Vertex vertexC;
     private Vertex vertexNormC;
     private Vertex vertexTangentC;
     private TextureCoordinate textureCoordinateC;
     private double edgeC;
+    private double slopeFactorC;
     private Color color = new Color(1.0, 1.0, 1.0, 1.0);
 
     public Triangle(Vertex vertexA, TextureCoordinate textureCoordinateA,
@@ -156,6 +159,11 @@ public class Triangle {
         edges.add(edgeC);
     }
 
+    public void appendSlopeFactor(List<Double> slopeFactor) {
+        slopeFactor.add(slopeFactorA);
+        slopeFactor.add(slopeFactorB);
+        slopeFactor.add(slopeFactorC);
+    }
 
     public Vertex calculateNorm() {
         return vertexA.cross(vertexB, vertexC).normalize(1.0);
@@ -332,6 +340,17 @@ public class Triangle {
         this.color = color;
     }
 
+    public void setSlopeFactorA(double slopeFactorA) {
+        this.slopeFactorA = slopeFactorA;
+    }
+
+    public void setSlopeFactorB(double slopeFactorB) {
+        this.slopeFactorB = slopeFactorB;
+    }
+
+    public void setSlopeFactorC(double slopeFactorC) {
+        this.slopeFactorC = slopeFactorC;
+    }
 
     public void adjustTextureCoordinate() {
         double minS = Math.min(textureCoordinateA.getS(), Math.min(textureCoordinateB.getS(), textureCoordinateC.getS()));

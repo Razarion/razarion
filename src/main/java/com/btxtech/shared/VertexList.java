@@ -24,6 +24,7 @@ public class VertexList {
     List<TextureCoordinate> textureCoordinates = new ArrayList<>();
     List<Color> colors = new ArrayList<>();
     List<Double> edges = new ArrayList<>();
+    List<Double> slopeFactor = new ArrayList<>();
 
     public void add(Triangle triangle) {
         triangle.appendVertexTo(vertices);
@@ -33,6 +34,7 @@ public class VertexList {
         triangle.appendColorsTo(colors);
         triangle.appendTextureCoordinateTo(textureCoordinates);
         triangle.appendEdgesTo(edges);
+        triangle.appendSlopeFactor(slopeFactor);
     }
 
     public void add(Vertex vertexA, Vertex normA, Vertex vertexB, Vertex normB, Vertex vertexC, Vertex normC) {
@@ -110,12 +112,9 @@ public class VertexList {
         return doubleList;
     }
 
-    public List<Double> createColorDoubles() {
-        List<Double> doubleList = new ArrayList<>();
-        for (Color color : colors) {
-            color.appendToColorRGBA(doubleList);
-        }
-        return doubleList;
+
+    public List<Double> createSlopeFactorDoubles() {
+        return new ArrayList<>(slopeFactor);
     }
 
     public void normalize(ImageDescriptor imageDescriptor) {

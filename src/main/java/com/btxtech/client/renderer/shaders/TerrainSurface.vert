@@ -4,6 +4,7 @@ attribute vec3 aVertexPosition;
 attribute vec3 aVertexNormal;
 attribute vec3 aVertexTangent;
 attribute float aEdgePosition;
+attribute float aSlopeFactor;
 
 uniform highp mat4 uVMatrix;
 uniform highp mat4 uPMatrix;
@@ -18,6 +19,7 @@ varying vec4 vVertexPosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
 varying float vEdgePosition;
+varying float vSlopeFactor;
 
 void main(void) {
     vVertexNormal = (uNMatrix * vec4(aVertexNormal, 1.0)).xyz;
@@ -28,5 +30,6 @@ void main(void) {
     vEdgePosition = aEdgePosition;
     vVertexPositionCoord = aVertexPosition.xyz;
     vVertexNormCoord = aVertexNormal;
+    vSlopeFactor = aSlopeFactor;
 }
 

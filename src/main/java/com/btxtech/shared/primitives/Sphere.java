@@ -37,7 +37,7 @@ public class Sphere {
                 double x = distanceToX * zFactor;
                 double y = distanceToY * zFactor;
                 Index meshIndex = new Index(longNumber, latNumber);
-                mesh.setVertex(meshIndex, new Vertex(x, y, z).multiply(radius));
+                mesh.createVertexData(meshIndex, new Vertex(x, y, z).multiply(radius));
             }
         }
         mesh.generateAllTriangle();

@@ -20,7 +20,7 @@ import java.util.Map;
  * 17.10.2015.
  */
 public class Plateau {
-    private static final Rectangle INDEX_RECT = new Rectangle(30, 20, 30, 15);
+    private static final Rectangle INDEX_RECT = new Rectangle(45, 60, 30, 15);
     private Mesh mesh;
     private PlateauConfigEntity plateauConfigEntity;
     private final List<Index> SLOP_INDEX = new ArrayList<>(Arrays.asList(
@@ -42,7 +42,7 @@ public class Plateau {
 
         final int top = plateauConfigEntity != null ? plateauConfigEntity.getTop() : 100;
         final List<Double> slopeForm = new ArrayList<>();
-        slopeForm.add((double)top);
+        slopeForm.add((double) top);
         for (Index index : SLOP_INDEX) {
             slopeForm.add((double) index.getY());
         }
@@ -53,13 +53,18 @@ public class Plateau {
         mesh.iterate(new Mesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                if (INDEX_RECT.contains2(new DecimalPosition(index))) {
-                    mesh.setVertex(index, vertex.add(0, 0, top));
+                Mesh.VertexData vertexData = mesh.getVertexDataSafe(index);
+                if (isInside(index)) {
+                    vertexData.setVertex(new Vertex(vertex.getX(), vertex.getY(), top));
+                    vertexData.setSlopeFactor(0);
                 } else {
                     double distance = INDEX_RECT.getNearestPointInclusive(new DecimalPosition(index)).getDistance(new DecimalPosition(index));
                     if (distance < slopeSize + 1) {
                         mesh.getVertexDataSafe(index).addZValue(MathHelper2.interpolate(distance, slopeForm));
                         slopeIndexes.add(index);
+                        vertexData.setSlopeFactor(1.0);
+                    } else {
+                        vertexData.setSlopeFactor(0);
                     }
                 }
             }
@@ -79,6 +84,10 @@ public class Plateau {
             mesh.getVertexDataSafe(entry.getKey()).add(entry.getValue());
         }
 
+    }
+
+    public boolean isInside(Index index) {
+        return INDEX_RECT.contains2(new DecimalPosition(index));
     }
 
     public void setPlateauConfigEntity(PlateauConfigEntity plateauConfigEntity) {

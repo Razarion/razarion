@@ -29,6 +29,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String A_VERTEX_NORMAL = "aVertexNormal";
     private static final String A_VERTEX_TANGENT = "aVertexTangent";
+    private static final String A_SLOPE_FACTOR = "aSlopeFactor";
     private static final String EDGE_POSITION_ATTRIBUTE_NAME = "aEdgePosition";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
@@ -53,13 +54,14 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String UNIFORM_SLOPE_SPECULAR_HARDNESS = "uSlopeSpecularHardness";
     private static final String UNIFORM_SLOPE_SPECULAR_INTENSITY = "uSlopeSpecularIntensity";
 
-
     private WebGLBuffer verticesBuffer;
     private int vertexPositionAttribute;
     private WebGLBuffer normalBuffer;
     private int normalPositionAttribute;
     private WebGLBuffer tangentBuffer;
     private int tangentPositionAttribute;
+    private int slopeFactorAttribute;
+    private WebGLBuffer slopeFactorBuffer;
     private int edgePositionAttribute;
     private WebGLBuffer edgeBuffer;
     private WebGLTexture coverWebGLTexture;
@@ -99,6 +101,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         tangentPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_TANGENT);
         edgeBuffer = gameCanvas.getCtx3d().createBuffer();
         edgePositionAttribute = getAndEnableAttributeLocation(EDGE_POSITION_ATTRIBUTE_NAME);
+        slopeFactorBuffer = gameCanvas.getCtx3d().createBuffer();
+        slopeFactorAttribute = getAndEnableAttributeLocation(A_SLOPE_FACTOR);
 
         coverWebGLTexture = setupTexture(terrainSurface.getCoverImageDescriptor());
         blenderWebGLTexture = setupTexture(terrainSurface.getBlenderImageDescriptor());
@@ -130,6 +134,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, edgeBuffer);
         WebGlUtil.checkLastWebGlError("bindBuffer", gameCanvas.getCtx3d());
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createEdgeDoubles()), WebGLRenderingContext.STATIC_DRAW);
+        WebGlUtil.checkLastWebGlError("bufferData", gameCanvas.getCtx3d());
+
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, slopeFactorBuffer);
+        WebGlUtil.checkLastWebGlError("bindBuffer", gameCanvas.getCtx3d());
+        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createSlopeFactorDoubles()), WebGLRenderingContext.STATIC_DRAW);
         WebGlUtil.checkLastWebGlError("bufferData", gameCanvas.getCtx3d());
 
         elementCount = vertexList.getVerticesCount();
@@ -206,8 +215,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         // Edges
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, edgeBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(edgePositionAttribute, 1, WebGLRenderingContext.FLOAT, false, 0, 0);
-        // Textures
+        // Slope factor
+        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, slopeFactorBuffer);
+        gameCanvas.getCtx3d().vertexAttribPointer(slopeFactorAttribute, 1, WebGLRenderingContext.FLOAT, false, 0, 0);
 
+        // Textures
         WebGLUniformLocation coverUniform = getUniformLocation(COLVER_SAMPLER_UNIFORM_NAME);
         gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE1);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, coverWebGLTexture);

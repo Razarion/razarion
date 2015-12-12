@@ -27,6 +27,7 @@ public class Mesh {
         private Triangle triangle1;
         private Triangle triangle2;
         private double edge;
+        private double slopeFactor;
 
         public VertexData(Vertex vertex) {
             this.vertex = vertex;
@@ -72,11 +73,12 @@ public class Mesh {
             this.edge = edge;
         }
 
-        public void flatten() {
-            edge = 0;
-            triangle1 = null;
-            triangle2 = null;
-            vertex = new Vertex(vertex.getX(), vertex.getY(), 0);
+        public double getSlopeFactor() {
+            return slopeFactor;
+        }
+
+        public void setSlopeFactor(double slopeFactor) {
+            this.slopeFactor = slopeFactor;
         }
 
         @Override
@@ -86,6 +88,7 @@ public class Mesh {
                     ", triangle1=" + triangle1 +
                     ", triangle2=" + triangle2 +
                     ", edge=" + edge +
+                    ", slopeFactor=" + slopeFactor +
                     '}';
         }
     }
@@ -98,13 +101,15 @@ public class Mesh {
         void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2);
     }
 
-    public void flatten() {
-        iterate(new VertexVisitor() {
-            @Override
-            public void onVisit(Index index, Vertex vertex) {
-                getVertexDataSafe(index).flatten();
+    public void reset(int edgeLength, int xSize, int ySize, int z) {
+        grid.clear();
+        int xCount = xSize / edgeLength + 1;
+        int yCount = ySize / edgeLength + 1;
+        for (int x = 0; x < xCount; x++) {
+            for (int y = 0; y < yCount; y++) {
+                createVertexData(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, z));
             }
-        });
+        }
     }
 
 
@@ -112,8 +117,10 @@ public class Mesh {
         grid.clear();
         for (TerrainMeshVertex terrainMeshVertex : terrainMeshVertexes) {
             Index meshIndex = new Index(terrainMeshVertex.getMeshIndexX(), terrainMeshVertex.getMeshIndexY());
-            setVertex(meshIndex, new Vertex(terrainMeshVertex.getX(), terrainMeshVertex.getY(), terrainMeshVertex.getZ()));
-            getVertexDataSafe(meshIndex).setEdge(terrainMeshVertex.getEdge());
+            createVertexData(meshIndex, new Vertex(terrainMeshVertex.getX(), terrainMeshVertex.getY(), terrainMeshVertex.getZ()));
+            VertexData vertexData = getVertexDataSafe(meshIndex);
+            vertexData.setEdge(terrainMeshVertex.getEdge());
+            vertexData.setSlopeFactor(terrainMeshVertex.getSlopeFactor());
         }
 
     }
@@ -124,7 +131,8 @@ public class Mesh {
         iterate(new VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                terrainMeshVertex.add(new TerrainMeshVertex(index, vertex, getVertexDataSafe(index).getEdge()));
+                VertexData vertexData = getVertexDataSafe(index);
+                terrainMeshVertex.add(new TerrainMeshVertex(index, vertex, vertexData.getEdge(), vertexData.getSlopeFactor()));
             }
         });
 
@@ -132,7 +140,7 @@ public class Mesh {
     }
 
 
-    public void setVertex(Index index, Vertex vertex) {
+    public void createVertexData(Index index, Vertex vertex) {
         grid.put(index, new VertexData(vertex));
         maxX = Math.max(index.getX(), maxX);
         maxY = Math.max(index.getY(), maxY);
@@ -322,13 +330,19 @@ public class Mesh {
         if (triangle1) {
             triangle = new Triangle(bottomLeft.getVertex(), bottomRight.getVertex(), topLeft.getVertex());
             triangle.setEdgeA(bottomLeft.getEdge());
+            triangle.setSlopeFactorA(bottomLeft.getSlopeFactor());
             triangle.setEdgeB(bottomRight.getEdge());
+            triangle.setSlopeFactorB(bottomRight.getSlopeFactor());
             triangle.setEdgeC(topLeft.getEdge());
+            triangle.setSlopeFactorC(topLeft.getSlopeFactor());
         } else {
             triangle = new Triangle(bottomRight.getVertex(), topRight.getVertex(), topLeft.getVertex());
             triangle.setEdgeA(bottomRight.getEdge());
+            triangle.setSlopeFactorA(bottomRight.getSlopeFactor());
             triangle.setEdgeB(topRight.getEdge());
+            triangle.setSlopeFactorB(topRight.getSlopeFactor());
             triangle.setEdgeC(topLeft.getEdge());
+            triangle.setSlopeFactorC(topLeft.getSlopeFactor());
         }
         return triangle;
     }
