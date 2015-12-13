@@ -24,11 +24,11 @@ public class Plateau {
     private Mesh mesh;
     private PlateauConfigEntity plateauConfigEntity;
     private final List<Index> SLOP_INDEX = new ArrayList<>(Arrays.asList(
-            new Index(TerrainSurface.MESH_EDGE_LENGTH, 70),
-            new Index(TerrainSurface.MESH_EDGE_LENGTH * 2, 60),
-            new Index(TerrainSurface.MESH_EDGE_LENGTH * 3, 50),
-            new Index(TerrainSurface.MESH_EDGE_LENGTH * 4, 40),
-            new Index(TerrainSurface.MESH_EDGE_LENGTH * 5, 30)));
+            new Index(TerrainSurface.MESH_NODE_EDGE_LENGTH, 70),
+            new Index(TerrainSurface.MESH_NODE_EDGE_LENGTH * 2, 60),
+            new Index(TerrainSurface.MESH_NODE_EDGE_LENGTH * 3, 50),
+            new Index(TerrainSurface.MESH_NODE_EDGE_LENGTH * 4, 40),
+            new Index(TerrainSurface.MESH_NODE_EDGE_LENGTH * 5, 30)));
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
 
     public Plateau(Mesh mesh) {

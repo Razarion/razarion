@@ -29,8 +29,8 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainSurface {
-    public static final int MESH_EDGE_LENGTH = 8;
-    public static final int MESH_EDGE_NODE_COUNT = 1024;
+    public static final int MESH_EDGE_SIZE = 1024;
+    public static final int MESH_NODE_EDGE_LENGTH = 8;
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
@@ -147,9 +147,9 @@ public class TerrainSurface {
     }
 
     public void sculpt() {
-        mesh.reset(MESH_EDGE_LENGTH, MESH_EDGE_NODE_COUNT, MESH_EDGE_NODE_COUNT, 0);
+        mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_EDGE_SIZE, MESH_EDGE_SIZE, 0);
 
-        final FractalField fractalField = FractalField.createSaveFractalField(MESH_EDGE_NODE_COUNT, MESH_EDGE_NODE_COUNT, 2.0, -0.5, 0.9);
+        final FractalField fractalField = FractalField.createSaveFractalField(MESH_EDGE_SIZE, MESH_EDGE_SIZE, 2.0, -0.5, 0.9);
         mesh.iterate(new Mesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {

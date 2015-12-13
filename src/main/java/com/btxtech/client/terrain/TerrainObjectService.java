@@ -3,9 +3,9 @@ package com.btxtech.client.terrain;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.VertexListService;
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Sphere;
 import org.jboss.errai.bus.client.api.UncaughtException;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -25,6 +25,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainObjectService {
+    private static final int EDGE_COUNT = 10;
     private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
     @Inject
     private Caller<VertexListService> serviceCaller;
@@ -35,24 +36,25 @@ public class TerrainObjectService {
     private ImageDescriptor imageDescriptor = ImageDescriptor.BUSH_1;
 
     public TerrainObjectService() {
-//        for (int x = 0; x < 30; x++) {
-//            for (int y = 0; y < 30; y++) {
-//                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
-//                double translateX = Math.random() * 130;
-//                double translateY = Math.random() * 130;
-//                Matrix4 matrix4 = Matrix4.createTranslation(x * 130 + translateX, y * 130 + translateY, 0);
-//                double scale = Math.random() * 2.0 + 4.0;
-//                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
-//                // matrix4 = base.multiply(matrix4);
-//                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
-//                positions.add(matrix4);
-//            }
-//        }
+        int edge = TerrainSurface.MESH_EDGE_SIZE / EDGE_COUNT;
+        for (int x = 0; x < EDGE_COUNT; x++) {
+            for (int y = 0; y < EDGE_COUNT; y++) {
+                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
+                double translateX = Math.random() * edge;
+                double translateY = Math.random() * edge;
+                Matrix4 matrix4 = Matrix4.createTranslation(x * edge + translateX, y * edge + translateY, 0);
+                double scale = Math.random() * 2.0 + 4.0;
+                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
+                // matrix4 = base.multiply(matrix4);
+                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
+                positions.add(matrix4);
+            }
+        }
 
-        vertexList = new Sphere(15, 10, 10).provideVertexList(ImageDescriptor.BUSH_1);
+        // vertexList = new Sphere(15, 10, 10).provideVertexList(ImageDescriptor.BUSH_1);
         // vertexList = new Plane(100).provideVertexListPlain(AbstractRenderer.CHESS_TEXTURE_08);
 
-        positions.add(Matrix4.createTranslation(450, 400, 0));
+        // positions.add(Matrix4.createTranslation(450, 400, 0));
         //    positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
 
     }
@@ -74,8 +76,8 @@ public class TerrainObjectService {
         serviceCaller.call(new RemoteCallback<VertexList>() {
             @Override
             public void callback(final VertexList vertexList) {
-                // TerrainObjectService.this.vertexList = vertexList;
-                // renderService.fillBuffers();
+                TerrainObjectService.this.vertexList = vertexList;
+                renderService.fillBuffers();
             }
         }, new ErrorCallback() {
             @Override
