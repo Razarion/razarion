@@ -87,11 +87,6 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
     @PostConstruct
     public void init() {
-        Object extension = gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
-        if (extension == null) {
-            throw new WebGlException("OES_standard_derivatives is no supported");
-        }
-
         createProgram(Shaders.INSTANCE.terrainSurfaceVertexShader(), Shaders.INSTANCE.terrainSurfaceFragmentShader());
         verticesBuffer = gameCanvas.getCtx3d().createBuffer();
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);

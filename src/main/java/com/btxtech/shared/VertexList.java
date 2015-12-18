@@ -17,6 +17,7 @@ import java.util.List;
  */
 @Portable
 public class VertexList {
+    private String name;
     List<Vertex> vertices = new ArrayList<>();
     List<Vertex> normVertices = new ArrayList<>();
     List<Vertex> tangentVertices = new ArrayList<>();
@@ -25,6 +26,20 @@ public class VertexList {
     List<Color> colors = new ArrayList<>();
     List<Double> edges = new ArrayList<>();
     List<Double> slopeFactor = new ArrayList<>();
+
+    /**
+     * Used by Errai
+     */
+    public VertexList() {
+    }
+
+    public VertexList(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public void add(Triangle triangle) {
         triangle.appendVertexTo(vertices);
@@ -66,6 +81,13 @@ public class VertexList {
 
     public int getVerticesCount() {
         return vertices.size();
+    }
+
+    public int getTriangleCount() {
+        if(vertices.size() % 3 != 0) {
+            throw new IllegalStateException("");
+        }
+        return vertices.size() / 3;
     }
 
     public List<Double> createPositionDoubles() {
@@ -155,10 +177,15 @@ public class VertexList {
         return tangentVertices;
     }
 
+    public List<TextureCoordinate> getTextureCoordinates() {
+        return textureCoordinates;
+    }
+
     @Override
     public String toString() {
         return "VertexList{" +
-                "vertices=" + vertices +
+                "name=" + name +
+                ", vertices=" + vertices +
                 ", normVertices=" + normVertices +
                 ", barycentric=" + barycentric +
                 ", textureCoordinates=" + textureCoordinates +

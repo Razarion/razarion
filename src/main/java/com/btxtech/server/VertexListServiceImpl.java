@@ -8,6 +8,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.FileInputStream;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -20,9 +21,10 @@ public class VertexListServiceImpl implements VertexListService {
     private ExceptionHandler exceptionHandler;
 
     @Override
-    public VertexList getVertexList() {
+    public List<VertexList> getVertexList() {
         try {
-            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\bush1.dae");
+            // FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\bush1.dae");
+            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\tree03.dae");
             return ColladaConverter.read(fileInputStream);
         } catch (Exception e) {
             exceptionHandler.handleException(e);

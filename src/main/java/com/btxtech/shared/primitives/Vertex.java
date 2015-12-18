@@ -186,6 +186,14 @@ public class Vertex {
         return 3;
     }
 
+    public static Vertex sum(Collection<Vertex> vertices) {
+        Vertex sum = new Vertex(0, 0, 0);
+        for (Vertex vertex : vertices) {
+            sum = sum.add(vertex);
+        }
+        return sum;
+    }
+
     @Override
     public String toString() {
         return "Vertex{" +
@@ -197,13 +205,5 @@ public class Vertex {
 
     public String testString() {
         return "new Vertex(" + getX() + ", " + getY() + ", " + getZ() + ")";
-    }
-
-    public static Vertex sum(Collection<Vertex> vertices) {
-        Vertex sum = new Vertex(0, 0, 0);
-        for (Vertex vertex : vertices) {
-            sum = sum.add(vertex);
-        }
-        return sum;
     }
 }

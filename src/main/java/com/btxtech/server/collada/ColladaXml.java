@@ -14,6 +14,9 @@ import java.util.List;
 public class ColladaXml {
 
     public static final String ELEMENT_COLLADA = "COLLADA";
+    public static final String ELEMENT_ASSET = "asset";
+    public static final String ELEMENT_CREATED = "created";
+    public static final String ELEMENT_MODIFIED = "modified";
     public static final String ELEMENT_SCENE = "scene";
     public static final String ELEMENT_INSTANCE_VISUAL_SCENE = "instance_visual_scene";
     public static final String ELEMENT_LIBRARY_VISUAL_SCENES = "library_visual_scenes";

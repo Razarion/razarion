@@ -6,16 +6,19 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 18.08.2015.
  */
-public class NodeScene extends ColladaXml {
+public class NodeScene extends NameIdColladaXml {
+    private static Logger LOGGER = Logger.getLogger(NodeScene.class.getName());
     private Collection<Matrix> matrices;
     private Collection<InstanceGeometry> instanceGeometries;
 
     public NodeScene(Node node) {
+        super(node);
         matrices = new ArrayList<>();
         for (Node matrixNode : getChildren(node, ELEMENT_MATRIX)) {
             matrices.add(new Matrix(matrixNode));
@@ -26,23 +29,34 @@ public class NodeScene extends ColladaXml {
         }
     }
 
-    public void processGeometry(VertexList vertexList, Map<String, Geometry> geometries) {
+    public VertexList processGeometry(Map<String, Geometry> geometries) {
+        VertexList vertexList = null;
         for (InstanceGeometry instanceGeometry : instanceGeometries) {
             Geometry geometry = geometries.get(instanceGeometry.getUrl());
-            if(geometry == null) {
+            if (geometry == null) {
                 throw new ColladaRuntimeException("No geometry for url found: " + instanceGeometry.getUrl());
             }
             VertexList meshVertex = geometry.getMesh().getVertexList();
-            for (Matrix matrix : matrices) {
-                meshVertex.multiply(matrix.getMatrix4());
+            if(vertexList == null) {
+                vertexList = new VertexList(geometry.getName());
+            }
+            LOGGER.finest("--:processGeometry:  " + geometry);
+            if(matrices.isEmpty()) {
                 vertexList.append(meshVertex);
+            } else {
+                for (Matrix matrix : matrices) {
+                    meshVertex.multiply(matrix.getMatrix4());
+                    vertexList.append(meshVertex);
+                }
             }
         }
+        return vertexList;
     }
 
     @Override
     public String toString() {
         return "NodeScene{" +
+                super.toString() +
                 "matrices=" + matrices +
                 ", instanceGeometries=" + instanceGeometries +
                 '}';

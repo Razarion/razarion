@@ -10,23 +10,29 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 14.08.2015.
  */
 public class ColladaConverter {
+    private static Logger LOGGER = Logger.getLogger(ColladaConverter.class.getName());
 
-    public static VertexList read(InputStream inputStream) throws ParserConfigurationException, IOException, SAXException, ColladaException {
+    public static List<VertexList> read(InputStream inputStream) throws ParserConfigurationException, IOException, SAXException, ColladaException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(inputStream);
 
+        LOGGER.finest("Start Parsing");
         Collada collada = new Collada(doc);
 
-        VertexList vertexList = collada.generateVertexList();
-        vertexList.multiply(Matrix4.createScale(0.1, 0.1, 0.1));
-        return vertexList;
+        List<VertexList> vertexLists = collada.generateVertexList();
+        for (VertexList vertexList : vertexLists) {
+            vertexList.multiply(Matrix4.createScale(20, 20, 20));
+        }
+        return vertexLists;
     }
 
 }

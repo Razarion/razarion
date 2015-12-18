@@ -4,6 +4,7 @@ import com.btxtech.shared.VertexList;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +26,7 @@ public class Mesh extends ColladaXml {
             throw new ColladaRuntimeException("Semantics must be POSITION. " + node);
         }
 
+        List<Node> polylists = getChildren(node, ELEMENT_POLYLIST);
         Polylist polylist = new Polylist(getChild(node, ELEMENT_POLYLIST));
         vertexList = polylist.toTriangleVertexList(sources, vertices);
     }
@@ -33,4 +35,10 @@ public class Mesh extends ColladaXml {
         return vertexList;
     }
 
+    @Override
+    public String toString() {
+        return "Mesh{" +
+                "vertexList=" + vertexList +
+                '}';
+    }
 }

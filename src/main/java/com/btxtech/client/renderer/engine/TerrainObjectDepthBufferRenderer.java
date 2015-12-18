@@ -5,6 +5,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.shared.VertexList;
@@ -49,6 +50,10 @@ public class TerrainObjectDepthBufferRenderer extends AbstractRenderer {
 
     @PostConstruct
     public void init() {
+        Object extension = gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
+        if (extension == null) {
+            throw new WebGlException("OES_standard_derivatives is no supported");
+        }
         createProgram(Shaders.INSTANCE.depthBufferVertexShader(), Shaders.INSTANCE.depthBufferFragmentShader());
         verticesBuffer = gameCanvas.getCtx3d().createBuffer();
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);

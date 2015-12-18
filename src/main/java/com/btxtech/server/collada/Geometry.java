@@ -21,7 +21,8 @@ public class Geometry extends NameIdColladaXml {
     @Override
     public String toString() {
         return "Geometry{" +
+                super.toString() +
                 "mesh=" + mesh +
-                "} " + super.toString();
+                '}';
     }
 }

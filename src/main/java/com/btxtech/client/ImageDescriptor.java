@@ -31,6 +31,8 @@ public class ImageDescriptor {
     public static final ImageDescriptor BLEND_2 = new ImageDescriptor("blend2.png", 512, 512);
     public static final ImageDescriptor BLEND_3 = new ImageDescriptor("blend3.png", 512, 512);
     public static final ImageDescriptor BUSH_1 = new ImageDescriptor("bush-texture.png", 1024, 1024);
+    public static final ImageDescriptor TREE_01 = new ImageDescriptor("tree128.png", 128, 128);
+    public static final ImageDescriptor BRANCH_01 = new ImageDescriptor("branch1.png", 512, 512);
     public static final ImageDescriptor CHESS_TEXTURE_32 = new ImageDescriptor("chess32.jpg", 512, 512);
     public static final ImageDescriptor CHESS_TEXTURE_08 = new ImageDescriptor("chess08.jpg", 512, 512);
     public static final ImageDescriptor TEX_DEV_1 = new ImageDescriptor("texdev1.jpg", 256, 256);
