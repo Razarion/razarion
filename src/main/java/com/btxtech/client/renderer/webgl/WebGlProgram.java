@@ -33,6 +33,7 @@ public class WebGlProgram {
             throw new IllegalArgumentException("No attribute location for '" + attributeName + "' in OpenGl program.");
         }
         gameCanvas.getCtx3d().enableVertexAttribArray(attributeLocation);
+        WebGlUtil.checkLastWebGlError("enableVertexAttribArray",gameCanvas.getCtx3d());
         return attributeLocation;
     }
 

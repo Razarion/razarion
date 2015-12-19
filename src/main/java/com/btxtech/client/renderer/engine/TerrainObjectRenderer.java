@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.Normal;
@@ -37,13 +38,11 @@ public class TerrainObjectRenderer extends AbstractRenderer {
     private static final String UNIFORM_AMBIENT_COLOR = "uAmbientColor";
     private static final String UNIFORM_LIGHTING_DIRECTION = "uLightingDirection";
     private static final String UNIFORM_DIRECTIONAL_COLOR = "uDirectionalColor";
-    private WebGLBuffer verticesBuffer;
-    private int vertexPositionAttribute;
-    private WebGLBuffer normalBuffer;
-    private int normalPositionAttribute;
-    private WebGLBuffer textureCoordinateBuffer;
-    private int textureCoordinatePositionAttribute;
-    private WebGLTexture webGLTexture;
+    private ShaderVertexAttribute positions;
+    private ShaderVertexAttribute normals;
+    private ShaderTextureCoordinateAttribute textureCoordinate;
+    private WebGlUniformTexture webGLTexture;
+    // private WebGLTexture webGLTexture;
     private int elementCount;
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
     @Inject
@@ -61,14 +60,12 @@ public class TerrainObjectRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.terrainObjectVertexShader(), Shaders.INSTANCE.terrainObjectFragmentShader());
-        verticesBuffer = gameCanvas.getCtx3d().createBuffer();
-        vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);
-        normalBuffer = gameCanvas.getCtx3d().createBuffer();
-        normalPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_NORMAL);
-        textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
-        textureCoordinatePositionAttribute = getAndEnableAttributeLocation(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
-        webGLTexture = setupTexture(terrainObjectService.getImageDescriptor());
+        positions = createVertexShaderAttribute(A_VERTEX_POSITION);
+        normals = createVertexShaderAttribute(A_VERTEX_NORMAL);
+        textureCoordinate = createShaderTextureCoordinateAttributee(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
+        webGLTexture = createWebGLTexture(terrainObjectService.getImageDescriptor(), SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
     }
+
 
     @Override
     public void fillBuffers() {
@@ -77,15 +74,9 @@ public class TerrainObjectRenderer extends AbstractRenderer {
             elementCount = 0;
             return;
         }
-        // vertices
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
-        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
-        // barycentric
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, normalBuffer);
-        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createNormPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
-        // texture Coordinate
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
-        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createTextureDoubles()), WebGLRenderingContext.STATIC_DRAW);
+        positions.fillBuffer(vertexList.getVertices());
+        normals.fillBuffer(vertexList.getNormVertices());
+        textureCoordinate.fillBuffer(vertexList.getTextureCoordinates());
 
         elementCount = vertexList.getVerticesCount();
     }
@@ -99,41 +90,23 @@ public class TerrainObjectRenderer extends AbstractRenderer {
 //         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
-        // Projection uniform
-        WebGLUniformLocation perspectiveUniform = getUniformLocation(PERSPECTIVE_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveUniform, false, WebGlUtil.createArrayBufferOfFloat32(projectionTransformation.createMatrix().toWebGlArray()));
-        // View transformation uniform
-        WebGLUniformLocation viewUniform = getUniformLocation(VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(camera.createMatrix().toWebGlArray()));
-        // Model transformation uniform
-        WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
-        // set vertices position
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
-        gameCanvas.getCtx3d().vertexAttribPointer(vertexPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
-        // set the normals
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, normalBuffer);
-        gameCanvas.getCtx3d().vertexAttribPointer(normalPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
-        // set vertices texture coordinates
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
-        gameCanvas.getCtx3d().vertexAttribPointer(textureCoordinatePositionAttribute, TextureCoordinate.getComponentCount(), WebGLRenderingContext.FLOAT, false, 0, 0);
 
-        // Ambient color uniform
-        WebGLUniformLocation pAmbientUniformColor = getUniformLocation(UNIFORM_AMBIENT_COLOR);
-        gameCanvas.getCtx3d().uniform3f(pAmbientUniformColor, (float) lighting.getAmbientIntensity(), (float) lighting.getAmbientIntensity(), (float) lighting.getAmbientIntensity());
-        // Lighting direction uniform
+        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, projectionTransformation.createMatrix());
+        uniformMatrix4fv(VIEW_UNIFORM_NAME, camera.createMatrix());
+        uniform3f(UNIFORM_AMBIENT_COLOR, lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
         Vertex direction = lighting.getLightDirection();
-        WebGLUniformLocation pLightingDirectionUniformColor = getUniformLocation(UNIFORM_LIGHTING_DIRECTION);
-        gameCanvas.getCtx3d().uniform3f(pLightingDirectionUniformColor, (float) direction.getX(), (float) direction.getY(), (float) direction.getZ());
-        // Lighting color uniform
-        WebGLUniformLocation pLightingColorUniformColor = getUniformLocation(UNIFORM_DIRECTIONAL_COLOR);
-        gameCanvas.getCtx3d().uniform3f(pLightingColorUniformColor, (float) lighting.getDiffuseIntensity(), (float) lighting.getDiffuseIntensity(), (float) lighting.getDiffuseIntensity());
+        uniform3f(UNIFORM_LIGHTING_DIRECTION, direction.getX(), direction.getY(), direction.getZ());
+        uniform3f(UNIFORM_DIRECTIONAL_COLOR, lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity());
+
+
+        positions.activate();
+        normals.activate();
+        textureCoordinate.activate();
 
         // Texture
-        WebGLUniformLocation tUniform = getUniformLocation(SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0);
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
-        gameCanvas.getCtx3d().uniform1i(tUniform, 0);
+        webGLTexture.activate();
         // Draw
+        WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
         for (Matrix4 matrix4 : terrainObjectService.getPositions()) {
             // Model model transformation uniform
             gameCanvas.getCtx3d().uniformMatrix4fv(modelUniform, false, WebGlUtil.createArrayBufferOfFloat32(matrix4.toWebGlArray()));

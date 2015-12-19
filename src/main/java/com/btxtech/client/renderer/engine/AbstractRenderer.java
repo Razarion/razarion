@@ -1,10 +1,11 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.ImageDescriptor;
+import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.game.jsre.common.ImageLoader;
+import com.btxtech.shared.primitives.Matrix4;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.TextResource;
 import elemental.html.WebGLRenderingContext;
@@ -38,6 +39,14 @@ public abstract class AbstractRenderer implements Renderer {
 //        webGlProgram = null;
 //    }
 
+    protected ShaderVertexAttribute createVertexShaderAttribute(String attributeName) {
+        return new ShaderVertexAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
+    }
+
+    protected ShaderTextureCoordinateAttribute createShaderTextureCoordinateAttributee(String attributeName) {
+        return new ShaderTextureCoordinateAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
+    }
+
     protected int getAndEnableAttributeLocation(String attributeName) {
         return webGlProgram.getAndEnableAttributeLocation(attributeName);
     }
@@ -48,6 +57,22 @@ public abstract class AbstractRenderer implements Renderer {
 
     protected void useProgram() {
         webGlProgram.useProgram();
+    }
+
+    protected void uniformMatrix4fv(String uniformName, Matrix4 matrix) {
+        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.createArrayBufferOfFloat32(matrix.toWebGlArray()));
+        WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
+    }
+
+    protected void uniform3f(String uniformName, double x, double y, double z) {
+        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+        gameCanvas.getCtx3d().uniform3f(uniformLocation, (float) x, (float) y, (float) z);
+        WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
+    }
+
+    protected WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName, int textureId, int uniformValue) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureId, uniformValue);
     }
 
     protected WebGLTexture setupTexture(ImageDescriptor imageDescriptor) {
@@ -72,10 +97,12 @@ public abstract class AbstractRenderer implements Renderer {
                 gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR_MIPMAP_NEAREST);
                 gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
                 gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
+                WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
             }
         });
         return webGLTexture;
     }
+
     protected WebGLTexture setupTextureForBumpMap(ImageDescriptor imageDescriptor) {
         final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
         ImageLoader<WebGLTexture> textureLoader = new ImageLoader<>();
