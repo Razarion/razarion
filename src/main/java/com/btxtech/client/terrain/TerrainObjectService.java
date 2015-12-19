@@ -3,6 +3,7 @@ package com.btxtech.client.terrain;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.VertexListService;
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
 import org.jboss.errai.bus.client.api.UncaughtException;
@@ -46,7 +47,7 @@ public class TerrainObjectService {
 //                double translateX = Math.random() * edge;
 //                double translateY = Math.random() * edge;
 //                Matrix4 matrix4 = Matrix4.createTranslation(x * edge + translateX, y * edge + translateY, 0);
-//                double scale = Math.random() * 2.0 + 4.0;
+//                double scale = Math.random() * 0.5 + 0.3;
 //                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
 //                // matrix4 = base.multiply(matrix4);
 //                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
@@ -57,7 +58,7 @@ public class TerrainObjectService {
         // opaqueVertexList = new Sphere(15, 10, 10).provideVertexList(ImageDescriptor.BUSH_1);
         // opaqueVertexList = new Plane(100).provideVertexListPlain(AbstractRenderer.CHESS_TEXTURE_08);
 
-        positions.add(Matrix4.createTranslation(450, 300, 0));
+         positions.add(Matrix4.createTranslation(450, 300, 0));
         // positions.add(Matrix4.createIdentity());
         // positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
 
