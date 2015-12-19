@@ -43,7 +43,8 @@ public class RenderService {
     public void init() {
         initFrameBuffer();
         createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class);
-        createAndAddRenderSwitch(TerrainObjectRenderer.class, TerrainObjectDepthBufferRenderer.class, TerrainObjectWireRender.class);
+        createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, TerrainObjectDepthBufferRenderer.class, TerrainObjectWireRender.class);
+        createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TerrainObjectDepthBufferRenderer.class, TerrainObjectWireRender.class);
         monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null);
         norm = createAndAddRenderSwitch(NormRenderer.class, null, NormRenderer.class);
     }

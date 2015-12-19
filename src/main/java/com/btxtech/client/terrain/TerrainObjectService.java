@@ -32,9 +32,11 @@ public class TerrainObjectService {
     private Caller<VertexListService> serviceCaller;
     @Inject
     private RenderService renderService;
-    private VertexList vertexList;
+    private VertexList opaqueVertexList;
+    private VertexList transparentVertexList;
     private List<Matrix4> positions = new ArrayList<>();
-    private ImageDescriptor imageDescriptor = ImageDescriptor.BRANCH_01;
+    private ImageDescriptor opaqueDescriptor = ImageDescriptor.SAND_2;
+    private ImageDescriptor transparentDescriptor = ImageDescriptor.BRANCH_01;
 
     public TerrainObjectService() {
 //        int edge = TerrainSurface.MESH_EDGE_SIZE / EDGE_COUNT;
@@ -52,8 +54,8 @@ public class TerrainObjectService {
 //            }
 //        }
 
-        // vertexList = new Sphere(15, 10, 10).provideVertexList(ImageDescriptor.BUSH_1);
-        // vertexList = new Plane(100).provideVertexListPlain(AbstractRenderer.CHESS_TEXTURE_08);
+        // opaqueVertexList = new Sphere(15, 10, 10).provideVertexList(ImageDescriptor.BUSH_1);
+        // opaqueVertexList = new Plane(100).provideVertexListPlain(AbstractRenderer.CHESS_TEXTURE_08);
 
         positions.add(Matrix4.createTranslation(450, 300, 0));
         // positions.add(Matrix4.createIdentity());
@@ -61,16 +63,24 @@ public class TerrainObjectService {
 
     }
 
-    public VertexList getVertexList() {
-        return vertexList;
+    public VertexList getOpaqueVertexList() {
+        return opaqueVertexList;
+    }
+
+    public VertexList getTransparentVertexList() {
+        return transparentVertexList;
     }
 
     public List<Matrix4> getPositions() {
         return positions;
     }
 
-    public ImageDescriptor getImageDescriptor() {
-        return imageDescriptor;
+    public ImageDescriptor getOpaqueDescriptor() {
+        return opaqueDescriptor;
+    }
+
+    public ImageDescriptor getTransparentDescriptor() {
+        return transparentDescriptor;
     }
 
     @AfterInitialization
@@ -79,8 +89,14 @@ public class TerrainObjectService {
             @Override
             public void callback(final List<VertexList> vertexLists) {
                 for (VertexList vertexList : vertexLists) {
-                    if (vertexList.getName().equals(TWIG_MESH)) {
-                        TerrainObjectService.this.vertexList = vertexList;
+                    switch (vertexList.getName()) {
+                        case TRUNK_MESH:
+                            opaqueVertexList = vertexList;
+                            break;
+                        case TWIG_MESH:
+                            transparentVertexList = vertexList;
+                            break;
+
                     }
                     logger.severe("TerrainObjectService loaded: " + vertexList.getName() + " size: " + vertexList.getVertices().size());
                 }

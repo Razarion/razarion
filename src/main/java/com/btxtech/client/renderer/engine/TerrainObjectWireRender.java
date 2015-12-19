@@ -73,7 +73,7 @@ public class TerrainObjectWireRender extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = terrainObjectService.getVertexList();
+        VertexList vertexList = terrainObjectService.getOpaqueVertexList();
         if (vertexList == null) {
             elementCount = 0;
             return;

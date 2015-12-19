@@ -26,8 +26,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 04.09.2015.
  */
-@Dependent
-public class TerrainObjectRenderer extends AbstractRenderer {
+public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String A_VERTEX_NORMAL = "aVertexNormal";
     private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
@@ -57,19 +56,23 @@ public class TerrainObjectRenderer extends AbstractRenderer {
     @Inject
     private Lighting lighting;
 
+    abstract protected VertexList getVertexList(TerrainObjectService terrainObjectService);
+    abstract protected ImageDescriptor getImageDescriptor(TerrainObjectService terrainObjectService);
+    abstract protected void preDraw(WebGLRenderingContext webGLRenderingContext);
+
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.terrainObjectVertexShader(), Shaders.INSTANCE.terrainObjectFragmentShader());
         positions = createVertexShaderAttribute(A_VERTEX_POSITION);
         normals = createVertexShaderAttribute(A_VERTEX_NORMAL);
         textureCoordinate = createShaderTextureCoordinateAttributee(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
-        webGLTexture = createWebGLTexture(terrainObjectService.getImageDescriptor(), SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
+        webGLTexture = createWebGLTexture(getImageDescriptor(terrainObjectService), SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
     }
 
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = terrainObjectService.getVertexList();
+        VertexList vertexList = getVertexList(terrainObjectService);
         if (vertexList == null) {
             elementCount = 0;
             return;
@@ -81,13 +84,10 @@ public class TerrainObjectRenderer extends AbstractRenderer {
         elementCount = vertexList.getVerticesCount();
     }
 
+
     @Override
     public void draw() {
-        gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
-        gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
-        gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
-//         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
-//         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
+        preDraw(gameCanvas.getCtx3d());
 
         useProgram();
 
