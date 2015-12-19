@@ -1,13 +1,11 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.shared.VertexList;
 import elemental.html.WebGLRenderingContext;
 
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 /**
  * Created by Beat
