@@ -1,7 +1,11 @@
 package com.btxtech;
 
+import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 import org.junit.Assert;
+
+import java.util.List;
 
 /**
  * Created by Beat
@@ -10,6 +14,10 @@ import org.junit.Assert;
 public class TestHelper {
     public static void assertVertex(Vertex expected, Vertex actual) {
         String message = "Expected: " + expected + " but was: " + actual;
+        assertVertex(message, expected, actual);
+    }
+
+    public static void assertVertex(String message, Vertex expected, Vertex actual) {
         Assert.assertEquals(message, expected.getX(), actual.getX(), 0.001);
         Assert.assertEquals(message, expected.getY(), actual.getY(), 0.001);
         Assert.assertEquals(message, expected.getZ(), actual.getZ(), 0.001);
@@ -17,5 +25,14 @@ public class TestHelper {
 
     public static void assertVertex(double expectedX, double expectedY, double expectedZ, Vertex actual) {
         assertVertex(new Vertex(expectedX, expectedY, expectedZ), actual);
+    }
+
+    public static void assertTriangle(Triangle expected, int index, VertexList vertexList) {
+        List<Vertex> vertexes = vertexList.getVertices().subList(index * 3, index * 3 + 3);
+
+        String message = "Expected: " + expected + " but was: A: " + vertexes.get(0) + " B: " + vertexes.get(1) + " C: " + vertexes.get(2);
+        assertVertex(message, expected.getVertexA(), vertexes.get(0));
+        assertVertex(message, expected.getVertexB(), vertexes.get(1));
+        assertVertex(message, expected.getVertexC(), vertexes.get(2));
     }
 }

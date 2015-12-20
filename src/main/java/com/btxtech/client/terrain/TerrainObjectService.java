@@ -2,8 +2,9 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.VertexListService;
+import com.btxtech.client.renderer.DepthSorter;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
 import org.jboss.errai.bus.client.api.UncaughtException;
@@ -33,6 +34,8 @@ public class TerrainObjectService {
     private Caller<VertexListService> serviceCaller;
     @Inject
     private RenderService renderService;
+    @Inject
+    private Camera camera;
     private VertexList opaqueVertexList;
     private VertexList transparentVertexList;
     private List<Matrix4> positions = new ArrayList<>();
@@ -58,7 +61,7 @@ public class TerrainObjectService {
         // opaqueVertexList = new Sphere(15, 10, 10).provideVertexList(ImageDescriptor.BUSH_1);
         // opaqueVertexList = new Plane(100).provideVertexListPlain(AbstractRenderer.CHESS_TEXTURE_08);
 
-         positions.add(Matrix4.createTranslation(450, 300, 0));
+        positions.add(Matrix4.createTranslation(450, 300, 0));
         // positions.add(Matrix4.createIdentity());
         // positions.add(base.multiply(Matrix4.createTranslation(600, 200, 5)));
 
@@ -95,7 +98,8 @@ public class TerrainObjectService {
                             opaqueVertexList = vertexList;
                             break;
                         case TWIG_MESH:
-                            transparentVertexList = vertexList;
+                            Matrix4 mvMatrix = camera.createMatrix().multiply(positions.get(0));
+                            transparentVertexList =  DepthSorter.depthSort(vertexList, mvMatrix);
                             break;
 
                     }
@@ -120,7 +124,6 @@ public class TerrainObjectService {
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "An unexpected error has occurred", t);
         }
-
     }
 
 }

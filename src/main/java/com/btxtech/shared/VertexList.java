@@ -1,7 +1,6 @@
 package com.btxtech.shared;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Triangle;
@@ -23,7 +22,6 @@ public class VertexList {
     List<Vertex> tangentVertices = new ArrayList<>();
     List<Vertex> barycentric = new ArrayList<>();
     List<TextureCoordinate> textureCoordinates = new ArrayList<>();
-    List<Color> colors = new ArrayList<>();
     List<Double> edges = new ArrayList<>();
     List<Double> slopeFactor = new ArrayList<>();
 
@@ -46,7 +44,6 @@ public class VertexList {
         triangle.appendNormVertexTo(normVertices);
         triangle.appendTangentVertexTo(tangentVertices);
         triangle.appendBarycentricTo(barycentric);
-        triangle.appendColorsTo(colors);
         triangle.appendTextureCoordinateTo(textureCoordinates);
         triangle.appendEdgesTo(edges);
         triangle.appendSlopeFactor(slopeFactor);
@@ -84,7 +81,7 @@ public class VertexList {
     }
 
     public int getTriangleCount() {
-        if(vertices.size() % 3 != 0) {
+        if (vertices.size() % 3 != 0) {
             throw new IllegalStateException("");
         }
         return vertices.size() / 3;
@@ -161,8 +158,41 @@ public class VertexList {
         tangentVertices.addAll(vertexList.tangentVertices);
         barycentric.addAll(vertexList.barycentric);
         textureCoordinates.addAll(vertexList.textureCoordinates);
-        colors.addAll(vertexList.colors);
         edges.addAll(vertexList.edges);
+    }
+
+    public void appendTo(int index, VertexList vertexList) {
+        if (!vertexList.vertices.isEmpty()) {
+            vertices.add(vertexList.vertices.get(index));
+            vertices.add(vertexList.vertices.get(index + 1));
+            vertices.add(vertexList.vertices.get(index + 2));
+        }
+        if (!vertexList.normVertices.isEmpty()) {
+            normVertices.add(vertexList.normVertices.get(index));
+            normVertices.add(vertexList.normVertices.get(index + 1));
+            normVertices.add(vertexList.normVertices.get(index + 2));
+        }
+
+        if (!vertexList.tangentVertices.isEmpty()) {
+            tangentVertices.add(vertexList.tangentVertices.get(index));
+            tangentVertices.add(vertexList.tangentVertices.get(index + 1));
+            tangentVertices.add(vertexList.tangentVertices.get(index + 2));
+        }
+        if (!vertexList.barycentric.isEmpty()) {
+            barycentric.add(vertexList.barycentric.get(index));
+            barycentric.add(vertexList.barycentric.get(index + 1));
+            barycentric.add(vertexList.barycentric.get(index + 2));
+        }
+        if (!vertexList.textureCoordinates.isEmpty()) {
+            textureCoordinates.add(vertexList.textureCoordinates.get(index));
+            textureCoordinates.add(vertexList.textureCoordinates.get(index + 1));
+            textureCoordinates.add(vertexList.textureCoordinates.get(index + 2));
+        }
+        if (!vertexList.edges.isEmpty()) {
+            edges.add(vertexList.edges.get(index));
+            edges.add(vertexList.edges.get(index + 1));
+            edges.add(vertexList.edges.get(index + 2));
+        }
     }
 
     public List<Vertex> getVertices() {
@@ -189,7 +219,6 @@ public class VertexList {
                 ", normVertices=" + normVertices +
                 ", barycentric=" + barycentric +
                 ", textureCoordinates=" + textureCoordinates +
-                ", colors=" + colors +
                 ", edges=" + edges +
                 '}';
     }

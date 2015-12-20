@@ -378,12 +378,12 @@ public class Triangle {
     @Override
     public String toString() {
         return "Triangle{" +
-                //"vertexA=" + vertexA +
-                ", textureCoordinateA=" + textureCoordinateA +
-                //", vertexB=" + vertexB +
-                ", textureCoordinateB=" + textureCoordinateB +
-                //", vertexC=" + vertexC +
-                ", textureCoordinateC=" + textureCoordinateC +
+                "vertexA=" + vertexA +
+                // ", textureCoordinateA=" + textureCoordinateA +
+                ", vertexB=" + vertexB +
+                // ", textureCoordinateB=" + textureCoordinateB +
+                ", vertexC=" + vertexC +
+                //", textureCoordinateC=" + textureCoordinateC +
                 '}';
     }
 }
