@@ -18,6 +18,7 @@ import java.util.List;
 public class VertexList {
     private String name;
     List<Vertex> vertices = new ArrayList<>();
+    List<Vertex> storedVertices;
     List<Vertex> normVertices = new ArrayList<>();
     List<Vertex> tangentVertices = new ArrayList<>();
     List<Vertex> barycentric = new ArrayList<>();
@@ -144,6 +145,14 @@ public class VertexList {
         textureCoordinates = normalized;
     }
 
+    public void storeVertices() {
+        storedVertices = new ArrayList<>(vertices);
+    }
+
+    public void restoreVertices() {
+        vertices = storedVertices;
+        storedVertices = null;
+    }
 
     public void multiply(Matrix4 matrix) {
         for (int i = 0; i < vertices.size(); i++) {
@@ -159,6 +168,13 @@ public class VertexList {
         barycentric.addAll(vertexList.barycentric);
         textureCoordinates.addAll(vertexList.textureCoordinates);
         edges.addAll(vertexList.edges);
+    }
+
+    public void append(Matrix4 transformationMatrix, VertexList vertexList) {
+        vertexList.storeVertices();
+        vertexList.multiply(transformationMatrix);
+        append(vertexList);
+        vertexList.restoreVertices();
     }
 
     public void appendTo(int index, VertexList vertexList) {
@@ -201,6 +217,10 @@ public class VertexList {
 
     public List<Vertex> getNormVertices() {
         return normVertices;
+    }
+
+    public List<Vertex> getBarycentric() {
+        return barycentric;
     }
 
     public List<Vertex> getTangentVertices() {

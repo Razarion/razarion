@@ -2,24 +2,19 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Vertex;
-import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLTexture;
-import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -41,7 +36,6 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
     private ShaderVertexAttribute normals;
     private ShaderTextureCoordinateAttribute textureCoordinate;
     private WebGlUniformTexture webGLTexture;
-    // private WebGLTexture webGLTexture;
     private int elementCount;
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
     @Inject
@@ -57,8 +51,14 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
     private Lighting lighting;
 
     abstract protected VertexList getVertexList(TerrainObjectService terrainObjectService);
+
     abstract protected ImageDescriptor getImageDescriptor(TerrainObjectService terrainObjectService);
+
     abstract protected void preDraw(WebGLRenderingContext webGLRenderingContext);
+
+    protected void postDraw(WebGLRenderingContext ctx3d) {
+
+    }
 
     @PostConstruct
     public void init() {
@@ -93,26 +93,21 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
 
         uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, projectionTransformation.createMatrix());
         uniformMatrix4fv(VIEW_UNIFORM_NAME, camera.createMatrix());
+        uniformMatrix4fv(MODEL_UNIFORM_NAME, Matrix4.createIdentity());
         uniform3f(UNIFORM_AMBIENT_COLOR, lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
         Vertex direction = lighting.getLightDirection();
         uniform3f(UNIFORM_LIGHTING_DIRECTION, direction.getX(), direction.getY(), direction.getZ());
         uniform3f(UNIFORM_DIRECTIONAL_COLOR, lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity());
 
-
         positions.activate();
         normals.activate();
         textureCoordinate.activate();
 
-        // Texture
         webGLTexture.activate();
-        // Draw
-        WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
-        for (Matrix4 matrix4 : terrainObjectService.getPositions()) {
-            // Model model transformation uniform
-            gameCanvas.getCtx3d().uniformMatrix4fv(modelUniform, false, WebGlUtil.createArrayBufferOfFloat32(matrix4.toWebGlArray()));
-            // Draw
-            gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-            WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
-        }
+
+        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
+        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+
+        postDraw(gameCanvas.getCtx3d());
     }
 }

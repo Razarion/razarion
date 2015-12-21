@@ -105,8 +105,14 @@ public class ColladaConverterTest {
     public static String toTriangleString(VertexList vertexList, int index) {
         List<Vertex> vertices = vertexList.getVertices();
         List<TextureCoordinate> textureCoordinates = vertexList.getTextureCoordinates();
-        return "A: " + toSimpleString(vertices.get(index)) + " B: " + toSimpleString(vertices.get(index + 1)) + " C: " + toSimpleString(vertices.get(index + 2))
-                + " tex A: " + toSimpleString(textureCoordinates.get(index)) + " tex B: " + toSimpleString(textureCoordinates.get(index + 1)) + " tex C: " + toSimpleString(textureCoordinates.get(index + 2));
+
+
+        if(textureCoordinates.isEmpty()) {
+            return "A: " + toSimpleString(vertices.get(index)) + " B: " + toSimpleString(vertices.get(index + 1)) + " C: " + toSimpleString(vertices.get(index + 2));
+        } else {
+            return "A: " + toSimpleString(vertices.get(index)) + " B: " + toSimpleString(vertices.get(index + 1)) + " C: " + toSimpleString(vertices.get(index + 2))
+                    + " tex A: " + toSimpleString(textureCoordinates.get(index)) + " tex B: " + toSimpleString(textureCoordinates.get(index + 1)) + " tex C: " + toSimpleString(textureCoordinates.get(index + 2));
+        }
     }
 
     public static String toSimpleString(Vertex vertex) {

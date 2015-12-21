@@ -13,6 +13,6 @@ import javax.enterprise.context.Dependent;
 public class OpaqueTerrainObjectDepthBufferRenderer extends AbstractTerrainObjectDepthBufferRenderer {
     @Override
     protected VertexList getVertexList(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getOpaqueVertexList();
+        return terrainObjectService.getTotalOpaqueVertexList();
     }
 }

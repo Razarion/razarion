@@ -13,6 +13,6 @@ import javax.enterprise.context.Dependent;
 public class TransparentTerrainObjectWireRender extends AbstractTerrainObjectWireRender {
     @Override
     protected VertexList getVertexList(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getTransparentVertexList();
+        return terrainObjectService.getTotalTransparentVertexList();
     }
 }

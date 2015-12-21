@@ -15,7 +15,7 @@ import javax.enterprise.context.Dependent;
 public class TransparentTerrainObjectRenderer extends AbstractTerrainObjectRenderer {
     @Override
     protected VertexList getVertexList(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getTransparentVertexList();
+        return terrainObjectService.getTotalTransparentVertexList();
     }
 
     @Override
@@ -27,6 +27,11 @@ public class TransparentTerrainObjectRenderer extends AbstractTerrainObjectRende
     protected void preDraw(WebGLRenderingContext webGLRenderingContext) {
         webGLRenderingContext.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         webGLRenderingContext.enable(WebGLRenderingContext.BLEND);
-        webGLRenderingContext.disable(WebGLRenderingContext.DEPTH_TEST);
+        webGLRenderingContext.depthMask(false);
+    }
+
+    @Override
+    protected void postDraw(WebGLRenderingContext webGLRenderingContext) {
+        webGLRenderingContext.depthMask(true);
     }
 }

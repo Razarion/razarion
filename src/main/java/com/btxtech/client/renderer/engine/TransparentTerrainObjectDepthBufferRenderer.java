@@ -13,6 +13,6 @@ import javax.enterprise.context.Dependent;
 public class TransparentTerrainObjectDepthBufferRenderer extends AbstractTerrainObjectDepthBufferRenderer {
     @Override
     protected VertexList getVertexList(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getShadowVertexList();
+        return terrainObjectService.getTotalShadowTransparentVertexList();
     }
 }

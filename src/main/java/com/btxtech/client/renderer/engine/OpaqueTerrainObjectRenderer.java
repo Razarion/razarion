@@ -16,7 +16,7 @@ public class OpaqueTerrainObjectRenderer extends AbstractTerrainObjectRenderer {
 
     @Override
     protected VertexList getVertexList(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getOpaqueVertexList();
+        return terrainObjectService.getTotalOpaqueVertexList();
     }
 
     @Override

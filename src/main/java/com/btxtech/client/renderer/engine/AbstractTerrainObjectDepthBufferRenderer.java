@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
@@ -16,7 +15,6 @@ import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -29,11 +27,8 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
     private static final String MODEL_UNIFORM_NAME = "uMMatrix";
-    private static final String SAMPLER_UNIFORM_NAME = "uSampler";
-    private WebGLBuffer verticesBuffer;
-    private int vertexPositionAttribute;
-    private WebGLBuffer barycentricBuffer;
-    private int barycentricPositionAttribute;
+    private ShaderVertexAttribute positions;
+    private ShaderVertexAttribute barycentric;
     private int elementCount;
     // private Logger logger = Logger.getLogger(TerrainDepthBufferObjectRenderer.class.getName());
     @Inject
@@ -54,10 +49,8 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
             throw new WebGlException("OES_standard_derivatives is no supported");
         }
         createProgram(Shaders.INSTANCE.depthBufferVertexShader(), Shaders.INSTANCE.depthBufferFragmentShader());
-        verticesBuffer = gameCanvas.getCtx3d().createBuffer();
-        vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);
-        barycentricBuffer = gameCanvas.getCtx3d().createBuffer();
-        barycentricPositionAttribute = getAndEnableAttributeLocation(BARYCENTRIC_ATTRIBUTE_NAME);
+        positions = createVertexShaderAttribute(A_VERTEX_POSITION);
+        barycentric = createVertexShaderAttribute(BARYCENTRIC_ATTRIBUTE_NAME);
     }
 
     @Override
@@ -67,31 +60,11 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
             elementCount = 0;
             return;
         }
-        // vertices
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
-        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
-        // barycentric
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, barycentricBuffer);
-        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createBarycentricDoubles()), WebGLRenderingContext.STATIC_DRAW);
+        positions.fillBuffer(vertexList.getVertices());
+        barycentric.fillBuffer(vertexList.getBarycentric());
 
         elementCount = vertexList.getVerticesCount();
     }
-
-//    @Override
-//    public void fillBuffers() {
-//        double height = -1;
-//        Vertex pointA = new Vertex(-1, -1, height);
-//        Vertex pointB = new Vertex(1, -1, height);
-//        Vertex pointC = new Vertex(-1, 1, height);
-//
-//        VertexList vertexList =new VertexList();
-//        vertexList.add(new Triangle(pointA, pointB, pointC));
-//        // vertices
-//        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
-//        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
-//
-//        elementCount = vertexList.getVerticesCount();
-//    }
 
     @Override
     public void draw() {
@@ -99,28 +72,15 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
-        // Projection uniform
-        WebGLUniformLocation perspectiveUniform = getUniformLocation(PERSPECTIVE_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveUniform, false, WebGlUtil.createArrayBufferOfFloat32(lighting.createProjectionTransformation().toWebGlArray()));
-        // View transformation uniform
-        WebGLUniformLocation viewUniform = getUniformLocation(VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(lighting.createViewTransformation().toWebGlArray()));
-        // Model transformation uniform
-        WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
-        // set vertices position
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
-        gameCanvas.getCtx3d().vertexAttribPointer(vertexPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
-        // set the barycentric coordinates
-        gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, barycentricBuffer);
-        gameCanvas.getCtx3d().vertexAttribPointer(barycentricPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);
+        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, lighting.createProjectionTransformation());
+        uniformMatrix4fv(VIEW_UNIFORM_NAME, lighting.createViewTransformation());
+        uniformMatrix4fv(MODEL_UNIFORM_NAME, Matrix4.createIdentity());
+
+        positions.activate();
+        barycentric.activate();
 
         // Draw
-        for (Matrix4 matrix4 : terrainObjectService.getPositions()) {
-            // Model model transformation uniform
-            gameCanvas.getCtx3d().uniformMatrix4fv(modelUniform, false, WebGlUtil.createArrayBufferOfFloat32(matrix4.toWebGlArray()));
-            // Draw
-            gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-            WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
-        }
+        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
+        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
     }
 }
