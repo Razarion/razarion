@@ -29,6 +29,7 @@ public class TerrainObjectService {
     private static final int EDGE_COUNT = 10;
     private static final String TRUNK_MESH = "Trunk Mesh";
     private static final String TWIG_MESH = "Twig Mesh";
+    private static final String SHADOW_MESH = "Shadow Mesh";
     private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
     @Inject
     private Caller<VertexListService> serviceCaller;
@@ -38,6 +39,7 @@ public class TerrainObjectService {
     private Camera camera;
     private VertexList opaqueVertexList;
     private VertexList transparentVertexList;
+    private VertexList shadowVertexList;
     private List<Matrix4> positions = new ArrayList<>();
     private ImageDescriptor opaqueDescriptor = ImageDescriptor.SAND_2;
     private ImageDescriptor transparentDescriptor = ImageDescriptor.BRANCH_01;
@@ -75,6 +77,10 @@ public class TerrainObjectService {
         return transparentVertexList;
     }
 
+    public VertexList getShadowVertexList() {
+        return shadowVertexList;
+    }
+
     public List<Matrix4> getPositions() {
         return positions;
     }
@@ -100,6 +106,9 @@ public class TerrainObjectService {
                         case TWIG_MESH:
                             Matrix4 mvMatrix = camera.createMatrix().multiply(positions.get(0));
                             transparentVertexList =  DepthSorter.depthSort(vertexList, mvMatrix);
+                            break;
+                        case SHADOW_MESH:
+                            shadowVertexList =  vertexList;
                             break;
 
                     }
