@@ -32,8 +32,8 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
     private static final String UNIFORM_AMBIENT_COLOR = "uAmbientColor";
     private static final String UNIFORM_LIGHTING_DIRECTION = "uLightingDirection";
     private static final String UNIFORM_DIRECTIONAL_COLOR = "uDirectionalColor";
-    private ShaderVertexAttribute positions;
-    private ShaderVertexAttribute normals;
+    private VertexShaderAttribute positions;
+    private VertexShaderAttribute normals;
     private ShaderTextureCoordinateAttribute textureCoordinate;
     private WebGlUniformTexture webGLTexture;
     private int elementCount;

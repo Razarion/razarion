@@ -9,10 +9,7 @@ import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
-import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -27,8 +24,8 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
     private static final String MODEL_UNIFORM_NAME = "uMMatrix";
-    private ShaderVertexAttribute positions;
-    private ShaderVertexAttribute barycentric;
+    private VertexShaderAttribute positions;
+    private VertexShaderAttribute barycentric;
     private int elementCount;
     // private Logger logger = Logger.getLogger(TerrainDepthBufferObjectRenderer.class.getName());
     @Inject

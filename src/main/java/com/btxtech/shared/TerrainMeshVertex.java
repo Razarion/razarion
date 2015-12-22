@@ -5,6 +5,8 @@ import com.btxtech.shared.primitives.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
@@ -18,6 +20,21 @@ import javax.persistence.Table;
 @Table(name = "TERRAIN_MESH_VERTEX")
 @IdClass(TerrainMeshVertexId.class)
 public class TerrainMeshVertex {
+    public enum Type {
+        GROUND(0),
+        PLATEAU(1),
+        BEACH(2);
+
+        private int intType;
+
+        Type(int intType) {
+            this.intType = intType;
+        }
+
+        public int getIntType() {
+            return intType;
+        }
+    }
     @Id
     private int meshIndexX;
     @Id
@@ -27,6 +44,8 @@ public class TerrainMeshVertex {
     private double z;
     private double edge;
     private double slopeFactor;
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
     /**
      * Used by JPA & errai
@@ -35,7 +54,7 @@ public class TerrainMeshVertex {
     public TerrainMeshVertex() {
     }
 
-    public TerrainMeshVertex(Index meshIndex, Vertex vertex, double edge, double slopeFactor) {
+    public TerrainMeshVertex(Index meshIndex, Vertex vertex, double edge, double slopeFactor, Type type) {
         meshIndexX = meshIndex.getX();
         meshIndexY = meshIndex.getY();
         x = vertex.getX();
@@ -43,6 +62,7 @@ public class TerrainMeshVertex {
         z = vertex.getZ();
         this.edge = edge;
         this.slopeFactor = slopeFactor;
+        this.type = type;
     }
 
     public int getMeshIndexX() {
@@ -99,6 +119,10 @@ public class TerrainMeshVertex {
 
     public void setSlopeFactor(double slopeFactor) {
         this.slopeFactor = slopeFactor;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override

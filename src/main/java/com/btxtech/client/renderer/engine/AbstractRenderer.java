@@ -39,8 +39,16 @@ public abstract class AbstractRenderer implements Renderer {
 //        webGlProgram = null;
 //    }
 
-    protected ShaderVertexAttribute createVertexShaderAttribute(String attributeName) {
-        return new ShaderVertexAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
+    protected VertexShaderAttribute createVertexShaderAttribute(String attributeName) {
+        return new VertexShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
+    }
+
+    protected FloatShaderAttribute createFloatShaderAttribute(String attributeName) {
+        return new FloatShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
+    }
+
+    protected IntegerShaderAttribute createIntegerShaderAttribute(String attributeName) {
+        return new IntegerShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
     }
 
     protected ShaderTextureCoordinateAttribute createShaderTextureCoordinateAttributee(String attributeName) {
@@ -71,8 +79,18 @@ public abstract class AbstractRenderer implements Renderer {
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
     }
 
+    protected void uniform1f(String uniformName, double value) {
+        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+        gameCanvas.getCtx3d().uniform1f(uniformLocation, (float)value);
+        WebGlUtil.checkLastWebGlError("uniform1f", gameCanvas.getCtx3d());
+    }
+
     protected WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName, int textureId, int uniformValue) {
         return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureId, uniformValue);
+    }
+
+    protected WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName, int textureId, int uniformValue) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureId, uniformValue);
     }
 
     protected WebGLTexture setupTexture(ImageDescriptor imageDescriptor) {

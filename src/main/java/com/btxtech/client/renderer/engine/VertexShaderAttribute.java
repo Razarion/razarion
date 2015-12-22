@@ -1,9 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlProgram;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.shared.primitives.Vertex;
-import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
 
 import java.util.ArrayList;
@@ -13,9 +11,9 @@ import java.util.List;
  * Created by Beat
  * 19.12.2015.
  */
-public class ShaderVertexAttribute extends AbstractShaderAttribute{
+public class VertexShaderAttribute extends AbstractShaderAttribute {
 
-    public ShaderVertexAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName) {
+    public VertexShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName) {
         super(ctx3d, webGlProgram, attributeName, Vertex.getComponentsPerVertex());
     }
 

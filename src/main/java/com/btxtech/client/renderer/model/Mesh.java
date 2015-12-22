@@ -28,6 +28,7 @@ public class Mesh {
         private Triangle triangle2;
         private double edge;
         private double slopeFactor;
+        private TerrainMeshVertex.Type type;
 
         public VertexData(Vertex vertex) {
             this.vertex = vertex;
@@ -81,6 +82,14 @@ public class Mesh {
             this.slopeFactor = slopeFactor;
         }
 
+        public TerrainMeshVertex.Type getType() {
+            return type;
+        }
+
+        public void setType(TerrainMeshVertex.Type type) {
+            this.type = type;
+        }
+
         @Override
         public String toString() {
             return "VertexData{" +
@@ -89,6 +98,7 @@ public class Mesh {
                     ", triangle2=" + triangle2 +
                     ", edge=" + edge +
                     ", slopeFactor=" + slopeFactor +
+                    ", type=" + type +
                     '}';
         }
     }
@@ -121,6 +131,7 @@ public class Mesh {
             VertexData vertexData = getVertexDataSafe(meshIndex);
             vertexData.setEdge(terrainMeshVertex.getEdge());
             vertexData.setSlopeFactor(terrainMeshVertex.getSlopeFactor());
+            vertexData.setType(terrainMeshVertex.getType());
         }
 
     }
@@ -132,7 +143,7 @@ public class Mesh {
             @Override
             public void onVisit(Index index, Vertex vertex) {
                 VertexData vertexData = getVertexDataSafe(index);
-                terrainMeshVertex.add(new TerrainMeshVertex(index, vertex, vertexData.getEdge(), vertexData.getSlopeFactor()));
+                terrainMeshVertex.add(new TerrainMeshVertex(index, vertex, vertexData.getEdge(), vertexData.getSlopeFactor(), vertexData.getType()));
             }
         });
 
@@ -335,6 +346,7 @@ public class Mesh {
             triangle.setSlopeFactorB(bottomRight.getSlopeFactor());
             triangle.setEdgeC(topLeft.getEdge());
             triangle.setSlopeFactorC(topLeft.getSlopeFactor());
+            setType(triangle, bottomLeft.getType(), bottomRight.getType(), topLeft.getType());
         } else {
             triangle = new Triangle(bottomRight.getVertex(), topRight.getVertex(), topLeft.getVertex());
             triangle.setEdgeA(bottomRight.getEdge());
@@ -343,8 +355,21 @@ public class Mesh {
             triangle.setSlopeFactorB(topRight.getSlopeFactor());
             triangle.setEdgeC(topLeft.getEdge());
             triangle.setSlopeFactorC(topLeft.getSlopeFactor());
+            setType(triangle, bottomRight.getType(), topRight.getType(), topLeft.getType());
         }
         return triangle;
+    }
+
+    private void setType(Triangle triangle, TerrainMeshVertex.Type type1, TerrainMeshVertex.Type type2, TerrainMeshVertex.Type type3) {
+        TerrainMeshVertex.Type type = TerrainMeshVertex.Type.GROUND;
+        if (type1 == TerrainMeshVertex.Type.PLATEAU || type2 == TerrainMeshVertex.Type.PLATEAU || type3 == TerrainMeshVertex.Type.PLATEAU) {
+            type = TerrainMeshVertex.Type.PLATEAU;
+        } else if (type1 == TerrainMeshVertex.Type.BEACH || type2 == TerrainMeshVertex.Type.BEACH || type3 == TerrainMeshVertex.Type.BEACH) {
+            type = TerrainMeshVertex.Type.BEACH;
+        }
+        triangle.setTypeA(type);
+        triangle.setTypeB(type);
+        triangle.setTypeC(type);
     }
 
     private void setupTriangleTexture1(Index index, Triangle triangle1) {

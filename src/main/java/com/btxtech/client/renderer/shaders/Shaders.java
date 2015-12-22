@@ -53,4 +53,9 @@ public interface Shaders extends ClientBundle {
     @Source("DebugVector.frag")
     TextResource debugVectorFragmentShader();
 
+    @Source("Water.vert")
+    TextResource waterVertexShader();
+
+    @Source("Water.frag")
+    TextResource waterFragmentShader();
 }

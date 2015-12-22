@@ -3,6 +3,7 @@ package com.btxtech.shared.primitives;
 import com.btxtech.client.terrain.TextureCoordinateCalculator;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.TerrainMeshVertex;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -19,18 +20,21 @@ public class Triangle {
     private TextureCoordinate textureCoordinateA;
     private double edgeA;
     private double slopeFactorA;
+    private TerrainMeshVertex.Type typeA;
     private Vertex vertexB;
     private Vertex vertexNormB;
     private Vertex vertexTangentB;
     private TextureCoordinate textureCoordinateB;
     private double edgeB;
     private double slopeFactorB;
+    private TerrainMeshVertex.Type typeB;
     private Vertex vertexC;
     private Vertex vertexNormC;
     private Vertex vertexTangentC;
     private TextureCoordinate textureCoordinateC;
     private double edgeC;
     private double slopeFactorC;
+    private TerrainMeshVertex.Type typeC;
     private Color color = new Color(1.0, 1.0, 1.0, 1.0);
 
     public Triangle(Vertex vertexA, TextureCoordinate textureCoordinateA,
@@ -163,6 +167,12 @@ public class Triangle {
         slopeFactor.add(slopeFactorA);
         slopeFactor.add(slopeFactorB);
         slopeFactor.add(slopeFactorC);
+    }
+
+    public void appendType(List<TerrainMeshVertex.Type> types) {
+        types.add(typeA);
+        types.add(typeB);
+        types.add(typeC);
     }
 
     public Vertex calculateNorm() {
@@ -350,6 +360,18 @@ public class Triangle {
 
     public void setSlopeFactorC(double slopeFactorC) {
         this.slopeFactorC = slopeFactorC;
+    }
+
+    public void setTypeA(TerrainMeshVertex.Type typeA) {
+        this.typeA = typeA;
+    }
+
+    public void setTypeB(TerrainMeshVertex.Type typeB) {
+        this.typeB = typeB;
+    }
+
+    public void setTypeC(TerrainMeshVertex.Type typeC) {
+        this.typeC = typeC;
     }
 
     public void adjustTextureCoordinate() {

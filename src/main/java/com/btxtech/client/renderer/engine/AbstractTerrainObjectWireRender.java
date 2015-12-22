@@ -28,8 +28,8 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
     private static final String MODEL_UNIFORM_NAME = "uMMatrix";
-    private ShaderVertexAttribute positions;
-    private ShaderVertexAttribute barycentric;
+    private VertexShaderAttribute positions;
+    private VertexShaderAttribute barycentric;
     private ShaderTextureCoordinateAttribute textureCoordinate;
     private WebGlUniformTexture webGLTexture;
     private int elementCount;

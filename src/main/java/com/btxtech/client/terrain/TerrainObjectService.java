@@ -36,6 +36,8 @@ public class TerrainObjectService {
     @Inject
     private RenderService renderService;
     @Inject
+    private TerrainSurface terrainSurface;
+    @Inject
     private Camera camera;
     private VertexList opaqueVertexList;
     private VertexList totalOpaqueVertexList = new VertexList();
@@ -104,12 +106,15 @@ public class TerrainObjectService {
     }
 
     private void setupTriangles() {
-        int edge = TerrainSurface.MESH_EDGE_SIZE / EDGE_COUNT;
+        int edge = TerrainSurface.MESH_SIZE / EDGE_COUNT;
         for (int x = 0; x < EDGE_COUNT; x++) {
             for (int y = 0; y < EDGE_COUNT; y++) {
                 double angleZ = Math.random() * MathHelper.ONE_RADIANT;
                 double translateX = Math.random() * edge;
                 double translateY = Math.random() * edge;
+                if(!terrainSurface.isFree(x * edge + translateX, y * edge + translateY)) {
+                    continue;
+                }
                 Matrix4 matrix4 = Matrix4.createTranslation(x * edge + translateX, y * edge + translateY, 0);
                 double scale = Math.random() * 0.5 + 0.4;
                 matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));

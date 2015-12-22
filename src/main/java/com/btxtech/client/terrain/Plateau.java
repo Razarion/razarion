@@ -6,6 +6,7 @@ import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Rectangle;
 import com.btxtech.shared.MathHelper2;
 import com.btxtech.shared.PlateauConfigEntity;
+import com.btxtech.shared.TerrainMeshVertex;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
@@ -63,8 +64,7 @@ public class Plateau {
                         mesh.getVertexDataSafe(index).addZValue(MathHelper2.interpolate(distance, slopeForm));
                         slopeIndexes.add(index);
                         vertexData.setSlopeFactor(1.0);
-                    } else {
-                        vertexData.setSlopeFactor(0);
+                        vertexData.setType(TerrainMeshVertex.Type.PLATEAU);
                     }
                 }
             }

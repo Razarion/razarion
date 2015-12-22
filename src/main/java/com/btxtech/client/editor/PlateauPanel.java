@@ -36,14 +36,6 @@ public class PlateauPanel extends Composite {
     @Inject
     @Bound
     @DataField
-    private DoubleBox slopeTopThreshold;
-    @Inject
-    @Bound
-    @DataField
-    private DoubleBox slopeTopThresholdFading;
-    @Inject
-    @Bound
-    @DataField
     private DoubleBox bumpMapDepth;
     @Inject
     @Bound

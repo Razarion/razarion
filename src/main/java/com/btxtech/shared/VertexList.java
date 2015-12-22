@@ -25,6 +25,7 @@ public class VertexList {
     List<TextureCoordinate> textureCoordinates = new ArrayList<>();
     List<Double> edges = new ArrayList<>();
     List<Double> slopeFactor = new ArrayList<>();
+    List<TerrainMeshVertex.Type> types = new ArrayList<>();
 
     /**
      * Used by Errai
@@ -48,6 +49,7 @@ public class VertexList {
         triangle.appendTextureCoordinateTo(textureCoordinates);
         triangle.appendEdgesTo(edges);
         triangle.appendSlopeFactor(slopeFactor);
+        triangle.appendType(types);
     }
 
     public void add(Vertex vertexA, Vertex normA, Vertex vertexB, Vertex normB, Vertex vertexC, Vertex normC) {
@@ -96,26 +98,6 @@ public class VertexList {
         return doubleList;
     }
 
-    public List<Double> createNormPositionDoubles() {
-        List<Double> doubleList = new ArrayList<>();
-        for (Vertex vertex : normVertices) {
-            vertex.appendTo(doubleList);
-        }
-        return doubleList;
-    }
-
-    public List<Double> createTangentPositionDoubles() {
-        List<Double> doubleList = new ArrayList<>();
-        for (Vertex vertex : tangentVertices) {
-            vertex.appendTo(doubleList);
-        }
-        return doubleList;
-    }
-
-    public List<Double> createEdgeDoubles() {
-        return new ArrayList<>(edges);
-    }
-
     public List<Double> createBarycentricDoubles() {
         List<Double> doubleList = new ArrayList<>();
         for (Vertex vertex : barycentric) {
@@ -130,11 +112,6 @@ public class VertexList {
             textureCoordinate.appendTo(doubleList);
         }
         return doubleList;
-    }
-
-
-    public List<Double> createSlopeFactorDoubles() {
-        return new ArrayList<>(slopeFactor);
     }
 
     public void normalize(ImageDescriptor imageDescriptor) {
@@ -168,6 +145,8 @@ public class VertexList {
         barycentric.addAll(vertexList.barycentric);
         textureCoordinates.addAll(vertexList.textureCoordinates);
         edges.addAll(vertexList.edges);
+        slopeFactor.addAll(vertexList.slopeFactor);
+        types.addAll(vertexList.types);
     }
 
     public void append(Matrix4 transformationMatrix, VertexList vertexList) {
@@ -209,6 +188,12 @@ public class VertexList {
             edges.add(vertexList.edges.get(index + 1));
             edges.add(vertexList.edges.get(index + 2));
         }
+        if (!vertexList.slopeFactor.isEmpty()) {
+            slopeFactor.add(vertexList.slopeFactor.get(index));
+        }
+        if (!vertexList.types.isEmpty()) {
+            types.add(vertexList.types.get(index));
+        }
     }
 
     public List<Vertex> getVertices() {
@@ -231,6 +216,22 @@ public class VertexList {
         return textureCoordinates;
     }
 
+    public List<Double> getEdges() {
+        return edges;
+    }
+
+    public List<Double> getSlopeFactor() {
+        return slopeFactor;
+    }
+
+    public List<Double> getTypesAsDoubles() {
+        List<Double> typesAsDoubles = new ArrayList<>();
+        for (TerrainMeshVertex.Type type : types) {
+            typesAsDoubles.add((double) type.getIntType());
+        }
+        return typesAsDoubles;
+    }
+
     @Override
     public String toString() {
         return "VertexList{" +
@@ -240,6 +241,8 @@ public class VertexList {
                 ", barycentric=" + barycentric +
                 ", textureCoordinates=" + textureCoordinates +
                 ", edges=" + edges +
+                ", slopeFactor=" + slopeFactor +
+                ", types=" + types +
                 '}';
     }
 }

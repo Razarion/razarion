@@ -21,8 +21,6 @@ public class PlateauConfigEntity {
     @GeneratedValue
     private Long id;
     private int top;
-    private double slopeTopThreshold;
-    private double slopeTopThresholdFading;
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
@@ -34,22 +32,6 @@ public class PlateauConfigEntity {
 
     public void setTop(int top) {
         this.top = top;
-    }
-
-    public double getSlopeTopThreshold() {
-        return slopeTopThreshold;
-    }
-
-    public void setSlopeTopThreshold(double slopeTopThreshold) {
-        this.slopeTopThreshold = slopeTopThreshold;
-    }
-
-    public double getSlopeTopThresholdFading() {
-        return slopeTopThresholdFading;
-    }
-
-    public void setSlopeTopThresholdFading(double slopeTopThresholdFading) {
-        this.slopeTopThresholdFading = slopeTopThresholdFading;
     }
 
     public double getBumpMapDepth() {

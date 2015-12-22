@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainSurface {
-    public static final int MESH_EDGE_SIZE = 1024;
+    public static final int MESH_SIZE = 1024;
     public static final int MESH_NODE_EDGE_LENGTH = 8;
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
@@ -44,16 +44,21 @@ public class TerrainSurface {
     private ImageDescriptor groundBmImageDescriptor = ImageDescriptor.BUMP_MAP_GROUND_1;
     private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
     private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_04;
+    private ImageDescriptor beachImageDescriptor = ImageDescriptor.BEACH_01;
+    private ImageDescriptor beachPumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_05;
     private double edgeDistance = 0.5;
     private double groundBumpMap = 2;
     private Plateau plateau;
+    private Beach beach;
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private boolean plateauConfigRead = false;
     private boolean meshRead = false;
+    private double beachBumpMap = 0.5;
 
     @PostConstruct
     public void init() {
         plateau = new Plateau(mesh);
+        beach = new Beach(mesh);
     }
 
     @AfterInitialization
@@ -147,27 +152,38 @@ public class TerrainSurface {
     }
 
     public void sculpt() {
-        mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_EDGE_SIZE, MESH_EDGE_SIZE, 0);
+        mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
 
-        final FractalField fractalField = FractalField.createSaveFractalField(MESH_EDGE_SIZE, MESH_EDGE_SIZE, 2.0, -0.5, 0.9);
+        final FractalField fractalField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 2.0, -0.5, 0.9);
         mesh.iterate(new Mesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
                 double value = fractalField.get(index);
                 mesh.getVertexDataSafe(index).setEdge(value);
+                mesh.getVertexDataSafe(index).setType(TerrainMeshVertex.Type.GROUND);
+                mesh.getVertexDataSafe(index).setSlopeFactor(0);
             }
 
         });
 
-
         plateau.sculpt();
+        beach.sculpt();
         mesh.generateAllTriangle();
         mesh.adjustNorm();
 
     }
 
+    public boolean isFree(double absoluteX, double absoluteY) {
+        Index index = new Index((int)(absoluteX / MESH_NODE_EDGE_LENGTH), (int)(absoluteY/ MESH_NODE_EDGE_LENGTH));
+        return !plateau.isInside(index) && !beach.isInside(index);
+    }
+
     public VertexList getVertexList() {
         return mesh.provideVertexList(groundImageDescriptor);
+    }
+
+    public VertexList getWaterVertexList() {
+        return beach.provideWaterVertexList();
     }
 
     public ImageDescriptor getGroundImageDescriptor() {
@@ -212,5 +228,29 @@ public class TerrainSurface {
 
     public Plateau getPlateau() {
         return plateau;
+    }
+
+    public ImageDescriptor getBeachImageDescriptor() {
+        return beachImageDescriptor;
+    }
+
+    public void setBeachImageDescriptor(ImageDescriptor beachImageDescriptor) {
+        this.beachImageDescriptor = beachImageDescriptor;
+    }
+
+    public ImageDescriptor getBeachPumpMapImageDescriptor() {
+        return beachPumpMapImageDescriptor;
+    }
+
+    public void setBeachPumpMapImageDescriptor(ImageDescriptor beachPumpMapImageDescriptor) {
+        this.beachPumpMapImageDescriptor = beachPumpMapImageDescriptor;
+    }
+
+    public double getBeachBumpMap() {
+        return beachBumpMap;
+    }
+
+    public void setBeachBumpMap(double beachBumpMap) {
+        this.beachBumpMap = beachBumpMap;
     }
 }

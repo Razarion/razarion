@@ -9,26 +9,28 @@ varying float vEdgePosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
 varying float vSlopeFactor;
+varying float vType;
 
 uniform sampler2D uSamplerCover;
 uniform sampler2D uSamplerBlender;
 uniform sampler2D uSamplerGround;
 uniform sampler2D uSamplerGroundBm;
 uniform sampler2D uSamplerSlope;
-uniform sampler2D uSamplerShadow;
 uniform sampler2D uSamplerSlopePumpMap;
+uniform sampler2D uSamplerBeach;
+uniform sampler2D uSamplerBeachPumpMap;
+uniform sampler2D uSamplerShadow;
 uniform float uEdgeDistance;
 uniform float uShadowAlpha;
 uniform vec3 uLightingDirection;
 uniform float diffuseWeightFactor;
 uniform vec3 uAmbientColor;
 uniform highp mat4 uNMatrix;
-uniform float bumpMapDepthSlope;
 uniform float bumpMapDepthGround;
+uniform float bumpMapDepthSlope;
+uniform float bumpMapDepthBeach;
 uniform float uSlopeSpecularHardness;
 uniform float uSlopeSpecularIntensity;
-uniform float slopeTopThreshold;
-uniform float slopeTopThresholdFading;
 
 const vec3 LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 const float PLATEAU_GROUND = 0.0;
@@ -63,7 +65,7 @@ vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale) {
       return normalize(normal);
 }
 
-float setupSpecularLightFactor(vec3 correctedLigtDirection, vec3 correctedNorm) {
+float setupSpecularLight(vec3 correctedLigtDirection, vec3 correctedNorm) {
      vec3 eyeDirection = normalize(-vVertexPosition.xyz);
      vec3 reflectionDirection = normalize(reflect(-correctedLigtDirection, correctedNorm));
      return pow(max(dot(reflectionDirection, eyeDirection), 0.0), uSlopeSpecularHardness) * uSlopeSpecularIntensity;
@@ -86,71 +88,46 @@ float calculateShadowFactor() {
     }
 }
 
-float calculateGroundFactor() {
-  return vSlopeFactor;
-//    if(vVertexPositionCoord.z == PLATEAU_TOP) {
-//       return 0.0;
-//    } else if(vVertexPositionCoord.z == PLATEAU_GROUND) {
-//       return 0.0;
-//    } else {
-//       if(vVertexPositionCoord.z > (PLATEAU_TOP - PLATEAU_GROUND_CHANGE)) {
-//           return (PLATEAU_TOP - vVertexPositionCoord.z) / PLATEAU_GROUND_CHANGE;
-//       } else if(vVertexPositionCoord.z < PLATEAU_GROUND_CHANGE) {
-//           return vVertexPositionCoord.z / PLATEAU_GROUND_CHANGE;
-//       }  else {
-//           return 1.0;
-//       }
-//    }
+vec4 renderGround(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm) {
+    vec4 ambient = vec4(uAmbientColor, 1.0) * splatteredColorGround;
+    vec4 diffuse = vec4(max(dot(normalize(groundNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * splatteredColorGround.rgb, 1.0);
+    return ambient + diffuse;
+}
+
+vec4 renderSlope(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm, sampler2D sampler, sampler2D samplerBumpMap, float bumpMapDepth) {
+    // Norm
+    vec3 correctedNorm = mix(groundNorm, bumpMapNorm(samplerBumpMap, bumpMapDepth, 128.0), vSlopeFactor);
+    // Color
+    vec4 colorSlope = triPlanarTextureMapping(sampler, 512.0, vec2(0,0));
+    vec4 textureColor = mix(splatteredColorGround, colorSlope, vSlopeFactor);
+    // Light
+    vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
+    vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * textureColor.rgb, 1.0);
+    float specularLight = mix(0.0, setupSpecularLight(correctedLigtDirection, correctedNorm), vSlopeFactor) * shadowFactor;
+    return ambient + diffuseFactor + specularLight;
 }
 
 void main(void) {
     float shadowFactor = calculateShadowFactor();
-
     vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
-
-    vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
-
-    //// remove
-    vec3 correctedZenith = (uNMatrix * vec4(vec3(0, 0, 1), 1.0)).xyz;
-    float slope = dot(vVertexNormal.xyz, correctedZenith);
-    float _slopeFactor = smoothstep(slopeTopThreshold + slopeTopThresholdFading, slopeTopThreshold - slopeTopThresholdFading, slope);
-    //// remove ends
-
-    float slopeFactor = calculateGroundFactor();
-
-    vec3 correctedNorm = mix(bumpMapNorm(uSamplerGroundBm, bumpMapDepthGround, 512.0), bumpMapNorm(uSamplerSlopePumpMap, bumpMapDepthSlope, 128.0), slopeFactor);
-
-    // float blender = texture2D(uSamplerBlender, vVertexPositionCoord.xy / 512.0).r;
+    // Terrain splatting
     float blender = triPlanarTextureMapping(uSamplerBlender, 512.0, vec2(0,0)).r;
     float blendFactor = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, blender);
-    // vec4 colorCover = texture2D(uSamplerCover, vVertexPositionCoord.xy / 512.0);
     vec4 colorCover = triPlanarTextureMapping(uSamplerCover, 512.0, vec2(0,0));
-    // vec4 colorGround = texture2D(uSamplerGround, vVertexPositionCoord.xy / 512.0);
     vec4 colorGround = triPlanarTextureMapping(uSamplerGround, 512.0, vec2(0,0));
     vec4 splatteredColorGround = mix(colorCover, colorGround, blendFactor);
+    // Ground norm
+    vec3 norm = bumpMapNorm(uSamplerGroundBm, bumpMapDepthGround, 512.0);
+    vec3 groundNorm = mix(vVertexNormal, norm, blendFactor);
 
-    vec3 correctedNorm2;
-    if(slopeFactor == 0.0) {
-        correctedNorm2 = mix(vVertexNormal, correctedNorm, blendFactor);
+    if(vType >= 0.5 && vType <= 1.5) {
+        // PLATEAU(1)
+        gl_FragColor = renderSlope(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm, uSamplerSlope, uSamplerSlopePumpMap, bumpMapDepthSlope);
+    } else if(vType >= 1.5) {
+        // BEACH(2)
+        gl_FragColor = renderSlope(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm, uSamplerBeach, uSamplerBeachPumpMap, bumpMapDepthBeach);
     } else {
-        correctedNorm2 = correctedNorm;
+        // GROUND(0)
+        gl_FragColor = renderGround(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);
     }
-
-    vec4 textureColor = mix(splatteredColorGround, colorSlope, slopeFactor);
-    float specularLightFactor = mix(0.0, setupSpecularLightFactor(correctedLigtDirection, correctedNorm2), slopeFactor);
-
-    // Diffuse light
-    vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm2), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * LIGHT_COLOR , 1.0);
-    vec4 ambientDiffuseFactor = diffuseFactor + vec4(uAmbientColor, 1.0);
-    gl_FragColor = textureColor * ambientDiffuseFactor + vec4(specularLightFactor * shadowFactor * LIGHT_COLOR, 1.0);
-
-    // gl_FragColor = vec4(coverColorFactor, coverColorFactor, coverColorFactor, 1.0);
-
-
-    // float heightFactor = vVertexPositionCoord.z / 100.0;
-    // gl_FragColor = vec4(heightFactor, heightFactor, heightFactor, 1.0);
-
-     // float x = calculateGroundFactor();
-     // gl_FragColor = vec4(x, x, x, 1.0);// TODO 2
-     // gl_FragColor = vec4(vSlopeFactor, vSlopeFactor, vSlopeFactor, 1.0);// TODO 2
 }
