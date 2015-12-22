@@ -47,10 +47,11 @@ public class Beach {
                 if (isInside(index)) {
                     vertexData.setVertex(new Vertex(vertex.getX(), vertex.getY(), BOTTOM));
                     vertexData.setSlopeFactor(0);
+                    vertexData.setType(TerrainMeshVertex.Type.UNDER_WATER);
                 } else {
                     double distance = INDEX_RECT.getNearestPointInclusive(new DecimalPosition(index)).getDistance(new DecimalPosition(index));
                     if (distance < slopeSize + 1) {
-                        mesh.getVertexDataSafe(index).addZValue(MathHelper2.interpolate(distance, slopeForm));
+                        vertexData.addZValue(MathHelper2.interpolate(distance, slopeForm));
                         vertexData.setSlopeFactor(1.0);
                         vertexData.setType(TerrainMeshVertex.Type.BEACH);
                     }

@@ -23,7 +23,8 @@ public class TerrainMeshVertex {
     public enum Type {
         GROUND(0),
         PLATEAU(1),
-        BEACH(2);
+        BEACH(2),
+        UNDER_WATER(3);
 
         private int intType;
 

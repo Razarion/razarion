@@ -360,11 +360,13 @@ public class Mesh {
         return triangle;
     }
 
-    private void setType(Triangle triangle, TerrainMeshVertex.Type type1, TerrainMeshVertex.Type type2, TerrainMeshVertex.Type type3) {
+    private void setType(Triangle triangle, TerrainMeshVertex.Type typeA, TerrainMeshVertex.Type typeB, TerrainMeshVertex.Type typeC) {
         TerrainMeshVertex.Type type = TerrainMeshVertex.Type.GROUND;
-        if (type1 == TerrainMeshVertex.Type.PLATEAU || type2 == TerrainMeshVertex.Type.PLATEAU || type3 == TerrainMeshVertex.Type.PLATEAU) {
+        if (typeA == TerrainMeshVertex.Type.UNDER_WATER || typeB == TerrainMeshVertex.Type.UNDER_WATER || typeC == TerrainMeshVertex.Type.UNDER_WATER) {
+            type = TerrainMeshVertex.Type.UNDER_WATER;
+        } else if (typeA == TerrainMeshVertex.Type.PLATEAU || typeB == TerrainMeshVertex.Type.PLATEAU || typeC == TerrainMeshVertex.Type.PLATEAU) {
             type = TerrainMeshVertex.Type.PLATEAU;
-        } else if (type1 == TerrainMeshVertex.Type.BEACH || type2 == TerrainMeshVertex.Type.BEACH || type3 == TerrainMeshVertex.Type.BEACH) {
+        } else if (typeA == TerrainMeshVertex.Type.BEACH || typeB == TerrainMeshVertex.Type.BEACH || typeC == TerrainMeshVertex.Type.BEACH) {
             type = TerrainMeshVertex.Type.BEACH;
         }
         triangle.setTypeA(type);

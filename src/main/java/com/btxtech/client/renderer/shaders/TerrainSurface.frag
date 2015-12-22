@@ -123,9 +123,12 @@ void main(void) {
     if(vType >= 0.5 && vType <= 1.5) {
         // PLATEAU(1)
         gl_FragColor = renderSlope(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm, uSamplerSlope, uSamplerSlopePumpMap, bumpMapDepthSlope);
-    } else if(vType >= 1.5) {
+    } else if(vType >= 1.5 && vType <= 2.5) {
         // BEACH(2)
         gl_FragColor = renderSlope(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm, uSamplerBeach, uSamplerBeachPumpMap, bumpMapDepthBeach);
+    } else if(vType >= 2.5) {
+        // UNDER_WATER(3)
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
     } else {
         // GROUND(0)
         gl_FragColor = renderGround(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);

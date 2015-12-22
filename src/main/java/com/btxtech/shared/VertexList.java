@@ -17,15 +17,16 @@ import java.util.List;
 @Portable
 public class VertexList {
     private String name;
-    List<Vertex> vertices = new ArrayList<>();
-    List<Vertex> storedVertices;
-    List<Vertex> normVertices = new ArrayList<>();
-    List<Vertex> tangentVertices = new ArrayList<>();
-    List<Vertex> barycentric = new ArrayList<>();
-    List<TextureCoordinate> textureCoordinates = new ArrayList<>();
-    List<Double> edges = new ArrayList<>();
-    List<Double> slopeFactor = new ArrayList<>();
-    List<TerrainMeshVertex.Type> types = new ArrayList<>();
+    private List<Vertex> vertices = new ArrayList<>();
+    private List<Vertex> storedVertices;
+    private List<Vertex> normVertices = new ArrayList<>();
+    private List<Vertex> tangentVertices = new ArrayList<>();
+    private List<Vertex> barycentric = new ArrayList<>();
+    private List<TextureCoordinate> textureCoordinates = new ArrayList<>();
+    private List<Double> edges = new ArrayList<>();
+    private List<Double> slopeFactor = new ArrayList<>();
+    private List<TerrainMeshVertex.Type> types = new ArrayList<>();
+    // private static final Logger LOGGER = Logger.getLogger(VertexList.class.getName());
 
     /**
      * Used by Errai
