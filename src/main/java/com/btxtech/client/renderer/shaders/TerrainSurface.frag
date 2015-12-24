@@ -31,6 +31,8 @@ uniform float bumpMapDepthSlope;
 uniform float bumpMapDepthBeach;
 uniform float uSlopeSpecularHardness;
 uniform float uSlopeSpecularIntensity;
+uniform float uWaterLevel;
+uniform float uWaterGround;
 
 const vec3 LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 const float PLATEAU_GROUND = 0.0;
@@ -94,17 +96,39 @@ vec4 renderGround(vec3 correctedLigtDirection, float shadowFactor, vec4 splatter
     return ambient + diffuse;
 }
 
-vec4 renderSlope(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm, sampler2D sampler, sampler2D samplerBumpMap, float bumpMapDepth) {
+vec4 renderSlope(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm) {
     // Norm
-    vec3 correctedNorm = mix(groundNorm, bumpMapNorm(samplerBumpMap, bumpMapDepth, 128.0), vSlopeFactor);
+    vec3 correctedNorm = mix(groundNorm, bumpMapNorm(uSamplerSlopePumpMap, bumpMapDepthSlope, 128.0), vSlopeFactor);
     // Color
-    vec4 colorSlope = triPlanarTextureMapping(sampler, 512.0, vec2(0,0));
+    vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
     vec4 textureColor = mix(splatteredColorGround, colorSlope, vSlopeFactor);
     // Light
     vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
     vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * textureColor.rgb, 1.0);
     float specularLight = mix(0.0, setupSpecularLight(correctedLigtDirection, correctedNorm), vSlopeFactor) * shadowFactor;
     return ambient + diffuseFactor + specularLight;
+}
+
+vec4 renderBeach(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm) {
+    float z = vVertexPositionCoord.z;
+    if(z > uWaterLevel) {
+        // Over water level render beach
+        // Norm
+        vec3 correctedNorm = mix(groundNorm, bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0), vSlopeFactor);
+        // Color
+        vec4 colorSlope = triPlanarTextureMapping(uSamplerBeach, 512.0, vec2(0,0));
+        vec4 textureColor = mix(splatteredColorGround, colorSlope, vSlopeFactor);
+        // Light
+        vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
+        vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * textureColor.rgb, 1.0);
+        float specularLight = mix(0.0, setupSpecularLight(correctedLigtDirection, correctedNorm), vSlopeFactor) * shadowFactor;
+        return (ambient + diffuseFactor + specularLight);
+    } else {
+        float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
+        // vec3 underWaterColor = vec3(0.87, 0.81, 0.69);
+        vec3 underWaterColor = vec3(0.74, 0.81, 0.69);
+        return vec4(underWaterColor * underWaterFactor, 1.0);
+    }
 }
 
 void main(void) {
@@ -122,13 +146,13 @@ void main(void) {
 
     if(vType >= 0.5 && vType <= 1.5) {
         // PLATEAU(1)
-        gl_FragColor = renderSlope(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm, uSamplerSlope, uSamplerSlopePumpMap, bumpMapDepthSlope);
+        gl_FragColor = renderSlope(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);
     } else if(vType >= 1.5 && vType <= 2.5) {
         // BEACH(2)
-        gl_FragColor = renderSlope(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm, uSamplerBeach, uSamplerBeachPumpMap, bumpMapDepthBeach);
+        gl_FragColor = renderBeach(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);
     } else if(vType >= 2.5) {
         // UNDER_WATER(3)
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        discard;
     } else {
         // GROUND(0)
         gl_FragColor = renderGround(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);

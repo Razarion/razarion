@@ -253,4 +253,8 @@ public class TerrainSurface {
     public void setBeachBumpMap(double beachBumpMap) {
         this.beachBumpMap = beachBumpMap;
     }
+
+    public Beach getBeach() {
+        return beach;
+    }
 }

@@ -52,6 +52,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String UNIFORM_SHADOW_ALPHA = "uShadowAlpha";
     private static final String UNIFORM_SLOPE_SPECULAR_HARDNESS = "uSlopeSpecularHardness";
     private static final String UNIFORM_SLOPE_SPECULAR_INTENSITY = "uSlopeSpecularIntensity";
+    private static final String UNIFORM_WATER_LEVEL = "uWaterLevel";
+    private static final String UNIFORM_WATER_GROUND = "uWaterGround";
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute normals;
     private VertexShaderAttribute tangents;
@@ -134,6 +136,9 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         uniform1f(UNIFORM_BUMP_MAP_DEPTH_BEACH, terrainSurface.getBeachBumpMap());
         uniform1f(UNIFORM_SLOPE_SPECULAR_HARDNESS, terrainSurface.getPlateau().getPlateauConfigEntity().getSpecularHardness());
         uniform1f(UNIFORM_SLOPE_SPECULAR_INTENSITY, terrainSurface.getPlateau().getPlateauConfigEntity().getSpecularIntensity());
+        uniform1f(UNIFORM_WATER_LEVEL, terrainSurface.getBeach().getWaterLevel());
+        uniform1f(UNIFORM_WATER_GROUND, terrainSurface.getBeach().getWaterGround());
+
 
         // Shadow
         // TODO make simpler
