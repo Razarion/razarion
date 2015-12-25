@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.model.Mesh;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Rectangle;
+import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.MathHelper2;
 import com.btxtech.shared.TerrainMeshVertex;
 import com.btxtech.shared.VertexList;
@@ -120,5 +121,19 @@ public class Beach {
 
     public void setWaterSpecularHardness(double waterSpecularHardness) {
         this.waterSpecularHardness = waterSpecularHardness;
+    }
+
+    public double getWaterAnimation() {
+        return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
+    }
+
+    public double getWaterAnimation2() {
+        return getWaterAnimation(System.currentTimeMillis(), 2000, 500);
+    }
+
+    public double getWaterAnimation(long millis, int durationMs, int offsetMs) {
+        return Math.sin(((millis % durationMs) / (double) durationMs + ((double)offsetMs / (double)durationMs)) * MathHelper.ONE_RADIANT);
+
+        // return Math.sin(((double)millis % (double)durationMs) * (double)durationMs * MathHelper.ONE_RADIANT);
     }
 }

@@ -79,6 +79,8 @@ public class WaterRenderer extends AbstractRenderer {
         uniform3f("uLightingColor", lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity());
         uniform1f("uSlopeSpecularHardness", terrainSurface.getBeach().getWaterSpecularHardness());
         uniform1f("uSlopeSpecularIntensity", terrainSurface.getBeach().getWaterSpecularIntensity());
+        uniform1f("animation", terrainSurface.getBeach().getWaterAnimation());
+        uniform1f("animation2", terrainSurface.getBeach().getWaterAnimation2());
 
         positions.activate();
         norms.activate();
