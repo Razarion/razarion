@@ -12,7 +12,10 @@ import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -24,6 +27,9 @@ public class Beach {
     private static final double WATER_LEVEL = -4.0;
     private final List<Double> SLOP_INDEX = Arrays.asList(-8.0, -7.0, -6.0, -5.0, -4.0, -3.0, -2.0, -1.0, -0.0);
     private Mesh mesh;
+    private double bumpMap = 0.5;
+    private double fractal = 0.5;
+    // Water, should not be in here
     private double waterTransparency = 0.5;
     private double waterBumpMap = 2.0;
     private double waterSpecularIntensity = 0.5;
@@ -42,6 +48,7 @@ public class Beach {
         slopeForm.addAll(SLOP_INDEX);
         slopeForm.add(0.0);
 
+        final Collection<Index> slopeIndexes = new ArrayList<>();
 
         mesh.iterate(new Mesh.VertexVisitor() {
             @Override
@@ -57,10 +64,27 @@ public class Beach {
                         vertexData.addZValue(MathHelper2.interpolate(distance, slopeForm));
                         vertexData.setSlopeFactor(1.0);
                         vertexData.setType(TerrainMeshVertex.Type.BEACH);
+                        slopeIndexes.add(index);
                     }
                 }
             }
         });
+
+
+        FractalField fractalField = FractalField.createSaveFractalField(INDEX_RECT.getWidth() + slopeSize * 2, INDEX_RECT.getHeight() + slopeSize * 2, fractal, -fractal, 1.0);
+        // Calculate fractal
+        Index origin = INDEX_RECT.getStart().sub(slopeSize, slopeSize);
+        Map<Index, Vertex> displacements = new HashMap<>();
+        for (Index slopeIndex : slopeIndexes) {
+            Vertex norm = mesh.getVertexNormSafe(slopeIndex);
+            displacements.put(slopeIndex, norm.multiply(fractalField.get(slopeIndex.sub(origin))));
+        }
+
+        // Apply fractal
+        for (Map.Entry<Index, Vertex> entry : displacements.entrySet()) {
+            mesh.getVertexDataSafe(entry.getKey()).add(entry.getValue());
+        }
+
     }
 
     public boolean isInside(Index index) {
@@ -133,7 +157,21 @@ public class Beach {
 
     public double getWaterAnimation(long millis, int durationMs, int offsetMs) {
         return Math.sin(((millis % durationMs) / (double) durationMs + ((double)offsetMs / (double)durationMs)) * MathHelper.ONE_RADIANT);
+    }
 
-        // return Math.sin(((double)millis % (double)durationMs) * (double)durationMs * MathHelper.ONE_RADIANT);
+    public double getBumpMap() {
+        return bumpMap;
+    }
+
+    public void setBumpMap(double bumpMap) {
+        this.bumpMap = bumpMap;
+    }
+
+    public double getFractal() {
+        return fractal;
+    }
+
+    public void setFractal(double fractal) {
+        this.fractal = fractal;
     }
 }

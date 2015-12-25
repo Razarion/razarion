@@ -1,5 +1,6 @@
 package com.btxtech.client.menu;
 
+import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -22,11 +23,16 @@ public class TerrainMenu extends Composite {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
+    private RenderService renderService;
+    @Inject
     @DataField("surfaceSlider")
     private DoubleBox surfaceSlider;
     @Inject
     @DataField("groundBumpMap")
     private DoubleBox groundBumpMap;
+    @Inject
+    @DataField
+    private Button sculptButton;
     @Inject
     @DataField
     private Button saveButton;
@@ -48,6 +54,12 @@ public class TerrainMenu extends Composite {
     @EventHandler("groundBumpMap")
     public void groundBumpMapChanged(ChangeEvent e) {
         terrainSurface.setGroundBumpMap(groundBumpMap.getValue());
+    }
+
+    @EventHandler("sculptButton")
+    private void sculptButtonClick(ClickEvent event) {
+        terrainSurface.sculpt();
+        renderService.fillBuffers();
     }
 
     @EventHandler("saveButton")

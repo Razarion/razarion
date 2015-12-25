@@ -53,7 +53,6 @@ public class TerrainSurface {
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private boolean plateauConfigRead = false;
     private boolean meshRead = false;
-    private double beachBumpMap = 0.5;
 
     @PostConstruct
     public void init() {
@@ -244,14 +243,6 @@ public class TerrainSurface {
 
     public void setBeachPumpMapImageDescriptor(ImageDescriptor beachPumpMapImageDescriptor) {
         this.beachPumpMapImageDescriptor = beachPumpMapImageDescriptor;
-    }
-
-    public double getBeachBumpMap() {
-        return beachBumpMap;
-    }
-
-    public void setBeachBumpMap(double beachBumpMap) {
-        this.beachBumpMap = beachBumpMap;
     }
 
     public Beach getBeach() {

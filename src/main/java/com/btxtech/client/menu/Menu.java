@@ -23,6 +23,9 @@ public class Menu extends Composite {
     @DataField
     private Button plateauEditor;
     @Inject
+    @DataField("menu-beach")
+    private BeachMenu beachMenu;
+    @Inject
     @DataField("menu-water")
     private WaterMenu waterMenu;
     @Inject

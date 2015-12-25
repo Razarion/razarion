@@ -131,7 +131,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         uniform1f(UNIFORM_EDGE_DISTANCE, terrainSurface.getEdgeDistance());
         uniform1f(UNIFORM_BUMP_MAP_DEPTH_GROUND, terrainSurface.getGroundBumpMap());
         uniform1f(UNIFORM_BUMP_MAP_DEPTH_SLOPE, terrainSurface.getPlateau().getPlateauConfigEntity().getBumpMapDepth());
-        uniform1f(UNIFORM_BUMP_MAP_DEPTH_BEACH, terrainSurface.getBeachBumpMap());
+        uniform1f(UNIFORM_BUMP_MAP_DEPTH_BEACH, terrainSurface.getBeach().getBumpMap());
         uniform1f(UNIFORM_SLOPE_SPECULAR_HARDNESS, terrainSurface.getPlateau().getPlateauConfigEntity().getSpecularHardness());
         uniform1f(UNIFORM_SLOPE_SPECULAR_INTENSITY, terrainSurface.getPlateau().getPlateauConfigEntity().getSpecularIntensity());
         uniform1f(UNIFORM_WATER_LEVEL, terrainSurface.getBeach().getWaterLevel());
