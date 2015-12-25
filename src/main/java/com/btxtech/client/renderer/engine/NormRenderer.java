@@ -2,7 +2,6 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -37,7 +36,6 @@ public class NormRenderer extends AbstractRenderer {
     @Inject
     private Camera camera;
     @Inject
-    @Normal
     private ProjectionTransformation projectionTransformation;
     // private Logger logger = Logger.getLogger(NormRenderer.class.getName());
     private int elementCount;

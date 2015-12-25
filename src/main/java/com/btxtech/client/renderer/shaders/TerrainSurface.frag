@@ -35,6 +35,7 @@ uniform float uWaterLevel;
 uniform float uWaterGround;
 
 const vec3 LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
+const vec3 UNDER_WATER_COLOR = vec3(0.74, 0.81, 0.69);
 const float PLATEAU_GROUND = 0.0;
 const float PLATEAU_TOP = 100.0;
 const float PLATEAU_GROUND_CHANGE = 20.0;
@@ -125,9 +126,10 @@ vec4 renderBeach(vec3 correctedLigtDirection, float shadowFactor, vec4 splattere
         return (ambient + diffuseFactor + specularLight);
     } else {
         float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
-        // vec3 underWaterColor = vec3(0.87, 0.81, 0.69);
-        vec3 underWaterColor = vec3(0.74, 0.81, 0.69);
-        return vec4(underWaterColor * underWaterFactor, 1.0);
+        vec3 beachNorm = bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0);
+        vec3 ambient = uAmbientColor * UNDER_WATER_COLOR * underWaterFactor;
+        vec3 diffuse = vec3(max(dot(normalize(beachNorm), normalize(correctedLigtDirection)), 0.0) * underWaterFactor * shadowFactor * diffuseWeightFactor * UNDER_WATER_COLOR);
+        return vec4(vec3(ambient + diffuse), 1.0);
     }
 }
 

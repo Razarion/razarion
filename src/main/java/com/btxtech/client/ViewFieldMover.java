@@ -1,7 +1,6 @@
 package com.btxtech.client;
 
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
@@ -26,7 +25,6 @@ public class ViewFieldMover {
     @Inject
     private Camera camera;
     @Inject
-    @Normal
     private ProjectionTransformation projectionTransformation;
     private Index startMoveXY;
     private Integer startMoveZ;

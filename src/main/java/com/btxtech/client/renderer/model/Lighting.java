@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer.model;
 
 import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -18,7 +17,6 @@ public class Lighting {
     @Inject
     private Camera camera;
     @Inject
-    @Normal
     private ProjectionTransformation normalProjectionTransformation;
     private double zNear = 10;
     private double highestPoint = 120;
@@ -169,7 +167,7 @@ public class Lighting {
     }
 
     public Matrix4 createProjectionTransformation() {
-        return AbstractProjectionTransformation.makeBalancedOrthographicFrustum(calculateRight(), calculateTop(), zNear, calculateZFar());
+        return ProjectionTransformation.makeBalancedOrthographicFrustum(calculateRight(), calculateTop(), zNear, calculateZFar());
     }
 
 

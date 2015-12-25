@@ -152,7 +152,7 @@ public class TerrainSurface {
     }
 
     public void sculpt() {
-        mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
+        mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
 
         final FractalField fractalField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 2.0, -0.5, 0.9);
         mesh.iterate(new Mesh.VertexVisitor() {
@@ -174,12 +174,12 @@ public class TerrainSurface {
     }
 
     public boolean isFree(double absoluteX, double absoluteY) {
-        Index index = new Index((int)(absoluteX / MESH_NODE_EDGE_LENGTH), (int)(absoluteY/ MESH_NODE_EDGE_LENGTH));
+        Index index = new Index((int) (absoluteX / MESH_NODE_EDGE_LENGTH), (int) (absoluteY / MESH_NODE_EDGE_LENGTH));
         return !plateau.isInside(index) && !beach.isInside(index);
     }
 
     public VertexList getVertexList() {
-        return mesh.provideVertexList(groundImageDescriptor);
+        return mesh.provideVertexList();
     }
 
     public VertexList getWaterVertexList() {

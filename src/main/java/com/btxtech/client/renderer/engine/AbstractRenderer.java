@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.game.jsre.common.ImageLoader;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.TextResource;
 import elemental.html.WebGLRenderingContext;
@@ -79,9 +80,13 @@ public abstract class AbstractRenderer implements Renderer {
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
     }
 
+    protected void uniform3f(String uniformName, Vertex vertex) {
+        uniform3f(uniformName, vertex.getX(), vertex.getY(), vertex.getZ());
+    }
+
     protected void uniform1f(String uniformName, double value) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
-        gameCanvas.getCtx3d().uniform1f(uniformLocation, (float)value);
+        gameCanvas.getCtx3d().uniform1f(uniformLocation, (float) value);
         WebGlUtil.checkLastWebGlError("uniform1f", gameCanvas.getCtx3d());
     }
 

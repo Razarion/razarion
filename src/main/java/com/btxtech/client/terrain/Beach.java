@@ -7,7 +7,6 @@ import com.btxtech.game.jsre.client.common.Rectangle;
 import com.btxtech.shared.MathHelper2;
 import com.btxtech.shared.TerrainMeshVertex;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
@@ -24,6 +23,10 @@ public class Beach {
     private static final double WATER_LEVEL = -4.0;
     private final List<Double> SLOP_INDEX = Arrays.asList(-8.0, -7.0, -6.0, -5.0, -4.0, -3.0, -2.0, -1.0, -0.0);
     private Mesh mesh;
+    private double waterTransparency = 0.5;
+    private double waterBumpMap = 2.0;
+    private double waterSpecularIntensity = 0.5;
+    private double waterSpecularHardness = 2.0;
     // private Logger logger = Logger.getLogger(Beach.class.getName());
 
     public Beach(Mesh mesh) {
@@ -64,18 +67,19 @@ public class Beach {
     }
 
     public VertexList provideWaterVertexList() {
-        Index waterStart = INDEX_RECT.getStart().sub(10, 10).scale(TerrainSurface.MESH_NODE_EDGE_LENGTH);
-        Index waterEnd = INDEX_RECT.getEnd().add(10, 10).scale(TerrainSurface.MESH_NODE_EDGE_LENGTH);
-        Vertex bottomLeft = new Vertex(waterStart.getX(), waterStart.getY(), WATER_LEVEL);
-        Vertex bottomRight = new Vertex(waterEnd.getX(), waterStart.getY(), WATER_LEVEL);
-        Vertex topLeft = new Vertex(waterStart.getX(), waterEnd.getY(), WATER_LEVEL);
-        Vertex topRight = new Vertex(waterEnd.getX(), waterEnd.getY(), WATER_LEVEL);
+        int waterX = (INDEX_RECT.getStart().getX() - SLOP_INDEX.size() - 1) * TerrainSurface.MESH_NODE_EDGE_LENGTH;
+        int waterY = (INDEX_RECT.getStart().getY() - SLOP_INDEX.size() - 1) * TerrainSurface.MESH_NODE_EDGE_LENGTH;
 
-        VertexList vertexList = new VertexList();
-        vertexList.add(new Triangle(bottomLeft, bottomRight, topLeft));
-        vertexList.add(new Triangle(bottomRight, topRight, topLeft));
+        int waterXSize = (INDEX_RECT.getWidth() + 2 * SLOP_INDEX.size() + 2) * TerrainSurface.MESH_NODE_EDGE_LENGTH;
+        int waterYSize = (INDEX_RECT.getHeight() + 2 * SLOP_INDEX.size() + 2) * TerrainSurface.MESH_NODE_EDGE_LENGTH;
 
-        return vertexList;
+        Mesh waterMesh = new Mesh();
+        waterMesh.reset(waterXSize, waterYSize, waterXSize, waterYSize, WATER_LEVEL);
+        waterMesh.shift(new Index(waterX, waterY));
+        waterMesh.generateAllTriangle();
+        waterMesh.adjustNorm();
+
+        return waterMesh.provideVertexList();
     }
 
     public double getWaterLevel() {
@@ -84,5 +88,37 @@ public class Beach {
 
     public double getWaterGround() {
         return BOTTOM;
+    }
+
+    public double getWaterTransparency() {
+        return waterTransparency;
+    }
+
+    public void setWaterTransparency(double waterTransparency) {
+        this.waterTransparency = waterTransparency;
+    }
+
+    public double getWaterBumpMap() {
+        return waterBumpMap;
+    }
+
+    public void setWaterBumpMap(double waterBumpMap) {
+        this.waterBumpMap = waterBumpMap;
+    }
+
+    public double getWaterSpecularIntensity() {
+        return waterSpecularIntensity;
+    }
+
+    public void setWaterSpecularIntensity(double waterSpecularIntensity) {
+        this.waterSpecularIntensity = waterSpecularIntensity;
+    }
+
+    public double getWaterSpecularHardness() {
+        return waterSpecularHardness;
+    }
+
+    public void setWaterSpecularHardness(double waterSpecularHardness) {
+        this.waterSpecularHardness = waterSpecularHardness;
     }
 }

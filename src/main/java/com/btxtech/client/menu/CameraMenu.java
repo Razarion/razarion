@@ -1,7 +1,6 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -25,7 +24,6 @@ public class CameraMenu extends Composite {
     @Inject
     private Camera camera;
     @Inject
-    @Normal
     private ProjectionTransformation normalProjectionTransformation;
     @Inject
     @DataField("topButton")

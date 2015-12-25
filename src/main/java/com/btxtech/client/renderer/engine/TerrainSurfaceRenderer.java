@@ -3,7 +3,6 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
-import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -76,7 +75,6 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     @Inject
     private Lighting lighting;
     @Inject
-    @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;

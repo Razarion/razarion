@@ -58,4 +58,10 @@ public interface Shaders extends ClientBundle {
 
     @Source("Water.frag")
     TextResource waterFragmentShader();
+
+    @Source("WaterWire.vert")
+    TextResource waterWireVertexShader();
+
+    @Source("WaterWire.frag")
+    TextResource waterWireFragmentShader();
 }

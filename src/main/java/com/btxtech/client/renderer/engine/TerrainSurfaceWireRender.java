@@ -2,7 +2,6 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Normal;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
@@ -39,7 +38,6 @@ public class TerrainSurfaceWireRender extends AbstractRenderer {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
-    @Normal
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;

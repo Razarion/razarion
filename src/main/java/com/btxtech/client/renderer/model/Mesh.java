@@ -20,6 +20,7 @@ public class Mesh {
     private int maxX;
     private int maxY;
     private Map<Index, VertexData> grid = new HashMap<>();
+
     // private Logger logger = Logger.getLogger(Math.class.getName());
 
     public class VertexData {
@@ -111,17 +112,25 @@ public class Mesh {
         void onVisit(Index bottomLeftIndex, Vertex bottomLeftVertex, Triangle triangle1, Triangle triangle2);
     }
 
-    public void reset(int edgeLength, int xSize, int ySize, int z) {
+    public void reset(int edgeLengthX, int edgeLengthY, int xSize, int ySize, double z) {
         grid.clear();
-        int xCount = xSize / edgeLength + 1;
-        int yCount = ySize / edgeLength + 1;
+        int xCount = xSize / edgeLengthX + 1;
+        int yCount = ySize / edgeLengthY + 1;
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount; y++) {
-                createVertexData(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, z));
+                createVertexData(new Index(x, y), new Vertex(x * edgeLengthX, y * edgeLengthY, z));
             }
         }
     }
 
+    public void shift(final Index bottomLeftXY) {
+        iterate(new VertexVisitor() {
+            @Override
+            public void onVisit(Index index, Vertex vertex) {
+                getVertexData(index).setVertex(new Vertex(vertex.getX() + bottomLeftXY.getX(), vertex.getY() + bottomLeftXY.getY(), vertex.getZ()));
+            }
+        });
+    }
 
     public void fill(Collection<TerrainMeshVertex> terrainMeshVertexes) {
         grid.clear();
@@ -440,7 +449,7 @@ public class Mesh {
         return maxY + 1;
     }
 
-    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+    public VertexList provideVertexList() {
         final VertexList vertexList = new VertexList();
         // final TextureCoordinateCalculator textureCoordinateCalculator = new TextureCoordinateCalculator(new Vertex(1, 0, 0), new Vertex(0, 1, 0));
 

@@ -1,0 +1,62 @@
+package com.btxtech.client.menu;
+
+import com.btxtech.client.terrain.TerrainSurface;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DoubleBox;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+/**
+ * Created by Beat
+ * 06.11.2015.
+ */
+@Templated("WaterMenu.html#menu-water")
+public class WaterMenu extends Composite {
+    @Inject
+    private TerrainSurface terrainSurface;
+    @Inject
+    @DataField
+    private DoubleBox transparency;
+    @Inject
+    @DataField
+    private DoubleBox bumpMap;
+    @Inject
+    @DataField
+    private DoubleBox specularIntensity;
+    @Inject
+    @DataField
+    private DoubleBox specularHardness;
+
+    @PostConstruct
+    public void init() {
+        transparency.setValue(terrainSurface.getBeach().getWaterTransparency());
+        bumpMap.setValue(terrainSurface.getBeach().getWaterBumpMap());
+        specularIntensity.setValue(terrainSurface.getBeach().getWaterSpecularIntensity());
+        specularHardness.setValue(terrainSurface.getBeach().getWaterSpecularHardness());
+    }
+
+    @EventHandler("transparency")
+    public void transparencyChanged(ChangeEvent e) {
+        terrainSurface.getBeach().setWaterTransparency(transparency.getValue());
+    }
+
+    @EventHandler("bumpMap")
+    public void bumpMapChanged(ChangeEvent e) {
+        terrainSurface.getBeach().setWaterBumpMap(bumpMap.getValue());
+    }
+
+    @EventHandler("specularIntensity")
+    public void specularIntensityChanged(ChangeEvent e) {
+        terrainSurface.getBeach().setWaterSpecularIntensity(specularIntensity.getValue());
+    }
+
+    @EventHandler("specularHardness")
+    public void specularHardnessChanged(ChangeEvent e) {
+        terrainSurface.getBeach().setWaterSpecularHardness(specularHardness.getValue());
+    }
+}

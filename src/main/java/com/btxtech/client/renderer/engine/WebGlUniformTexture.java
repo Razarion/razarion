@@ -29,11 +29,11 @@ public class WebGlUniformTexture {
 
     public void activate() {
         WebGLUniformLocation tUniform = abstractRenderer.getUniformLocation(samplerUniformName);
+        ctx3d.uniform1i(tUniform, uniformValue);
+        WebGlUtil.checkLastWebGlError("uniform1i", ctx3d);
         ctx3d.activeTexture(textureId);
         WebGlUtil.checkLastWebGlError("activeTexture", ctx3d);
         ctx3d.bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
         WebGlUtil.checkLastWebGlError("bindTexture", ctx3d);
-        ctx3d.uniform1i(tUniform, uniformValue);
-        WebGlUtil.checkLastWebGlError("uniform1i", ctx3d);
     }
 }

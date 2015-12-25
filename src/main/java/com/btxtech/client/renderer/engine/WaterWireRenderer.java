@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
@@ -20,11 +19,9 @@ import javax.inject.Inject;
  * 04.09.2015.
  */
 @Dependent
-public class WaterRenderer extends AbstractRenderer {
+public class WaterWireRenderer extends AbstractRenderer {
     private VertexShaderAttribute positions;
-    private VertexShaderAttribute norms;
-    private VertexShaderAttribute tangents;
-    private WebGlUniformTexture bumpMap;
+    private VertexShaderAttribute barycentrics;
     private int elementCount;
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
     @Inject
@@ -40,11 +37,9 @@ public class WaterRenderer extends AbstractRenderer {
 
     @PostConstruct
     public void init() {
-        createProgram(Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader());
+        createProgram(Shaders.INSTANCE.waterWireVertexShader(), Shaders.INSTANCE.waterWireFragmentShader());
         positions = createVertexShaderAttribute("aVertexPosition");
-        norms = createVertexShaderAttribute("aVertexNormal");
-        tangents = createVertexShaderAttribute("aVertexTangent");
-        bumpMap = createWebGLBumpMapTexture(ImageDescriptor.BUMP_MAP_01, "uSamplerBm", WebGLRenderingContext.TEXTURE0, 0); // TODO
+        barycentrics = createVertexShaderAttribute("aBarycentric");
     }
 
     @Override
@@ -55,8 +50,7 @@ public class WaterRenderer extends AbstractRenderer {
             return;
         }
         positions.fillBuffer(vertexList.getVertices());
-        norms.fillBuffer(vertexList.getNormVertices());
-        tangents.fillBuffer(vertexList.getTangentVertices());
+        barycentrics.fillBuffer(vertexList.getBarycentric());
 
         elementCount = vertexList.getVerticesCount();
     }
@@ -71,20 +65,9 @@ public class WaterRenderer extends AbstractRenderer {
 
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
-        uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
-        uniform1f("uTransparency", terrainSurface.getBeach().getWaterTransparency());
-        uniform1f("uBumpMapDepth", terrainSurface.getBeach().getWaterBumpMap());
-        uniform3f("uAmbientColor", lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
-        uniform3f("uLightingDirection", lighting.getLightDirection());
-        uniform3f("uLightingColor", lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity());
-        uniform1f("uSlopeSpecularHardness", terrainSurface.getBeach().getWaterSpecularHardness());
-        uniform1f("uSlopeSpecularIntensity", terrainSurface.getBeach().getWaterSpecularIntensity());
 
         positions.activate();
-        norms.activate();
-        tangents.activate();
-
-        bumpMap.activate();
+        barycentrics.activate();
 
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());

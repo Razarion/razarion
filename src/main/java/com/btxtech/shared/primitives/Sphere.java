@@ -1,6 +1,5 @@
 package com.btxtech.shared.primitives;
 
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.Mesh;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
@@ -20,7 +19,7 @@ public class Sphere {
         this.longitudeBands = longitudeBands;
     }
 
-    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+    public VertexList provideVertexList() {
         Mesh mesh = new Mesh();
 
         // Generate nodes
@@ -48,6 +47,6 @@ public class Sphere {
                 triangle2.setupTexture();
             }
         });
-        return mesh.provideVertexList(imageDescriptor);
+        return mesh.provideVertexList();
     }
 }
