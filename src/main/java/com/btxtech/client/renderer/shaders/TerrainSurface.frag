@@ -39,6 +39,7 @@ const vec3 UNDER_WATER_COLOR = vec3(0.74, 0.81, 0.69);
 const float PLATEAU_GROUND = 0.0;
 const float PLATEAU_TOP = 100.0;
 const float PLATEAU_GROUND_CHANGE = 20.0;
+const float BEACH_FADEOUT = 2.0;
 
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
@@ -68,10 +69,14 @@ vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale) {
       return normalize(normal);
 }
 
-float setupSpecularLight(vec3 correctedLigtDirection, vec3 correctedNorm) {
+float setupSpecularLight2(vec3 correctedLigtDirection, vec3 correctedNorm, float intensity, float hardness) {
      vec3 eyeDirection = normalize(-vVertexPosition.xyz);
      vec3 reflectionDirection = normalize(reflect(-correctedLigtDirection, correctedNorm));
-     return pow(max(dot(reflectionDirection, eyeDirection), 0.0), uSlopeSpecularHardness) * uSlopeSpecularIntensity;
+     return pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
+}
+
+float setupSpecularLight(vec3 correctedLigtDirection, vec3 correctedNorm) {
+    return setupSpecularLight2(correctedLigtDirection, correctedNorm, uSlopeSpecularIntensity, uSlopeSpecularHardness);
 }
 
 float calculateShadowFactor() {
@@ -112,19 +117,31 @@ vec4 renderSlope(vec3 correctedLigtDirection, float shadowFactor, vec4 splattere
 
 vec4 renderBeach(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm) {
     float z = vVertexPositionCoord.z;
-    if(z > uWaterLevel) {
+    if(z > uWaterLevel + BEACH_FADEOUT) {
         // Over water level render beach
         // Norm
         vec3 correctedNorm = mix(groundNorm, bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0), vSlopeFactor);
         // Color
-        vec4 colorSlope = triPlanarTextureMapping(uSamplerBeach, 512.0, vec2(0,0));
-        vec4 textureColor = mix(splatteredColorGround, colorSlope, vSlopeFactor);
+        vec4 colorBeach = triPlanarTextureMapping(uSamplerBeach, 512.0, vec2(0,0));
+        vec4 textureColor = mix(splatteredColorGround, colorBeach, vSlopeFactor);
         // Light
         vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
         vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * textureColor.rgb, 1.0);
         float specularLight = mix(0.0, setupSpecularLight(correctedLigtDirection, correctedNorm), vSlopeFactor) * shadowFactor;
         return (ambient + diffuseFactor + specularLight);
-    } else {
+   }  if(z >= uWaterLevel) {
+       float beachFadeoutFactor = 1.0 - ((z - uWaterLevel) / BEACH_FADEOUT);
+       float beachColorFadeoutFactor = mix(1.0, 0.5, beachFadeoutFactor);
+       // float beachFadeoutFactor = 0.5;
+       vec3 beachNorm = bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0);
+       vec4 beachColor = triPlanarTextureMapping(uSamplerBeach, 512.0, vec2(0,0));
+       vec4 ambient = vec4(uAmbientColor, 1.0) * beachColor * beachColorFadeoutFactor;
+       vec4 diffuse = vec4(max(dot(normalize(beachNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * beachColorFadeoutFactor * beachColor.rgb, 1.0);
+       float specularIntensity = setupSpecularLight2(correctedLigtDirection, beachNorm, beachFadeoutFactor, 4.0) * shadowFactor;
+       vec4 specular = vec4(specularIntensity, specularIntensity, specularIntensity, 1.0);
+       return ambient + diffuse + specular;
+       // return vec4(beachFadeoutFactor, beachFadeoutFactor, beachFadeoutFactor, 1.0);
+   } else {
         float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
         vec3 beachNorm = bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0);
         vec3 ambient = uAmbientColor * UNDER_WATER_COLOR * underWaterFactor;
