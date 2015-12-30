@@ -5,6 +5,7 @@ import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
@@ -37,6 +38,10 @@ public class WaterWireRenderer extends AbstractRenderer {
 
     @PostConstruct
     public void init() {
+        Object extension = gameCanvas.getCtx3d().getExtension("OES_standard_derivatives");
+        if (extension == null) {
+            throw new WebGlException("OES_standard_derivatives is no supported");
+        }
         createProgram(Shaders.INSTANCE.waterWireVertexShader(), Shaders.INSTANCE.waterWireFragmentShader());
         positions = createVertexShaderAttribute("aVertexPosition");
         barycentrics = createVertexShaderAttribute("aBarycentric");

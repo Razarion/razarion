@@ -101,6 +101,23 @@ public class ColladaConverterTest {
         }
     }
 
+    @Test
+    public void testViper2_6() throws Exception {
+        List<VertexList> vertexLists = ColladaConverter.read(getClass().getResourceAsStream("/collada/Viper2_6.dae"));
+        // List<VertexList> vertexLists = ColladaConverter.read(getClass().getResourceAsStream("/collada/tree03_test1.dae"));
+
+        for (VertexList vertexList : vertexLists) {
+            LOGGER.severe("VertexList: " + vertexList.getName() + " --------------");
+            LOGGER.severe("Count: " + vertexList.getVertices().size());
+            LOGGER.severe("Triangles: " + vertexList.getVertices().size() / 3);
+            // LOGGER.severe("vertexList: " + vertexList);
+
+//            for (int index = 0; index < vertexList.getTriangleCount(); index++) {
+//                LOGGER.severe("-Triangle " + index + " :" + toTriangleString(vertexList, index));
+//            }
+        }
+    }
+
     // ********************** Stupid helpers
     public static String toTriangleString(VertexList vertexList, int index) {
         List<Vertex> vertices = vertexList.getVertices();

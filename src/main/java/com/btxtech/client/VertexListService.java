@@ -12,4 +12,6 @@ import java.util.List;
 @Remote
 public interface VertexListService {
     List<VertexList> getVertexList();
+
+    List<VertexList> getUnit();
 }

@@ -39,4 +39,14 @@ abstract public class AbstractShaderAttribute {
         ctx3d.vertexAttribPointer(attributeLocation, size, WebGLRenderingContext.FLOAT, false, 0, 0);
         WebGlUtil.checkLastWebGlError("vertexAttribPointer", ctx3d);
     }
+
+    @Override
+    public String toString() {
+        return "AbstractShaderAttribute{" +
+                "ctx3d=" + ctx3d +
+                ", size=" + size +
+                ", attributeLocation=" + attributeLocation +
+                ", webGlBuffer=" + webGlBuffer +
+                '}';
+    }
 }

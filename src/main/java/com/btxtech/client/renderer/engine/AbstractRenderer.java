@@ -153,4 +153,7 @@ public abstract class AbstractRenderer implements Renderer {
         return webGLTexture;
     }
 
+    protected WebGLRenderingContext getCtx3d() {
+        return gameCanvas.getCtx3d();
+    }
 }

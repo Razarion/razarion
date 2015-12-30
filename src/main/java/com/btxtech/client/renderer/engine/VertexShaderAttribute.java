@@ -24,4 +24,11 @@ public class VertexShaderAttribute extends AbstractShaderAttribute {
         }
         fillDoubleBuffer(doubleList);
     }
+
+    @Override
+    public String toString() {
+        return "VertexShaderAttribute{" +
+                super.toString() +
+                "}";
+    }
 }
