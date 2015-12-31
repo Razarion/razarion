@@ -111,6 +111,21 @@ public class ColladaConverterTest {
             LOGGER.severe("Count: " + vertexList.getVertices().size());
             LOGGER.severe("Triangles: " + vertexList.getVertices().size() / 3);
             // LOGGER.severe("vertexList: " + vertexList);
+            List<Double> doubleListX = new ArrayList<>();
+            List<Double> doubleListY = new ArrayList<>();
+            List<Double> doubleListZ = new ArrayList<>();
+            for (Vertex vertex : vertexList.getVertices()) {
+                doubleListX.add(vertex.getX());
+                doubleListY.add(vertex.getY());
+                doubleListZ.add(vertex.getZ());
+            }
+
+            LOGGER.severe("X min: " + MathHelper2.getMax(doubleListX));
+            LOGGER.severe("X max: " + MathHelper2.getMin(doubleListX));
+            LOGGER.severe("Y min: " + MathHelper2.getMax(doubleListY));
+            LOGGER.severe("Y max: " + MathHelper2.getMin(doubleListY));
+            LOGGER.severe("Z min: " + MathHelper2.getMax(doubleListZ));
+            LOGGER.severe("Z max: " + MathHelper2.getMin(doubleListZ));
 
 //            for (int index = 0; index < vertexList.getTriangleCount(); index++) {
 //                LOGGER.severe("-Triangle " + index + " :" + toTriangleString(vertexList, index));

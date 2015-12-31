@@ -54,6 +54,6 @@ public class UnitService {
     }
 
     public Matrix4 getModelMatrix() {
-         return Matrix4.createTranslation(400, 300, 0);
+         return Matrix4.createTranslation(355, 300, 0);
     }
 }

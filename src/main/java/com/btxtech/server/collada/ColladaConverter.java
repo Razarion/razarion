@@ -29,9 +29,9 @@ public class ColladaConverter {
         Collada collada = new Collada(doc);
 
         List<VertexList> vertexLists = collada.generateVertexList();
-        for (VertexList vertexList : vertexLists) {
-            vertexList.multiply(Matrix4.createScale(20, 20, 20));
-        }
+        // for (VertexList vertexList : vertexLists) {
+        //    vertexList.multiply(Matrix4.createScale(20, 20, 20));
+        // }
         return vertexLists;
     }
 
