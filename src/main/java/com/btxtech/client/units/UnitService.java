@@ -1,5 +1,6 @@
 package com.btxtech.client.units;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.VertexListService;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.shared.VertexList;
@@ -23,10 +24,14 @@ import java.util.logging.Logger;
 public class UnitService {
     private Logger logger = Logger.getLogger(UnitService.class.getName());
     private VertexList vertexList;
+    private ImageDescriptor imageDescriptor = ImageDescriptor.UNIT_TEXTURE_O1;
+    private double specularIntensity = 0.1;
+    private double specularHardness = 10;
     @Inject
     private Caller<VertexListService> vertexListService;
     @Inject
     private RenderService renderService;
+
 
     @AfterInitialization
     public void afterInitialization() {
@@ -55,5 +60,25 @@ public class UnitService {
 
     public Matrix4 getModelMatrix() {
          return Matrix4.createTranslation(355, 300, 0);
+    }
+
+    public ImageDescriptor getImageDescriptor() {
+        return imageDescriptor;
+    }
+
+    public double getSpecularIntensity() {
+        return specularIntensity;
+    }
+
+    public void setSpecularIntensity(double specularIntensity) {
+        this.specularIntensity = specularIntensity;
+    }
+
+    public double getSpecularHardness() {
+        return specularHardness;
+    }
+
+    public void setSpecularHardness(double specularHardness) {
+        this.specularHardness = specularHardness;
     }
 }

@@ -29,6 +29,8 @@ public class UnitRenderer extends AbstractRenderer {
     private Lighting lighting;
     private VertexShaderAttribute positions;
     private VertexShaderAttribute norms;
+    private ShaderTextureCoordinateAttribute textureCoordinateAttribute;
+    private WebGlUniformTexture texture;
     private int elementCount;
     // private Logger logger = Logger.getLogger(UnitRenderer.class.getName());
 
@@ -37,6 +39,8 @@ public class UnitRenderer extends AbstractRenderer {
         createProgram(Shaders.INSTANCE.unitVertexShader(), Shaders.INSTANCE.unitFragmentShader());
         norms = createVertexShaderAttribute("aVertexNormal");
         positions = createVertexShaderAttribute("aVertexPosition");
+        textureCoordinateAttribute = createShaderTextureCoordinateAttributee("aTextureCoord");
+        texture = createWebGLTexture(unitService.getImageDescriptor(), "uSampler", WebGLRenderingContext.TEXTURE0, 0);
     }
 
     @Override
@@ -47,6 +51,7 @@ public class UnitRenderer extends AbstractRenderer {
         }
         positions.fillBuffer(vertexList.getVertices());
         norms.fillBuffer(vertexList.getNormVertices());
+        textureCoordinateAttribute.fillBuffer(vertexList.getTextureCoordinates());
         elementCount = vertexList.getVerticesCount();
     }
 
@@ -63,9 +68,13 @@ public class UnitRenderer extends AbstractRenderer {
         uniform3f("uAmbientColor", lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
         uniform3f("uLightingDirection", lighting.getLightDirection());
         uniform3f("uLightingColor", lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity());
+        uniform1f("uSpecularHardness", unitService.getSpecularHardness());
+        uniform1f("uSpecularIntensity", unitService.getSpecularIntensity());
 
         positions.activate();
         norms.activate();
+        textureCoordinateAttribute.activate();
+        texture.activate();
 
         getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

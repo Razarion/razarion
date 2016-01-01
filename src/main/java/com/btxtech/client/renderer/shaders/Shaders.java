@@ -29,11 +29,11 @@ public interface Shaders extends ClientBundle {
     @Source("TerrainObject.frag")
     TextResource terrainObjectFragmentShader();
 
-    @Source("TerrainObjectWire.vert")
-    TextResource terrainObjectWireVertexShader();
+    @Source("Wire.vert")
+    TextResource wireVertexShader();
 
-    @Source("TerrainObjectWire.frag")
-    TextResource terrainObjectWireFragmentShader();
+    @Source("Wire.frag")
+    TextResource wireFragmentShader();
 
     @Source("Monitor.vert")
     TextResource monitorVertexShader();

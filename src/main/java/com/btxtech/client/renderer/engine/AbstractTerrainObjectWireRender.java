@@ -51,7 +51,7 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
             throw new WebGlException("OES_standard_derivatives is no supported");
         }
 
-        createProgram(Shaders.INSTANCE.terrainObjectWireVertexShader(), Shaders.INSTANCE.terrainObjectWireFragmentShader());
+        createProgram(Shaders.INSTANCE.wireVertexShader(), Shaders.INSTANCE.wireFragmentShader());
 
         positions = createVertexShaderAttribute(A_VERTEX_POSITION);
         barycentric = createVertexShaderAttribute(BARYCENTRIC_ATTRIBUTE_NAME);
