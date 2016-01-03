@@ -37,6 +37,7 @@ public class VertexListServiceImpl implements VertexListService {
     public List<VertexList> getUnit() {
         try {
             FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\ViperBeat1.dae");
+            // FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\SimpleCuboid.dae");
             return ColladaConverter.read(fileInputStream);
         } catch (Exception e) {
             exceptionHandler.handleException(e);

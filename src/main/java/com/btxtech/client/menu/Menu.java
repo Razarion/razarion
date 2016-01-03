@@ -17,14 +17,14 @@ import javax.inject.Inject;
 @Templated("Menu.html#menu-template")
 public class Menu extends Composite {
     @Inject
+    @DataField("menu-debug")
+    private DebugMenu debugMenu;
+    @Inject
     @DataField("menu-light")
     private LightMenu lightMenu;
     @Inject
     @DataField("menu-camera")
     private CameraMenu cameraMenu;
-    @Inject
-    @DataField("menu-debug")
-    private DebugMenu debugMenu;
     @Inject
     @DataField("menu-terrain")
     private TerrainMenu terrainMenu;

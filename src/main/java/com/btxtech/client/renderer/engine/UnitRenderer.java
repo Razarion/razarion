@@ -7,6 +7,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.units.UnitService;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Matrix4;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -37,8 +38,8 @@ public class UnitRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.unitVertexShader(), Shaders.INSTANCE.unitFragmentShader());
-        norms = createVertexShaderAttribute("aVertexNormal");
         positions = createVertexShaderAttribute("aVertexPosition");
+        norms = createVertexShaderAttribute("aVertexNormal");
         textureCoordinateAttribute = createShaderTextureCoordinateAttributee("aTextureCoord");
         texture = createWebGLTexture(unitService.getImageDescriptor(), "uSampler", WebGLRenderingContext.TEXTURE0, 0);
     }
@@ -63,7 +64,7 @@ public class UnitRenderer extends AbstractRenderer {
 
         uniformMatrix4fv("uMMatrix", unitService.getModelMatrix());
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
-        uniformMatrix4fv("uNMatrix", camera.createNormMatrix()); // TODO norm matrix model
+        uniformMatrix4fv("uNMatrix", unitService.getModelNormMatrix().multiply(camera.createNormMatrix()));
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
         uniform3f("uAmbientColor", lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
         uniform3f("uLightingDirection", lighting.getLightDirection());

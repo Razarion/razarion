@@ -199,4 +199,15 @@ public class TestVertex {
         Assert.assertEquals(Math.toRadians(90), new Vertex(1, 45, -33).unsignedAngle(new Vertex(1 + 1, 45, 33), new Vertex(1, -1 + 45, -33)), 0.0001);
 
     }
+
+    public static void assertVertex(Vertex expected, Vertex actual) {
+        String message = "expected:<" + expected + "> but was:<" + actual + ">";
+        Assert.assertEquals(message, expected.getX(), actual.getX(), 0.0001);
+        Assert.assertEquals(message, expected.getY(), actual.getY(), 0.0001);
+        Assert.assertEquals(message, expected.getZ(), actual.getZ(), 0.0001);
+    }
+
+    public static void assertVertex(double x, double y, double z, Vertex actual) {
+        assertVertex(new Vertex(x, y, z), actual);
+    }
 }

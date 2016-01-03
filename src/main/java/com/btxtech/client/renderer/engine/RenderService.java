@@ -38,7 +38,8 @@ public class RenderService {
     private boolean showNorm = false;
     private boolean showDeep = false;
     private RenderSwitch monitor;
-    private RenderSwitch norm;
+    private RenderSwitch terrainNorm;
+    private RenderSwitch unitNorm;
 
     public void init() {
         initFrameBuffer();
@@ -48,7 +49,8 @@ public class RenderService {
         createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class);
         // createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class);
         monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null);
-        norm = createAndAddRenderSwitch(NormRenderer.class, null, NormRenderer.class);
+        terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class);
+        unitNorm = createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class);
     }
 
     private RenderSwitch createAndAddRenderSwitch(Class<? extends Renderer> normalRendererClass, Class<? extends Renderer> depthBufferRendererClass, Class<? extends Renderer> wireRendererClass) {
@@ -87,7 +89,7 @@ public class RenderService {
             if (!showMonitor && renderSwitch == monitor) {
                 continue;
             }
-            if (!showNorm && renderSwitch == norm) {
+            if (!showNorm && (renderSwitch == terrainNorm || renderSwitch == unitNorm)) {
                 continue;
             }
             try {

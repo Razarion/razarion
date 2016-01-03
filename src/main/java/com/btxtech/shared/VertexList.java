@@ -133,9 +133,13 @@ public class VertexList {
     }
 
     public void multiply(Matrix4 matrix) {
+        Matrix4 normTransformation = matrix.normTransformation();
         for (int i = 0; i < vertices.size(); i++) {
-            Vertex vertex = vertices.get(i);
-            vertices.set(i, matrix.multiply(vertex, 1.0));
+            vertices.set(i, matrix.multiply(vertices.get(i), 1.0));
+            normVertices.set(i, normTransformation.multiply(normVertices.get(i), 0.0).normalize(1.0));
+            if(!tangentVertices.isEmpty()) {
+                tangentVertices.set(i, normTransformation.multiply(tangentVertices.get(i), 0.0).normalize(1.0));
+            }
         }
     }
 

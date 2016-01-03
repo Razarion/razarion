@@ -561,4 +561,102 @@ public class TestMatrix4 {
         double actual = matrix.multiplyW(vertex, 1.0);
         Assert.assertEquals(-313.5, actual, 0.001);
     }
+
+    @Test
+    public void inverse() {
+        Matrix4 matrix4 = new Matrix4(new double[][]{
+                {1, 0, 0, 4},
+                {0, 1, 0, 8},
+                {0, 0, 1, 6},
+                {0, 0, 0, 1}});
+        Matrix4 inverse = matrix4.invert();
+        Matrix4 expected = new Matrix4(new double[][]{
+                {1, 0, 0, -4},
+                {0, 1, 0, -8},
+                {0, 0, 1, -6},
+                {0, 0, 0, 1}});
+        Assert.assertEquals(expected, inverse);
+    }
+
+    @Test
+    public void inverse2() {
+        // Separate for translation, scale and rotation
+        Matrix4 matrix = Matrix4.createTranslation(-10, 0.4, 23);
+        Matrix4 inverse = matrix.invert();
+        assertMatrix(Matrix4.createIdentity(), matrix.multiply(inverse));
+        matrix = Matrix4.createXRotation(Math.toRadians(45));
+        inverse = matrix.invert();
+        assertMatrix(Matrix4.createIdentity(), matrix.multiply(inverse));
+        matrix = Matrix4.createXRotation(Math.toRadians(60)).multiply(Matrix4.createYRotation(Math.toRadians(120))).multiply(Matrix4.createZRotation(Math.toRadians(180)));
+        inverse = matrix.invert();
+        assertMatrix(Matrix4.createIdentity(), matrix.multiply(inverse));
+        matrix = Matrix4.createScale(-5, 12, 0.8);
+        inverse = matrix.invert();
+        assertMatrix(Matrix4.createIdentity(), matrix.multiply(inverse));
+        // translation, scale and rotation together
+        matrix = Matrix4.createXRotation(Math.toRadians(45)).multiply(Matrix4.createTranslation(-10, 0.4, 23));
+        inverse = matrix.invert();
+        assertMatrix(Matrix4.createIdentity(), matrix.multiply(inverse));
+        matrix = Matrix4.createXRotation(Math.toRadians(45)).multiply(Matrix4.createTranslation(-10, 0.4, 23)).multiply(Matrix4.createScale(-5, 12, 0.8));
+        inverse = matrix.invert();
+        assertMatrix(Matrix4.createIdentity(), matrix.multiply(inverse));
+    }
+
+    @Test
+    public void transpose() {
+        Matrix4 matrix = new Matrix4(new double[][]{
+                {1, 2, 3, 4},
+                {5, 6, 7, 8},
+                {9, 10, 11, 12},
+                {13, 14, 15, 16}});
+        Matrix4 transpose = matrix.transpose();
+        Matrix4 expected = new Matrix4(new double[][]{
+                {1, 5, 9, 13},
+                {2, 6, 10, 14},
+                {3, 7, 11, 15},
+                {4, 8, 12, 16}});
+
+        Assert.assertEquals(expected, transpose);
+    }
+
+    @Test
+    public void normTransformation() {
+        Vertex vector1 = new Vertex(0, 0, 1);
+        Vertex vector2 = new Vertex(0, 1, 0);
+        Vertex vector3 = new Vertex(1, 0, 0);
+        // Rotation
+        TestVertex.assertVertex(0, 1, 0, Matrix4.createXRotation(Math.toRadians(90)).normTransformation().multiply(vector1, 0));
+        // Translation
+        TestVertex.assertVertex(0, 0, 1, Matrix4.createTranslation(-1, 4, 16).normTransformation().multiply(vector1, 0));
+        // Scale negative scale doe not work
+        TestVertex.assertVertex(vector1, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector1, 0).normalize(1.0));
+        TestVertex.assertVertex(vector2, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector2, 0).normalize(1.0));
+        TestVertex.assertVertex(vector3, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector3, 0).normalize(1.0));
+        TestVertex.assertVertex(vector3, Matrix4.createScale(13, 0.5, 27).normTransformation().multiply(vector3, 0).normalize(1.0));
+        // Scale rotation and translation together
+        TestVertex.assertVertex(0, 1, 0, Matrix4.createScale(13, 0.5, 27).multiply(Matrix4.createXRotation(Math.toRadians(90))).multiply(Matrix4.createTranslation(-1, 4, 16)).normTransformation().multiply(vector1, 0).normalize(1.0));
+    }
+
+    public static void assertMatrix(Matrix4 expected, Matrix4 received) {
+        String message = "expected:<" + expected + "> but was:<" + received + ">";
+        Assert.assertEquals(message, expected.getNumber(0, 0), received.getNumber(0, 0), 0.001);
+        Assert.assertEquals(message, expected.getNumber(1, 0), received.getNumber(1, 0), 0.001);
+        Assert.assertEquals(message, expected.getNumber(2, 0), received.getNumber(2, 0), 0.001);
+        Assert.assertEquals(message, expected.getNumber(3, 0), received.getNumber(3, 0), 0.001);
+        // Row 1
+        Assert.assertEquals(message, expected.getNumber(0, 1), received.getNumber(0, 1), 0.001);
+        Assert.assertEquals(message, expected.getNumber(1, 1), received.getNumber(1, 1), 0.001);
+        Assert.assertEquals(message, expected.getNumber(2, 1), received.getNumber(2, 1), 0.001);
+        Assert.assertEquals(message, expected.getNumber(3, 1), received.getNumber(3, 1), 0.001);
+        // Row 2
+        Assert.assertEquals(message, expected.getNumber(0, 2), received.getNumber(0, 2), 0.001);
+        Assert.assertEquals(message, expected.getNumber(1, 2), received.getNumber(1, 2), 0.001);
+        Assert.assertEquals(message, expected.getNumber(2, 2), received.getNumber(2, 2), 0.001);
+        Assert.assertEquals(message, expected.getNumber(3, 2), received.getNumber(3, 2), 0.001);
+        // Row 3
+        Assert.assertEquals(message, expected.getNumber(0, 3), received.getNumber(0, 3), 0.001);
+        Assert.assertEquals(message, expected.getNumber(1, 3), received.getNumber(1, 3), 0.001);
+        Assert.assertEquals(message, expected.getNumber(2, 3), received.getNumber(2, 3), 0.001);
+        Assert.assertEquals(message, expected.getNumber(3, 3), received.getNumber(3, 3), 0.001);
+    }
 }

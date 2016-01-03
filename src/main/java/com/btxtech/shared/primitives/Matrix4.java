@@ -72,6 +72,72 @@ public class Matrix4 {
         return getNumber(0, row) * vertex.getX() + getNumber(1, row) * vertex.getY() + getNumber(2, row) * vertex.getZ() + getNumber(3, row) * w;
     }
 
+    public Matrix4 invert() {
+        double[] m = field2Array(numbers);
+        double[] r = new double[ROWS * COLUMNS];
+
+        r[0] = m[5] * m[10] * m[15] - m[5] * m[14] * m[11] - m[6] * m[9] * m[15] + m[6] * m[13] * m[11] + m[7] * m[9] * m[14] - m[7] * m[13] * m[10];
+        r[1] = -m[1] * m[10] * m[15] + m[1] * m[14] * m[11] + m[2] * m[9] * m[15] - m[2] * m[13] * m[11] - m[3] * m[9] * m[14] + m[3] * m[13] * m[10];
+        r[2] = m[1] * m[6] * m[15] - m[1] * m[14] * m[7] - m[2] * m[5] * m[15] + m[2] * m[13] * m[7] + m[3] * m[5] * m[14] - m[3] * m[13] * m[6];
+        r[3] = -m[1] * m[6] * m[11] + m[1] * m[10] * m[7] + m[2] * m[5] * m[11] - m[2] * m[9] * m[7] - m[3] * m[5] * m[10] + m[3] * m[9] * m[6];
+
+        r[4] = -m[4] * m[10] * m[15] + m[4] * m[14] * m[11] + m[6] * m[8] * m[15] - m[6] * m[12] * m[11] - m[7] * m[8] * m[14] + m[7] * m[12] * m[10];
+        r[5] = m[0] * m[10] * m[15] - m[0] * m[14] * m[11] - m[2] * m[8] * m[15] + m[2] * m[12] * m[11] + m[3] * m[8] * m[14] - m[3] * m[12] * m[10];
+        r[6] = -m[0] * m[6] * m[15] + m[0] * m[14] * m[7] + m[2] * m[4] * m[15] - m[2] * m[12] * m[7] - m[3] * m[4] * m[14] + m[3] * m[12] * m[6];
+        r[7] = m[0] * m[6] * m[11] - m[0] * m[10] * m[7] - m[2] * m[4] * m[11] + m[2] * m[8] * m[7] + m[3] * m[4] * m[10] - m[3] * m[8] * m[6];
+
+        r[8] = m[4] * m[9] * m[15] - m[4] * m[13] * m[11] - m[5] * m[8] * m[15] + m[5] * m[12] * m[11] + m[7] * m[8] * m[13] - m[7] * m[12] * m[9];
+        r[9] = -m[0] * m[9] * m[15] + m[0] * m[13] * m[11] + m[1] * m[8] * m[15] - m[1] * m[12] * m[11] - m[3] * m[8] * m[13] + m[3] * m[12] * m[9];
+        r[10] = m[0] * m[5] * m[15] - m[0] * m[13] * m[7] - m[1] * m[4] * m[15] + m[1] * m[12] * m[7] + m[3] * m[4] * m[13] - m[3] * m[12] * m[5];
+        r[11] = -m[0] * m[5] * m[11] + m[0] * m[9] * m[7] + m[1] * m[4] * m[11] - m[1] * m[8] * m[7] - m[3] * m[4] * m[9] + m[3] * m[8] * m[5];
+
+        r[12] = -m[4] * m[9] * m[14] + m[4] * m[13] * m[10] + m[5] * m[8] * m[14] - m[5] * m[12] * m[10] - m[6] * m[8] * m[13] + m[6] * m[12] * m[9];
+        r[13] = m[0] * m[9] * m[14] - m[0] * m[13] * m[10] - m[1] * m[8] * m[14] + m[1] * m[12] * m[10] + m[2] * m[8] * m[13] - m[2] * m[12] * m[9];
+        r[14] = -m[0] * m[5] * m[14] + m[0] * m[13] * m[6] + m[1] * m[4] * m[14] - m[1] * m[12] * m[6] - m[2] * m[4] * m[13] + m[2] * m[12] * m[5];
+        r[15] = m[0] * m[5] * m[10] - m[0] * m[9] * m[6] - m[1] * m[4] * m[10] + m[1] * m[8] * m[6] + m[2] * m[4] * m[9] - m[2] * m[8] * m[5];
+
+        double det = m[0] * r[0] + m[1] * r[4] + m[2] * r[8] + m[3] * r[12];
+        for (int i = 0; i < 16; i++) {
+            r[i] /= det;
+        }
+
+        return new Matrix4(array2Field(r));
+    }
+
+    public Matrix4 transpose() {
+        double[] m = field2Array(numbers);
+        double[] r = new double[ROWS * COLUMNS];
+
+        r[0] = m[0];
+        r[1] = m[4];
+        r[2] = m[8];
+        r[3] = m[12];
+        r[4] = m[1];
+        r[5] = m[5];
+        r[6] = m[9];
+        r[7] = m[13];
+        r[8] = m[2];
+        r[9] = m[6];
+        r[10] = m[10];
+        r[11] = m[14];
+        r[12] = m[3];
+        r[13] = m[7];
+        r[14] = m[11];
+        r[15] = m[15];
+
+        return new Matrix4(array2Field(r));
+    }
+
+    /**
+     * Setup a matrix which can be used for norm transformation.
+     * Works fine as long as the scale-transformation is not negative
+     *
+     * @return matrix for norm transformation
+     */
+    public Matrix4 normTransformation() {
+        return invert().transpose();
+    }
+
     public static Matrix4 createIdentity() {
         double[][] numbers = {
                 {1, 0, 0, 0},
@@ -192,7 +258,7 @@ public class Matrix4 {
     }
 
     /**
-     * Converts a field to array.
+     * Converts a field to array. Row-major order
      *
      * @return array: C0R0, C1R0, C2R0 ... C3R3
      */
@@ -211,9 +277,9 @@ public class Matrix4 {
     }
 
     /**
-     * Converts a field to array.
+     * Converts a field to array. Column-major order
      *
-     * @return array: C0R1, C0R2, C0R3 ... C3R3
+     * @return array: C0R0, C0R1, C0R2 ... C3R3
      */
     public static double[] field2Array2(double[][] field) {
         if (field.length != ROWS) {
@@ -234,7 +300,7 @@ public class Matrix4 {
     }
 
     /**
-     * Converts a array to a field.
+     * Converts a array to a field. Row-major order
      *
      * @param array array: C0R0, C1R0, C2R0 ... C3R
      */

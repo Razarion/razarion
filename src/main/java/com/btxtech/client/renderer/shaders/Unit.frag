@@ -26,6 +26,10 @@ void main(void) {
     vec3 diffuse = max(dot(normalize(vVertexNormal), normalize(correctedLigtDirection)), 0.0) /* * shadowFactor */* uLightingColor * texColor.rgb;
     float specularIntensity = setupSpecularLight(correctedLigtDirection) /* * shadowFactor */;
     vec3 specular = vec3(specularIntensity, specularIntensity, specularIntensity);
-    gl_FragColor = vec4(vec3(ambient + diffuse + specular), 1.0);
+    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
+
+    ////
+    // vec3 xxx = normalize(vVertexNormal) * 0.5 + 0.5;
+    // gl_FragColor = vec4(xxx, 1.0);
 }
 
