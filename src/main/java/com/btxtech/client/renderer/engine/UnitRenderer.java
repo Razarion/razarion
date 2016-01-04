@@ -7,7 +7,6 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.units.UnitService;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Matrix4;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -64,7 +63,8 @@ public class UnitRenderer extends AbstractRenderer {
 
         uniformMatrix4fv("uMMatrix", unitService.getModelMatrix());
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
-        uniformMatrix4fv("uNMatrix", unitService.getModelNormMatrix().multiply(camera.createNormMatrix()));
+        uniformMatrix4fv("uNMMatrix", unitService.getModelNormMatrix());
+        uniformMatrix4fv("uNVMatrix", camera.createNormMatrix());
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
         uniform3f("uAmbientColor", lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
         uniform3f("uLightingDirection", lighting.getLightDirection());

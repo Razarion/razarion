@@ -4,7 +4,7 @@ varying vec3 vVertexNormal;
 varying vec3 vVertexPosition;
 varying vec2 vTextureCoord;
 
-uniform highp mat4 uNMatrix;
+uniform highp mat4 uNVMatrix;
 uniform vec3 uAmbientColor;
 uniform vec3 uLightingDirection;
 uniform vec3 uLightingColor;
@@ -19,7 +19,7 @@ float setupSpecularLight(vec3 correctedLigtDirection) {
 }
 
 void main(void) {
-    vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
+    vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightingDirection, 1.0)).xyz;
     vec4 texColor = texture2D(uSampler, vTextureCoord);
 
     vec3 ambient = uAmbientColor * texColor.rgb;
@@ -28,8 +28,8 @@ void main(void) {
     vec3 specular = vec3(specularIntensity, specularIntensity, specularIntensity);
     gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 
-    ////
-    // vec3 xxx = normalize(vVertexNormal) * 0.5 + 0.5;
-    // gl_FragColor = vec4(xxx, 1.0);
+//    ////
+//    vec3 xxx = normalize(correctedLigtDirection) * 0.5 + 0.5;
+//    gl_FragColor = vec4(xxx, 1.0);
 }
 

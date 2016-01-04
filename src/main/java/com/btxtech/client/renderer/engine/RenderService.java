@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.webgl.WebGlException;
+import com.btxtech.client.units.UnitService;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
@@ -28,6 +29,8 @@ public class RenderService {
     private GameCanvas gameCanvas;
     @Inject
     private Camera camera;
+    @Inject
+    private UnitService unitService;
     private List<RenderSwitch> renderQueue = new ArrayList<>();
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
@@ -72,6 +75,8 @@ public class RenderService {
     }
 
     public void draw() {
+        unitService.tick();
+
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, shadowFrameBuffer);
         gameCanvas.getCtx3d().viewport(0, 0, DEPTH_BUFFER_SIZE, DEPTH_BUFFER_SIZE);
         gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);

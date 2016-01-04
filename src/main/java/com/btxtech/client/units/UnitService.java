@@ -23,6 +23,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class UnitService {
+    private static final long PERIOD_DURATION = 16000;
     private Logger logger = Logger.getLogger(UnitService.class.getName());
     private VertexList vertexList;
     private ImageDescriptor imageDescriptor = ImageDescriptor.UNIT_TEXTURE_O1;
@@ -66,36 +67,23 @@ public class UnitService {
         return vertexList;
     }
 
-    public Matrix4 getModelMatrix() {
-        return getModelMatrix(16000);
-    }
-
-    public Matrix4 getModelMatrix(int durationMs) {
+    public void tick() {
         long current = System.currentTimeMillis();
         long delta = current - lastTimestamp;
         lastTimestamp = current;
 
-        double deltaAngle = (double) delta / (double) durationMs * MathHelper.ONE_RADIANT;
+        double deltaAngle = (double) delta / (double) PERIOD_DURATION * MathHelper.ONE_RADIANT;
         if (moving) {
             angle += deltaAngle;
         }
-        return Matrix4.createTranslation(355, 300, 0).multiply(Matrix4.createZRotation(angle)).multiply(Matrix4.createTranslation(100, 0, 0)).multiply(Matrix4.createZRotation(Math.toDegrees(90)));
+    }
+
+    public Matrix4 getModelMatrix() {
+        return Matrix4.createTranslation(355, 300, 0).multiply(Matrix4.createZRotation(angle)).multiply(Matrix4.createTranslation(100, 0, 0)).multiply(Matrix4.createZRotation(Math.toRadians(-90)));
     }
 
     public Matrix4 getModelNormMatrix() {
-        return getModelNormMatrix(16000);
-    }
-
-    public Matrix4 getModelNormMatrix(int durationMs) {
-        long current = System.currentTimeMillis();
-        long delta = current - lastTimestamp;
-        lastTimestamp = current;
-
-        double deltaAngle = (double) delta / (double) durationMs * MathHelper.ONE_RADIANT;
-        if (moving) {
-            angle += deltaAngle;
-        }
-        return Matrix4.createZRotation(angle).multiply(Matrix4.createZRotation(Math.toDegrees(90)));
+        return Matrix4.createZRotation(angle).multiply(Matrix4.createZRotation(Math.toRadians(-90)));
     }
 
     public boolean isMoving() {

@@ -38,11 +38,9 @@ public class TerrainSurface {
     @Inject
     private RenderService renderService;
     private Mesh mesh = new Mesh();
-    // private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_2;
-    private ImageDescriptor coverImageDescriptor = ImageDescriptor.OLD_GAME_UNITS;
+    private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_2;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
-    // private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_2;
-    private ImageDescriptor groundImageDescriptor = ImageDescriptor.OLD_GAME_UNITS;
+    private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_2;
     private ImageDescriptor groundBmImageDescriptor = ImageDescriptor.BUMP_MAP_GROUND_1;
     private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
     private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_04;
