@@ -19,9 +19,9 @@ public class Lighting {
     @Inject
     private ProjectionTransformation normalProjectionTransformation;
     private double zNear = 10;
-    private double highestPoint = 120;
+    private double highestPoint = 50;
     private double lowestPoint = -1;
-    private double shadowAlpha = 0.6;
+    private double shadowAlpha = 0.2;
     private Logger logger = Logger.getLogger(Lighting.class.getName());
     private double rotateX = -Math.toRadians(0);
     private double rotateY = -Math.toRadians(45);
