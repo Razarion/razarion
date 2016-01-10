@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.model;
 
+import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
@@ -18,9 +19,9 @@ public class Lighting {
     private Camera camera;
     @Inject
     private ProjectionTransformation normalProjectionTransformation;
+    @Inject
+    private TerrainSurface terrainSurface;
     private double zNear = 10;
-    private double highestPoint = 50;
-    private double lowestPoint = -1;
     private double shadowAlpha = 0.2;
     private Logger logger = Logger.getLogger(Lighting.class.getName());
     private double rotateX = Math.toRadians(20);
@@ -129,12 +130,12 @@ public class Lighting {
     private double calculateZ() {
         double angle = calculateAngle();
         double z = Math.cos(angle) * MathHelper.getPythagorasC(calculateRight(), calculateTop());
-        return z + highestPoint + Math.cos(angle) * zNear;
+        return z + terrainSurface.getHighestPointInView() + Math.cos(angle) * zNear;
     }
 
     private double calculateZFar() {
         double angle = calculateAngle();
-        double norm = Math.abs(2.0 * Math.cos(angle) * MathHelper.getPythagorasC(calculateRight(), calculateTop())) + highestPoint - lowestPoint;
+        double norm = Math.abs(2.0 * Math.cos(angle) * MathHelper.getPythagorasC(calculateRight(), calculateTop())) + terrainSurface.getHighestPointInView() - terrainSurface.getLowestPointInView();
         return zNear + Math.abs(norm / Math.cos(angle));
     }
 
@@ -148,22 +149,6 @@ public class Lighting {
 
     public void setZNear(double zNear) {
         this.zNear = zNear;
-    }
-
-    public double getHighestPoint() {
-        return highestPoint;
-    }
-
-    public void setHighestPoint(double highestPoint) {
-        this.highestPoint = highestPoint;
-    }
-
-    public double getLowestPoint() {
-        return lowestPoint;
-    }
-
-    public void setLowestPoint(double lowestPoint) {
-        this.lowestPoint = lowestPoint;
     }
 
     public Matrix4 createProjectionTransformation() {

@@ -1,25 +1,29 @@
 package com.btxtech.client.renderer.model;
 
+import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.primitives.Matrix4;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
  * Created by Beat
  * 26.09.2015.
+ * <p/>
+ * http://www.songho.ca/opengl/gl_projectionmatrix.html
  */
 @Singleton
 public class ProjectionTransformation {
-    public ProjectionTransformation() {
-        setFovY(Math.toRadians(45));
-        setZNear(300);
-        setZFar(1200);
-    }
-
     private double fovY;
     private double aspectRatio;
-    private double zNear;
-    private double zFar;
+    @Inject
+    private Camera camera;
+    @Inject
+    private TerrainSurface terrainSurface;
+
+    public ProjectionTransformation() {
+        setFovY(Math.toRadians(45));
+    }
 
     public double getFovY() {
         return fovY;
@@ -30,6 +34,7 @@ public class ProjectionTransformation {
     }
 
     public double calculateFovX() {
+        double zNear = calculateZNear();
         double top = zNear * Math.tan(fovY / 2.0);
         double right = top * aspectRatio;
         return Math.atan(right / zNear) * 2.0;
@@ -43,24 +48,36 @@ public class ProjectionTransformation {
         this.aspectRatio = aspectRatio;
     }
 
-    public double getZNear() {
-        return zNear;
-    }
-
-    public void setZNear(double zNear) {
-        this.zNear = zNear;
-    }
-
-    public double getZFar() {
-        return zFar;
-    }
-
-    public void setZFar(double zFar) {
-        this.zFar = zFar;
-    }
-
     public Matrix4 createMatrix() {
-        return makePerspectiveFrustum(fovY, aspectRatio, zNear, zFar);
+        return makePerspectiveFrustum(fovY, aspectRatio, calculateZNear(), calculateZFar());
+    }
+
+    private double calculateZFar() {
+        double angle1 = camera.getRotateX() + fovY / 2.0;
+        double angle2 = camera.getRotateX() - fovY / 2.0;
+        double height = camera.getTranslateZ() - terrainSurface.getLowestPointInView();
+
+        double leg1 = height / Math.cos(angle1);
+        double leg2 = height / Math.cos(angle2);
+
+        double zFar1 = leg1 * Math.cos(fovY / 2.0);
+        double zFar2 = leg2 * Math.cos(fovY / 2.0);
+
+        return Math.max(zFar1, zFar2);
+    }
+
+    private double calculateZNear() {
+        double angle1 = camera.getRotateX() + fovY / 2.0;
+        double angle2 = camera.getRotateX() - fovY / 2.0;
+        double height = camera.getTranslateZ() - terrainSurface.getHighestPointInView();
+
+        double leg1 = height / Math.cos(angle1);
+        double leg2 = height / Math.cos(angle2);
+
+        double zNear1 = leg1 * Math.cos(fovY / 2.0);
+        double zNear2 = leg2 * Math.cos(fovY / 2.0);
+
+        return Math.min(zNear1, zNear2);
     }
 
     /**
@@ -110,12 +127,6 @@ public class ProjectionTransformation {
 
     /**
      * http://www.songho.ca/opengl/gl_projectionmatrix.html
-     *
-     * @param right
-     * @param top
-     * @param zNear
-     * @param zFar
-     * @return
      */
     public static Matrix4 makeBalancedOrthographicFrustum(double right, double top, double zNear, double zFar) {
         double a = -2.0 / (zFar - zNear);

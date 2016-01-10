@@ -57,26 +57,26 @@ public class TestProjectionTransformation {
     }
 
 
-    @Test
-    public void setterGetters() {
-        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
-        projectionTransformation.setZNear(-0.1);
-        projectionTransformation.setZFar(-100);
-        projectionTransformation.setAspectRatio(3.0 / 4.0);
-        projectionTransformation.setFovY(Math.toRadians(33));
-        Assert.assertEquals(-0.1, projectionTransformation.getZNear(), 0.0001);
-        Assert.assertEquals(-100, projectionTransformation.getZFar(), 0.0001);
-        Assert.assertEquals(3.0 / 4.0, projectionTransformation.getAspectRatio(), 0.0001);
-        Assert.assertEquals(Math.toRadians(33), projectionTransformation.getFovY(), 0.0001);
-        Matrix4 expected = new Matrix4(new double[][]{
-                {4.501257896788329, 0.0, 0.0, 0.0},
-                {0.0, 3.3759434225912464, 0.0, 0.0},
-                {0.0, 0.0, -1.002002002002002, 0.20020020020020018},
-                {0.0, 0.0, -1.0, 0.0}
-        });
-        Assert.assertEquals(expected, projectionTransformation.createMatrix());
-
-    }
+//    @Test
+//    public void setterGetters() {
+//        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
+//        projectionTransformation.setZNear(-0.1);
+//        projectionTransformation.setZFar(-100);
+//        projectionTransformation.setAspectRatio(3.0 / 4.0);
+//        projectionTransformation.setFovY(Math.toRadians(33));
+//        Assert.assertEquals(-0.1, projectionTransformation.getZNear(), 0.0001);
+//        Assert.assertEquals(-100, projectionTransformation.getZFar(), 0.0001);
+//        Assert.assertEquals(3.0 / 4.0, projectionTransformation.getAspectRatio(), 0.0001);
+//        Assert.assertEquals(Math.toRadians(33), projectionTransformation.getFovY(), 0.0001);
+//        Matrix4 expected = new Matrix4(new double[][]{
+//                {4.501257896788329, 0.0, 0.0, 0.0},
+//                {0.0, 3.3759434225912464, 0.0, 0.0},
+//                {0.0, 0.0, -1.002002002002002, 0.20020020020020018},
+//                {0.0, 0.0, -1.0, 0.0}
+//        });
+//        Assert.assertEquals(expected, projectionTransformation.createMatrix());
+//
+//    }
 
 
 }

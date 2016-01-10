@@ -53,6 +53,8 @@ public class TerrainSurface {
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private boolean plateauConfigRead = false;
     private boolean meshRead = false;
+    private final double highestPointInView = 101; // Should be calculated
+    private final double lowestPointInView = -9; // Should be calculated
 
     @PostConstruct
     public void init() {
@@ -247,5 +249,13 @@ public class TerrainSurface {
 
     public Beach getBeach() {
         return beach;
+    }
+
+    public double getHighestPointInView() {
+        return highestPointInView;
+    }
+
+    public double getLowestPointInView() {
+        return lowestPointInView;
     }
 }
