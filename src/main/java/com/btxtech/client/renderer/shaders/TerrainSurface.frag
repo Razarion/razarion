@@ -80,16 +80,17 @@ float setupSpecularLight(vec3 correctedLigtDirection, vec3 correctedNorm) {
 }
 
 float calculateShadowFactor() {
-    // Shadow
     float zNdc = vShadowCoord.z / vShadowCoord.w;
+    zNdc = zNdc * 0.5 + 0.5;
+
     mat4 coordCorrectionMatrix = mat4(0.5, 0.0, 0.0, 0.0,
                                  0.0, 0.5, 0.0, 0.0,
                                  0.0, 0.0, 0.5, 0.0,
                                  0.5, 0.5, 0.5, 1.0);
     vec4 coordShadowMap = coordCorrectionMatrix * vShadowCoord;
     float zMap = texture2D(uSamplerShadow, coordShadowMap.st / coordShadowMap.w).r;
-    zNdc = zNdc * 0.5 + 0.5;
-    if(zMap > zNdc - 0.01) {
+
+    if(zMap > zNdc - 0.001) {
         return 1.0;
     } else {
         return uShadowAlpha;

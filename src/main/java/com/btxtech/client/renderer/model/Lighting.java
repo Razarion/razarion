@@ -23,8 +23,8 @@ public class Lighting {
     private double lowestPoint = -1;
     private double shadowAlpha = 0.2;
     private Logger logger = Logger.getLogger(Lighting.class.getName());
-    private double rotateX = -Math.toRadians(0);
-    private double rotateY = -Math.toRadians(45);
+    private double rotateX = Math.toRadians(20);
+    private double rotateY = -Math.toRadians(25);
     private double ambientIntensity;
     private double diffuseIntensity;
 
