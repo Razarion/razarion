@@ -146,7 +146,6 @@ public abstract class AbstractRenderer implements Renderer {
                 gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) WebGlUtil.castElementToElement(imageElement));
                 gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.LINEAR);
                 gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR);
-                gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
                 gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
             }
         });
