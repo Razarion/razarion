@@ -63,6 +63,14 @@ public class Lighting {
         this.diffuseIntensity = diffuseIntensity;
     }
 
+    public double getShadowAlpha() {
+        return shadowAlpha;
+    }
+
+    public void setShadowAlpha(double shadowAlpha) {
+        this.shadowAlpha = shadowAlpha;
+    }
+
     public double getRotateX() {
         return rotateX;
     }
@@ -108,15 +116,9 @@ public class Lighting {
         yViewField.end = Math.tan(camera.getRotateX() + normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
         return yViewField;
     }
-    public double getShadowAlpha() {
-        return shadowAlpha;
-    }
-
-    public void setShadowAlpha(double shadowAlpha) {
-        this.shadowAlpha = shadowAlpha;
-    }
 
     private double calculateRight() {
+        // TODO hier
         double maxY = calculateYViewField().calculateMax();
         double z = MathHelper.getPythagorasC(maxY, camera.getTranslateZ());
         double xHalfViewFiled = Math.tan(normalProjectionTransformation.calculateFovX() / 2.0) * z;
@@ -154,7 +156,6 @@ public class Lighting {
     public Matrix4 createProjectionTransformation() {
         return ProjectionTransformation.makeBalancedOrthographicFrustum(calculateRight(), calculateTop(), zNear, calculateZFar());
     }
-
 
     public void testPrint() {
         logger.severe("calculateAngle() = " + Math.toDegrees(calculateAngle()));
