@@ -45,9 +45,9 @@ public class SlopeEditor {
         drawEnvironment();
         svg.appendChild(group);
 
-        for (Index index : terrainSurface.getPlateau().getSlopeIndexes()) {
-            addEditorCorner(index);
-        }
+//        for (Index index : terrainSurface.getPlateau().getSlopeIndexes()) {
+//            addEditorCorner(index);
+//        }
     }
 
     private void drawEnvironment() {
@@ -62,9 +62,9 @@ public class SlopeEditor {
 
         SVGLineElement top = Browser.getDocument().createSVGLineElement();
         top.getX1().getBaseVal().setValue(-1000);
-        top.getY1().getBaseVal().setValue(terrainSurface.getPlateau().getPlateauConfigEntity().getTop());
+        // top.getY1().getBaseVal().setValue(terrainSurface.getPlateau().getPlateauConfigEntity().getTop());
         top.getX2().getBaseVal().setValue(1000);
-        top.getY2().getBaseVal().setValue(terrainSurface.getPlateau().getPlateauConfigEntity().getTop());
+        // top.getY2().getBaseVal().setValue(terrainSurface.getPlateau().getPlateauConfigEntity().getTop());
         top.getStyle().setProperty("stroke", "#888888");
         top.getStyle().setProperty("stroke-width", "1");
         group.appendChild(top);
@@ -91,7 +91,7 @@ public class SlopeEditor {
     }
 
     public void onChanged() {
-        terrainSurface.getPlateau().setSlopeIndexes(setupIndexes());
+        // terrainSurface.getPlateau().setSlopeIndexes(setupIndexes());
     }
 
     private List<Index> setupIndexes() {

@@ -58,12 +58,12 @@ public class PlateauPanel extends Composite {
 
     @PostConstruct
     public void init() {
-        plateauConfigEntityDataBinder = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity(), InitialState.FROM_MODEL);
-        slopeEditor.init(svgElement);
+        // plateauConfigEntityDataBinder = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity(), InitialState.FROM_MODEL);
+        // slopeEditor.init(svgElement);
     }
 
     @EventHandler("save")
     private void saveButtonClick(ClickEvent event) {
-        terrainSurface.savePlateauConfigEntity();
+        // terrainSurface.savePlateauConfigEntity();
     }
 }

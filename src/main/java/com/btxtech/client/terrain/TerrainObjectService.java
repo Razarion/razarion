@@ -26,7 +26,8 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainObjectService {
-    private static final int EDGE_COUNT = 10;
+    // private static final int EDGE_COUNT = 10;
+    private static final int EDGE_COUNT = 0;
     private static final String TRUNK_MESH = "Trunk Mesh";
     private static final String TWIG_MESH = "Twig Mesh";
     private static final String SHADOW_MESH = "Shadow Mesh";

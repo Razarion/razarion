@@ -34,12 +34,6 @@ public abstract class AbstractRenderer implements Renderer {
         webGlProgram.createProgram(vertexShaderCode.getText(), fragmentShaderCode.getText());
     }
 
-//    protected void destroy() {
-//        webGlProgram.useProgram();
-//        webGlProgram.destroy();
-//        webGlProgram = null;
-//    }
-
     protected VertexShaderAttribute createVertexShaderAttribute(String attributeName) {
         return new VertexShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
     }

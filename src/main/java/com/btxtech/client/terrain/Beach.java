@@ -71,13 +71,13 @@ public class Beach {
         });
 
 
-        FractalField fractalField = FractalField.createSaveFractalField(INDEX_RECT.getWidth() + slopeSize * 2, INDEX_RECT.getHeight() + slopeSize * 2, fractal, -fractal, 1.0);
+        FractalFieldOld fractalFieldOld = FractalFieldOld.createSaveFractalField(INDEX_RECT.getWidth() + slopeSize * 2, INDEX_RECT.getHeight() + slopeSize * 2, fractal, -fractal, 1.0);
         // Calculate fractal
         Index origin = INDEX_RECT.getStart().sub(slopeSize, slopeSize);
         Map<Index, Vertex> displacements = new HashMap<>();
         for (Index slopeIndex : slopeIndexes) {
             Vertex norm = mesh.getVertexNormSafe(slopeIndex);
-            displacements.put(slopeIndex, norm.multiply(fractalField.get(slopeIndex.sub(origin))));
+            displacements.put(slopeIndex, norm.multiply(fractalFieldOld.get(slopeIndex.sub(origin))));
         }
 
         // Apply fractal

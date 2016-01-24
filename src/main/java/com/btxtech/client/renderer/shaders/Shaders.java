@@ -11,29 +11,29 @@ import com.google.gwt.resources.client.TextResource;
 public interface Shaders extends ClientBundle {
     Shaders INSTANCE = GWT.create(Shaders.class);
 
+    @Source("ViewPerspectiveWire.vert")
+    TextResource viewPerspectiveWireVertexShader();
+
+    @Source("ViewPerspectiveWire.frag")
+    TextResource viewPerspectiveWireFragmentShader();
+
+    @Source("ModelViewPerspectiveWire.vert")
+    TextResource modelViewPerspectiveWireVertexShader();
+
+    @Source("ModelViewPerspectiveWire.frag")
+    TextResource modelViewPerspectiveWireFragmentShader();
+
     @Source("TerrainSurface.vert")
     TextResource terrainSurfaceVertexShader();
 
     @Source("TerrainSurface.frag")
     TextResource terrainSurfaceFragmentShader();
 
-    @Source("TerrainSurfaceWire.vert")
-    TextResource terrainSurfaceWireVertexShader();
-
-    @Source("TerrainSurfaceWire.frag")
-    TextResource terrainSurfaceWireFragmentShader();
-
     @Source("TerrainObject.vert")
     TextResource terrainObjectVertexShader();
 
     @Source("TerrainObject.frag")
     TextResource terrainObjectFragmentShader();
-
-    @Source("Wire.vert")
-    TextResource wireVertexShader();
-
-    @Source("Wire.frag")
-    TextResource wireFragmentShader();
 
     @Source("Monitor.vert")
     TextResource monitorVertexShader();
@@ -58,12 +58,6 @@ public interface Shaders extends ClientBundle {
 
     @Source("Water.frag")
     TextResource waterFragmentShader();
-
-    @Source("WaterWire.vert")
-    TextResource waterWireVertexShader();
-
-    @Source("WaterWire.frag")
-    TextResource waterWireFragmentShader();
 
     @Source("Unit.vert")
     TextResource unitVertexShader();

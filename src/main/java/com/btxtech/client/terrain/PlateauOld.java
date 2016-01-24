@@ -20,7 +20,8 @@ import java.util.Map;
  * Created by Beat
  * 17.10.2015.
  */
-public class Plateau {
+@Deprecated
+public class PlateauOld {
     private static final Rectangle INDEX_RECT = new Rectangle(45, 60, 30, 15);
     private Mesh mesh;
     private PlateauConfigEntity plateauConfigEntity;
@@ -32,7 +33,7 @@ public class Plateau {
             new Index(TerrainSurface.MESH_NODE_EDGE_LENGTH * 5, 30)));
     // private Logger logger = Logger.getLogger(Plateau.class.getName());
 
-    public Plateau(Mesh mesh) {
+    public PlateauOld(Mesh mesh) {
         this.mesh = mesh;
     }
 
@@ -70,13 +71,13 @@ public class Plateau {
             }
         });
 
-        FractalField fractalField = FractalField.createSaveFractalField(INDEX_RECT.getWidth() + doubleSlopeSize, INDEX_RECT.getHeight() + doubleSlopeSize, fractal, -fractal, 1.0);
+        FractalFieldOld fractalFieldOld = FractalFieldOld.createSaveFractalField(INDEX_RECT.getWidth() + doubleSlopeSize, INDEX_RECT.getHeight() + doubleSlopeSize, fractal, -fractal, 1.0);
         // Calculate fractal
         Index origin = INDEX_RECT.getStart().sub(slopeSize, slopeSize);
         Map<Index, Vertex> displacements = new HashMap<>();
         for (Index slopeIndex : slopeIndexes) {
             Vertex norm = mesh.getVertexNormSafe(slopeIndex);
-            displacements.put(slopeIndex, norm.multiply(fractalField.get(slopeIndex.sub(origin))));
+            displacements.put(slopeIndex, norm.multiply(fractalFieldOld.get(slopeIndex.sub(origin))));
         }
 
         // Apply fractal

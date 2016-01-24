@@ -58,12 +58,12 @@ public class TerrainMenu extends Composite {
 
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
-        terrainSurface.sculpt();
+        // terrainSurface.sculpt();
         renderService.fillBuffers();
     }
 
     @EventHandler("saveButton")
     private void saveButtonClick(ClickEvent event) {
-        terrainSurface.saveTerrain();
+        // terrainSurface.saveTerrain();
     }
 }

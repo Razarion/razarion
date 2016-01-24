@@ -7,25 +7,25 @@ import org.junit.Test;
  * Created by Beat
  * 23.05.2015.
  */
-public class FractalFieldTest {
+public class FractalFieldOldTest {
 
     @Test
     public void simple() {
-        FractalField fractalField = new FractalField(9, 0.25);
-        Assert.assertEquals(8, fractalField.getDivisions());
+        FractalFieldOld fractalFieldOld = new FractalFieldOld(9, 0.25);
+        Assert.assertEquals(8, fractalFieldOld.getDivisions());
 
-        fractalField.get(0, 0);
-        fractalField.get(8, 8);
+        fractalFieldOld.get(0, 0);
+        fractalFieldOld.get(8, 8);
 
         try {
-            fractalField.get(8, 9);
+            fractalFieldOld.get(8, 9);
             Assert.fail();
         } catch (ArrayIndexOutOfBoundsException e) {
             // expected
         }
 
         try {
-            fractalField.get(9, 8);
+            fractalFieldOld.get(9, 8);
             Assert.fail();
         } catch (ArrayIndexOutOfBoundsException e) {
             // expected
@@ -37,10 +37,10 @@ public class FractalFieldTest {
         double min = Double.MAX_VALUE;
         double max = Double.MIN_NORMAL;
 
-        FractalField fractalField = new FractalField(9, 0.95);
+        FractalFieldOld fractalFieldOld = new FractalFieldOld(9, 0.95);
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y < 9; y++) {
-                double value = fractalField.get(x, y);
+                double value = fractalFieldOld.get(x, y);
                 min = Math.min(value, min);
                 max = Math.max(value, max);
             }
@@ -54,11 +54,11 @@ public class FractalFieldTest {
         double min = Double.MAX_VALUE;
         double max = Double.MIN_NORMAL;
 
-        FractalField fractalField = new FractalField(9, 0.95);
-        fractalField.normalize(1, 0);
+        FractalFieldOld fractalFieldOld = new FractalFieldOld(9, 0.95);
+        fractalFieldOld.normalize(1, 0);
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y < 9; y++) {
-                double value = fractalField.get(x, y);
+                double value = fractalFieldOld.get(x, y);
                 min = Math.min(value, min);
                 max = Math.max(value, max);
             }
@@ -72,11 +72,11 @@ public class FractalFieldTest {
         double min = Double.MAX_VALUE;
         double max = Double.MIN_NORMAL;
 
-        FractalField fractalField = new FractalField(9, 0.95);
-        fractalField.normalize(20, -30);
+        FractalFieldOld fractalFieldOld = new FractalFieldOld(9, 0.95);
+        fractalFieldOld.normalize(20, -30);
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y < 9; y++) {
-                double value = fractalField.get(x, y);
+                double value = fractalFieldOld.get(x, y);
                 System.out.println("value: " + value);
                 min = Math.min(value, min);
                 max = Math.max(value, max);

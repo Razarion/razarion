@@ -1,14 +1,12 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.units.UnitService;
 import com.btxtech.shared.VertexList;
 import elemental.html.WebGLRenderingContext;
@@ -44,7 +42,7 @@ public class UnitWireRenderer extends AbstractRenderer {
         if (extension == null) {
             throw new WebGlException("OES_standard_derivatives is no supported");
         }
-        createProgram(Shaders.INSTANCE.wireVertexShader(), Shaders.INSTANCE.wireFragmentShader());
+        createProgram(Shaders.INSTANCE.modelViewPerspectiveWireVertexShader(), Shaders.INSTANCE.modelViewPerspectiveWireFragmentShader());
         positions = createVertexShaderAttribute("aVertexPosition");
         barycentrics = createVertexShaderAttribute("aBarycentric");
         textureCoordinate = createShaderTextureCoordinateAttributee("aTextureCoord");

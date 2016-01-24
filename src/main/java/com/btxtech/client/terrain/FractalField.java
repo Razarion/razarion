@@ -3,149 +3,146 @@ package com.btxtech.client.terrain;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 
-import java.util.Random;
-
 /**
  * Created by Beat
- * 19.05.2015.
- * <p/>
- * DiamondSquareAlgorithm algorithm
+ * 23.01.2016.
+ *
+ *  Diamond-square algorithm
  */
 public class FractalField {
-    private double[][] terrain;
+    private int verticesPerEdge;
+    private final double minValue;
+    private final double maxValue;
     private int divisions;
-    private Random rng;
+    private int log2;
+    private double[][] values;
+    private double roughness;
 
-    public FractalField(int verticesPerEdge, double roughness) {
-        if (!MathHelper.isPowerOfTwo(verticesPerEdge - 1)) {
-            throw new IllegalArgumentException("verticesPerEdge must be a power of two number + 1. Given value: " + verticesPerEdge);
-        }
-
+    public FractalField(int verticesPerEdge, double roughness, double minValue, double maxValue) {
+        // TODO Check correct value verticesPerEdge
+        this.verticesPerEdge = verticesPerEdge;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
         divisions = verticesPerEdge - 1;
-        terrain = new double[verticesPerEdge][verticesPerEdge];
-        rng = new Random();
+        log2 = (int) MathHelper.log2(divisions);
+        this.roughness = roughness;
+        values = new double[verticesPerEdge][verticesPerEdge];
+        clearValues();
+        values[0][0] = randomInit();
+        values[0][divisions] = randomInit();
+        values[divisions][0] = randomInit();
+        values[divisions][divisions] = randomInit();
+    }
 
-        terrain[0][0] = rnd();
-        terrain[0][divisions] = rnd();
-        terrain[divisions][0] = rnd();
-        terrain[divisions][divisions] = rnd();
-
+    public void process() {
         double rough = roughness;
-
-        int log2 = (int) MathHelper.log2(divisions);
-
-        for (int i = 0; i < log2; ++i) {
-            int r = 1 << (log2 - i);
-            int s = r >> 1;
-            for (int x = 0; x < divisions; x += r) {
-                for (int y = 0; y < divisions; y += r) {
-                    diamond(x, y, r, rough);
+        for (int i = 0; i < log2; i++) {
+            int side = 1 << (log2 - i);
+            for (int x = 0; x < divisions; x += side) {
+                for (int y = 0; y < divisions; y += side) {
+                    square(x, y, side, rough);
                 }
             }
+            int s = side >> 1;
             if (s > 0) {
                 for (int j = 0; j <= divisions; j += s) {
-                    for (int k = (j + s) % r; k <= divisions; k += r) {
-                        square(j - s, k - s, r, rough);
+                    for (int k = (j + s) % side; k <= divisions; k += side) {
+                        diamond(j - s, k - s, side, rough);
                     }
                 }
+                rough *= roughness;
             }
-            rough *= roughness;
+        }
+    }
+
+    public double[][] getValues() {
+        return values;
+    }
+
+    public double getValue(int x, int y) {
+        return values[x][y];
+    }
+
+    public double getValue(Index index) {
+        return values[index.getX()][index.getY()];
+    }
+
+    private void square(int x, int y, int side, double scale) {
+        if (side > 1) {
+            int half = side / 2;
+            double avg = (values[x][y] + values[x + side][y] + values[x][y + side] + values[x + side][y + side]) / 4.0;
+            values[x + half][y + half] = clamp(avg + random(scale));
         }
     }
 
     private void diamond(int x, int y, int side, double scale) {
-        if (side > 1) {
-            int half = side / 2;
-            double avg = (terrain[x][y] + terrain[x + side][y] + terrain[x + side][y + side] + terrain[x][y + side]) / 4.0;
-            terrain[x + half][y + half] = avg + rnd() * scale;
-        }
-    }
-
-    private void square(int x, int y, int side, double scale) {
         int half = side / 2;
-        double avg = 0.0;
+        int factor = 0;
         double sum = 0.0;
         if (x >= 0) {
-            avg += terrain[x][y + half];
-            sum += 1.0;
+            sum = values[x][y + half];
+            factor++;
         }
         if (y >= 0) {
-            avg += terrain[x + half][y];
-            sum += 1.0;
+            sum += values[x + half][y];
+            factor++;
         }
         if (x + side <= divisions) {
-            avg += terrain[x + side][y + half];
-            sum += 1.0;
+            sum += values[x + side][y + half];
+            factor++;
         }
         if (y + side <= divisions) {
-            avg += terrain[x + half][y + side];
-            sum += 1.0;
+            sum += values[x + half][y + side];
+            factor++;
         }
-        terrain[x + half][y + half] = avg / sum + rnd() * scale;
+        values[x + half][y + half] = clamp(sum / (double) factor + random(scale));
     }
 
-    private double rnd() {
-        return 60.0 * rng.nextDouble() - 30.0;
+    private double randomInit() {
+        double delta = maxValue - minValue;
+        return Math.random() * delta + minValue;
     }
 
-    public double get(int x, int y) {
-        return terrain[x][y];
+    private double random(double scale) {
+        double delta = maxValue - minValue;
+        return (Math.random() - 0.5) * delta * scale;
     }
 
-    public double get(Index index) {
-        if (index.getX() >= terrain.length) {
-            throw new IndexOutOfBoundsException("X: " + index.getX() + " >= " + terrain.length);
+    public double clamp(double value) {
+        if (value > maxValue) {
+            return maxValue;
+        } else if (value < minValue) {
+            return minValue;
+        } else {
+            return value;
         }
-        if (index.getY() >= terrain.length) {
-            throw new IndexOutOfBoundsException("Y: " + index.getY() + " >= " + terrain.length);
-        }
-        return terrain[index.getX()][index.getY()];
     }
 
-    public int addOffset(int x, int y, double zBase) {
-        return (int) (terrain[x][y] * zBase);
+    public int getVerticesPerEdge() {
+        return verticesPerEdge;
     }
 
-    public int getDivisions() {
-        return divisions;
-    }
-
-    public void setToNull() {
-        for (int x = 0; x < terrain.length; x++) {
-            for (int y = 0; y < terrain[x].length; y++) {
-                terrain[x][y] = 0;
+    private void clearValues() {
+        for (int row = 0; row < verticesPerEdge; row++) {
+            for (int column = 0; column < verticesPerEdge; column++) {
+                values[column][row] = 0;
             }
         }
-    }
-
-    public void normalize(double max, double min) {
-        double minFound = Double.MAX_VALUE;
-        double maxFound = Double.MIN_VALUE;
-
-        for (double[] aTerrain : terrain) {
-            for (double anATerrain : aTerrain) {
-                minFound = Math.min(anATerrain, minFound);
-                maxFound = Math.max(anATerrain, maxFound);
-            }
-        }
-
-        double factor = maxFound - minFound;
-        for (int x = 0; x < terrain.length; x++) {
-            for (int y = 0; y < terrain[x].length; y++) {
-                double value = terrain[x][y] - minFound;
-                terrain[x][y] = (max - min) * (value / factor) + min;
-            }
-        }
-
     }
 
     public static int nearestPossibleNumber(int number1, int number2) {
-        return MathHelper.nearestPowerOf2Number(Math.max(number1, number2)) + 1;
+        int maxNumber = Math.max(number1, number2);
+
+        if(MathHelper.isPowerOfTwo(maxNumber - 1)) {
+            return maxNumber;
+        }
+
+        return MathHelper.nearestPowerOf2Number(maxNumber) + 1;
     }
 
-    public static FractalField createSaveFractalField(int size1, int size2, double max, double min, double roughness) {
-        FractalField fractalField = new FractalField(nearestPossibleNumber(size1, size2), roughness);
-        fractalField.normalize(max, min);
+    public static FractalField createSaveFractalField(int nodeCount1, int nodeCount2, double roughness, double minValue, double maxValue) {
+        FractalField fractalField = new FractalField(nearestPossibleNumber(nodeCount1, nodeCount2), roughness, minValue, maxValue);
+        fractalField.process();
         return fractalField;
     }
 }

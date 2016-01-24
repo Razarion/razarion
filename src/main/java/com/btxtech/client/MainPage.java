@@ -3,6 +3,7 @@ package com.btxtech.client;
 import com.btxtech.client.editor.EditorPanelContainer;
 import com.btxtech.client.menu.Menu;
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.renderer.engine.RenderService;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
@@ -28,6 +29,8 @@ public class MainPage extends Composite {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
+    private RenderService renderService;
+    @Inject
     @DataField
     private Menu menu;
     @Inject
@@ -42,7 +45,8 @@ public class MainPage extends Composite {
             }
             gameCanvas.init(canvas);
             menu.setEditorPanelContainer(editorPanelContainer);
-            // dataBinder.setModel(menuModel);
+            renderService.fillBuffers();
+            gameCanvas.startRenderLoop();
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "MainPage init failed", throwable);
         }

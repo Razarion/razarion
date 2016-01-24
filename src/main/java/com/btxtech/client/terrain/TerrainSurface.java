@@ -5,22 +5,19 @@ import com.btxtech.client.TerrainEditorService;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.Mesh;
+import com.btxtech.client.terrain.slope.Plateau;
+import com.btxtech.client.terrain.slope.Shape;
+import com.btxtech.client.terrain.slope.ShapeTemplate;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.PlateauConfigEntity;
-import com.btxtech.shared.TerrainMeshVertex;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Vertex;
-import com.google.gwt.core.client.GWT;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Collection;
-import java.util.logging.Level;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -30,7 +27,7 @@ import java.util.logging.Logger;
 @Singleton
 public class TerrainSurface {
     public static final int MESH_SIZE = 1024;
-    public static final int MESH_NODE_EDGE_LENGTH = 8;
+    public static final int MESH_NODE_EDGE_LENGTH = 64;
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
@@ -51,132 +48,43 @@ public class TerrainSurface {
     private Plateau plateau;
     private Beach beach;
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
-    private boolean plateauConfigRead = false;
-    private boolean meshRead = false;
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated
 
     @PostConstruct
     public void init() {
-        plateau = new Plateau(mesh);
+        setupGround();
+
+        ShapeTemplate shapeTemplate = new ShapeTemplate(10, new Shape());
+        shapeTemplate.sculpt(10, 0);
+        plateau = new Plateau(shapeTemplate, 20, Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 600)));
+        plateau.wrap();
         beach = new Beach(mesh);
     }
 
-    @AfterInitialization
-    public void afterInitialization() {
-        readPlateauConfig();
-        readTerrain();
-    }
-
-    private void readPlateauConfig() {
-        terrainEditorService.call(new RemoteCallback<PlateauConfigEntity>() {
-            @Override
-            public void callback(PlateauConfigEntity plateauConfigEntity) {
-                plateau.setPlateauConfigEntity(plateauConfigEntity);
-                plateauConfigRead = true;
-                checkState();
-            }
-        }, new ErrorCallback() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                GWT.log("Error calling terrainEditorService.read(): " + message + " " + throwable);
-                logger.log(Level.SEVERE, TerrainSurface.class.getName() + ": Error calling terrainEditorService.readTerrainMeshVertices(). message:" + message, throwable);
-                return false;
-            }
-
-        }).read();
-    }
-
-    private void readTerrain() {
-        terrainEditorService.call(new RemoteCallback<Collection<TerrainMeshVertex>>() {
-            @Override
-            public void callback(Collection<TerrainMeshVertex> terrainMeshVertexes) {
-                try {
-                    logger.severe("terrainMeshVertexes: " + terrainMeshVertexes.size());
-                    mesh.fill(terrainMeshVertexes);
-                    mesh.generateAllTriangle();
-                    mesh.adjustNorm();
-                    meshRead = true;
-                    checkState();
-                } catch (Throwable t) {
-                    logger.log(Level.SEVERE, "readTerrain failed", t);
-                }
-            }
-        }, new ErrorCallback() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                GWT.log("Error calling terrainEditorService.readTerrainMeshVertices(): " + message + " " + throwable);
-                logger.log(Level.SEVERE, TerrainSurface.class.getName() + ": Error calling terrainEditorService.read(). message:" + message, throwable);
-                return false;
-            }
-
-        }).readTerrainMeshVertices();
-    }
-
-    private void checkState() {
-        if (plateauConfigRead && meshRead) {
-            logger.severe("gameCanvas.startRenderLoop()");
-            renderService.fillBuffers();
-            gameCanvas.startRenderLoop();
-        }
-    }
-
-    public void savePlateauConfigEntity() {
-        terrainEditorService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void ignore) {
-            }
-        }, new ErrorCallback() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "message: " + message, throwable);
-                return false;
-            }
-
-        }).save(plateau.getPlateauConfigEntity());
-    }
-
-
-    public void saveTerrain() {
-        terrainEditorService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void ignore) {
-            }
-        }, new ErrorCallback() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "message: " + message, throwable);
-                return false;
-            }
-
-        }).saveTerrainMeshVertices(mesh.createTerrainMeshVertices());
-    }
-
-    public void sculpt() {
+    private void setupGround() {
         mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
 
-        final FractalField fractalField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 2.0, -0.5, 0.9);
+        final FractalField heightField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, -10, 10);
+        final FractalField grassGround = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, 0, 1);
         mesh.iterate(new Mesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                double value = fractalField.get(index);
-                mesh.getVertexDataSafe(index).setEdge(value);
-                mesh.getVertexDataSafe(index).setType(TerrainMeshVertex.Type.GROUND);
-                mesh.getVertexDataSafe(index).setSlopeFactor(0);
+                mesh.getVertexDataSafe(index).setEdge(grassGround.getValue(index));
+                // TODO mesh.getVertexDataSafe(index).add(new Vertex(0, 0, heightField.getValue(index)));
             }
-
         });
 
-        plateau.sculpt();
-        beach.sculpt();
         mesh.generateAllTriangle();
         mesh.adjustNorm();
-
     }
 
     public boolean isFree(double absoluteX, double absoluteY) {
-        Index index = new Index((int) (absoluteX / MESH_NODE_EDGE_LENGTH), (int) (absoluteY / MESH_NODE_EDGE_LENGTH));
-        return !plateau.isInside(index) && !beach.isInside(index);
+        return true; // TODO
+    }
+
+    public Plateau getPlateau() {
+        return plateau;
     }
 
     public VertexList getVertexList() {
@@ -225,10 +133,6 @@ public class TerrainSurface {
 
     public void setGroundBumpMap(double groundBumpMap) {
         this.groundBumpMap = groundBumpMap;
-    }
-
-    public Plateau getPlateau() {
-        return plateau;
     }
 
     public ImageDescriptor getBeachImageDescriptor() {
