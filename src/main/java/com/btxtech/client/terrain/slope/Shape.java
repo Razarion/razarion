@@ -11,7 +11,13 @@ import java.util.List;
  * 23.01.2016.
  */
 public class Shape {
-    private List<Index> vertices = Arrays.asList(new Index(0, 100) , new Index(5, 50) , new Index(10, 0));
+    private List<Index> vertices = Arrays.asList(new Index(0, 100),
+            new Index(5, 105),
+            new Index(10, 100),
+            new Index(15, 66),
+            new Index(20, 33),
+            new Index(25, 1),
+            new Index(40, 1));
     private double distance;
 
     public Shape() {
