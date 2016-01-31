@@ -1,6 +1,5 @@
 precision mediump float;
 
-varying vec2 vTextureCoord;
 varying vec4 vShadowCoord;
 varying vec3 vVertexNormal;
 varying vec3 vVertexTangent;

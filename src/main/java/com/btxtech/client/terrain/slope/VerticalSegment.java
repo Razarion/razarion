@@ -17,8 +17,11 @@ public class VerticalSegment {
     }
 
     public Matrix4 getTransformation() {
-        Matrix4 translationMatrix = Matrix4.createTranslation(inner.getX(), inner.getY(), 0);
-        Matrix4 rotationMatrix = Matrix4.createZRotation(inner.getAngleToNorth(outer));
+        Matrix4 translationMatrix = Matrix4.createTranslation(outer.getX(), outer.getY(), 0);
+        if(inner.equals(outer)) {
+            return translationMatrix;
+        }
+        Matrix4 rotationMatrix = Matrix4.createZRotation(outer.getAngleToNorth(inner));
         return translationMatrix.multiply(rotationMatrix);
     }
 }

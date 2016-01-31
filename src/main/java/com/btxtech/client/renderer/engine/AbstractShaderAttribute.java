@@ -2,7 +2,6 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
 
@@ -29,7 +28,14 @@ abstract public class AbstractShaderAttribute {
     protected void fillDoubleBuffer(List<Double> doubleList) {
         ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, webGlBuffer);
         WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);
-        ctx3d.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(doubleList), WebGLRenderingContext.STATIC_DRAW);
+        ctx3d.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32Doubles(doubleList), WebGLRenderingContext.STATIC_DRAW);
+        WebGlUtil.checkLastWebGlError("bufferData", ctx3d);
+    }
+
+    protected void fillFloatBuffer(List<Float> floatList) {
+        ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, webGlBuffer);
+        WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);
+        ctx3d.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(floatList), WebGLRenderingContext.STATIC_DRAW);
         WebGlUtil.checkLastWebGlError("bufferData", ctx3d);
     }
 

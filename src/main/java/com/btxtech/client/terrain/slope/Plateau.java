@@ -18,6 +18,29 @@ public class Plateau {
 
     public Plateau(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners) {
         this.shapeTemplate = shapeTemplate;
+
+        if(shapeTemplate.getDistance() > 0) {
+            setupSlopingBorder(corners);
+        } else {
+            setupStraightBorder(corners);
+        }
+
+        // Setup vertical segments
+        xVertices = 0;
+        for (AbstractBorder border : borders) {
+            xVertices += border.setupVerticalSegments(verticalSpace);
+        }
+    }
+
+    private void setupStraightBorder(List<DecimalPosition> corners) {
+        for (int i = 0; i < corners.size(); i++) {
+            DecimalPosition current = corners.get(i);
+            DecimalPosition next = corners.get((i + 1) % corners.size());
+            borders.add(new LineBorder(current, next));
+        }
+    }
+
+    private void setupSlopingBorder(List<DecimalPosition> corners) {
         // Setup inner and outer corner
         List<AbstractCornerBorder> cornerBorders = new ArrayList<>();
         for (int i = 0; i < corners.size(); i++) {
@@ -36,11 +59,6 @@ public class Plateau {
             AbstractCornerBorder next = cornerBorders.get((i + 1) % cornerBorders.size());
             borders.add(current);
             borders.add(new LineBorder(current, next, shapeTemplate.getDistance()));
-        }
-        // Setup vertical segments
-        xVertices = 0;
-        for (AbstractBorder border : borders) {
-            xVertices += border.setupVerticalSegments(verticalSpace);
         }
     }
 

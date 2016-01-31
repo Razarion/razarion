@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.terrain.slope.Mesh;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
@@ -45,24 +46,28 @@ public class TerrainNormRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = terrainSurface.getVertexList();
-        List<Vertex> vertices = vertexList.getVertices();
-        List<Vertex> norms = vertexList.getNormVertices();
-        List<Vertex> tangents = vertexList.getTangentVertices();
-
         List<Vertex> vectors = new ArrayList<>();
+
+        VertexList vertexList = terrainSurface.getVertexList();
+        appendVectors(vectors, vertexList.getVertices(), vertexList.getNormVertices(), vertexList.getTangentVertices());
+
+        Mesh mesh = terrainSurface.getPlateau().getMesh();
+        appendVectors(vectors, mesh.getVertices(), mesh.getNorms(), mesh.getTangents());
+
+        this.vertices.fillBuffer(vectors);
+        elementCount = vectors.size();
+    }
+
+    private void appendVectors(List<Vertex> vectors, List<Vertex> vertices, List<Vertex> norms, List<Vertex> tangents) {
         for (int i = 0; i < vertices.size(); i++) {
             Vertex vertex = vertices.get(i);
             // Norm
             vectors.add(vertex);
-            vectors.add(vertex.add(norms.get(i).multiply(5)));
+            vectors.add(vertex.add(norms.get(i).multiply(20)));
             // Tangent
             vectors.add(vertex);
-            vectors.add(vertex.add(tangents.get(i).multiply(5)));
+            vectors.add(vertex.add(tangents.get(i).multiply(20)));
         }
-
-        this.vertices.fillBuffer(vectors);
-        elementCount = vertexList.getVerticesCount() * 2;
     }
 
     @Override
@@ -79,7 +84,6 @@ public class TerrainNormRenderer extends AbstractRenderer {
         vertices.activate();
 
         // Draw
-        gameCanvas.getCtx3d().lineWidth(30);
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.LINES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
     }

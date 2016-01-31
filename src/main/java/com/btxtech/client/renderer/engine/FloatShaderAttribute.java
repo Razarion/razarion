@@ -17,8 +17,4 @@ public class FloatShaderAttribute extends AbstractShaderAttribute {
         super(ctx3d, webGlProgram, attributeName, 1);
     }
 
-    public void fillBuffer(List<Double> doubles) {
-        fillDoubleBuffer(doubles);
-    }
-
 }

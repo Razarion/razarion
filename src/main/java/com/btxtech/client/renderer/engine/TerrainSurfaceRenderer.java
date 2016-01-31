@@ -108,9 +108,9 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         vertices.fillBuffer(vertexList.getVertices());
         normals.fillBuffer(vertexList.getNormVertices());
         tangents.fillBuffer(vertexList.getTangentVertices());
-        edges.fillBuffer(vertexList.getEdges());
-        slopes.fillBuffer(vertexList.getSlopeFactor());
-        types.fillBuffer(vertexList.getTypesAsDoubles());
+        edges.fillDoubleBuffer(vertexList.getEdges());
+        slopes.fillDoubleBuffer(vertexList.getSlopeFactor());
+        types.fillDoubleBuffer(vertexList.getTypesAsDoubles());
 
         elementCount = vertexList.getVerticesCount();
     }

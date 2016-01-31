@@ -29,7 +29,7 @@ public class WebGlUtil {
         }
     }
 
-    public static Float32Array createArrayBufferOfFloat32(List<Double> doubleList) {
+    public static Float32Array createArrayBufferOfFloat32Doubles(List<Double> doubleList) {
         JsArrayOfNumber vertices = JsArrayOfNumber.create();
         for (double d : doubleList) {
             vertices.push(d);
@@ -37,7 +37,15 @@ public class WebGlUtil {
         return createFloat32Array(vertices);
     }
 
-    public native static Float32Array createArrayBufferOfFloat32(double[] doubles) /*-{
+    public static Float32Array createArrayBufferOfFloat32(List<Float> floatList) {
+        JsArrayOfNumber vertices = JsArrayOfNumber.create();
+        for (double f : floatList) {
+            vertices.push(f);
+        }
+        return createFloat32Array(vertices);
+    }
+
+    public native static Float32Array createArrayBufferOfFloat32Doubles(double[] doubles) /*-{
         // TODO Why does this work?
         return doubles;
         // return new Float32Array(doubles);

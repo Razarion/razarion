@@ -44,7 +44,7 @@ public class Mesh {
                 Vertex bottom = getVertexSave(x, y - 1);
                 Vertex left = getVertexSave(x - 1, y);
                 Collection<Vertex> norms = new ArrayList<>();
-                appendNorm(norms, center, top, right);
+                appendNorm(norms, center, right, top);
                 appendNorm(norms, center, bottom, right);
                 appendNorm(norms, center, left, bottom);
                 appendNorm(norms, center, top, left);

@@ -21,6 +21,15 @@ public class LineBorder extends AbstractBorder {
         outerEnd = next.getOuterStart();
     }
 
+    public LineBorder(DecimalPosition current, DecimalPosition next) {
+        super(0);
+        innerStart = current;
+        innerEnd = next;
+        outerStart = current;
+        outerEnd = next;
+    }
+
+
     @Override
     protected int getSegmentCount(int verticalSpace) {
         double distance = innerStart.getDistance(innerEnd);

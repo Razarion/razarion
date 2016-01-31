@@ -109,13 +109,7 @@ public class FractalField {
     }
 
     public double clamp(double value) {
-        if (value > maxValue) {
-            return maxValue;
-        } else if (value < minValue) {
-            return minValue;
-        } else {
-            return value;
-        }
+        return MathHelper.clamp(value, minValue, maxValue);
     }
 
     public int getVerticesPerEdge() {

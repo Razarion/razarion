@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.Lighting;
@@ -10,11 +9,9 @@ import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
@@ -65,10 +62,10 @@ public class TerrainSurfaceDepthBufferRenderer extends AbstractRenderer {
         VertexList vertexList = terrainSurface.getVertexList();
         // vertices
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
-        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
+        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32Doubles(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);
         // barycentric
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, barycentricBuffer);
-        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(vertexList.createBarycentricDoubles()), WebGLRenderingContext.STATIC_DRAW);
+        gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32Doubles(vertexList.createBarycentricDoubles()), WebGLRenderingContext.STATIC_DRAW);
 
         elementCount = vertexList.getVerticesCount();
     }
@@ -81,13 +78,13 @@ public class TerrainSurfaceDepthBufferRenderer extends AbstractRenderer {
         useProgram();
         // Projection uniform
         WebGLUniformLocation perspectiveUniform = getUniformLocation(PERSPECTIVE_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveUniform, false, WebGlUtil.createArrayBufferOfFloat32(lighting.createProjectionTransformation().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveUniform, false, WebGlUtil.createArrayBufferOfFloat32Doubles(lighting.createProjectionTransformation().toWebGlArray()));
         // View transformation uniform
         WebGLUniformLocation viewUniform = getUniformLocation(VIEW_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32(lighting.createViewTransformation().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(viewUniform, false, WebGlUtil.createArrayBufferOfFloat32Doubles(lighting.createViewTransformation().toWebGlArray()));
         // Model transformation uniform
         WebGLUniformLocation modelUniform = getUniformLocation(MODEL_UNIFORM_NAME);
-        gameCanvas.getCtx3d().uniformMatrix4fv(modelUniform, false, WebGlUtil.createArrayBufferOfFloat32(Matrix4.createIdentity().toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(modelUniform, false, WebGlUtil.createArrayBufferOfFloat32Doubles(Matrix4.createIdentity().toWebGlArray()));
         // set vertices position
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
         gameCanvas.getCtx3d().vertexAttribPointer(vertexPositionAttribute, Vertex.getComponentsPerVertex(), WebGLRenderingContext.FLOAT, false, 0, 0);

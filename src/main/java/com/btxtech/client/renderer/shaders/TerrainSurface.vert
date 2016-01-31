@@ -11,7 +11,6 @@ uniform highp mat4 uVMatrix;
 uniform highp mat4 uPMatrix;
 uniform highp mat4 uMVPDepthBias;
 uniform highp mat4 uNMatrix;
-uniform vec3 uAmbientColor;
 
 varying vec4 vShadowCoord;
 varying vec3 vVertexNormal;

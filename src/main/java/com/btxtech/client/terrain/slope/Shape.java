@@ -11,17 +11,21 @@ import java.util.List;
  * 23.01.2016.
  */
 public class Shape {
-    private List<Index> vertices = Arrays.asList(new Index(0, 100),
-            new Index(5, 105),
-            new Index(10, 100),
-            new Index(15, 66),
-            new Index(20, 33),
-            new Index(25, 1),
-            new Index(40, 1));
+    public static final List<Index> SHAPE_0 = Arrays.asList(
+            new Index(70, 100),
+            new Index(65, 110),
+            new Index(60, 100),
+            new Index(50, 80),
+            new Index(40, 40),
+            new Index(30, 10),
+            new Index(0, 0)
+    );
     private double distance;
+    private List<Index> vertices;
 
-    public Shape() {
-        distance = vertices.get(vertices.size() - 1).getX();
+    public Shape(List<Index> vertices) {
+        this.vertices = vertices;
+        distance = Math.abs(vertices.get(0).getX() - vertices.get(vertices.size() - 1).getX());
     }
 
     public int getVertexCount() {
@@ -47,7 +51,7 @@ public class Shape {
 
         double deltaAngle = current.getAngle(next, previous) / 2.0;
         double angle = current.getAngleToNord(next) + deltaAngle;
-        return toVertex(current.getPointFromAngelToNord(angle, distance));
+        return toVertex(current.getPointFromAngleRound(angle, distance));
     }
 
     public double getDistance() {
@@ -56,5 +60,9 @@ public class Shape {
 
     private Vertex toVertex(Index index) {
         return new Vertex(index.getX(), 0, index.getY());
+    }
+
+    public int getShiftableOffset() {
+        return 1;
     }
 }

@@ -28,12 +28,13 @@ public class ShapeTemplate {
         FractalField fractalField = FractalField.createSaveFractalField(shape.getShiftableVertexCount(), columns, roughness, -shift / 2.0, shift / 2.0);
         fractalField.process();
         for (int column = 0; column < columns; column++) {
-            for (int row = 0; row < shape.getVertexCount(); row++) {
+            for (int row = 0; row < rows; row++) {
+                int correctedRow = rows - 1 - row;
                 if (shape.isShiftableVertex(row)) {
-                    double normShift = fractalField.getValue(column, row);
-                    nodes[column][row] = shape.getNormShiftedVertex(row, normShift);
+                    double normShift = fractalField.getValue(column, correctedRow - shape.getShiftableOffset());
+                    nodes[column][correctedRow] = shape.getNormShiftedVertex(row, normShift);
                 } else {
-                    nodes[column][row] = shape.getVertex(row);
+                    nodes[column][correctedRow] = shape.getVertex(row);
                 }
             }
         }

@@ -64,7 +64,7 @@ public abstract class AbstractRenderer implements Renderer {
 
     protected void uniformMatrix4fv(String uniformName, Matrix4 matrix) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
-        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.createArrayBufferOfFloat32(matrix.toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.createArrayBufferOfFloat32Doubles(matrix.toWebGlArray()));
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
     }
 

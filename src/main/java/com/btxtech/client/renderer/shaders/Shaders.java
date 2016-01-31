@@ -64,4 +64,10 @@ public interface Shaders extends ClientBundle {
 
     @Source("Unit.frag")
     TextResource unitFragmentShader();
+
+    @Source("Slope.vert")
+    TextResource slopeVertexShader();
+
+    @Source("Slope.frag")
+    TextResource slopeFragmentShader();
 }

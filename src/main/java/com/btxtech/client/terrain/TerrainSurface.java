@@ -55,9 +55,9 @@ public class TerrainSurface {
     public void init() {
         setupGround();
 
-        ShapeTemplate shapeTemplate = new ShapeTemplate(10, new Shape());
+        ShapeTemplate shapeTemplate = new ShapeTemplate(100, new Shape(Shape.SHAPE_0));
         shapeTemplate.sculpt(20, 1);
-        plateau = new Plateau(shapeTemplate, 20, Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 600)));
+        plateau = new Plateau(shapeTemplate, 10, Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 600)));
         plateau.wrap();
         beach = new Beach(mesh);
     }
