@@ -11,12 +11,16 @@ uniform highp mat4 uNMatrix;
 
 varying vec3 vVertexNormal;
 varying vec3 vVertexTangent;
+varying vec3 vVertexPositionCoord;
+varying vec3 vVertexNormCoord;
 varying float vSlopeFactor;
 
 void main(void) {
     vVertexNormal = (uNMatrix * vec4(aVertexNormal, 1.0)).xyz;
     vVertexTangent = (uNMatrix * vec4(aVertexTangent, 1.0)).xyz;
     gl_Position = uPMatrix * uVMatrix * vec4(aVertexPosition, 1.0);
+    vVertexPositionCoord = aVertexPosition.xyz;
+    vVertexNormCoord = aVertexNormal;
     vSlopeFactor = aSlopeFactor;
 }
 

@@ -84,6 +84,12 @@ public abstract class AbstractRenderer implements Renderer {
         WebGlUtil.checkLastWebGlError("uniform1f", gameCanvas.getCtx3d());
     }
 
+    protected void uniform1i(String uniformName, int value) {
+        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+        gameCanvas.getCtx3d().uniform1i(uniformLocation, value);
+        WebGlUtil.checkLastWebGlError("uniform1i", gameCanvas.getCtx3d());
+    }
+
     protected WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName, int textureId, int uniformValue) {
         return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureId, uniformValue);
     }

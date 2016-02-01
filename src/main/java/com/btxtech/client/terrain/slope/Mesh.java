@@ -1,5 +1,6 @@
 package com.btxtech.client.terrain.slope;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class Mesh {
     private List<Vertex> norms;
     private List<Vertex> tangents;
     private List<Float> slopeFactors;
+    // private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;;
+    private ImageDescriptor slopeImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
 
     public Mesh(int xCount, int yCount) {
         this.xCount = xCount;
@@ -189,5 +192,9 @@ public class Mesh {
 
     public List<Float> getSlopeFactors() {
         return slopeFactors;
+    }
+
+    public ImageDescriptor getSlopeImageDescriptor() {
+        return slopeImageDescriptor;
     }
 }

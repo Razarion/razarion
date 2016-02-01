@@ -34,6 +34,7 @@ public class SlopeRenderer extends AbstractRenderer {
     private VertexShaderAttribute normals;
     private VertexShaderAttribute tangents;
     private FloatShaderAttribute slopeFactors;
+    private WebGlUniformTexture slopeWebGLTexture;
 
     @PostConstruct
     public void init() {
@@ -42,6 +43,7 @@ public class SlopeRenderer extends AbstractRenderer {
         normals = createVertexShaderAttribute("aVertexNormal");
         tangents = createVertexShaderAttribute("aVertexTangent");
         slopeFactors = createFloatShaderAttribute("aSlopeFactor");
+        slopeWebGLTexture = createWebGLTexture(terrainSurface.getPlateau().getMesh().getSlopeImageDescriptor(), "uSamplerSlopeTexture", WebGLRenderingContext.TEXTURE0, 0);
     }
 
     @Override
@@ -71,11 +73,14 @@ public class SlopeRenderer extends AbstractRenderer {
         Vertex direction = lighting.getLightDirection();
         uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
         uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
+        uniform1i("uSamplerSlopeTextureSize", terrainSurface.getPlateau().getMesh().getSlopeImageDescriptor().getQuadraticEdge());
 
         vertices.activate();
         normals.activate();
         tangents.activate();
         slopeFactors.activate();
+
+        slopeWebGLTexture.activate();
 
         getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
