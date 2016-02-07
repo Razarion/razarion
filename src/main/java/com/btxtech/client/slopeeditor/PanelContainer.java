@@ -1,4 +1,4 @@
-package com.btxtech.client.editor;
+package com.btxtech.client.slopeeditor;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,8 +16,8 @@ import javax.inject.Inject;
  * Created by Beat
  * 22.11.2015.
  */
-@Templated("EditorPanelContainer.html#editorPanelContainer")
-public class EditorPanelContainer extends Composite {
+@Templated("PanelContainer.html#editorPanelContainer")
+public class PanelContainer extends Composite {
     @Inject
     private Instance<PlateauPanel> plateauPanelInstance;
     @Inject

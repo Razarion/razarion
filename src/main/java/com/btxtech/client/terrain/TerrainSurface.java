@@ -10,14 +10,19 @@ import com.btxtech.client.terrain.slope.Shape;
 import com.btxtech.client.terrain.slope.ShapeTemplate;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.PlateauConfigEntity;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Vertex;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.api.AfterInitialization;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -46,6 +51,7 @@ public class TerrainSurface {
     private double edgeDistance = 0.5;
     private double groundBumpMap = 2;
     private Plateau plateau;
+    private PlateauConfigEntity plateauConfigEntity;
     private Beach beach;
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private final double highestPointInView = 101; // Should be calculated
@@ -54,13 +60,27 @@ public class TerrainSurface {
     @PostConstruct
     public void init() {
         setupGround();
-
-        ShapeTemplate shapeTemplate = new ShapeTemplate(100, new Shape(Shape.SHAPE_0));
-        shapeTemplate.sculpt(20, 1);
-        plateau = new Plateau(shapeTemplate, 10, Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 600)));
-        plateau.wrap();
         beach = new Beach(mesh);
     }
+
+    public void setupPlateau() {
+        ShapeTemplate shapeTemplate = new ShapeTemplate(100, new Shape(plateauConfigEntity.getShape()));
+        shapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalShift());
+        plateau = new Plateau(shapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 600)));
+        plateau.wrap();
+    }
+
+//    private PlateauConfigEntity setupPlateauConfigEntity() {
+//        plateauConfigEntity = new PlateauConfigEntity();
+//        plateauConfigEntity.setBumpMapDepth(0.5);
+//        plateauConfigEntity.setFractalRoughness(0);
+//        plateauConfigEntity.setFractalShift(0);
+//        plateauConfigEntity.setSpecularHardness(0.2);
+//        plateauConfigEntity.setSpecularIntensity(1.0);
+//        plateauConfigEntity.setVerticalSpace(10);
+//        plateauConfigEntity.setShape(Shape.SHAPE_1);
+//        return plateauConfigEntity;
+//    }
 
     private void setupGround() {
         mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
@@ -79,12 +99,21 @@ public class TerrainSurface {
         mesh.adjustNorm();
     }
 
+    public void sculpt() {
+        setupPlateau();
+        renderService.fillBuffers();
+    }
+
     public boolean isFree(double absoluteX, double absoluteY) {
         return true; // TODO
     }
 
     public Plateau getPlateau() {
         return plateau;
+    }
+
+    public PlateauConfigEntity getPlateauConfigEntity() {
+        return plateauConfigEntity;
     }
 
     public VertexList getVertexList() {
@@ -161,5 +190,38 @@ public class TerrainSurface {
 
     public double getLowestPointInView() {
         return lowestPointInView;
+    }
+
+    public void savePlateauConfigEntity() {
+        terrainEditorService.call(new RemoteCallback<Void>() {
+            @Override
+            public void callback(Void response) {
+
+            }
+        }, new ErrorCallback<Object>() {
+            @Override
+            public boolean error(Object message, Throwable throwable) {
+                logger.log(Level.SEVERE, "save failed: " + message, throwable);
+                return false;
+            }
+        }).save(plateauConfigEntity);
+    }
+
+    @AfterInitialization
+    public void afterInitialization() {
+        terrainEditorService.call(new RemoteCallback<PlateauConfigEntity>() {
+            @Override
+            public void callback(PlateauConfigEntity plateauConfigEntity) {
+                TerrainSurface.this.plateauConfigEntity = plateauConfigEntity;
+                setupPlateau();
+            }
+        }, new ErrorCallback<Object>() {
+            @Override
+            public boolean error(Object message, Throwable throwable) {
+                logger.log(Level.SEVERE, "read failed: " + message, throwable);
+                return false;
+            }
+        }).read();
+
     }
 }

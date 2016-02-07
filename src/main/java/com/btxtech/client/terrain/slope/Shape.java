@@ -20,6 +20,14 @@ public class Shape {
             new Index(30, 10),
             new Index(0, 0)
     );
+    public static final List<Index> SHAPE_1 = Arrays.asList(
+            new Index(300, 210),
+            new Index(200, 210),
+            new Index(100, 110),
+            new Index(100, 10),
+            new Index(95, 10),
+            new Index(0, 10)
+    );
     private double distance;
     private List<Index> vertices;
 

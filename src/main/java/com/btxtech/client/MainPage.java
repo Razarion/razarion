@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.client.editor.EditorPanelContainer;
+import com.btxtech.client.slopeeditor.PanelContainer;
 import com.btxtech.client.menu.Menu;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
@@ -35,7 +35,7 @@ public class MainPage extends Composite {
     private Menu menu;
     @Inject
     @DataField
-    private EditorPanelContainer editorPanelContainer;
+    private PanelContainer editorPanelContainer;
 
     @PostConstruct
     public void init() {

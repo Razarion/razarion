@@ -1,12 +1,17 @@
 package com.btxtech.shared;
 
+import com.btxtech.game.jsre.client.common.Index;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -20,18 +25,23 @@ public class PlateauConfigEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private int top;
+    @ElementCollection
+    @OrderColumn
+    @CollectionTable(name = "TERRAIN_PLATEAU_CONFIG_SHAPE")
+    private List<Index> shape;
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
-    private double fractal;
+    private double fractalShift;
+    private double fractalRoughness;
+    private int verticalSpace;
 
-    public int getTop() {
-        return top;
+    public List<Index> getShape() {
+        return shape;
     }
 
-    public void setTop(int top) {
-        this.top = top;
+    public void setShape(List<Index> shape) {
+        this.shape = shape;
     }
 
     public double getBumpMapDepth() {
@@ -58,12 +68,28 @@ public class PlateauConfigEntity {
         this.specularHardness = specularHardness;
     }
 
-    public double getFractal() {
-        return fractal;
+    public double getFractalShift() {
+        return fractalShift;
     }
 
-    public void setFractal(double fractal) {
-        this.fractal = fractal;
+    public void setFractalShift(double fractalShift) {
+        this.fractalShift = fractalShift;
+    }
+
+    public double getFractalRoughness() {
+        return fractalRoughness;
+    }
+
+    public void setFractalRoughness(double fractalRoughness) {
+        this.fractalRoughness = fractalRoughness;
+    }
+
+    public int getVerticalSpace() {
+        return verticalSpace;
+    }
+
+    public void setVerticalSpace(int verticalSpace) {
+        this.verticalSpace = verticalSpace;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.btxtech.client.editor;
+package com.btxtech.client.slopeeditor;
 
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
@@ -19,6 +19,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -43,27 +44,55 @@ public class PlateauPanel extends Composite {
     @Bound
     @DataField
     private DoubleBox specularHardness;
-    @DataField
-    private Element svgElement = (Element) Browser.getDocument().createSVGElement();
-    @Inject
-    private SlopeEditor slopeEditor;
     @Inject
     @Bound
     @DataField
-    private DoubleBox fractal;
+    private DoubleBox fractalShift;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox fractalRoughness;
+    @DataField
+    private Element svgElement = (Element) Browser.getDocument().createSVGElement();
+    @Inject
+    @DataField
+    private Button zoomIn;
+    @Inject
+    @DataField
+    private Button zoomOut;
+    @Inject
+    private SlopeEditor slopeEditor;
+    @Inject
+    @DataField
+    private Button sculpt;
     @Inject
     @DataField
     private Button save;
-    // private Logger logger = Logger.getLogger(PlateauPanel.class.getName());
+    private Logger logger = Logger.getLogger(PlateauPanel.class.getName());
 
     @PostConstruct
     public void init() {
-        // plateauConfigEntityDataBinder = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity(), InitialState.FROM_MODEL);
-        // slopeEditor.init(svgElement);
+        plateauConfigEntityDataBinder = DataBinder.forModel(terrainSurface.getPlateauConfigEntity(), InitialState.FROM_MODEL);
+        slopeEditor.init(svgElement);
+    }
+
+    @EventHandler("zoomIn")
+    private void zoomInButtonClick(ClickEvent event) {
+        slopeEditor.zoomIn();
+    }
+
+    @EventHandler("zoomOut")
+    private void zoomOutButtonClick(ClickEvent event) {
+        slopeEditor.zoomOut();
+    }
+
+    @EventHandler("sculpt")
+    private void sculptButtonClick(ClickEvent event) {
+        terrainSurface.sculpt();
     }
 
     @EventHandler("save")
     private void saveButtonClick(ClickEvent event) {
-        // terrainSurface.savePlateauConfigEntity();
+        terrainSurface.savePlateauConfigEntity();
     }
 }

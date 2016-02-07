@@ -1,6 +1,6 @@
 package com.btxtech.client.menu;
 
-import com.btxtech.client.editor.EditorPanelContainer;
+import com.btxtech.client.slopeeditor.PanelContainer;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -40,15 +40,15 @@ public class Menu extends Composite {
     @Inject
     @DataField("menu-unit")
     private UnitMenu unitMenu;
-    private EditorPanelContainer editorPanelContainer;
+    private PanelContainer panelContainer;
 
-    public void setEditorPanelContainer(EditorPanelContainer editorPanelContainer) {
-        this.editorPanelContainer = editorPanelContainer;
+    public void setEditorPanelContainer(PanelContainer panelContainer) {
+        this.panelContainer = panelContainer;
     }
 
     @EventHandler("plateauEditor")
     private void plateauEditorButtonClick(ClickEvent event) {
-        editorPanelContainer.showSlopeEditor();
+        panelContainer.showSlopeEditor();
     }
 
 }

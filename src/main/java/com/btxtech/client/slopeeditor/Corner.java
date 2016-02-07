@@ -1,4 +1,4 @@
-package com.btxtech.client.editor;
+package com.btxtech.client.slopeeditor;
 
 import com.btxtech.game.jsre.client.common.Index;
 import com.google.gwt.dom.client.Style;
@@ -9,24 +9,22 @@ import elemental.events.EventRemover;
 import elemental.events.MouseEvent;
 import elemental.svg.SVGCircleElement;
 
-import java.util.logging.Logger;
-
 /**
  * Created by Beat
  * 02.05.2015.
  */
-public class EditorCorner implements EventListener {
+public class Corner {
     private static final float RADIUS = 5;
     private Index position;
-    private SlopeEditor slopeEditor;
     private SVGCircleElement circle;
-    private Logger logger = Logger.getLogger(EditorCorner.class.getName());
+    // private Logger logger = Logger.getLogger(Corner.class.getName());
     private EventRemover onMouseMoveEventRemover;
     private EventRemover onMouseUpEventRemover;
+    private Model model;
 
-    public EditorCorner(Index position,  SlopeEditor slopeEditor) {
+    public Corner(Index position, Model model) {
         this.position = position;
-        this.slopeEditor = slopeEditor;
+        this.model = model;
         circle = Browser.getDocument().createSVGCircleElement();
         circle.getCx().getBaseVal().setValue(position.getX());
         circle.getCy().getBaseVal().setValue(position.getY());
@@ -34,7 +32,6 @@ public class EditorCorner implements EventListener {
         circle.addEventListener("mousedown", new EventListener() {
             @Override
             public void handleEvent(Event event) {
-
                 onMouseMoveEventRemover = Browser.getWindow().addEventListener("mousemove", new EventListener() {
                     @Override
                     public void handleEvent(Event event) {
@@ -50,14 +47,17 @@ public class EditorCorner implements EventListener {
             }
         }, false);
         circle.getStyle().setCursor(Style.Cursor.MOVE.getCssName());
-        slopeEditor.getGroup().appendChild(circle);
         circle.getStyle().setProperty("fill", "blue");
     }
 
-    private void move(MouseEvent event) {
-        position = new Index(position.getX(), slopeEditor.convertMouseToSvg(event).getY());
+    public void move(Index position) {
+        this.position = position;
         circle.getCx().getBaseVal().setValue(position.getX());
         circle.getCy().getBaseVal().setValue(position.getY());
+    }
+
+    private void move(MouseEvent event) {
+        model.cornerMoved(model.convertMouseToSvg(event), this);
     }
 
     private void deselect() {
@@ -67,15 +67,14 @@ public class EditorCorner implements EventListener {
         if (onMouseUpEventRemover != null) {
             onMouseUpEventRemover.remove();
         }
-        slopeEditor.onChanged();
-    }
-
-    @Override
-    public void handleEvent(Event event) {
-        logger.severe("event: " + event);
+        model.onChanged();
     }
 
     public Index getPosition() {
         return position;
+    }
+
+    public SVGCircleElement getSvgElement() {
+        return circle;
     }
 }
