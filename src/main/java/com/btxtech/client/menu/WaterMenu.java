@@ -32,7 +32,7 @@ public class WaterMenu extends Composite {
     @DataField
     private DoubleBox specularHardness;
 
-    @PostConstruct
+    // @PostConstruct
     public void init() {
         transparency.setValue(terrainSurface.getBeach().getWaterTransparency());
         bumpMap.setValue(terrainSurface.getBeach().getWaterBumpMap());

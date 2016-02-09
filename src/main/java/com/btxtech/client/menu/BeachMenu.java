@@ -34,8 +34,8 @@ public class BeachMenu extends Composite {
 
     @PostConstruct
     public void init() {
-        bumpMap.setValue(terrainSurface.getBeach().getBumpMap());
-        fractal.setValue(terrainSurface.getBeach().getFractal());
+        // bumpMap.setValue(terrainSurface.getBeach().getBumpMap());
+        // fractal.setValue(terrainSurface.getBeach().getFractal());
         // specularIntensity.setValue(terrainSurface.getBeach().getWaterSpecularIntensity());
         // specularHardness.setValue(terrainSurface.getBeach().getWaterSpecularHardness());
     }

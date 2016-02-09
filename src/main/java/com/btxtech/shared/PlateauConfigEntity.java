@@ -6,6 +6,7 @@ import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -26,7 +27,7 @@ public class PlateauConfigEntity {
     @GeneratedValue
     private Long id;
     @ElementCollection
-    @OrderColumn
+    @OrderColumn(name = "orderColumn")
     @CollectionTable(name = "TERRAIN_PLATEAU_CONFIG_SHAPE")
     private List<Index> shape;
     private double bumpMapDepth;

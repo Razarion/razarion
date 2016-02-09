@@ -1,6 +1,6 @@
 package com.btxtech.server.terrain;
 
-import com.btxtech.client.TerrainEditorService;
+import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.server.ExceptionHandler;
 import com.btxtech.shared.PlateauConfigEntity;
 import com.btxtech.shared.TerrainMeshVertex;
@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -23,14 +24,15 @@ import java.util.Collection;
 @Service
 @ApplicationScoped
 public class TerrainEditorServiceImpl implements TerrainEditorService {
-    // @Inject
-    // private Logger logger;
+    @Inject
+    private Logger logger;
     @Inject
     private ExceptionHandler exceptionHandler;
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
+    @Transactional
     public PlateauConfigEntity read() {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -38,7 +40,9 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
             CriteriaQuery<PlateauConfigEntity> userQuery = criteriaBuilder.createQuery(PlateauConfigEntity.class);
             Root<PlateauConfigEntity> from = userQuery.from(PlateauConfigEntity.class);
             CriteriaQuery<PlateauConfigEntity> userSelect = userQuery.select(from);
-            return entityManager.createQuery(userSelect).getSingleResult();
+            PlateauConfigEntity plateauConfigEntity =  entityManager.createQuery(userSelect).getSingleResult();
+            logger.severe("plateauConfigEntity: " + plateauConfigEntity.getShape());
+            return plateauConfigEntity;
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

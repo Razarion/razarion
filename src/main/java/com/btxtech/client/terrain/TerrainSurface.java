@@ -1,7 +1,7 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.TerrainEditorService;
+import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.Mesh;
@@ -34,8 +34,6 @@ public class TerrainSurface {
     public static final int MESH_SIZE = 1024;
     public static final int MESH_NODE_EDGE_LENGTH = 64;
     @Inject
-    private Caller<TerrainEditorService> terrainEditorService;
-    @Inject
     private GameCanvas gameCanvas;
     @Inject
     private RenderService renderService;
@@ -57,10 +55,11 @@ public class TerrainSurface {
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated
 
-    @PostConstruct
     public void init() {
         setupGround();
+        // setupPlateauConfigEntity();
         beach = new Beach(mesh);
+        setupPlateau();
     }
 
     public void setupPlateau() {
@@ -70,17 +69,17 @@ public class TerrainSurface {
         plateau.wrap();
     }
 
-//    private PlateauConfigEntity setupPlateauConfigEntity() {
-//        plateauConfigEntity = new PlateauConfigEntity();
-//        plateauConfigEntity.setBumpMapDepth(0.5);
-//        plateauConfigEntity.setFractalRoughness(0);
-//        plateauConfigEntity.setFractalShift(0);
-//        plateauConfigEntity.setSpecularHardness(0.2);
-//        plateauConfigEntity.setSpecularIntensity(1.0);
-//        plateauConfigEntity.setVerticalSpace(10);
-//        plateauConfigEntity.setShape(Shape.SHAPE_1);
-//        return plateauConfigEntity;
-//    }
+    private PlateauConfigEntity setupPlateauConfigEntity() {
+        plateauConfigEntity = new PlateauConfigEntity();
+        plateauConfigEntity.setBumpMapDepth(0.5);
+        plateauConfigEntity.setFractalRoughness(0);
+        plateauConfigEntity.setFractalShift(0);
+        plateauConfigEntity.setSpecularHardness(0.2);
+        plateauConfigEntity.setSpecularIntensity(1.0);
+        plateauConfigEntity.setVerticalSpace(10);
+        plateauConfigEntity.setShape(Shape.SHAPE_1);
+        return plateauConfigEntity;
+    }
 
     private void setupGround() {
         mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
@@ -192,36 +191,7 @@ public class TerrainSurface {
         return lowestPointInView;
     }
 
-    public void savePlateauConfigEntity() {
-        terrainEditorService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void response) {
-
-            }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "save failed: " + message, throwable);
-                return false;
-            }
-        }).save(plateauConfigEntity);
-    }
-
-    @AfterInitialization
-    public void afterInitialization() {
-        terrainEditorService.call(new RemoteCallback<PlateauConfigEntity>() {
-            @Override
-            public void callback(PlateauConfigEntity plateauConfigEntity) {
-                TerrainSurface.this.plateauConfigEntity = plateauConfigEntity;
-                setupPlateau();
-            }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "read failed: " + message, throwable);
-                return false;
-            }
-        }).read();
-
+    public void setPlateauConfigEntity(PlateauConfigEntity plateauConfigEntity) {
+        this.plateauConfigEntity = plateauConfigEntity;
     }
 }

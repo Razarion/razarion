@@ -4,6 +4,8 @@ import com.btxtech.client.slopeeditor.PanelContainer;
 import com.btxtech.client.menu.Menu;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.system.boot.ClientRunner;
+import com.btxtech.client.system.boot.GameStartupSeq;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
@@ -24,12 +26,12 @@ import java.util.logging.Logger;
 @Templated("MainPage.html#app-template")
 public class MainPage extends Composite {
     private Logger logger = Logger.getLogger(MainPage.class.getName());
+    @com.google.inject.Inject
+    private ClientRunner clientRunner;
     @DataField
     private Canvas canvas = Canvas.createIfSupported();
     @Inject
     private GameCanvas gameCanvas;
-    @Inject
-    private RenderService renderService;
     @Inject
     @DataField
     private Menu menu;
@@ -43,10 +45,9 @@ public class MainPage extends Composite {
             if (canvas == null) {
                 throw new IllegalStateException("Canvas is not supported");
             }
-            gameCanvas.init(canvas);
+            gameCanvas.setCanvas(canvas);
             menu.setEditorPanelContainer(editorPanelContainer);
-            renderService.fillBuffers();
-            gameCanvas.startRenderLoop();
+            clientRunner.guiErrayReady(GameStartupSeq.COLD_SIMULATED);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "MainPage init failed", throwable);
         }

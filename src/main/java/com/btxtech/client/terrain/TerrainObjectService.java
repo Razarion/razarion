@@ -1,7 +1,7 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.VertexListService;
+import com.btxtech.shared.VertexListService;
 import com.btxtech.client.renderer.DepthSorter;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.Camera;

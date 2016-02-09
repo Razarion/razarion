@@ -41,11 +41,16 @@ public class GameCanvas {
         logger.severe("GameCanvas <init> called twice????");
     }
 
-    public void init(Canvas canvas) {
+    public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
+    }
+
+    public void init() {
+        if(canvas == null) {
+            throw new IllegalStateException("Canvas not set");
+        }
         initCanvas();
         resizeCanvas();
-        renderService.init();
         viewFieldMover.activate(canvas);
 
         Window.addResizeHandler(new ResizeHandler() {

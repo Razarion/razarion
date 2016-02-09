@@ -1,6 +1,6 @@
 package com.btxtech.server;
 
-import com.btxtech.client.VertexListService;
+import com.btxtech.shared.VertexListService;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.shared.VertexList;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -9,7 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.FileInputStream;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat

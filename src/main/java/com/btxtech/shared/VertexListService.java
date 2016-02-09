@@ -1,4 +1,4 @@
-package com.btxtech.client;
+package com.btxtech.shared;
 
 import com.btxtech.shared.VertexList;
 import org.jboss.errai.bus.server.annotations.Remote;

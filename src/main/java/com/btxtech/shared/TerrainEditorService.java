@@ -1,4 +1,4 @@
-package com.btxtech.client;
+package com.btxtech.shared;
 
 import com.btxtech.shared.TerrainMeshVertex;
 import com.btxtech.shared.PlateauConfigEntity;
