@@ -21,7 +21,8 @@ public class Mesh {
     private List<Vertex> tangents;
     private List<Float> slopeFactors;
     // private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;;
-    private ImageDescriptor slopeImageDescriptor = ImageDescriptor.CHESS_TEXTURE_08;
+    private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
+    private ImageDescriptor slopeBumpImageDescriptor = ImageDescriptor.BUMP_MAP_04;
 
     public Mesh(int xCount, int yCount) {
         this.xCount = xCount;
@@ -196,5 +197,9 @@ public class Mesh {
 
     public ImageDescriptor getSlopeImageDescriptor() {
         return slopeImageDescriptor;
+    }
+
+    public ImageDescriptor getSlopeBumpImageDescriptor() {
+        return slopeBumpImageDescriptor;
     }
 }
