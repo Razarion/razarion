@@ -1,6 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.ShapeEntryEntity;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.Arrays;
@@ -29,33 +30,37 @@ public class Shape {
             new Index(0, 10)
     );
     private double distance;
-    private List<Index> vertices;
+    private List<ShapeEntryEntity> entries;
 
-    public Shape(List<Index> vertices) {
-        this.vertices = vertices;
-        distance = Math.abs(vertices.get(0).getX() - vertices.get(vertices.size() - 1).getX());
+    public Shape(List<ShapeEntryEntity> entries) {
+        this.entries = entries;
+        distance = Math.abs(entries.get(0).getPosition().getX() - entries.get(entries.size() - 1).getPosition().getX());
     }
 
     public int getVertexCount() {
-        return vertices.size();
+        return entries.size();
     }
 
-    public int getShiftableVertexCount() {
-        return vertices.size() - 2;
+    public int getShiftableCount() {
+        return entries.size() - 2;
     }
 
-    public boolean isShiftableVertex(int index) {
-        return index > 0 && index < vertices.size() - 1;
+    public boolean isShiftableEntry(int index) {
+        return index > 0 && index < entries.size() - 1;
     }
 
     public Vertex getVertex(int index) {
-        return toVertex(vertices.get(index));
+        return toVertex(entries.get(index).getPosition());
+    }
+
+    public float getSlopeFactor(int index) {
+        return entries.get(index).getSlopeFactor();
     }
 
     public Vertex getNormShiftedVertex(int row, double distance) {
-        Index previous = vertices.get(row - 1);
-        Index current = vertices.get(row);
-        Index next = vertices.get(row + 1);
+        Index previous = entries.get(row - 1).getPosition();
+        Index current = entries.get(row).getPosition();
+        Index next = entries.get(row + 1).getPosition();
 
         double deltaAngle = current.getAngle(next, previous) / 2.0;
         double angle = current.getAngleToNord(next) + deltaAngle;

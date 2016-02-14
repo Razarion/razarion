@@ -77,7 +77,7 @@ public class TerrainSurface {
         plateauConfigEntity.setSpecularHardness(0.2);
         plateauConfigEntity.setSpecularIntensity(1.0);
         plateauConfigEntity.setVerticalSpace(10);
-        plateauConfigEntity.setShape(Shape.SHAPE_1);
+        // plateauConfigEntity.setShape(Shape.SHAPE_1);
         return plateauConfigEntity;
     }
 

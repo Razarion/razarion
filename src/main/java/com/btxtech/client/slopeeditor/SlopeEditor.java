@@ -1,8 +1,8 @@
 package com.btxtech.client.slopeeditor;
 
-import com.btxtech.client.ViewFieldMover;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.ShapeEntryEntity;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -17,7 +17,6 @@ import elemental.svg.SVGTransform;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -31,7 +30,7 @@ public class SlopeEditor implements Model {
     private List<Corner> corners = new ArrayList<>();
     private List<Line> lines = new ArrayList<>();
     private SVGGElement group;
-    private Logger logger = Logger.getLogger(SlopeEditor.class.getName());
+    // private Logger logger = Logger.getLogger(SlopeEditor.class.getName());
     private SVGTransform translateTransform;
     private SVGTransform scaleTransform;
     private Index lastScrollPosition;
@@ -83,7 +82,7 @@ public class SlopeEditor implements Model {
         setup(terrainSurface.getPlateauConfigEntity().getShape());
     }
 
-    private void setup(List<Index> cornerPositions) {
+    private void setup(List<ShapeEntryEntity> shapeEntryEntities) {
         // remove old
         for (Corner corner : corners) {
             group.removeChild(corner.getSvgElement());
@@ -94,12 +93,11 @@ public class SlopeEditor implements Model {
         }
         lines.clear();
         // setup
-        for (int i = 0; i < cornerPositions.size(); i++) {
-            Index index = cornerPositions.get(i);
-            Corner corner = new Corner(index, this);
+        for (int i = 0; i < shapeEntryEntities.size(); i++) {
+            Corner corner = new Corner(shapeEntryEntities.get(i), this);
             corners.add(corner);
-            if (i + 1 < cornerPositions.size()) {
-                lines.add(new Line(corner, cornerPositions.get(i + 1), this));
+            if (i + 1 < shapeEntryEntities.size()) {
+                lines.add(new Line(corner, shapeEntryEntities.get(i + 1).getPosition(), this));
             }
         }
         // append. zIndex does not work in SVG 1.1. Append order is used. First added first draw. Latter added are draw on top.
@@ -132,21 +130,11 @@ public class SlopeEditor implements Model {
     }
 
     @Override
-    public void onChanged() {
-        terrainSurface.getPlateauConfigEntity().setShape(setupIndexes());
-    }
-
-    @Override
     public void createCorner(Index position, Corner previous) {
-        List<Index> cornerPositions = new ArrayList<>();
-        for (Corner corner : corners) {
-            cornerPositions.add(corner.getPosition());
-            if (corner.equals(previous)) {
-                cornerPositions.add(position);
-            }
-        }
-        setup(cornerPositions);
-        onChanged();
+        int index = terrainSurface.getPlateauConfigEntity().getShape().indexOf(previous.getShapeEntryEntity());
+        ShapeEntryEntity shapeEntryEntity = new ShapeEntryEntity(position, 0f);
+        terrainSurface.getPlateauConfigEntity().getShape().add(index+1, shapeEntryEntity);
+        setup(terrainSurface.getPlateauConfigEntity().getShape());
     }
 
     @Override
@@ -160,14 +148,6 @@ public class SlopeEditor implements Model {
             lines.get(cornerIndex - 1).moveEnd(position);
         }
 
-    }
-
-    private List<Index> setupIndexes() {
-        List<Index> indexes = new ArrayList<>();
-        for (Corner corner : corners) {
-            indexes.add(corner.getPosition());
-        }
-        return indexes;
     }
 
     public void zoomIn() {

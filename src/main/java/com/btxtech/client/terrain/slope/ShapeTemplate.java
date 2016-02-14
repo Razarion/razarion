@@ -15,27 +15,30 @@ public class ShapeTemplate {
     private int columns;
     private final Shape shape;
     // columns, row
-    private Vertex[][] nodes;
+    private ShapeTemplateEntry[][] nodes;
 
     public ShapeTemplate(int columns, Shape shape) {
         this.columns = columns;
         this.shape = shape;
         rows = shape.getVertexCount();
-        nodes = new Vertex[columns][shape.getVertexCount()];
+        nodes = new ShapeTemplateEntry[columns][shape.getVertexCount()];
     }
 
     public void sculpt(double shift, double roughness) {
-        FractalField fractalField = FractalField.createSaveFractalField(shape.getShiftableVertexCount(), columns, roughness, -shift / 2.0, shift / 2.0);
+        FractalField fractalField = FractalField.createSaveFractalField(shape.getShiftableCount(), columns, roughness, -shift / 2.0, shift / 2.0);
         fractalField.process();
         for (int column = 0; column < columns; column++) {
             for (int row = 0; row < rows; row++) {
                 int correctedRow = rows - 1 - row;
-                if (shape.isShiftableVertex(row)) {
+                ShapeTemplateEntry shapeTemplateEntry = new ShapeTemplateEntry();
+                shapeTemplateEntry.setSlopeFactor(shape.getSlopeFactor(row));
+                if (shape.isShiftableEntry(row)) {
                     double normShift = fractalField.getValue(column, correctedRow - shape.getShiftableOffset());
-                    nodes[column][correctedRow] = shape.getNormShiftedVertex(row, normShift);
+                    shapeTemplateEntry.setPosition(shape.getNormShiftedVertex(row, normShift));
                 } else {
-                    nodes[column][correctedRow] = shape.getVertex(row);
+                    shapeTemplateEntry.setPosition(shape.getVertex(row));
                 }
+                nodes[column][correctedRow] = shapeTemplateEntry;
             }
         }
     }
@@ -47,10 +50,9 @@ public class ShapeTemplate {
             for (VerticalSegment verticalSegment : abstractBorder.getVerticalSegments()) {
                 Matrix4 transformationMatrix = verticalSegment.getTransformation();
                 for (int row = 0; row < rows; row++) {
-                    Vertex templateVector = nodes[templateColumn][row];
-                    Vertex transformedPoint = transformationMatrix.multiply(templateVector, 1.0);
-                    // TODO calculate slope factor
-                    mesh.addVertex(meshColumn, row, transformedPoint, 1f);
+                    ShapeTemplateEntry shapeTemplateEntry = nodes[templateColumn][row];
+                    Vertex transformedPoint = transformationMatrix.multiply(shapeTemplateEntry.getPosition(), 1.0);
+                    mesh.addVertex(meshColumn, row, transformedPoint, shapeTemplateEntry.getSlopeFactor());
                 }
                 templateColumn++;
                 if (templateColumn >= columns) {

@@ -4,12 +4,14 @@ import com.btxtech.game.jsre.client.common.Index;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.List;
@@ -26,10 +28,9 @@ public class PlateauConfigEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @ElementCollection
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "plateauConfigEntity")
     @OrderColumn(name = "orderColumn")
-    @CollectionTable(name = "TERRAIN_PLATEAU_CONFIG_SHAPE")
-    private List<Index> shape;
+    private List<ShapeEntryEntity> shape;
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
@@ -37,11 +38,11 @@ public class PlateauConfigEntity {
     private double fractalRoughness;
     private int verticalSpace;
 
-    public List<Index> getShape() {
+    public List<ShapeEntryEntity> getShape() {
         return shape;
     }
 
-    public void setShape(List<Index> shape) {
+    public void setShape(List<ShapeEntryEntity> shape) {
         this.shape = shape;
     }
 

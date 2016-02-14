@@ -36,6 +36,7 @@ public class SlopeRenderer extends AbstractRenderer {
     private FloatShaderAttribute slopeFactors;
     private WebGlUniformTexture slopeWebGLTexture;
     private WebGlUniformTexture slopeBumpWebGLTexture;
+    private WebGlUniformTexture groundWebGLTexture;
 
     @PostConstruct
     public void init() {
@@ -46,6 +47,7 @@ public class SlopeRenderer extends AbstractRenderer {
         slopeFactors = createFloatShaderAttribute("aSlopeFactor");
         slopeWebGLTexture = createWebGLTexture(terrainSurface.getPlateau().getMesh().getSlopeImageDescriptor(), "uSamplerSlopeTexture", WebGLRenderingContext.TEXTURE0, 0);
         slopeBumpWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getPlateau().getMesh().getSlopeBumpImageDescriptor(), "uSamplerBumpMapSlopeTexture", WebGLRenderingContext.TEXTURE1, 1);
+        groundWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), "uSamplerGroundCover", WebGLRenderingContext.TEXTURE2, 2);
     }
 
     @Override
@@ -80,6 +82,7 @@ public class SlopeRenderer extends AbstractRenderer {
         uniform1f("uBumpMapSlopeDepth", terrainSurface.getPlateauConfigEntity().getBumpMapDepth());
         uniform1f("slopeSpecularIntensity", terrainSurface.getPlateauConfigEntity().getSpecularIntensity());
         uniform1f("slopeSpecularHardness", terrainSurface.getPlateauConfigEntity().getSpecularHardness());
+        uniform1i("uSamplerGroundCoverSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
 
         vertices.activate();
         normals.activate();
@@ -88,6 +91,7 @@ public class SlopeRenderer extends AbstractRenderer {
 
         slopeWebGLTexture.activate();
         slopeBumpWebGLTexture.activate();
+        groundWebGLTexture.activate();
 
         getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

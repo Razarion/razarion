@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.IntegerBox;
 import elemental.client.Browser;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -51,6 +52,10 @@ public class PlateauPanel extends Composite {
     @Bound
     @DataField
     private DoubleBox specularHardness;
+    @Inject
+    @Bound
+    @DataField
+    private IntegerBox verticalSpace;
     @Inject
     @Bound
     @DataField

@@ -10,8 +10,6 @@ import elemental.events.MouseEvent;
 public interface Model {
     Index convertMouseToSvg(MouseEvent event);
 
-    void onChanged();
-
     void createCorner(Index position, Corner previous);
 
     void cornerMoved(Index position, Corner corner);

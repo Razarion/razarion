@@ -1,7 +1,6 @@
 package com.btxtech.client.slopeeditor;
 
 import com.btxtech.game.jsre.client.common.Index;
-import com.google.gwt.dom.client.Style;
 import elemental.client.Browser;
 import elemental.dom.Node;
 import elemental.events.Event;
@@ -18,8 +17,8 @@ public class Line {
 
     public Line(final Corner previous, Index next, final Model model) {
         line = Browser.getDocument().createSVGLineElement();
-        line.getX1().getBaseVal().setValue(previous.getPosition().getX());
-        line.getY1().getBaseVal().setValue(previous.getPosition().getY());
+        line.getX1().getBaseVal().setValue(previous.getShapeEntryEntity().getPosition().getX());
+        line.getY1().getBaseVal().setValue(previous.getShapeEntryEntity().getPosition().getY());
         line.getX2().getBaseVal().setValue(next.getX());
         line.getY2().getBaseVal().setValue(next.getY());
         line.getStyle().setProperty("stroke", "blue");
@@ -29,7 +28,7 @@ public class Line {
 
             @Override
             public void handleEvent(Event evt) {
-                model.createCorner(model.convertMouseToSvg((MouseEvent)evt), previous);
+                model.createCorner(model.convertMouseToSvg((MouseEvent) evt), previous);
             }
         }, false);
 

@@ -5,6 +5,7 @@ varying vec3 vVertexTangent;
 varying vec4 vVertexPosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
+varying float vSlopeFactor;
 
 uniform highp mat4 uNMatrix;
 uniform vec3 uLightingDirection;
@@ -17,6 +18,9 @@ uniform int uSamplerBumpMapSlopeTextureSize;
 uniform float uBumpMapSlopeDepth;
 uniform float slopeSpecularIntensity;
 uniform float slopeSpecularHardness;
+uniform sampler2D uSamplerGroundCover;
+uniform int uSamplerGroundCoverSize;
+
 
 const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
 
@@ -39,13 +43,13 @@ vec4 triPlanarTextureMapping(sampler2D sampler, float size, vec2 addCoord) {
         }
     }
 
-    float b = (blending.x + blending.y + blending.z);
-    blending /= vec3(b, b, b);
-    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / size + addCoord);
-    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / size + addCoord);
-    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / size + addCoord);
-    // blend the results of the 3 planar projections.
-    return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
+//    float b = (blending.x + blending.y + blending.z);
+//    blending /= vec3(b, b, b);
+//    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / size + addCoord);
+//    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / size + addCoord);
+//    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / size + addCoord);
+//    // blend the results of the 3 planar projections.
+//    return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
 }
 
 vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float size) {
@@ -70,11 +74,17 @@ vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
 }
 
 void main(void) {
+     // Color
+     vec4 textureColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
+
+    if(vSlopeFactor < 1.0) {
+        vec4 groundColor = triPlanarTextureMapping(uSamplerGroundCover, float(uSamplerGroundCoverSize), vec2(0,0));
+        textureColor = mix(groundColor, textureColor, vSlopeFactor);
+    }
+
     vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
     // Norm
     vec3 correctedNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
-    // Color
-    vec4 textureColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
     // Light
     vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
     vec4 diffuse = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * diffuseWeightFactor * textureColor.rgb, 1.0);
