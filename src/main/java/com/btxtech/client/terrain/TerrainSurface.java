@@ -89,7 +89,8 @@ public class TerrainSurface {
         mesh.iterate(new Mesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                mesh.getVertexDataSafe(index).setEdge(grassGround.getValue(index));
+                mesh.getVertexDataSafe(index).setEdge(0);
+                // TODO mesh.getVertexDataSafe(index).setEdge(grassGround.getValue(index));
                 // TODO mesh.getVertexDataSafe(index).add(new Vertex(0, 0, heightField.getValue(index)));
             }
         });
