@@ -43,7 +43,7 @@ public class ShapeTemplate {
         }
     }
 
-    public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton) {
+    public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Vertex> innerLine, List<Vertex> outerLine) {
         int templateColumn = 0;
         int meshColumn = 0;
         for (AbstractBorder abstractBorder : skeleton) {
@@ -53,6 +53,11 @@ public class ShapeTemplate {
                     ShapeTemplateEntry shapeTemplateEntry = nodes[templateColumn][row];
                     Vertex transformedPoint = transformationMatrix.multiply(shapeTemplateEntry.getPosition(), 1.0);
                     mesh.addVertex(meshColumn, row, transformedPoint, shapeTemplateEntry.getSlopeFactor());
+                    if (row == 0) {
+                        outerLine.add(transformedPoint);
+                    } else if (row + 1 == rows) {
+                        innerLine.add(transformedPoint);
+                    }
                 }
                 templateColumn++;
                 if (templateColumn >= columns) {

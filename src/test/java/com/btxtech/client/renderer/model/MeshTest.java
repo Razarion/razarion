@@ -18,7 +18,7 @@ public class MeshTest {
 //        Mesh mesh = new Mesh();
 //        mesh.fill(200, 200, 100);
 //        mesh.generateAllTriangle();
-//        mesh.adjustNorm();
+//        mesh.setupNorms();
 //
 //        mesh.iterateOverTriangles(new Mesh.TriangleVisitor() {
 //            @Override
@@ -47,7 +47,7 @@ public class MeshTest {
 //        mesh.fill(200, 200, 100);
 //        mesh.getVertexDataSafe(new Index(1, 1)).addZValue(100);
 //        mesh.generateAllTriangle();
-//        mesh.adjustNorm();
+//        mesh.setupNorms();
 //
 //        // Not complete
 ////        TestHelper.assertVertex(0, 0, 1, mesh.getVertexDataSafe(new Index(0, 0)).getTriangle1().getVertexNormA());

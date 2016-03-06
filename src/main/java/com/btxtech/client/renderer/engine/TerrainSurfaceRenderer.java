@@ -57,7 +57,9 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private VertexShaderAttribute normals;
     private VertexShaderAttribute tangents;
     private FloatShaderAttribute edges;
+    @Deprecated
     private FloatShaderAttribute slopes;
+    @Deprecated
     private FloatShaderAttribute types;
     private WebGlUniformTexture coverWebGLTexture;
     private WebGlUniformTexture blenderWebGLTexture;
@@ -109,8 +111,8 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         normals.fillBuffer(vertexList.getNormVertices());
         tangents.fillBuffer(vertexList.getTangentVertices());
         edges.fillDoubleBuffer(vertexList.getEdges());
-        slopes.fillDoubleBuffer(vertexList.getSlopeFactor());
-        types.fillDoubleBuffer(vertexList.getTypesAsDoubles());
+        slopes.fillDoubleBuffer(vertexList.getEdges()); // TODO remove
+        types.fillDoubleBuffer(vertexList.getEdges()); // TODO remove
 
         elementCount = vertexList.getVerticesCount();
     }
@@ -130,10 +132,10 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         uniform1f(UNIFORM_DIFFUSE_WEIGHT_FACTOR, lighting.getDiffuseIntensity());
         uniform1f(UNIFORM_EDGE_DISTANCE, terrainSurface.getEdgeDistance());
         uniform1f(UNIFORM_BUMP_MAP_DEPTH_GROUND, terrainSurface.getGroundBumpMap());
-        uniform1f(UNIFORM_BUMP_MAP_DEPTH_SLOPE, 1); // TODO
+        uniform1f(UNIFORM_BUMP_MAP_DEPTH_SLOPE, 1); // TODO remove
         uniform1f(UNIFORM_BUMP_MAP_DEPTH_BEACH, terrainSurface.getBeach().getBumpMap());
-        uniform1f(UNIFORM_SLOPE_SPECULAR_HARDNESS, 1);// TODO
-        uniform1f(UNIFORM_SLOPE_SPECULAR_INTENSITY, 1);// TODO
+        uniform1f(UNIFORM_SLOPE_SPECULAR_HARDNESS, 1);// TODO remove
+        uniform1f(UNIFORM_SLOPE_SPECULAR_INTENSITY, 1);// TODO remove
         uniform1f(UNIFORM_WATER_LEVEL, terrainSurface.getBeach().getWaterLevel());
         uniform1f(UNIFORM_WATER_GROUND, terrainSurface.getBeach().getWaterGround());
 

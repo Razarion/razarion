@@ -1,9 +1,13 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Line;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.game.jsre.common.gameengine.syncObjects.CollisionConstants;
+import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -12,14 +16,18 @@ import java.util.List;
  */
 public class Plateau {
     private final ShapeTemplate shapeTemplate;
+    private final int verticalSpace;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
+    private List<Vertex> innerLine;
+    private List<Vertex> outerLine;
 
     public Plateau(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners) {
         this.shapeTemplate = shapeTemplate;
+        this.verticalSpace = verticalSpace;
 
-        if(shapeTemplate.getDistance() > 0) {
+        if (shapeTemplate.getDistance() > 0) {
             setupSlopingBorder(corners);
         } else {
             setupStraightBorder(corners);
@@ -63,12 +71,52 @@ public class Plateau {
     }
 
     public void wrap() {
+        innerLine = new ArrayList<>();
+        outerLine = new ArrayList<>();
         mesh = new Mesh(xVertices, shapeTemplate.getShape().getVertexCount());
-        shapeTemplate.generateMesh(mesh, borders);
+        shapeTemplate.generateMesh(mesh, borders, innerLine, outerLine);
         mesh.setupValues();
     }
 
     public Mesh getMesh() {
         return mesh;
+    }
+
+    public boolean isInside(Vertex vertex) {
+        Collection<DecimalPosition> crossPoints = new ArrayList<>();
+        DecimalPosition position = new DecimalPosition(vertex.getX(), vertex.getY());
+        Line testLine = new Line(position, MathHelper.EIGHTH_RADIANT, Integer.MAX_VALUE);
+        for (int i = 0; i < outerLine.size(); i++) {
+            Vertex vertexStart = outerLine.get(i);
+            Vertex vertexEnd = outerLine.get(i + 1 < outerLine.size() ? i + 1 : i - outerLine.size() + 1);
+            // TODO ugly hack
+            if(vertexStart.equals(vertexEnd)) {
+                continue;
+            }
+            // TODO ugly hack ends
+            Line line = new Line(new DecimalPosition(vertexStart.getX(), vertexStart.getY()), new DecimalPosition(vertexEnd.getX(), vertexEnd.getY()));
+
+            if (line.isPointInLineInclusive(position)) {
+                return true;
+                // throw new IllegalStateException("Point is on line. Don't know what to do...");
+            }
+            DecimalPosition crossPoint = line.getCrossInfinite(testLine);
+            if (crossPoint != null) {
+                if (line.isPointInLineInclusive(crossPoint) && testLine.isPointInLineInclusive(crossPoint)) {
+                    crossPoints.add(crossPoint);
+                }
+            }
+        }
+
+        crossPoints = DecimalPosition.removeSimilarPoints(crossPoints, CollisionConstants.SAFETY_DISTANCE);
+        return crossPoints.size() % 2 != 0;
+    }
+
+    public List<Vertex> getInnerLine() {
+        return innerLine;
+    }
+
+    public List<Vertex> getOuterLine() {
+        return outerLine;
     }
 }

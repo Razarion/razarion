@@ -1,12 +1,5 @@
 package com.btxtech.client.terrain;
 
-import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.renderer.model.Mesh;
-import com.btxtech.client.renderer.model.MeshGroup;
-import org.junit.Test;
-
-import java.util.logging.Logger;
-
 /**
  * Created by Beat
  * 20.10.2015.

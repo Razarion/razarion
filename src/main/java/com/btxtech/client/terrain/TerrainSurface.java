@@ -1,28 +1,23 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.renderer.model.Mesh;
+import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.slope.Plateau;
 import com.btxtech.client.terrain.slope.Shape;
 import com.btxtech.client.terrain.slope.ShapeTemplate;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.PlateauConfigEntity;
+import com.btxtech.shared.ShapeEntryEntity;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Vertex;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
-import java.util.logging.Level;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -37,7 +32,7 @@ public class TerrainSurface {
     private GameCanvas gameCanvas;
     @Inject
     private RenderService renderService;
-    private Mesh mesh = new Mesh();
+    private GroundMesh groundMesh = new GroundMesh();
     private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
     private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_5;
@@ -56,17 +51,29 @@ public class TerrainSurface {
     private final double lowestPointInView = -9; // Should be calculated
 
     public void init() {
-        setupGround();
         // setupPlateauConfigEntity();
-        beach = new Beach(mesh);
+        beach = new Beach(groundMesh);
+        setupGround();
         setupPlateau();
+        groundMesh.setupNorms();
     }
 
     public void setupPlateau() {
         ShapeTemplate shapeTemplate = new ShapeTemplate(100, new Shape(plateauConfigEntity.getShape()));
+//        logger.severe("---------------------------------");
+//        List<ShapeEntryEntity> shape = plateauConfigEntity.getShape();
+//        for (int i = 0; i < shape.size(); i++) {
+//            ShapeEntryEntity shapeEntryEntity = shape.get(i);
+//            logger.severe(i + ":" + shapeEntryEntity.getPosition().testString());
+//        }
+//        logger.severe("---------------------------------");
+
         shapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalShift());
         plateau = new Plateau(shapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 600)));
         plateau.wrap();
+
+        GroundSlopeConnector groundSlopeConnector = new GroundSlopeConnector(groundMesh, plateau);
+        groundSlopeConnector.stampOut();
     }
 
     private PlateauConfigEntity setupPlateauConfigEntity() {
@@ -82,21 +89,18 @@ public class TerrainSurface {
     }
 
     private void setupGround() {
-        mesh.reset(MESH_NODE_EDGE_LENGTH, MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
+        groundMesh.reset(MESH_NODE_EDGE_LENGTH, MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
 
         final FractalField heightField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, -10, 10);
         final FractalField grassGround = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, 0, 1);
-        mesh.iterate(new Mesh.VertexVisitor() {
+        groundMesh.iterate(new GroundMesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                mesh.getVertexDataSafe(index).setEdge(0);
+                // TODO groundMesh.getVertexDataSafe(index).setEdge(0);
                 // TODO mesh.getVertexDataSafe(index).setEdge(grassGround.getValue(index));
                 // TODO mesh.getVertexDataSafe(index).add(new Vertex(0, 0, heightField.getValue(index)));
             }
         });
-
-        mesh.generateAllTriangle();
-        mesh.adjustNorm();
     }
 
     public void sculpt() {
@@ -117,7 +121,7 @@ public class TerrainSurface {
     }
 
     public VertexList getVertexList() {
-        return mesh.provideVertexList();
+        return groundMesh.provideVertexList();
     }
 
     public VertexList getWaterVertexList() {

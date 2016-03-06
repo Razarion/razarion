@@ -1,6 +1,6 @@
 package com.btxtech.client.terrain;
 
-import com.btxtech.client.renderer.model.Mesh;
+import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Rectangle;
@@ -26,7 +26,7 @@ public class Beach {
     private static final double BOTTOM = -8.0;
     private static final double WATER_LEVEL = -4.0;
     private final List<Double> SLOP_INDEX = Arrays.asList(-8.0, -7.0, -6.0, -5.0, -4.0, -3.0, -2.0, -1.0, -0.0);
-    private Mesh mesh;
+    // private GroundMesh groundMesh;
     private double bumpMap = 0.5;
     private double fractal = 0.5;
     // Water, should not be in here
@@ -36,54 +36,54 @@ public class Beach {
     private double waterSpecularHardness = 2.0;
     // private Logger logger = Logger.getLogger(Beach.class.getName());
 
-    public Beach(Mesh mesh) {
-        this.mesh = mesh;
+    public Beach(GroundMesh groundMesh) {
+      //   this.groundMesh = groundMesh;
     }
 
     public void sculpt() {
-        final int slopeSize = SLOP_INDEX.size();
-
-        final List<Double> slopeForm = new ArrayList<>();
-        slopeForm.add(BOTTOM);
-        slopeForm.addAll(SLOP_INDEX);
-        slopeForm.add(0.0);
-
-        final Collection<Index> slopeIndexes = new ArrayList<>();
-
-        mesh.iterate(new Mesh.VertexVisitor() {
-            @Override
-            public void onVisit(Index index, Vertex vertex) {
-                Mesh.VertexData vertexData = mesh.getVertexDataSafe(index);
-                if (isInside(index)) {
-                    vertexData.setVertex(new Vertex(vertex.getX(), vertex.getY(), BOTTOM));
-                    vertexData.setSlopeFactor(0);
-                    vertexData.setType(TerrainMeshVertex.Type.UNDER_WATER);
-                } else {
-                    double distance = INDEX_RECT.getNearestPointInclusive(new DecimalPosition(index)).getDistance(new DecimalPosition(index));
-                    if (distance < slopeSize + 1) {
-                        vertexData.addZValue(MathHelper2.interpolate(distance, slopeForm));
-                        vertexData.setSlopeFactor(1.0);
-                        vertexData.setType(TerrainMeshVertex.Type.BEACH);
-                        slopeIndexes.add(index);
-                    }
-                }
-            }
-        });
-
-
-        FractalFieldOld fractalFieldOld = FractalFieldOld.createSaveFractalField(INDEX_RECT.getWidth() + slopeSize * 2, INDEX_RECT.getHeight() + slopeSize * 2, fractal, -fractal, 1.0);
-        // Calculate fractal
-        Index origin = INDEX_RECT.getStart().sub(slopeSize, slopeSize);
-        Map<Index, Vertex> displacements = new HashMap<>();
-        for (Index slopeIndex : slopeIndexes) {
-            Vertex norm = mesh.getVertexNormSafe(slopeIndex);
-            displacements.put(slopeIndex, norm.multiply(fractalFieldOld.get(slopeIndex.sub(origin))));
-        }
-
-        // Apply fractal
-        for (Map.Entry<Index, Vertex> entry : displacements.entrySet()) {
-            mesh.getVertexDataSafe(entry.getKey()).add(entry.getValue());
-        }
+//        final int slopeSize = SLOP_INDEX.size();
+//
+//        final List<Double> slopeForm = new ArrayList<>();
+//        slopeForm.add(BOTTOM);
+//        slopeForm.addAll(SLOP_INDEX);
+//        slopeForm.add(0.0);
+//
+//        final Collection<Index> slopeIndexes = new ArrayList<>();
+//
+//        groundMesh.iterate(new GroundMesh.VertexVisitor() {
+//            @Override
+//            public void onVisit(Index index, Vertex vertex) {
+//                GroundMesh.VertexData vertexData = groundMesh.getVertexDataSafe(index);
+//                if (isInside(index)) {
+//                    vertexData.setVertex(new Vertex(vertex.getX(), vertex.getY(), BOTTOM));
+//                    vertexData.setSlopeFactor(0);
+//                    vertexData.setType(TerrainMeshVertex.Type.UNDER_WATER);
+//                } else {
+//                    double distance = INDEX_RECT.getNearestPointInclusive(new DecimalPosition(index)).getDistance(new DecimalPosition(index));
+//                    if (distance < slopeSize + 1) {
+//                        vertexData.addZValue(MathHelper2.interpolate(distance, slopeForm));
+//                        vertexData.setSlopeFactor(1.0);
+//                        vertexData.setType(TerrainMeshVertex.Type.BEACH);
+//                        slopeIndexes.add(index);
+//                    }
+//                }
+//            }
+//        });
+//
+//
+//        FractalFieldOld fractalFieldOld = FractalFieldOld.createSaveFractalField(INDEX_RECT.getWidth() + slopeSize * 2, INDEX_RECT.getHeight() + slopeSize * 2, fractal, -fractal, 1.0);
+//        // Calculate fractal
+//        Index origin = INDEX_RECT.getStart().sub(slopeSize, slopeSize);
+//        Map<Index, Vertex> displacements = new HashMap<>();
+//        for (Index slopeIndex : slopeIndexes) {
+//            Vertex norm = groundMesh.getVertexNormSafe(slopeIndex);
+//            displacements.put(slopeIndex, norm.multiply(fractalFieldOld.get(slopeIndex.sub(origin))));
+//        }
+//
+//        // Apply fractal
+//        for (Map.Entry<Index, Vertex> entry : displacements.entrySet()) {
+//            groundMesh.getVertexDataSafe(entry.getKey()).add(entry.getValue());
+//        }
 
     }
 
@@ -98,13 +98,14 @@ public class Beach {
         int waterXSize = (INDEX_RECT.getWidth() + 2 * SLOP_INDEX.size() + 2) * TerrainSurface.MESH_NODE_EDGE_LENGTH;
         int waterYSize = (INDEX_RECT.getHeight() + 2 * SLOP_INDEX.size() + 2) * TerrainSurface.MESH_NODE_EDGE_LENGTH;
 
-        Mesh waterMesh = new Mesh();
-        waterMesh.reset(waterXSize, waterYSize, waterXSize, waterYSize, WATER_LEVEL);
-        waterMesh.shift(new Index(waterX, waterY));
-        waterMesh.generateAllTriangle();
-        waterMesh.adjustNorm();
-
-        return waterMesh.provideVertexList();
+//        GroundMesh waterGroundMesh = new GroundMesh();
+//        waterGroundMesh.reset(waterXSize, waterYSize, waterXSize, waterYSize, WATER_LEVEL);
+//        waterGroundMesh.shift(new Index(waterX, waterY));
+//        waterGroundMesh.generateAllTriangle();
+//        waterGroundMesh.setupNorms();
+//
+//        return waterGroundMesh.provideVertexList();
+        return new VertexList();
     }
 
     public double getWaterLevel() {

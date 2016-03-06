@@ -45,5 +45,4 @@ public class LineBorder extends AbstractBorder {
     protected DecimalPosition setupOuterPointFormStart(int verticalSpace, int count) {
         return outerStart.getPointWithDistance(verticalSpace * count, outerEnd, true);
     }
-
 }
