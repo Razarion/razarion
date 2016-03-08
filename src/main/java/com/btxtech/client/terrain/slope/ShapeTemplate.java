@@ -54,9 +54,20 @@ public class ShapeTemplate {
                     Vertex transformedPoint = transformationMatrix.multiply(shapeTemplateEntry.getPosition(), 1.0);
                     mesh.addVertex(meshColumn, row, transformedPoint, shapeTemplateEntry.getSlopeFactor());
                     if (row == 0) {
-                        outerLine.add(transformedPoint);
+                        if(!outerLine.contains(transformedPoint)) {
+                            outerLine.add(transformedPoint);
+                        }
                     } else if (row + 1 == rows) {
-                        innerLine.add(transformedPoint);
+                        if(innerLine.isEmpty()) {
+                            System.out.println("transformedPoint: " + transformedPoint);
+                            innerLine.add(transformedPoint);
+                        } else {
+                            Vertex last = innerLine.get(innerLine.size() - 1);
+                            double distance = last.distance(transformedPoint);
+                            if(distance > 1) {
+                                innerLine.add(transformedPoint);
+                            }
+                        }
                     }
                 }
                 templateColumn++;
@@ -75,5 +86,4 @@ public class ShapeTemplate {
     public Shape getShape() {
         return shape;
     }
-
 }

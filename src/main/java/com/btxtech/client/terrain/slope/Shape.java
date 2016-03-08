@@ -12,23 +12,6 @@ import java.util.List;
  * 23.01.2016.
  */
 public class Shape {
-    public static final List<Index> SHAPE_0 = Arrays.asList(
-            new Index(70, 100),
-            new Index(65, 110),
-            new Index(60, 100),
-            new Index(50, 80),
-            new Index(40, 40),
-            new Index(30, 10),
-            new Index(0, 0)
-    );
-    public static final List<Index> SHAPE_1 = Arrays.asList(
-            new Index(300, 210),
-            new Index(200, 210),
-            new Index(100, 110),
-            new Index(100, 10),
-            new Index(95, 10),
-            new Index(0, 10)
-    );
     private double distance;
     private List<ShapeEntryEntity> entries;
 
@@ -77,5 +60,9 @@ public class Shape {
 
     public int getShiftableOffset() {
         return 1;
+    }
+
+    public double getZInner() {
+        return entries.get(0).getPosition().getY();
     }
 }

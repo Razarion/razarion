@@ -28,6 +28,14 @@ public class GroundMesh {
             this.vertex = vertex;
         }
 
+        public VertexData(VertexData vertexData) {
+            this.vertex = vertexData.vertex;
+            this.norm = vertexData.norm;
+            this.tangent = vertexData.tangent;
+            this.edge = vertexData.edge;
+            this.slopeFactor = vertexData.slopeFactor;
+        }
+
         public Vertex getVertex() {
             return vertex;
         }
@@ -36,8 +44,8 @@ public class GroundMesh {
             this.vertex = vertex;
         }
 
-        public void add(Vertex vertex) {
-            this.vertex = this.vertex.add(vertex);
+        public void add(double x, double y, double z) {
+            this.vertex = this.vertex.add(x, y, z);
         }
 
         public double getEdge() {
@@ -99,6 +107,13 @@ public class GroundMesh {
 
     public void createVertexData(Index index, Vertex vertex) {
         grid.put(index, new VertexData(vertex));
+        maxX = Math.max(index.getX(), maxX);
+        maxY = Math.max(index.getY(), maxY);
+    }
+
+    public void createVertexData(Index index, GroundMesh groundMesh) {
+        VertexData vertexData = groundMesh.getVertexDataSafe(index);
+        grid.put(index, new VertexData(vertexData));
         maxX = Math.max(index.getX(), maxX);
         maxY = Math.max(index.getY(), maxY);
     }

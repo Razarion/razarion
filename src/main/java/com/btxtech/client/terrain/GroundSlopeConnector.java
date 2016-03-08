@@ -16,6 +16,7 @@ public class GroundSlopeConnector {
     private final GroundMesh groundMesh;
     private final Plateau plateau;
     private Collection<Vertex> stampedOut = new ArrayList<>();
+    private GroundMesh topMesh;
 
     public GroundSlopeConnector(GroundMesh groundMesh, Plateau plateau) {
         this.groundMesh = groundMesh;
@@ -23,18 +24,26 @@ public class GroundSlopeConnector {
     }
 
     public void stampOut() {
+        topMesh = new GroundMesh();
         groundMesh.iterate(new GroundMesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                if (plateau.isInside(vertex)) {
+                if (plateau.isInsideInner(vertex)) {
                     stampedOut.add(vertex);
-                    // groundMesh.remove(index);
+                    topMesh.createVertexData(index, groundMesh);
+                    topMesh.getVertexDataSafe(index).add(0, 0, plateau.getZInner());
+                    // TODO groundMesh.remove(index); ???
                 }
             }
         });
+        topMesh.setupNorms();
     }
 
     public Collection<Vertex> getStampedOut() {
         return stampedOut;
+    }
+
+    public GroundMesh getTopMesh() {
+        return topMesh;
     }
 }

@@ -16,7 +16,6 @@ import java.util.List;
  */
 public class Plateau {
     private final ShapeTemplate shapeTemplate;
-    private final int verticalSpace;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
@@ -25,7 +24,6 @@ public class Plateau {
 
     public Plateau(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners) {
         this.shapeTemplate = shapeTemplate;
-        this.verticalSpace = verticalSpace;
 
         if (shapeTemplate.getDistance() > 0) {
             setupSlopingBorder(corners);
@@ -82,23 +80,31 @@ public class Plateau {
         return mesh;
     }
 
-    public boolean isInside(Vertex vertex) {
+    public boolean isInsideInner(Vertex vertex) {
+        return isInside(vertex, innerLine);
+    }
+
+    private boolean isInside(Vertex vertex, List<Vertex> vertexList) {
         Collection<DecimalPosition> crossPoints = new ArrayList<>();
         DecimalPosition position = new DecimalPosition(vertex.getX(), vertex.getY());
         Line testLine = new Line(position, MathHelper.EIGHTH_RADIANT, Integer.MAX_VALUE);
-        for (int i = 0; i < outerLine.size(); i++) {
-            Vertex vertexStart = outerLine.get(i);
-            Vertex vertexEnd = outerLine.get(i + 1 < outerLine.size() ? i + 1 : i - outerLine.size() + 1);
-            // TODO ugly hack
-            if(vertexStart.equals(vertexEnd)) {
-                continue;
+        for (int i = 0; i < vertexList.size(); i++) {
+            Vertex vertexStart = vertexList.get(i);
+            DecimalPosition startPoint = new DecimalPosition(vertexStart.getX(), vertexStart.getY());
+            if(startPoint.equals(position)) {
+                return true;
             }
-            // TODO ugly hack ends
-            Line line = new Line(new DecimalPosition(vertexStart.getX(), vertexStart.getY()), new DecimalPosition(vertexEnd.getX(), vertexEnd.getY()));
+            Vertex vertexEnd = vertexList.get(i + 1 < vertexList.size() ? i + 1 : i - vertexList.size() + 1);
+            DecimalPosition endPoint= new DecimalPosition(vertexEnd.getX(), vertexEnd.getY());
+            Line line = new Line(startPoint, endPoint);
 
             if (line.isPointInLineInclusive(position)) {
                 return true;
                 // throw new IllegalStateException("Point is on line. Don't know what to do...");
+            }
+
+            if(MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
+                continue;
             }
             DecimalPosition crossPoint = line.getCrossInfinite(testLine);
             if (crossPoint != null) {
@@ -118,5 +124,9 @@ public class Plateau {
 
     public List<Vertex> getOuterLine() {
         return outerLine;
+    }
+
+    public double getZInner() {
+        return shapeTemplate.getShape().getZInner();
     }
 }

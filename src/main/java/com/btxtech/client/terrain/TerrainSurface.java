@@ -32,7 +32,6 @@ public class TerrainSurface {
     private GameCanvas gameCanvas;
     @Inject
     private RenderService renderService;
-    private GroundMesh groundMesh = new GroundMesh();
     private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
     private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_5;
@@ -43,7 +42,9 @@ public class TerrainSurface {
     private ImageDescriptor beachPumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_05;
     private double edgeDistance = 0.5;
     private double groundBumpMap = 2;
+    private GroundMesh groundMesh = new GroundMesh();
     private Plateau plateau;
+    private GroundSlopeConnector groundSlopeConnector;
     private PlateauConfigEntity plateauConfigEntity;
     private Beach beach;
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
@@ -72,7 +73,7 @@ public class TerrainSurface {
         plateau = new Plateau(shapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 600)));
         plateau.wrap();
 
-        GroundSlopeConnector groundSlopeConnector = new GroundSlopeConnector(groundMesh, plateau);
+        groundSlopeConnector = new GroundSlopeConnector(groundMesh, plateau);
         groundSlopeConnector.stampOut();
     }
 
@@ -121,7 +122,11 @@ public class TerrainSurface {
     }
 
     public VertexList getVertexList() {
-        return groundMesh.provideVertexList();
+//        VertexList vertexList = groundMesh.provideVertexList();
+//        vertexList.append(groundSlopeConnector.getTopMesh().provideVertexList());
+//        return vertexList;
+
+        return groundSlopeConnector.getTopMesh().provideVertexList();
     }
 
     public VertexList getWaterVertexList() {
