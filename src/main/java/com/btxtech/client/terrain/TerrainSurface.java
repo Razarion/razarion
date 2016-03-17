@@ -90,7 +90,7 @@ public class TerrainSurface {
     }
 
     private void setupGround() {
-        groundMesh.reset(MESH_NODE_EDGE_LENGTH, MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
+        groundMesh.reset(MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
 
         final FractalField heightField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, -10, 10);
         final FractalField grassGround = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, 0, 1);
@@ -122,11 +122,9 @@ public class TerrainSurface {
     }
 
     public VertexList getVertexList() {
-//        VertexList vertexList = groundMesh.provideVertexList();
-//        vertexList.append(groundSlopeConnector.getTopMesh().provideVertexList());
-//        return vertexList;
-
-        return groundSlopeConnector.getTopMesh().provideVertexList();
+        VertexList vertexList = groundMesh.provideVertexList();
+        vertexList.append(groundSlopeConnector.getTopMesh().provideVertexList());
+        return vertexList;
     }
 
     public VertexList getWaterVertexList() {

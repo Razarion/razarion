@@ -4,6 +4,7 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -192,6 +193,14 @@ public class Vertex {
             sum = sum.add(vertex);
         }
         return sum;
+    }
+
+    public static List<DecimalPosition> toXY(List<Vertex> vertices) {
+        List<DecimalPosition> decimalPositions = new ArrayList<>();
+        for (Vertex vertex : vertices) {
+            decimalPositions.add(vertex.toXY());
+        }
+        return decimalPositions;
     }
 
     @Override

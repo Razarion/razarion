@@ -1,0 +1,86 @@
+package com.btxtech.shared.primitives;
+
+import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Line;
+import com.btxtech.game.jsre.common.MathHelper;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * Created by Beat
+ * 11.03.2016.
+ */
+public class Polygon2d {
+    private List<DecimalPosition> corners = new ArrayList<>();
+    private List<Line> lines = new ArrayList<>();
+
+    public Polygon2d(List<DecimalPosition> corners) {
+        this.corners = new ArrayList<>(corners);
+        for (int i = 0; i < corners.size(); i++) {
+            DecimalPosition start = corners.get(i);
+            DecimalPosition end = corners.get(i + 1 < corners.size() ? i + 1 : i - corners.size() + 1);
+            Line line = new Line(start, end);
+            line.setNorm(end.rotateCounterClock(start, MathHelper.QUARTER_RADIANT).normalize());
+            lines.add(line);
+        }
+    }
+
+    private boolean isInside2(DecimalPosition position) {
+        Collection<DecimalPosition> crossPoints = new ArrayList<>();
+        Line testLine = new Line(position, MathHelper.EIGHTH_RADIANT, Integer.MAX_VALUE);
+
+        for (Line line : lines) {
+            if (line.getPoint1().equals(position)) {
+                return true;
+            }
+            if (line.isPointInLineInclusive(position)) {
+                return true;
+                // throw new IllegalStateException("Point is on line. Don't know what to do...");
+            }
+
+            if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
+                continue;
+            }
+            DecimalPosition crossPoint = line.getCrossInfinite(testLine);
+            if (crossPoint != null) {
+                if (line.isPointInLineInclusive(crossPoint) && testLine.isPointInLineInclusive(crossPoint)) {
+                    crossPoints.add(crossPoint);
+                }
+            }
+        }
+        // crossPoints = DecimalPosition.removeSimilarPoints(crossPoints, CollisionConstants.SAFETY_DISTANCE);
+        return crossPoints.size() % 2 != 0;
+    }
+
+    public boolean isInside(DecimalPosition position) {
+        int i, j;
+        boolean c = false;
+        for (i = 0, j = corners.size() - 1; i < corners.size(); j = i++) {
+            DecimalPosition start = corners.get(i);
+            DecimalPosition end = corners.get(j);
+
+            if (((start.getY() > position.getY()) != (end.getY() > position.getY()))
+                    && (position.getX() < (end.getX() - start.getX()) * (position.getY() - start.getY()) / (end.getY() - start.getY()) + start.getX()))
+                c = !c;
+        }
+        return c;
+    }
+
+    public List<Line> getLines() {
+        return lines;
+    }
+    //
+//    boolean pnpoly(int nvert, float[] vertx, float[] verty, float testx, float testy) {
+//        int i, j;
+//        boolean c = false;
+//        for (i = 0, j = nvert - 1; i < nvert; j = i++) {
+//            if (((verty[i] > testy) != (verty[j] > testy)) && (testx < (vertx[j] - vertx[i]) * (testy - verty[i]) / (verty[j] - verty[i]) + vertx[i]))
+//                c = !c;
+//        }
+//        return c;
+//    }
+
+
+}
