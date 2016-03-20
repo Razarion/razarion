@@ -1,10 +1,7 @@
 package com.btxtech.shared.primitives;
 
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygon;
-import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygonCorner;
-import com.btxtech.game.jsre.common.gameengine.services.terrain.TerrainPolygonLine;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,104 +11,80 @@ import java.util.logging.Logger;
 /**
  * Created by Beat
  * 16.07.2015.
- *
+ * <p/>
  * http://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf
  */
 public class Triangulator {
     private Logger logger = Logger.getLogger(Triangulator.class.getName());
+    private List<Triangle2d> triangles;
 
-    private List<Triangle2d> triangles = new ArrayList<>();
-    private TerrainPolygon<TerrainPolygonCorner, TerrainPolygonLine> lastKnownGoodPolygon;
-
-    public List<Triangle2d> calculate(List<Index> positions) {
-        try {
-            triangles.clear();
-            List<Index> positionCopy = new ArrayList<>(positions);
-            extractTriangle(positionCopy);
-            return triangles;
-        } catch(RuntimeException re) {
-            logger.severe(Index.testString(positions));
-            throw re;
-        }
-    }
-
-    public List<Triangle2d> getTriangles() {
+    public List<Triangle2d> calculate(Polygon2d polygon) {
+        triangles = new ArrayList<>();
+        extractTriangle(polygon);
         return triangles;
     }
 
-    private void extractTriangle(List<Index> positions) {
-        System.out.println(Index.testString(positions));
-
-
-        if(positions.size() < 3) {
-            throw new IllegalStateException("Polygon with less then  3 vertices: " + positions);
-        }
-
-        if(positions.size() == 3) {
-            triangles.add(new Triangle2d(positions.get(0), positions.get(1), positions.get(2)));
+    private void extractTriangle(Polygon2d polygon) {
+        if (polygon.size() == 3) {
+            triangles.add(new Triangle2d(polygon.getCorner(0), polygon.getCorner(1), polygon.getCorner(2)));
             return;
         }
 
-        TerrainPolygon<TerrainPolygonCorner, TerrainPolygonLine> terrainPolygon = new TerrainPolygon<>(positions);
-        lastKnownGoodPolygon = terrainPolygon;
-
         // Setup convex & reflex vertices list
         // Interior angle is smaller than 180 degrees.
-        LinkedList<Integer> convexVertices = new LinkedList<>();
+        List<Integer> convexCornerIndices = new LinkedList<>();
         // Interior angle is larger than 180 degrees.
-        LinkedList<Integer> reflexVertices = new LinkedList<>();
-        List<TerrainPolygonCorner> terrainPolygonCorners = terrainPolygon.getTerrainPolygonCorners();
-        for (int i = 0; i < terrainPolygonCorners.size(); i++) {
-            TerrainPolygonCorner corner = terrainPolygonCorners.get(i);
-            if (corner.getInnerAngle() > MathHelper.HALF_RADIANT) {
-                reflexVertices.add(i);
+        List<Integer> reflexCornerIndices = new LinkedList<>();
+        List<DecimalPosition> polygonCorners = polygon.getCorners();
+        for (int i = 0; i < polygonCorners.size(); i++) {
+            if (polygon.getInnerAngle(i) > MathHelper.HALF_RADIANT) {
+                reflexCornerIndices.add(i);
             } else {
-                convexVertices.add(i);
+                convexCornerIndices.add(i);
             }
         }
         // Setup ear list
-        LinkedList<Integer> ears = new LinkedList<>();
-        for (int convexVertex : convexVertices) {
-            TerrainPolygonCorner corner = terrainPolygonCorners.get(convexVertex);
-            TerrainPolygonCorner previousCorner = terrainPolygon.getTerrainPolygonCornerSafe(convexVertex - 1);
-            TerrainPolygonCorner nextCorner = terrainPolygon.getTerrainPolygonCornerSafe(convexVertex + 1);
+        List<Integer> ears = new LinkedList<>();
+        for (int convexCornerIndex : convexCornerIndices) {
+            DecimalPosition previousCorner = polygon.getCorner(convexCornerIndex - 1);
+            DecimalPosition corner = polygon.getCorner(convexCornerIndex);
+            DecimalPosition nextCorner = polygon.getCorner(convexCornerIndex + 1);
 
-            Triangle2d triangle = new Triangle2d(corner.getPoint(), previousCorner.getPoint(), nextCorner.getPoint());
+            Triangle2d triangle = new Triangle2d(corner, previousCorner, nextCorner);
 
             boolean isEar = true;
-            for (int reflexVertex : reflexVertices) {
-                if (reflexVertex == convexVertex || reflexVertex == convexVertex + 1 || reflexVertex == convexVertex - 1) {
+            for (int reflexCornerIndex : reflexCornerIndices) {
+                if (reflexCornerIndex == convexCornerIndex || reflexCornerIndex == convexCornerIndex + 1 || reflexCornerIndex == convexCornerIndex - 1) {
                     continue;
                 }
 
-                if(triangle.isInside(terrainPolygonCorners.get(reflexVertex).getPoint())) {
+                if (triangle.isInside(polygon.getCorner(reflexCornerIndex))) {
                     isEar = false;
                     break;
                 }
             }
 
-            if(isEar) {
-                ears.add(convexVertex);
+            if (isEar) {
+                ears.add(convexCornerIndex);
             }
 
         }
 
         // Add the triangle
-        if(ears.isEmpty()) {
+        if (ears.isEmpty()) {
             throw new IllegalStateException("No ears found");
         }
 
         int earIndex = ears.get(0);
-        positions.remove(earIndex);
-        TerrainPolygonCorner corner = terrainPolygonCorners.get(earIndex);
-        TerrainPolygonCorner previousCorner = terrainPolygon.getTerrainPolygonCornerSafe(earIndex - 1);
-        TerrainPolygonCorner nextCorner = terrainPolygon.getTerrainPolygonCornerSafe(earIndex + 1);
-        triangles.add(new Triangle2d(corner.getPoint(), previousCorner.getPoint(), nextCorner.getPoint()));
+        DecimalPosition corner = polygon.getCorner(earIndex);
+        DecimalPosition previousCorner = polygon.getCorner(earIndex - 1);
+        DecimalPosition nextCorner = polygon.getCorner(earIndex + 1);
+        triangles.add(new Triangle2d(corner, previousCorner, nextCorner));
 
-        extractTriangle(positions);
+        extractTriangle(polygon.createReducedPolygon(earIndex));
     }
 
-    public TerrainPolygon<TerrainPolygonCorner, TerrainPolygonLine> getLastKnownGoodPolygon() {
-        return lastKnownGoodPolygon;
+    public List<Triangle2d> getTriangles() {
+        return triangles;
     }
 }

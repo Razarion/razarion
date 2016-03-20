@@ -76,6 +76,10 @@ public class Polygon2d {
         return corners;
     }
 
+    public int size() {
+        return corners.size();
+    }
+
     public boolean isLineCrossing(Line testLine) {
         for (Line line : lines) {
             if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
@@ -87,6 +91,24 @@ public class Polygon2d {
             }
         }
         return false;
+    }
+
+    public double getInnerAngle(int index) {
+        return getCorner(index).getAngle(getCorner(index + 1), getCorner(index - 1));
+    }
+
+    public DecimalPosition getCorner(int index) {
+        int modIndex = index % corners.size();
+        if (modIndex < 0) {
+            modIndex += corners.size();
+        }
+        return corners.get(modIndex);
+    }
+
+    public Polygon2d createReducedPolygon(int indexToReduce) {
+        List<DecimalPosition> corners = new ArrayList<>(this.corners);
+        corners.remove(indexToReduce);
+        return new Polygon2d(corners);
     }
 
 

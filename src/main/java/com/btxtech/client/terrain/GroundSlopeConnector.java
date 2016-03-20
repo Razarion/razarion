@@ -7,12 +7,14 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Line;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Line3d;
 import com.btxtech.shared.primitives.Polygon2d;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,6 +29,7 @@ public class GroundSlopeConnector {
     private GroundMesh topMesh;
     private List<Vertex> innerEdges;
     private VertexList connectionVertexList;
+    private List<DecimalPosition> totalLine;
 
     public GroundSlopeConnector(GroundMesh groundMesh, Plateau plateau) {
         this.groundMesh = groundMesh;
@@ -58,8 +61,33 @@ public class GroundSlopeConnector {
         }
 
         setupInnerEdges(topIndices);
+        totalLine = new ArrayList<>();
+        totalLine.addAll(Vertex.toXY(plateau.getInnerLine()));
+        totalLine.add(plateau.getInnerLine().get(0).toXY());
+        totalLine.add(innerEdges.get(0).toXY());
+        List<Vertex> innerVertices = new ArrayList<>(innerEdges);
+        Collections.reverse(innerVertices);
+        totalLine.addAll(Vertex.toXY(innerVertices));
+        System.out.println(DecimalPosition.testString(totalLine));
 
-        setupConnectionTriangles();
+
+
+
+
+
+
+//        totalLine.addAll(Vertex.toXY(innerEdges));
+//        totalLine.add(innerEdges.get(0).toXY());
+//        totalLine.add(plateau.getInnerLine().get(0).toXY());
+//        List<Vertex> outerVertices = new ArrayList<>(plateau.getInnerLine());
+//        Collections.reverse(outerVertices);
+//        totalLine.addAll(Vertex.toXY(outerVertices));
+//        System.out.println(DecimalPosition.testString(totalLine));
+
+        // Make polygon with inner and outer line
+
+
+        // setupConnectionTriangles();
     }
 
     private void setupInnerEdges(List<Index> topIndices) {
@@ -174,10 +202,10 @@ public class GroundSlopeConnector {
         Polygon2d innerPolygon = new Polygon2d(Vertex.toXY(innerEdges));
 
         int innerIndex = 0;
-        List<Vertex> innerLine = plateau.getInnerLine();
-        for (int outerIndex = 0; outerIndex < innerLine.size(); outerIndex++) {
-            Vertex outer1 = innerLine.get(outerIndex);
-            Vertex outer2 = innerLine.get(outerIndex + 1 < innerLine.size() ? outerIndex + 1 : outerIndex - innerLine.size() + 1);
+        List<Vertex> outerLine = plateau.getInnerLine();
+        for (int outerIndex = 0; outerIndex < outerLine.size(); outerIndex++) {
+            Vertex outer1 = outerLine.get(outerIndex);
+            Vertex outer2 = outerLine.get(outerIndex + 1 < outerLine.size() ? outerIndex + 1 : outerIndex - outerLine.size() + 1);
 
             // TODO Triangle correct direction (corner order counter clock)
             if (checkIntersection(innerPolygon, outer1, outer2, innerEdges.get(innerIndex))) {
@@ -189,12 +217,39 @@ public class GroundSlopeConnector {
                     }
                     Vertex inner2 = innerEdges.get(innerIndex);
                     if (checkIntersection(innerPolygon, inner1, inner2, outer1)) {
-                        System.out.println("-------------------");
-                        System.out.println("inner1: " + inner1);
-                        System.out.println("inner2: " + inner2);
-                        System.out.println("outer1: " + outer1);
-                        return;
+//                        System.out.println("-------------------");
+//                        System.out.println("inner1: " + inner1);
+//                        System.out.println("inner2: " + inner2);
+//                        System.out.println("outer1: " + outer1);
+//                        System.out.println("outer2: " + outer2);
+                        Vertex insertOuter = projectOnLine(outer1, outer2, inner2);
+                        outerLine.add(outerIndex + 1, insertOuter);
+                        // System.out.println("new outer2: " + outer2);
+
+                        if (!checkIntersection(innerPolygon, outer1, insertOuter, inner1)) {
+                            connectionVertexList.add(outer1, norm, insertOuter, norm, inner1, norm);
+                        } else {
+                            System.out.println("Unknown 1 ???");
+                            // TODO ???
+                            return;
+                        }
+
+                        outer1 = insertOuter;
+                        if(checkIntersection(innerPolygon, inner1, inner2, outer1)) {
+                            System.out.println("Unknown 2 ???");
+                            // TODO ???
+                            return;
+                        }
+
                     }
+
+//                    if(!checkIntersection(innerPolygon, inner1, inner2, outer1)) {
+//                        System.out.println("failed");
+//                        System.out.println("inner1: " + inner1);
+//                        System.out.println("inner2: " + inner2);
+//                        System.out.println("outer1: " + outer1);
+//                    }
+
                     connectionVertexList.add(inner1, norm, inner2, norm, outer1, norm);
                     if (!checkIntersection(innerPolygon, outer1, outer2, inner2)) {
                         System.out.println("Next outer");
@@ -206,6 +261,20 @@ public class GroundSlopeConnector {
         }
     }
 
+    private Vertex projectOnLine(Vertex lineStart, Vertex lineEnd, Vertex source) {
+        Line3d line = new Line3d(lineStart, lineEnd);
+        return line.projectOnInfiniteLine(source);
+    }
+
+    /**
+     * Ceck if trinagle violates inner polygon
+     *
+     * @param innerPolygon Polygon inner (2d)
+     * @param cornerA triangle corner A
+     * @param cornerB triangle corner B
+     * @param cornerC triangle corner C
+     * @return true if inner polygon is violated
+     */
     private boolean checkIntersection(Polygon2d innerPolygon, Vertex cornerA, Vertex cornerB, Vertex cornerC) {
         Line line1 = new Line(cornerA.toXY(), cornerB.toXY());
         if (innerPolygon.isLineCrossing(line1)) {
@@ -255,5 +324,9 @@ public class GroundSlopeConnector {
 
     public VertexList getConnectionVertexList() {
         return connectionVertexList;
+    }
+
+    public List<DecimalPosition> getTotalLine() {
+        return totalLine;
     }
 }

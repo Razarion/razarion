@@ -157,6 +157,10 @@ public class Vertex {
         return new DecimalPosition(x, y);
     }
 
+    public DecimalPosition toXZ() {
+        return new DecimalPosition(x, z);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
