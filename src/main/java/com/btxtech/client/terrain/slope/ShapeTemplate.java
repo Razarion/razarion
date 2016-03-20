@@ -59,7 +59,6 @@ public class ShapeTemplate {
                         }
                     } else if (row + 1 == rows) {
                         if(innerLine.isEmpty()) {
-                            System.out.println("transformedPoint: " + transformedPoint);
                             innerLine.add(transformedPoint);
                         } else {
                             Vertex last = innerLine.get(innerLine.size() - 1);

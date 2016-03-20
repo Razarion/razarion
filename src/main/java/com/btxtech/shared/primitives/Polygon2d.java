@@ -71,6 +71,25 @@ public class Polygon2d {
     public List<Line> getLines() {
         return lines;
     }
+
+    public List<DecimalPosition> getCorners() {
+        return corners;
+    }
+
+    public boolean isLineCrossing(Line testLine) {
+        for (Line line : lines) {
+            if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
+                continue;
+            }
+            DecimalPosition cross = line.getCrossInclusive(testLine);
+            if (cross != null && !cross.equalsDelta(testLine.getPoint1()) && !cross.equalsDelta(testLine.getPoint2()) && !cross.equalsDelta(line.getPoint1()) && !cross.equalsDelta(line.getPoint2())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     //
 //    boolean pnpoly(int nvert, float[] vertx, float[] verty, float testx, float testy) {
 //        int i, j;
