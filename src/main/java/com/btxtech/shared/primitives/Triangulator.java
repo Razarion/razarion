@@ -2,6 +2,7 @@ package com.btxtech.shared.primitives;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.VertexList;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,17 +17,20 @@ import java.util.logging.Logger;
  */
 public class Triangulator {
     private Logger logger = Logger.getLogger(Triangulator.class.getName());
-    private List<Triangle2d> triangles;
+    private VertexList vertexList;
 
-    public List<Triangle2d> calculate(Polygon2d polygon) {
-        triangles = new ArrayList<>();
-        extractTriangle(polygon);
-        return triangles;
+    public Triangulator(VertexList vertexList) {
+        this.vertexList = vertexList;
     }
 
-    private void extractTriangle(Polygon2d polygon) {
-        if (polygon.size() == 3) {
-            triangles.add(new Triangle2d(polygon.getCorner(0), polygon.getCorner(1), polygon.getCorner(2)));
+    public void calculate(List<Vertex> vertexPolygon) {
+        extractTriangle(vertexPolygon);
+    }
+
+    private void extractTriangle(List<Vertex> vertexPolygon) {
+        if (vertexPolygon.size() == 3) {
+            // TODO norms & triangle direction
+            vertexList.addFakeNormAndTangent(vertexPolygon.get(0), vertexPolygon.get(1), vertexPolygon.get(2));
             return;
         }
 
@@ -35,6 +39,7 @@ public class Triangulator {
         List<Integer> convexCornerIndices = new LinkedList<>();
         // Interior angle is larger than 180 degrees.
         List<Integer> reflexCornerIndices = new LinkedList<>();
+        Polygon2D polygon = new Polygon2D(Vertex.toXY(vertexPolygon));
         List<DecimalPosition> polygonCorners = polygon.getCorners();
         for (int i = 0; i < polygonCorners.size(); i++) {
             if (polygon.getInnerAngle(i) > MathHelper.HALF_RADIANT) {
@@ -76,15 +81,16 @@ public class Triangulator {
         }
 
         int earIndex = ears.get(0);
-        DecimalPosition corner = polygon.getCorner(earIndex);
-        DecimalPosition previousCorner = polygon.getCorner(earIndex - 1);
-        DecimalPosition nextCorner = polygon.getCorner(earIndex + 1);
-        triangles.add(new Triangle2d(corner, previousCorner, nextCorner));
+        Vertex corner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex));
+        Vertex previousCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex - 1));
+        Vertex nextCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex + 1));
 
-        extractTriangle(polygon.createReducedPolygon(earIndex));
+        // TODO norms & triangle direction
+        vertexList.addFakeNormAndTangent(corner, previousCorner, nextCorner);
+
+        List<Vertex> newVertexPolygon = new ArrayList<>(vertexPolygon);
+        newVertexPolygon.remove(earIndex);
+        extractTriangle(newVertexPolygon);
     }
 
-    public List<Triangle2d> getTriangles() {
-        return triangles;
-    }
 }

@@ -12,11 +12,11 @@ import java.util.List;
  * Created by Beat
  * 11.03.2016.
  */
-public class Polygon2d {
+public class Polygon2D {
     private List<DecimalPosition> corners = new ArrayList<>();
     private List<Line> lines = new ArrayList<>();
 
-    public Polygon2d(List<DecimalPosition> corners) {
+    public Polygon2D(List<DecimalPosition> corners) {
         this.corners = new ArrayList<>(corners);
         for (int i = 0; i < corners.size(); i++) {
             DecimalPosition start = corners.get(i);
@@ -98,17 +98,21 @@ public class Polygon2d {
     }
 
     public DecimalPosition getCorner(int index) {
-        int modIndex = index % corners.size();
-        if (modIndex < 0) {
-            modIndex += corners.size();
-        }
-        return corners.get(modIndex);
+        return corners.get(getCorrectedIndex(index));
     }
 
-    public Polygon2d createReducedPolygon(int indexToReduce) {
+    public int getCorrectedIndex(int index) {
+        int correctedIndex = index % corners.size();
+        if (correctedIndex < 0) {
+            correctedIndex += corners.size();
+        }
+        return correctedIndex;
+    }
+
+    public Polygon2D createReducedPolygon(int indexToReduce) {
         List<DecimalPosition> corners = new ArrayList<>(this.corners);
         corners.remove(indexToReduce);
-        return new Polygon2d(corners);
+        return new Polygon2D(corners);
     }
 
 

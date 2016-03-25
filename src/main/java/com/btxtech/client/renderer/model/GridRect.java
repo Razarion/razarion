@@ -35,27 +35,47 @@ public class GridRect {
 
     public Cross getSingleCross(Line line, Cross ignore) {
         List<Cross> crosses = new ArrayList<>();
-        DecimalPosition crossPoint = northLine.getCrossInclusive(line);
-        if (crossPoint != null) {
+        DecimalPosition northCross = northLine.getCrossInclusive(line);
+        if (northCross != null) {
             crosses.add(new Cross(topLeftIndex, topRightIndex));
         }
-        crossPoint = eastLine.getCrossInclusive(line);
-        if (crossPoint != null) {
+        DecimalPosition eastCross = eastLine.getCrossInclusive(line);
+        if (eastCross != null) {
             crosses.add(new Cross(bottomRightIndex, topRightIndex));
         }
-        crossPoint = southLine.getCrossInclusive(line);
-        if (crossPoint != null) {
+        DecimalPosition southCross = southLine.getCrossInclusive(line);
+        if (southCross != null) {
             crosses.add(new Cross(bottomLeftIndex, bottomRightIndex));
         }
-        crossPoint = westLine.getCrossInclusive(line);
-        if (crossPoint != null) {
+        DecimalPosition westCross = westLine.getCrossInclusive(line);
+        if (westCross != null) {
             crosses.add(new Cross(bottomLeftIndex, topLeftIndex));
         }
         if (ignore != null) {
             crosses.remove(ignore);
         }
-        if (crosses.size() > 1) {
+        if (crosses.size() >= 3) {
             throw new IllegalArgumentException();
+        }
+        if (crosses.size() == 2) {
+            // Check if the lines moves exactly to a edge
+            List<DecimalPosition> crossPoints = new ArrayList<>();
+            if (northCross != null) {
+                crossPoints.add(northCross);
+            }
+            if (eastCross != null) {
+                crossPoints.add(eastCross);
+            }
+            if (southCross != null) {
+                crossPoints.add(southCross);
+            }
+            if (westCross != null) {
+                crossPoints.add(westCross);
+            }
+            crossPoints = new ArrayList<>(DecimalPosition.removeSimilarPoints(crossPoints, 0.1));
+            if(crossPoints.size() != 1) {
+                throw new IllegalArgumentException();
+            }
         }
         if (crosses.isEmpty()) {
             return null;

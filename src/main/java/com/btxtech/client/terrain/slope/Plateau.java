@@ -2,7 +2,7 @@ package com.btxtech.client.terrain.slope;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.primitives.Polygon2d;
+import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class Plateau {
     private Mesh mesh;
     private int xVertices;
     private List<Vertex> innerLine;
-    private Polygon2d innerPolygon;
+    private Polygon2D innerPolygon;
     private List<Vertex> outerLine;
 
     public Plateau(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners) {
@@ -72,7 +72,7 @@ public class Plateau {
         outerLine = new ArrayList<>();
         mesh = new Mesh(xVertices, shapeTemplate.getShape().getVertexCount());
         shapeTemplate.generateMesh(mesh, borders, innerLine, outerLine);
-        innerPolygon = new Polygon2d(Vertex.toXY(innerLine));
+        innerPolygon = new Polygon2D(Vertex.toXY(innerLine));
         mesh.setupValues();
     }
 
@@ -84,7 +84,7 @@ public class Plateau {
         return innerPolygon.isInside(vertex.toXY());
     }
 
-    public Polygon2d getInnerPolygon() {
+    public Polygon2D getInnerPolygon() {
         return innerPolygon;
     }
 

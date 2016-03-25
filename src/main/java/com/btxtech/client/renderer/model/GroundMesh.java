@@ -3,7 +3,7 @@ package com.btxtech.client.renderer.model;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Polygon2d;
+import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
@@ -195,7 +195,7 @@ public class GroundMesh {
                     corners.add(vertexBottomRight.toXY());
                     corners.add(vertexTopRight.toXY());
                     corners.add(vertexTopLeft.toXY());
-                    Polygon2d polygon = new Polygon2d(corners);
+                    Polygon2D polygon = new Polygon2D(corners);
                     if (polygon.isInside(absoluteXY)) {
                         return new GridRect(vertexBottomLeft, index,
                                 vertexBottomRight, index.add(1, 0),

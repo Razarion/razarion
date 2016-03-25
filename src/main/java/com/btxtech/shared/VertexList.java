@@ -61,6 +61,24 @@ public class VertexList {
         barycentric.add(new Vertex(0, 0, 1));
     }
 
+    public void addFakeNormAndTangent(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
+        vertices.add(vertexA);
+        vertices.add(vertexB);
+        vertices.add(vertexC);
+        normVertices.add(new Vertex(0, 0, 1));
+        normVertices.add(new Vertex(0, 0, 1));
+        normVertices.add(new Vertex(0, 0, 1));
+        tangentVertices.add(new Vertex(1, 0, 0));
+        tangentVertices.add(new Vertex(1, 0, 0));
+        tangentVertices.add(new Vertex(1, 0, 0));
+        barycentric.add(new Vertex(1, 0, 0));
+        barycentric.add(new Vertex(0, 1, 0));
+        barycentric.add(new Vertex(0, 0, 1));
+        edges.add(0.0);
+        edges.add(0.0);
+        edges.add(0.0);
+    }
+
     public void add(Vertex vertexA, Vertex normA, TextureCoordinate textureA, Vertex vertexB, Vertex normB, TextureCoordinate textureB, Vertex vertexC, Vertex normC, TextureCoordinate textureC) {
         vertices.add(vertexA);
         vertices.add(vertexB);
@@ -141,7 +159,7 @@ public class VertexList {
         for (int i = 0; i < vertices.size(); i++) {
             vertices.set(i, matrix.multiply(vertices.get(i), 1.0));
             normVertices.set(i, normTransformation.multiply(normVertices.get(i), 0.0).normalize(1.0));
-            if(!tangentVertices.isEmpty()) {
+            if (!tangentVertices.isEmpty()) {
                 tangentVertices.set(i, normTransformation.multiply(tangentVertices.get(i), 0.0).normalize(1.0));
             }
         }

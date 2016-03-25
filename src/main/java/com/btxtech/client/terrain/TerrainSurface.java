@@ -70,7 +70,7 @@ public class TerrainSurface {
 //        logger.severe("---------------------------------");
 
         shapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalShift());
-        plateau = new Plateau(shapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 600)));
+        plateau = new Plateau(shapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(180, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 620)));
         plateau.wrap();
 
         groundSlopeConnector = new GroundSlopeConnector(groundMesh, plateau);
@@ -124,6 +124,7 @@ public class TerrainSurface {
     public VertexList getVertexList() {
         VertexList vertexList = groundMesh.provideVertexList();
         vertexList.append(groundSlopeConnector.getTopMesh().provideVertexList());
+        vertexList.append(groundSlopeConnector.getConnectionVertexList());
         return vertexList;
     }
 
