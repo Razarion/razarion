@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 @Singleton
 public class RenderService {
     public static final int DEPTH_BUFFER_SIZE = 1024;
+    public static final int RENDER_FRAME_COUNT = 1;
+    public static final int RENDER_FRAME_COUNT_MILLIS = RENDER_FRAME_COUNT * 1000;
     @Inject
     private Instance<Renderer> renderInstance;
     @Inject
@@ -43,6 +45,9 @@ public class RenderService {
     private RenderSwitch monitor;
     private RenderSwitch terrainNorm;
     private RenderSwitch unitNorm;
+    private int framesCount = 0;
+    private long lastTime = 0;
+
 
     public void init() {
         initFrameBuffer();
@@ -103,6 +108,15 @@ public class RenderService {
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "draw failed", t);
             }
+        }
+
+        framesCount++;
+        if (lastTime == 0) {
+            lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
+        } else if (lastTime < System.currentTimeMillis()) {
+            logger.severe("Frames per seonds: " + (double) framesCount / (double) RENDER_FRAME_COUNT);
+            framesCount = 0;
+            lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
         }
     }
 
