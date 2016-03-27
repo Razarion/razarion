@@ -20,6 +20,7 @@ public class Plateau {
     private List<Vertex> innerLine;
     private Polygon2D innerPolygon;
     private List<Vertex> outerLine;
+    private Polygon2D outerPolygon;
 
     public Plateau(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners) {
         this.shapeTemplate = shapeTemplate;
@@ -73,6 +74,7 @@ public class Plateau {
         mesh = new Mesh(xVertices, shapeTemplate.getShape().getVertexCount());
         shapeTemplate.generateMesh(mesh, borders, innerLine, outerLine);
         innerPolygon = new Polygon2D(Vertex.toXY(innerLine));
+        outerPolygon = new Polygon2D(Vertex.toXY(outerLine));
         mesh.setupValues();
     }
 
@@ -82,6 +84,10 @@ public class Plateau {
 
     public boolean isInsideInner(Vertex vertex) {
         return innerPolygon.isInside(vertex.toXY());
+    }
+
+    public boolean isInsideOuter(Vertex vertex) {
+        return outerPolygon.isInside(vertex.toXY());
     }
 
     public Polygon2D getInnerPolygon() {

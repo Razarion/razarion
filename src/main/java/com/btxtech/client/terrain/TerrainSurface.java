@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainSurface {
-    public static final int MESH_SIZE = 1024;
+    public static final int MESH_SIZE = 2048;
     public static final int MESH_NODE_EDGE_LENGTH = 64;
     @Inject
     private GameCanvas gameCanvas;
@@ -56,7 +56,6 @@ public class TerrainSurface {
         beach = new Beach(groundMesh);
         setupGround();
         setupPlateau();
-        groundMesh.setupNorms();
     }
 
     public void setupPlateau() {
@@ -70,7 +69,7 @@ public class TerrainSurface {
 //        logger.severe("---------------------------------");
 
         shapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalShift());
-        plateau = new Plateau(shapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(180, 200), new DecimalPosition(600, 200), new DecimalPosition(600, 620)));
+        plateau = new Plateau(shapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
         plateau.wrap();
 
         groundSlopeConnector = new GroundSlopeConnector(groundMesh, plateau);
@@ -102,6 +101,7 @@ public class TerrainSurface {
                 // TODO mesh.getVertexDataSafe(index).add(new Vertex(0, 0, heightField.getValue(index)));
             }
         });
+        groundMesh.setupNorms();
     }
 
     public void sculpt() {
@@ -125,6 +125,7 @@ public class TerrainSurface {
         VertexList vertexList = groundMesh.provideVertexList();
         vertexList.append(groundSlopeConnector.getTopMesh().provideVertexList());
         vertexList.append(groundSlopeConnector.getConnectionVertexList());
+        vertexList.append(groundSlopeConnector.getOuterConnectionVertexList());
         return vertexList;
     }
 

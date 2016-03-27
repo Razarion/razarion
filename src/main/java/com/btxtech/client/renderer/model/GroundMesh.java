@@ -136,14 +136,11 @@ public class GroundMesh {
                 VertexData center = getVertexData(index);
                 VertexData north = getVertexData(index.add(0, 1));
                 VertexData east = getVertexData(index.add(1, 0));
-                VertexData northWest = getVertexData(index.add(-1, 1));
+                VertexData northEast = getVertexData(index.add(1, 1));
 
-                if (east != null && north != null) {
+                if (east != null && north != null && northEast != null) {
                     generateTriangle(vertexList, center, east, north);
-                }
-
-                if (north != null && northWest != null) {
-                    generateTriangle(vertexList, center, north, northWest);
+                    generateTriangle(vertexList, east, northEast, north);
                 }
 
             }
@@ -178,6 +175,10 @@ public class GroundMesh {
                 }
             }
         }
+    }
+
+    public boolean contains(Index index) {
+        return grid.containsKey(index);
     }
 
     public GridRect getGridRect(DecimalPosition absoluteXY) {
@@ -215,29 +216,4 @@ public class GroundMesh {
                 getVertex(bottomLeftIndex.add(1, 1)), bottomLeftIndex.add(1, 1),
                 getVertex(bottomLeftIndex.add(0, 1)), bottomLeftIndex.add(0, 1));
     }
-
-    public GridRect getGridRect(GridRect.Cross cross, GridRect ignore) {
-        List<GridRect> gridRectStarts = new ArrayList<>();
-        gridRectStarts.add(setupGridRect(cross.getIndexStart()));
-        gridRectStarts.add(setupGridRect(cross.getIndexStart().add(-1, 0)));
-        gridRectStarts.add(setupGridRect(cross.getIndexStart().add(-1, -1)));
-        gridRectStarts.add(setupGridRect(cross.getIndexStart().add(0, -1)));
-
-        List<GridRect> gridRectEnds = new ArrayList<>();
-        gridRectEnds.add(setupGridRect(cross.getIndexEnd()));
-        gridRectEnds.add(setupGridRect(cross.getIndexEnd().add(-1, 0)));
-        gridRectEnds.add(setupGridRect(cross.getIndexEnd().add(-1, -1)));
-        gridRectEnds.add(setupGridRect(cross.getIndexEnd().add(0, -1)));
-
-        gridRectStarts.retainAll(gridRectEnds);
-
-        gridRectStarts.remove(ignore);
-
-        if (gridRectStarts.size() != 1) {
-            throw new IllegalStateException();
-        }
-
-        return gridRectStarts.get(0);
-    }
-
 }

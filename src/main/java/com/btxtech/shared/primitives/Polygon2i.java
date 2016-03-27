@@ -2,6 +2,7 @@ package com.btxtech.shared.primitives;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.game.jsre.client.common.JavaUtils;
 import com.btxtech.game.jsre.client.common.Line;
 import com.btxtech.game.jsre.client.common.Line2I;
 import com.btxtech.game.jsre.common.MathHelper;
@@ -77,11 +78,27 @@ public class Polygon2I {
     }
 
     public int getCorrectedIndex(int index) {
-        int correctedIndex = index % corners.size();
-        if (correctedIndex < 0) {
-            correctedIndex += corners.size();
+        return JavaUtils.getCorrectedIndex(index, corners.size());
+    }
+
+    public static boolean isCounterClock(List<Index> corners) {
+        double angleSum = 0;
+        for (int i = 0; i < corners.size(); i++) {
+            Index lastCorner = corners.get(JavaUtils.getCorrectedIndex(i - 1, corners.size()));
+            Index currentCorner = corners.get(JavaUtils.getCorrectedIndex(i, corners.size()));
+            Index nextCorner = corners.get(JavaUtils.getCorrectedIndex(i + 1, corners.size()));
+            angleSum += currentCorner.getAngle(lastCorner, nextCorner);
         }
-        return correctedIndex;
+        double angleSumCalculated = MathHelper.HALF_RADIANT * (corners.size() - 2);
+        double outerAngleSumCalculated = MathHelper.ONE_RADIANT * corners.size() - angleSumCalculated;
+
+        if (MathHelper.compareWithPrecision(angleSumCalculated, angleSum)) {
+            return false;
+        } else if (MathHelper.compareWithPrecision(outerAngleSumCalculated, angleSum)) {
+            return true;
+        } else {
+            throw new IllegalStateException("angleSum is odd: " + angleSum + " (" + MathHelper.radToGrad(angleSum) + ") ");
+        }
     }
 
 }

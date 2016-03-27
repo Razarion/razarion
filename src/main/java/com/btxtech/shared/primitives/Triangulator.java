@@ -2,12 +2,10 @@ package com.btxtech.shared.primitives;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.VertexList;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -16,21 +14,19 @@ import java.util.logging.Logger;
  * http://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf
  */
 public class Triangulator {
-    private Logger logger = Logger.getLogger(Triangulator.class.getName());
-    private VertexList vertexList;
+    // private Logger logger = Logger.getLogger(Triangulator.class.getName());
 
-    public Triangulator(VertexList vertexList) {
-        this.vertexList = vertexList;
+    public interface Listener {
+        void onTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3);
     }
 
-    public void calculate(List<Vertex> vertexPolygon) {
-        extractTriangle(vertexPolygon);
+    public static void calculate(List<Vertex> vertexPolygon, Listener listener) {
+        extractTriangle(vertexPolygon, listener);
     }
 
-    private void extractTriangle(List<Vertex> vertexPolygon) {
+    private static void extractTriangle(List<Vertex> vertexPolygon, Listener listener) {
         if (vertexPolygon.size() == 3) {
-            // TODO norms & triangle direction
-            vertexList.addFakeNormAndTangent(vertexPolygon.get(0), vertexPolygon.get(1), vertexPolygon.get(2));
+            listener.onTriangle(vertexPolygon.get(0), vertexPolygon.get(1), vertexPolygon.get(2));
             return;
         }
 
@@ -85,12 +81,11 @@ public class Triangulator {
         Vertex previousCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex - 1));
         Vertex nextCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex + 1));
 
-        // TODO norms & triangle direction
-        vertexList.addFakeNormAndTangent(corner, previousCorner, nextCorner);
+        listener.onTriangle(corner, previousCorner, nextCorner);
 
         List<Vertex> newVertexPolygon = new ArrayList<>(vertexPolygon);
         newVertexPolygon.remove(earIndex);
-        extractTriangle(newVertexPolygon);
+        extractTriangle(newVertexPolygon, listener);
     }
 
 }
