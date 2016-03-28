@@ -37,6 +37,7 @@ public class SlopeRenderer extends AbstractRenderer {
     private WebGlUniformTexture slopeWebGLTexture;
     private WebGlUniformTexture slopeBumpWebGLTexture;
     private WebGlUniformTexture groundWebGLTexture;
+    private WebGlUniformTexture bumpMapGroundWebGlTexture;
 
     @PostConstruct
     public void init() {
@@ -48,6 +49,7 @@ public class SlopeRenderer extends AbstractRenderer {
         slopeWebGLTexture = createWebGLTexture(terrainSurface.getPlateau().getMesh().getSlopeImageDescriptor(), "uSamplerSlopeTexture", WebGLRenderingContext.TEXTURE0, 0);
         slopeBumpWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getPlateau().getMesh().getSlopeBumpImageDescriptor(), "uSamplerBumpMapSlopeTexture", WebGLRenderingContext.TEXTURE1, 1);
         groundWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), "uSamplerGroundCover", WebGLRenderingContext.TEXTURE2, 2);
+        bumpMapGroundWebGlTexture = createWebGLTexture(terrainSurface.getGroundBmImageDescriptor(), "uSamplerBumpMapGroundTexture", WebGLRenderingContext.TEXTURE3, 3);
     }
 
     @Override
@@ -83,6 +85,8 @@ public class SlopeRenderer extends AbstractRenderer {
         uniform1f("slopeSpecularIntensity", terrainSurface.getPlateauConfigEntity().getSpecularIntensity());
         uniform1f("slopeSpecularHardness", terrainSurface.getPlateauConfigEntity().getSpecularHardness());
         uniform1i("uSamplerGroundCoverSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());
+        uniform1i("uSamplerBumpMapGroundTextureSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
+        uniform1f("uSamplerBumpMapGroundDepth", terrainSurface.getGroundBumpMap());
 
         vertices.activate();
         normals.activate();
@@ -92,6 +96,7 @@ public class SlopeRenderer extends AbstractRenderer {
         slopeWebGLTexture.activate();
         slopeBumpWebGLTexture.activate();
         groundWebGLTexture.activate();
+        bumpMapGroundWebGlTexture.activate();
 
         getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

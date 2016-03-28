@@ -175,5 +175,5 @@ void main(void) {
     } else {
         // GROUND(0)
         gl_FragColor = renderGround(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);
-    }
+  }
 }

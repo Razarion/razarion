@@ -20,7 +20,9 @@ uniform float slopeSpecularIntensity;
 uniform float slopeSpecularHardness;
 uniform sampler2D uSamplerGroundCover;
 uniform int uSamplerGroundCoverSize;
-
+uniform sampler2D uSamplerBumpMapGroundTexture;
+uniform float uSamplerBumpMapGroundDepth;
+uniform int uSamplerBumpMapGroundTextureSize;
 
 const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
 const float SLOPE_FACTOR_BIAS = 0.001;
@@ -59,14 +61,14 @@ vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
 }
 
 void main(void) {
-    vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
+    vec3 correctedLightDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
     vec4 textureColor;
     vec3 correctedNorm;
 
     if(vSlopeFactor < SLOPE_FACTOR_BIAS) {
         // Ground
         textureColor = triPlanarTextureMapping(uSamplerGroundCover, float(uSamplerGroundCoverSize), vec2(0,0));
-        correctedNorm = normalize(vVertexNormal);
+        correctedNorm = bumpMapNorm(uSamplerBumpMapGroundTexture, uSamplerBumpMapGroundDepth, float(uSamplerBumpMapGroundTextureSize));
    } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
         // Slope
         textureColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
@@ -76,14 +78,14 @@ void main(void) {
        vec4 groundColor = triPlanarTextureMapping(uSamplerGroundCover, float(uSamplerGroundCoverSize), vec2(0,0));
        vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
        textureColor = mix(groundColor, slopeColor, vSlopeFactor);
-       vec3 groundNorm = normalize(vVertexNormal);
+       vec3 groundNorm = bumpMapNorm(uSamplerBumpMapGroundTexture, uSamplerBumpMapGroundDepth, float(uSamplerBumpMapGroundTextureSize));
        vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
        correctedNorm = mix(groundNorm, slopeNorm, vSlopeFactor);
     }
 
     // Light
     vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
-    vec4 diffuse = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * diffuseWeightFactor * textureColor.rgb, 1.0);
-    vec4 specular = setupSpecularLight(correctedLigtDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
+    vec4 diffuse = vec4(max(dot(normalize(correctedNorm), normalize(correctedLightDirection)), 0.0) * diffuseWeightFactor * textureColor.rgb, 1.0);
+    vec4 specular = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
     gl_FragColor = ambient + diffuse + specular;
 }
