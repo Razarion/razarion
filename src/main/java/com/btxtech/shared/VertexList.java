@@ -61,16 +61,16 @@ public class VertexList {
         barycentric.add(new Vertex(0, 0, 1));
     }
 
-    public void addFakeNormAndTangent(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
+    public void add(Vertex vertexA, Vertex normA, Vertex tangentA, Vertex vertexB, Vertex normB, Vertex tangentB, Vertex vertexC, Vertex normC, Vertex tangentC) {
         vertices.add(vertexA);
         vertices.add(vertexB);
         vertices.add(vertexC);
-        normVertices.add(new Vertex(0, 0, 1));
-        normVertices.add(new Vertex(0, 0, 1));
-        normVertices.add(new Vertex(0, 0, 1));
-        tangentVertices.add(new Vertex(1, 0, 0));
-        tangentVertices.add(new Vertex(1, 0, 0));
-        tangentVertices.add(new Vertex(1, 0, 0));
+        normVertices.add(normA);
+        normVertices.add(normB);
+        normVertices.add(normC);
+        tangentVertices.add(tangentA);
+        tangentVertices.add(tangentB);
+        tangentVertices.add(tangentC);
         barycentric.add(new Vertex(1, 0, 0));
         barycentric.add(new Vertex(0, 1, 0));
         barycentric.add(new Vertex(0, 0, 1));

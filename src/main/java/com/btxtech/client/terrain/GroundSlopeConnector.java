@@ -1,6 +1,7 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.renderer.model.GroundMesh;
+import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.Plateau;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
@@ -24,12 +25,12 @@ public class GroundSlopeConnector {
     private final Plateau plateau;
     private Collection<Vertex> stampedOut = new ArrayList<>();
     private GroundMesh topMesh;
-    private List<Vertex> innerEdges;
-    private List<Vertex> outerEdges;
+    private List<VertexDataObject> innerEdges;
+    private List<VertexDataObject> outerEdges;
     private VertexList connectionVertexList;
     private VertexList outerConnectionVertexList;
-    private List<Vertex> totalLine;
-    private List<Vertex> totalOuterLine;
+    private List<VertexDataObject> totalLine;
+    private List<VertexDataObject> totalOuterLine;
     private List<Index> topIndices;
     private List<Index> bottomIndices;
 
@@ -98,29 +99,35 @@ public class GroundSlopeConnector {
         }
         outerEdges = new ArrayList<>();
         for (Index index : hull) {
-            outerEdges.add(groundMesh.getVertexSafe(index));
+            VertexData vertexData = groundMesh.getVertexDataSafe(index);
+            outerEdges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent()));
         }
 
-        List<Vertex> tmpInnerLine = new ArrayList<>(plateau.getOuterLine());
-        Collections.reverse(tmpInnerLine);
+
+        List<VertexDataObject> tmpInnerLine = new ArrayList<>();
+        List<Vertex> outerLine = plateau.getOuterLine();
+        for (int i = outerLine.size() - 1; i >= 0; i--) {
+            Index index = plateau.getOuterLineMeshIndex().get(i);
+            tmpInnerLine.add(new VertexDataObject(plateau.getMesh().getVertexSave(index), plateau.getMesh().getNormSave(index), plateau.getMesh().getTangentSave(index)));
+        }
 
         // Find nearest point and fix list
         double shortestDistance = Double.MAX_VALUE;
         int index = -1;
-        Vertex outerEdge = outerEdges.get(0);
+        VertexDataObject outerEdge = outerEdges.get(0);
         for (int i = 0; i < tmpInnerLine.size(); i++) {
-            Vertex vertex = tmpInnerLine.get(i);
+            VertexDataObject vertex = tmpInnerLine.get(i);
             double distance = vertex.distance(outerEdge);
             if (shortestDistance > distance) {
                 shortestDistance = distance;
                 index = i;
             }
         }
-        if(index == -1) {
+        if (index == -1) {
             throw new IllegalStateException();
         }
 
-        List<Vertex> tmpInnerLine2 = new ArrayList<>(tmpInnerLine.subList(index, tmpInnerLine.size()));
+        List<VertexDataObject> tmpInnerLine2 = new ArrayList<>(tmpInnerLine.subList(index, tmpInnerLine.size()));
         tmpInnerLine2.addAll(tmpInnerLine.subList(0, index));
 
         // Setup total outer line
@@ -132,13 +139,17 @@ public class GroundSlopeConnector {
 
         outerConnectionVertexList = new VertexList();
         try {
-            Triangulator.calculate(totalOuterLine, new Triangulator.Listener() {
+            Triangulator.calculate(totalOuterLine, new Triangulator.Listener<VertexDataObject>() {
                 @Override
-                public void onTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3) {
+                public void onTriangle(VertexDataObject vertex1, VertexDataObject vertex2, VertexDataObject vertex3) {
                     if (vertex1.cross(vertex2, vertex3).getZ() >= 0) {
-                        outerConnectionVertexList.addFakeNormAndTangent(vertex1, vertex2, vertex3);
+                        outerConnectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(),
+                                vertex2, vertex2.getNorm(), vertex2.getTangent(),
+                                vertex3, vertex3.getNorm(), vertex3.getTangent());
                     } else {
-                        outerConnectionVertexList.addFakeNormAndTangent(vertex1, vertex3, vertex2);
+                        outerConnectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(),
+                                vertex3, vertex3.getNorm(), vertex3.getTangent(),
+                                vertex2, vertex2.getNorm(), vertex2.getTangent());
                     }
                 }
             });
@@ -193,21 +204,30 @@ public class GroundSlopeConnector {
 
         setupInnerEdges(topIndices);
         totalLine = new ArrayList<>();
-        totalLine.addAll(plateau.getInnerLine());
-        totalLine.add(plateau.getInnerLine().get(0));
+        List<Vertex> innerLine = plateau.getInnerLine();
+        for (int i = 0; i < innerLine.size(); i++) {
+            Index index = plateau.getInnerLineMeshIndex().get(i);
+            totalLine.add(new VertexDataObject(plateau.getMesh().getVertexSave(index), plateau.getMesh().getNormSave(index), plateau.getMesh().getTangentSave(index)));
+        }
+
+        totalLine.add(totalLine.get(0));
         totalLine.add(innerEdges.get(0));
-        List<Vertex> innerVertices = new ArrayList<>(innerEdges);
+        List<VertexDataObject> innerVertices = new ArrayList<>(innerEdges);
         Collections.reverse(innerVertices);
         totalLine.addAll(innerVertices);
 
         connectionVertexList = new VertexList();
-        Triangulator.calculate(totalLine, new Triangulator.Listener() {
+        Triangulator.calculate(totalLine, new Triangulator.Listener<VertexDataObject>() {
             @Override
-            public void onTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3) {
+            public void onTriangle(VertexDataObject vertex1, VertexDataObject vertex2, VertexDataObject vertex3) {
                 if (vertex1.cross(vertex2, vertex3).getZ() >= 0) {
-                    connectionVertexList.addFakeNormAndTangent(vertex1, vertex2, vertex3);
+                    connectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(),
+                            vertex2, vertex2.getNorm(), vertex2.getTangent(),
+                            vertex3, vertex3.getNorm(), vertex3.getTangent());
                 } else {
-                    connectionVertexList.addFakeNormAndTangent(vertex1, vertex3, vertex2);
+                    connectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(),
+                            vertex3, vertex3.getNorm(), vertex3.getTangent(),
+                            vertex2, vertex2.getNorm(), vertex2.getTangent());
                 }
             }
         });
@@ -247,7 +267,8 @@ public class GroundSlopeConnector {
 
         innerEdges = new ArrayList<>();
         for (Index index : correctedEdgeIndices2) {
-            innerEdges.add(topMesh.getVertexSafe(index));
+            VertexData vertexData = topMesh.getVertexDataSafe(index);
+            innerEdges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent()));
         }
     }
 
@@ -309,7 +330,7 @@ public class GroundSlopeConnector {
         return topMesh;
     }
 
-    public List<Vertex> getInnerEdges() {
+    public List<VertexDataObject> getInnerEdges() {
         return innerEdges;
     }
 
@@ -317,15 +338,15 @@ public class GroundSlopeConnector {
         return connectionVertexList;
     }
 
-    public List<Vertex> getTotalLine() {
+    public List<VertexDataObject> getTotalLine() {
         return totalLine;
     }
 
-    public List<Vertex> getOuterEdges() {
+    public List<VertexDataObject> getOuterEdges() {
         return outerEdges;
     }
 
-    public List<Vertex> getTotalOuterLine() {
+    public List<VertexDataObject> getTotalOuterLine() {
         return totalOuterLine;
     }
 

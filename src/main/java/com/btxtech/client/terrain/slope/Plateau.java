@@ -1,11 +1,13 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -17,8 +19,10 @@ public class Plateau {
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
+    private List<Index> innerLineMeshIndex;
     private List<Vertex> innerLine;
     private Polygon2D innerPolygon;
+    private List<Index> outerLineMeshIndex;
     private List<Vertex> outerLine;
     private Polygon2D outerPolygon;
 
@@ -69,13 +73,33 @@ public class Plateau {
     }
 
     public void wrap() {
-        innerLine = new ArrayList<>();
-        outerLine = new ArrayList<>();
         mesh = new Mesh(xVertices, shapeTemplate.getShape().getVertexCount());
-        shapeTemplate.generateMesh(mesh, borders, innerLine, outerLine);
-        innerPolygon = new Polygon2D(Vertex.toXY(innerLine));
-        outerPolygon = new Polygon2D(Vertex.toXY(outerLine));
+        innerLineMeshIndex = new ArrayList<>();
+        outerLineMeshIndex = new ArrayList<>();
+        shapeTemplate.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex);
         mesh.setupValues();
+        // Setup helper lists
+        innerLine = new ArrayList<>();
+        innerPolygon = correctAndCreateEdge(innerLineMeshIndex, innerLine);
+        outerLine = new ArrayList<>();
+        outerPolygon = correctAndCreateEdge(outerLineMeshIndex, outerLine);
+    }
+
+    private Polygon2D correctAndCreateEdge(List<Index> indices, List<Vertex> vertices) {
+        Vertex last = null;
+        for (Iterator<Index> iterator = indices.iterator(); iterator.hasNext(); ) {
+            Index index = iterator.next();
+            Vertex current = mesh.getVertexSave(index);
+            if (last != null) {
+                if (current.toXY().getDistance(last.toXY()) > 0.1) {
+                    vertices.add(current);
+                } else {
+                    iterator.remove();
+                }
+            }
+            last = current;
+        }
+        return new Polygon2D(Vertex.toXY(vertices));
     }
 
     public Mesh getMesh() {
@@ -94,15 +118,23 @@ public class Plateau {
         return innerPolygon;
     }
 
+    public List<Index> getInnerLineMeshIndex() {
+        return innerLineMeshIndex;
+    }
+
+    public List<Index> getOuterLineMeshIndex() {
+        return outerLineMeshIndex;
+    }
+
+    public double getZInner() {
+        return shapeTemplate.getShape().getZInner();
+    }
+
     public List<Vertex> getInnerLine() {
         return innerLine;
     }
 
     public List<Vertex> getOuterLine() {
         return outerLine;
-    }
-
-    public double getZInner() {
-        return shapeTemplate.getShape().getZInner();
     }
 }

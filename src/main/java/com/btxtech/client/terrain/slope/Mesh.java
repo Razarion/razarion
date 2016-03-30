@@ -1,6 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.client.ImageDescriptor;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
@@ -54,10 +55,16 @@ public class Mesh {
                 appendNorm(norms, center, top, left);
                 Vertex norm = sum(norms);
                 double normMagnitude = norm.magnitude();
-                if (normMagnitude == 0.0) {
-                    nodes[x][y].setNorm(getNorm(x - 1, y));
+                if (y == 0) {
+                    nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground
+                } else if(y == yCount - 1) {
+                    nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground
                 } else {
-                    nodes[x][y].setNorm(norm.divide(normMagnitude));
+                    if (normMagnitude == 0.0) {
+                        nodes[x][y].setNorm(getNorm(x - 1, y));
+                    } else {
+                        nodes[x][y].setNorm(norm.divide(normMagnitude));
+                    }
                 }
 
                 Vertex tangent = setupTangent(center, left, right);
@@ -173,6 +180,18 @@ public class Mesh {
         } else {
             return null;
         }
+    }
+
+    public Vertex getVertexSave(Index index) {
+        return getVertexSave(index.getX(), index.getY());
+    }
+
+    public Vertex getNormSave(Index index) {
+        return getNorm(index.getX(), index.getY());
+    }
+
+    public Vertex getTangentSave(Index index) {
+        return getTangent(index.getX(), index.getY());
     }
 
     public List<Vertex> getVertices() {

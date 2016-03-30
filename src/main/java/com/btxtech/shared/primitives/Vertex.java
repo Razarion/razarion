@@ -199,7 +199,7 @@ public class Vertex {
         return sum;
     }
 
-    public static List<DecimalPosition> toXY(List<Vertex> vertices) {
+    public static List<DecimalPosition> toXY(List<? extends Vertex> vertices) {
         List<DecimalPosition> decimalPositions = new ArrayList<>();
         for (Vertex vertex : vertices) {
             decimalPositions.add(vertex.toXY());

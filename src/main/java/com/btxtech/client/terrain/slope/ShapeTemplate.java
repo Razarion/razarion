@@ -1,6 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.client.terrain.FractalField;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -43,7 +44,7 @@ public class ShapeTemplate {
         }
     }
 
-    public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Vertex> innerLine, List<Vertex> outerLine) {
+    public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex) {
         int templateColumn = 0;
         int meshColumn = 0;
         for (AbstractBorder abstractBorder : skeleton) {
@@ -54,19 +55,19 @@ public class ShapeTemplate {
                     Vertex transformedPoint = transformationMatrix.multiply(shapeTemplateEntry.getPosition(), 1.0);
                     mesh.addVertex(meshColumn, row, transformedPoint, shapeTemplateEntry.getSlopeFactor());
                     if (row == 0) {
-                        if(!outerLine.contains(transformedPoint)) {
-                            outerLine.add(transformedPoint);
-                        }
+//                        if(!outerLineMeshIndex.contains(transformedPoint)) {
+                            outerLineMeshIndex.add(new Index(meshColumn, row));
+//                        }
                     } else if (row + 1 == rows) {
-                        if(innerLine.isEmpty()) {
-                            innerLine.add(transformedPoint);
-                        } else {
-                            Vertex last = innerLine.get(innerLine.size() - 1);
-                            double distance = last.distance(transformedPoint);
-                            if(distance > 1) {
-                                innerLine.add(transformedPoint);
-                            }
-                        }
+//                        if(innerLineMeshIndex.isEmpty()) {
+                            innerLineMeshIndex.add(new Index(meshColumn, row));
+//                        } else {
+//                            Index last = innerLineMeshIndex.get(innerLineMeshIndex.size() - 1);
+//                            double distance = last.distance(transformedPoint);
+//                            if(distance > 1) {
+//                                innerLineMeshIndex.add(new Index(meshColumn, row));
+//                            }
+//                        }
                     }
                 }
                 templateColumn++;

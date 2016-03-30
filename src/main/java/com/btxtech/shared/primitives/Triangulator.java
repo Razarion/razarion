@@ -16,15 +16,15 @@ import java.util.List;
 public class Triangulator {
     // private Logger logger = Logger.getLogger(Triangulator.class.getName());
 
-    public interface Listener {
-        void onTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3);
+    public interface Listener<T extends Vertex> {
+        void onTriangle(T vertex1, T vertex2, T vertex3);
     }
 
-    public static void calculate(List<Vertex> vertexPolygon, Listener listener) {
+    public static <T extends Vertex> void calculate(List<T> vertexPolygon, Listener<T> listener) {
         extractTriangle(vertexPolygon, listener);
     }
 
-    private static void extractTriangle(List<Vertex> vertexPolygon, Listener listener) {
+    private static <T extends Vertex> void extractTriangle(List<T> vertexPolygon, Listener<T> listener) {
         if (vertexPolygon.size() == 3) {
             listener.onTriangle(vertexPolygon.get(0), vertexPolygon.get(1), vertexPolygon.get(2));
             return;
@@ -77,13 +77,13 @@ public class Triangulator {
         }
 
         int earIndex = ears.get(0);
-        Vertex corner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex));
-        Vertex previousCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex - 1));
-        Vertex nextCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex + 1));
+        T corner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex));
+        T previousCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex - 1));
+        T nextCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex + 1));
 
         listener.onTriangle(corner, previousCorner, nextCorner);
 
-        List<Vertex> newVertexPolygon = new ArrayList<>(vertexPolygon);
+        List<T> newVertexPolygon = new ArrayList<>(vertexPolygon);
         newVertexPolygon.remove(earIndex);
         extractTriangle(newVertexPolygon, listener);
     }
