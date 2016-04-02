@@ -21,6 +21,7 @@ public class Mesh {
     private List<Vertex> norms;
     private List<Vertex> tangents;
     private List<Float> slopeFactors;
+    private List<Float> splatting;
     // private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;;
     private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
     private ImageDescriptor slopeBumpImageDescriptor = ImageDescriptor.BUMP_MAP_04;
@@ -84,6 +85,7 @@ public class Mesh {
         norms = new ArrayList<>();
         tangents = new ArrayList<>();
         slopeFactors = new ArrayList<>();
+        splatting = new ArrayList<>();
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount - 1; y++) {
                 MeshEntry bottomLeft = getMeshEntrySave(x, y);
@@ -103,6 +105,9 @@ public class Mesh {
         barycentric.add(new Vertex(1, 0, 0));
         barycentric.add(new Vertex(0, 1, 0));
         barycentric.add(new Vertex(0, 0, 1));
+        splatting.add(0.0f); // TODO
+        splatting.add(0.0f); // TODO
+        splatting.add(0.0f); // TODO
     }
 
     private void appendTriangleCorner(MeshEntry corner) {
@@ -212,6 +217,10 @@ public class Mesh {
 
     public List<Float> getSlopeFactors() {
         return slopeFactors;
+    }
+
+    public List<Float> getSplatting() {
+        return splatting;
     }
 
     public ImageDescriptor getSlopeImageDescriptor() {

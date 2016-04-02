@@ -34,9 +34,12 @@ public class SlopeRenderer extends AbstractRenderer {
     private VertexShaderAttribute normals;
     private VertexShaderAttribute tangents;
     private FloatShaderAttribute slopeFactors;
+    private FloatShaderAttribute groundSplatting;
     private WebGlUniformTexture slopeWebGLTexture;
     private WebGlUniformTexture slopeBumpWebGLTexture;
-    private WebGlUniformTexture groundWebGLTexture;
+    private WebGlUniformTexture groundSplattingTexture;
+    private WebGlUniformTexture groundTopWebGLTexture;
+    private WebGlUniformTexture groundBottomWebGLTexture;
     private WebGlUniformTexture bumpMapGroundWebGlTexture;
 
     @PostConstruct
@@ -46,10 +49,13 @@ public class SlopeRenderer extends AbstractRenderer {
         normals = createVertexShaderAttribute("aVertexNormal");
         tangents = createVertexShaderAttribute("aVertexTangent");
         slopeFactors = createFloatShaderAttribute("aSlopeFactor");
+        groundSplatting = createFloatShaderAttribute("aGroundSplatting");
         slopeWebGLTexture = createWebGLTexture(terrainSurface.getPlateau().getMesh().getSlopeImageDescriptor(), "uSamplerSlopeTexture", WebGLRenderingContext.TEXTURE0, 0);
         slopeBumpWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getPlateau().getMesh().getSlopeBumpImageDescriptor(), "uSamplerBumpMapSlopeTexture", WebGLRenderingContext.TEXTURE1, 1);
-        groundWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), "uSamplerGroundCover", WebGLRenderingContext.TEXTURE2, 2);
-        bumpMapGroundWebGlTexture = createWebGLTexture(terrainSurface.getGroundBmImageDescriptor(), "uSamplerBumpMapGroundTexture", WebGLRenderingContext.TEXTURE3, 3);
+        groundSplattingTexture = createWebGLTexture(terrainSurface.getBlenderImageDescriptor(), "uGroundSplatting", WebGLRenderingContext.TEXTURE2, 2);
+        groundTopWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), "uGroundTopTexture", WebGLRenderingContext.TEXTURE3, 3);
+        groundBottomWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), "uGroundBottomTexture", WebGLRenderingContext.TEXTURE4, 4);
+        bumpMapGroundWebGlTexture = createWebGLTexture(terrainSurface.getGroundBmImageDescriptor(), "uGroundBottomMap", WebGLRenderingContext.TEXTURE5, 5);
     }
 
     @Override
@@ -60,6 +66,7 @@ public class SlopeRenderer extends AbstractRenderer {
         normals.fillBuffer(mesh.getNorms());
         tangents.fillBuffer(mesh.getTangents());
         slopeFactors.fillFloatBuffer(mesh.getSlopeFactors());
+        groundSplatting.fillFloatBuffer(mesh.getSplatting());
 
         elementCount = vertexList.size();
     }
@@ -84,18 +91,24 @@ public class SlopeRenderer extends AbstractRenderer {
         uniform1f("uBumpMapSlopeDepth", terrainSurface.getPlateauConfigEntity().getBumpMapDepth());
         uniform1f("slopeSpecularIntensity", terrainSurface.getPlateauConfigEntity().getSpecularIntensity());
         uniform1f("slopeSpecularHardness", terrainSurface.getPlateauConfigEntity().getSpecularHardness());
-        uniform1i("uSamplerGroundCoverSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());
-        uniform1i("uSamplerBumpMapGroundTextureSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
-        uniform1f("uSamplerBumpMapGroundDepth", terrainSurface.getGroundBumpMap());
+        uniform1i("uGroundSplattingSize", terrainSurface.getBlenderImageDescriptor().getQuadraticEdge());
+        uniform1i("uGroundTopTextureSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
+        uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());
+        uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
+        uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundBumpMap());
+        uniform1f("uGroundSplattingDistance", terrainSurface.getEdgeDistance());
 
         vertices.activate();
         normals.activate();
         tangents.activate();
         slopeFactors.activate();
+        groundSplatting.activate();
 
         slopeWebGLTexture.activate();
         slopeBumpWebGLTexture.activate();
-        groundWebGLTexture.activate();
+        groundSplattingTexture.activate();
+        groundTopWebGLTexture.activate();
+        groundBottomWebGLTexture.activate();
         bumpMapGroundWebGlTexture.activate();
 
         getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
