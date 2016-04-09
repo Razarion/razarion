@@ -80,6 +80,7 @@ public class ShapeTemplate {
         } else if (MathHelper.compareWithPrecision(0.0, shapeTemplateEntry.getSlopeFactor())) {
             return 0;
         }
+        // Why -shapeTemplateEntry.getNormShift() and not + is unclear
         return (float) MathHelper.clamp(shapeTemplateEntry.getSlopeFactor() - shapeTemplateEntry.getNormShift(), 0.0, 1.0);
     }
 
