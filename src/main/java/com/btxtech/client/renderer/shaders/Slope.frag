@@ -12,6 +12,7 @@ uniform highp mat4 uNMatrix;
 uniform vec3 uLightingDirection;
 uniform float diffuseWeightFactor;
 uniform vec3 uAmbientColor;
+uniform float uSlopeFactorDistance;
 uniform sampler2D uSamplerSlopeTexture;
 uniform int uSamplerSlopeTextureSize;
 uniform sampler2D uSamplerBumpMapSlopeTexture;
@@ -99,13 +100,14 @@ void main(void) {
         correctedNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
    } else {
        // Transition
+       float correctedSlopeFactor = smoothstep(uSlopeFactorDistance, 1.0 - uSlopeFactorDistance, vSlopeFactor);
        float splattingFactor = setupGroundSplattingFactor();
        vec4 groundColor = setupGroundColor(splattingFactor);
        vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
-       textureColor = mix(groundColor, slopeColor, vSlopeFactor);
+       textureColor = mix(groundColor, slopeColor, correctedSlopeFactor);
        vec3 groundNorm = setupGroundNorm(splattingFactor);
        vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
-       correctedNorm = mix(groundNorm, slopeNorm, vSlopeFactor);
+       correctedNorm = mix(groundNorm, slopeNorm, correctedSlopeFactor);
     }
 
     // Light

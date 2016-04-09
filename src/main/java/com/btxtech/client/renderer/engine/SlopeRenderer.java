@@ -86,6 +86,7 @@ public class SlopeRenderer extends AbstractRenderer {
         Vertex direction = lighting.getLightDirection();
         uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
         uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
+        uniform1f("uSlopeFactorDistance", terrainSurface.getPlateauConfigEntity().getSlopeFactorDistance());
         uniform1i("uSamplerSlopeTextureSize", terrainSurface.getPlateau().getMesh().getSlopeImageDescriptor().getQuadraticEdge());
         uniform1i("uSamplerBumpMapSlopeTextureSize", terrainSurface.getPlateau().getMesh().getSlopeBumpImageDescriptor().getQuadraticEdge());
         uniform1f("uBumpMapSlopeDepth", terrainSurface.getPlateauConfigEntity().getBumpMapDepth());

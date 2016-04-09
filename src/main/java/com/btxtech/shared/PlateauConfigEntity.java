@@ -31,6 +31,7 @@ public class PlateauConfigEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "plateauConfigEntity")
     @OrderColumn(name = "orderColumn")
     private List<ShapeEntryEntity> shape;
+    private double slopeFactorDistance;
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
@@ -44,6 +45,14 @@ public class PlateauConfigEntity {
 
     public void setShape(List<ShapeEntryEntity> shape) {
         this.shape = shape;
+    }
+
+    public double getSlopeFactorDistance() {
+        return slopeFactorDistance;
+    }
+
+    public void setSlopeFactorDistance(double slopeFactorDistance) {
+        this.slopeFactorDistance = slopeFactorDistance;
     }
 
     public double getBumpMapDepth() {
