@@ -98,7 +98,7 @@ public abstract class AbstractRenderer implements Renderer {
         return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureId, uniformValue);
     }
 
-    protected WebGLTexture setupTexture(ImageDescriptor imageDescriptor) {
+    protected WebGLTexture setupTexture(final ImageDescriptor imageDescriptor) {
         final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
         ImageLoader<WebGLTexture> textureLoader = new ImageLoader<>();
         textureLoader.addImageUrl(imageDescriptor.getUrl(), webGLTexture);
@@ -106,11 +106,11 @@ public abstract class AbstractRenderer implements Renderer {
             @Override
             public void onLoaded(Map<WebGLTexture, ImageElement> loadedImageElements, Collection<WebGLTexture> failed) {
                 if (!failed.isEmpty()) {
-                    throw new IllegalStateException("Failed loading texture");
+                    throw new IllegalStateException("Failed loading texture: " + imageDescriptor.getUrl());
                 }
                 ImageElement imageElement = loadedImageElements.get(webGLTexture);
                 if (imageElement == null) {
-                    throw new IllegalStateException("Failed loading texture");
+                    throw new IllegalStateException("Failed loading texture: " + imageDescriptor.getUrl());
                 }
 
                 gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);

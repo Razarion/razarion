@@ -83,6 +83,22 @@ public class GridRect {
         return crosses.get(0);
     }
 
+    public Index getBottomLeftIndex() {
+        return bottomLeftIndex;
+    }
+
+    public Index getBottomRightIndex() {
+        return bottomRightIndex;
+    }
+
+    public Index getTopRightIndex() {
+        return topRightIndex;
+    }
+
+    public Index getTopLeftIndex() {
+        return topLeftIndex;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

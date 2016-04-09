@@ -9,11 +9,13 @@ import com.btxtech.shared.primitives.Vertex;
 public class VertexDataObject extends Vertex {
     private Vertex norm;
     private Vertex tangent;
+    private double splatting;
 
-    public VertexDataObject(Vertex vertex, Vertex norm, Vertex tangent) {
+    public VertexDataObject(Vertex vertex, Vertex norm, Vertex tangent, double splatting) {
         super(vertex.getX(), vertex.getY(), vertex.getZ());
         this.norm = norm;
         this.tangent = tangent;
+        this.splatting = splatting;
     }
 
     public Vertex getNorm() {
@@ -22,5 +24,9 @@ public class VertexDataObject extends Vertex {
 
     public Vertex getTangent() {
         return tangent;
+    }
+
+    public double getSplatting() {
+        return splatting;
     }
 }

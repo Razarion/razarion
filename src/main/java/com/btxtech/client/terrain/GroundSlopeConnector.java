@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class GroundSlopeConnector {
     private final GroundMesh groundMesh;
+    private final GroundMesh groundMeshOriginal;
     private final Plateau plateau;
     private Collection<Vertex> stampedOut = new ArrayList<>();
     private GroundMesh topMesh;
@@ -37,6 +38,7 @@ public class GroundSlopeConnector {
     public GroundSlopeConnector(GroundMesh groundMesh, Plateau plateau) {
         this.groundMesh = groundMesh;
         this.plateau = plateau;
+        groundMeshOriginal = groundMesh.copy();
     }
 
     public void stampOut() {
@@ -49,7 +51,7 @@ public class GroundSlopeConnector {
                 if (plateau.isInsideInner(vertex)) {
                     stampedOut.add(vertex);
                     topMesh.createVertexData(index, groundMesh);
-                    topMesh.getVertexDataSafe(index).add(0, 0, plateau.getZInner());
+                    topMesh.getVertexDataSafe(index).addZ(plateau.getZInner());
                     topIndices.add(index);
                 }
                 if (plateau.isInsideOuter(vertex)) {
@@ -66,6 +68,124 @@ public class GroundSlopeConnector {
     }
 
     private void setupBottomConnections() {
+        outerEdges = setupGroundEdgeList(bottomIndices, groundMesh);
+
+        List<VertexDataObject> slopeOuterLine = setupSlopeEdgeList(plateau.getOuterLineMeshIndex(), groundMeshOriginal, outerEdges.get(0));
+
+        outerConnectionVertexList = new VertexList();
+        triangulation(outerConnectionVertexList, outerEdges, slopeOuterLine);
+    }
+
+    private List<VertexDataObject> setupGroundEdgeList(List<Index> indices, GroundMesh groundMesh) {
+        // Edge detection
+        Index start = indices.get(0);
+
+        while (!groundMesh.contains(start)) {
+            start = start.sub(1, 0);
+        }
+
+        List<Index> edgeList = new ArrayList<>();
+        edgeList.add(start);
+        List<Index> connectingEdges = getConnectedEdges(start, groundMesh);
+        Index last = connectingEdges.get(0);
+        edgeList.add(last);
+
+        Index secondToLast = start;
+        while (!start.equals(last)) {
+            connectingEdges = getConnectedEdges(last, groundMesh);
+            connectingEdges.remove(secondToLast);
+            if (connectingEdges.size() != 1) {
+                throw new IllegalStateException();
+            }
+            secondToLast = last;
+            last = connectingEdges.get(0);
+            if (!start.equals(last)) {
+                edgeList.add(last);
+            }
+        }
+
+        // Setup the outer edges list
+        if (Polygon2I.isCounterClock(edgeList)) {
+            Collections.reverse(edgeList);
+        }
+        List<VertexDataObject> edges = new ArrayList<>();
+        for (Index index : edgeList) {
+            VertexData vertexData = groundMesh.getVertexDataSafe(index);
+            edges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent(), vertexData.getEdge()));
+        }
+
+        return edges;
+    }
+
+    private List<VertexDataObject> setupSlopeEdgeList(List<Index> inputSlopeMeshIndices, GroundMesh groundMesh, Vertex referenceGroundVertex) {
+        List<VertexDataObject> slopeLine = new ArrayList<>();
+        for (Index index : inputSlopeMeshIndices) {
+            Vertex vertex = plateau.getMesh().getVertexSave(index);
+            slopeLine.add(new VertexDataObject(vertex,
+                    plateau.getMesh().getNormSave(index),
+                    plateau.getMesh().getTangentSave(index),
+                    groundMesh.getInterpolatedSplatting(vertex.toXY())));
+        }
+
+        // Find nearest point and fix list
+        double shortestDistance = Double.MAX_VALUE;
+        int index = -1;
+        for (int i = 0; i < slopeLine.size(); i++) {
+            VertexDataObject vertex = slopeLine.get(i);
+            double distance = vertex.distance(referenceGroundVertex);
+            if (shortestDistance > distance) {
+                shortestDistance = distance;
+                index = i;
+            }
+        }
+        if (index == -1) {
+            throw new IllegalStateException();
+        }
+
+        List<VertexDataObject> correctedSlopeLine = new ArrayList<>(slopeLine.subList(index, slopeLine.size()));
+        correctedSlopeLine.addAll(slopeLine.subList(0, index));
+
+        return correctedSlopeLine;
+    }
+
+    private void triangulation(VertexList vertexList, List<VertexDataObject> groundLine, List<VertexDataObject> slopeLine) {
+        int innerIndex = 0;
+        int outerIndex = 0;
+
+        groundLine.add(groundLine.get(0));
+        slopeLine.add(slopeLine.get(0));
+
+        while (outerIndex + 1 < groundLine.size() || innerIndex + 1 < slopeLine.size()) {
+            VertexDataObject outerVertex = groundLine.get(outerIndex);
+            VertexDataObject innerVertex = slopeLine.get(innerIndex);
+
+            double distanceOuter = Double.MAX_VALUE;
+            if (outerIndex + 1 < groundLine.size()) {
+                distanceOuter = groundLine.get(outerIndex + 1).distance(innerVertex);
+            }
+
+            double distanceInner = Double.MAX_VALUE;
+            if (innerIndex + 1 < slopeLine.size()) {
+                distanceInner = slopeLine.get(innerIndex + 1).distance(outerVertex);
+            }
+
+            if (distanceOuter < distanceInner) {
+                addOuterTriangle(vertexList, outerVertex, groundLine.get(outerIndex + 1), innerVertex);
+                outerIndex++;
+            } else {
+                addOuterTriangle(vertexList, outerVertex, slopeLine.get(innerIndex + 1), innerVertex);
+                innerIndex++;
+            }
+        }
+    }
+
+    private void addOuterTriangle(VertexList vertexList, VertexDataObject vertexA, VertexDataObject vertexB, VertexDataObject vertexC) {
+        vertexList.add(vertexA, vertexA.getNorm(), vertexA.getTangent(), vertexA.getSplatting(),
+                vertexB, vertexB.getNorm(), vertexB.getTangent(), vertexB.getSplatting(),
+                vertexC, vertexC.getNorm(), vertexC.getTangent(), vertexC.getSplatting());
+    }
+
+    private void setupBottomConnections2() {
         // Edge detection
         Index start = bottomIndices.get(0);
 
@@ -99,8 +219,8 @@ public class GroundSlopeConnector {
         }
         outerEdges = new ArrayList<>();
         for (Index index : hull) {
-            VertexData vertexData = groundMesh.getVertexDataSafe(index);
-            outerEdges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent()));
+            VertexData vertexData = groundMeshOriginal.getVertexDataSafe(index);
+            outerEdges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent(), vertexData.getEdge()));
         }
 
 
@@ -108,7 +228,11 @@ public class GroundSlopeConnector {
         List<Vertex> outerLine = plateau.getOuterLine();
         for (int i = outerLine.size() - 1; i >= 0; i--) {
             Index index = plateau.getOuterLineMeshIndex().get(i);
-            tmpInnerLine.add(new VertexDataObject(plateau.getMesh().getVertexSave(index), plateau.getMesh().getNormSave(index), plateau.getMesh().getTangentSave(index)));
+            Vertex vertex = plateau.getMesh().getVertexSave(index);
+            tmpInnerLine.add(new VertexDataObject(vertex,
+                    plateau.getMesh().getNormSave(index),
+                    plateau.getMesh().getTangentSave(index),
+                    groundMeshOriginal.getInterpolatedSplatting(vertex.toXY())));
         }
 
         // Find nearest point and fix list
@@ -143,13 +267,13 @@ public class GroundSlopeConnector {
                 @Override
                 public void onTriangle(VertexDataObject vertex1, VertexDataObject vertex2, VertexDataObject vertex3) {
                     if (vertex1.cross(vertex2, vertex3).getZ() >= 0) {
-                        outerConnectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(),
-                                vertex2, vertex2.getNorm(), vertex2.getTangent(),
-                                vertex3, vertex3.getNorm(), vertex3.getTangent());
+                        outerConnectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(), vertex1.getSplatting(),
+                                vertex2, vertex2.getNorm(), vertex2.getTangent(), vertex2.getSplatting(),
+                                vertex3, vertex3.getNorm(), vertex3.getTangent(), vertex3.getSplatting());
                     } else {
-                        outerConnectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(),
-                                vertex3, vertex3.getNorm(), vertex3.getTangent(),
-                                vertex2, vertex2.getNorm(), vertex2.getTangent());
+                        outerConnectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(), vertex1.getSplatting(),
+                                vertex3, vertex3.getNorm(), vertex3.getTangent(), vertex3.getSplatting(),
+                                vertex2, vertex2.getNorm(), vertex2.getTangent(), vertex2.getSplatting());
                     }
                 }
             });
@@ -202,12 +326,28 @@ public class GroundSlopeConnector {
             }
         }
 
+        innerEdges = setupGroundEdgeList(topIndices, topMesh);
+
+        List<VertexDataObject> slopeInnerLine = setupSlopeEdgeList(plateau.getInnerLineMeshIndex(), groundMeshOriginal, innerEdges.get(0));
+
+        connectionVertexList = new VertexList();
+        triangulation(connectionVertexList, innerEdges, slopeInnerLine);
+    }
+
+    private void setupTopConnections2() {
+        for (Iterator<Index> iterator = topIndices.iterator(); iterator.hasNext(); ) {
+            Index topIndex = iterator.next();
+            if (!isValidTriangle(topIndex, topIndices)) {
+                iterator.remove();
+            }
+        }
+
         setupInnerEdges(topIndices);
         totalLine = new ArrayList<>();
         List<Vertex> innerLine = plateau.getInnerLine();
         for (int i = 0; i < innerLine.size(); i++) {
             Index index = plateau.getInnerLineMeshIndex().get(i);
-            totalLine.add(new VertexDataObject(plateau.getMesh().getVertexSave(index), plateau.getMesh().getNormSave(index), plateau.getMesh().getTangentSave(index)));
+            totalLine.add(new VertexDataObject(plateau.getMesh().getVertexSave(index), plateau.getMesh().getNormSave(index), plateau.getMesh().getTangentSave(index), 1)); // TODO
         }
 
         totalLine.add(totalLine.get(0));
@@ -221,13 +361,13 @@ public class GroundSlopeConnector {
             @Override
             public void onTriangle(VertexDataObject vertex1, VertexDataObject vertex2, VertexDataObject vertex3) {
                 if (vertex1.cross(vertex2, vertex3).getZ() >= 0) {
-                    connectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(),
-                            vertex2, vertex2.getNorm(), vertex2.getTangent(),
-                            vertex3, vertex3.getNorm(), vertex3.getTangent());
+                    connectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(), vertex1.getSplatting(),
+                            vertex2, vertex2.getNorm(), vertex2.getTangent(), vertex2.getSplatting(),
+                            vertex3, vertex3.getNorm(), vertex3.getTangent(), vertex3.getSplatting());
                 } else {
-                    connectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(),
-                            vertex3, vertex3.getNorm(), vertex3.getTangent(),
-                            vertex2, vertex2.getNorm(), vertex2.getTangent());
+                    connectionVertexList.add(vertex1, vertex1.getNorm(), vertex1.getTangent(), vertex1.getSplatting(),
+                            vertex3, vertex3.getNorm(), vertex3.getTangent(), vertex3.getSplatting(),
+                            vertex2, vertex2.getNorm(), vertex2.getTangent(), vertex2.getSplatting());
                 }
             }
         });
@@ -268,7 +408,7 @@ public class GroundSlopeConnector {
         innerEdges = new ArrayList<>();
         for (Index index : correctedEdgeIndices2) {
             VertexData vertexData = topMesh.getVertexDataSafe(index);
-            innerEdges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent()));
+            innerEdges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent(), vertexData.getEdge()));
         }
     }
 

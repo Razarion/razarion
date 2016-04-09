@@ -48,6 +48,9 @@ public class ImageDescriptor {
     public static final ImageDescriptor BEACH_01 = new ImageDescriptor("beach01.png", 512, 512);
     public static final ImageDescriptor OLD_GAME_UNITS = new ImageDescriptor("OldGameUnitTexture.png", 512, 512);
     public static final ImageDescriptor UNIT_TEXTURE_O1 = new ImageDescriptor("UnitTexture.png", 512, 512);
+    public static final ImageDescriptor CIRCLE_1 = new ImageDescriptor("circle.png", 512, 512);
+    public static final ImageDescriptor CIRCLE_2 = new ImageDescriptor("circle2.png", 512, 512);
+    public static final ImageDescriptor GREY = new ImageDescriptor("grey.jpg", 512, 512);
 
     private String url;
     private int width;

@@ -68,18 +68,20 @@ vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
 
 float setupGroundSplattingFactor() {
     float splatting = triPlanarTextureMapping(uGroundSplatting, float(uGroundSplattingSize), vec2(0,0)).r;
-    return smoothstep(vGroundSplatting - uGroundSplattingDistance, vGroundSplatting + uGroundSplattingDistance, splatting);
+    float splattingFactor = (vGroundSplatting + splatting) / 2.0;
+    float smoothStep = 0.5 - clamp(uGroundSplattingDistance / 2.0, 0.0, 0.5);
+    return smoothstep(smoothStep, 1.0 - smoothStep, splattingFactor);
 }
 
 vec4 setupGroundColor(float splattingFactor) {
     vec4 colorTop = triPlanarTextureMapping(uGroundTopTexture, float(uGroundTopTextureSize), vec2(0,0));
     vec4 colorBottom = triPlanarTextureMapping(uGroundBottomTexture, float(uGroundBottomTextureSize), vec2(0,0));
-    return mix(colorTop, colorBottom, splattingFactor);
+    return mix(colorBottom, colorTop, splattingFactor);
 }
 
 vec3 setupGroundNorm(float splattingFactor) {
     vec3 bottomNorm = bumpMapNorm(uGroundBottomMap, uGroundBottomMapDepth, float(uGroundBottomMapSize));
-    return mix(vVertexNormal, bottomNorm, splattingFactor);
+    return mix(bottomNorm, vVertexNormal, splattingFactor);
 }
 
 void main(void) {

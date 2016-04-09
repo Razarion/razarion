@@ -37,7 +37,17 @@ public class GroundMesh {
         }
     }
 
-    public void createVertexData(Index index, Vertex vertex) {
+    public GroundMesh copy() {
+        GroundMesh groundMesh = new GroundMesh();
+        groundMesh.maxX = maxX;
+        groundMesh.maxY = maxY;
+        for (Map.Entry<Index, VertexData> entry : grid.entrySet()) {
+            groundMesh.grid.put(entry.getKey(), new VertexData(entry.getValue()));
+        }
+        return groundMesh;
+    }
+
+    private void createVertexData(Index index, Vertex vertex) {
         grid.put(index, new VertexData(vertex));
         maxX = Math.max(index.getX(), maxX);
         maxY = Math.max(index.getY(), maxY);
@@ -179,6 +189,34 @@ public class GroundMesh {
 
     public boolean contains(Index index) {
         return grid.containsKey(index);
+    }
+
+    /**
+     * Bilinear interpolation of splatting
+     *
+     * Only works if the grid is Unit Square
+     * https://en.wikipedia.org/wiki/Bilinear_interpolation
+     *
+     * @param absoluteXY input
+     * @return interpolated Splatting
+     */
+    public double getInterpolatedSplatting(DecimalPosition absoluteXY) {
+        GridRect gridRect = getGridRect(absoluteXY);
+        VertexData vertexDataBL = getVertexDataSafe(gridRect.getBottomLeftIndex());
+        VertexData vertexDataBR = getVertexDataSafe(gridRect.getBottomRightIndex());
+        VertexData vertexDataTR = getVertexDataSafe(gridRect.getTopRightIndex());
+        VertexData vertexDataTL = getVertexDataSafe(gridRect.getTopLeftIndex());
+
+        DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
+        DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
+        DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
+
+        double splattingBL = vertexDataBL.getEdge() * (1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY());
+        double splattingBR = vertexDataBR.getEdge() * normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY());
+        double splattingTR = vertexDataTR.getEdge() * normalizedInterpolated.getX() * normalizedInterpolated.getY();
+        double splattingTL = vertexDataTL.getEdge() * (1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY();
+
+        return splattingBL + splattingBR + splattingTR + splattingTL;
     }
 
     public GridRect getGridRect(DecimalPosition absoluteXY) {

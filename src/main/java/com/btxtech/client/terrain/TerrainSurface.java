@@ -10,14 +10,12 @@ import com.btxtech.client.terrain.slope.ShapeTemplate;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.PlateauConfigEntity;
-import com.btxtech.shared.ShapeEntryEntity;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -34,6 +32,7 @@ public class TerrainSurface {
     private RenderService renderService;
     private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
+    // private ImageDescriptor blenderImageDescriptor = ImageDescriptor.GREY;
     private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_5;
     private ImageDescriptor groundBmImageDescriptor = ImageDescriptor.GROUND_BM_5;
     private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
@@ -96,8 +95,22 @@ public class TerrainSurface {
         groundMesh.iterate(new GroundMesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                // TODO groundMesh.getVertexDataSafe(index).setEdge(0);
-                // TODO mesh.getVertexDataSafe(index).setEdge(grassGround.getValue(index));
+                double splatting;
+                if (index.getX() % 2 == 0) {
+                    if (index.getY() % 2 == 0) {
+                        splatting = 0;
+                    } else {
+                        splatting = 1;
+                    }
+                } else {
+                    if (index.getY() % 2 == 0) {
+                        splatting = 1;
+                    } else {
+                        splatting = 0;
+                    }
+                }
+                // groundMesh.getVertexDataSafe(index).setEdge(splatting);
+                groundMesh.getVertexDataSafe(index).setEdge(grassGround.getValue(index));
                 // TODO mesh.getVertexDataSafe(index).add(new Vertex(0, 0, heightField.getValue(index)));
             }
         });

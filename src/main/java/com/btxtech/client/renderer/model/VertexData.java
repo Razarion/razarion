@@ -29,12 +29,8 @@ public class VertexData {
         return vertex;
     }
 
-    public void setVertex(Vertex vertex) {
-        this.vertex = vertex;
-    }
-
-    public void add(double x, double y, double z) {
-        this.vertex = this.vertex.add(x, y, z);
+    public void addZ(double z) {
+        this.vertex = this.vertex.add(0, 0, z);
     }
 
     public double getEdge() {

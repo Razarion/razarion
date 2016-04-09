@@ -91,11 +91,13 @@ public class Plateau {
             Index index = iterator.next();
             Vertex current = mesh.getVertexSave(index);
             if (last != null) {
-                if (current.toXY().getDistance(last.toXY()) > 0.1) {
+                 if (current.toXY().getDistance(last.toXY()) > 0.1) {
                     vertices.add(current);
-                } else {
-                    iterator.remove();
-                }
+                 } else {
+                     iterator.remove();
+                 }
+            } else {
+                vertices.add(current);
             }
             last = current;
         }

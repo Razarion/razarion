@@ -25,8 +25,6 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String A_VERTEX_NORMAL = "aVertexNormal";
     private static final String A_VERTEX_TANGENT = "aVertexTangent";
-    private static final String A_SLOPE_FACTOR = "aSlopeFactor";
-    private static final String A_TYPE = "aType";
     private static final String EDGE_POSITION_ATTRIBUTE_NAME = "aEdgePosition";
     private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
     private static final String VIEW_UNIFORM_NAME = "uVMatrix";
@@ -35,12 +33,12 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String GROUND_SAMPLER_UNIFORM_NAME = "uSamplerGround";
     private static final String GROUND_BM_SAMPLER_UNIFORM_NAME = "uSamplerGroundBm";
     private static final String UNIFORM_BUMP_MAP_DEPTH_GROUND = "bumpMapDepthGround";
-    private static final String SLOPE_SAMPLER_UNIFORM_NAME = "uSamplerSlope";
-    private static final String SLOPE_BUMP_MAP_SAMPLER_UNIFORM_NAME = "uSamplerSlopePumpMap";
-    private static final String UNIFORM_BUMP_MAP_DEPTH_SLOPE = "bumpMapDepthSlope";
-    private static final String BEACH_SAMPLER_UNIFORM_NAME = "uSamplerBeach";
-    private static final String BEACH_BUMP_MAP_SAMPLER_UNIFORM_NAME = "uSamplerBeachPumpMap";
-    private static final String UNIFORM_BUMP_MAP_DEPTH_BEACH = "bumpMapDepthBeach";
+    // private static final String SLOPE_SAMPLER_UNIFORM_NAME = "uSamplerSlope";
+    // private static final String SLOPE_BUMP_MAP_SAMPLER_UNIFORM_NAME = "uSamplerSlopePumpMap";
+    // private static final String UNIFORM_BUMP_MAP_DEPTH_SLOPE = "bumpMapDepthSlope";
+//    private static final String BEACH_SAMPLER_UNIFORM_NAME = "uSamplerBeach";
+//    private static final String BEACH_BUMP_MAP_SAMPLER_UNIFORM_NAME = "uSamplerBeachPumpMap";
+    // private static final String UNIFORM_BUMP_MAP_DEPTH_BEACH = "bumpMapDepthBeach";
     private static final String COLVER_SAMPLER_UNIFORM_NAME = "uSamplerCover";
     private static final String BLENDER_SAMPLER_UNIFORM_NAME = "uSamplerBlender";
     private static final String UNIFORM_LIGHTING_DIRECTION = "uLightingDirection";
@@ -49,26 +47,22 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private static final String UNIFORM_MVP_SHADOW_BIAS = "uMVPDepthBias";
     private static final String UNIFORM_SHADOW_MAP_SAMPLER = "uSamplerShadow";
     private static final String UNIFORM_SHADOW_ALPHA = "uShadowAlpha";
-    private static final String UNIFORM_SLOPE_SPECULAR_HARDNESS = "uSlopeSpecularHardness";
-    private static final String UNIFORM_SLOPE_SPECULAR_INTENSITY = "uSlopeSpecularIntensity";
-    private static final String UNIFORM_WATER_LEVEL = "uWaterLevel";
-    private static final String UNIFORM_WATER_GROUND = "uWaterGround";
+//    private static final String UNIFORM_SLOPE_SPECULAR_HARDNESS = "uSlopeSpecularHardness";
+//    private static final String UNIFORM_SLOPE_SPECULAR_INTENSITY = "uSlopeSpecularIntensity";
+//    private static final String UNIFORM_WATER_LEVEL = "uWaterLevel";
+//    private static final String UNIFORM_WATER_GROUND = "uWaterGround";
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute normals;
     private VertexShaderAttribute tangents;
     private FloatShaderAttribute edges;
-    @Deprecated
-    private FloatShaderAttribute slopes;
-    @Deprecated
-    private FloatShaderAttribute types;
     private WebGlUniformTexture coverWebGLTexture;
     private WebGlUniformTexture blenderWebGLTexture;
     private WebGlUniformTexture groundWebGLTexture;
     private WebGlUniformTexture groundBmWebGLTexture;
-    private WebGlUniformTexture slopeWebGLTexture;
-    private WebGlUniformTexture slopeBumpMapWebGLTexture;
-    private WebGlUniformTexture beachWebGLTexture;
-    private WebGlUniformTexture beachBumpMapWebGLTexture;
+//    private WebGlUniformTexture slopeWebGLTexture;
+//    private WebGlUniformTexture slopeBumpMapWebGLTexture;
+//    private WebGlUniformTexture beachWebGLTexture;
+//    private WebGlUniformTexture beachBumpMapWebGLTexture;
     private int elementCount;
     @Inject
     private TerrainSurface terrainSurface;
@@ -90,17 +84,15 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         normals = createVertexShaderAttribute(A_VERTEX_NORMAL);
         tangents = createVertexShaderAttribute(A_VERTEX_TANGENT);
         edges = createFloatShaderAttribute(EDGE_POSITION_ATTRIBUTE_NAME);
-        slopes = createFloatShaderAttribute(A_SLOPE_FACTOR);
-        types = createFloatShaderAttribute(A_TYPE);
 
         coverWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), COLVER_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE1, 1);
         blenderWebGLTexture = createWebGLTexture(terrainSurface.getBlenderImageDescriptor(), BLENDER_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE2, 2);
         groundWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), GROUND_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE3, 3);
         groundBmWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getGroundBmImageDescriptor(), GROUND_BM_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE4, 4);
-        slopeWebGLTexture = createWebGLTexture(terrainSurface.getSlopeImageDescriptor(), SLOPE_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE5, 5);
-        slopeBumpMapWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getSlopePumpMapImageDescriptor(), SLOPE_BUMP_MAP_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE6, 6);
-        beachWebGLTexture = createWebGLTexture(terrainSurface.getBeachImageDescriptor(), BEACH_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE7, 7);
-        beachBumpMapWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getBeachPumpMapImageDescriptor(), BEACH_BUMP_MAP_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE8, 8);
+//        slopeWebGLTexture = createWebGLTexture(terrainSurface.getSlopeImageDescriptor(), SLOPE_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE5, 5);
+//        slopeBumpMapWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getSlopePumpMapImageDescriptor(), SLOPE_BUMP_MAP_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE6, 6);
+//        beachWebGLTexture = createWebGLTexture(terrainSurface.getBeachImageDescriptor(), BEACH_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE7, 7);
+//        beachBumpMapWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getBeachPumpMapImageDescriptor(), BEACH_BUMP_MAP_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE8, 8);
     }
 
     @Override
@@ -111,8 +103,6 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         normals.fillBuffer(vertexList.getNormVertices());
         tangents.fillBuffer(vertexList.getTangentVertices());
         edges.fillDoubleBuffer(vertexList.getEdges());
-        slopes.fillDoubleBuffer(vertexList.getEdges()); // TODO remove
-        types.fillDoubleBuffer(vertexList.getEdges()); // TODO remove
 
         elementCount = vertexList.getVerticesCount();
     }
@@ -132,12 +122,12 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         uniform1f(UNIFORM_DIFFUSE_WEIGHT_FACTOR, lighting.getDiffuseIntensity());
         uniform1f(UNIFORM_EDGE_DISTANCE, terrainSurface.getEdgeDistance());
         uniform1f(UNIFORM_BUMP_MAP_DEPTH_GROUND, terrainSurface.getGroundBumpMap());
-        uniform1f(UNIFORM_BUMP_MAP_DEPTH_SLOPE, 1); // TODO remove
-        uniform1f(UNIFORM_BUMP_MAP_DEPTH_BEACH, terrainSurface.getBeach().getBumpMap());
-        uniform1f(UNIFORM_SLOPE_SPECULAR_HARDNESS, 1);// TODO remove
-        uniform1f(UNIFORM_SLOPE_SPECULAR_INTENSITY, 1);// TODO remove
-        uniform1f(UNIFORM_WATER_LEVEL, terrainSurface.getBeach().getWaterLevel());
-        uniform1f(UNIFORM_WATER_GROUND, terrainSurface.getBeach().getWaterGround());
+        // uniform1f(UNIFORM_BUMP_MAP_DEPTH_SLOPE, 1); // TODO remove
+        // uniform1f(UNIFORM_BUMP_MAP_DEPTH_BEACH, terrainSurface.getBeach().getBumpMap());
+//        uniform1f(UNIFORM_SLOPE_SPECULAR_HARDNESS, 1);// TODO remove
+//        uniform1f(UNIFORM_SLOPE_SPECULAR_INTENSITY, 1);// TODO remove
+//        uniform1f(UNIFORM_WATER_LEVEL, terrainSurface.getBeach().getWaterLevel());
+//        uniform1f(UNIFORM_WATER_GROUND, terrainSurface.getBeach().getWaterGround());
 
 
         // Shadow
@@ -154,17 +144,15 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         normals.activate();
         tangents.activate();
         edges.activate();
-        slopes.activate();
-        types.activate();
 
         coverWebGLTexture.activate();
         blenderWebGLTexture.activate();
         groundWebGLTexture.activate();
         groundBmWebGLTexture.activate();
-        slopeWebGLTexture.activate();
-        slopeBumpMapWebGLTexture.activate();
-        beachWebGLTexture.activate();
-        beachBumpMapWebGLTexture.activate();
+//        slopeWebGLTexture.activate();
+//        slopeBumpMapWebGLTexture.activate();
+//        beachWebGLTexture.activate();
+//        beachBumpMapWebGLTexture.activate();
 
         // Draw
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);

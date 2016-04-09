@@ -7,17 +7,15 @@ varying vec4 vVertexPosition;
 varying float vEdgePosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
-varying float vSlopeFactor;
-varying float vType;
 
 uniform sampler2D uSamplerCover;
 uniform sampler2D uSamplerBlender;
 uniform sampler2D uSamplerGround;
 uniform sampler2D uSamplerGroundBm;
-uniform sampler2D uSamplerSlope;
-uniform sampler2D uSamplerSlopePumpMap;
-uniform sampler2D uSamplerBeach;
-uniform sampler2D uSamplerBeachPumpMap;
+// uniform sampler2D uSamplerSlope;
+// uniform sampler2D uSamplerSlopePumpMap;
+// uniform sampler2D uSamplerBeach;
+// uniform sampler2D uSamplerBeachPumpMap;
 uniform sampler2D uSamplerShadow;
 uniform float uEdgeDistance;
 uniform float uShadowAlpha;
@@ -26,12 +24,12 @@ uniform float diffuseWeightFactor;
 uniform vec3 uAmbientColor;
 uniform highp mat4 uNMatrix;
 uniform float bumpMapDepthGround;
-uniform float bumpMapDepthSlope;
-uniform float bumpMapDepthBeach;
-uniform float uSlopeSpecularHardness;
-uniform float uSlopeSpecularIntensity;
-uniform float uWaterLevel;
-uniform float uWaterGround;
+// uniform float bumpMapDepthSlope;
+// uniform float bumpMapDepthBeach;
+// uniform float uSlopeSpecularHardness;
+// uniform float uSlopeSpecularIntensity;
+//uniform float uWaterLevel;
+//uniform float uWaterGround;
 
 const vec3 LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 const vec3 UNDER_WATER_COLOR = vec3(0.74, 0.81, 0.69);
@@ -68,15 +66,15 @@ vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale) {
       return normalize(normal);
 }
 
-float setupSpecularLight2(vec3 correctedLigtDirection, vec3 correctedNorm, float intensity, float hardness) {
-     vec3 eyeDirection = normalize(-vVertexPosition.xyz);
-     vec3 reflectionDirection = normalize(reflect(-correctedLigtDirection, correctedNorm));
-     return pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
-}
-
-float setupSpecularLight(vec3 correctedLigtDirection, vec3 correctedNorm) {
-    return setupSpecularLight2(correctedLigtDirection, correctedNorm, uSlopeSpecularIntensity, uSlopeSpecularHardness);
-}
+//float setupSpecularLight2(vec3 correctedLigtDirection, vec3 correctedNorm, float intensity, float hardness) {
+//     vec3 eyeDirection = normalize(-vVertexPosition.xyz);
+//     vec3 reflectionDirection = normalize(reflect(-correctedLigtDirection, correctedNorm));
+//     return pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
+//}
+//
+//float setupSpecularLight(vec3 correctedLigtDirection, vec3 correctedNorm) {
+//    return setupSpecularLight2(correctedLigtDirection, correctedNorm, uSlopeSpecularIntensity, uSlopeSpecularHardness);
+//}
 
 float calculateShadowFactor() {
     float zNdc = vShadowCoord.z / vShadowCoord.w;
@@ -103,77 +101,71 @@ vec4 renderGround(vec3 correctedLigtDirection, float shadowFactor, vec4 splatter
 }
 
 vec4 renderSlope(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm) {
-    // Norm
-    vec3 correctedNorm = mix(groundNorm, bumpMapNorm(uSamplerSlopePumpMap, bumpMapDepthSlope, 128.0), vSlopeFactor);
-    // Color
-    vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
-    vec4 textureColor = mix(splatteredColorGround, colorSlope, vSlopeFactor);
-    // Light
-    vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
-    vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * textureColor.rgb, 1.0);
-    float specularLight = mix(0.0, setupSpecularLight(correctedLigtDirection, correctedNorm), vSlopeFactor) * shadowFactor;
-    return ambient + diffuseFactor + specularLight;
+//    // Norm
+//    vec3 correctedNorm = mix(groundNorm, bumpMapNorm(uSamplerSlopePumpMap, bumpMapDepthSlope, 128.0), vSlopeFactor);
+//    // Color
+//    vec4 colorSlope = triPlanarTextureMapping(uSamplerSlope, 512.0, vec2(0,0));
+//    vec4 textureColor = mix(splatteredColorGround, colorSlope, vSlopeFactor);
+//    // Light
+//    vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
+//    vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * textureColor.rgb, 1.0);
+//    float specularLight = mix(0.0, setupSpecularLight(correctedLigtDirection, correctedNorm), vSlopeFactor) * shadowFactor;
+//    return ambient + diffuseFactor + specularLight;
+      return vec4(0.0,0.0,0.0,0.0);
 }
 
 vec4 renderBeach(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm) {
-    float z = vVertexPositionCoord.z;
-    if(z > uWaterLevel + BEACH_FADEOUT) {
-        // Over water level render beach
-        // Norm
-        vec3 correctedNorm = mix(groundNorm, bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0), vSlopeFactor);
-        // Color
-        vec4 colorBeach = triPlanarTextureMapping(uSamplerBeach, 512.0, vec2(0,0));
-        vec4 textureColor = mix(splatteredColorGround, colorBeach, vSlopeFactor);
-        // Light
-        vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
-        vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * textureColor.rgb, 1.0);
-        float specularLight = mix(0.0, setupSpecularLight(correctedLigtDirection, correctedNorm), vSlopeFactor) * shadowFactor;
-        return (ambient + diffuseFactor + specularLight);
-   }  if(z >= uWaterLevel) {
-       float beachFadeoutFactor = 1.0 - ((z - uWaterLevel) / BEACH_FADEOUT);
-       float beachColorFadeoutFactor = mix(1.0, 0.5, beachFadeoutFactor);
-       // float beachFadeoutFactor = 0.5;
-       vec3 beachNorm = bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0);
-       vec4 beachColor = triPlanarTextureMapping(uSamplerBeach, 512.0, vec2(0,0));
-       vec4 ambient = vec4(uAmbientColor, 1.0) * beachColor * beachColorFadeoutFactor;
-       vec4 diffuse = vec4(max(dot(normalize(beachNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * beachColorFadeoutFactor * beachColor.rgb, 1.0);
-       float specularIntensity = setupSpecularLight2(correctedLigtDirection, beachNorm, beachFadeoutFactor, 4.0) * shadowFactor;
-       vec4 specular = vec4(specularIntensity, specularIntensity, specularIntensity, 1.0);
-       return ambient + diffuse + specular;
-       // return vec4(beachFadeoutFactor, beachFadeoutFactor, beachFadeoutFactor, 1.0);
-   } else {
-        float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
-        vec3 beachNorm = bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0);
-        vec3 ambient = uAmbientColor * UNDER_WATER_COLOR * underWaterFactor;
-        vec3 diffuse = vec3(max(dot(normalize(beachNorm), normalize(correctedLigtDirection)), 0.0) * underWaterFactor * shadowFactor * diffuseWeightFactor * UNDER_WATER_COLOR);
-        return vec4(vec3(ambient + diffuse), 1.0);
-    }
+//    float z = vVertexPositionCoord.z;
+//    if(z > uWaterLevel + BEACH_FADEOUT) {
+//        // Over water level render beach
+//        // Norm
+//        vec3 correctedNorm = mix(groundNorm, bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0), vSlopeFactor);
+//        // Color
+//        vec4 colorBeach = triPlanarTextureMapping(uSamplerBeach, 512.0, vec2(0,0));
+//        vec4 textureColor = mix(splatteredColorGround, colorBeach, vSlopeFactor);
+//        // Light
+//        vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
+//        vec4 diffuseFactor = vec4(max(dot(normalize(correctedNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * textureColor.rgb, 1.0);
+//        float specularLight = mix(0.0, setupSpecularLight(correctedLigtDirection, correctedNorm), vSlopeFactor) * shadowFactor;
+//        return (ambient + diffuseFactor + specularLight);
+//   }  if(z >= uWaterLevel) {
+//       float beachFadeoutFactor = 1.0 - ((z - uWaterLevel) / BEACH_FADEOUT);
+//       float beachColorFadeoutFactor = mix(1.0, 0.5, beachFadeoutFactor);
+//       // float beachFadeoutFactor = 0.5;
+//       vec3 beachNorm = bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0);
+//       vec4 beachColor = triPlanarTextureMapping(uSamplerBeach, 512.0, vec2(0,0));
+//       vec4 ambient = vec4(uAmbientColor, 1.0) * beachColor * beachColorFadeoutFactor;
+//       vec4 diffuse = vec4(max(dot(normalize(beachNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * beachColorFadeoutFactor * beachColor.rgb, 1.0);
+//       float specularIntensity = setupSpecularLight2(correctedLigtDirection, beachNorm, beachFadeoutFactor, 4.0) * shadowFactor;
+//       vec4 specular = vec4(specularIntensity, specularIntensity, specularIntensity, 1.0);
+//       return ambient + diffuse + specular;
+//       // return vec4(beachFadeoutFactor, beachFadeoutFactor, beachFadeoutFactor, 1.0);
+//   } else {
+//        float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
+//        vec3 beachNorm = bumpMapNorm(uSamplerBeachPumpMap, bumpMapDepthBeach, 128.0);
+//        vec3 ambient = uAmbientColor * UNDER_WATER_COLOR * underWaterFactor;
+//        vec3 diffuse = vec3(max(dot(normalize(beachNorm), normalize(correctedLigtDirection)), 0.0) * underWaterFactor * shadowFactor * diffuseWeightFactor * UNDER_WATER_COLOR);
+//        return vec4(vec3(ambient + diffuse), 1.0);
+//    }
+      return vec4(0.0,0.0,0.0,0.0);
 }
 
 void main(void) {
     float shadowFactor = calculateShadowFactor();
     vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
     // Terrain splatting
-    float blender = triPlanarTextureMapping(uSamplerBlender, 512.0, vec2(0,0)).r;
-    float blendFactor = smoothstep(vEdgePosition - uEdgeDistance, vEdgePosition + uEdgeDistance, blender);
+    float splatting = triPlanarTextureMapping(uSamplerBlender, 512.0, vec2(0,0)).r;
+    float splattingFactor = (vEdgePosition + splatting) / 2.0;
+    float smoothStep = 0.5 - clamp(uEdgeDistance / 2.0, 0.0, 0.5);
+    splattingFactor = smoothstep(smoothStep, 1.0 - smoothStep, splattingFactor);
     vec4 colorCover = triPlanarTextureMapping(uSamplerCover, 512.0, vec2(0,0));
     vec4 colorGround = triPlanarTextureMapping(uSamplerGround, 512.0, vec2(0,0));
-    vec4 splatteredColorGround = mix(colorCover, colorGround, blendFactor);
+    vec4 splatteredColorGround = mix(colorGround, colorCover, splattingFactor);
     // Ground norm
     vec3 norm = bumpMapNorm(uSamplerGroundBm, bumpMapDepthGround, 512.0);
-    vec3 groundNorm = mix(vVertexNormal, norm, blendFactor);
+    vec3 groundNorm = mix(norm, vVertexNormal, splattingFactor);
 
-    if(vType >= 0.5 && vType <= 1.5) {
-        // PLATEAU(1)
-        gl_FragColor = renderSlope(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);
-    } else if(vType >= 1.5 && vType <= 2.5) {
-        // BEACH(2)
-        gl_FragColor = renderBeach(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);
-    } else if(vType >= 2.5) {
-        // UNDER_WATER(3)
-        discard;
-    } else {
         // GROUND(0)
-        gl_FragColor = renderGround(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);
-  }
+    gl_FragColor = renderGround(correctedLigtDirection, shadowFactor, splatteredColorGround, groundNorm);
+    // gl_FragColor = vec4(vEdgePosition, vEdgePosition, vEdgePosition, 1.0);
 }

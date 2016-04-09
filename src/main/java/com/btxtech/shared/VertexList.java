@@ -61,7 +61,9 @@ public class VertexList {
         barycentric.add(new Vertex(0, 0, 1));
     }
 
-    public void add(Vertex vertexA, Vertex normA, Vertex tangentA, Vertex vertexB, Vertex normB, Vertex tangentB, Vertex vertexC, Vertex normC, Vertex tangentC) {
+    public void add(Vertex vertexA, Vertex normA, Vertex tangentA, double splattingA,
+                    Vertex vertexB, Vertex normB, Vertex tangentB, double splattingB,
+                    Vertex vertexC, Vertex normC, Vertex tangentC, double splattingC) {
         vertices.add(vertexA);
         vertices.add(vertexB);
         vertices.add(vertexC);
@@ -74,9 +76,9 @@ public class VertexList {
         barycentric.add(new Vertex(1, 0, 0));
         barycentric.add(new Vertex(0, 1, 0));
         barycentric.add(new Vertex(0, 0, 1));
-        edges.add(0.0);
-        edges.add(0.0);
-        edges.add(0.0);
+        edges.add(splattingA);
+        edges.add(splattingB);
+        edges.add(splattingC);
     }
 
     public void add(Vertex vertexA, Vertex normA, TextureCoordinate textureA, Vertex vertexB, Vertex normB, TextureCoordinate textureB, Vertex vertexC, Vertex normC, TextureCoordinate textureC) {
