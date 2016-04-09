@@ -9,6 +9,7 @@ import com.btxtech.shared.primitives.Vertex;
 public class ShapeTemplateEntry {
     private Vertex position;
     private float slopeFactor;
+    private double normShift;
 
     public Vertex getPosition() {
         return position;
@@ -24,5 +25,13 @@ public class ShapeTemplateEntry {
 
     public void setSlopeFactor(float slopeFactor) {
         this.slopeFactor = slopeFactor;
+    }
+
+    public double getNormShift() {
+        return normShift;
+    }
+
+    public void setNormShift(double normShift) {
+        this.normShift = normShift;
     }
 }

@@ -26,6 +26,9 @@ public class ShapeEntryEntity {
     private PlateauConfigEntity plateauConfigEntity;
     @Embedded
     private Index position;
+    /**
+     * 1.0 is slope 0.0 is ground
+     */
     private float slopeFactor;
 
     /**

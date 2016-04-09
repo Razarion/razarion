@@ -38,8 +38,10 @@ public class ShapeTemplate {
                 if (shape.isShiftableEntry(row)) {
                     double normShift = fractalField.getValue(column, correctedRow - shape.getShiftableOffset());
                     shapeTemplateEntry.setPosition(shape.getNormShiftedVertex(row, normShift));
+                    shapeTemplateEntry.setNormShift(normShift);
                 } else {
                     shapeTemplateEntry.setPosition(shape.getVertex(row));
+                    shapeTemplateEntry.setNormShift(0);
                 }
                 nodes[column][correctedRow] = shapeTemplateEntry;
             }
@@ -55,7 +57,8 @@ public class ShapeTemplate {
                 for (int row = 0; row < rows; row++) {
                     ShapeTemplateEntry shapeTemplateEntry = nodes[templateColumn][row];
                     Vertex transformedPoint = transformationMatrix.multiply(shapeTemplateEntry.getPosition(), 1.0);
-                    mesh.addVertex(meshColumn, row, transformedPoint, shapeTemplateEntry.getSlopeFactor(), setupSplatting(transformedPoint, shapeTemplateEntry.getSlopeFactor(), groundMeshSplatting));
+                    float splatting = setupSplatting(transformedPoint, shapeTemplateEntry.getSlopeFactor(), groundMeshSplatting);
+                    mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(shapeTemplateEntry), splatting);
                     if (row == 0) {
                         outerLineMeshIndex.add(new Index(meshColumn, row));
                     } else if (row + 1 == rows) {
@@ -69,6 +72,15 @@ public class ShapeTemplate {
                 meshColumn++;
             }
         }
+    }
+
+    private float setupSlopeFactor(ShapeTemplateEntry shapeTemplateEntry) {
+        if (MathHelper.compareWithPrecision(1.0, shapeTemplateEntry.getSlopeFactor())) {
+            return 1;
+        } else if (MathHelper.compareWithPrecision(0.0, shapeTemplateEntry.getSlopeFactor())) {
+            return 0;
+        }
+        return (float) MathHelper.clamp(shapeTemplateEntry.getSlopeFactor() - shapeTemplateEntry.getNormShift(), 0.0, 1.0);
     }
 
     private float setupSplatting(Vertex vertex, float slopeFactor, GroundMesh groundMesh) {
