@@ -3,12 +3,10 @@ package com.btxtech.client.terrain.slope;
 import com.btxtech.TestHelper;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.ShapeEntryEntity;
 import com.btxtech.shared.primitives.Vertex;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +23,7 @@ public class PlateauTest {
         ShapeTemplate shapeTemplate = new ShapeTemplate(1, shape);
         shapeTemplate.sculpt(0, 0);
         Plateau plateau = new Plateau(shapeTemplate, 1000, Arrays.asList(new DecimalPosition(0, 0), new DecimalPosition(200, 0), new DecimalPosition(200, 200)));
-        plateau.wrap();
+        plateau.wrap(null);
         Mesh mesh = plateau.getMesh();
 
         Assert.assertEquals(18, mesh.getVertices().size());
@@ -45,7 +43,7 @@ public class PlateauTest {
         ShapeTemplate shapeTemplate = new ShapeTemplate(1, shape);
         shapeTemplate.sculpt(0, 0);
         Plateau plateau = new Plateau(shapeTemplate, 1000, Arrays.asList(new DecimalPosition(0, 0), new DecimalPosition(200, 0), new DecimalPosition(200, 200), new DecimalPosition(0, 200)));
-        plateau.wrap();
+        plateau.wrap(null);
         Mesh mesh = plateau.getMesh();
 
         Assert.assertEquals(24, mesh.getVertices().size());
@@ -87,7 +85,7 @@ public class PlateauTest {
         ShapeTemplate shapeTemplate = new ShapeTemplate(1, shape);
         shapeTemplate.sculpt(0, 0);
         Plateau plateau = new Plateau(shapeTemplate, 1000, Arrays.asList(new DecimalPosition(0, 0), new DecimalPosition(200, 0), new DecimalPosition(200, 200), new DecimalPosition(0, 200)));
-        plateau.wrap();
+        plateau.wrap(null);
         Mesh mesh = plateau.getMesh();
 
         Assert.assertEquals(96, mesh.getVertices().size());

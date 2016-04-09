@@ -32,8 +32,8 @@ public class Mesh {
         nodes = new MeshEntry[xCount][yCount];
     }
 
-    public void addVertex(int x, int y, Vertex vertex, float slopeFactor) {
-        nodes[x][y] = new MeshEntry(vertex, slopeFactor);
+    public void addVertex(int x, int y, Vertex vertex, float slopeFactor, float splatting) {
+        nodes[x][y] = new MeshEntry(vertex, slopeFactor, splatting);
     }
 
     public void setupValues() {
@@ -105,9 +105,6 @@ public class Mesh {
         barycentric.add(new Vertex(1, 0, 0));
         barycentric.add(new Vertex(0, 1, 0));
         barycentric.add(new Vertex(0, 0, 1));
-        splatting.add(0.0f); // TODO
-        splatting.add(0.0f); // TODO
-        splatting.add(0.0f); // TODO
     }
 
     private void appendTriangleCorner(MeshEntry corner) {
@@ -115,6 +112,7 @@ public class Mesh {
         norms.add(corner.getNorm());
         tangents.add(corner.getTangent());
         slopeFactors.add(corner.getSlopeFactor());
+        splatting.add(corner.getSplatting());
     }
 
     private Vertex setupTangent(Vertex center, Vertex left, Vertex right) {

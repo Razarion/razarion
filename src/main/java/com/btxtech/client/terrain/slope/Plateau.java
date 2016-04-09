@@ -1,5 +1,6 @@
 package com.btxtech.client.terrain.slope;
 
+import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
@@ -72,11 +73,11 @@ public class Plateau {
         }
     }
 
-    public void wrap() {
+    public void wrap(GroundMesh groundMeshSplatting) {
         mesh = new Mesh(xVertices, shapeTemplate.getShape().getVertexCount());
         innerLineMeshIndex = new ArrayList<>();
         outerLineMeshIndex = new ArrayList<>();
-        shapeTemplate.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex);
+        shapeTemplate.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex, groundMeshSplatting);
         mesh.setupValues();
         // Setup helper lists
         innerLine = new ArrayList<>();

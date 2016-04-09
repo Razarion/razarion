@@ -69,7 +69,7 @@ public class TerrainSurface {
 
         shapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalShift());
         plateau = new Plateau(shapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
-        plateau.wrap();
+        plateau.wrap(groundMesh);
 
         groundSlopeConnector = new GroundSlopeConnector(groundMesh, plateau);
         groundSlopeConnector.stampOut();

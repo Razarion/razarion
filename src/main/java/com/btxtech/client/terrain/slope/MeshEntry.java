@@ -11,10 +11,12 @@ public class MeshEntry {
     private Vertex norm;
     private Vertex tangent;
     private float slopeFactor;
+    private float splatting;
 
-    public MeshEntry(Vertex vertex, float slopeFactor) {
+    public MeshEntry(Vertex vertex, float slopeFactor, float splatting) {
         this.vertex = vertex;
         this.slopeFactor = slopeFactor;
+        this.splatting = splatting;
     }
 
     public Vertex getVertex() {
@@ -23,6 +25,10 @@ public class MeshEntry {
 
     public float getSlopeFactor() {
         return slopeFactor;
+    }
+
+    public float getSplatting() {
+        return splatting;
     }
 
     public Vertex getNorm() {
