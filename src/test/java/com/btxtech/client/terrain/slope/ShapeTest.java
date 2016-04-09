@@ -2,12 +2,11 @@ package com.btxtech.client.terrain.slope;
 
 import com.btxtech.TestHelper;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.ShapeEntryEntity;
+import com.btxtech.shared.SlopeShapeEntity;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -82,12 +81,12 @@ public class ShapeTest {
 
     }
 
-    public static List<ShapeEntryEntity> toShapeEntryEntity(Index ... indices) {
-        List<ShapeEntryEntity> shapeEntryEntities = new ArrayList<>();
+    public static List<SlopeShapeEntity> toShapeEntryEntity(Index... indices) {
+        List<SlopeShapeEntity> slopeShapeEntities = new ArrayList<>();
         for (Index index : indices) {
-            shapeEntryEntities.add(new ShapeEntryEntity(index, 0f));
+            slopeShapeEntities.add(new SlopeShapeEntity(index, 0f));
         }
-        return shapeEntryEntities;
+        return slopeShapeEntities;
     }
 
 }

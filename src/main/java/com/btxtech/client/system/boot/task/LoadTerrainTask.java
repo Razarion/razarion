@@ -1,7 +1,7 @@
 package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.shared.PlateauConfigEntity;
+import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.TerrainEditorService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -27,9 +27,9 @@ public class LoadTerrainTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        terrainEditorService.call(new RemoteCallback<PlateauConfigEntity>() {
+        terrainEditorService.call(new RemoteCallback<SlopeConfigEntity>() {
             @Override
-            public void callback(PlateauConfigEntity plateauConfigEntity) {
+            public void callback(SlopeConfigEntity plateauConfigEntity) {
                 try {
                     terrainSurface.setPlateauConfigEntity(plateauConfigEntity);
                     terrainSurface.init();

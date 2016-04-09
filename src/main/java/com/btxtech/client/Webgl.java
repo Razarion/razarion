@@ -1,19 +1,16 @@
 package com.btxtech.client;
 
+import com.btxtech.client.system.boot.ClientRunner;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.client.system.boot.StartupProgressListener;
 import com.btxtech.client.system.boot.StartupSeq;
 import com.btxtech.client.system.boot.StartupTaskEnum;
 import com.btxtech.client.system.boot.task.AbstractStartupTask;
-import com.btxtech.shared.PlateauConfigEntity;
 import com.btxtech.shared.StartupTaskInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
-import com.btxtech.client.system.boot.ClientRunner;
 
 import java.util.List;
 import java.util.logging.Level;

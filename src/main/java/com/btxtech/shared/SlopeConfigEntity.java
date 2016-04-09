@@ -1,13 +1,9 @@
 package com.btxtech.shared;
 
-import com.btxtech.game.jsre.client.common.Index;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,14 +19,14 @@ import java.util.List;
 @Entity
 @Portable
 @Bindable
-@Table(name = "TERRAIN_PLATEAU_CONFIG")
-public class PlateauConfigEntity {
+@Table(name = "SLOPE_CONFIG")
+public class SlopeConfigEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "plateauConfigEntity")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "slopeConfigEntity")
     @OrderColumn(name = "orderColumn")
-    private List<ShapeEntryEntity> shape;
+    private List<SlopeShapeEntity> shape;
     private double slopeFactorDistance;
     private double bumpMapDepth;
     private double specularIntensity;
@@ -39,11 +35,11 @@ public class PlateauConfigEntity {
     private double fractalRoughness;
     private int verticalSpace;
 
-    public List<ShapeEntryEntity> getShape() {
+    public List<SlopeShapeEntity> getShape() {
         return shape;
     }
 
-    public void setShape(List<ShapeEntryEntity> shape) {
+    public void setShape(List<SlopeShapeEntity> shape) {
         this.shape = shape;
     }
 
@@ -112,7 +108,7 @@ public class PlateauConfigEntity {
             return false;
         }
 
-        PlateauConfigEntity that = (PlateauConfigEntity) o;
+        SlopeConfigEntity that = (SlopeConfigEntity) o;
         return id != null && id.equals(that.id);
     }
 

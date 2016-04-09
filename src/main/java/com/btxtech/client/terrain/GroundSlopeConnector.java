@@ -2,7 +2,7 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.renderer.model.VertexData;
-import com.btxtech.client.terrain.slope.Plateau;
+import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.ConvexHull;
@@ -23,7 +23,7 @@ import java.util.List;
 public class GroundSlopeConnector {
     private final GroundMesh groundMesh;
     private final GroundMesh groundMeshOriginal;
-    private final Plateau plateau;
+    private final Slope slope;
     private Collection<Vertex> stampedOut = new ArrayList<>();
     private GroundMesh topMesh;
     private List<VertexDataObject> innerEdges;
@@ -35,9 +35,9 @@ public class GroundSlopeConnector {
     private List<Index> topIndices;
     private List<Index> bottomIndices;
 
-    public GroundSlopeConnector(GroundMesh groundMesh, Plateau plateau) {
+    public GroundSlopeConnector(GroundMesh groundMesh, Slope slope) {
         this.groundMesh = groundMesh;
-        this.plateau = plateau;
+        this.slope = slope;
         groundMeshOriginal = groundMesh.copy();
     }
 
@@ -48,13 +48,13 @@ public class GroundSlopeConnector {
         groundMesh.iterate(new GroundMesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                if (plateau.isInsideInner(vertex)) {
+                if (slope.isInsideInner(vertex)) {
                     stampedOut.add(vertex);
                     topMesh.createVertexData(index, groundMesh);
-                    topMesh.getVertexDataSafe(index).addZ(plateau.getZInner());
+                    topMesh.getVertexDataSafe(index).addZ(slope.getZInner());
                     topIndices.add(index);
                 }
-                if (plateau.isInsideOuter(vertex)) {
+                if (slope.isInsideOuter(vertex)) {
                     bottomIndices.add(index);
                     groundMesh.remove(index);
                 }
@@ -70,7 +70,7 @@ public class GroundSlopeConnector {
     private void setupBottomConnections() {
         outerEdges = setupGroundEdgeList(bottomIndices, groundMesh);
 
-        List<VertexDataObject> slopeOuterLine = setupSlopeEdgeList(plateau.getOuterLineMeshIndex(), groundMeshOriginal, outerEdges.get(0));
+        List<VertexDataObject> slopeOuterLine = setupSlopeEdgeList(slope.getOuterLineMeshIndex(), groundMeshOriginal, outerEdges.get(0));
 
         outerConnectionVertexList = new VertexList();
         triangulation(outerConnectionVertexList, outerEdges, slopeOuterLine);
@@ -120,10 +120,10 @@ public class GroundSlopeConnector {
     private List<VertexDataObject> setupSlopeEdgeList(List<Index> inputSlopeMeshIndices, GroundMesh groundMesh, Vertex referenceGroundVertex) {
         List<VertexDataObject> slopeLine = new ArrayList<>();
         for (Index index : inputSlopeMeshIndices) {
-            Vertex vertex = plateau.getMesh().getVertexSave(index);
+            Vertex vertex = slope.getMesh().getVertexSave(index);
             slopeLine.add(new VertexDataObject(vertex,
-                    plateau.getMesh().getNormSave(index),
-                    plateau.getMesh().getTangentSave(index),
+                    slope.getMesh().getNormSave(index),
+                    slope.getMesh().getTangentSave(index),
                     groundMesh.getInterpolatedSplatting(vertex.toXY())));
         }
 
@@ -225,13 +225,13 @@ public class GroundSlopeConnector {
 
 
         List<VertexDataObject> tmpInnerLine = new ArrayList<>();
-        List<Vertex> outerLine = plateau.getOuterLine();
+        List<Vertex> outerLine = slope.getOuterLine();
         for (int i = outerLine.size() - 1; i >= 0; i--) {
-            Index index = plateau.getOuterLineMeshIndex().get(i);
-            Vertex vertex = plateau.getMesh().getVertexSave(index);
+            Index index = slope.getOuterLineMeshIndex().get(i);
+            Vertex vertex = slope.getMesh().getVertexSave(index);
             tmpInnerLine.add(new VertexDataObject(vertex,
-                    plateau.getMesh().getNormSave(index),
-                    plateau.getMesh().getTangentSave(index),
+                    slope.getMesh().getNormSave(index),
+                    slope.getMesh().getTangentSave(index),
                     groundMeshOriginal.getInterpolatedSplatting(vertex.toXY())));
         }
 
@@ -328,7 +328,7 @@ public class GroundSlopeConnector {
 
         innerEdges = setupGroundEdgeList(topIndices, topMesh);
 
-        List<VertexDataObject> slopeInnerLine = setupSlopeEdgeList(plateau.getInnerLineMeshIndex(), groundMeshOriginal, innerEdges.get(0));
+        List<VertexDataObject> slopeInnerLine = setupSlopeEdgeList(slope.getInnerLineMeshIndex(), groundMeshOriginal, innerEdges.get(0));
 
         connectionVertexList = new VertexList();
         triangulation(connectionVertexList, innerEdges, slopeInnerLine);
@@ -344,10 +344,10 @@ public class GroundSlopeConnector {
 
         setupInnerEdges(topIndices);
         totalLine = new ArrayList<>();
-        List<Vertex> innerLine = plateau.getInnerLine();
+        List<Vertex> innerLine = slope.getInnerLine();
         for (int i = 0; i < innerLine.size(); i++) {
-            Index index = plateau.getInnerLineMeshIndex().get(i);
-            totalLine.add(new VertexDataObject(plateau.getMesh().getVertexSave(index), plateau.getMesh().getNormSave(index), plateau.getMesh().getTangentSave(index), 1)); // TODO
+            Index index = slope.getInnerLineMeshIndex().get(i);
+            totalLine.add(new VertexDataObject(slope.getMesh().getVertexSave(index), slope.getMesh().getNormSave(index), slope.getMesh().getTangentSave(index), 1)); // TODO
         }
 
         totalLine.add(totalLine.get(0));

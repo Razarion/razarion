@@ -1,7 +1,5 @@
 package com.btxtech.shared;
 
-import com.btxtech.shared.TerrainMeshVertex;
-import com.btxtech.shared.PlateauConfigEntity;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 import java.util.Collection;
@@ -12,9 +10,9 @@ import java.util.Collection;
  */
 @Remote
 public interface TerrainEditorService {
-    PlateauConfigEntity read();
+    SlopeConfigEntity read();
 
-    void save(PlateauConfigEntity plateauConfigEntity);
+    void save(SlopeConfigEntity plateauConfigEntity);
 
     Collection<TerrainMeshVertex> readTerrainMeshVertices();
 

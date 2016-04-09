@@ -2,7 +2,7 @@ package com.btxtech.client.slopeeditor;
 
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.ShapeEntryEntity;
+import com.btxtech.shared.SlopeShapeEntity;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -82,7 +82,7 @@ public class SlopeEditor implements Model {
         setup(terrainSurface.getPlateauConfigEntity().getShape());
     }
 
-    private void setup(List<ShapeEntryEntity> shapeEntryEntities) {
+    private void setup(List<SlopeShapeEntity> shapeEntryEntities) {
         // remove old
         for (Corner corner : corners) {
             group.removeChild(corner.getSvgElement());
@@ -131,8 +131,8 @@ public class SlopeEditor implements Model {
 
     @Override
     public void createCorner(Index position, Corner previous) {
-        int index = terrainSurface.getPlateauConfigEntity().getShape().indexOf(previous.getShapeEntryEntity());
-        ShapeEntryEntity shapeEntryEntity = new ShapeEntryEntity(position, 0f);
+        int index = terrainSurface.getPlateauConfigEntity().getShape().indexOf(previous.getSlopeShapeEntity());
+        SlopeShapeEntity shapeEntryEntity = new SlopeShapeEntity(position, 0f);
         terrainSurface.getPlateauConfigEntity().getShape().add(index+1, shapeEntryEntity);
         setup(terrainSurface.getPlateauConfigEntity().getShape());
     }

@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Beat
  * 23.01.2016.
  */
-public class Plateau {
+public class Slope {
     private final ShapeTemplate shapeTemplate;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
@@ -27,7 +27,7 @@ public class Plateau {
     private List<Vertex> outerLine;
     private Polygon2D outerPolygon;
 
-    public Plateau(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners) {
+    public Slope(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners) {
         this.shapeTemplate = shapeTemplate;
 
         if (shapeTemplate.getDistance() > 0) {
@@ -87,18 +87,14 @@ public class Plateau {
     }
 
     private Polygon2D correctAndCreateEdge(List<Index> indices, List<Vertex> vertices) {
-        Vertex last = null;
+        Vertex last = mesh.getVertexSave(indices.get(indices.size() - 1));
         for (Iterator<Index> iterator = indices.iterator(); iterator.hasNext(); ) {
             Index index = iterator.next();
             Vertex current = mesh.getVertexSave(index);
-            if (last != null) {
-                 if (current.toXY().getDistance(last.toXY()) > 0.1) {
-                    vertices.add(current);
-                 } else {
-                     iterator.remove();
-                 }
-            } else {
+            if (current.toXY().getDistance(last.toXY()) > 0.1) {
                 vertices.add(current);
+            } else {
+                iterator.remove();
             }
             last = current;
         }

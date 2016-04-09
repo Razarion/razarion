@@ -17,13 +17,13 @@ import javax.persistence.Table;
  */
 @Entity
 @Portable
-@Table(name = "TERRAIN_PLATEAU_CONFIG_SHAPE")
-public class ShapeEntryEntity {
+@Table(name = "SLOPE_SHAPE")
+public class SlopeShapeEntity {
     @Id
     @GeneratedValue
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    private PlateauConfigEntity plateauConfigEntity;
+    private SlopeConfigEntity slopeConfigEntity;
     @Embedded
     private Index position;
     /**
@@ -34,10 +34,10 @@ public class ShapeEntryEntity {
     /**
      * Used by Errai and JPA
      */
-    public ShapeEntryEntity() {
+    public SlopeShapeEntity() {
     }
 
-    public ShapeEntryEntity(Index position, float slopeFactor) {
+    public SlopeShapeEntity(Index position, float slopeFactor) {
         this.position = position;
         this.slopeFactor = slopeFactor;
     }
@@ -58,8 +58,8 @@ public class ShapeEntryEntity {
         this.slopeFactor = slopeFactor;
     }
 
-    public ShapeEntryEntity(PlateauConfigEntity plateauConfigEntity) {
-        this.plateauConfigEntity = plateauConfigEntity;
+    public SlopeShapeEntity(SlopeConfigEntity slopeConfigEntity) {
+        this.slopeConfigEntity = slopeConfigEntity;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ShapeEntryEntity {
             return false;
         }
 
-        ShapeEntryEntity that = (ShapeEntryEntity) o;
+        SlopeShapeEntity that = (SlopeShapeEntity) o;
         return id != null && id.equals(that.id);
     }
 

@@ -1,8 +1,7 @@
 package com.btxtech.client.slopeeditor;
 
-import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.shared.PlateauConfigEntity;
+import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -39,7 +38,7 @@ public class PlateauPanel extends Composite {
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
     @AutoBound
-    private DataBinder<PlateauConfigEntity> plateauConfigEntityDataBinder/* = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity())*/;
+    private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder/* = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity())*/;
     @Inject
     @Bound
     @DataField

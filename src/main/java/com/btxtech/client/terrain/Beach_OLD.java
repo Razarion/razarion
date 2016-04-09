@@ -21,7 +21,8 @@ import java.util.Map;
  * Created by Beat
  * 21.12.2015.
  */
-public class Beach {
+@Deprecated
+public class Beach_OLD {
     private static final Rectangle INDEX_RECT = new Rectangle(100, 30, 30, 15);
     private static final double BOTTOM = -8.0;
     private static final double WATER_LEVEL = -4.0;
@@ -36,7 +37,7 @@ public class Beach {
     private double waterSpecularHardness = 2.0;
     // private Logger logger = Logger.getLogger(Beach.class.getName());
 
-    public Beach(GroundMesh groundMesh) {
+    public Beach_OLD(GroundMesh groundMesh) {
       //   this.groundMesh = groundMesh;
     }
 

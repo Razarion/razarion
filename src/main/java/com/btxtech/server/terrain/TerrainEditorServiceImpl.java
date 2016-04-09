@@ -1,8 +1,8 @@
 package com.btxtech.server.terrain;
 
+import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.server.ExceptionHandler;
-import com.btxtech.shared.PlateauConfigEntity;
 import com.btxtech.shared.TerrainMeshVertex;
 import org.jboss.errai.bus.server.annotations.Service;
 
@@ -33,14 +33,14 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public PlateauConfigEntity read() {
+    public SlopeConfigEntity read() {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             // Query for total row count in invitations
-            CriteriaQuery<PlateauConfigEntity> userQuery = criteriaBuilder.createQuery(PlateauConfigEntity.class);
-            Root<PlateauConfigEntity> from = userQuery.from(PlateauConfigEntity.class);
-            CriteriaQuery<PlateauConfigEntity> userSelect = userQuery.select(from);
-            PlateauConfigEntity plateauConfigEntity =  entityManager.createQuery(userSelect).getSingleResult();
+            CriteriaQuery<SlopeConfigEntity> userQuery = criteriaBuilder.createQuery(SlopeConfigEntity.class);
+            Root<SlopeConfigEntity> from = userQuery.from(SlopeConfigEntity.class);
+            CriteriaQuery<SlopeConfigEntity> userSelect = userQuery.select(from);
+            SlopeConfigEntity plateauConfigEntity =  entityManager.createQuery(userSelect).getSingleResult();
             logger.severe("plateauConfigEntity: " + plateauConfigEntity.getShape());
             return plateauConfigEntity;
         } catch (Throwable e) {
@@ -51,7 +51,7 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public void save(PlateauConfigEntity plateauConfigEntity) {
+    public void save(SlopeConfigEntity plateauConfigEntity) {
         try {
             entityManager.merge(plateauConfigEntity);
         } catch (Throwable e) {

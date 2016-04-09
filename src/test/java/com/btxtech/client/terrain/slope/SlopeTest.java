@@ -15,7 +15,7 @@ import java.util.List;
  * 29.01.2016.
  */
 @SuppressWarnings("NonJREEmulationClassesInClientCode")
-public class PlateauTest {
+public class SlopeTest {
 
     @Test
     public void test3CornersUpright1() throws Exception {

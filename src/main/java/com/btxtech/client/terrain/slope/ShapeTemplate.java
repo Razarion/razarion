@@ -20,11 +20,11 @@ public class ShapeTemplate {
     // columns, row
     private ShapeTemplateEntry[][] nodes;
 
-    public ShapeTemplate(int columns, Shape shape) {
-        this.columns = columns;
+    public ShapeTemplate(int segments, Shape shape) {
+        this.columns = segments;
         this.shape = shape;
         rows = shape.getVertexCount();
-        nodes = new ShapeTemplateEntry[columns][shape.getVertexCount()];
+        nodes = new ShapeTemplateEntry[segments][shape.getVertexCount()];
     }
 
     public void sculpt(double shift, double roughness) {
