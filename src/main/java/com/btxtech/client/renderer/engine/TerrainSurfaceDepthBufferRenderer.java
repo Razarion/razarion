@@ -58,6 +58,11 @@ public class TerrainSurfaceDepthBufferRenderer extends AbstractRenderer {
     }
 
     @Override
+    public void setupImages() {
+
+    }
+
+    @Override
     public void fillBuffers() {
         VertexList vertexList = terrainSurface.getVertexList();
         // vertices

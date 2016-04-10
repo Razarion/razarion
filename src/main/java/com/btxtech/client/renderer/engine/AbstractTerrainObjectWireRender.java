@@ -56,6 +56,10 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
         positions = createVertexShaderAttribute(A_VERTEX_POSITION);
         barycentric = createVertexShaderAttribute(BARYCENTRIC_ATTRIBUTE_NAME);
         textureCoordinate = createShaderTextureCoordinateAttributee(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
+    }
+
+    @Override
+    public void setupImages() {
         webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
     }
 

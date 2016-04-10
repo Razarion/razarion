@@ -51,29 +51,36 @@ public class RenderService {
 
     public void init() {
         initFrameBuffer();
-        createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class);
-        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class);
-        createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class);
-        createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class);
-        createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class);
-        createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class);
-        monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null);
-        terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class);
-        unitNorm = createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class);
+        createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class, 0);
+        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 0);
+        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 1);
+        createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, 0);
+        createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, 0);
+        createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);
+        createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class, 0);
+        monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null, 0);
+        terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class, 0);
+        unitNorm = createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, 0);
     }
 
-    private RenderSwitch createAndAddRenderSwitch(Class<? extends Renderer> normalRendererClass, Class<? extends Renderer> depthBufferRendererClass, Class<? extends Renderer> wireRendererClass) {
+    private RenderSwitch createAndAddRenderSwitch(Class<? extends Renderer> normalRendererClass, Class<? extends Renderer> depthBufferRendererClass, Class<? extends Renderer> wireRendererClass, int id) {
         Renderer normalRenderer = null;
         if (normalRendererClass != null) {
             normalRenderer = renderInstance.select(normalRendererClass).get();
+            normalRenderer.setId(id);
+            normalRenderer.setupImages();
         }
         Renderer depthBufferRenderer = null;
         if (depthBufferRendererClass != null) {
             depthBufferRenderer = renderInstance.select(depthBufferRendererClass).get();
+            depthBufferRenderer.setId(id);
+            depthBufferRenderer.setupImages();
         }
         Renderer wireRenderer = null;
         if (wireRendererClass != null) {
             wireRenderer = renderInstance.select(wireRendererClass).get();
+            wireRenderer.setId(id);
+            wireRenderer.setupImages();
         }
         RenderSwitch renderSwitch = new RenderSwitch(normalRenderer, depthBufferRenderer, wireRenderer, wire);
         renderQueue.add(renderSwitch);

@@ -46,6 +46,10 @@ public class UnitWireRenderer extends AbstractRenderer {
         positions = createVertexShaderAttribute("aVertexPosition");
         barycentrics = createVertexShaderAttribute("aBarycentric");
         textureCoordinate = createShaderTextureCoordinateAttributee("aTextureCoord");
+    }
+
+    @Override
+    public void setupImages() {
         webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, "uSampler", WebGLRenderingContext.TEXTURE0, 0);
     }
 

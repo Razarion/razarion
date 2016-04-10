@@ -45,6 +45,11 @@ public class TerrainNormRenderer extends AbstractRenderer {
     }
 
     @Override
+    public void setupImages() {
+
+    }
+
+    @Override
     public void fillBuffers() {
         List<Vertex> vectors = new ArrayList<>();
 

@@ -64,9 +64,12 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
         positions = createVertexShaderAttribute(A_VERTEX_POSITION);
         normals = createVertexShaderAttribute(A_VERTEX_NORMAL);
         textureCoordinate = createShaderTextureCoordinateAttributee(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
-        webGLTexture = createWebGLTexture(getImageDescriptor(terrainObjectService), SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
     }
 
+    @Override
+    public void setupImages() {
+        webGLTexture = createWebGLTexture(getImageDescriptor(terrainObjectService), SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
+    }
 
     @Override
     public void fillBuffers() {

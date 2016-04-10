@@ -44,6 +44,10 @@ public class WaterRenderer extends AbstractRenderer {
         positions = createVertexShaderAttribute("aVertexPosition");
         norms = createVertexShaderAttribute("aVertexNormal");
         tangents = createVertexShaderAttribute("aVertexTangent");
+    }
+
+    @Override
+    public void setupImages() {
         bumpMap = createWebGLBumpMapTexture(ImageDescriptor.BUMP_MAP_01, "uSamplerBm", WebGLRenderingContext.TEXTURE0, 0); // TODO
     }
 

@@ -40,6 +40,10 @@ public class UnitRenderer extends AbstractRenderer {
         positions = createVertexShaderAttribute("aVertexPosition");
         norms = createVertexShaderAttribute("aVertexNormal");
         textureCoordinateAttribute = createShaderTextureCoordinateAttributee("aTextureCoord");
+    }
+
+    @Override
+    public void setupImages() {
         texture = createWebGLTexture(unitService.getImageDescriptor(), "uSampler", WebGLRenderingContext.TEXTURE0, 0);
     }
 

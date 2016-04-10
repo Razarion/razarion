@@ -7,6 +7,8 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.Mesh;
+import com.btxtech.client.terrain.slope.Slope;
+import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 
@@ -14,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -21,6 +24,7 @@ import java.util.List;
  */
 @Dependent
 public class SlopeRenderer extends AbstractRenderer {
+    private static Logger logger = Logger.getLogger(SlopeRenderer.class.getName());
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -50,8 +54,15 @@ public class SlopeRenderer extends AbstractRenderer {
         tangents = createVertexShaderAttribute("aVertexTangent");
         slopeFactors = createFloatShaderAttribute("aSlopeFactor");
         groundSplatting = createFloatShaderAttribute("aGroundSplatting");
-        slopeWebGLTexture = createWebGLTexture(terrainSurface.getPlateau().getMesh().getSlopeImageDescriptor(), "uSamplerSlopeTexture", WebGLRenderingContext.TEXTURE0, 0);
-        slopeBumpWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getPlateau().getMesh().getSlopeBumpImageDescriptor(), "uSamplerBumpMapSlopeTexture", WebGLRenderingContext.TEXTURE1, 1);
+    }
+
+    @Override
+    public void setupImages() {
+        Slope slope = terrainSurface.getSlope(getId());
+        slopeWebGLTexture = createWebGLTexture(slope.getSlopeImageDescriptor(), "uSamplerSlopeTexture", WebGLRenderingContext.TEXTURE0, 0);
+        logger.severe("SlopeRenderer1: " + getId() + " " + slope.getSlopeImageDescriptor().getUrl());
+        slopeBumpWebGLTexture = createWebGLBumpMapTexture(slope.getSlopeBumpImageDescriptor(), "uSamplerBumpMapSlopeTexture", WebGLRenderingContext.TEXTURE1, 1);
+        logger.severe("SlopeRenderer1: " + getId() + " " + slope.getSlopeBumpImageDescriptor().getUrl());
         groundSplattingTexture = createWebGLTexture(terrainSurface.getBlenderImageDescriptor(), "uGroundSplatting", WebGLRenderingContext.TEXTURE2, 2);
         groundTopWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), "uGroundTopTexture", WebGLRenderingContext.TEXTURE3, 3);
         groundBottomWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), "uGroundBottomTexture", WebGLRenderingContext.TEXTURE4, 4);
@@ -60,7 +71,7 @@ public class SlopeRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        Mesh mesh = terrainSurface.getPlateau().getMesh();
+        Mesh mesh = terrainSurface.getSlope(getId()).getMesh();
         List<Vertex> vertexList = mesh.getVertices();
         vertices.fillBuffer(vertexList);
         normals.fillBuffer(mesh.getNorms());
@@ -74,6 +85,9 @@ public class SlopeRenderer extends AbstractRenderer {
 
     @Override
     public void draw() {
+        Slope slope = terrainSurface.getSlope(getId());
+        SlopeConfigEntity slopeConfigEntity = slope.getSlopeConfigEntity();
+
         useProgram();
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
@@ -86,18 +100,18 @@ public class SlopeRenderer extends AbstractRenderer {
         Vertex direction = lighting.getLightDirection();
         uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
         uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
-        uniform1f("uSlopeFactorDistance", terrainSurface.getPlateauConfigEntity().getSlopeFactorDistance());
-        uniform1i("uSamplerSlopeTextureSize", terrainSurface.getPlateau().getMesh().getSlopeImageDescriptor().getQuadraticEdge());
-        uniform1i("uSamplerBumpMapSlopeTextureSize", terrainSurface.getPlateau().getMesh().getSlopeBumpImageDescriptor().getQuadraticEdge());
-        uniform1f("uBumpMapSlopeDepth", terrainSurface.getPlateauConfigEntity().getBumpMapDepth());
-        uniform1f("slopeSpecularIntensity", terrainSurface.getPlateauConfigEntity().getSpecularIntensity());
-        uniform1f("slopeSpecularHardness", terrainSurface.getPlateauConfigEntity().getSpecularHardness());
+        uniform1f("uSlopeFactorDistance", slopeConfigEntity.getSlopeFactorDistance());
+        uniform1i("uSamplerSlopeTextureSize", slope.getSlopeImageDescriptor().getQuadraticEdge());
+        uniform1i("uSamplerBumpMapSlopeTextureSize", slope.getSlopeBumpImageDescriptor().getQuadraticEdge());
+        uniform1f("uBumpMapSlopeDepth", slopeConfigEntity.getBumpMapDepth());
+        uniform1f("slopeSpecularIntensity", slopeConfigEntity.getSpecularIntensity());
+        uniform1f("slopeSpecularHardness", slopeConfigEntity.getSpecularHardness());
         uniform1i("uGroundSplattingSize", terrainSurface.getBlenderImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundTopTextureSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
         uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundBumpMap());
-        uniform1f("uGroundSplattingDistance", terrainSurface.getEdgeDistance());
+        uniform1f("uGroundSplattingDistance", terrainSurface.getSplattingBlur());
 
         vertices.activate();
         normals.activate();

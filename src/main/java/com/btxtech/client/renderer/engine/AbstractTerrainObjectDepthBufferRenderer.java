@@ -51,6 +51,11 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
     }
 
     @Override
+    public void setupImages() {
+
+    }
+
+    @Override
     public void fillBuffers() {
         VertexList vertexList = getVertexList(terrainObjectService);
         if (vertexList == null) {

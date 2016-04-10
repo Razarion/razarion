@@ -28,6 +28,16 @@ public abstract class AbstractRenderer implements Renderer {
     private Instance<WebGlProgram> webGlProgramInstance;
     @Inject
     private GameCanvas gameCanvas;
+    private int id;
+
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     protected void createProgram(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
         webGlProgram = webGlProgramInstance.get();

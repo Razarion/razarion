@@ -47,6 +47,11 @@ public class MonitorRenderer extends AbstractRenderer {
     }
 
     @Override
+    public void setupImages() {
+
+    }
+
+    @Override
     public void fillBuffers() {
         VertexList vertexList = new VertexList();
         double monitorWidth = 2.0 * SIDE_LENGTH / (double) gameCanvas.getWidth();

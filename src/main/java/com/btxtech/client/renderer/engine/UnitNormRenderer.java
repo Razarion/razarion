@@ -43,6 +43,11 @@ public class UnitNormRenderer extends AbstractRenderer {
     }
 
     @Override
+    public void setupImages() {
+
+    }
+
+    @Override
     public void fillBuffers() {
         VertexList vertexList = unitService.getVertexList();
         if(vertexList == null) {

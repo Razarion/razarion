@@ -1,6 +1,5 @@
 package com.btxtech.client.terrain.slope;
 
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -22,9 +21,6 @@ public class Mesh {
     private List<Vertex> tangents;
     private List<Float> slopeFactors;
     private List<Float> splatting;
-    // private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;;
-    private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
-    private ImageDescriptor slopeBumpImageDescriptor = ImageDescriptor.BUMP_MAP_04;
 
     public Mesh(int xCount, int yCount) {
         this.xCount = xCount;
@@ -56,22 +52,28 @@ public class Mesh {
                 appendNorm(norms, center, top, left);
                 Vertex norm = sum(norms);
                 double normMagnitude = norm.magnitude();
-                if (y == 0) {
-                    nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground
-                } else if(y == yCount - 1) {
-                    nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground
-                } else {
-                    if (normMagnitude == 0.0) {
-                        nodes[x][y].setNorm(getNorm(x - 1, y));
+                if (normMagnitude == 0.0) {
+                    if (y == 0) {
+                        nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground
+                    } else if (y == yCount - 1) {
+                        nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground
                     } else {
-                        nodes[x][y].setNorm(norm.divide(normMagnitude));
+                        nodes[x][y].setNorm(getNorm(x - 1, y));
                     }
+                } else {
+                    nodes[x][y].setNorm(norm.divide(normMagnitude));
                 }
 
                 Vertex tangent = setupTangent(center, left, right);
                 double tangentMagnitude = tangent.magnitude();
                 if (tangentMagnitude == 0.0) {
-                    nodes[x][y].setTangent(getTangent(x - 1, y));
+                    if (y == 0) {
+                        nodes[x][y].setTangent(new Vertex(1, 0, 0)); // TODO take tangent from Ground
+                    } else if (y == yCount - 1) {
+                        nodes[x][y].setTangent(new Vertex(1, 0, 0)); // TODO take tangent from Ground
+                    } else {
+                        nodes[x][y].setTangent(getTangent(x - 1, y));
+                    }
                 } else {
                     nodes[x][y].setTangent(tangent.divide(tangentMagnitude));
                 }
@@ -219,13 +221,5 @@ public class Mesh {
 
     public List<Float> getSplatting() {
         return splatting;
-    }
-
-    public ImageDescriptor getSlopeImageDescriptor() {
-        return slopeImageDescriptor;
-    }
-
-    public ImageDescriptor getSlopeBumpImageDescriptor() {
-        return slopeBumpImageDescriptor;
     }
 }

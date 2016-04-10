@@ -1,9 +1,11 @@
 package com.btxtech.client.terrain.slope;
 
+import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -26,9 +28,13 @@ public class Slope {
     private List<Index> outerLineMeshIndex;
     private List<Vertex> outerLine;
     private Polygon2D outerPolygon;
+    private SlopeConfigEntity slopeConfigEntity;
+    private ImageDescriptor slopeImageDescriptor;
+    private ImageDescriptor slopeBumpImageDescriptor;
 
-    public Slope(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners) {
+    public Slope(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners, SlopeConfigEntity slopeConfigEntity) {
         this.shapeTemplate = shapeTemplate;
+        this.slopeConfigEntity = slopeConfigEntity;
 
         if (shapeTemplate.getDistance() > 0) {
             setupSlopingBorder(corners);
@@ -135,5 +141,25 @@ public class Slope {
 
     public List<Vertex> getOuterLine() {
         return outerLine;
+    }
+
+    public SlopeConfigEntity getSlopeConfigEntity() {
+        return slopeConfigEntity;
+    }
+
+    public ImageDescriptor getSlopeImageDescriptor() {
+        return slopeImageDescriptor;
+    }
+
+    public void setSlopeImageDescriptor(ImageDescriptor slopeImageDescriptor) {
+        this.slopeImageDescriptor = slopeImageDescriptor;
+    }
+
+    public ImageDescriptor getSlopeBumpImageDescriptor() {
+        return slopeBumpImageDescriptor;
+    }
+
+    public void setSlopeBumpImageDescriptor(ImageDescriptor slopeBumpImageDescriptor) {
+        this.slopeBumpImageDescriptor = slopeBumpImageDescriptor;
     }
 }

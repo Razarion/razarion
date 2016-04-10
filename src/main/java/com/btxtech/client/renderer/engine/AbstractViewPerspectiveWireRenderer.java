@@ -52,6 +52,11 @@ public abstract class AbstractViewPerspectiveWireRenderer extends AbstractRender
     }
 
     @Override
+    public void setupImages() {
+
+    }
+
+    @Override
     public void fillBuffers() {
         List<Vertex> vertexList = getVertexList();
         vertices.fillBuffer(vertexList);

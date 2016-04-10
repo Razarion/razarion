@@ -42,7 +42,7 @@ public class TerrainMenu extends Composite {
 
     @PostConstruct
     public void init() {
-        surfaceSlider.setValue(terrainSurface.getEdgeDistance());
+        surfaceSlider.setValue(terrainSurface.getSplattingBlur());
         groundBumpMap.setValue(terrainSurface.getGroundBumpMap());
     }
 

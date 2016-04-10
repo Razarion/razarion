@@ -16,11 +16,11 @@ public class SlopeWireRenderer extends AbstractViewPerspectiveWireRenderer {
 
     @Override
     protected List<Vertex> getVertexList() {
-        return terrainSurface.getPlateau().getMesh().getVertices();
+        return terrainSurface.getSlope(getId()).getMesh().getVertices();
     }
 
     @Override
     protected List<Vertex> getBarycentricList() {
-        return terrainSurface.getPlateau().getMesh().getBarycentric();
+        return terrainSurface.getSlope(getId()).getMesh().getBarycentric();
     }
 }

@@ -84,7 +84,10 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         normals = createVertexShaderAttribute(A_VERTEX_NORMAL);
         tangents = createVertexShaderAttribute(A_VERTEX_TANGENT);
         edges = createFloatShaderAttribute(EDGE_POSITION_ATTRIBUTE_NAME);
+    }
 
+    @Override
+    public void setupImages() {
         coverWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), COLVER_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE1, 1);
         blenderWebGLTexture = createWebGLTexture(terrainSurface.getBlenderImageDescriptor(), BLENDER_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE2, 2);
         groundWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), GROUND_SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE3, 3);
@@ -120,7 +123,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         Vertex direction = lighting.getLightDirection();
         uniform3f(UNIFORM_LIGHTING_DIRECTION, direction.getX(), direction.getY(), direction.getZ());
         uniform1f(UNIFORM_DIFFUSE_WEIGHT_FACTOR, lighting.getDiffuseIntensity());
-        uniform1f(UNIFORM_EDGE_DISTANCE, terrainSurface.getEdgeDistance());
+        uniform1f(UNIFORM_EDGE_DISTANCE, terrainSurface.getSplattingBlur());
         uniform1f(UNIFORM_BUMP_MAP_DEPTH_GROUND, terrainSurface.getGroundBumpMap());
         // uniform1f(UNIFORM_BUMP_MAP_DEPTH_SLOPE, 1); // TODO remove
         // uniform1f(UNIFORM_BUMP_MAP_DEPTH_BEACH, terrainSurface.getBeach().getBumpMap());
