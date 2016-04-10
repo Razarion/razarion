@@ -54,9 +54,9 @@ public class Mesh {
                 double normMagnitude = norm.magnitude();
                 if (normMagnitude == 0.0) {
                     if (y == 0) {
-                        nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground
+                        nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground. Only in corners.
                     } else if (y == yCount - 1) {
-                        nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground
+                        nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground. Only in corners.
                     } else {
                         nodes[x][y].setNorm(getNorm(x - 1, y));
                     }
@@ -68,9 +68,9 @@ public class Mesh {
                 double tangentMagnitude = tangent.magnitude();
                 if (tangentMagnitude == 0.0) {
                     if (y == 0) {
-                        nodes[x][y].setTangent(new Vertex(1, 0, 0)); // TODO take tangent from Ground
+                        nodes[x][y].setTangent(new Vertex(1, 0, 0)); // TODO take tangent from Ground. Only in corners.
                     } else if (y == yCount - 1) {
-                        nodes[x][y].setTangent(new Vertex(1, 0, 0)); // TODO take tangent from Ground
+                        nodes[x][y].setTangent(new Vertex(1, 0, 0)); // TODO take tangent from Ground. Only in corners.
                     } else {
                         nodes[x][y].setTangent(getTangent(x - 1, y));
                     }

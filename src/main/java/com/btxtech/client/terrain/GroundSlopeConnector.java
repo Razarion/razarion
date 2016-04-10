@@ -3,7 +3,6 @@ package com.btxtech.client.terrain;
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.Slope;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Line;
 import com.btxtech.shared.VertexList;
@@ -156,14 +155,7 @@ public class GroundSlopeConnector {
         groundLine.add(groundLine.get(0));
         slopeLine.add(slopeLine.get(0));
 
-        int count = 0;
-
-
         while (outerIndex + 1 < groundLine.size() || innerIndex + 1 < slopeLine.size()) {
-//            if (count >= 24) {
-//                System.out.println("xxx");
-//                break;
-//            }
             VertexDataObject groundVertex = groundLine.get(outerIndex);
             VertexDataObject slopeVertex = slopeLine.get(innerIndex);
 
@@ -179,7 +171,6 @@ public class GroundSlopeConnector {
 
             if (distanceOuter < distanceInner) {
                 if (innerPolygon.isLineCrossing2(new Line(groundLine.get(outerIndex + 1).toXY(), slopeVertex.toXY()))) {
-                    System.out.println("xxxx1");
                     addOuterTriangle(vertexList, groundVertex, slopeLine.get(innerIndex + 1), slopeVertex);
                     innerIndex++;
                 } else {
@@ -188,7 +179,6 @@ public class GroundSlopeConnector {
                 }
             } else {
                 if (innerPolygon.isLineCrossing2(new Line(groundVertex.toXY(), slopeLine.get(innerIndex + 1).toXY()))) {
-                    System.out.println("xxxx2");
                     addOuterTriangle(vertexList, groundVertex, groundLine.get(outerIndex + 1), slopeVertex);
                     outerIndex++;
                 } else {
@@ -196,7 +186,6 @@ public class GroundSlopeConnector {
                     innerIndex++;
                 }
             }
-            count++;
         }
     }
 
@@ -251,11 +240,7 @@ public class GroundSlopeConnector {
         }
 
         innerEdges = setupGroundEdgeList(topIndices, topMesh);
-
-        System.out.println("Ground innerEdges: " + innerEdges);
-
         List<VertexDataObject> slopeInnerLine = setupSlopeEdgeList(slope.getInnerLineMeshIndex(), groundMeshOriginal, innerEdges.get(0));
-        System.out.println("slopeInnerLine: " + slopeInnerLine);
 
         connectionVertexList = new VertexList();
         triangulation(connectionVertexList, innerEdges, slopeInnerLine, false);
