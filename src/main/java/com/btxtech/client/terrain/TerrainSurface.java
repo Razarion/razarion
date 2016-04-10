@@ -55,11 +55,14 @@ public class TerrainSurface {
     private final double lowestPointInView = -9; // Should be calculated
 
     public void init() {
+        logger.severe("Start setup surface");
+        long time = System.currentTimeMillis();
         // setupPlateauConfigEntity();
         beach_old = new Beach_OLD(groundMesh);
         setupGround();
         setupPlateau();
         setupBeach();
+        logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }
 
     public void setupPlateau() {
@@ -114,7 +117,7 @@ public class TerrainSurface {
         beachSlopeConfigEntity.setFractalShift(5);
         beachSlopeConfigEntity.setSpecularHardness(0.2);
         beachSlopeConfigEntity.setSpecularIntensity(0.0);
-        beachSlopeConfigEntity.setVerticalSpace(10);
+        beachSlopeConfigEntity.setVerticalSpace(100);
         List<SlopeShapeEntity> shape = new ArrayList<>();
         shape.add(new SlopeShapeEntity(new Index(400, -8), 1));
         shape.add(new SlopeShapeEntity(new Index(350, -7), 1));
@@ -132,7 +135,7 @@ public class TerrainSurface {
     private void setupGround() {
         groundMesh.reset(MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
 
-        final FractalField heightField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, -10, 10);
+        // TODO final FractalField heightField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, -10, 10);
         final FractalField grassGround = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, 0, 1);
         groundMesh.iterate(new GroundMesh.VertexVisitor() {
             @Override

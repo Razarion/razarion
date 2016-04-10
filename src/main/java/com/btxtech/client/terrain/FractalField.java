@@ -6,10 +6,11 @@ import com.btxtech.game.jsre.common.MathHelper;
 /**
  * Created by Beat
  * 23.01.2016.
- *
- *  Diamond-square algorithm
+ * <p/>
+ * Diamond-square algorithm
  */
 public class FractalField {
+    // private final static Logger logger = Logger.getLogger(FractalField.class.getName());
     private int verticesPerEdge;
     private final double minValue;
     private final double maxValue;
@@ -18,7 +19,7 @@ public class FractalField {
     private double[][] values;
     private double roughness;
 
-    public FractalField(int verticesPerEdge, double roughness, double minValue, double maxValue) {
+    private FractalField(int verticesPerEdge, double roughness, double minValue, double maxValue) {
         // TODO Check correct value verticesPerEdge
         this.verticesPerEdge = verticesPerEdge;
         this.minValue = minValue;
@@ -127,7 +128,7 @@ public class FractalField {
     public static int nearestPossibleNumber(int number1, int number2) {
         int maxNumber = Math.max(number1, number2);
 
-        if(MathHelper.isPowerOfTwo(maxNumber - 1)) {
+        if (MathHelper.isPowerOfTwo(maxNumber - 1)) {
             return maxNumber;
         }
 
@@ -135,7 +136,9 @@ public class FractalField {
     }
 
     public static FractalField createSaveFractalField(int nodeCount1, int nodeCount2, double roughness, double minValue, double maxValue) {
+        long time = System.currentTimeMillis();
         FractalField fractalField = new FractalField(nearestPossibleNumber(nodeCount1, nodeCount2), roughness, minValue, maxValue);
+        time = System.currentTimeMillis();
         fractalField.process();
         return fractalField;
     }

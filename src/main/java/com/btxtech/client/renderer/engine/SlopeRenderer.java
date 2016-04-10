@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  */
 @Dependent
 public class SlopeRenderer extends AbstractRenderer {
-    private static Logger logger = Logger.getLogger(SlopeRenderer.class.getName());
+    // private static Logger logger = Logger.getLogger(SlopeRenderer.class.getName());
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -60,9 +60,7 @@ public class SlopeRenderer extends AbstractRenderer {
     public void setupImages() {
         Slope slope = terrainSurface.getSlope(getId());
         slopeWebGLTexture = createWebGLTexture(slope.getSlopeImageDescriptor(), "uSamplerSlopeTexture", WebGLRenderingContext.TEXTURE0, 0);
-        logger.severe("SlopeRenderer1: " + getId() + " " + slope.getSlopeImageDescriptor().getUrl());
         slopeBumpWebGLTexture = createWebGLBumpMapTexture(slope.getSlopeBumpImageDescriptor(), "uSamplerBumpMapSlopeTexture", WebGLRenderingContext.TEXTURE1, 1);
-        logger.severe("SlopeRenderer1: " + getId() + " " + slope.getSlopeBumpImageDescriptor().getUrl());
         groundSplattingTexture = createWebGLTexture(terrainSurface.getBlenderImageDescriptor(), "uGroundSplatting", WebGLRenderingContext.TEXTURE2, 2);
         groundTopWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), "uGroundTopTexture", WebGLRenderingContext.TEXTURE3, 3);
         groundBottomWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), "uGroundBottomTexture", WebGLRenderingContext.TEXTURE4, 4);

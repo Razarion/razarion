@@ -14,6 +14,7 @@ import java.util.List;
  * 23.01.2016.
  */
 public class ShapeTemplate {
+    // private Logger logger = Logger.getLogger(ShapeTemplate.class.getName());
     private int rows;
     private int columns;
     private final Shape shape;

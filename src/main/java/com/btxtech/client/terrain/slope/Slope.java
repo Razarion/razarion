@@ -18,6 +18,7 @@ import java.util.List;
  * 23.01.2016.
  */
 public class Slope {
+    // private Logger logger = Logger.getLogger(Slope.class.getName());
     private final ShapeTemplate shapeTemplate;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
