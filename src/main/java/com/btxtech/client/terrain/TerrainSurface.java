@@ -67,13 +67,13 @@ public class TerrainSurface {
 
     public void setupPlateau() {
         ShapeTemplate plateauShapeTemplate = new ShapeTemplate(100, new Shape(plateauConfigEntity.getShape()));
-//        logger.severe("---------------------------------");
-//        List<ShapeEntryEntity> shape = plateauConfigEntity.getShape();
-//        for (int i = 0; i < shape.size(); i++) {
-//            ShapeEntryEntity shapeEntryEntity = shape.get(i);
-//            logger.severe(i + ":" + shapeEntryEntity.getPosition().testString());
-//        }
-//        logger.severe("---------------------------------");
+        logger.severe("---------------------------------");
+        List<SlopeShapeEntity> shape = plateauConfigEntity.getShape();
+        for (int i = 0; i < shape.size(); i++) {
+            SlopeShapeEntity shapeEntryEntity = shape.get(i);
+            logger.severe(i + ":shape.add(new SlopeShapeEntity(" + shapeEntryEntity.getPosition().testString() + ", " + shapeEntryEntity.getSlopeFactor()+"f));");
+        }
+        logger.severe("---------------------------------");
 
         plateauShapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalShift());
         plateau = new Slope(plateauShapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)), plateauConfigEntity);
