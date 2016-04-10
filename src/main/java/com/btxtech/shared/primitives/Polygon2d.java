@@ -93,6 +93,19 @@ public class Polygon2D {
         return false;
     }
 
+    public boolean isLineCrossing2(Line testLine) {
+        for (Line line : lines) {
+            if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
+                continue;
+            }
+            DecimalPosition cross = line.getCrossInclusive(testLine);
+            if (cross != null && !cross.equalsDelta(testLine.getPoint1()) && !cross.equalsDelta(testLine.getPoint2())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public double getInnerAngle(int index) {
         return getCorner(index).getAngle(getCorner(index + 1), getCorner(index - 1));
     }
