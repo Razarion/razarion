@@ -33,7 +33,17 @@ public class LineBorder extends AbstractBorder {
     @Override
     protected int getSegmentCount(int verticalSpace) {
         double distance = innerStart.getDistance(innerEnd);
-        return (int) (distance / verticalSpace);
+        int segments =  (int) Math.round(distance / verticalSpace);
+        if(segments > 0) {
+            return segments;
+        } else {
+            return 1;
+        }
+    }
+
+    @Override
+    protected int getSegmentLength(int segmentCount) {
+        return (int)Math.round(innerStart.getDistance(innerEnd) / (double)segmentCount);
     }
 
     @Override

@@ -25,10 +25,20 @@ public abstract class AbstractCornerBorder extends AbstractBorder {
     @Override
     protected int getSegmentCount(int verticalSpace) {
         if (verticalSpace >= 2.0 * getDistance()) {
-            return 0;
+            return 1;
         }
         double nodeAngle = getSegmentAngle(verticalSpace);
-        return (int) (getAngle() / nodeAngle);
+        int count = (int) Math.round(getAngle() / nodeAngle);
+        if (count > 0) {
+            return count;
+        } else {
+            return 1;
+        }
+    }
+
+    @Override
+    protected int getSegmentLength(int count) {
+        return (int) Math.round(2.0 * getDistance() * Math.sin(getAngle() / (double) count / 2.0));
     }
 
     protected double getSegmentAngle(int verticalSpace) {

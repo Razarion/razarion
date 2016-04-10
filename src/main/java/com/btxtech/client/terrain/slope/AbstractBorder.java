@@ -20,6 +20,8 @@ public abstract class AbstractBorder {
 
     protected abstract int getSegmentCount(int verticalSpace);
 
+    protected abstract int getSegmentLength(int count);
+
     protected abstract DecimalPosition setupInnerPointFormStart(int verticalSpace, int count);
 
     protected abstract DecimalPosition setupOuterPointFormStart(int verticalSpace, int count);
@@ -30,10 +32,11 @@ public abstract class AbstractBorder {
 
     public int setupVerticalSegments(int verticalSpace) {
         int count = getSegmentCount(verticalSpace);
-        for (int i = 0; i < count + 1; i++) {
-            verticalSegments.add(new VerticalSegment(setupInnerPointFormStart(verticalSpace, i), setupOuterPointFormStart(verticalSpace, i)));
+        int length = getSegmentLength(count);
+        for (int i = 0; i < count; i++) {
+            verticalSegments.add(new VerticalSegment(setupInnerPointFormStart(length, i), setupOuterPointFormStart(length, i)));
         }
-        return count + 1;
+        return count;
     }
 
     public List<VerticalSegment> getVerticalSegments() {

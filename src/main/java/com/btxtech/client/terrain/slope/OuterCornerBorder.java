@@ -60,7 +60,7 @@ public class OuterCornerBorder extends AbstractCornerBorder {
     }
 
     @Override
-    protected DecimalPosition setupOuterPointFormStart(int verticaISpace, int count) {
+    protected DecimalPosition setupOuterPointFormStart(int verticalSpace, int count) {
         return outerCenter;
     }
 }
