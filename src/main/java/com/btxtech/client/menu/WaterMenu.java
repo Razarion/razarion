@@ -32,31 +32,31 @@ public class WaterMenu extends Composite {
     @DataField
     private DoubleBox specularHardness;
 
-    // @PostConstruct
+    @PostConstruct
     public void init() {
-        transparency.setValue(terrainSurface.getBeach().getWaterTransparency());
-        bumpMap.setValue(terrainSurface.getBeach().getWaterBumpMap());
-        specularIntensity.setValue(terrainSurface.getBeach().getWaterSpecularIntensity());
-        specularHardness.setValue(terrainSurface.getBeach().getWaterSpecularHardness());
+        transparency.setValue(terrainSurface.getWater().getWaterTransparency());
+        bumpMap.setValue(terrainSurface.getWater().getWaterBumpMapDepth());
+        specularIntensity.setValue(terrainSurface.getWater().getWaterSpecularIntensity());
+        specularHardness.setValue(terrainSurface.getWater().getWaterSpecularHardness());
     }
 
     @EventHandler("transparency")
     public void transparencyChanged(ChangeEvent e) {
-        terrainSurface.getBeach().setWaterTransparency(transparency.getValue());
+        terrainSurface.getWater().setWaterTransparency(transparency.getValue());
     }
 
     @EventHandler("bumpMap")
     public void bumpMapChanged(ChangeEvent e) {
-        terrainSurface.getBeach().setWaterBumpMap(bumpMap.getValue());
+        terrainSurface.getWater().setWaterBumpMapDepth(bumpMap.getValue());
     }
 
     @EventHandler("specularIntensity")
     public void specularIntensityChanged(ChangeEvent e) {
-        terrainSurface.getBeach().setWaterSpecularIntensity(specularIntensity.getValue());
+        terrainSurface.getWater().setWaterSpecularIntensity(specularIntensity.getValue());
     }
 
     @EventHandler("specularHardness")
     public void specularHardnessChanged(ChangeEvent e) {
-        terrainSurface.getBeach().setWaterSpecularHardness(specularHardness.getValue());
+        terrainSurface.getWater().setWaterSpecularHardness(specularHardness.getValue());
     }
 }

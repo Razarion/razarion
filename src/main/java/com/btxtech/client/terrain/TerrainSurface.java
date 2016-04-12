@@ -7,6 +7,7 @@ import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.slope.Shape;
 import com.btxtech.client.terrain.slope.ShapeTemplate;
 import com.btxtech.client.terrain.slope.Slope;
+import com.btxtech.client.terrain.slope.SlopeWater;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
@@ -44,7 +45,8 @@ public class TerrainSurface {
     private double groundBumpMap = 2;
     private GroundMesh groundMesh = new GroundMesh();
     private Slope plateau;
-    private Slope beach;
+    private SlopeWater beach;
+    private Water water = new Water(-7.0); // Init here due to the editor
     private GroundSlopeConnector groundPlateauConnector;
     private GroundSlopeConnector groundBeachConnector;
     private SlopeConfigEntity plateauConfigEntity;
@@ -89,7 +91,7 @@ public class TerrainSurface {
         ShapeTemplate beachShapeTemplate = new ShapeTemplate(100, new Shape(beachSlopeConfigEntity.getShape()));
         beachShapeTemplate.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalShift());
 
-        beach = new Slope(beachShapeTemplate, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
+        beach = new SlopeWater(water, beachShapeTemplate, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
         beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
         beach.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
         beach.wrap(groundMesh);
@@ -112,20 +114,20 @@ public class TerrainSurface {
 
     private SlopeConfigEntity setupBeachConfigEntity() {
         SlopeConfigEntity beachSlopeConfigEntity = new SlopeConfigEntity();
-        beachSlopeConfigEntity.setBumpMapDepth(0.5);
-        beachSlopeConfigEntity.setFractalRoughness(1);
-        beachSlopeConfigEntity.setFractalShift(5);
+        beachSlopeConfigEntity.setBumpMapDepth(5);
+        beachSlopeConfigEntity.setFractalRoughness(0.01);
+        beachSlopeConfigEntity.setFractalShift(1.1);
         beachSlopeConfigEntity.setSpecularHardness(0.2);
         beachSlopeConfigEntity.setSpecularIntensity(0.0);
-        beachSlopeConfigEntity.setVerticalSpace(100);
+        beachSlopeConfigEntity.setVerticalSpace(30);
         List<SlopeShapeEntity> shape = new ArrayList<>();
-        shape.add(new SlopeShapeEntity(new Index(400, -8), 1));
-        shape.add(new SlopeShapeEntity(new Index(350, -7), 1));
-        shape.add(new SlopeShapeEntity(new Index(300, -6), 1));
-        shape.add(new SlopeShapeEntity(new Index(250, -5), 1));
-        shape.add(new SlopeShapeEntity(new Index(200, -4), 1));
-        shape.add(new SlopeShapeEntity(new Index(150, -3), 1));
-        shape.add(new SlopeShapeEntity(new Index(100, -2), 1));
+        shape.add(new SlopeShapeEntity(new Index(400, -15), 1));
+        shape.add(new SlopeShapeEntity(new Index(350, -13), 1));
+        shape.add(new SlopeShapeEntity(new Index(300, -11), 1));
+        shape.add(new SlopeShapeEntity(new Index(250, -9), 1));
+        shape.add(new SlopeShapeEntity(new Index(200, -7), 1));
+        shape.add(new SlopeShapeEntity(new Index(150, -5), 1));
+        shape.add(new SlopeShapeEntity(new Index(100, -3), 1));
         shape.add(new SlopeShapeEntity(new Index(50, -1), 0.5f));
         shape.add(new SlopeShapeEntity(new Index(0, 0), 0));
         beachSlopeConfigEntity.setShape(shape);
@@ -254,5 +256,9 @@ public class TerrainSurface {
         } else {
             return beach;
         }
+    }
+
+    public Water getWater() {
+        return water;
     }
 }

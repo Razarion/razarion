@@ -18,11 +18,11 @@ public class WaterWireRenderer extends AbstractViewPerspectiveWireRenderer {
 
     @Override
     protected List<Vertex> getVertexList() {
-        return terrainSurface.getWaterVertexList().getVertices();
+        return terrainSurface.getWater().getVertices();
     }
 
     @Override
     protected List<Vertex> getBarycentricList() {
-        return terrainSurface.getWaterVertexList().getBarycentric();
+        return terrainSurface.getWater().getBarycentric();
     }
 }

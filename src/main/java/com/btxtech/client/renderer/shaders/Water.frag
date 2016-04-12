@@ -7,7 +7,8 @@ varying vec3 vWorldVertexPosition;
 
 uniform highp mat4 uNMatrix;
 uniform float uTransparency;
-uniform sampler2D uSamplerBm;
+uniform sampler2D uSamplerBumpMap;
+uniform int uBumpMapSize;
 uniform float uBumpMapDepth;
 uniform vec3 uAmbientColor;
 uniform vec3 uLightingDirection;
@@ -22,19 +23,19 @@ const vec3 WATER_COLOR = vec3(0.0, 0.0, 0.7);
 vec3 bumpMapNorm(float scale) {
     vec3 normal = normalize(vVertexNormal);
     vec3 tangent = normalize(vVertexTangent);
-    vec3 binormal = cross(normal,tangent);
+    vec3 binormal = cross(normal, tangent);
 
-//     float bm0 = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale + vec2(animation / 100.0, 0)).r;
-//     float bmUp = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale + vec2(0.0, 1.0/scale)+ vec2(animation/ 100.0, 0)).r;
-//     float bmRight = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale + vec2(1.0/scale, 0.0)+ vec2(animation/ 100.0, 0)).r;
+//     float bm0 = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(animation / 100.0, 0)).r;
+//     float bmUp = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.0, 1.0/scale)+ vec2(animation/ 100.0, 0)).r;
+//     float bmRight = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(1.0/scale, 0.0)+ vec2(animation/ 100.0, 0)).r;
 
-    float bm0 = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale).r;
-    float bm0Up = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale + vec2(0.0, 1.0/scale)).r;
-    float bm0Right = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale + vec2(1.0/scale, 0.0)).r;
+    float bm0 = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale).r;
+    float bm0Up = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.0, 1.0/scale)).r;
+    float bm0Right = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(1.0/scale, 0.0)).r;
 
-    float bm1 = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1)).r;
-    float bm1Up = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1) + vec2(0.0, 1.0/scale)).r;
-    float bm1Right = texture2D(uSamplerBm, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1) + vec2(1.0/scale, 0.0)).r;
+    float bm1 = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1)).r;
+    float bm1Up = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1) + vec2(0.0, 1.0/scale)).r;
+    float bm1Right = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1) + vec2(1.0/scale, 0.0)).r;
 
     vec3 bump0Vector = (bm0Right - bm0)*tangent + (bm0Up - bm0)*binormal;
     vec3 bump1Vector = (bm1Right - bm1)*tangent + (bm1Up - bm1)*binormal;
@@ -51,7 +52,7 @@ float setupSpecularLight(vec3 correctedLigtDirection, vec3 correctedNorm) {
 }
 
 void main(void) {
-    vec3 norm = bumpMapNorm(512.0);
+    vec3 norm = bumpMapNorm(float(uBumpMapSize));
     vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
 
     vec3 ambient = uAmbientColor * WATER_COLOR;

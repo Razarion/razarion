@@ -30,11 +30,6 @@ public class Beach_OLD {
     // private GroundMesh groundMesh;
     private double bumpMap = 0.5;
     private double fractal = 0.5;
-    // Water, should not be in here
-    private double waterTransparency = 0.5;
-    private double waterBumpMap = 2.0;
-    private double waterSpecularIntensity = 0.5;
-    private double waterSpecularHardness = 2.0;
     // private Logger logger = Logger.getLogger(Beach.class.getName());
 
     public Beach_OLD(GroundMesh groundMesh) {
@@ -117,38 +112,6 @@ public class Beach_OLD {
         return BOTTOM;
     }
 
-    public double getWaterTransparency() {
-        return waterTransparency;
-    }
-
-    public void setWaterTransparency(double waterTransparency) {
-        this.waterTransparency = waterTransparency;
-    }
-
-    public double getWaterBumpMap() {
-        return waterBumpMap;
-    }
-
-    public void setWaterBumpMap(double waterBumpMap) {
-        this.waterBumpMap = waterBumpMap;
-    }
-
-    public double getWaterSpecularIntensity() {
-        return waterSpecularIntensity;
-    }
-
-    public void setWaterSpecularIntensity(double waterSpecularIntensity) {
-        this.waterSpecularIntensity = waterSpecularIntensity;
-    }
-
-    public double getWaterSpecularHardness() {
-        return waterSpecularHardness;
-    }
-
-    public void setWaterSpecularHardness(double waterSpecularHardness) {
-        this.waterSpecularHardness = waterSpecularHardness;
-    }
-
     public double getWaterAnimation() {
         return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
     }
@@ -176,4 +139,6 @@ public class Beach_OLD {
     public void setFractal(double fractal) {
         this.fractal = fractal;
     }
+
+
 }
