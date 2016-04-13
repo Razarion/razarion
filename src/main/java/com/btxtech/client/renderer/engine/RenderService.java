@@ -117,6 +117,28 @@ public class RenderService {
             }
         }
 
+        // Dirty way to render wire over image (see changed files in GIT).
+        gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
+        gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
+        gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+        gameCanvas.getCtx3d().depthMask(false);
+        for (RenderSwitch renderSwitch : renderQueue) {
+            if (!showMonitor && renderSwitch == monitor) {
+                continue;
+            }
+            if (!showNorm && (renderSwitch == terrainNorm || renderSwitch == unitNorm)) {
+                continue;
+            }
+            try {
+                renderSwitch.drawWire();
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "draw failed", t);
+            }
+        }
+        gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
+        gameCanvas.getCtx3d().depthMask(true);
+        gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
+
         framesCount++;
         if (lastTime == 0) {
             lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;

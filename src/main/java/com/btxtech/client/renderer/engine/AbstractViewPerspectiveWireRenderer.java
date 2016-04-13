@@ -67,9 +67,6 @@ public abstract class AbstractViewPerspectiveWireRenderer extends AbstractRender
 
     @Override
     public void draw() {
-        gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
-        gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
-
         useProgram();
 
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());

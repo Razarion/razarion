@@ -29,6 +29,12 @@ public class RenderSwitch {
         }
     }
 
+    public void drawWire() {
+        if(wireRenderer != null) {
+            wireRenderer.draw();
+        }
+    }
+
     public void fillBuffers() {
         if(current != null) {
             current.fillBuffers();
