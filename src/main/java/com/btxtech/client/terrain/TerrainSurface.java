@@ -81,6 +81,7 @@ public class TerrainSurface {
         plateau = new Slope(plateauShapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)), plateauConfigEntity);
         plateau.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
         plateau.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
+        plateau.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.CHESS_TEXTURE_32);
         plateau.wrap(groundMesh);
         groundPlateauConnector = new GroundSlopeConnector(groundMesh, plateau);
         groundPlateauConnector.stampOut();
@@ -94,6 +95,7 @@ public class TerrainSurface {
         beach = new SlopeWater(water, beachShapeTemplate, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
         beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
         beach.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
+        beach.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.CHESS_TEXTURE_32);
         beach.wrap(groundMesh);
         groundBeachConnector = new GroundSlopeConnector(groundMesh, beach);
         groundBeachConnector.stampOut();
@@ -114,12 +116,13 @@ public class TerrainSurface {
 
     private SlopeConfigEntity setupBeachConfigEntity() {
         SlopeConfigEntity beachSlopeConfigEntity = new SlopeConfigEntity();
-        beachSlopeConfigEntity.setBumpMapDepth(5);
+        beachSlopeConfigEntity.setBumpMapDepth(2);
         beachSlopeConfigEntity.setFractalRoughness(0.01);
-        beachSlopeConfigEntity.setFractalShift(1.1);
+        beachSlopeConfigEntity.setFractalShift(1.5);
         beachSlopeConfigEntity.setSpecularHardness(0.2);
         beachSlopeConfigEntity.setSpecularIntensity(0.0);
         beachSlopeConfigEntity.setVerticalSpace(30);
+        beachSlopeConfigEntity.setSlopeFactorDistance(0.4);
         List<SlopeShapeEntity> shape = new ArrayList<>();
         shape.add(new SlopeShapeEntity(new Index(400, -15), 1));
         shape.add(new SlopeShapeEntity(new Index(350, -13), 1));

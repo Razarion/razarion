@@ -83,6 +83,7 @@ public class ShapeTemplate {
         }
         // Why -shapeTemplateEntry.getNormShift() and not + is unclear
         return (float) MathHelper.clamp(shapeTemplateEntry.getSlopeFactor() - shapeTemplateEntry.getNormShift(), 0.0, 1.0);
+        // return shapeTemplateEntry.getSlopeFactor();
     }
 
     private float setupSplatting(Vertex vertex, float slopeFactor, GroundMesh groundMesh) {

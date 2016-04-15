@@ -56,7 +56,7 @@ public class RenderService {
         createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 1);
         createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, 0);
         createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, 0);
-        createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);
+        //createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);
         createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class, 0);
         monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null, 0);
         terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class, 0);

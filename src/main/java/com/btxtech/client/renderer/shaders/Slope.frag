@@ -13,6 +13,8 @@ uniform vec3 uLightingDirection;
 uniform float diffuseWeightFactor;
 uniform vec3 uAmbientColor;
 uniform float uSlopeFactorDistance;
+uniform sampler2D uSlopeGroundSplatting;
+uniform int uSlopeGroundSplattingSize;
 uniform sampler2D uSamplerSlopeTexture;
 uniform int uSamplerSlopeTextureSize;
 uniform sampler2D uSamplerBumpMapSlopeTexture;
@@ -100,7 +102,12 @@ void main(void) {
         correctedNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
    } else {
        // Transition
-       float correctedSlopeFactor = smoothstep(uSlopeFactorDistance, 1.0 - uSlopeFactorDistance, vSlopeFactor);
+       // Setup slope factor
+       float slopeGroundSplatting = triPlanarTextureMapping(uSlopeGroundSplatting, float(uSlopeGroundSplattingSize), vec2(0,0)).r;
+       float slopeGroundSplattingFactor = (vSlopeFactor + slopeGroundSplatting) / 2.0;
+       float slopeGroundSplattinSmoothStep = 0.5 - clamp(uSlopeFactorDistance / 2.0, 0.0, 0.5);
+       float correctedSlopeFactor = smoothstep(slopeGroundSplattinSmoothStep, 1.0 - slopeGroundSplattinSmoothStep, slopeGroundSplattingFactor);
+       // Mix slope and ground
        float splattingFactor = setupGroundSplattingFactor();
        vec4 groundColor = setupGroundColor(splattingFactor);
        vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));

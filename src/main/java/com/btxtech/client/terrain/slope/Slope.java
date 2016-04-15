@@ -30,6 +30,7 @@ public class Slope {
     private List<Vertex> outerLine;
     private Polygon2D outerPolygon;
     private SlopeConfigEntity slopeConfigEntity;
+    private ImageDescriptor slopeGroundSplattingImageDescriptor;
     private ImageDescriptor slopeImageDescriptor;
     private ImageDescriptor slopeBumpImageDescriptor;
 
@@ -162,5 +163,13 @@ public class Slope {
 
     public void setSlopeBumpImageDescriptor(ImageDescriptor slopeBumpImageDescriptor) {
         this.slopeBumpImageDescriptor = slopeBumpImageDescriptor;
+    }
+
+    public ImageDescriptor getSlopeGroundSplattingImageDescriptor() {
+        return slopeGroundSplattingImageDescriptor;
+    }
+
+    public void setSlopeGroundSplattingImageDescriptor(ImageDescriptor slopeGroundSplattingImageDescriptor) {
+        this.slopeGroundSplattingImageDescriptor = slopeGroundSplattingImageDescriptor;
     }
 }
