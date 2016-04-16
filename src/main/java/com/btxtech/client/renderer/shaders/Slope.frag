@@ -15,6 +15,7 @@ uniform vec3 uAmbientColor;
 uniform float uSlopeFactorDistance;
 uniform sampler2D uSlopeGroundSplatting;
 uniform int uSlopeGroundSplattingSize;
+uniform float uSlopeGroundSplattingBumpDepth;
 uniform sampler2D uSamplerSlopeTexture;
 uniform int uSamplerSlopeTextureSize;
 uniform sampler2D uSamplerBumpMapSlopeTexture;
@@ -114,7 +115,8 @@ void main(void) {
        textureColor = mix(groundColor, slopeColor, correctedSlopeFactor);
        vec3 groundNorm = setupGroundNorm(splattingFactor);
        vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
-       correctedNorm = mix(groundNorm, slopeNorm, correctedSlopeFactor);
+       vec3 slopeGrounsPlattingNaorm = bumpMapNorm(uSlopeGroundSplatting, uSlopeGroundSplattingBumpDepth, float(uSlopeGroundSplattingSize));
+       correctedNorm = mix(groundNorm, slopeNorm, correctedSlopeFactor) + slopeGrounsPlattingNaorm;
     }
 
     // Light

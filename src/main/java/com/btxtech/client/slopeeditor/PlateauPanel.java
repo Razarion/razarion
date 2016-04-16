@@ -42,6 +42,10 @@ public class PlateauPanel extends Composite {
     @Inject
     @Bound
     @DataField
+    private DoubleBox slopeGroundSplattingBumpDepth;
+    @Inject
+    @Bound
+    @DataField
     private DoubleBox slopeFactorDistance;
     @Inject
     @Bound

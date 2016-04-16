@@ -101,6 +101,7 @@ public class SlopeRenderer extends AbstractRenderer {
         uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
         uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
         uniform1i("uSlopeGroundSplattingSize", slope.getSlopeGroundSplattingImageDescriptor().getQuadraticEdge());
+        uniform1f("uSlopeGroundSplattingBumpDepth", slopeConfigEntity.getSlopeGroundSplattingBumpDepth());
         uniform1f("uSlopeFactorDistance", slopeConfigEntity.getSlopeFactorDistance());
         uniform1i("uSamplerSlopeTextureSize", slope.getSlopeImageDescriptor().getQuadraticEdge());
         uniform1i("uSamplerBumpMapSlopeTextureSize", slope.getSlopeBumpImageDescriptor().getQuadraticEdge());

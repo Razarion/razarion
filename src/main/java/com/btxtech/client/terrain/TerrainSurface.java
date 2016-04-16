@@ -81,7 +81,7 @@ public class TerrainSurface {
         plateau = new Slope(plateauShapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)), plateauConfigEntity);
         plateau.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
         plateau.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
-        plateau.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.CHESS_TEXTURE_32);
+        plateau.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
         plateau.wrap(groundMesh);
         groundPlateauConnector = new GroundSlopeConnector(groundMesh, plateau);
         groundPlateauConnector.stampOut();
@@ -95,7 +95,7 @@ public class TerrainSurface {
         beach = new SlopeWater(water, beachShapeTemplate, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
         beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
         beach.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
-        beach.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.CHESS_TEXTURE_32);
+        beach.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
         beach.wrap(groundMesh);
         groundBeachConnector = new GroundSlopeConnector(groundMesh, beach);
         groundBeachConnector.stampOut();

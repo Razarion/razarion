@@ -28,6 +28,7 @@ public class SlopeConfigEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "slopeConfigEntity")
     @OrderColumn(name = "orderColumn")
     private List<SlopeShapeEntity> shape;
+    private double slopeGroundSplattingBumpDepth;
     private double slopeFactorDistance;
     private double bumpMapDepth;
     private double specularIntensity;
@@ -42,6 +43,14 @@ public class SlopeConfigEntity {
 
     public void setShape(List<SlopeShapeEntity> shape) {
         this.shape = shape;
+    }
+
+    public double getSlopeGroundSplattingBumpDepth() {
+        return slopeGroundSplattingBumpDepth;
+    }
+
+    public void setSlopeGroundSplattingBumpDepth(double slopeGroundSplattingBumpDepth) {
+        this.slopeGroundSplattingBumpDepth = slopeGroundSplattingBumpDepth;
     }
 
     public double getSlopeFactorDistance() {
