@@ -31,4 +31,19 @@ public class SlopeWater extends Slope {
             }
         });
     }
+
+    @Override
+    public boolean hasWater() {
+        return true;
+    }
+
+    @Override
+    public double getWaterLevel() {
+        return water.getLevel();
+    }
+
+    @Override
+    public double getWaterGround() {
+        return water.getGround();
+    }
 }

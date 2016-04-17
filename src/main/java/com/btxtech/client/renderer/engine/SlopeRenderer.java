@@ -16,7 +16,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -114,6 +113,9 @@ public class SlopeRenderer extends AbstractRenderer {
         uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
         uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundBumpMap());
         uniform1f("uGroundSplattingDistance", terrainSurface.getSplattingBlur());
+        uniform1b("uHasWater", slope.hasWater());
+        uniform1f("uWaterLevel", slope.getWaterLevel());
+        uniform1f("uWaterGround", slope.getWaterGround());
 
         vertices.activate();
         normals.activate();

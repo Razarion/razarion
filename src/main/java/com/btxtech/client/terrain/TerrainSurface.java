@@ -46,7 +46,7 @@ public class TerrainSurface {
     private GroundMesh groundMesh = new GroundMesh();
     private Slope plateau;
     private SlopeWater beach;
-    private Water water = new Water(-7.0); // Init here due to the editor
+    private Water water = new Water(-7, -11); // Init here due to the editor
     private GroundSlopeConnector groundPlateauConnector;
     private GroundSlopeConnector groundBeachConnector;
     private SlopeConfigEntity plateauConfigEntity;

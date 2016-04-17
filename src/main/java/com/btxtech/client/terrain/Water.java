@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class Water {
     private double level;
+    private double ground;
     // Water, should not be in here
     private double waterTransparency = 0.5;
     private double waterBumpMapDepth = 2.0;
@@ -22,12 +23,17 @@ public class Water {
     private List<Vertex> tangents = new ArrayList<>();
     private List<Vertex> barycentric = new ArrayList<>();
 
-    public Water(double level) {
+    public Water(double level, double ground) {
         this.level = level;
+        this.ground = ground;
     }
 
     public double getLevel() {
         return level;
+    }
+
+    public double getGround() {
+        return ground;
     }
 
     public ImageDescriptor getBumpMap() {

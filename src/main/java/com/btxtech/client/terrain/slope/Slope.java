@@ -172,4 +172,16 @@ public class Slope {
     public void setSlopeGroundSplattingImageDescriptor(ImageDescriptor slopeGroundSplattingImageDescriptor) {
         this.slopeGroundSplattingImageDescriptor = slopeGroundSplattingImageDescriptor;
     }
+
+    public boolean hasWater() {
+        return false;
+    }
+
+    public double getWaterLevel() {
+        return 0;
+    }
+
+    public double getWaterGround() {
+        return 0;
+    }
 }
