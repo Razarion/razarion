@@ -50,11 +50,16 @@ public class TerrainSurface {
     private GroundSlopeConnector groundPlateauConnector;
     private GroundSlopeConnector groundBeachConnector;
     private SlopeConfigEntity plateauConfigEntity;
+    private SlopeConfigEntity beachSlopeConfigEntity;
     @Deprecated
     private Beach_OLD beach_old;
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated
+
+    public TerrainSurface() {
+        setupBeachConfigEntity();
+    }
 
     public void init() {
         logger.severe("Start setup surface");
@@ -88,7 +93,6 @@ public class TerrainSurface {
     }
 
     private void setupBeach() {
-        SlopeConfigEntity beachSlopeConfigEntity = setupBeachConfigEntity();
         ShapeTemplate beachShapeTemplate = new ShapeTemplate(100, new Shape(beachSlopeConfigEntity.getShape()));
         beachShapeTemplate.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalShift());
 
@@ -114,8 +118,8 @@ public class TerrainSurface {
     }
 
 
-    private SlopeConfigEntity setupBeachConfigEntity() {
-        SlopeConfigEntity beachSlopeConfigEntity = new SlopeConfigEntity();
+    private void setupBeachConfigEntity() {
+        beachSlopeConfigEntity = new SlopeConfigEntity();
         beachSlopeConfigEntity.setBumpMapDepth(2);
         beachSlopeConfigEntity.setFractalRoughness(0.01);
         beachSlopeConfigEntity.setFractalShift(1.5);
@@ -134,7 +138,6 @@ public class TerrainSurface {
         shape.add(new SlopeShapeEntity(new Index(50, -1), 0.5f));
         shape.add(new SlopeShapeEntity(new Index(0, 0), 0));
         beachSlopeConfigEntity.setShape(shape);
-        return beachSlopeConfigEntity;
     }
 
     private void setupGround() {
@@ -182,6 +185,10 @@ public class TerrainSurface {
 
     public SlopeConfigEntity getPlateauConfigEntity() {
         return plateauConfigEntity;
+    }
+
+    public SlopeConfigEntity getBeachSlopeConfigEntity() {
+        return beachSlopeConfigEntity;
     }
 
     public VertexList getVertexList() {

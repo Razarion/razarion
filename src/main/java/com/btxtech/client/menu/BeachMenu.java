@@ -1,11 +1,15 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.terrain.TerrainSurface;
-import com.google.gwt.event.dom.client.ChangeEvent;
+import com.btxtech.shared.SlopeConfigEntity;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.IntegerBox;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.api.InitialState;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
@@ -20,43 +24,43 @@ public class BeachMenu extends Composite {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
-    @DataField
-    private DoubleBox bumpMap;
+    @AutoBound
+    private DataBinder<SlopeConfigEntity> slopeConfigEntityDataBinder/* = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity())*/;
     @Inject
+    @Bound
     @DataField
-    private DoubleBox fractal;
-//    @Inject
-//    @DataField
-//    private DoubleBox specularIntensity;
-//    @Inject
-//    @DataField
-//    private DoubleBox specularHardness;
+    private DoubleBox slopeGroundSplattingBumpDepth;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox slopeFactorDistance;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox bumpMapDepth;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox specularIntensity;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox specularHardness;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox fractalShift;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox fractalRoughness;
+    @Inject
+    @Bound
+    @DataField
+    private IntegerBox verticalSpace;
 
     @PostConstruct
     public void init() {
-        // bumpMap.setValue(terrainSurface.getBeach().getBumpMap());
-        // fractal.setValue(terrainSurface.getBeach().getFractal());
-        // specularIntensity.setValue(terrainSurface.getBeach().getWaterSpecularIntensity());
-        // specularHardness.setValue(terrainSurface.getBeach().getWaterSpecularHardness());
+        slopeConfigEntityDataBinder = DataBinder.forModel(terrainSurface.getBeachSlopeConfigEntity(), InitialState.FROM_MODEL);
     }
-
-    @EventHandler("bumpMap")
-    public void bumpMapChanged(ChangeEvent e) {
-        terrainSurface.getBeach().setBumpMap(bumpMap.getValue());
-    }
-
-    @EventHandler("fractal")
-    public void fractalChanged(ChangeEvent e) {
-        terrainSurface.getBeach().setFractal(fractal.getValue());
-    }
-
-//    @EventHandler("specularIntensity")
-//    public void specularIntensityChanged(ChangeEvent e) {
-//        terrainSurface.getBeach().setWaterSpecularIntensity(specularIntensity.getValue());
-//    }
-//
-//    @EventHandler("specularHardness")
-//    public void specularHardnessChanged(ChangeEvent e) {
-//        terrainSurface.getBeach().setWaterSpecularHardness(specularHardness.getValue());
-//    }
 }

@@ -113,6 +113,8 @@ public class SlopeRenderer extends AbstractRenderer {
         uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
         uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundBumpMap());
         uniform1f("uGroundSplattingDistance", terrainSurface.getSplattingBlur());
+        uniform1f("groundSpecularIntensity", 0); // TODO Ground specular intensity
+        uniform1f("groundSpecularHardness", 0); // TODO Ground specular hardness
         uniform1b("uHasWater", slope.hasWater());
         uniform1f("uWaterLevel", slope.getWaterLevel());
         uniform1f("uWaterGround", slope.getWaterGround());

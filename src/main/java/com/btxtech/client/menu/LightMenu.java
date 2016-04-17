@@ -30,7 +30,7 @@ public class LightMenu extends Composite {
     @DataField
     private DoubleBox lightRotateY;
     @Inject
-    @DataField()
+    @DataField
     private Label lightRotateYDisplay;
     @Inject
     @DataField
@@ -42,7 +42,7 @@ public class LightMenu extends Composite {
     @DataField
     private DoubleBox shadowProjectionTransformationZNear;
     @Inject
-    @DataField()
+    @DataField
     private DoubleBox shadowAlpha;
 
     @PostConstruct

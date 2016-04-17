@@ -33,6 +33,8 @@ uniform sampler2D uGroundBottomMap;
 uniform int uGroundBottomMapSize;
 uniform float uGroundBottomMapDepth;
 uniform float uGroundSplattingDistance;
+uniform float groundSpecularIntensity;
+uniform float groundSpecularHardness;
 uniform bool uHasWater;
 uniform float uWaterLevel;
 uniform float uWaterGround;
@@ -40,6 +42,8 @@ uniform float uWaterGround;
 const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
 const float SLOPE_FACTOR_BIAS = 0.001;
 const float SLOPE_WATER_STRIPE_FADEOUT = 2.0;
+const float SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR = 1.0;
+const float SLOPE_WATER_STRIPE_SPECULAR_HARDNESS_FACTOR = 1.0;
 const vec3 UNDER_WATER_COLOR = vec3(0.74, 0.81, 0.69);
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
@@ -94,14 +98,18 @@ vec3 setupGroundNorm(float splattingFactor) {
 }
 
 void main(void) {
+    vec3 correctedLightDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
+
     vec4 textureColor;
     vec3 correctedNorm;
+    vec4 specular;
 
     if(vSlopeFactor < SLOPE_FACTOR_BIAS) {
         // Ground
         float splattingFactor = setupGroundSplattingFactor();
         textureColor = setupGroundColor(splattingFactor);
         correctedNorm = setupGroundNorm(splattingFactor);
+        specular = setupSpecularLight(correctedLightDirection, correctedNorm, groundSpecularIntensity, groundSpecularHardness);
    } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
         // Slope
         if(uHasWater) {
@@ -110,18 +118,22 @@ void main(void) {
                 // Over water level: render normal slope
                 textureColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
                 correctedNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
-            }  if(z >= uWaterLevel) {
+                specular = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
+           } else  if(z >= uWaterLevel) {
                 // Water slope stripe:
                 float slopeFadeoutFactor = 1.0 - ((z - uWaterLevel) / SLOPE_WATER_STRIPE_FADEOUT);
                 float colorSlopeFadeoutFactor = mix(1.0, 0.5, slopeFadeoutFactor);
                 vec3 correctedLightDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
-                vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
                 vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
-                vec4 ambient = vec4(uAmbientColor, 1.0) * slopeColor * colorSlopeFadeoutFactor;
-                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(correctedLightDirection)), 0.0) /* * shadowFactor */ * diffuseWeightFactor * colorSlopeFadeoutFactor * slopeColor.rgb, 1.0);
-                vec4 specular = setupSpecularLight(correctedLightDirection, slopeNorm, colorSlopeFadeoutFactor, 4.0) /* * shadowFactor */;
+                vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
+                vec4 ambient = vec4(uAmbientColor, 1.0) * slopeColor /* * colorSlopeFadeoutFactor*/;
+                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(correctedLightDirection)), 0.0) /* * shadowFactor */ * diffuseWeightFactor /* * colorSlopeFadeoutFactor */* slopeColor.rgb, 1.0);
+                float specularIntensity = mix(slopeSpecularIntensity, slopeSpecularIntensity * SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR, slopeFadeoutFactor);
+                float specularHardness = mix(slopeSpecularHardness, slopeSpecularHardness * SLOPE_WATER_STRIPE_SPECULAR_HARDNESS_FACTOR, slopeFadeoutFactor);
+                vec4 specular = setupSpecularLight(correctedLightDirection, slopeNorm, specularIntensity, specularHardness) /* * shadowFactor */;
                 gl_FragColor = ambient + diffuse + specular;
-                return;
+                // gl_FragColor = vec4(slopeFadeoutFactor, slopeFadeoutFactor, slopeFadeoutFactor, 1.0);
+              return;
             } else {
                 // Under water level: render slope fadeout
                 float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
@@ -135,7 +147,8 @@ void main(void) {
         } else {
             textureColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
             correctedNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
-        }
+            specular = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
+       }
    } else {
        // Transition
        // Setup slope factor
@@ -152,12 +165,13 @@ void main(void) {
        vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
        vec3 slopeGrounsPlattingNaorm = bumpMapNorm(uSlopeGroundSplatting, uSlopeGroundSplattingBumpDepth, float(uSlopeGroundSplattingSize));
        correctedNorm = mix(groundNorm, slopeNorm, correctedSlopeFactor) + slopeGrounsPlattingNaorm;
+       vec4 specularSlope = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
+       vec4 specularGround = setupSpecularLight(correctedLightDirection, correctedNorm, groundSpecularIntensity, groundSpecularHardness);
+       specular = mix(specularGround, specularSlope, correctedSlopeFactor);
     }
 
     // Light
-    vec3 correctedLightDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
     vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
     vec4 diffuse = vec4(max(dot(normalize(correctedNorm), normalize(correctedLightDirection)), 0.0) * diffuseWeightFactor * textureColor.rgb, 1.0);
-    vec4 specular = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
     gl_FragColor = ambient + diffuse + specular;
 }
