@@ -19,6 +19,7 @@ public class GroundMesh {
     private int maxX;
     private int maxY;
     private Map<Index, VertexData> grid = new HashMap<>();
+    private int edgeLength;
 
     // private Logger logger = Logger.getLogger(Math.class.getName());
 
@@ -27,6 +28,7 @@ public class GroundMesh {
     }
 
     public void reset(int edgeLength, int xSize, int ySize, double z) {
+        this.edgeLength = edgeLength;
         grid.clear();
         int xCount = xSize / edgeLength + 1;
         int yCount = ySize / edgeLength + 1;
@@ -41,6 +43,7 @@ public class GroundMesh {
         GroundMesh groundMesh = new GroundMesh();
         groundMesh.maxX = maxX;
         groundMesh.maxY = maxY;
+        groundMesh.edgeLength = edgeLength;
         for (Map.Entry<Index, VertexData> entry : grid.entrySet()) {
             groundMesh.grid.put(entry.getKey(), new VertexData(entry.getValue()));
         }
@@ -176,24 +179,13 @@ public class GroundMesh {
         }
     }
 
-    public void iterateExclude(VertexVisitor vertexVisitor) {
-        for (int y = 0; y < maxY; y++) {
-            for (int x = 0; x < maxX; x++) {
-                Index index = new Index(x, y);
-                if (grid.containsKey(index)) {
-                    vertexVisitor.onVisit(index, getVertexSafe(index));
-                }
-            }
-        }
-    }
-
     public boolean contains(Index index) {
         return grid.containsKey(index);
     }
 
     /**
      * Bilinear interpolation of splatting
-     *
+     * <p/>
      * Only works if the grid is Unit Square
      * https://en.wikipedia.org/wiki/Bilinear_interpolation
      *
@@ -201,11 +193,11 @@ public class GroundMesh {
      * @return interpolated Splatting
      */
     public double getInterpolatedSplatting(DecimalPosition absoluteXY) {
-        GridRect gridRect = getGridRect(absoluteXY);
-        VertexData vertexDataBL = getVertexDataSafe(gridRect.getBottomLeftIndex());
-        VertexData vertexDataBR = getVertexDataSafe(gridRect.getBottomRightIndex());
-        VertexData vertexDataTR = getVertexDataSafe(gridRect.getTopRightIndex());
-        VertexData vertexDataTL = getVertexDataSafe(gridRect.getTopLeftIndex());
+        Index bottomLeftIndex = absoluteToIndex(absoluteXY);
+        VertexData vertexDataBL = getVertexDataSafe(bottomLeftIndex);
+        VertexData vertexDataBR = getVertexDataSafe(bottomLeftIndex.add(1, 0));
+        VertexData vertexDataTR = getVertexDataSafe(bottomLeftIndex.add(1, 1));
+        VertexData vertexDataTL = getVertexDataSafe(bottomLeftIndex.add(0, 1));
 
         DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
         DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
@@ -219,39 +211,13 @@ public class GroundMesh {
         return splattingBL + splattingBR + splattingTR + splattingTL;
     }
 
-    public GridRect getGridRect(DecimalPosition absoluteXY) {
-        for (int y = 0; y < maxY; y++) {
-            for (int x = 0; x < maxX; x++) {
-                Index index = new Index(x, y);
-                Vertex vertexBottomLeft = getVertex(index);
-                Vertex vertexBottomRight = getVertex(index.add(1, 0));
-                Vertex vertexTopRight = getVertex(index.add(1, 1));
-                Vertex vertexTopLeft = getVertex(index.add(0, 1));
-
-                if (vertexBottomLeft != null && vertexBottomRight != null && vertexTopRight != null && vertexTopLeft != null) {
-                    List<DecimalPosition> corners = new ArrayList<>();
-                    corners.add(vertexBottomLeft.toXY());
-                    corners.add(vertexBottomRight.toXY());
-                    corners.add(vertexTopRight.toXY());
-                    corners.add(vertexTopLeft.toXY());
-                    Polygon2D polygon = new Polygon2D(corners);
-                    if (polygon.isInside(absoluteXY)) {
-                        return new GridRect(vertexBottomLeft, index,
-                                vertexBottomRight, index.add(1, 0),
-                                vertexTopRight, index.add(1, 1),
-                                vertexTopLeft, index.add(0, 1));
-                    }
-                }
-
-            }
+    private Index absoluteToIndex(DecimalPosition absoluteXY) {
+        if(edgeLength == 0) {
+            throw new IllegalStateException("edgeLength == 0");
         }
-        throw new IllegalArgumentException();
+        int x = (int) (absoluteXY.getX() / (double) edgeLength);
+        int y = (int) (absoluteXY.getY() / (double) edgeLength);
+        return new Index(x, y);
     }
 
-    private GridRect setupGridRect(Index bottomLeftIndex) {
-        return new GridRect(getVertex(bottomLeftIndex), bottomLeftIndex,
-                getVertex(bottomLeftIndex.add(1, 0)), bottomLeftIndex.add(1, 0),
-                getVertex(bottomLeftIndex.add(1, 1)), bottomLeftIndex.add(1, 1),
-                getVertex(bottomLeftIndex.add(0, 1)), bottomLeftIndex.add(0, 1));
-    }
 }
