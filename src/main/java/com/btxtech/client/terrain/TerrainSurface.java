@@ -82,7 +82,7 @@ public class TerrainSurface {
 //        }
 //        logger.severe("---------------------------------");
 
-        plateauShapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalShift());
+        plateauShapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalRoughness());
         plateau = new Slope(plateauShapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)), plateauConfigEntity);
         plateau.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
         plateau.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
@@ -94,7 +94,7 @@ public class TerrainSurface {
 
     private void setupBeach() {
         ShapeTemplate beachShapeTemplate = new ShapeTemplate(100, new Shape(beachSlopeConfigEntity.getShape()));
-        beachShapeTemplate.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalShift());
+        beachShapeTemplate.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalRoughness());
 
         beach = new SlopeWater(water, beachShapeTemplate, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
         beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
@@ -122,7 +122,7 @@ public class TerrainSurface {
         beachSlopeConfigEntity = new SlopeConfigEntity();
         beachSlopeConfigEntity.setBumpMapDepth(2);
         beachSlopeConfigEntity.setFractalRoughness(0.01);
-        beachSlopeConfigEntity.setFractalShift(1.5);
+        beachSlopeConfigEntity.setFractalShift(1.0);
         beachSlopeConfigEntity.setSpecularHardness(0.2);
         beachSlopeConfigEntity.setSpecularIntensity(0.0);
         beachSlopeConfigEntity.setVerticalSpace(30);
@@ -171,7 +171,7 @@ public class TerrainSurface {
     }
 
     public void sculpt() {
-        setupPlateau();
+        init();
         renderService.fillBuffers();
     }
 
