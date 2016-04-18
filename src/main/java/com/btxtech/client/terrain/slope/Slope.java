@@ -184,4 +184,8 @@ public class Slope {
     public double getWaterGround() {
         return 0;
     }
+
+    public MeshEntry pick(Vertex pointOnGround) {
+        return mesh.pick(pointOnGround);
+    }
 }

@@ -1,6 +1,8 @@
 package com.btxtech.client.renderer.model;
 
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Ray3d;
+import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Singleton;
 import java.util.logging.Logger;
@@ -109,6 +111,12 @@ public class Camera {
 
     private void fireChanged() {
         // testPrint();
+    }
+
+    public Ray3d toWorld(Ray3d pickRay) {
+        Vertex start = createMatrix().invert().multiply(pickRay.getStart(), 1);
+        Vertex direction = createNormMatrix().invert().multiply(pickRay.getDirection(), 1);
+        return new Ray3d(start, direction);
     }
 
     public void testPrint() {

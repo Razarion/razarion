@@ -1,7 +1,10 @@
 package com.btxtech.client.renderer.model;
 
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Ray3d;
+import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,6 +17,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ProjectionTransformation {
+    // private Logger logger = Logger.getLogger(ProjectionTransformation.class.getName());
     private double fovY;
     private double aspectRatio;
     @Inject
@@ -139,4 +143,21 @@ public class ProjectionTransformation {
                 {0, 0, 0, 1}});
     }
 
+    /**
+     * Creates the pick ray for converting the mouse position to the model position
+     *
+     * @param ndc normalized device coordinates (-1 to 1)
+     */
+    public Ray3d createPickRay(DecimalPosition ndc) {
+        double zNear = calculateZNear();
+        double top = zNear * Math.tan(fovY / 2.0);
+        double y = top * ndc.getY();
+        double x = ndc.getX() * top * aspectRatio;
+        double rotateY = -Math.atan(x / zNear);
+        double rotateX = -Math.atan(y / zNear);
+        Vertex direction = new Vertex(0, 0, -1);
+        Matrix4 rotation = Matrix4.createXRotation(rotateX).multiply(Matrix4.createYRotation(rotateY));
+        direction = rotation.multiply(direction, 1.0);
+        return new Ray3d(new Vertex(0, 0, 0), direction);
+    }
 }

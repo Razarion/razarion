@@ -87,6 +87,11 @@ public class GroundMesh {
         return vertexData.getVertex();
     }
 
+    public VertexData getVertexFromAbsoluteXY(DecimalPosition absoluteXY) {
+        Index index = absoluteToIndex(absoluteXY);
+        return getVertexData(index);
+    }
+
     public void remove(Index index) {
         grid.remove(index);
     }

@@ -2,8 +2,11 @@ package com.btxtech.client;
 
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.primitives.Ray3d;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -15,6 +18,7 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -22,15 +26,18 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ViewFieldMover {
+    private Logger logger = Logger.getLogger(ViewFieldMover.class.getName());
     @Inject
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
+    @Inject
+    private TerrainSurface terrainSurface;
     private Index startMoveXY;
     private Integer startMoveZ;
     private double factor = 0.5;
 
-    public void activate(Canvas canvas) {
+    public void activate(final Canvas canvas) {
         canvas.addMouseMoveHandler(new MouseMoveHandler() {
             @Override
             public void onMouseMove(MouseMoveEvent event) {
@@ -64,6 +71,14 @@ public class ViewFieldMover {
             public void onMouseDown(MouseDownEvent event) {
                 if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_LEFT) == NativeEvent.BUTTON_LEFT) {
                     startMoveXY = new Index(event.getX(), event.getY());
+                    if (eventIsShiftPressed(event.getNativeEvent())) {
+                        DecimalPosition webglPosition = new DecimalPosition((double) event.getX() / (double) canvas.getCoordinateSpaceWidth(), 1.0 - (double) event.getY() / (double) canvas.getCoordinateSpaceHeight());
+                        webglPosition = webglPosition.multiply(2.0);
+                        webglPosition = webglPosition.sub(1, 1);
+                        Ray3d pickRay = projectionTransformation.createPickRay(webglPosition);
+                        Ray3d worldPickRay = camera.toWorld(pickRay);
+                        terrainSurface.handlePickRay(worldPickRay);
+                    }
                 } else if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
                     startMoveZ = event.getY();
                 }
@@ -98,6 +113,10 @@ public class ViewFieldMover {
 
     public native int eventGetButton(NativeEvent evt) /*-{
         return evt.buttons;
+    }-*/;
+
+    public native boolean eventIsShiftPressed(NativeEvent evt) /*-{
+        return evt.shiftKey;
     }-*/;
 
 }

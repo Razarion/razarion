@@ -46,4 +46,15 @@ public class MeshEntry {
     public void setTangent(Vertex tangent) {
         this.tangent = tangent;
     }
+
+    @Override
+    public String toString() {
+        return "MeshEntry{" +
+                "vertex=" + vertex +
+                ", norm=" + norm +
+                ", tangent=" + tangent +
+                ", slopeFactor=" + slopeFactor +
+                ", splatting=" + splatting +
+                '}';
+    }
 }

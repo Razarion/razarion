@@ -11,7 +11,6 @@ public class VertexData {
     private Vertex norm;
     private Vertex tangent;
     private double edge;
-    private double slopeFactor;
 
     public VertexData(Vertex vertex) {
         this.vertex = vertex;
@@ -22,7 +21,6 @@ public class VertexData {
         this.norm = vertexData.norm;
         this.tangent = vertexData.tangent;
         this.edge = vertexData.edge;
-        this.slopeFactor = vertexData.slopeFactor;
     }
 
     public Vertex getVertex() {
@@ -39,14 +37,6 @@ public class VertexData {
 
     public void setEdge(double edge) {
         this.edge = edge;
-    }
-
-    public double getSlopeFactor() {
-        return slopeFactor;
-    }
-
-    public void setSlopeFactor(double slopeFactor) {
-        this.slopeFactor = slopeFactor;
     }
 
     public Vertex getNorm() {
@@ -69,8 +59,9 @@ public class VertexData {
     public String toString() {
         return "VertexData{" +
                 "vertex=" + vertex +
+                ", norm=" + norm +
+                ", tangent=" + tangent +
                 ", edge=" + edge +
-                ", slopeFactor=" + slopeFactor +
                 '}';
     }
 }

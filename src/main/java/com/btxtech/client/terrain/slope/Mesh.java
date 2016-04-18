@@ -222,4 +222,22 @@ public class Mesh {
     public List<Float> getSplatting() {
         return splatting;
     }
+
+    public MeshEntry pick(Vertex pointOnGround) {
+        double minDistance = Double.MAX_VALUE;
+        MeshEntry nearestMeshEntry = null;
+        for (int x = 0; x < xCount; x++) {
+            for (int y = 0; y < yCount; y++) {
+                MeshEntry meshEntry = getMeshEntrySave(x, y);
+                if (meshEntry != null) {
+                    double distance = meshEntry.getVertex().toXY().getDistance(pointOnGround.toXY());
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nearestMeshEntry = meshEntry;
+                    }
+                }
+            }
+        }
+        return nearestMeshEntry;
+    }
 }

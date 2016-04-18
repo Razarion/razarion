@@ -4,6 +4,8 @@ import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.GroundMesh;
+import com.btxtech.client.renderer.model.VertexData;
+import com.btxtech.client.terrain.slope.MeshEntry;
 import com.btxtech.client.terrain.slope.Shape;
 import com.btxtech.client.terrain.slope.ShapeTemplate;
 import com.btxtech.client.terrain.slope.Slope;
@@ -13,6 +15,7 @@ import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
@@ -121,8 +124,8 @@ public class TerrainSurface {
     private void setupBeachConfigEntity() {
         beachSlopeConfigEntity = new SlopeConfigEntity();
         beachSlopeConfigEntity.setBumpMapDepth(2);
-        beachSlopeConfigEntity.setFractalRoughness(0.01);
-        beachSlopeConfigEntity.setFractalShift(1.0);
+        beachSlopeConfigEntity.setFractalRoughness(0.6);
+        beachSlopeConfigEntity.setFractalShift(16);
         beachSlopeConfigEntity.setSpecularHardness(0.2);
         beachSlopeConfigEntity.setSpecularIntensity(0.0);
         beachSlopeConfigEntity.setVerticalSpace(30);
@@ -270,5 +273,19 @@ public class TerrainSurface {
 
     public Water getWater() {
         return water;
+    }
+
+    public void handlePickRay(Ray3d worldPickRay) {
+        // Find pultiplier where the ray hits the ground (z = 0). start + m*direction -> z = 0
+        double m = -worldPickRay.getStart().getZ() / worldPickRay.getDirection().getZ();
+        Vertex pointOnGround = worldPickRay.getPoint(m);
+        logger.severe("Point On Ground: " + pointOnGround);
+        VertexData vertexData = groundMesh.getVertexFromAbsoluteXY(pointOnGround.toXY());
+        if (vertexData != null) {
+            logger.severe("Ground VertexData: " + vertexData);
+            return;
+        }
+        MeshEntry meshEntry = beach.pick(pointOnGround);
+        logger.severe("beach MeshEntry: " + meshEntry);
     }
 }
