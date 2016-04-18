@@ -136,9 +136,9 @@ public class FractalField {
     }
 
     public static FractalField createSaveFractalField(int nodeCount1, int nodeCount2, double roughness, double minValue, double maxValue) {
-        long time = System.currentTimeMillis();
+        // long time = System.currentTimeMillis();
         FractalField fractalField = new FractalField(nearestPossibleNumber(nodeCount1, nodeCount2), roughness, minValue, maxValue);
-        time = System.currentTimeMillis();
+        // time = System.currentTimeMillis();
         fractalField.process();
         return fractalField;
     }
