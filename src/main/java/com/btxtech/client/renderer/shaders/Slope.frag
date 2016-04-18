@@ -43,7 +43,7 @@ const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
 const float SLOPE_FACTOR_BIAS = 0.001;
 const float SLOPE_WATER_STRIPE_FADEOUT = 2.0;
 const float SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR = 5.0;
-const vec3 UNDER_WATER_COLOR = vec3(0.74, 0.81, 0.69);
+const vec3 UNDER_WATER_COLOR = vec3(1.0, 1.0, 1.0);
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
 vec4 triPlanarTextureMapping(sampler2D sampler, float size, vec2 addCoord) {
