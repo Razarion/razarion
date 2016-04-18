@@ -15,10 +15,10 @@ public class Water {
     private double level;
     private double ground;
     // Water, should not be in here
-    private double waterTransparency = 0.5;
-    private double waterBumpMapDepth = 2.0;
-    private double waterSpecularIntensity = 0.5;
-    private double waterSpecularHardness = 2.0;
+    private double waterTransparency = 0.75;
+    private double waterBumpMapDepth = 20;
+    private double waterSpecularIntensity = 0.4;
+    private double waterSpecularHardness = 0.8;
     private List<Vertex> vertices = new ArrayList<>();
     private List<Vertex> norms = new ArrayList<>();
     private List<Vertex> tangents = new ArrayList<>();
