@@ -42,8 +42,7 @@ uniform float uWaterGround;
 const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
 const float SLOPE_FACTOR_BIAS = 0.001;
 const float SLOPE_WATER_STRIPE_FADEOUT = 2.0;
-const float SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR = 1.0;
-const float SLOPE_WATER_STRIPE_SPECULAR_HARDNESS_FACTOR = 1.0;
+const float SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR = 5.0;
 const vec3 UNDER_WATER_COLOR = vec3(0.74, 0.81, 0.69);
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
@@ -125,14 +124,12 @@ void main(void) {
                 float colorSlopeFadeoutFactor = mix(1.0, 0.5, slopeFadeoutFactor);
                 vec3 correctedLightDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
                 vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
-                vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
+                vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth * (1.0 - slopeFadeoutFactor), float(uSamplerBumpMapSlopeTextureSize));
                 vec4 ambient = vec4(uAmbientColor, 1.0) * slopeColor /* * colorSlopeFadeoutFactor*/;
-                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(correctedLightDirection)), 0.0) /* * shadowFactor */ * diffuseWeightFactor /* * colorSlopeFadeoutFactor */* slopeColor.rgb, 1.0);
+                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(correctedLightDirection)), 0.0) /* * shadowFactor */ * diffuseWeightFactor * colorSlopeFadeoutFactor * slopeColor.rgb, 1.0);
                 float specularIntensity = mix(slopeSpecularIntensity, slopeSpecularIntensity * SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR, slopeFadeoutFactor);
-                float specularHardness = mix(slopeSpecularHardness, slopeSpecularHardness * SLOPE_WATER_STRIPE_SPECULAR_HARDNESS_FACTOR, slopeFadeoutFactor);
-                vec4 specular = setupSpecularLight(correctedLightDirection, slopeNorm, specularIntensity, specularHardness) /* * shadowFactor */;
+                vec4 specular = setupSpecularLight(correctedLightDirection, slopeNorm, specularIntensity, slopeSpecularHardness) /* * shadowFactor */;
                 gl_FragColor = ambient + diffuse + specular;
-                // gl_FragColor = vec4(slopeFadeoutFactor, slopeFadeoutFactor, slopeFadeoutFactor, 1.0);
               return;
             } else {
                 // Under water level: render slope fadeout

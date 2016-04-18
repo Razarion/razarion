@@ -1,6 +1,7 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
+import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
@@ -112,5 +113,16 @@ public class Water {
 
     public List<Vertex> getBarycentric() {
         return barycentric;
+    }
+    public double getWaterAnimation() {
+        return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
+    }
+
+    public double getWaterAnimation2() {
+        return getWaterAnimation(System.currentTimeMillis(), 2000, 500);
+    }
+
+    public double getWaterAnimation(long millis, int durationMs, int offsetMs) {
+        return Math.sin(((millis % durationMs) / (double) durationMs + ((double)offsetMs / (double)durationMs)) * MathHelper.ONE_RADIANT);
     }
 }

@@ -54,8 +54,6 @@ public class TerrainSurface {
     private GroundSlopeConnector groundBeachConnector;
     private SlopeConfigEntity plateauConfigEntity;
     private SlopeConfigEntity beachSlopeConfigEntity;
-    @Deprecated
-    private Beach_OLD beach_old;
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated
@@ -68,7 +66,6 @@ public class TerrainSurface {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
         // setupPlateauConfigEntity();
-        beach_old = new Beach_OLD(groundMesh);
         setupGround();
         setupPlateau();
         setupBeach();
@@ -126,8 +123,8 @@ public class TerrainSurface {
         beachSlopeConfigEntity.setBumpMapDepth(2);
         beachSlopeConfigEntity.setFractalRoughness(0.6);
         beachSlopeConfigEntity.setFractalShift(16);
-        beachSlopeConfigEntity.setSpecularHardness(0.2);
-        beachSlopeConfigEntity.setSpecularIntensity(0.0);
+        beachSlopeConfigEntity.setSpecularHardness(6);
+        beachSlopeConfigEntity.setSpecularIntensity(0.1);
         beachSlopeConfigEntity.setVerticalSpace(30);
         beachSlopeConfigEntity.setSlopeFactorDistance(0.4);
         List<SlopeShapeEntity> shape = new ArrayList<>();
@@ -203,10 +200,6 @@ public class TerrainSurface {
         return vertexList;
     }
 
-    public VertexList getWaterVertexList() {
-        return beach_old.provideWaterVertexList();
-    }
-
     public ImageDescriptor getGroundImageDescriptor() {
         return groundImageDescriptor;
     }
@@ -245,10 +238,6 @@ public class TerrainSurface {
 
     public void setGroundBumpMap(double groundBumpMap) {
         this.groundBumpMap = groundBumpMap;
-    }
-
-    public Beach_OLD getBeach() {
-        return beach_old;
     }
 
     public double getHighestPointInView() {
