@@ -1,9 +1,11 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.terrain.Water;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.IntegerBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -31,13 +33,22 @@ public class WaterMenu extends Composite {
     @Inject
     @DataField
     private DoubleBox specularHardness;
+    @Inject
+    @DataField
+    private DoubleBox level;
+    @Inject
+    @DataField
+    private DoubleBox ground;
 
     @PostConstruct
     public void init() {
-        transparency.setValue(terrainSurface.getWater().getWaterTransparency());
-        bumpMap.setValue(terrainSurface.getWater().getWaterBumpMapDepth());
-        specularIntensity.setValue(terrainSurface.getWater().getWaterSpecularIntensity());
-        specularHardness.setValue(terrainSurface.getWater().getWaterSpecularHardness());
+        Water water = terrainSurface.getWater();
+        transparency.setValue(water.getWaterTransparency());
+        bumpMap.setValue(water.getWaterBumpMapDepth());
+        specularIntensity.setValue(water.getWaterSpecularIntensity());
+        specularHardness.setValue(water.getWaterSpecularHardness());
+        level.setValue(water.getLevel());
+        ground.setValue(water.getGround());
     }
 
     @EventHandler("transparency")
@@ -58,5 +69,15 @@ public class WaterMenu extends Composite {
     @EventHandler("specularHardness")
     public void specularHardnessChanged(ChangeEvent e) {
         terrainSurface.getWater().setWaterSpecularHardness(specularHardness.getValue());
+    }
+
+    @EventHandler("level")
+    public void levelChanged(ChangeEvent e) {
+        terrainSurface.getWater().setLevel(level.getValue());
+    }
+
+    @EventHandler("ground")
+    public void groundChanged(ChangeEvent e) {
+        terrainSurface.getWater().setGround(ground.getValue());
     }
 }

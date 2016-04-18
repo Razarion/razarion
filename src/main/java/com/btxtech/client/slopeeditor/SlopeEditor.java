@@ -1,7 +1,7 @@
 package com.btxtech.client.slopeeditor;
 
-import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeShapeEntity;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
@@ -14,7 +14,6 @@ import elemental.svg.SVGPoint;
 import elemental.svg.SVGSVGElement;
 import elemental.svg.SVGTransform;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +33,11 @@ public class SlopeEditor implements Model {
     private SVGTransform translateTransform;
     private SVGTransform scaleTransform;
     private Index lastScrollPosition;
-    @Inject
-    private TerrainSurface terrainSurface;
+    private SlopeConfigEntity slopeConfigEntity;
+    private SVGLineElement helperLine;
 
-    protected void init(Element svgElement) {
+    protected void init(Element svgElement, SlopeConfigEntity slopeConfigEntity) {
+        this.slopeConfigEntity = slopeConfigEntity;
         this.svg = (SVGSVGElement) svgElement;
 
         group = Browser.getDocument().createSVGGElement();
@@ -79,7 +79,7 @@ public class SlopeEditor implements Model {
         svg.getStyle().setCursor("all-scroll");
         svg.appendChild(group);
 
-        setup(terrainSurface.getPlateauConfigEntity().getShape());
+        setup(slopeConfigEntity.getShape());
     }
 
     private void setup(List<SlopeShapeEntity> shapeEntryEntities) {
@@ -131,10 +131,10 @@ public class SlopeEditor implements Model {
 
     @Override
     public void createCorner(Index position, Corner previous) {
-        int index = terrainSurface.getPlateauConfigEntity().getShape().indexOf(previous.getSlopeShapeEntity());
+        int index = slopeConfigEntity.getShape().indexOf(previous.getSlopeShapeEntity());
         SlopeShapeEntity shapeEntryEntity = new SlopeShapeEntity(position, 0f);
-        terrainSurface.getPlateauConfigEntity().getShape().add(index+1, shapeEntryEntity);
-        setup(terrainSurface.getPlateauConfigEntity().getShape());
+        slopeConfigEntity.getShape().add(index + 1, shapeEntryEntity);
+        setup(slopeConfigEntity.getShape());
     }
 
     @Override
@@ -163,8 +163,27 @@ public class SlopeEditor implements Model {
         scaleTransform.setScale(scale, -scale);
     }
 
+    public void setHelperLine(Double value) {
+        if (value != null) {
+            if (helperLine == null) {
+                helperLine = Browser.getDocument().createSVGLineElement();
+                helperLine.getStyle().setProperty("stroke", "#222222");
+                helperLine.getStyle().setProperty("stroke-width", "1");
+                helperLine.getX1().getBaseVal().setValue(-1000);
+                helperLine.getX2().getBaseVal().setValue(1000);
+                group.appendChild(helperLine);
+            }
+            helperLine.getY1().getBaseVal().setValue(value.floatValue());
+            helperLine.getY2().getBaseVal().setValue(value.floatValue());
+        } else {
+            if (helperLine != null) {
+                group.removeChild(helperLine);
+                helperLine = null;
+            }
+        }
+    }
+
     private native int getButtons(MouseEvent event) /*-{
         return event.buttons;
     }-*/;
-
 }

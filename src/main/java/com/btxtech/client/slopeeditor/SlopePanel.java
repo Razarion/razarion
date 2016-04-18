@@ -4,6 +4,7 @@ import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -30,15 +31,15 @@ import java.util.logging.Logger;
  * Created by Beat
  * 06.11.2015.
  */
-@Templated("PlateauPanel.html#plateau")
-public class PlateauPanel extends Composite {
+@Templated("SlopePanel.html#slope")
+public class SlopePanel extends Composite {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
     @AutoBound
-    private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder/* = DataBinder.forModel(terrainSurface.getPlateau().getPlateauConfigEntity())*/;
+    private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder;
     @Inject
     @Bound
     @DataField
@@ -87,12 +88,15 @@ public class PlateauPanel extends Composite {
     @Inject
     @DataField
     private Button save;
-    private Logger logger = Logger.getLogger(PlateauPanel.class.getName());
+    @Inject
+    @DataField
+    private DoubleBox helperLine;
+    private Logger logger = Logger.getLogger(SlopePanel.class.getName());
 
-    @PostConstruct
-    public void init() {
-        plateauConfigEntityDataBinder = DataBinder.forModel(terrainSurface.getPlateauConfigEntity(), InitialState.FROM_MODEL);
-        slopeEditor.init(svgElement);
+    public void init(int id) {
+        SlopeConfigEntity slopeConfigEntity = terrainSurface.getSlopeConfig(id);
+        plateauConfigEntityDataBinder.setModel(slopeConfigEntity);
+        slopeEditor.init(svgElement, slopeConfigEntity);
     }
 
     @EventHandler("zoomIn")
@@ -103,6 +107,11 @@ public class PlateauPanel extends Composite {
     @EventHandler("zoomOut")
     private void zoomOutButtonClick(ClickEvent event) {
         slopeEditor.zoomOut();
+    }
+
+    @EventHandler("helperLine")
+    public void groundChanged(ChangeEvent e) {
+        slopeEditor.setHelperLine(helperLine.getValue());
     }
 
     @EventHandler("sculpt")

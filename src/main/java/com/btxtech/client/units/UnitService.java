@@ -79,7 +79,7 @@ public class UnitService {
     }
 
     public Matrix4 getModelMatrix() {
-        return Matrix4.createTranslation(355, 300, 0).multiply(Matrix4.createZRotation(angle)).multiply(Matrix4.createTranslation(100, 0, 0)).multiply(Matrix4.createZRotation(Math.toRadians(-90)));
+        return Matrix4.createTranslation(2000, 1000, -15).multiply(Matrix4.createZRotation(angle)).multiply(Matrix4.createTranslation(100, 0, 0)).multiply(Matrix4.createZRotation(Math.toRadians(-90)));
     }
 
     public Matrix4 getModelNormMatrix() {

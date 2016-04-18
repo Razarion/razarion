@@ -33,8 +33,16 @@ public class Water {
         return level;
     }
 
+    public void setLevel(double level) {
+        this.level = level;
+    }
+
     public double getGround() {
         return ground;
+    }
+
+    public void setGround(double ground) {
+        this.ground = ground;
     }
 
     public ImageDescriptor getBumpMap() {

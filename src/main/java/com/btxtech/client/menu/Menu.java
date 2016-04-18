@@ -1,11 +1,8 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.slopeeditor.PanelContainer;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
@@ -29,26 +26,17 @@ public class Menu extends Composite {
     @DataField("menu-terrain")
     private TerrainMenu terrainMenu;
     @Inject
-    @DataField
-    private Button plateauEditor;
-    @Inject
-    @DataField("menu-beach")
-    private BeachMenu beachMenu;
+    @DataField("menu-slope")
+    private SlopeMenu slopeMenu;
     @Inject
     @DataField("menu-water")
     private WaterMenu waterMenu;
     @Inject
     @DataField("menu-unit")
     private UnitMenu unitMenu;
-    private PanelContainer panelContainer;
 
     public void setEditorPanelContainer(PanelContainer panelContainer) {
-        this.panelContainer = panelContainer;
-    }
-
-    @EventHandler("plateauEditor")
-    private void plateauEditorButtonClick(ClickEvent event) {
-        panelContainer.showSlopeEditor();
+        slopeMenu.setEditorPanelContainer(panelContainer);
     }
 
 }

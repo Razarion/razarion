@@ -19,7 +19,7 @@ import javax.inject.Inject;
 @Templated("PanelContainer.html#editorPanelContainer")
 public class PanelContainer extends Composite {
     @Inject
-    private Instance<PlateauPanel> plateauPanelInstance;
+    private Instance<SlopePanel> plateauPanelInstance;
     @Inject
     @DataField
     private SimplePanel content;
@@ -27,10 +27,12 @@ public class PanelContainer extends Composite {
     @DataField
     private Button closeButton;
 
-    public void showSlopeEditor() {
+    public void showSlopeEditor(int id) {
         content.clear();
         closeButton.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        content.setWidget(plateauPanelInstance.get());
+        SlopePanel slopePanel = plateauPanelInstance.get();
+        slopePanel.init(id);
+        content.setWidget(slopePanel);
     }
 
     @EventHandler("closeButton")
@@ -38,5 +40,4 @@ public class PanelContainer extends Composite {
         content.clear();
         closeButton.getElement().getStyle().setDisplay(Style.Display.NONE);
     }
-
 }

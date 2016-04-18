@@ -191,6 +191,14 @@ public class TerrainSurface {
         return beachSlopeConfigEntity;
     }
 
+    public SlopeConfigEntity getSlopeConfig(int id) {
+        if (id == 0) {
+            return plateauConfigEntity;
+        } else {
+            return beachSlopeConfigEntity;
+        }
+    }
+
     public VertexList getVertexList() {
         VertexList vertexList = groundMesh.provideVertexList();
         vertexList.append(groundPlateauConnector.getTopMesh().provideVertexList());
