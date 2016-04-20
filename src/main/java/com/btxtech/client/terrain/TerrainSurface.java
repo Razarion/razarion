@@ -7,8 +7,9 @@ import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.MeshEntry;
 import com.btxtech.client.terrain.slope.Shape;
-import com.btxtech.client.terrain.slope.ShapeTemplate;
 import com.btxtech.client.terrain.slope.Slope;
+import com.btxtech.client.terrain.slope.SlopeSkeleton;
+import com.btxtech.client.terrain.slope.SlopeSkeletonFactory;
 import com.btxtech.client.terrain.slope.SlopeWater;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
@@ -73,7 +74,7 @@ public class TerrainSurface {
     }
 
     public void setupPlateau() {
-        ShapeTemplate plateauShapeTemplate = new ShapeTemplate(100, new Shape(plateauConfigEntity.getShape()));
+        SlopeSkeletonFactory plateauSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(plateauConfigEntity.getShape()));
 //        logger.severe("---------------------------------");
 //        List<SlopeShapeEntity> shape = plateauConfigEntity.getShape();
 //        for (int i = 0; i < shape.size(); i++) {
@@ -82,8 +83,8 @@ public class TerrainSurface {
 //        }
 //        logger.severe("---------------------------------");
 
-        plateauShapeTemplate.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalRoughness());
-        plateau = new Slope(plateauShapeTemplate, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)), plateauConfigEntity);
+        SlopeSkeleton slopeSkeleton = plateauSlopeSkeletonFactory.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalRoughness());
+        plateau = new Slope(slopeSkeleton, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)), plateauConfigEntity);
         plateau.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
         plateau.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
         plateau.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
@@ -93,10 +94,10 @@ public class TerrainSurface {
     }
 
     private void setupBeach() {
-        ShapeTemplate beachShapeTemplate = new ShapeTemplate(100, new Shape(beachSlopeConfigEntity.getShape()));
-        beachShapeTemplate.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalRoughness());
+        SlopeSkeletonFactory beachSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(beachSlopeConfigEntity.getShape()));
+        SlopeSkeleton slopeSkeleton = beachSlopeSkeletonFactory.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalRoughness());
 
-        beach = new SlopeWater(water, beachShapeTemplate, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
+        beach = new SlopeWater(water, slopeSkeleton, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
         beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
         beach.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
         beach.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);

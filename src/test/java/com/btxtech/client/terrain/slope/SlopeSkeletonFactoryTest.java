@@ -12,15 +12,15 @@ import java.lang.reflect.Field;
  * 30.01.2016.
  */
 @SuppressWarnings("NonJREEmulationClassesInClientCode")
-public class ShapeTemplateTest {
+public class SlopeSkeletonFactoryTest {
 
     @Test
     public void testSimple1() throws Exception {
         Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(0, 0)));
-        ShapeTemplate shapeTemplate = new ShapeTemplate(1, shape);
-        shapeTemplate.sculpt(0, 0);
+        SlopeSkeletonFactory slopeSkeletonFactory = new SlopeSkeletonFactory(1, shape);
+        slopeSkeletonFactory.sculpt(0, 0);
 
-        ShapeTemplateEntry[][] nodes = getNodes(shapeTemplate);
+        SlopeSkeletonEntry[][] nodes = getNodes(slopeSkeletonFactory);
         Assert.assertEquals(1, nodes.length);
         Assert.assertEquals(2, nodes[0].length);
 
@@ -31,10 +31,10 @@ public class ShapeTemplateTest {
     @Test
     public void testSimple2() throws Exception {
         Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(0, 50), new Index(0, 0)));
-        ShapeTemplate shapeTemplate = new ShapeTemplate(1, shape);
-        shapeTemplate.sculpt(0, 0);
+        SlopeSkeletonFactory slopeSkeletonFactory = new SlopeSkeletonFactory(1, shape);
+        slopeSkeletonFactory.sculpt(0, 0);
 
-        ShapeTemplateEntry[][] nodes = getNodes(shapeTemplate);
+        SlopeSkeletonEntry[][] nodes = getNodes(slopeSkeletonFactory);
         Assert.assertEquals(1, nodes.length);
         Assert.assertEquals(3, nodes[0].length);
 
@@ -46,13 +46,13 @@ public class ShapeTemplateTest {
     @Test
     public void testMultiple() throws Exception {
         Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(20, 50), new Index(40, 0)));
-        ShapeTemplate shapeTemplate = new ShapeTemplate(10, shape);
-        shapeTemplate.sculpt(0, 0);
+        SlopeSkeletonFactory slopeSkeletonFactory = new SlopeSkeletonFactory(10, shape);
+        slopeSkeletonFactory.sculpt(0, 0);
 
-        ShapeTemplateEntry[][] nodes = getNodes(shapeTemplate);
+        SlopeSkeletonEntry[][] nodes = getNodes(slopeSkeletonFactory);
         Assert.assertEquals(10, nodes.length);
 
-        for (ShapeTemplateEntry[] rows : nodes) {
+        for (SlopeSkeletonEntry[] rows : nodes) {
             Assert.assertEquals(3, rows.length);
             TestHelper.assertVertex(40, 0, 0, rows[0].getPosition());
             TestHelper.assertVertex(20, 0, 50, rows[1].getPosition());
@@ -63,13 +63,13 @@ public class ShapeTemplateTest {
     @Test
     public void testMultipleFractal() throws Exception {
         Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(20, 50), new Index(40, 0)));
-        ShapeTemplate shapeTemplate = new ShapeTemplate(100, shape);
-        shapeTemplate.sculpt(10, 1);
+        SlopeSkeletonFactory slopeSkeletonFactory = new SlopeSkeletonFactory(100, shape);
+        slopeSkeletonFactory.sculpt(10, 1);
 
-        ShapeTemplateEntry[][] nodes = getNodes(shapeTemplate);
+        SlopeSkeletonEntry[][] nodes = getNodes(slopeSkeletonFactory);
         Assert.assertEquals(100, nodes.length);
 
-        for (ShapeTemplateEntry[] rows : nodes) {
+        for (SlopeSkeletonEntry[] rows : nodes) {
             Assert.assertEquals(3, rows.length);
 
             TestHelper.assertVertex(40, 0, 0, rows[0].getPosition());
@@ -81,10 +81,10 @@ public class ShapeTemplateTest {
         }
     }
 
-    private ShapeTemplateEntry[][] getNodes(ShapeTemplate shapeTemplate) throws NoSuchFieldException, IllegalAccessException {
-        Field field = shapeTemplate.getClass().getDeclaredField("nodes");
+    private SlopeSkeletonEntry[][] getNodes(SlopeSkeletonFactory slopeSkeletonFactory) throws NoSuchFieldException, IllegalAccessException {
+        Field field = slopeSkeletonFactory.getClass().getDeclaredField("nodes");
         field.setAccessible(true);
-        ShapeTemplateEntry[][] nodes = (ShapeTemplateEntry[][]) field.get(shapeTemplate);
+        SlopeSkeletonEntry[][] nodes = (SlopeSkeletonEntry[][]) field.get(slopeSkeletonFactory);
         field.setAccessible(false);
 
         return nodes;

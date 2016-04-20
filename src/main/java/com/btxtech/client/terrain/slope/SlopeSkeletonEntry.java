@@ -6,7 +6,7 @@ import com.btxtech.shared.primitives.Vertex;
  * Created by Beat
  * 13.02.2016.
  */
-public class ShapeTemplateEntry {
+public class SlopeSkeletonEntry {
     private Vertex position;
     private float slopeFactor;
     private double normShift;

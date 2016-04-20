@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
-    private final ShapeTemplate shapeTemplate;
+    private final SlopeSkeleton slopeSkeleton;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
@@ -34,11 +34,11 @@ public class Slope {
     private ImageDescriptor slopeImageDescriptor;
     private ImageDescriptor slopeBumpImageDescriptor;
 
-    public Slope(ShapeTemplate shapeTemplate, int verticalSpace, List<DecimalPosition> corners, SlopeConfigEntity slopeConfigEntity) {
-        this.shapeTemplate = shapeTemplate;
+    public Slope(SlopeSkeleton slopeSkeleton, int verticalSpace, List<DecimalPosition> corners, SlopeConfigEntity slopeConfigEntity) {
+        this.slopeSkeleton = slopeSkeleton;
         this.slopeConfigEntity = slopeConfigEntity;
 
-        if (shapeTemplate.getDistance() > 0) {
+        if (slopeSkeleton.getWidth() > 0) {
             setupSlopingBorder(corners);
         } else {
             setupStraightBorder(corners);
@@ -67,9 +67,9 @@ public class Slope {
             DecimalPosition current = corners.get(i);
             DecimalPosition next = corners.get((i + 1) % corners.size());
             if (current.getAngle(next, previous) > MathHelper.HALF_RADIANT) {
-                cornerBorders.add(new OuterCornerBorder(current, previous, next, shapeTemplate.getDistance()));
+                cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeleton.getWidth()));
             } else {
-                cornerBorders.add(new InnerCornerBorder(current, previous, next, shapeTemplate.getDistance()));
+                cornerBorders.add(new InnerCornerBorder(current, previous, next, slopeSkeleton.getWidth()));
             }
         }
         // Setup whole contour
@@ -77,15 +77,15 @@ public class Slope {
             AbstractCornerBorder current = cornerBorders.get(i);
             AbstractCornerBorder next = cornerBorders.get((i + 1) % cornerBorders.size());
             borders.add(current);
-            borders.add(new LineBorder(current, next, shapeTemplate.getDistance()));
+            borders.add(new LineBorder(current, next, slopeSkeleton.getWidth()));
         }
     }
 
     public void wrap(GroundMesh groundMeshSplatting) {
-        mesh = new Mesh(xVertices, shapeTemplate.getShape().getVertexCount());
+        mesh = new Mesh(xVertices, slopeSkeleton.getRows());
         innerLineMeshIndex = new ArrayList<>();
         outerLineMeshIndex = new ArrayList<>();
-        shapeTemplate.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex, groundMeshSplatting);
+        slopeSkeleton.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex, groundMeshSplatting);
         mesh.setupValues();
         // Setup helper lists
         innerLine = new ArrayList<>();
@@ -134,7 +134,7 @@ public class Slope {
     }
 
     public double getZInner() {
-        return shapeTemplate.getShape().getZInner();
+        return slopeSkeleton.getHeight();
     }
 
     public List<Vertex> getInnerLine() {
