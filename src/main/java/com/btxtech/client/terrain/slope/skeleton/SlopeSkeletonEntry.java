@@ -1,4 +1,4 @@
-package com.btxtech.client.terrain.slope;
+package com.btxtech.client.terrain.slope.skeleton;
 
 import com.btxtech.shared.primitives.Vertex;
 

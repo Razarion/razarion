@@ -10,12 +10,9 @@ import java.util.Collection;
  */
 @Remote
 public interface TerrainEditorService {
-    SlopeConfigEntity read();
+    Collection<SlopeNameId> getSlopeNameIds();
+
+    SlopeConfigEntity load(int id);
 
     void save(SlopeConfigEntity plateauConfigEntity);
-
-    Collection<TerrainMeshVertex> readTerrainMeshVertices();
-
-    void saveTerrainMeshVertices(Collection<TerrainMeshVertex> terrainMeshVertexes);
-
 }

@@ -56,11 +56,11 @@ public class TerrainNormRenderer extends AbstractRenderer {
         VertexList vertexList = terrainSurface.getVertexList();
         appendVectors(vectors, vertexList.getVertices(), vertexList.getNormVertices(), vertexList.getTangentVertices());
 
-        Mesh mesh = terrainSurface.getSlope(0).getMesh();
-        appendVectors(vectors, mesh.getVertices(), mesh.getNorms(), mesh.getTangents());
-
-        mesh = terrainSurface.getSlope(1).getMesh();
-        appendVectors(vectors, mesh.getVertices(), mesh.getNorms(), mesh.getTangents());
+//        Mesh mesh = terrainSurface.getSlope(0).getMesh();
+//        appendVectors(vectors, mesh.getVertices(), mesh.getNorms(), mesh.getTangents());
+//
+//        mesh = terrainSurface.getSlope(1).getMesh();
+//        appendVectors(vectors, mesh.getVertices(), mesh.getNorms(), mesh.getTangents());
 
         appendVectors(vectors, terrainSurface.getWater().getVertices(), terrainSurface.getWater().getNorms(), terrainSurface.getWater().getTangents());
 

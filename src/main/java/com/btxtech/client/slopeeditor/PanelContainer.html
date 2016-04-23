@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://java.sun.com/jsf/html">
 <head>
     <meta charset="UTF-8">
     <title></title>
@@ -7,8 +7,11 @@
 <body>
 
 <div id="editorPanelContainer" style="width: 100%;">
-    <div id="content" style="width: 100%">
-    </div>
+    <select id="slopeSelection" style="display:none">
+    </select>
+    <button id="newSlope" style="display:none">New</button>
+    <div id="content" style="width: 100%"></div>
+    <span id="loadingLabel" style="display:none">Loading</span>
     <button id="closeButton" style="display:none">close</button>
 </div>
 

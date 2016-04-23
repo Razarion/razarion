@@ -52,8 +52,8 @@ public class RenderService {
     public void init() {
         initFrameBuffer();
         createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class, 0);
-        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 0);
-        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 1);
+//        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 0);
+//        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 1);
         createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, 0);
         createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, 0);
         createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);

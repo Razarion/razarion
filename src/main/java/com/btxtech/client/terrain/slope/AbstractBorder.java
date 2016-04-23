@@ -1,7 +1,6 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Line;
 
 import java.util.ArrayList;
 import java.util.List;

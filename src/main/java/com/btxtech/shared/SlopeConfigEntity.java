@@ -1,6 +1,5 @@
 package com.btxtech.shared;
 
-import com.btxtech.client.ImageDescriptor;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 
@@ -17,9 +16,9 @@ import java.util.List;
  * Created by Beat
  * 21.11.2015.
  */
-@Entity
 @Portable
 @Bindable
+@Entity
 @Table(name = "SLOPE_CONFIG")
 public class SlopeConfigEntity {
     @Id
@@ -28,6 +27,7 @@ public class SlopeConfigEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "slopeConfigEntity")
     @OrderColumn(name = "orderColumn")
     private List<SlopeShapeEntity> shape;
+    private String internalName;
     private double slopeGroundSplattingBumpDepth;
     private double slopeFactorDistance;
     private double bumpMapDepth;
@@ -37,12 +37,24 @@ public class SlopeConfigEntity {
     private double fractalRoughness;
     private int verticalSpace;
 
+    public Long getId() {
+        return id;
+    }
+
     public List<SlopeShapeEntity> getShape() {
         return shape;
     }
 
     public void setShape(List<SlopeShapeEntity> shape) {
         this.shape = shape;
+    }
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
     }
 
     public double getSlopeGroundSplattingBumpDepth() {

@@ -10,21 +10,18 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 import elemental.client.Browser;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.databinding.client.api.InitialState;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -40,6 +37,14 @@ public class SlopePanel extends Composite {
     @Inject
     @AutoBound
     private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder;
+    @Inject
+    @Bound
+    @DataField
+    private Label id;
+    @Inject
+    @Bound
+    @DataField
+    private TextBox internalName;
     @Inject
     @Bound
     @DataField
@@ -93,8 +98,7 @@ public class SlopePanel extends Composite {
     private DoubleBox helperLine;
     private Logger logger = Logger.getLogger(SlopePanel.class.getName());
 
-    public void init(int id) {
-        SlopeConfigEntity slopeConfigEntity = terrainSurface.getSlopeConfig(id);
+    public void init(SlopeConfigEntity slopeConfigEntity) {
         plateauConfigEntityDataBinder.setModel(slopeConfigEntity);
         slopeEditor.init(svgElement, slopeConfigEntity);
     }
@@ -121,17 +125,17 @@ public class SlopePanel extends Composite {
 
     @EventHandler("save")
     private void saveButtonClick(ClickEvent event) {
-        terrainEditorService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void response) {
-
-            }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "save failed: " + message, throwable);
-                return false;
-            }
-        }).save(terrainSurface.getPlateauConfigEntity());
+//        terrainEditorService.call(new RemoteCallback<Void>() {
+//            @Override
+//            public void callback(Void response) {
+//
+//            }
+//        }, new ErrorCallback<Object>() {
+//            @Override
+//            public boolean error(Object message, Throwable throwable) {
+//                logger.log(Level.SEVERE, "save failed: " + message, throwable);
+//                return false;
+//            }
+//        }).save(terrainSurface.getPlateauConfigEntity());
     }
 }

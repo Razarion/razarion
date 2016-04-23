@@ -1,10 +1,9 @@
-package com.btxtech.client.terrain.slope;
+package com.btxtech.client.terrain.slope.skeleton;
 
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.shared.primitives.Vertex;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**

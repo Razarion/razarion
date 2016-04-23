@@ -6,24 +6,21 @@ import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.MeshEntry;
-import com.btxtech.client.terrain.slope.Shape;
 import com.btxtech.client.terrain.slope.Slope;
-import com.btxtech.client.terrain.slope.SlopeSkeleton;
-import com.btxtech.client.terrain.slope.SlopeSkeletonFactory;
 import com.btxtech.client.terrain.slope.SlopeWater;
+import com.btxtech.client.terrain.slope.skeleton.SlopeSkeleton;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.SlopeConfigEntity;
-import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -48,104 +45,101 @@ public class TerrainSurface {
     private double edgeDistance = 0.5;
     private double groundBumpMap = 2;
     private GroundMesh groundMesh = new GroundMesh();
-    private Slope plateau;
     private SlopeWater beach;
     private Water water = new Water(-7, -11); // Init here due to the editor
     private GroundSlopeConnector groundPlateauConnector;
     private GroundSlopeConnector groundBeachConnector;
-    private SlopeConfigEntity plateauConfigEntity;
-    private SlopeConfigEntity beachSlopeConfigEntity;
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated
-
-    public TerrainSurface() {
-        setupBeachConfigEntity();
-    }
+    private Map<Integer, SlopeSkeleton> slopeSkeletonMap = new HashMap<>();
+    private Map<Integer, Slope> slopeMap = new HashMap<>();
 
     public void init() {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
         // setupPlateauConfigEntity();
         setupGround();
-        setupPlateau();
-        setupBeach();
+//        setupPlateau(0, Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
+        // setupBeach();
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }
 
-    public void setupPlateau() {
-        SlopeSkeletonFactory plateauSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(plateauConfigEntity.getShape()));
-//        logger.severe("---------------------------------");
-//        List<SlopeShapeEntity> shape = plateauConfigEntity.getShape();
-//        for (int i = 0; i < shape.size(); i++) {
-//            SlopeShapeEntity shapeEntryEntity = shape.get(i);
-//            logger.severe(i + ":shape.add(new SlopeShapeEntity(" + shapeEntryEntity.getPosition().testString() + ", " + shapeEntryEntity.getSlopeFactor()+"f));");
-//        }
-//        logger.severe("---------------------------------");
-
-        SlopeSkeleton slopeSkeleton = plateauSlopeSkeletonFactory.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalRoughness());
-        plateau = new Slope(slopeSkeleton, plateauConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)), plateauConfigEntity);
+    public void setupPlateau(int id, List<DecimalPosition> corners) {
+        //SlopeSkeletonFactory plateauSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(plateauConfigEntity.getShape()));
+        // SlopeSkeleton slopeSkeleton = plateauSlopeSkeletonFactory.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalRoughness());
+        SlopeSkeleton slopeSkeleton = getSlopeSkeleton(id);
+        Slope plateau = new Slope(slopeSkeleton, corners);
         plateau.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
         plateau.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
         plateau.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
         plateau.wrap(groundMesh);
         groundPlateauConnector = new GroundSlopeConnector(groundMesh, plateau);
         groundPlateauConnector.stampOut();
+        slopeMap.put(slopeMap.size(), plateau);
     }
 
-    private void setupBeach() {
-        SlopeSkeletonFactory beachSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(beachSlopeConfigEntity.getShape()));
-        SlopeSkeleton slopeSkeleton = beachSlopeSkeletonFactory.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalRoughness());
-
-        beach = new SlopeWater(water, slopeSkeleton, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
-        beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
-        beach.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
-        beach.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
-        beach.wrap(groundMesh);
-        groundBeachConnector = new GroundSlopeConnector(groundMesh, beach);
-        groundBeachConnector.stampOut();
+    private SlopeSkeleton getSlopeSkeleton(int id) {
+        SlopeSkeleton slopeSkeleton = slopeSkeletonMap.get(id);
+        if (slopeSkeleton == null) {
+            throw new IllegalArgumentException("No entry in integerSlopeSkeletonMap for id: " + id);
+        }
+        return slopeSkeleton;
     }
 
-    private SlopeConfigEntity setupPlateauConfigEntity() {
-        plateauConfigEntity = new SlopeConfigEntity();
-        plateauConfigEntity.setBumpMapDepth(0.5);
-        plateauConfigEntity.setFractalRoughness(0);
-        plateauConfigEntity.setFractalShift(0);
-        plateauConfigEntity.setSpecularHardness(0.2);
-        plateauConfigEntity.setSpecularIntensity(1.0);
-        plateauConfigEntity.setVerticalSpace(10);
-        // plateauConfigEntity.setShape(Shape.SHAPE_1);
-        return plateauConfigEntity;
-    }
+//    private void setupBeach() {
+//        SlopeSkeletonFactory beachSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(beachSlopeConfigEntity.getShape()));
+//        SlopeSkeleton slopeSkeleton = beachSlopeSkeletonFactory.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalRoughness());
+//
+//        beach = new SlopeWater(water, slopeSkeleton, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
+//        beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
+//        beach.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
+//        beach.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
+//        beach.wrap(groundMesh);
+//        groundBeachConnector = new GroundSlopeConnector(groundMesh, beach);
+//        groundBeachConnector.stampOut();
+//    }
 
-
-    private void setupBeachConfigEntity() {
-        beachSlopeConfigEntity = new SlopeConfigEntity();
-        beachSlopeConfigEntity.setBumpMapDepth(2);
-        beachSlopeConfigEntity.setFractalRoughness(0.6);
-        beachSlopeConfigEntity.setFractalShift(16);
-        beachSlopeConfigEntity.setSpecularHardness(6);
-        beachSlopeConfigEntity.setSpecularIntensity(0.1);
-        beachSlopeConfigEntity.setVerticalSpace(30);
-        beachSlopeConfigEntity.setSlopeFactorDistance(0.4);
-        List<SlopeShapeEntity> shape = new ArrayList<>();
-        shape.add(new SlopeShapeEntity(new Index(400, -15), 1));
-        shape.add(new SlopeShapeEntity(new Index(350, -13), 1));
-        shape.add(new SlopeShapeEntity(new Index(300, -11), 1));
-        shape.add(new SlopeShapeEntity(new Index(250, -9), 1));
-        shape.add(new SlopeShapeEntity(new Index(200, -7), 1));
-        shape.add(new SlopeShapeEntity(new Index(150, -5), 1));
-        shape.add(new SlopeShapeEntity(new Index(100, -3), 1));
-        shape.add(new SlopeShapeEntity(new Index(50, -1), 0.5f));
-        shape.add(new SlopeShapeEntity(new Index(0, 0), 0));
-        beachSlopeConfigEntity.setShape(shape);
-    }
+//    private SlopeConfigEntity setupPlateauConfigEntity() {
+//        plateauConfigEntity = new SlopeConfigEntity();
+//        plateauConfigEntity.setBumpMapDepth(0.5);
+//        plateauConfigEntity.setFractalRoughness(0);
+//        plateauConfigEntity.setFractalShift(0);
+//        plateauConfigEntity.setSpecularHardness(0.2);
+//        plateauConfigEntity.setSpecularIntensity(1.0);
+//        plateauConfigEntity.setVerticalSpace(10);
+//        // plateauConfigEntity.setShape(Shape.SHAPE_1);
+//        return plateauConfigEntity;
+//    }
+//
+//
+//    private void setupBeachConfigEntity() {
+//        beachSlopeConfigEntity = new SlopeConfigEntity();
+//        beachSlopeConfigEntity.setBumpMapDepth(2);
+//        beachSlopeConfigEntity.setFractalRoughness(0.6);
+//        beachSlopeConfigEntity.setFractalShift(16);
+//        beachSlopeConfigEntity.setSpecularHardness(6);
+//        beachSlopeConfigEntity.setSpecularIntensity(0.1);
+//        beachSlopeConfigEntity.setVerticalSpace(30);
+//        beachSlopeConfigEntity.setSlopeFactorDistance(0.4);
+//        List<SlopeShapeEntity> shape = new ArrayList<>();
+//        shape.add(new SlopeShapeEntity(new Index(400, -15), 1));
+//        shape.add(new SlopeShapeEntity(new Index(350, -13), 1));
+//        shape.add(new SlopeShapeEntity(new Index(300, -11), 1));
+//        shape.add(new SlopeShapeEntity(new Index(250, -9), 1));
+//        shape.add(new SlopeShapeEntity(new Index(200, -7), 1));
+//        shape.add(new SlopeShapeEntity(new Index(150, -5), 1));
+//        shape.add(new SlopeShapeEntity(new Index(100, -3), 1));
+//        shape.add(new SlopeShapeEntity(new Index(50, -1), 0.5f));
+//        shape.add(new SlopeShapeEntity(new Index(0, 0), 0));
+//        beachSlopeConfigEntity.setShape(shape);
+//    }
 
     private void setupGround() {
         groundMesh.reset(MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
 
         // TODO final FractalField heightField = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, -10, 10);
-        final FractalField grassGround = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, 0, 1);
+        //final FractalField grassGround = FractalField.createSaveFractalField(MESH_SIZE, MESH_SIZE, 1.0, 0, 1);
         groundMesh.iterate(new GroundMesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
@@ -164,7 +158,7 @@ public class TerrainSurface {
                     }
                 }
                 // groundMesh.getVertexDataSafe(index).setEdge(splatting);
-                groundMesh.getVertexDataSafe(index).setEdge(grassGround.getValue(index));
+                // groundMesh.getVertexDataSafe(index).setEdge(grassGround.getValue(index));
                 // TODO mesh.getVertexDataSafe(index).add(new Vertex(0, 0, heightField.getValue(index)));
             }
         });
@@ -180,32 +174,12 @@ public class TerrainSurface {
         return true; // TODO
     }
 
-    public Slope getPlateau() {
-        return plateau;
-    }
-
-    public SlopeConfigEntity getPlateauConfigEntity() {
-        return plateauConfigEntity;
-    }
-
-    public SlopeConfigEntity getBeachSlopeConfigEntity() {
-        return beachSlopeConfigEntity;
-    }
-
-    public SlopeConfigEntity getSlopeConfig(int id) {
-        if (id == 0) {
-            return plateauConfigEntity;
-        } else {
-            return beachSlopeConfigEntity;
-        }
-    }
-
     public VertexList getVertexList() {
         VertexList vertexList = groundMesh.provideVertexList();
-        vertexList.append(groundPlateauConnector.getTopMesh().provideVertexList());
-        vertexList.append(groundPlateauConnector.getConnectionVertexList());
-        vertexList.append(groundPlateauConnector.getOuterConnectionVertexList());
-        vertexList.append(groundBeachConnector.getOuterConnectionVertexList()); // TODO in beach no inner VertexList
+//        vertexList.append(groundPlateauConnector.getTopMesh().provideVertexList());
+//        vertexList.append(groundPlateauConnector.getConnectionVertexList());
+//        vertexList.append(groundPlateauConnector.getOuterConnectionVertexList());
+//        vertexList.append(groundBeachConnector.getOuterConnectionVertexList()); // TODO in beach no inner VertexList
         return vertexList;
     }
 
@@ -257,16 +231,12 @@ public class TerrainSurface {
         return lowestPointInView;
     }
 
-    public void setPlateauConfigEntity(SlopeConfigEntity plateauConfigEntity) {
-        this.plateauConfigEntity = plateauConfigEntity;
+    public Slope getSlope(int id) {
+        return slopeMap.get(id);
     }
 
-    public Slope getSlope(int id) {
-        if (id == 0) {
-            return plateau;
-        } else {
-            return beach;
-        }
+    public int getSlopeCount() {
+        return slopeMap.size();
     }
 
     public Water getWater() {

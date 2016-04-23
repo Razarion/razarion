@@ -1,8 +1,8 @@
 package com.btxtech.client.slopeeditor;
 
-import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeShapeEntity;
+import com.btxtech.game.jsre.client.common.Index;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
 import elemental.events.Event;

@@ -2,8 +2,8 @@ package com.btxtech.client.terrain.slope;
 
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.Water;
+import com.btxtech.client.terrain.slope.skeleton.SlopeSkeleton;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.primitives.Triangulator;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -16,8 +16,8 @@ import java.util.List;
 public class SlopeWater extends Slope {
     private final Water water;
 
-    public SlopeWater(Water water, SlopeSkeleton slopeSkeleton, int verticalSpace, List<DecimalPosition> corners, SlopeConfigEntity slopeConfigEntity) {
-        super(slopeSkeleton, verticalSpace, corners, slopeConfigEntity);
+    public SlopeWater(Water water, SlopeSkeleton slopeSkeleton, List<DecimalPosition> corners) {
+        super(slopeSkeleton, corners);
         this.water = water;
     }
 

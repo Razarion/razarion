@@ -92,12 +92,12 @@
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-jboss-as-support</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.hibernate</groupId>-->
-            <!--<artifactId>hibernate-jpamodelgen</artifactId>-->
-            <!--<version>5.0.4.Final</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>5.0.9.Final</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -161,6 +161,17 @@
                     </filesets>
                 </configuration>
             </plugin>
+            <!--<plugin> Somehow crashes with ERRAI marshalling -->
+                <!--<inherited>true</inherited>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                <!--<version>3.5.1</version>-->
+                <!--<configuration>-->
+                    <!--<compilerArguments>-->
+                        <!--<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>-->
+                    <!--</compilerArguments>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 </project>

@@ -8,7 +8,6 @@ import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.Mesh;
 import com.btxtech.client.terrain.slope.Slope;
-import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 
@@ -85,7 +84,6 @@ public class SlopeRenderer extends AbstractRenderer {
     @Override
     public void draw() {
         Slope slope = terrainSurface.getSlope(getId());
-        SlopeConfigEntity slopeConfigEntity = slope.getSlopeConfigEntity();
 
         useProgram();
         getCtx3d().disable(WebGLRenderingContext.BLEND);
@@ -100,13 +98,13 @@ public class SlopeRenderer extends AbstractRenderer {
         uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
         uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
         uniform1i("uSlopeGroundSplattingSize", slope.getSlopeGroundSplattingImageDescriptor().getQuadraticEdge());
-        uniform1f("uSlopeGroundSplattingBumpDepth", slopeConfigEntity.getSlopeGroundSplattingBumpDepth());
-        uniform1f("uSlopeFactorDistance", slopeConfigEntity.getSlopeFactorDistance());
+        uniform1f("uSlopeGroundSplattingBumpDepth", slope.getSlopeSkeleton().getSlopeGroundSplattingBumpDepth());
+        uniform1f("uSlopeFactorDistance", slope.getSlopeSkeleton().getSlopeFactorDistance());
         uniform1i("uSamplerSlopeTextureSize", slope.getSlopeImageDescriptor().getQuadraticEdge());
         uniform1i("uSamplerBumpMapSlopeTextureSize", slope.getSlopeBumpImageDescriptor().getQuadraticEdge());
-        uniform1f("uBumpMapSlopeDepth", slopeConfigEntity.getBumpMapDepth());
-        uniform1f("slopeSpecularIntensity", slopeConfigEntity.getSpecularIntensity());
-        uniform1f("slopeSpecularHardness", slopeConfigEntity.getSpecularHardness());
+        uniform1f("uBumpMapSlopeDepth", slope.getSlopeSkeleton().getBumpMapDepth());
+        uniform1f("slopeSpecularIntensity", slope.getSlopeSkeleton().getSpecularIntensity());
+        uniform1f("slopeSpecularHardness", slope.getSlopeSkeleton().getSpecularHardness());
         uniform1i("uGroundSplattingSize", terrainSurface.getBlenderImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundTopTextureSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());

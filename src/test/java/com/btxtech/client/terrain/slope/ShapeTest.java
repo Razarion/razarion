@@ -1,8 +1,9 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.TestHelper;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.client.terrain.slope.skeleton.Shape;
 import com.btxtech.shared.SlopeShapeEntity;
+import com.btxtech.game.jsre.client.common.Index;
 import org.junit.Assert;
 import org.junit.Test;
 
