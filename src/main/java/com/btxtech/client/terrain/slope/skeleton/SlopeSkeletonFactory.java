@@ -26,11 +26,10 @@ public class SlopeSkeletonFactory {
         fractalField.process();
         for (int column = 0; column < segments; column++) {
             for (int row = 0; row < rows; row++) {
-                int correctedRow = rows - 1 - row;
-                SlopeSkeletonEntry slopeSkeletonEntry = new SlopeSkeletonEntry(column, correctedRow);
+                SlopeSkeletonEntry slopeSkeletonEntry = new SlopeSkeletonEntry(column, row);
                 slopeSkeletonEntry.setSlopeFactor(shape.getSlopeFactor(row));
                 if (shape.isShiftableEntry(row)) {
-                    double normShift = fractalField.getValue(column, correctedRow - shape.getShiftableOffset());
+                    double normShift = fractalField.getValue(column, row - shape.getShiftableOffset());
                     slopeSkeletonEntry.setPosition(shape.getNormShiftedVertex(row, normShift));
                     slopeSkeletonEntry.setNormShift(normShift);
                 } else {

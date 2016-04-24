@@ -7,6 +7,7 @@ import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeConfigEntity_;
 import com.btxtech.shared.SlopeNameId;
 import com.btxtech.shared.TerrainEditorService;
+import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -78,6 +79,9 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
     @Transactional
     public SlopeConfigEntity save(SlopeConfigEntity slopeConfigEntity) {
         try {
+            Gson gson = new Gson();
+            String json = gson.toJson(slopeConfigEntity);
+            System.out.println(json);
             return entityManager.merge(slopeConfigEntity);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);

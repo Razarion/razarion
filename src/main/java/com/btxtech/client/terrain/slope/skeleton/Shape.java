@@ -62,6 +62,6 @@ public class Shape {
     }
 
     public double getZInner() {
-        return entries.get(0).getPosition().getY();
+        return entries.get(entries.size() - 1).getPosition().getY();
     }
 }

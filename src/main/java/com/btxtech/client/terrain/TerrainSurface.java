@@ -251,7 +251,7 @@ public class TerrainSurface {
     }
 
     public void handlePickRay(Ray3d worldPickRay) {
-        // Find pultiplier where the ray hits the ground (z = 0). start + m*direction -> z = 0
+        // Find multiplier where the ray hits the ground (z = 0). start + m*direction -> z = 0
         double m = -worldPickRay.getStart().getZ() / worldPickRay.getDirection().getZ();
         Vertex pointOnGround = worldPickRay.getPoint(m);
         logger.severe("Point On Ground: " + pointOnGround);
