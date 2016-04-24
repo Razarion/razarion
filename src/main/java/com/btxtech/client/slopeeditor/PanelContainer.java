@@ -20,6 +20,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -54,6 +55,16 @@ public class PanelContainer extends Composite {
     @DataField
     private Button closeButton;
 
+    @PostConstruct
+    public void init() {
+        slopeSelection.addValueChangeHandler(new ValueChangeHandler<SlopeNameId>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<SlopeNameId> event) {
+                loadSlopeSkeleton(slopeSelection.getValue());
+            }
+        });
+    }
+
     public void showSlopeEditor() {
         content.clear();
         closeButton.getElement().getStyle().setDisplay(Style.Display.BLOCK);
@@ -72,12 +83,23 @@ public class PanelContainer extends Composite {
             }
         }).getSlopeNameIds();
         slopeSelection.setValue(null);
-        slopeSelection.addValueChangeHandler(new ValueChangeHandler<SlopeNameId>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<SlopeNameId> event) {
-                loadSlopeSkeleton(slopeSelection.getValue());
-            }
-        });
+    }
+
+    @EventHandler("newSlope")
+    private void newSlopeButtonClick(ClickEvent event) {
+        SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
+        slopeConfigEntity.setShape(new ArrayList<SlopeShapeEntity>());
+
+        initEditor(slopeConfigEntity);
+    }
+
+    @EventHandler("closeButton")
+    private void closeButtonClick(ClickEvent event) {
+        content.clear();
+        closeButton.getElement().getStyle().setDisplay(Style.Display.NONE);
+        slopeSelection.getElement().getStyle().setDisplay(Style.Display.NONE);
+        newSlope.getElement().getStyle().setDisplay(Style.Display.NONE);
+        loadingLabel.getElement().getStyle().setDisplay(Style.Display.NONE);
     }
 
     private void loadSlopeSkeleton(SlopeNameId value) {
@@ -98,26 +120,9 @@ public class PanelContainer extends Composite {
 
     }
 
-    @EventHandler("newSlope")
-    private void newSlopeButtonClick(ClickEvent event) {
-        SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
-        slopeConfigEntity.setShape(new ArrayList<SlopeShapeEntity>());
-
-        initEditor(slopeConfigEntity);
-    }
-
     private void initEditor(SlopeConfigEntity slopeConfigEntity) {
         SlopePanel slopePanel = plateauPanelInstance.get();
         slopePanel.init(slopeConfigEntity);
         content.setWidget(slopePanel);
-    }
-
-    @EventHandler("closeButton")
-    private void closeButtonClick(ClickEvent event) {
-        content.clear();
-        closeButton.getElement().getStyle().setDisplay(Style.Display.NONE);
-        slopeSelection.getElement().getStyle().setDisplay(Style.Display.NONE);
-        newSlope.getElement().getStyle().setDisplay(Style.Display.NONE);
-        loadingLabel.getElement().getStyle().setDisplay(Style.Display.NONE);
     }
 }

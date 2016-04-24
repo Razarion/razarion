@@ -7,14 +7,26 @@
 <body>
 
 <div id="editorPanelContainer" style="width: 100%;">
-    <select id="slopeSelection" style="display:none">
-    </select>
-    <button id="newSlope" style="display:none">New</button>
-    <div id="content" style="width: 100%"></div>
-    <span id="loadingLabel" style="display:none">Loading</span>
-    <button id="closeButton" style="display:none">close</button>
+    <table id="slope" style="border-spacing: 0; border-collapse: separate;">
+        <tr>
+            <td><select id="slopeSelection" style="display:none"></select></td>
+            <td>
+                <button id="newSlope" style="display:none">New</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <span id="loadingLabel" style="display:none">Loading</span>
+                <div id="content" style="width: 100%"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button id="closeButton" style="display:none">close</button>
+            </td>
+        </tr>
+    </table>
 </div>
-
 
 </body>
 </html>
