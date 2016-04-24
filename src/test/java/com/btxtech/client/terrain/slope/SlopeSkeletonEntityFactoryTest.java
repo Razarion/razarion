@@ -1,11 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
-import com.btxtech.TestHelper;
-import com.btxtech.client.terrain.slope.skeleton.Shape;
-import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonEntry;
+import com.btxtech.shared.SlopeSkeletonEntry;
 import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
-import com.btxtech.game.jsre.client.common.Index;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -15,7 +11,7 @@ import java.lang.reflect.Field;
  * 30.01.2016.
  */
 @SuppressWarnings("NonJREEmulationClassesInClientCode")
-public class SlopeSkeletonFactoryTest {
+public class SlopeSkeletonEntityFactoryTest {
 
     @Test
     public void testSimple1() throws Exception {

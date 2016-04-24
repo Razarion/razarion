@@ -1,4 +1,4 @@
-package com.btxtech.client.terrain.slope.skeleton;
+package com.btxtech.shared;
 
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.slope.AbstractBorder;
@@ -8,17 +8,37 @@ import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.List;
 
 /**
  * Created by Beat
  * 18.04.2016.
  */
-public class SlopeSkeleton {
-    private SlopeSkeletonEntry[][] nodes;
+@Portable
+@Entity
+@Table(name = "SLOPE_SKELETON")
+public class SlopeSkeletonEntity {
+    @Id
+    @GeneratedValue
+    private Long id;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
+    private List<SlopeSkeletonEntry> slopeSkeletonEntries;
+    private int distance;
+    private int zInner;
     private int segments;
     private int rows;
+    private int segmentCount;
+    private int rowCount;
     private int width;
     private int height;
     private double slopeGroundSplattingBumpDepth;
@@ -28,33 +48,42 @@ public class SlopeSkeleton {
     private double specularHardness;
     private int verticalSpace;
 
-    public SlopeSkeleton(SlopeSkeletonEntry[][] nodes, int width, int height) {
-        this.nodes = nodes;
-        this.width = width;
-        this.height = height;
-        segments = nodes.length;
-        rows = nodes[0].length;
+    public Long getId() {
+        return id;
+    }
+
+    public void setValues(List<SlopeSkeletonEntry> slopeSkeletonEntries, int distance, int zInner, int segments, int rows) {
+        this.slopeSkeletonEntries = slopeSkeletonEntries;
+        this.distance = distance;
+        this.zInner = zInner;
+        this.segments = segments;
+        this.rows = rows;
     }
 
     public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMeshSplatting) {
+        SlopeSkeletonEntry[][] nodes = new SlopeSkeletonEntry[segmentCount][rowCount];
+        for (SlopeSkeletonEntry slopeSkeletonEntry : slopeSkeletonEntries) {
+            nodes[slopeSkeletonEntry.getColumnIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry;
+        }
+
         int templateSegment = 0;
         int meshColumn = 0;
         for (AbstractBorder abstractBorder : skeleton) {
             for (VerticalSegment verticalSegment : abstractBorder.getVerticalSegments()) {
                 Matrix4 transformationMatrix = verticalSegment.getTransformation();
-                for (int row = 0; row < rows; row++) {
+                for (int row = 0; row < rowCount; row++) {
                     SlopeSkeletonEntry slopeSkeletonEntry = nodes[templateSegment][row];
                     Vertex transformedPoint = transformationMatrix.multiply(slopeSkeletonEntry.getPosition(), 1.0);
                     float splatting = setupSplatting(transformedPoint, slopeSkeletonEntry.getSlopeFactor(), groundMeshSplatting);
                     mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(slopeSkeletonEntry), splatting);
                     if (row == 0) {
                         outerLineMeshIndex.add(new Index(meshColumn, row));
-                    } else if (row + 1 == rows) {
+                    } else if (row + 1 == rowCount) {
                         innerLineMeshIndex.add(new Index(meshColumn, row));
                     }
                 }
                 templateSegment++;
-                if (templateSegment >= segments) {
+                if (templateSegment >= segmentCount) {
                     templateSegment = 0;
                 }
                 meshColumn++;
@@ -81,8 +110,8 @@ public class SlopeSkeleton {
         }
     }
 
-    public int getRows() {
-        return rows;
+    public int getRowCount() {
+        return rowCount;
     }
 
     public int getWidth() {
@@ -140,4 +169,23 @@ public class SlopeSkeleton {
     public void setVerticalSpace(int verticalSpace) {
         this.verticalSpace = verticalSpace;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        SlopeSkeletonEntity that = (SlopeSkeletonEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : System.identityHashCode(this);
+    }
+
 }

@@ -98,13 +98,13 @@ public class SlopeRenderer extends AbstractRenderer {
         uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
         uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
         uniform1i("uSlopeGroundSplattingSize", slope.getSlopeGroundSplattingImageDescriptor().getQuadraticEdge());
-        uniform1f("uSlopeGroundSplattingBumpDepth", slope.getSlopeSkeleton().getSlopeGroundSplattingBumpDepth());
-        uniform1f("uSlopeFactorDistance", slope.getSlopeSkeleton().getSlopeFactorDistance());
+        uniform1f("uSlopeGroundSplattingBumpDepth", slope.getSlopeSkeletonEntity().getSlopeGroundSplattingBumpDepth());
+        uniform1f("uSlopeFactorDistance", slope.getSlopeSkeletonEntity().getSlopeFactorDistance());
         uniform1i("uSamplerSlopeTextureSize", slope.getSlopeImageDescriptor().getQuadraticEdge());
         uniform1i("uSamplerBumpMapSlopeTextureSize", slope.getSlopeBumpImageDescriptor().getQuadraticEdge());
-        uniform1f("uBumpMapSlopeDepth", slope.getSlopeSkeleton().getBumpMapDepth());
-        uniform1f("slopeSpecularIntensity", slope.getSlopeSkeleton().getSpecularIntensity());
-        uniform1f("slopeSpecularHardness", slope.getSlopeSkeleton().getSpecularHardness());
+        uniform1f("uBumpMapSlopeDepth", slope.getSlopeSkeletonEntity().getBumpMapDepth());
+        uniform1f("slopeSpecularIntensity", slope.getSlopeSkeletonEntity().getSpecularIntensity());
+        uniform1f("slopeSpecularHardness", slope.getSlopeSkeletonEntity().getSpecularHardness());
         uniform1i("uGroundSplattingSize", terrainSurface.getBlenderImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundTopTextureSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());

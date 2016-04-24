@@ -78,6 +78,10 @@ public class SlopePanel extends Composite {
     @Bound
     @DataField
     private DoubleBox fractalRoughness;
+    @Inject
+    @Bound
+    @DataField
+    private IntegerBox segments;
     @DataField
     private Element svgElement = (Element) Browser.getDocument().createSVGElement();
     @Inject

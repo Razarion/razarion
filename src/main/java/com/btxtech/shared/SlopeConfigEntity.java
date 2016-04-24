@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.List;
@@ -29,6 +30,9 @@ public class SlopeConfigEntity {
     @JoinColumn(nullable = false)
     @OrderColumn(name = "orderColumn")
     private List<SlopeShapeEntity> shape;
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
+    private SlopeSkeletonEntity slopeSkeletonEntity;
     private String internalName;
     private double slopeGroundSplattingBumpDepth;
     private double slopeFactorDistance;
@@ -38,6 +42,7 @@ public class SlopeConfigEntity {
     private double fractalShift;
     private double fractalRoughness;
     private int verticalSpace;
+    private int segments;
 
     public Long getId() {
         return id;
@@ -127,8 +132,24 @@ public class SlopeConfigEntity {
         this.verticalSpace = verticalSpace;
     }
 
+    public int getSegments() {
+        return segments;
+    }
+
+    public void setSegments(int segments) {
+        this.segments = segments;
+    }
+
     public SlopeNameId createSlopeNameId() {
         return new SlopeNameId(id.intValue(), internalName);
+    }
+
+    public SlopeSkeletonEntity getSlopeSkeletonEntity() {
+        return slopeSkeletonEntity;
+    }
+
+    public void setSlopeSkeletonEntity(SlopeSkeletonEntity slopeSkeletonEntity) {
+        this.slopeSkeletonEntity = slopeSkeletonEntity;
     }
 
     @Override
@@ -145,6 +166,8 @@ public class SlopeConfigEntity {
                 ", fractalShift=" + fractalShift +
                 ", fractalRoughness=" + fractalRoughness +
                 ", verticalSpace=" + verticalSpace +
+                ", segments=" + segments +
+                ", slopeSkeletonEntity=" + (slopeSkeletonEntity != null ? slopeSkeletonEntity.getId() : "-") +
                 '}';
     }
 

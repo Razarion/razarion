@@ -1,5 +1,6 @@
 package com.btxtech.client.slopeeditor;
 
+import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeNameId;
@@ -105,6 +106,7 @@ public class PanelContainer extends Composite {
     @EventHandler("newSlope")
     private void newSlopeButtonClick(ClickEvent event) {
         SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
+        slopeConfigEntity.setSegments(1);
         List<SlopeShapeEntity> slopeShapeEntityList = new ArrayList<>();
         slopeShapeEntityList.add(new SlopeShapeEntity(new Index(0, 0), 1));
         slopeShapeEntityList.add(new SlopeShapeEntity(new Index(20, 20), 1));
@@ -141,6 +143,7 @@ public class PanelContainer extends Composite {
 
     @EventHandler("save")
     private void saveButtonClick(ClickEvent event) {
+        SlopeSkeletonFactory.sculpt(getSlopeConfigEntity());
         terrainEditorService.call(new RemoteCallback<SlopeConfigEntity>() {
             @Override
             public void callback(SlopeConfigEntity slopeConfigEntity) {

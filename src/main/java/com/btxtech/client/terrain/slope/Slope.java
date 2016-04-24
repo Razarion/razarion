@@ -2,7 +2,7 @@ package com.btxtech.client.terrain.slope;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.GroundMesh;
-import com.btxtech.client.terrain.slope.skeleton.SlopeSkeleton;
+import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
-    private final SlopeSkeleton slopeSkeleton;
+    private final SlopeSkeletonEntity slopeSkeletonEntity;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
@@ -33,10 +33,10 @@ public class Slope {
     private ImageDescriptor slopeImageDescriptor;
     private ImageDescriptor slopeBumpImageDescriptor;
 
-    public Slope(SlopeSkeleton slopeSkeleton, List<DecimalPosition> corners) {
-        this.slopeSkeleton = slopeSkeleton;
+    public Slope(SlopeSkeletonEntity slopeSkeletonEntity, List<DecimalPosition> corners) {
+        this.slopeSkeletonEntity = slopeSkeletonEntity;
 
-        if (slopeSkeleton.getWidth() > 0) {
+        if (slopeSkeletonEntity.getWidth() > 0) {
             setupSlopingBorder(corners);
         } else {
             setupStraightBorder(corners);
@@ -45,7 +45,7 @@ public class Slope {
         // Setup vertical segments
         xVertices = 0;
         for (AbstractBorder border : borders) {
-            xVertices += border.setupVerticalSegments(slopeSkeleton.getVerticalSpace());
+            xVertices += border.setupVerticalSegments(slopeSkeletonEntity.getVerticalSpace());
         }
     }
 
@@ -65,9 +65,9 @@ public class Slope {
             DecimalPosition current = corners.get(i);
             DecimalPosition next = corners.get((i + 1) % corners.size());
             if (current.getAngle(next, previous) > MathHelper.HALF_RADIANT) {
-                cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeleton.getWidth()));
+                cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeletonEntity.getWidth()));
             } else {
-                cornerBorders.add(new InnerCornerBorder(current, previous, next, slopeSkeleton.getWidth()));
+                cornerBorders.add(new InnerCornerBorder(current, previous, next, slopeSkeletonEntity.getWidth()));
             }
         }
         // Setup whole contour
@@ -75,15 +75,15 @@ public class Slope {
             AbstractCornerBorder current = cornerBorders.get(i);
             AbstractCornerBorder next = cornerBorders.get((i + 1) % cornerBorders.size());
             borders.add(current);
-            borders.add(new LineBorder(current, next, slopeSkeleton.getWidth()));
+            borders.add(new LineBorder(current, next, slopeSkeletonEntity.getWidth()));
         }
     }
 
     public void wrap(GroundMesh groundMeshSplatting) {
-        mesh = new Mesh(xVertices, slopeSkeleton.getRows());
+        mesh = new Mesh(xVertices, slopeSkeletonEntity.getRowCount());
         innerLineMeshIndex = new ArrayList<>();
         outerLineMeshIndex = new ArrayList<>();
-        slopeSkeleton.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex, groundMeshSplatting);
+        slopeSkeletonEntity.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex, groundMeshSplatting);
         mesh.setupValues();
         // Setup helper lists
         innerLine = new ArrayList<>();
@@ -132,7 +132,7 @@ public class Slope {
     }
 
     public double getZInner() {
-        return slopeSkeleton.getHeight();
+        return slopeSkeletonEntity.getHeight();
     }
 
     public List<Vertex> getInnerLine() {
@@ -179,8 +179,8 @@ public class Slope {
         return 0;
     }
 
-    public SlopeSkeleton getSlopeSkeleton() {
-        return slopeSkeleton;
+    public SlopeSkeletonEntity getSlopeSkeletonEntity() {
+        return slopeSkeletonEntity;
     }
 
     public MeshEntry pick(Vertex pointOnGround) {

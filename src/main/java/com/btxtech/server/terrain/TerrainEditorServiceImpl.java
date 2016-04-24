@@ -1,5 +1,7 @@
 package com.btxtech.server.terrain;
 
+import com.btxtech.shared.SlopeSkeletonEntity;
+import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
 import com.btxtech.server.ExceptionHandler;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeConfigEntity_;
@@ -74,9 +76,9 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public SlopeConfigEntity save(SlopeConfigEntity plateauConfigEntity) {
+    public SlopeConfigEntity save(SlopeConfigEntity slopeConfigEntity) {
         try {
-            return entityManager.merge(plateauConfigEntity);
+            return entityManager.merge(slopeConfigEntity);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

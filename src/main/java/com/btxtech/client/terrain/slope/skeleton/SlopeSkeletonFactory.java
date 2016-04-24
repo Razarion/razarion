@@ -1,6 +1,12 @@
 package com.btxtech.client.terrain.slope.skeleton;
 
 import com.btxtech.client.terrain.FractalField;
+import com.btxtech.shared.SlopeConfigEntity;
+import com.btxtech.shared.SlopeSkeletonEntity;
+import com.btxtech.shared.SlopeSkeletonEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -8,24 +14,20 @@ import com.btxtech.client.terrain.FractalField;
  */
 public class SlopeSkeletonFactory {
     // private Logger logger = Logger.getLogger(ShapeTemplate.class.getName());
-    private int rows;
-    private int segments;
-    private final Shape shape;
+    public static void sculpt(SlopeConfigEntity slopeConfigEntity) {
+        int segments = slopeConfigEntity.getSegments();
+        Shape shape = new Shape(slopeConfigEntity.getShape());
+        int rows = shape.getVertexCount();
+        double shift = slopeConfigEntity.getFractalShift();
+        double roughness = slopeConfigEntity.getFractalRoughness();
 
-    public SlopeSkeletonFactory(int segments, Shape shape) {
-        this.segments = segments;
-        this.shape = shape;
-        rows = shape.getVertexCount();
-    }
-
-    public SlopeSkeleton sculpt(double shift, double roughness) {
-        SlopeSkeletonEntry[][] nodes = new SlopeSkeletonEntry[segments][shape.getVertexCount()];
+        List<SlopeSkeletonEntry> slopeSkeletonEntries = new ArrayList<>();
         FractalField fractalField = FractalField.createSaveFractalField(shape.getShiftableCount(), segments, roughness, -shift / 2.0, shift / 2.0);
         fractalField.process();
         for (int column = 0; column < segments; column++) {
             for (int row = 0; row < rows; row++) {
                 int correctedRow = rows - 1 - row;
-                SlopeSkeletonEntry slopeSkeletonEntry = new SlopeSkeletonEntry();
+                SlopeSkeletonEntry slopeSkeletonEntry = new SlopeSkeletonEntry(column, correctedRow);
                 slopeSkeletonEntry.setSlopeFactor(shape.getSlopeFactor(row));
                 if (shape.isShiftableEntry(row)) {
                     double normShift = fractalField.getValue(column, correctedRow - shape.getShiftableOffset());
@@ -35,9 +37,15 @@ public class SlopeSkeletonFactory {
                     slopeSkeletonEntry.setPosition(shape.getVertex(row));
                     slopeSkeletonEntry.setNormShift(0);
                 }
-                nodes[column][correctedRow] = slopeSkeletonEntry;
+                slopeSkeletonEntries.add(slopeSkeletonEntry);
             }
         }
-        return new SlopeSkeleton(nodes, (int)shape.getDistance(), (int)shape.getZInner());
+
+        SlopeSkeletonEntity slopeSkeletonEntity = slopeConfigEntity.getSlopeSkeletonEntity();
+        if (slopeSkeletonEntity == null) {
+            slopeSkeletonEntity = new SlopeSkeletonEntity();
+            slopeConfigEntity.setSlopeSkeletonEntity(slopeSkeletonEntity);
+        }
+        slopeSkeletonEntity.setValues(slopeSkeletonEntries, (int) shape.getDistance(), (int) shape.getZInner(), segments, rows);
     }
 }

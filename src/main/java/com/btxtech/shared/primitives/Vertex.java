@@ -4,6 +4,7 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
+import javax.persistence.Embeddable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * 05.04.2015.
  */
 @Portable
+@Embeddable
 public class Vertex {
     private double x;
     private double y;

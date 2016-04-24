@@ -8,19 +8,25 @@ import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.MeshEntry;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.client.terrain.slope.SlopeWater;
-import com.btxtech.client.terrain.slope.skeleton.SlopeSkeleton;
+import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.SlopeConfigEntity;
+import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -35,6 +41,8 @@ public class TerrainSurface {
     private GameCanvas gameCanvas;
     @Inject
     private RenderService renderService;
+    @Inject
+    private Caller<TerrainService> terrainServiceCaller;
     private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
     // private ImageDescriptor blenderImageDescriptor = ImageDescriptor.GREY;
@@ -52,7 +60,7 @@ public class TerrainSurface {
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated
-    private Map<Integer, SlopeSkeleton> slopeSkeletonMap = new HashMap<>();
+    private Map<Integer, SlopeSkeletonEntity> slopeSkeletonMap = new HashMap<>();
     private Map<Integer, Slope> slopeMap = new HashMap<>();
 
     public void init() {
@@ -68,8 +76,8 @@ public class TerrainSurface {
     public void setupPlateau(int id, List<DecimalPosition> corners) {
         //SlopeSkeletonFactory plateauSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(plateauConfigEntity.getShape()));
         // SlopeSkeleton slopeSkeleton = plateauSlopeSkeletonFactory.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalRoughness());
-        SlopeSkeleton slopeSkeleton = getSlopeSkeleton(id);
-        Slope plateau = new Slope(slopeSkeleton, corners);
+        SlopeSkeletonEntity slopeSkeletonEntity = getSlopeSkeleton(id);
+        Slope plateau = new Slope(slopeSkeletonEntity, corners);
         plateau.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
         plateau.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
         plateau.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
@@ -79,12 +87,12 @@ public class TerrainSurface {
         slopeMap.put(slopeMap.size(), plateau);
     }
 
-    private SlopeSkeleton getSlopeSkeleton(int id) {
-        SlopeSkeleton slopeSkeleton = slopeSkeletonMap.get(id);
-        if (slopeSkeleton == null) {
+    private SlopeSkeletonEntity getSlopeSkeleton(int id) {
+        SlopeSkeletonEntity slopeSkeletonEntity = slopeSkeletonMap.get(id);
+        if (slopeSkeletonEntity == null) {
             throw new IllegalArgumentException("No entry in integerSlopeSkeletonMap for id: " + id);
         }
-        return slopeSkeleton;
+        return slopeSkeletonEntity;
     }
 
 //    private void setupBeach() {
@@ -134,6 +142,21 @@ public class TerrainSurface {
 //        shape.add(new SlopeShapeEntity(new Index(0, 0), 0));
 //        beachSlopeConfigEntity.setShape(shape);
 //    }
+
+    public void loadSlopeConfigEntities() {
+        terrainServiceCaller.call(new RemoteCallback<Collection<SlopeSkeletonEntity>>() {
+            @Override
+            public void callback(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
+                // TODO xxx
+            }
+        }, new ErrorCallback<Object>() {
+            @Override
+            public boolean error(Object message, Throwable throwable) {
+                logger.log(Level.SEVERE, "loadSlopeConfigEntities failed: " + message, throwable);
+                return false;
+            }
+        }).loadSlopeConfigEntities();
+    }
 
     private void setupGround() {
         groundMesh.reset(MESH_NODE_EDGE_LENGTH, MESH_SIZE, MESH_SIZE, 0);
