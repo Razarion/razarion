@@ -48,13 +48,19 @@ public class SlopeSkeletonEntity {
         return id;
     }
 
-    public void setValues(List<SlopeSkeletonEntry> slopeSkeletonEntries, int width, int height, int segmentCount, int rowCount, int verticalSpace) {
+    public void setValues(List<SlopeSkeletonEntry> slopeSkeletonEntries, int width, int height, int segmentCount, int rowCount, SlopeConfigEntity slopeConfigEntity) {
         this.slopeSkeletonEntries = slopeSkeletonEntries;
         this.width = width;
         this.height = height;
         this.segmentCount = segmentCount;
         this.rowCount = rowCount;
-        this.verticalSpace = verticalSpace;
+        verticalSpace = slopeConfigEntity.getVerticalSpace();
+        slopeGroundSplattingBumpDepth = slopeConfigEntity.getSlopeGroundSplattingBumpDepth();
+        slopeFactorDistance = slopeConfigEntity.getSlopeFactorDistance();
+        bumpMapDepth  = slopeConfigEntity.getBumpMapDepth();
+        specularIntensity = slopeConfigEntity.getSpecularIntensity();
+        specularHardness = slopeConfigEntity.getSpecularHardness();
+
     }
 
     public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMeshSplatting) {

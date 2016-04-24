@@ -45,6 +45,6 @@ public class SlopeSkeletonFactory {
             slopeSkeletonEntity = new SlopeSkeletonEntity();
             slopeConfigEntity.setSlopeSkeletonEntity(slopeSkeletonEntity);
         }
-        slopeSkeletonEntity.setValues(slopeSkeletonEntries, (int) shape.getDistance(), (int) shape.getZInner(), segments, rows, slopeConfigEntity.getVerticalSpace());
+        slopeSkeletonEntity.setValues(slopeSkeletonEntries, (int) shape.getDistance(), (int) shape.getZInner(), segments, rows, slopeConfigEntity);
     }
 }
