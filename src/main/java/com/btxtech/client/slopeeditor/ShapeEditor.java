@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Beat
  * 12.05.2015.
  */
-public class SlopeEditor implements Model {
+public class ShapeEditor implements Model {
     @Deprecated
     private static final int HEIGHT = 400; // This is not the real SVG element height
     private float scale = 0.3f;

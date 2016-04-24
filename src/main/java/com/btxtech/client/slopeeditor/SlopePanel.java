@@ -36,8 +36,6 @@ public class SlopePanel extends Composite {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
-    private Caller<TerrainEditorService> terrainEditorService;
-    @Inject
     @AutoBound
     private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder;
     @Inject
@@ -89,13 +87,10 @@ public class SlopePanel extends Composite {
     @DataField
     private Button zoomOut;
     @Inject
-    private SlopeEditor slopeEditor;
+    private ShapeEditor shapeEditor;
     @Inject
     @DataField
     private Button sculpt;
-    @Inject
-    @DataField
-    private Button save;
     @Inject
     @DataField
     private DoubleBox helperLine;
@@ -103,22 +98,22 @@ public class SlopePanel extends Composite {
 
     public void init(SlopeConfigEntity slopeConfigEntity) {
         plateauConfigEntityDataBinder.setModel(slopeConfigEntity);
-        slopeEditor.init(svgElement, slopeConfigEntity);
+        shapeEditor.init(svgElement, slopeConfigEntity);
     }
 
     @EventHandler("zoomIn")
     private void zoomInButtonClick(ClickEvent event) {
-        slopeEditor.zoomIn();
+        shapeEditor.zoomIn();
     }
 
     @EventHandler("zoomOut")
     private void zoomOutButtonClick(ClickEvent event) {
-        slopeEditor.zoomOut();
+        shapeEditor.zoomOut();
     }
 
     @EventHandler("helperLine")
     public void groundChanged(ChangeEvent e) {
-        slopeEditor.setHelperLine(helperLine.getValue());
+        shapeEditor.setHelperLine(helperLine.getValue());
     }
 
     @EventHandler("sculpt")
@@ -126,19 +121,7 @@ public class SlopePanel extends Composite {
         terrainSurface.sculpt();
     }
 
-    @EventHandler("save")
-    private void saveButtonClick(ClickEvent event) {
-        terrainEditorService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void response) {
-
-            }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "save failed: " + message, throwable);
-                return false;
-            }
-        }).save(plateauConfigEntityDataBinder.getModel());
+    public SlopeConfigEntity getSlopeConfigEntity() {
+        return plateauConfigEntityDataBinder.getModel();
     }
 }

@@ -74,9 +74,20 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public void save(SlopeConfigEntity plateauConfigEntity) {
+    public SlopeConfigEntity save(SlopeConfigEntity plateauConfigEntity) {
         try {
-            entityManager.merge(plateauConfigEntity);
+            return entityManager.merge(plateauConfigEntity);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public void delete(SlopeConfigEntity slopeConfigEntity) {
+        try {
+            entityManager.remove(entityManager.contains(slopeConfigEntity) ? slopeConfigEntity : entityManager.merge(slopeConfigEntity));
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

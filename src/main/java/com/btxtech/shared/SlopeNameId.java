@@ -12,7 +12,7 @@ public class SlopeNameId {
     private String internalName;
 
     /**
-     * Used by Errai
+     * Used by GWT
      */
     public SlopeNameId() {
     }
@@ -33,5 +33,25 @@ public class SlopeNameId {
     @Override
     public String toString() {
         return internalName + " (" + id + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        SlopeNameId that = (SlopeNameId) o;
+
+        return id == that.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

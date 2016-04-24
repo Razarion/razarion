@@ -14,5 +14,7 @@ public interface TerrainEditorService {
 
     SlopeConfigEntity load(int id);
 
-    void save(SlopeConfigEntity plateauConfigEntity);
+    SlopeConfigEntity save(SlopeConfigEntity plateauConfigEntity);
+
+    void delete(SlopeConfigEntity slopeConfigEntity);
 }

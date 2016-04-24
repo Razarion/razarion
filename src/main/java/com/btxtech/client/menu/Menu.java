@@ -1,13 +1,9 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.slopeeditor.PanelContainer;
-import com.btxtech.shared.TerrainEditorService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.InlineHyperlink;
-import com.google.gwt.user.client.ui.Label;
-import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -51,7 +47,7 @@ public class Menu extends Composite {
 
     @EventHandler("menu-slope")
     private void slopeMenuClick(ClickEvent event) {
-        panelContainer.showSlopeEditor();
+        panelContainer.showPanelContainer();
     }
 
 }

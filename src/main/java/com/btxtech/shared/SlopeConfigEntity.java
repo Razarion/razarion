@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
@@ -24,7 +25,8 @@ public class SlopeConfigEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "slopeConfigEntity")
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     @OrderColumn(name = "orderColumn")
     private List<SlopeShapeEntity> shape;
     private String internalName;
@@ -39,6 +41,10 @@ public class SlopeConfigEntity {
 
     public Long getId() {
         return id;
+    }
+
+    public boolean hasId() {
+        return id != null;
     }
 
     public List<SlopeShapeEntity> getShape() {
@@ -119,6 +125,27 @@ public class SlopeConfigEntity {
 
     public void setVerticalSpace(int verticalSpace) {
         this.verticalSpace = verticalSpace;
+    }
+
+    public SlopeNameId createSlopeNameId() {
+        return new SlopeNameId(id.intValue(), internalName);
+    }
+
+    @Override
+    public String toString() {
+        return "SlopeConfigEntity{" +
+                "id=" + id +
+                ", shape=" + shape +
+                ", internalName='" + internalName + '\'' +
+                ", slopeGroundSplattingBumpDepth=" + slopeGroundSplattingBumpDepth +
+                ", slopeFactorDistance=" + slopeFactorDistance +
+                ", bumpMapDepth=" + bumpMapDepth +
+                ", specularIntensity=" + specularIntensity +
+                ", specularHardness=" + specularHardness +
+                ", fractalShift=" + fractalShift +
+                ", fractalRoughness=" + fractalRoughness +
+                ", verticalSpace=" + verticalSpace +
+                '}';
     }
 
     @Override

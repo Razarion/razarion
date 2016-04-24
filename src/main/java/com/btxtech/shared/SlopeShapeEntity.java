@@ -22,8 +22,9 @@ public class SlopeShapeEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private SlopeConfigEntity slopeConfigEntity;
+//    @Id
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    private SlopeConfigEntity slopeConfigEntity;
     @Embedded
     private Index position;
     /**
@@ -56,10 +57,6 @@ public class SlopeShapeEntity {
 
     public void setSlopeFactor(float slopeFactor) {
         this.slopeFactor = slopeFactor;
-    }
-
-    public SlopeShapeEntity(SlopeConfigEntity slopeConfigEntity) {
-        this.slopeConfigEntity = slopeConfigEntity;
     }
 
     @Override
