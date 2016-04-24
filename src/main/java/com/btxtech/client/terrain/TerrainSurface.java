@@ -60,7 +60,7 @@ public class TerrainSurface {
         long time = System.currentTimeMillis();
         // setupPlateauConfigEntity();
         setupGround();
-        setupPlateau(1, Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
+        setupPlateau(2005, Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
         // setupBeach();
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }

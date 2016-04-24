@@ -10,9 +10,7 @@ import com.btxtech.client.terrain.slope.Mesh;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
-import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -56,11 +54,10 @@ public class TerrainNormRenderer extends AbstractRenderer {
         VertexList vertexList = terrainSurface.getVertexList();
         appendVectors(vectors, vertexList.getVertices(), vertexList.getNormVertices(), vertexList.getTangentVertices());
 
-//        Mesh mesh = terrainSurface.getSlope(0).getMesh();
-//        appendVectors(vectors, mesh.getVertices(), mesh.getNorms(), mesh.getTangents());
-//
-//        mesh = terrainSurface.getSlope(1).getMesh();
-//        appendVectors(vectors, mesh.getVertices(), mesh.getNorms(), mesh.getTangents());
+        for (int id : terrainSurface.getSlopeIds()) {
+            Mesh mesh = terrainSurface.getSlope(id).getMesh();
+            appendVectors(vectors, mesh.getVertices(), mesh.getNorms(), mesh.getTangents());
+        }
 
         appendVectors(vectors, terrainSurface.getWater().getVertices(), terrainSurface.getWater().getNorms(), terrainSurface.getWater().getTangents());
 
