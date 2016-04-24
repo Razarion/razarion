@@ -49,7 +49,7 @@ public class GroundSlopeConnector {
                 if (slope.isInsideInner(vertex)) {
                     stampedOut.add(vertex);
                     topMesh.createVertexData(index, groundMesh);
-                    topMesh.getVertexDataSafe(index).addZ(slope.getZInner());
+                    topMesh.getVertexDataSafe(index).addZ(slope.getHeight());
                     topIndices.add(index);
                 }
                 if (slope.isInsideOuter(vertex)) {

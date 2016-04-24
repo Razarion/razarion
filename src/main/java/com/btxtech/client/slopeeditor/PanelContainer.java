@@ -107,6 +107,7 @@ public class PanelContainer extends Composite {
     private void newSlopeButtonClick(ClickEvent event) {
         SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
         slopeConfigEntity.setSegments(1);
+        slopeConfigEntity.setVerticalSpace(30);
         List<SlopeShapeEntity> slopeShapeEntityList = new ArrayList<>();
         slopeShapeEntityList.add(new SlopeShapeEntity(new Index(0, 0), 1));
         slopeShapeEntityList.add(new SlopeShapeEntity(new Index(20, 20), 1));

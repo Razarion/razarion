@@ -1,8 +1,6 @@
 package com.btxtech.client.slopeeditor;
 
-import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.SlopeConfigEntity;
-import com.btxtech.shared.TerrainEditorService;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -13,9 +11,6 @@ import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import elemental.client.Browser;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -24,7 +19,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -33,8 +27,6 @@ import java.util.logging.Logger;
  */
 @Templated("SlopePanel.html#slope")
 public class SlopePanel extends Composite {
-    @Inject
-    private TerrainSurface terrainSurface;
     @Inject
     @AutoBound
     private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder;
@@ -69,15 +61,15 @@ public class SlopePanel extends Composite {
     @Inject
     @Bound
     @DataField
-    private IntegerBox verticalSpace;
-    @Inject
-    @Bound
-    @DataField
     private DoubleBox fractalShift;
     @Inject
     @Bound
     @DataField
     private DoubleBox fractalRoughness;
+    @Inject
+    @Bound
+    @DataField
+    private IntegerBox verticalSpace;
     @Inject
     @Bound
     @DataField
@@ -92,9 +84,6 @@ public class SlopePanel extends Composite {
     private Button zoomOut;
     @Inject
     private ShapeEditor shapeEditor;
-    @Inject
-    @DataField
-    private Button sculpt;
     @Inject
     @DataField
     private DoubleBox helperLine;
@@ -118,11 +107,6 @@ public class SlopePanel extends Composite {
     @EventHandler("helperLine")
     public void groundChanged(ChangeEvent e) {
         shapeEditor.setHelperLine(helperLine.getValue());
-    }
-
-    @EventHandler("sculpt")
-    private void sculptButtonClick(ClickEvent event) {
-        terrainSurface.sculpt();
     }
 
     public SlopeConfigEntity getSlopeConfigEntity() {

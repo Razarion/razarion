@@ -131,7 +131,7 @@ public class Slope {
         return outerLineMeshIndex;
     }
 
-    public double getZInner() {
+    public double getHeight() {
         return slopeSkeletonEntity.getHeight();
     }
 

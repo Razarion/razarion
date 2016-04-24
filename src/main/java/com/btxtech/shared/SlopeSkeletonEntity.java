@@ -33,31 +33,28 @@ public class SlopeSkeletonEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<SlopeSkeletonEntry> slopeSkeletonEntries;
-    private int distance;
-    private int zInner;
-    private int segments;
-    private int rows;
     private int segmentCount;
     private int rowCount;
     private int width;
     private int height;
+    private int verticalSpace;
     private double slopeGroundSplattingBumpDepth;
     private double slopeFactorDistance;
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
-    private int verticalSpace;
 
     public Long getId() {
         return id;
     }
 
-    public void setValues(List<SlopeSkeletonEntry> slopeSkeletonEntries, int distance, int zInner, int segments, int rows) {
+    public void setValues(List<SlopeSkeletonEntry> slopeSkeletonEntries, int width, int height, int segmentCount, int rowCount, int verticalSpace) {
         this.slopeSkeletonEntries = slopeSkeletonEntries;
-        this.distance = distance;
-        this.zInner = zInner;
-        this.segments = segments;
-        this.rows = rows;
+        this.width = width;
+        this.height = height;
+        this.segmentCount = segmentCount;
+        this.rowCount = rowCount;
+        this.verticalSpace = verticalSpace;
     }
 
     public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMeshSplatting) {

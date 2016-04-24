@@ -22,6 +22,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +42,6 @@ public class TerrainSurface {
     private GameCanvas gameCanvas;
     @Inject
     private RenderService renderService;
-    @Inject
-    private Caller<TerrainService> terrainServiceCaller;
     private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
     // private ImageDescriptor blenderImageDescriptor = ImageDescriptor.GREY;
@@ -68,7 +67,7 @@ public class TerrainSurface {
         long time = System.currentTimeMillis();
         // setupPlateauConfigEntity();
         setupGround();
-//        setupPlateau(0, Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
+        setupPlateau(1, Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
         // setupBeach();
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }
@@ -143,19 +142,11 @@ public class TerrainSurface {
 //        beachSlopeConfigEntity.setShape(shape);
 //    }
 
-    public void loadSlopeConfigEntities() {
-        terrainServiceCaller.call(new RemoteCallback<Collection<SlopeSkeletonEntity>>() {
-            @Override
-            public void callback(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
-                // TODO xxx
-            }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "loadSlopeConfigEntities failed: " + message, throwable);
-                return false;
-            }
-        }).loadSlopeConfigEntities();
+    public void setSlopeSkeletonEntities(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
+        slopeSkeletonMap.clear();
+        for (SlopeSkeletonEntity slopeSkeletonEntity : slopeSkeletonEntities) {
+            slopeSkeletonMap.put(slopeSkeletonEntity.getId().intValue(), slopeSkeletonEntity);
+        }
     }
 
     private void setupGround() {
