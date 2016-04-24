@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.webgl.WebGlException;
+import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.units.UnitService;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
@@ -33,6 +34,8 @@ public class RenderService {
     private Camera camera;
     @Inject
     private UnitService unitService;
+    @Inject
+    private TerrainSurface terrainSurface;
     private List<RenderSwitch> renderQueue = new ArrayList<>();
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
@@ -52,8 +55,9 @@ public class RenderService {
     public void init() {
         initFrameBuffer();
         createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class, 0);
-//        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 0);
-//        createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, 1);
+        for (int id : terrainSurface.getSlopeIds()) {
+            createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, id);
+        }
         createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, 0);
         createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, 0);
         createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);

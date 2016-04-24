@@ -2,6 +2,7 @@ package com.btxtech.client.terrain.slope;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.GroundMesh;
+import com.btxtech.client.terrain.GroundSlopeConnector;
 import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
@@ -32,6 +33,7 @@ public class Slope {
     private ImageDescriptor slopeGroundSplattingImageDescriptor;
     private ImageDescriptor slopeImageDescriptor;
     private ImageDescriptor slopeBumpImageDescriptor;
+    private GroundSlopeConnector groundPlateauConnector;
 
     public Slope(SlopeSkeletonEntity slopeSkeletonEntity, List<DecimalPosition> corners) {
         this.slopeSkeletonEntity = slopeSkeletonEntity;
@@ -185,5 +187,14 @@ public class Slope {
 
     public MeshEntry pick(Vertex pointOnGround) {
         return mesh.pick(pointOnGround);
+    }
+
+    public void setupGroundConnection(GroundMesh groundMesh) {
+        groundPlateauConnector = new GroundSlopeConnector(groundMesh, this);
+        groundPlateauConnector.stampOut();
+    }
+
+    public GroundSlopeConnector getGroundPlateauConnector() {
+        return groundPlateauConnector;
     }
 }

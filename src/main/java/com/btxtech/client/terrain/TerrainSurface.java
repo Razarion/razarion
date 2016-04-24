@@ -8,17 +8,12 @@ import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.MeshEntry;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.client.terrain.slope.SlopeWater;
-import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.SlopeConfigEntity;
-import com.btxtech.shared.TerrainService;
+import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,7 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -54,8 +49,6 @@ public class TerrainSurface {
     private GroundMesh groundMesh = new GroundMesh();
     private SlopeWater beach;
     private Water water = new Water(-7, -11); // Init here due to the editor
-    private GroundSlopeConnector groundPlateauConnector;
-    private GroundSlopeConnector groundBeachConnector;
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated
@@ -81,8 +74,7 @@ public class TerrainSurface {
         plateau.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
         plateau.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
         plateau.wrap(groundMesh);
-        groundPlateauConnector = new GroundSlopeConnector(groundMesh, plateau);
-        groundPlateauConnector.stampOut();
+        plateau.setupGroundConnection(groundMesh);
         slopeMap.put(slopeMap.size(), plateau);
     }
 
@@ -190,10 +182,11 @@ public class TerrainSurface {
 
     public VertexList getVertexList() {
         VertexList vertexList = groundMesh.provideVertexList();
-//        vertexList.append(groundPlateauConnector.getTopMesh().provideVertexList());
-//        vertexList.append(groundPlateauConnector.getConnectionVertexList());
-//        vertexList.append(groundPlateauConnector.getOuterConnectionVertexList());
-//        vertexList.append(groundBeachConnector.getOuterConnectionVertexList()); // TODO in beach no inner VertexList
+        for (Slope slope : slopeMap.values()) {
+            vertexList.append(slope.getGroundPlateauConnector().getTopMesh().provideVertexList());
+            vertexList.append(slope.getGroundPlateauConnector().getConnectionVertexList());
+            vertexList.append(slope.getGroundPlateauConnector().getOuterConnectionVertexList());
+        }
         return vertexList;
     }
 
@@ -249,8 +242,8 @@ public class TerrainSurface {
         return slopeMap.get(id);
     }
 
-    public int getSlopeCount() {
-        return slopeMap.size();
+    public Collection<Integer> getSlopeIds() {
+        return slopeMap.keySet();
     }
 
     public Water getWater() {
