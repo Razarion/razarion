@@ -109,8 +109,8 @@ public class PanelContainer extends Composite {
         slopeConfigEntity.setSegments(1);
         slopeConfigEntity.setVerticalSpace(30);
         List<SlopeShapeEntity> slopeShapeEntityList = new ArrayList<>();
-        slopeShapeEntityList.add(new SlopeShapeEntity(new Index(0, 0), 1));
-        slopeShapeEntityList.add(new SlopeShapeEntity(new Index(20, 20), 1));
+        slopeShapeEntityList.add(new SlopeShapeEntity(new Index(0, 0), 0));
+        slopeShapeEntityList.add(new SlopeShapeEntity(new Index(20, 20), 0));
         slopeConfigEntity.setShape(slopeShapeEntityList);
         initEditor(slopeConfigEntity);
         slopeSelection.setValue(null);

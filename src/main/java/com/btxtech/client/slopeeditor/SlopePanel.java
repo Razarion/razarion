@@ -1,5 +1,6 @@
 package com.btxtech.client.slopeeditor;
 
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -19,14 +20,14 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 06.11.2015.
  */
 @Templated("SlopePanel.html#slope")
-public class SlopePanel extends Composite {
+public class SlopePanel extends Composite implements SelectedCornerListener {
+    // private Logger logger = Logger.getLogger(SlopePanel.class.getName());
     @Inject
     @AutoBound
     private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder;
@@ -87,11 +88,19 @@ public class SlopePanel extends Composite {
     @Inject
     @DataField
     private DoubleBox helperLine;
-    private Logger logger = Logger.getLogger(SlopePanel.class.getName());
+    @Inject
+    @DataField
+    private IntegerBox selectedXPos;
+    @Inject
+    @DataField
+    private IntegerBox selectedYPos;
+    @Inject
+    @DataField
+    private DoubleBox selectedSlopeFactor;
 
     public void init(SlopeConfigEntity slopeConfigEntity) {
         plateauConfigEntityDataBinder.setModel(slopeConfigEntity);
-        shapeEditor.init(svgElement, slopeConfigEntity);
+        shapeEditor.init(svgElement, slopeConfigEntity, this);
     }
 
     @EventHandler("zoomIn")
@@ -112,4 +121,36 @@ public class SlopePanel extends Composite {
     public SlopeConfigEntity getSlopeConfigEntity() {
         return plateauConfigEntityDataBinder.getModel();
     }
+
+    @Override
+    public void onSelectionChanged(Corner corner) {
+        if (corner != null) {
+            selectedXPos.setValue(corner.getSlopeShapeEntity().getPosition().getX());
+            selectedYPos.setValue(corner.getSlopeShapeEntity().getPosition().getY());
+            selectedSlopeFactor.setValue((double) corner.getSlopeShapeEntity().getSlopeFactor());
+        } else {
+            selectedXPos.setValue(null);
+            selectedXPos.setReadOnly(true);
+            selectedYPos.setValue(null);
+            selectedYPos.setReadOnly(true);
+            selectedSlopeFactor.setValue(null);
+            selectedSlopeFactor.setReadOnly(true);
+        }
+    }
+
+    @EventHandler("selectedXPos")
+    public void selectedXPosChanged(ChangeEvent e) {
+        shapeEditor.moveSelected(new Index(selectedXPos.getValue(), selectedYPos.getValue()));
+    }
+
+    @EventHandler("selectedYPos")
+    public void selectedYPosChanged(ChangeEvent e) {
+        shapeEditor.moveSelected(new Index(selectedXPos.getValue(), selectedYPos.getValue()));
+    }
+
+    @EventHandler("selectedSlopeFactor")
+    public void selectedSlopeFactorChanged(ChangeEvent e) {
+        shapeEditor.setSlopeFactorSelected(selectedSlopeFactor.getValue());
+    }
+
 }

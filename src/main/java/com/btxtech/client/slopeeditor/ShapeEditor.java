@@ -1,8 +1,8 @@
 package com.btxtech.client.slopeeditor;
 
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeShapeEntity;
-import com.btxtech.game.jsre.client.common.Index;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -34,10 +34,13 @@ public class ShapeEditor implements Model {
     private SVGTransform scaleTransform;
     private Index lastScrollPosition;
     private SlopeConfigEntity slopeConfigEntity;
+    private SelectedCornerListener selectedCornerListener;
     private SVGLineElement helperLine;
+    private Corner selected;
 
-    protected void init(Element svgElement, SlopeConfigEntity slopeConfigEntity) {
+    protected void init(Element svgElement, SlopeConfigEntity slopeConfigEntity, SelectedCornerListener selectedCornerListener) {
         this.slopeConfigEntity = slopeConfigEntity;
+        this.selectedCornerListener = selectedCornerListener;
         this.svg = (SVGSVGElement) svgElement;
 
         group = Browser.getDocument().createSVGGElement();
@@ -131,6 +134,7 @@ public class ShapeEditor implements Model {
 
     @Override
     public void createCorner(Index position, Corner previous) {
+        selectionChanged(null);
         int index = slopeConfigEntity.getShape().indexOf(previous.getSlopeShapeEntity());
         SlopeShapeEntity shapeEntryEntity = new SlopeShapeEntity(position, 0f);
         slopeConfigEntity.getShape().add(index + 1, shapeEntryEntity);
@@ -147,7 +151,15 @@ public class ShapeEditor implements Model {
         if (cornerIndex > 0) {
             lines.get(cornerIndex - 1).moveEnd(position);
         }
+        selectedCornerListener.onSelectionChanged(corner);
+    }
 
+    public void moveSelected(Index position) {
+        cornerMoved(position, selected);
+    }
+
+    public void setSlopeFactorSelected(double slopeFactor) {
+        selected.getSlopeShapeEntity().setSlopeFactor((float) slopeFactor);
     }
 
     public void zoomIn() {
@@ -181,6 +193,20 @@ public class ShapeEditor implements Model {
                 helperLine = null;
             }
         }
+    }
+
+    @Override
+    public void selectionChanged(Corner corner) {
+        if (selected != null) {
+            selected.setSelected(false);
+        }
+        if (corner != null) {
+            selected = corner;
+            selected.setSelected(true);
+        } else {
+            selected = null;
+        }
+        selectedCornerListener.onSelectionChanged(selected);
     }
 
     private native int getButtons(MouseEvent event) /*-{

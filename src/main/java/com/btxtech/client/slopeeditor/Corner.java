@@ -15,10 +15,12 @@ import elemental.svg.SVGCircleElement;
  * 02.05.2015.
  */
 public class Corner {
+    // private Logger logger = Logger.getLogger(Corner.class.getName());
+    private static final String COLOR_NORMAL = "blue";
+    private static final String COLOR_SELECT = "red";
     private static final float RADIUS = 5;
     private SVGCircleElement circle;
     private SlopeShapeEntity slopeShapeEntity;
-    // private Logger logger = Logger.getLogger(Corner.class.getName());
     private EventRemover onMouseMoveEventRemover;
     private EventRemover onMouseUpEventRemover;
     private Model model;
@@ -33,24 +35,11 @@ public class Corner {
         circle.addEventListener("mousedown", new EventListener() {
             @Override
             public void handleEvent(Event event) {
-                onMouseMoveEventRemover = Browser.getWindow().addEventListener("mousemove", new EventListener() {
-                    @Override
-                    public void handleEvent(Event event) {
-                        move((MouseEvent) event);
-                        event.stopPropagation();
-                        // event.preventDefault();
-                    }
-                }, true);
-                onMouseUpEventRemover = Browser.getWindow().addEventListener("mouseup", new EventListener() {
-                    @Override
-                    public void handleEvent(Event event) {
-                        deselect();
-                    }
-                }, true);
+                select();
             }
         }, false);
         circle.getStyle().setCursor(Style.Cursor.CROSSHAIR.getCssName());
-        circle.getStyle().setProperty("fill", "blue");
+        circle.getStyle().setProperty("fill", COLOR_NORMAL);
     }
 
     public void move(Index position) {
@@ -61,6 +50,24 @@ public class Corner {
 
     private void move(MouseEvent event) {
         model.cornerMoved(model.convertMouseToSvg(event), this);
+    }
+
+    private void select() {
+        onMouseMoveEventRemover = Browser.getWindow().addEventListener("mousemove", new EventListener() {
+            @Override
+            public void handleEvent(Event event) {
+                move((MouseEvent) event);
+                event.stopPropagation();
+                // event.preventDefault();
+            }
+        }, true);
+        onMouseUpEventRemover = Browser.getWindow().addEventListener("mouseup", new EventListener() {
+            @Override
+            public void handleEvent(Event event) {
+                deselect();
+            }
+        }, true);
+        model.selectionChanged(this);
     }
 
     private void deselect() {
@@ -78,5 +85,13 @@ public class Corner {
 
     public SlopeShapeEntity getSlopeShapeEntity() {
         return slopeShapeEntity;
+    }
+
+    public void setSelected(boolean selected) {
+        if(selected) {
+            circle.getStyle().setProperty("fill", COLOR_SELECT);
+        } else {
+            circle.getStyle().setProperty("fill", COLOR_NORMAL);
+        }
     }
 }

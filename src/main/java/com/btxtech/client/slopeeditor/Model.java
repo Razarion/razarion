@@ -13,4 +13,6 @@ public interface Model {
     void createCorner(Index position, Corner previous);
 
     void cornerMoved(Index position, Corner corner);
+
+    void selectionChanged(Corner corner);
 }
