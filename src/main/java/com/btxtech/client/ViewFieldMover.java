@@ -1,7 +1,9 @@
 package com.btxtech.client;
 
+import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
@@ -15,6 +17,8 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
+import elemental.html.WebGLRenderingContext;
+import elemental.js.html.JsUint8Array;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,6 +37,8 @@ public class ViewFieldMover {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private TerrainSurface terrainSurface;
+    @Inject
+    private GameCanvas gameCanvas;
     private Index startMoveXY;
     private Integer startMoveZ;
     private double factor = 0.5;
@@ -79,6 +85,16 @@ public class ViewFieldMover {
                         Ray3d worldPickRay = camera.toWorld(pickRay);
                         terrainSurface.handlePickRay(worldPickRay);
                     }
+                    if (eventIsAltPressed(event.getNativeEvent())) {
+                        JsUint8Array uint8Array = WebGlUtil.createUint8Array(4);
+                        gameCanvas.getCtx3d().readPixels(event.getX(), canvas.getCoordinateSpaceHeight() - event.getY(), 1, 1, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, uint8Array);
+                        WebGlUtil.checkLastWebGlError("readPixels", gameCanvas.getCtx3d());
+                        logger.severe("Read screen pixel at " + event.getX() + ":" + event.getY() + " RGBA=" + uint8Array.getBuffer() + "," + uint8Array.numberAt(0) + "," + uint8Array.numberAt(1) + "," + uint8Array.numberAt(2) + "," + uint8Array.numberAt(3) + "(if 0,0,0,0 -> {preserveDrawingBuffer: true})");
+                        double x = uint8Array.numberAt(0) / 255.0 * 2.0 - 1.0;
+                        double y = uint8Array.numberAt(1) / 255.0 * 2.0 - 1.0;
+                        double z = uint8Array.numberAt(2) / 255.0 * 2.0 - 1.0;
+                        logger.severe("x=" + x + " y=" + y + " z=" + z);
+                    }
                 } else if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
                     startMoveZ = event.getY();
                 }
@@ -117,6 +133,10 @@ public class ViewFieldMover {
 
     public native boolean eventIsShiftPressed(NativeEvent evt) /*-{
         return evt.shiftKey;
+    }-*/;
+
+    public native boolean eventIsAltPressed(NativeEvent evt) /*-{
+        return evt.altKey;
     }-*/;
 
 }

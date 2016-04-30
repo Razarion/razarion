@@ -1,7 +1,9 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
@@ -34,6 +36,9 @@ public class LightMenu extends Composite {
     private Label lightRotateYDisplay;
     @Inject
     @DataField
+    private Label lightLabel;
+    @Inject
+    @DataField
     private DoubleBox ambientIntensity;
     @Inject
     @DataField
@@ -47,6 +52,7 @@ public class LightMenu extends Composite {
 
     @PostConstruct
     public void init() {
+        displayLightDirectionLabel();
         lightRotateX.setValue(Math.toDegrees(lighting.getRotateX()));
         lightRotateXDisplay.setText(Double.toString(Math.toDegrees(lighting.getRotateX())));
         lightRotateY.setValue(Math.toDegrees(lighting.getRotateY()));
@@ -57,16 +63,24 @@ public class LightMenu extends Composite {
         diffuseIntensity.setValue(lighting.getDiffuseIntensity());
     }
 
+    private void displayLightDirectionLabel() {
+        Vertex lightDirection = lighting.getLightDirection();
+        NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
+        lightLabel.setText("Light Direction (" + decimalFormat.format(lightDirection.getX()) + ":" + decimalFormat.format(lightDirection.getY()) + ":" + decimalFormat.format(lightDirection.getZ()) + ")");
+    }
+
     @EventHandler("lightRotateX")
     public void lightRotateXChanged(ChangeEvent e) {
         lighting.setRotateX(Math.toRadians(lightRotateX.getValue()));
         lightRotateXDisplay.setText(Double.toString(Math.toDegrees(lighting.getRotateX())));
+        displayLightDirectionLabel();
     }
 
     @EventHandler("lightRotateY")
     public void lightRotateYChanged(ChangeEvent e) {
         lighting.setRotateY(Math.toRadians(lightRotateY.getValue()));
         lightRotateYDisplay.setText(Double.toString(Math.toDegrees(lighting.getRotateY())));
+        displayLightDirectionLabel();
     }
 
     @EventHandler("shadowProjectionTransformationZNear")

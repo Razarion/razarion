@@ -101,8 +101,8 @@ public class SlopeSkeletonEntity {
             return 0;
         }
         // Why -shapeTemplateEntry.getNormShift() and not + is unclear
-        return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
-        // return shapeTemplateEntry.getSlopeFactor();
+        // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
+        return slopeSkeletonEntry.getSlopeFactor();
     }
 
     private float setupSplatting(Vertex vertex, float slopeFactor, GroundMesh groundMesh) {

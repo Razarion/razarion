@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.webgl;
 import com.google.gwt.dom.client.CanvasElement;
 import elemental.html.Float32Array;
 import elemental.html.WebGLRenderingContext;
+import elemental.js.html.JsUint8Array;
 import elemental.js.util.JsArrayOfNumber;
 
 import java.util.List;
@@ -55,13 +56,21 @@ public class WebGlUtil {
         return new Float32Array(vertices);
     }-*/;
 
+    public native static JsUint8Array createUint8Array(int length) /*-{
+        return new Uint8Array(length);
+    }-*/;
+
     public native static elemental.dom.Element castElementToElement(com.google.gwt.dom.client.Element e) /*-{
         return e;
     }-*/;
 
     // http://in2gpu.com/2014/04/11/webgl-transparency/
     // {alpha:false}
+    // http://stackoverflow.com/questions/7156971/webgl-readpixels-is-always-returning-0-0-0-0
+    // {preserveDrawingBuffer: true}
     public native static WebGLRenderingContext getContext(CanvasElement canvasElement, String contextId) /*-{
-        return canvasElement.getContext(contextId, {alpha:false});
+        return canvasElement.getContext(contextId, {alpha:false, preserveDrawingBuffer: true});
     }-*/;
+
+
 }

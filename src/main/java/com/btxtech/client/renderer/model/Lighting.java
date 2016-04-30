@@ -24,8 +24,8 @@ public class Lighting {
     private double zNear = 10;
     private double shadowAlpha = 0.2;
     private Logger logger = Logger.getLogger(Lighting.class.getName());
-    private double rotateX = Math.toRadians(20);
-    private double rotateY = -Math.toRadians(25);
+    private double rotateX = Math.toRadians(0);
+    private double rotateY = -Math.toRadians(0);
     private double ambientIntensity;
     private double diffuseIntensity;
 
@@ -39,7 +39,7 @@ public class Lighting {
      * @return direction normalized
      */
     public Vertex getLightDirection() {
-        return createInverseRotationMatrix().multiply(new Vertex(0, 0, 1), 1.0);
+        return createRotationMatrix().multiply(new Vertex(0, 0, -1), 1.0);
     }
 
     public void setGame() {
@@ -93,15 +93,15 @@ public class Lighting {
         double lightNormalY = camera.getTranslateY() + calculateYViewField().calculateAverage();
         double actualLightPosY = lightNormalY + Math.tan(rotateX) * calculateZ();
 
-        return createRotationMatrix().multiply(Matrix4.createTranslation(-actualLightPosX, -actualLightPosY, -calculateZ()));
+        return createNegatedRotationMatrix().multiply(Matrix4.createTranslation(-actualLightPosX, -actualLightPosY, -calculateZ()));
     }
 
-    public Matrix4 createRotationMatrix() {
+    private Matrix4 createNegatedRotationMatrix() {
         Matrix4 rotationMatrix = Matrix4.createXRotation(-rotateX);
         return rotationMatrix.multiply(Matrix4.createYRotation(-rotateY));
     }
 
-    public Matrix4 createInverseRotationMatrix() {
+    private Matrix4 createRotationMatrix() {
         Matrix4 rotationMatrix = Matrix4.createXRotation(rotateX);
         return rotationMatrix.multiply(Matrix4.createYRotation(rotateY));
     }

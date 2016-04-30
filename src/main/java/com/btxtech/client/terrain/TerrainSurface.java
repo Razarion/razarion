@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -46,6 +45,8 @@ public class TerrainSurface {
     private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_04;
     private double edgeDistance = 0.5;
     private double groundBumpMap = 2;
+    private double groundSpecularHardness = 5;
+    private double groundSpecularIntensity = 0.255;
     private GroundMesh groundMesh = new GroundMesh();
     private SlopeWater beach;
     private Water water = new Water(-7, -11); // Init here due to the editor
@@ -228,6 +229,22 @@ public class TerrainSurface {
 
     public void setGroundBumpMap(double groundBumpMap) {
         this.groundBumpMap = groundBumpMap;
+    }
+
+    public double getGroundSpecularHardness() {
+        return groundSpecularHardness;
+    }
+
+    public void setGroundSpecularHardness(double groundSpecularHardness) {
+        this.groundSpecularHardness = groundSpecularHardness;
+    }
+
+    public double getGroundSpecularIntensity() {
+        return groundSpecularIntensity;
+    }
+
+    public void setGroundSpecularIntensity(double groundSpecularIntensity) {
+        this.groundSpecularIntensity = groundSpecularIntensity;
     }
 
     public double getHighestPointInView() {

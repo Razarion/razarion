@@ -3,7 +3,7 @@ precision mediump float;
 attribute vec3 aVertexPosition;
 attribute vec3 aVertexNormal;
 attribute vec3 aVertexTangent;
-attribute float aEdgePosition;
+attribute float aGroundSplatting;
 
 uniform highp mat4 uVMatrix;
 uniform highp mat4 uPMatrix;
@@ -16,7 +16,7 @@ varying vec3 vVertexTangent;
 varying vec4 vVertexPosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
-varying float vEdgePosition;
+varying float vGroundSplatting;
 
 
 void main(void) {
@@ -25,7 +25,7 @@ void main(void) {
     vVertexPosition = uVMatrix * vec4(aVertexPosition, 1.0);
     gl_Position = uPMatrix * vVertexPosition;
     vShadowCoord = uMVPDepthBias * vec4(aVertexPosition, 1.0);
-    vEdgePosition = aEdgePosition;
+    vGroundSplatting = aGroundSplatting;
     vVertexPositionCoord = aVertexPosition.xyz;
     vVertexNormCoord = aVertexNormal;
 }

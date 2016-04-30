@@ -32,6 +32,12 @@ public class TerrainMenu extends Composite {
     private DoubleBox groundBumpMap;
     @Inject
     @DataField
+    private DoubleBox specularIntensity;
+    @Inject
+    @DataField
+    private DoubleBox specularHardness;
+    @Inject
+    @DataField
     private Button sculptButton;
     @Inject
     @DataField
@@ -44,6 +50,8 @@ public class TerrainMenu extends Composite {
     public void init() {
         surfaceSlider.setValue(terrainSurface.getSplattingBlur());
         groundBumpMap.setValue(terrainSurface.getGroundBumpMap());
+        specularIntensity.setValue(terrainSurface.getGroundSpecularIntensity());
+        specularHardness.setValue(terrainSurface.getGroundSpecularHardness());
     }
 
     @EventHandler("surfaceSlider")
@@ -54,6 +62,16 @@ public class TerrainMenu extends Composite {
     @EventHandler("groundBumpMap")
     public void groundBumpMapChanged(ChangeEvent e) {
         terrainSurface.setGroundBumpMap(groundBumpMap.getValue());
+    }
+
+    @EventHandler("specularIntensity")
+    public void specularIntensityChanged(ChangeEvent e) {
+        terrainSurface.setGroundSpecularIntensity(specularIntensity.getValue());
+    }
+
+    @EventHandler("specularHardness")
+    public void specularHardnessChanged(ChangeEvent e) {
+        terrainSurface.setGroundSpecularHardness(specularHardness.getValue());
     }
 
     @EventHandler("sculptButton")

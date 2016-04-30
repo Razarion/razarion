@@ -33,8 +33,8 @@ uniform sampler2D uGroundBottomMap;
 uniform int uGroundBottomMapSize;
 uniform float uGroundBottomMapDepth;
 uniform float uGroundSplattingDistance;
-uniform float groundSpecularIntensity;
-uniform float groundSpecularHardness;
+uniform float uGroundSpecularIntensity;
+uniform float uGroundSpecularHardness;
 uniform bool uHasWater;
 uniform float uWaterLevel;
 uniform float uWaterGround;
@@ -44,6 +44,8 @@ const float SLOPE_FACTOR_BIAS = 0.001;
 const float SLOPE_WATER_STRIPE_FADEOUT = 2.0;
 const float SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR = 5.0;
 const vec3 UNDER_WATER_COLOR = vec3(1.0, 1.0, 1.0);
+
+// Vector to RGB -> normVector * 0.5 + 0.5
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
 vec4 triPlanarTextureMapping(sampler2D sampler, float size, vec2 addCoord) {
@@ -72,9 +74,9 @@ vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float size) {
 }
 
 vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
-     vec3 reflectionDirection = normalize(reflect(-correctedLightDirection, normalize(correctedNorm)));
+     vec3 reflectionDirection = normalize(reflect(correctedLightDirection, normalize(correctedNorm)));
      vec3 eyeDirection = normalize(-vVertexPosition.xyz);
-     float factor = pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
+     float factor = max(pow(dot(reflectionDirection, eyeDirection), hardness), 0.0) * intensity;
      return SPECULAR_LIGHT_COLOR * factor;
 }
 
@@ -97,7 +99,7 @@ vec3 setupGroundNorm(float splattingFactor) {
 }
 
 void main(void) {
-    vec3 correctedLightDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
+    vec3 correctedLightDirection = normalize((uNMatrix * vec4(uLightingDirection, 1.0)).xyz);
 
     vec4 textureColor;
     vec3 correctedNorm;
@@ -108,8 +110,8 @@ void main(void) {
         float splattingFactor = setupGroundSplattingFactor();
         textureColor = setupGroundColor(splattingFactor);
         correctedNorm = setupGroundNorm(splattingFactor);
-        specular = setupSpecularLight(correctedLightDirection, correctedNorm, groundSpecularIntensity, groundSpecularHardness);
-   } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
+        specular = setupSpecularLight(correctedLightDirection, correctedNorm, uGroundSpecularIntensity, uGroundSpecularHardness);
+    } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
         // Slope
         if(uHasWater) {
             float z = vVertexPositionCoord.z;
@@ -118,11 +120,10 @@ void main(void) {
                 textureColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
                 correctedNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
                 specular = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
-           } else  if(z >= uWaterLevel) {
+            } else  if(z >= uWaterLevel) {
                 // Water slope stripe:
                 float slopeFadeoutFactor = 1.0 - ((z - uWaterLevel) / SLOPE_WATER_STRIPE_FADEOUT);
                 float colorSlopeFadeoutFactor = mix(1.0, 0.5, slopeFadeoutFactor);
-                vec3 correctedLightDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
                 vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
                 vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth * (1.0 - slopeFadeoutFactor), float(uSamplerBumpMapSlopeTextureSize));
                 vec4 ambient = vec4(uAmbientColor, 1.0) * slopeColor /* * colorSlopeFadeoutFactor*/;
@@ -145,7 +146,7 @@ void main(void) {
             textureColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
             correctedNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
             specular = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
-       }
+     }
    } else {
        // Transition
        // Setup slope factor
@@ -161,14 +162,14 @@ void main(void) {
        vec3 groundNorm = setupGroundNorm(splattingFactor);
        vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
        vec3 slopeGrounsPlattingNaorm = bumpMapNorm(uSlopeGroundSplatting, uSlopeGroundSplattingBumpDepth, float(uSlopeGroundSplattingSize));
-       correctedNorm = mix(groundNorm, slopeNorm, correctedSlopeFactor) + slopeGrounsPlattingNaorm;
-       vec4 specularSlope = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
-       vec4 specularGround = setupSpecularLight(correctedLightDirection, correctedNorm, groundSpecularIntensity, groundSpecularHardness);
+       correctedNorm = mix(groundNorm, slopeNorm, correctedSlopeFactor) /*+ slopeGrounsPlattingNaorm*/;
+       vec4 specularSlope = setupSpecularLight(correctedLightDirection, slopeNorm, slopeSpecularIntensity, slopeSpecularHardness);
+       vec4 specularGround = setupSpecularLight(correctedLightDirection, groundNorm, uGroundSpecularIntensity, uGroundSpecularHardness);
        specular = mix(specularGround, specularSlope, correctedSlopeFactor);
     }
 
     // Light
     vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
-    vec4 diffuse = vec4(max(dot(normalize(correctedNorm), normalize(correctedLightDirection)), 0.0) * diffuseWeightFactor * textureColor.rgb, 1.0);
+    vec4 diffuse = vec4(max(dot(normalize(correctedNorm), -correctedLightDirection), 0.0) * diffuseWeightFactor * textureColor.rgb, 1.0);
     gl_FragColor = ambient + diffuse + specular;
 }
