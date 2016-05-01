@@ -57,8 +57,9 @@ public class TerrainSurface {
     public void init() {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
-        // setupPlateauConfigEntity();
+        water.clearAllTriangles();
         setupGround();
+        slopeMap.clear();
         setupPlateau(2005, Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
         setupBeach(12514, Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)));
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
@@ -142,11 +143,15 @@ public class TerrainSurface {
 //        beachSlopeConfigEntity.setShape(shape);
 //    }
 
-    public void setSlopeSkeletonEntities(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
+    public void setAllSlopeSkeletonEntities(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
         slopeSkeletonMap.clear();
         for (SlopeSkeletonEntity slopeSkeletonEntity : slopeSkeletonEntities) {
             slopeSkeletonMap.put(slopeSkeletonEntity.getId().intValue(), slopeSkeletonEntity);
         }
+    }
+
+    public void setSlopeSkeletonEntity(SlopeSkeletonEntity slopeSkeletonEntity) {
+        slopeSkeletonMap.put(slopeSkeletonEntity.getId().intValue(), slopeSkeletonEntity);
     }
 
     private void setupGround() {

@@ -1,11 +1,13 @@
 package com.btxtech.client.slopeeditor;
 
+import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeNameId;
 import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.TerrainService;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -39,6 +41,8 @@ import java.util.logging.Logger;
 public class PanelContainer extends Composite {
     private Logger logger = Logger.getLogger(PanelContainer.class.getName());
     @Inject
+    private TerrainSurface terrainSurface;
+    @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
     private Instance<SlopePanel> plateauPanelInstance;
@@ -57,6 +61,9 @@ public class PanelContainer extends Composite {
     @Inject
     @DataField
     private Button save;
+    @Inject
+    @DataField
+    private Button sculpt;
     @Inject
     @DataField
     private Label loadingLabel;
@@ -144,7 +151,6 @@ public class PanelContainer extends Composite {
 
     @EventHandler("save")
     private void saveButtonClick(ClickEvent event) {
-        SlopeSkeletonFactory.sculpt(getSlopeConfigEntity());
         terrainEditorService.call(new RemoteCallback<SlopeConfigEntity>() {
             @Override
             public void callback(SlopeConfigEntity slopeConfigEntity) {
@@ -158,6 +164,14 @@ public class PanelContainer extends Composite {
                 return false;
             }
         }).save(getSlopeConfigEntity());
+    }
+
+    @EventHandler("sculpt")
+    private void sculptButtonClick(ClickEvent event) {
+        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
+        SlopeSkeletonFactory.sculpt(slopeConfigEntity);
+        terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
+        terrainSurface.sculpt();
     }
 
     private void loadSlopeConfigEntity(SlopeNameId value) {
@@ -184,12 +198,14 @@ public class PanelContainer extends Composite {
         content.setWidget(slopePanel);
         delete.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         save.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        sculpt.getElement().getStyle().setDisplay(Style.Display.BLOCK);
     }
 
     private void hideEditor() {
         content.clear();
         delete.getElement().getStyle().setDisplay(Style.Display.NONE);
         save.getElement().getStyle().setDisplay(Style.Display.NONE);
+        sculpt.getElement().getStyle().setDisplay(Style.Display.NONE);
     }
 
     private void hidePanelContainer() {

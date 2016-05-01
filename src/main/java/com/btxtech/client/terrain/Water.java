@@ -81,6 +81,13 @@ public class Water {
         this.waterSpecularHardness = waterSpecularHardness;
     }
 
+    public void clearAllTriangles() {
+        vertices.clear();
+        norms.clear();
+        tangents.clear();
+        barycentric.clear();
+    }
+
     public void addTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3) {
         vertices.add(createLevelVertex(vertex1));
         if (vertex1.cross(vertex2, vertex3).getZ() >= 0) {
@@ -122,6 +129,7 @@ public class Water {
     public List<Vertex> getBarycentric() {
         return barycentric;
     }
+
     public double getWaterAnimation() {
         return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
     }
@@ -131,6 +139,6 @@ public class Water {
     }
 
     public double getWaterAnimation(long millis, int durationMs, int offsetMs) {
-        return Math.sin(((millis % durationMs) / (double) durationMs + ((double)offsetMs / (double)durationMs)) * MathHelper.ONE_RADIANT);
+        return Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT);
     }
 }

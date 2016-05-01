@@ -31,7 +31,7 @@ public class LoadSlopeSkeletonTask extends AbstractStartupTask {
         terrainServiceCaller.call(new RemoteCallback<Collection<SlopeSkeletonEntity>>() {
             @Override
             public void callback(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
-                terrainSurface.setSlopeSkeletonEntities(slopeSkeletonEntities);
+                terrainSurface.setAllSlopeSkeletonEntities(slopeSkeletonEntities);
                 deferredStartup.finished();
             }
         }, new ErrorCallback<Object>() {
