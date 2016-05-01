@@ -24,8 +24,8 @@ public class Lighting {
     private double zNear = 10;
     private double shadowAlpha = 0.2;
     private Logger logger = Logger.getLogger(Lighting.class.getName());
-    private double rotateX = Math.toRadians(0);
-    private double rotateY = -Math.toRadians(0);
+    private double rotateX = Math.toRadians(10);
+    private double rotateY = -Math.toRadians(10);
     private double ambientIntensity;
     private double diffuseIntensity;
 

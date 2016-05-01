@@ -191,7 +191,7 @@ public class Slope {
 
     public void setupGroundConnection(GroundMesh groundMesh) {
         groundPlateauConnector = new GroundSlopeConnector(groundMesh, this);
-        groundPlateauConnector.stampOut();
+        groundPlateauConnector.stampOut(!hasWater());
     }
 
     public GroundSlopeConnector getGroundPlateauConnector() {

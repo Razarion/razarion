@@ -11,7 +11,6 @@ import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -24,7 +23,6 @@ public class GroundSlopeConnector {
     private final GroundMesh groundMesh;
     private final GroundMesh groundMeshOriginal;
     private final Slope slope;
-    private Collection<Vertex> stampedOut = new ArrayList<>();
     private GroundMesh topMesh;
     private List<VertexDataObject> innerEdges;
     private List<VertexDataObject> outerEdges;
@@ -39,15 +37,16 @@ public class GroundSlopeConnector {
         groundMeshOriginal = groundMesh.copy();
     }
 
-    public void stampOut() {
-        topMesh = new GroundMesh();
-        topIndices = new ArrayList<>();
+    public void stampOut(final boolean hasTop) {
+        if (hasTop) {
+            topMesh = new GroundMesh();
+            topIndices = new ArrayList<>();
+        }
         bottomIndices = new ArrayList<>();
         groundMesh.iterate(new GroundMesh.VertexVisitor() {
             @Override
             public void onVisit(Index index, Vertex vertex) {
-                if (slope.isInsideInner(vertex)) {
-                    stampedOut.add(vertex);
+                if (hasTop && slope.isInsideInner(vertex)) {
                     topMesh.createVertexData(index, groundMesh);
                     topMesh.getVertexDataSafe(index).addZ(slope.getHeight());
                     topIndices.add(index);
@@ -58,9 +57,11 @@ public class GroundSlopeConnector {
                 }
             }
         });
-        topMesh.setupNorms();
 
-        setupInnerConnections();
+        if (hasTop) {
+            topMesh.setupNorms();
+            setupInnerConnections();
+        }
 
         setupOuterConnections();
     }
@@ -272,10 +273,6 @@ public class GroundSlopeConnector {
 
     private boolean exist(List<Index> indices, Index index, int x, int y) {
         return indices.contains(index.add(x, y));
-    }
-
-    public Collection<Vertex> getStampedOut() {
-        return stampedOut;
     }
 
     public GroundMesh getTopMesh() {

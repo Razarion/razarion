@@ -41,8 +41,6 @@ public class TerrainSurface {
     // private ImageDescriptor blenderImageDescriptor = ImageDescriptor.GREY;
     private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_5;
     private ImageDescriptor groundBmImageDescriptor = ImageDescriptor.GROUND_BM_5;
-    private ImageDescriptor slopeImageDescriptor = ImageDescriptor.ROCK_5;
-    private ImageDescriptor slopePumpMapImageDescriptor = ImageDescriptor.BUMP_MAP_04;
     private double edgeDistance = 0.5;
     private double groundBumpMap = 2;
     private double groundSpecularHardness = 5;
@@ -62,13 +60,11 @@ public class TerrainSurface {
         // setupPlateauConfigEntity();
         setupGround();
         setupPlateau(2005, Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
-        // setupBeach();
+        setupBeach(12514, Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)));
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }
 
     public void setupPlateau(int id, List<DecimalPosition> corners) {
-        //SlopeSkeletonFactory plateauSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(plateauConfigEntity.getShape()));
-        // SlopeSkeleton slopeSkeleton = plateauSlopeSkeletonFactory.sculpt(plateauConfigEntity.getFractalShift(), plateauConfigEntity.getFractalRoughness());
         SlopeSkeletonEntity slopeSkeletonEntity = getSlopeSkeleton(id);
         Slope plateau = new Slope(slopeSkeletonEntity, corners);
         plateau.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
@@ -77,6 +73,17 @@ public class TerrainSurface {
         plateau.wrap(groundMesh);
         plateau.setupGroundConnection(groundMesh);
         slopeMap.put(slopeMap.size(), plateau);
+    }
+
+    public void setupBeach(int id, List<DecimalPosition> corners) {
+        SlopeSkeletonEntity slopeSkeletonEntity = getSlopeSkeleton(id);
+        SlopeWater beach = new SlopeWater(water, slopeSkeletonEntity, corners);
+        beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
+        beach.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
+        beach.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
+        beach.wrap(groundMesh);
+        beach.setupGroundConnection(groundMesh);
+        slopeMap.put(slopeMap.size(), beach);
     }
 
     private SlopeSkeletonEntity getSlopeSkeleton(int id) {
@@ -184,8 +191,10 @@ public class TerrainSurface {
     public VertexList getVertexList() {
         VertexList vertexList = groundMesh.provideVertexList();
         for (Slope slope : slopeMap.values()) {
-            vertexList.append(slope.getGroundPlateauConnector().getTopMesh().provideVertexList());
-            vertexList.append(slope.getGroundPlateauConnector().getConnectionVertexList());
+            if(!slope.hasWater()) {
+                vertexList.append(slope.getGroundPlateauConnector().getTopMesh().provideVertexList());
+                vertexList.append(slope.getGroundPlateauConnector().getConnectionVertexList());
+            }
             vertexList.append(slope.getGroundPlateauConnector().getOuterConnectionVertexList());
         }
         return vertexList;
@@ -199,20 +208,12 @@ public class TerrainSurface {
         return groundBmImageDescriptor;
     }
 
-    public ImageDescriptor getSlopeImageDescriptor() {
-        return slopeImageDescriptor;
-    }
-
     public ImageDescriptor getCoverImageDescriptor() {
         return coverImageDescriptor;
     }
 
     public ImageDescriptor getBlenderImageDescriptor() {
         return blenderImageDescriptor;
-    }
-
-    public ImageDescriptor getSlopePumpMapImageDescriptor() {
-        return slopePumpMapImageDescriptor;
     }
 
     public double getSplattingBlur() {

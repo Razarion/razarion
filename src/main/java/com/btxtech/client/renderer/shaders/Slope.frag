@@ -46,6 +46,7 @@ const float SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR = 5.0;
 const vec3 UNDER_WATER_COLOR = vec3(1.0, 1.0, 1.0);
 
 // Vector to RGB -> normVector * 0.5 + 0.5
+// Interpolate x (MIN, MAX) to 0..1: 1.0/(MAX-MIN) * x + MIN/(MAX-MIN)
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
 vec4 triPlanarTextureMapping(sampler2D sampler, float size, vec2 addCoord) {
@@ -111,7 +112,7 @@ void main(void) {
         textureColor = setupGroundColor(splattingFactor);
         correctedNorm = setupGroundNorm(splattingFactor);
         specular = setupSpecularLight(correctedLightDirection, correctedNorm, uGroundSpecularIntensity, uGroundSpecularHardness);
-    } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
+   } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
         // Slope
         if(uHasWater) {
             float z = vVertexPositionCoord.z;
@@ -120,25 +121,23 @@ void main(void) {
                 textureColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
                 correctedNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
                 specular = setupSpecularLight(correctedLightDirection, correctedNorm, slopeSpecularIntensity, slopeSpecularHardness);
-            } else  if(z >= uWaterLevel) {
+            } else if(z >= uWaterLevel) {
                 // Water slope stripe:
-                float slopeFadeoutFactor = 1.0 - ((z - uWaterLevel) / SLOPE_WATER_STRIPE_FADEOUT);
+                float slopeFadeoutFactor = 1.0 - ((z - uWaterLevel) / SLOPE_WATER_STRIPE_FADEOUT); // 1.0 water .. 0.0 beach
                 float colorSlopeFadeoutFactor = mix(1.0, 0.5, slopeFadeoutFactor);
                 vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
                 vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth * (1.0 - slopeFadeoutFactor), float(uSamplerBumpMapSlopeTextureSize));
                 vec4 ambient = vec4(uAmbientColor, 1.0) * slopeColor /* * colorSlopeFadeoutFactor*/;
-                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(correctedLightDirection)), 0.0) /* * shadowFactor */ * diffuseWeightFactor * colorSlopeFadeoutFactor * slopeColor.rgb, 1.0);
-                float specularIntensity = mix(slopeSpecularIntensity, slopeSpecularIntensity * SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR, slopeFadeoutFactor);
-                vec4 specular = setupSpecularLight(correctedLightDirection, slopeNorm, specularIntensity, slopeSpecularHardness) /* * shadowFactor */;
+                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(-correctedLightDirection)), 0.0) /* * shadowFactor */ * diffuseWeightFactor * /*colorSlopeFadeoutFactor * */slopeColor.rgb, 1.0);
+                vec4 specular = setupSpecularLight(correctedLightDirection, slopeNorm, slopeSpecularIntensity, slopeSpecularHardness) /* * shadowFactor */;
                 gl_FragColor = ambient + diffuse + specular;
-              return;
+                return;
             } else {
                 // Under water level: render slope fadeout
                 float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
                 vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
-                vec3 correctedLightDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
                 vec3 ambient = uAmbientColor * UNDER_WATER_COLOR * underWaterFactor;
-                vec3 diffuse = vec3(max(dot(normalize(slopeNorm), normalize(correctedLightDirection)), 0.0) * underWaterFactor /* * shadowFactor*/ * diffuseWeightFactor * UNDER_WATER_COLOR);
+                vec3 diffuse = vec3(max(dot(normalize(slopeNorm), normalize(-correctedLightDirection)), 0.0) * underWaterFactor /* * shadowFactor*/ * diffuseWeightFactor * UNDER_WATER_COLOR);
                 gl_FragColor = vec4(vec3(ambient + diffuse), 1.0);
                 return;
             }
