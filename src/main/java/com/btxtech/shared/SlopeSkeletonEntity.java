@@ -54,10 +54,14 @@ public class SlopeSkeletonEntity {
         this.height = height;
         this.segmentCount = segmentCount;
         this.rowCount = rowCount;
+        setValues(slopeConfigEntity);
+    }
+
+    public void setValues(SlopeConfigEntity slopeConfigEntity) {
         verticalSpace = slopeConfigEntity.getVerticalSpace();
         slopeGroundSplattingBumpDepth = slopeConfigEntity.getSlopeGroundSplattingBumpDepth();
         slopeFactorDistance = slopeConfigEntity.getSlopeFactorDistance();
-        bumpMapDepth  = slopeConfigEntity.getBumpMapDepth();
+        bumpMapDepth = slopeConfigEntity.getBumpMapDepth();
         specularIntensity = slopeConfigEntity.getSpecularIntensity();
         specularHardness = slopeConfigEntity.getSpecularHardness();
 

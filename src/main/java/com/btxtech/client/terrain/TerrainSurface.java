@@ -95,54 +95,6 @@ public class TerrainSurface {
         return slopeSkeletonEntity;
     }
 
-//    private void setupBeach() {
-//        SlopeSkeletonFactory beachSlopeSkeletonFactory = new SlopeSkeletonFactory(100, new Shape(beachSlopeConfigEntity.getShape()));
-//        SlopeSkeleton slopeSkeleton = beachSlopeSkeletonFactory.sculpt(beachSlopeConfigEntity.getFractalShift(), beachSlopeConfigEntity.getFractalRoughness());
-//
-//        beach = new SlopeWater(water, slopeSkeleton, beachSlopeConfigEntity.getVerticalSpace(), Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)), beachSlopeConfigEntity);
-//        beach.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
-//        beach.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
-//        beach.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
-//        beach.wrap(groundMesh);
-//        groundBeachConnector = new GroundSlopeConnector(groundMesh, beach);
-//        groundBeachConnector.stampOut();
-//    }
-
-//    private SlopeConfigEntity setupPlateauConfigEntity() {
-//        plateauConfigEntity = new SlopeConfigEntity();
-//        plateauConfigEntity.setBumpMapDepth(0.5);
-//        plateauConfigEntity.setFractalRoughness(0);
-//        plateauConfigEntity.setFractalShift(0);
-//        plateauConfigEntity.setSpecularHardness(0.2);
-//        plateauConfigEntity.setSpecularIntensity(1.0);
-//        plateauConfigEntity.setVerticalSpace(10);
-//        // plateauConfigEntity.setShape(Shape.SHAPE_1);
-//        return plateauConfigEntity;
-//    }
-//
-//
-//    private void setupBeachConfigEntity() {
-//        beachSlopeConfigEntity = new SlopeConfigEntity();
-//        beachSlopeConfigEntity.setBumpMapDepth(2);
-//        beachSlopeConfigEntity.setFractalRoughness(0.6);
-//        beachSlopeConfigEntity.setFractalShift(16);
-//        beachSlopeConfigEntity.setSpecularHardness(6);
-//        beachSlopeConfigEntity.setSpecularIntensity(0.1);
-//        beachSlopeConfigEntity.setVerticalSpace(30);
-//        beachSlopeConfigEntity.setSlopeFactorDistance(0.4);
-//        List<SlopeShapeEntity> shape = new ArrayList<>();
-//        shape.add(new SlopeShapeEntity(new Index(400, -15), 1));
-//        shape.add(new SlopeShapeEntity(new Index(350, -13), 1));
-//        shape.add(new SlopeShapeEntity(new Index(300, -11), 1));
-//        shape.add(new SlopeShapeEntity(new Index(250, -9), 1));
-//        shape.add(new SlopeShapeEntity(new Index(200, -7), 1));
-//        shape.add(new SlopeShapeEntity(new Index(150, -5), 1));
-//        shape.add(new SlopeShapeEntity(new Index(100, -3), 1));
-//        shape.add(new SlopeShapeEntity(new Index(50, -1), 0.5f));
-//        shape.add(new SlopeShapeEntity(new Index(0, 0), 0));
-//        beachSlopeConfigEntity.setShape(shape);
-//    }
-
     public void setAllSlopeSkeletonEntities(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
         slopeSkeletonMap.clear();
         for (SlopeSkeletonEntity slopeSkeletonEntity : slopeSkeletonEntities) {
@@ -152,6 +104,12 @@ public class TerrainSurface {
 
     public void setSlopeSkeletonEntity(SlopeSkeletonEntity slopeSkeletonEntity) {
         slopeSkeletonMap.put(slopeSkeletonEntity.getId().intValue(), slopeSkeletonEntity);
+        for (Slope slope : slopeMap.values()) {
+            if(slope.getSlopeSkeletonEntity().equals(slopeSkeletonEntity)) {
+                slope.setSlopeSkeletonEntity(slopeSkeletonEntity);
+            }
+        }
+        logger.severe("setSlopeSkeletonEntity " + slopeSkeletonEntity.getId() + " size: " + slopeSkeletonMap.size() + " SlopeFactorDistance: " + slopeSkeletonEntity.getSlopeFactorDistance());
     }
 
     private void setupGround() {
@@ -184,7 +142,7 @@ public class TerrainSurface {
         groundMesh.setupNorms();
     }
 
-    public void sculpt() {
+    public void fillBuffers() {
         init();
         renderService.fillBuffers();
     }

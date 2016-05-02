@@ -7,7 +7,6 @@ import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeNameId;
 import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.TerrainService;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -61,6 +60,9 @@ public class PanelContainer extends Composite {
     @Inject
     @DataField
     private Button save;
+    @Inject
+    @DataField
+    private Button update;
     @Inject
     @DataField
     private Button sculpt;
@@ -166,12 +168,19 @@ public class PanelContainer extends Composite {
         }).save(getSlopeConfigEntity());
     }
 
+    @EventHandler("update")
+    private void updateButtonClick(ClickEvent event) {
+        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
+        slopeConfigEntity.getSlopeSkeletonEntity().setValues(slopeConfigEntity);
+        terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
+    }
+
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
         SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
         SlopeSkeletonFactory.sculpt(slopeConfigEntity);
         terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
-        terrainSurface.sculpt();
+        terrainSurface.fillBuffers();
     }
 
     private void loadSlopeConfigEntity(SlopeNameId value) {
@@ -204,6 +213,7 @@ public class PanelContainer extends Composite {
         delete.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         save.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         sculpt.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        update.getElement().getStyle().setDisplay(Style.Display.BLOCK);
     }
 
     private void hideEditor() {
@@ -211,6 +221,7 @@ public class PanelContainer extends Composite {
         delete.getElement().getStyle().setDisplay(Style.Display.NONE);
         save.getElement().getStyle().setDisplay(Style.Display.NONE);
         sculpt.getElement().getStyle().setDisplay(Style.Display.NONE);
+        update.getElement().getStyle().setDisplay(Style.Display.NONE);
     }
 
     private void hidePanelContainer() {

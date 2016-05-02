@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
-    private final SlopeSkeletonEntity slopeSkeletonEntity;
+    private SlopeSkeletonEntity slopeSkeletonEntity;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
@@ -183,6 +183,10 @@ public class Slope {
 
     public SlopeSkeletonEntity getSlopeSkeletonEntity() {
         return slopeSkeletonEntity;
+    }
+
+    public void setSlopeSkeletonEntity(SlopeSkeletonEntity slopeSkeletonEntity) {
+        this.slopeSkeletonEntity = slopeSkeletonEntity;
     }
 
     public MeshEntry pick(Vertex pointOnGround) {
