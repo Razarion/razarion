@@ -3,12 +3,9 @@ package com.btxtech.client.renderer.model;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,11 +23,9 @@ public class GroundMesh {
         void onVisit(Index index, Vertex vertex);
     }
 
-    public void reset(int edgeLength, int xSize, int ySize, double z) {
+    public void reset(int edgeLength, int xCount, int yCount, double z) {
         this.edgeLength = edgeLength;
         grid.clear();
-        int xCount = xSize / edgeLength + 1;
-        int yCount = ySize / edgeLength + 1;
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount; y++) {
                 createVertexData(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, z));
@@ -167,9 +162,9 @@ public class GroundMesh {
     }
 
     private void generateTriangle(VertexList vertexList, VertexData a, VertexData b, VertexData c) {
-        vertexList.addTriangleCorner(a.getVertex(), a.getNorm(), a.getTangent(), a.getEdge(), new Vertex(1, 0, 0));
-        vertexList.addTriangleCorner(b.getVertex(), b.getNorm(), b.getTangent(), b.getEdge(), new Vertex(0, 1, 0));
-        vertexList.addTriangleCorner(c.getVertex(), c.getNorm(), c.getTangent(), c.getEdge(), new Vertex(0, 0, 1));
+        vertexList.addTriangleCorner(a.getVertex(), a.getNorm(), a.getTangent(), a.getSplatting(), new Vertex(1, 0, 0));
+        vertexList.addTriangleCorner(b.getVertex(), b.getNorm(), b.getTangent(), b.getSplatting(), new Vertex(0, 1, 0));
+        vertexList.addTriangleCorner(c.getVertex(), c.getNorm(), c.getTangent(), c.getSplatting(), new Vertex(0, 0, 1));
     }
 
     public void iterate(VertexVisitor vertexVisitor) {
@@ -207,10 +202,10 @@ public class GroundMesh {
         DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
         DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
 
-        double splattingBL = vertexDataBL.getEdge() * (1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY());
-        double splattingBR = vertexDataBR.getEdge() * normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY());
-        double splattingTR = vertexDataTR.getEdge() * normalizedInterpolated.getX() * normalizedInterpolated.getY();
-        double splattingTL = vertexDataTL.getEdge() * (1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY();
+        double splattingBL = vertexDataBL.getSplatting() * (1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY());
+        double splattingBR = vertexDataBR.getSplatting() * normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY());
+        double splattingTR = vertexDataTR.getSplatting() * normalizedInterpolated.getX() * normalizedInterpolated.getY();
+        double splattingTL = vertexDataTL.getSplatting() * (1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY();
 
         return splattingBL + splattingBR + splattingTR + splattingTL;
     }

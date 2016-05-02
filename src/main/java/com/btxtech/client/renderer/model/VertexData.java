@@ -10,7 +10,7 @@ public class VertexData {
     private Vertex vertex;
     private Vertex norm;
     private Vertex tangent;
-    private double edge;
+    private double splatting;
 
     public VertexData(Vertex vertex) {
         this.vertex = vertex;
@@ -20,7 +20,7 @@ public class VertexData {
         this.vertex = vertexData.vertex;
         this.norm = vertexData.norm;
         this.tangent = vertexData.tangent;
-        this.edge = vertexData.edge;
+        this.splatting = vertexData.splatting;
     }
 
     public Vertex getVertex() {
@@ -31,12 +31,12 @@ public class VertexData {
         this.vertex = this.vertex.add(0, 0, z);
     }
 
-    public double getEdge() {
-        return edge;
+    public double getSplatting() {
+        return splatting;
     }
 
-    public void setEdge(double edge) {
-        this.edge = edge;
+    public void setSplatting(double splatting) {
+        this.splatting = splatting;
     }
 
     public Vertex getNorm() {
@@ -61,7 +61,7 @@ public class VertexData {
                 "vertex=" + vertex +
                 ", norm=" + norm +
                 ", tangent=" + tangent +
-                ", edge=" + edge +
+                ", splatting=" + splatting +
                 '}';
     }
 }

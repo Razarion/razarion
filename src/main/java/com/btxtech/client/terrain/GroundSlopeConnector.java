@@ -110,7 +110,7 @@ public class GroundSlopeConnector {
         List<VertexDataObject> edges = new ArrayList<>();
         for (Index index : edgeList) {
             VertexData vertexData = groundMesh.getVertexDataSafe(index);
-            edges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent(), vertexData.getEdge()));
+            edges.add(new VertexDataObject(vertexData.getVertex(), vertexData.getNorm(), vertexData.getTangent(), vertexData.getSplatting()));
         }
 
         return edges;

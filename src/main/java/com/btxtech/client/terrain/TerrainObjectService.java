@@ -107,16 +107,15 @@ public class TerrainObjectService {
     }
 
     private void setupTriangles() {
-        int edge = TerrainSurface.MESH_SIZE / EDGE_COUNT;
         for (int x = 0; x < EDGE_COUNT; x++) {
             for (int y = 0; y < EDGE_COUNT; y++) {
                 double angleZ = Math.random() * MathHelper.ONE_RADIANT;
-                double translateX = Math.random() * edge;
-                double translateY = Math.random() * edge;
-                if(!terrainSurface.isFree(x * edge + translateX, y * edge + translateY)) {
+                double translateX = Math.random() * TerrainSurface.MESH_NODES;
+                double translateY = Math.random() * TerrainSurface.MESH_NODES;
+                if(!terrainSurface.isFree(x * TerrainSurface.MESH_NODES + translateX, y * TerrainSurface.MESH_NODES + translateY)) {
                     continue;
                 }
-                Matrix4 matrix4 = Matrix4.createTranslation(x * edge + translateX, y * edge + translateY, 0);
+                Matrix4 matrix4 = Matrix4.createTranslation(x * TerrainSurface.MESH_NODES + translateX, y * TerrainSurface.MESH_NODES + translateY, 0);
                 double scale = Math.random() * 0.5 + 0.4;
                 matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
                 // matrix4 = base.multiply(matrix4);

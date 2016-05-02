@@ -147,7 +147,7 @@ public class RenderService {
         if (lastTime == 0) {
             lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
         } else if (lastTime < System.currentTimeMillis()) {
-            // logger.severe("Frames per seonds: " + (double) framesCount / (double) RENDER_FRAME_COUNT);
+            logger.severe("Frames per seonds: " + (double) framesCount / (double) RENDER_FRAME_COUNT);
             framesCount = 0;
             lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
         }

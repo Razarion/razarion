@@ -86,10 +86,10 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         Vertex direction = lighting.getLightDirection();
         uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
         uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
-        uniform1f("uGroundSplattingDistance", terrainSurface.getSplattingBlur());
-        uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundBumpMap());
-        uniform1f("uGroundSpecularIntensity", terrainSurface.getGroundSpecularIntensity());
-        uniform1f("uGroundSpecularHardness", terrainSurface.getGroundSpecularHardness());
+        uniform1f("uGroundSplattingDistance", terrainSurface.getGroundSkeletonEntity().getSplattingDistance());
+        uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundSkeletonEntity().getBumpMapDepth());
+        uniform1f("uGroundSpecularIntensity", terrainSurface.getGroundSkeletonEntity().getSpecularIntensity());
+        uniform1f("uGroundSpecularHardness", terrainSurface.getGroundSkeletonEntity().getSpecularHardness());
         uniform1i("uGroundTopTextureSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
