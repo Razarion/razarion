@@ -21,8 +21,8 @@ public class SlopeWater extends Slope {
         this.water = water;
     }
 
-    public void wrap(GroundMesh groundMeshSplatting) {
-        super.wrap(groundMeshSplatting);
+    public void wrap(GroundMesh groundMesh) {
+        super.wrap(groundMesh);
 
         Triangulator.calculate(getOuterLine(), new Triangulator.Listener<Vertex>() {
             @Override

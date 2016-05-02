@@ -81,7 +81,9 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
         try {
             Gson gson = new Gson();
             String json = gson.toJson(slopeConfigEntity);
+            System.out.println("--------------------------------------------------------");
             System.out.println(json);
+            System.out.println("--------------------------------------------------------");
             return entityManager.merge(slopeConfigEntity);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);

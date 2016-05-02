@@ -47,7 +47,7 @@ public class TerrainSurface {
     private double groundSpecularIntensity = 0.255;
     private GroundMesh groundMesh = new GroundMesh();
     private SlopeWater beach;
-    private Water water = new Water(-7, -11); // Init here due to the editor
+    private Water water = new Water(-7, -20); // Init here due to the editor
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated

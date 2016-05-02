@@ -63,7 +63,7 @@ public class SlopeSkeletonEntity {
 
     }
 
-    public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMeshSplatting) {
+    public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMesh) {
         SlopeSkeletonEntry[][] nodes = new SlopeSkeletonEntry[segmentCount][rowCount];
         for (SlopeSkeletonEntry slopeSkeletonEntry : slopeSkeletonEntries) {
             nodes[slopeSkeletonEntry.getColumnIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry;
@@ -77,7 +77,7 @@ public class SlopeSkeletonEntity {
                 for (int row = 0; row < rowCount; row++) {
                     SlopeSkeletonEntry slopeSkeletonEntry = nodes[templateSegment][row];
                     Vertex transformedPoint = transformationMatrix.multiply(slopeSkeletonEntry.getPosition(), 1.0);
-                    float splatting = setupSplatting(transformedPoint, slopeSkeletonEntry.getSlopeFactor(), groundMeshSplatting);
+                    float splatting = setupSplatting(transformedPoint, slopeSkeletonEntry.getSlopeFactor(), groundMesh);
                     mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(slopeSkeletonEntry), splatting);
                     if (row == 0) {
                         outerLineMeshIndex.add(new Index(meshColumn, row));

@@ -1,5 +1,6 @@
 package com.btxtech.client.terrain.slope;
 
+import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -32,53 +33,49 @@ public class Mesh {
         nodes[x][y] = new MeshEntry(vertex, slopeFactor, splatting);
     }
 
-    public void setupValues() {
-        setupNormAndTangent();
+    public void setupValues(GroundMesh groundMesh) {
+        setupNormAndTangent(groundMesh);
         setupResultList();
     }
 
-    private void setupNormAndTangent() {
+    private void setupNormAndTangent(GroundMesh groundMesh) {
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount; y++) {
-                Vertex center = getVertexSave(x, y);
-                Vertex top = getVertexSave(x, y + 1);
-                Vertex right = getVertexSave(x + 1, y);
-                Vertex bottom = getVertexSave(x, y - 1);
-                Vertex left = getVertexSave(x - 1, y);
-                Collection<Vertex> norms = new ArrayList<>();
-                appendNorm(norms, center, right, top);
-                appendNorm(norms, center, bottom, right);
-                appendNorm(norms, center, left, bottom);
-                appendNorm(norms, center, top, left);
-                Vertex norm = sum(norms);
-                double normMagnitude = norm.magnitude();
-                if (normMagnitude == 0.0) {
-                    if (y == 0) {
-                        nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground. Only in corners.
-                    } else if (y == yCount - 1) {
-                        nodes[x][y].setNorm(new Vertex(0, 0, 1)); // TODO take norm from Ground. Only in corners.
-                    } else {
-                        nodes[x][y].setNorm(getNorm(x - 1, y));
-                    }
+                if (y == 0 || y == yCount - 1) {
+                    // y == 0: Outer
+                    // y == yCount - 1: Inner
+                    Vertex center = getVertexSave(x, y);
+                    nodes[x][y].setNorm(groundMesh.getInterpolatedNorm(center.toXY()));
+                    nodes[x][y].setTangent(groundMesh.getInterpolatedTangent(center.toXY()));
+                    System.out.println(y + " tangent: " + groundMesh.getInterpolatedTangent(center.toXY()));
                 } else {
+                    Vertex center = getVertexSave(x, y);
+                    Vertex top = getVertexSave(x, y + 1);
+                    Vertex right = getVertexSave(x + 1, y);
+                    Vertex bottom = getVertexSave(x, y - 1);
+                    Vertex left = getVertexSave(x - 1, y);
+                    Collection<Vertex> norms = new ArrayList<>();
+                    appendNorm(norms, center, right, top);
+                    appendNorm(norms, center, bottom, right);
+                    appendNorm(norms, center, left, bottom);
+                    appendNorm(norms, center, top, left);
+                    Vertex norm = sum(norms);
+                    double normMagnitude = norm.magnitude();
+                    if (normMagnitude == 0.0) {
+                        throw new IllegalArgumentException("Norm magnitude is zero " + x + ":" + y + " center: " + center);
+                    }
                     nodes[x][y].setNorm(norm.divide(normMagnitude));
-                }
 
-                Vertex tangent = setupTangent(center, left, right);
-                double tangentMagnitude = tangent.magnitude();
-                if (tangentMagnitude == 0.0) {
-                    if (y == 0) {
-                        nodes[x][y].setTangent(new Vertex(1, 0, 0)); // TODO take tangent from Ground. Only in corners.
-                    } else if (y == yCount - 1) {
-                        nodes[x][y].setTangent(new Vertex(1, 0, 0)); // TODO take tangent from Ground. Only in corners.
-                    } else {
-                        nodes[x][y].setTangent(getTangent(x - 1, y));
+                    Vertex tangent = setupTangent(center, left, right);
+                    double tangentMagnitude = tangent.magnitude();
+                    if (tangentMagnitude == 0.0) {
+                        throw new IllegalArgumentException("Tangent magnitude is zero " + x + ":" + y + " center: " + center);
                     }
-                } else {
                     nodes[x][y].setTangent(tangent.divide(tangentMagnitude));
                 }
             }
         }
+
     }
 
     private void setupResultList() {
@@ -173,7 +170,7 @@ public class Mesh {
         }
         Vertex tangent = meshEntry.getTangent();
         if (tangent == null) {
-            throw new IllegalArgumentException("No tanget for: x=" + x + " y=" + y);
+            throw new IllegalArgumentException("No tangent for: x=" + x + " y=" + y);
         }
         return tangent;
     }

@@ -20,7 +20,6 @@ public class GroundMesh {
     private int maxY;
     private Map<Index, VertexData> grid = new HashMap<>();
     private int edgeLength;
-
     // private Logger logger = Logger.getLogger(Math.class.getName());
 
     public interface VertexVisitor {
@@ -214,6 +213,62 @@ public class GroundMesh {
         double splattingTL = vertexDataTL.getEdge() * (1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY();
 
         return splattingBL + splattingBR + splattingTR + splattingTL;
+    }
+
+    /**
+     * Bilinear interpolation of norm
+     * <p/>
+     * Only works if the grid is Unit Square
+     * https://en.wikipedia.org/wiki/Bilinear_interpolation
+     *
+     * @param absoluteXY input
+     * @return interpolated Norm
+     */
+    public Vertex getInterpolatedNorm(DecimalPosition absoluteXY) {
+        Index bottomLeftIndex = absoluteToIndex(absoluteXY);
+        VertexData vertexDataBL = getVertexDataSafe(bottomLeftIndex);
+        VertexData vertexDataBR = getVertexDataSafe(bottomLeftIndex.add(1, 0));
+        VertexData vertexDataTR = getVertexDataSafe(bottomLeftIndex.add(1, 1));
+        VertexData vertexDataTL = getVertexDataSafe(bottomLeftIndex.add(0, 1));
+
+        DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
+        DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
+        DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
+
+        Vertex normBL = vertexDataBL.getNorm().multiply((1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY()));
+        Vertex normBR = vertexDataBR.getNorm().multiply(normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY()));
+        Vertex normTR = vertexDataTR.getNorm().multiply(normalizedInterpolated.getX() * normalizedInterpolated.getY());
+        Vertex normTL = vertexDataTL.getNorm().multiply((1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY());
+
+        return normBL.add(normBR).add(normTR).add(normTL);
+    }
+
+    /**
+     * Bilinear interpolation of tangent
+     * <p/>
+     * Only works if the grid is Unit Square
+     * https://en.wikipedia.org/wiki/Bilinear_interpolation
+     *
+     * @param absoluteXY input
+     * @return interpolated tangent
+     */
+    public Vertex getInterpolatedTangent(DecimalPosition absoluteXY) {
+        Index bottomLeftIndex = absoluteToIndex(absoluteXY);
+        VertexData vertexDataBL = getVertexDataSafe(bottomLeftIndex);
+        VertexData vertexDataBR = getVertexDataSafe(bottomLeftIndex.add(1, 0));
+        VertexData vertexDataTR = getVertexDataSafe(bottomLeftIndex.add(1, 1));
+        VertexData vertexDataTL = getVertexDataSafe(bottomLeftIndex.add(0, 1));
+
+        DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
+        DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
+        DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
+
+        Vertex tangentBL = vertexDataBL.getTangent().multiply((1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY()));
+        Vertex tangentBR = vertexDataBR.getTangent().multiply(normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY()));
+        Vertex tangentTR = vertexDataTR.getTangent().multiply(normalizedInterpolated.getX() * normalizedInterpolated.getY());
+        Vertex tangentTL = vertexDataTL.getTangent().multiply((1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY());
+
+        return tangentBL.add(tangentBR).add(tangentTR).add(tangentTL);
     }
 
     private Index absoluteToIndex(DecimalPosition absoluteXY) {

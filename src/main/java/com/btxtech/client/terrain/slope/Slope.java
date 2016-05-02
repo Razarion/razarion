@@ -81,12 +81,12 @@ public class Slope {
         }
     }
 
-    public void wrap(GroundMesh groundMeshSplatting) {
+    public void wrap(GroundMesh groundMesh) {
         mesh = new Mesh(xVertices, slopeSkeletonEntity.getRowCount());
         innerLineMeshIndex = new ArrayList<>();
         outerLineMeshIndex = new ArrayList<>();
-        slopeSkeletonEntity.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex, groundMeshSplatting);
-        mesh.setupValues();
+        slopeSkeletonEntity.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex, groundMesh);
+        mesh.setupValues(groundMesh);
         // Setup helper lists
         innerLine = new ArrayList<>();
         innerPolygon = correctAndCreateEdge(innerLineMeshIndex, innerLine);
