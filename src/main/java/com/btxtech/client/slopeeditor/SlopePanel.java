@@ -20,6 +20,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -97,10 +98,17 @@ public class SlopePanel extends Composite implements SelectedCornerListener {
     @Inject
     @DataField
     private DoubleBox selectedSlopeFactor;
+    @Inject
+    @DataField
+    private Button deleteSelected;
 
-    public void init(SlopeConfigEntity slopeConfigEntity) {
+    public void init(SlopeConfigEntity slopeConfigEntity, Double zoom) {
         plateauConfigEntityDataBinder.setModel(slopeConfigEntity);
-        shapeEditor.init(svgElement, slopeConfigEntity, this);
+        shapeEditor.init(svgElement, slopeConfigEntity, this, zoom);
+    }
+
+    public double getZoom() {
+        return shapeEditor.getScale();
     }
 
     @EventHandler("zoomIn")
@@ -151,6 +159,11 @@ public class SlopePanel extends Composite implements SelectedCornerListener {
     @EventHandler("selectedSlopeFactor")
     public void selectedSlopeFactorChanged(ChangeEvent e) {
         shapeEditor.setSlopeFactorSelected(selectedSlopeFactor.getValue());
+    }
+
+    @EventHandler("deleteSelected")
+    public void deleteSelectedButtonClick(ClickEvent e) {
+        shapeEditor.deleteSelectedCorner();
     }
 
 }

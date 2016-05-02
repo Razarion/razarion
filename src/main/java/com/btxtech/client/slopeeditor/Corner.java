@@ -3,12 +3,15 @@ package com.btxtech.client.slopeeditor;
 import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.game.jsre.client.common.Index;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.MouseDownEvent;
 import elemental.client.Browser;
 import elemental.events.Event;
 import elemental.events.EventListener;
 import elemental.events.EventRemover;
 import elemental.events.MouseEvent;
 import elemental.svg.SVGCircleElement;
+
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -24,6 +27,7 @@ public class Corner {
     private EventRemover onMouseMoveEventRemover;
     private EventRemover onMouseUpEventRemover;
     private Model model;
+    private Index mouseOffset;
 
     public Corner(SlopeShapeEntity slopeShapeEntity, Model model) {
         this.slopeShapeEntity = slopeShapeEntity;
@@ -49,10 +53,15 @@ public class Corner {
     }
 
     private void move(MouseEvent event) {
-        model.cornerMoved(model.convertMouseToSvg(event), this);
+        Index mousePosition = model.convertMouseToSvg(event);
+        if(mouseOffset == null) {
+            mouseOffset = mousePosition.sub(slopeShapeEntity.getPosition());
+        }
+        model.cornerMoved(mousePosition.sub(mouseOffset), this);
     }
 
     private void select() {
+        mouseOffset = null;
         onMouseMoveEventRemover = Browser.getWindow().addEventListener("mousemove", new EventListener() {
             @Override
             public void handleEvent(Event event) {

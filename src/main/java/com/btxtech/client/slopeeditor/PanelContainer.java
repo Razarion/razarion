@@ -193,8 +193,13 @@ public class PanelContainer extends Composite {
     }
 
     private void initEditor(SlopeConfigEntity slopeConfigEntity) {
+        Double zoom = null;
+        if(content.getWidget() != null) {
+            zoom = ((SlopePanel)content.getWidget()).getZoom();
+        }
+
         SlopePanel slopePanel = plateauPanelInstance.get();
-        slopePanel.init(slopeConfigEntity);
+        slopePanel.init(slopeConfigEntity, zoom);
         content.setWidget(slopePanel);
         delete.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         save.getElement().getStyle().setDisplay(Style.Display.BLOCK);

@@ -38,7 +38,7 @@ public class ShapeEditor implements Model {
     private SVGLineElement helperLine;
     private Corner selected;
 
-    protected void init(Element svgElement, SlopeConfigEntity slopeConfigEntity, SelectedCornerListener selectedCornerListener) {
+    protected void init(Element svgElement, SlopeConfigEntity slopeConfigEntity, SelectedCornerListener selectedCornerListener, Double scale) {
         this.slopeConfigEntity = slopeConfigEntity;
         this.selectedCornerListener = selectedCornerListener;
         this.svg = (SVGSVGElement) svgElement;
@@ -49,7 +49,10 @@ public class ShapeEditor implements Model {
         translateTransform.setTranslate(0, HEIGHT / 2);
         group.getAnimatedTransform().getBaseVal().appendItem(translateTransform);
         scaleTransform = svg.createSVGTransform();
-        scaleTransform.setScale(scale, -scale);
+        if(scale != null) {
+            this.scale = scale.floatValue();
+        }
+        scaleTransform.setScale(this.scale, -this.scale);
         group.getAnimatedTransform().getBaseVal().appendItem(scaleTransform);
         drawEnvironment();
         svg.addEventListener("mousedown", new EventListener() {
@@ -141,6 +144,13 @@ public class ShapeEditor implements Model {
         setup(slopeConfigEntity.getShape());
     }
 
+    public void deleteSelectedCorner() {
+        SlopeShapeEntity slopeShapeEntity = selected.getSlopeShapeEntity();
+        selectionChanged(null);
+        slopeConfigEntity.getShape().remove(slopeShapeEntity);
+        setup(slopeConfigEntity.getShape());
+    }
+
     @Override
     public void cornerMoved(Index position, Corner corner) {
         int cornerIndex = corners.indexOf(corner);
@@ -173,6 +183,10 @@ public class ShapeEditor implements Model {
         }
         scale -= 0.1;
         scaleTransform.setScale(scale, -scale);
+    }
+
+    public float getScale() {
+        return scale;
     }
 
     public void setHelperLine(Double value) {
