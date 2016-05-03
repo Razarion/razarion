@@ -1,6 +1,7 @@
 package com.btxtech.client.menu;
 
-import com.btxtech.client.slopeeditor.PanelContainer;
+import com.btxtech.client.LeftSideBar;
+import com.btxtech.client.slopeeditor.SlopeConfigPanelContainer;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineHyperlink;
@@ -8,8 +9,8 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  */
 @Templated("Menu.html#menu-template")
 public class Menu extends Composite {
-    private Logger logger = Logger.getLogger(Menu.class.getName());
+    // private Logger logger = Logger.getLogger(Menu.class.getName());
     @Inject
     @DataField("menu-debug")
     private DebugMenu debugMenu;
@@ -39,15 +40,14 @@ public class Menu extends Composite {
     @Inject
     @DataField("menu-unit")
     private UnitMenu unitMenu;
-    private PanelContainer panelContainer;
-
-    public void setEditorPanelContainer(PanelContainer panelContainer) {
-        this.panelContainer = panelContainer;
-    }
+    @Inject
+    private LeftSideBar leftSideBar;
+    @Inject
+    private Instance<SlopeConfigPanelContainer> panelContainerInstance;
 
     @EventHandler("menu-slope")
     private void slopeMenuClick(ClickEvent event) {
-        panelContainer.showPanelContainer();
+        leftSideBar.show(panelContainerInstance.get());
     }
 
 }

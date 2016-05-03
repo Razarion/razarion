@@ -36,15 +36,13 @@ import java.util.logging.Logger;
  * Created by Beat
  * 22.11.2015.
  */
-@Templated("PanelContainer.html#editorPanelContainer")
-public class PanelContainer extends Composite {
-    private Logger logger = Logger.getLogger(PanelContainer.class.getName());
-    @Inject
-    private TerrainSurface terrainSurface;
+@Templated("SlopeConfigPanelContainer.html#editorPanelContainer")
+public class SlopeConfigPanelContainer extends Composite {
+    private Logger logger = Logger.getLogger(SlopeConfigPanelContainer.class.getName());
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
-    private Instance<SlopePanel> plateauPanelInstance;
+    private Instance<SlopeConfigPanel> plateauPanelInstance;
     @Inject
     @DataField
     private SimplePanel content;
@@ -62,33 +60,17 @@ public class PanelContainer extends Composite {
     private Button save;
     @Inject
     @DataField
-    private Button update;
-    @Inject
-    @DataField
-    private Button sculpt;
-    @Inject
-    @DataField
     private Label loadingLabel;
-    @Inject
-    @DataField
-    private Button closeButton;
 
     @PostConstruct
     public void init() {
+        updateSlopeSelection();
         slopeSelection.addValueChangeHandler(new ValueChangeHandler<SlopeNameId>() {
             @Override
             public void onValueChange(ValueChangeEvent<SlopeNameId> event) {
                 loadSlopeConfigEntity(slopeSelection.getValue());
             }
         });
-    }
-
-    public void showPanelContainer() {
-        content.clear();
-        closeButton.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        newSlope.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        slopeSelection.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        updateSlopeSelection();
     }
 
     private void updateSlopeSelection() {
@@ -106,7 +88,7 @@ public class PanelContainer extends Composite {
         }, new ErrorCallback<Object>() {
             @Override
             public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "save failed: " + message, throwable);
+                logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
                 return false;
             }
         }).getSlopeNameIds();
@@ -125,11 +107,6 @@ public class PanelContainer extends Composite {
         slopeSelection.setValue(null);
     }
 
-    @EventHandler("closeButton")
-    private void closeButtonClick(ClickEvent event) {
-        hidePanelContainer();
-    }
-
     @EventHandler("delete")
     private void deleteButtonClick(ClickEvent event) {
         // TODO are you sure dialog
@@ -144,7 +121,7 @@ public class PanelContainer extends Composite {
             }, new ErrorCallback<Object>() {
                 @Override
                 public boolean error(Object message, Throwable throwable) {
-                    logger.log(Level.SEVERE, "save failed: " + message, throwable);
+                    logger.log(Level.SEVERE, "delete failed: " + message, throwable);
                     return false;
                 }
             }).delete(slopeConfigEntity);
@@ -168,21 +145,6 @@ public class PanelContainer extends Composite {
         }).save(getSlopeConfigEntity());
     }
 
-    @EventHandler("update")
-    private void updateButtonClick(ClickEvent event) {
-        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
-        slopeConfigEntity.getSlopeSkeletonEntity().setValues(slopeConfigEntity);
-        terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
-    }
-
-    @EventHandler("sculpt")
-    private void sculptButtonClick(ClickEvent event) {
-        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
-        SlopeSkeletonFactory.sculpt(slopeConfigEntity);
-        terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
-        terrainSurface.fillBuffers();
-    }
-
     private void loadSlopeConfigEntity(SlopeNameId value) {
         loadingLabel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         terrainEditorService.call(new RemoteCallback<SlopeConfigEntity>() {
@@ -194,7 +156,7 @@ public class PanelContainer extends Composite {
         }, new ErrorCallback<Object>() {
             @Override
             public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "save failed: " + message, throwable);
+                logger.log(Level.SEVERE, "load failed: " + message, throwable);
                 return false;
             }
         }).load(value.getId());
@@ -204,35 +166,23 @@ public class PanelContainer extends Composite {
     private void initEditor(SlopeConfigEntity slopeConfigEntity) {
         Double zoom = null;
         if(content.getWidget() != null) {
-            zoom = ((SlopePanel)content.getWidget()).getZoom();
+            zoom = ((SlopeConfigPanel)content.getWidget()).getZoom();
         }
 
-        SlopePanel slopePanel = plateauPanelInstance.get();
-        slopePanel.init(slopeConfigEntity, zoom);
-        content.setWidget(slopePanel);
+        SlopeConfigPanel slopeConfigPanel = plateauPanelInstance.get();
+        slopeConfigPanel.init(slopeConfigEntity, zoom);
+        content.setWidget(slopeConfigPanel);
         delete.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         save.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        sculpt.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        update.getElement().getStyle().setDisplay(Style.Display.BLOCK);
     }
 
     private void hideEditor() {
         content.clear();
         delete.getElement().getStyle().setDisplay(Style.Display.NONE);
         save.getElement().getStyle().setDisplay(Style.Display.NONE);
-        sculpt.getElement().getStyle().setDisplay(Style.Display.NONE);
-        update.getElement().getStyle().setDisplay(Style.Display.NONE);
-    }
-
-    private void hidePanelContainer() {
-        hideEditor();
-        closeButton.getElement().getStyle().setDisplay(Style.Display.NONE);
-        slopeSelection.getElement().getStyle().setDisplay(Style.Display.NONE);
-        newSlope.getElement().getStyle().setDisplay(Style.Display.NONE);
-        loadingLabel.getElement().getStyle().setDisplay(Style.Display.NONE);
     }
 
     private SlopeConfigEntity getSlopeConfigEntity() {
-        return ((SlopePanel) content.getWidget()).getSlopeConfigEntity();
+        return ((SlopeConfigPanel) content.getWidget()).getSlopeConfigEntity();
     }
 }

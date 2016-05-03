@@ -1,5 +1,7 @@
 package com.btxtech.client.slopeeditor;
 
+import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.google.gwt.dom.client.Element;
@@ -26,9 +28,11 @@ import java.util.logging.Logger;
  * Created by Beat
  * 06.11.2015.
  */
-@Templated("SlopePanel.html#slope")
-public class SlopePanel extends Composite implements SelectedCornerListener {
+@Templated("SlopeConfigPanel.html#slope")
+public class SlopeConfigPanel extends Composite implements SelectedCornerListener {
     // private Logger logger = Logger.getLogger(SlopePanel.class.getName());
+    @Inject
+    private TerrainSurface terrainSurface;
     @Inject
     @AutoBound
     private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder;
@@ -101,6 +105,13 @@ public class SlopePanel extends Composite implements SelectedCornerListener {
     @Inject
     @DataField
     private Button deleteSelected;
+    @Inject
+    @DataField
+    private Button sculpt;
+    @Inject
+    @DataField
+    private Button update;
+
 
     public void init(SlopeConfigEntity slopeConfigEntity, Double zoom) {
         plateauConfigEntityDataBinder.setModel(slopeConfigEntity);
@@ -166,4 +177,18 @@ public class SlopePanel extends Composite implements SelectedCornerListener {
         shapeEditor.deleteSelectedCorner();
     }
 
+    @EventHandler("update")
+    private void updateButtonClick(ClickEvent event) {
+        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
+        slopeConfigEntity.getSlopeSkeletonEntity().setValues(slopeConfigEntity);
+        terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
+    }
+
+    @EventHandler("sculpt")
+    private void sculptButtonClick(ClickEvent event) {
+        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
+        SlopeSkeletonFactory.sculpt(slopeConfigEntity);
+        terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
+        terrainSurface.fillBuffers();
+    }
 }
