@@ -1,6 +1,7 @@
 package com.btxtech.server.terrain;
 
 import com.btxtech.server.ExceptionHandler;
+import com.btxtech.shared.GroundSkeletonEntity;
 import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.shared.TerrainService;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -29,13 +30,29 @@ public class TerrainServiceImpl implements TerrainService {
 
     @Override
     @Transactional
-    public Collection<SlopeSkeletonEntity> loadSlopeConfigEntities() {
+    public Collection<SlopeSkeletonEntity> loadSlopeSkeleton() {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<SlopeSkeletonEntity> userQuery = criteriaBuilder.createQuery(SlopeSkeletonEntity.class);
             Root<SlopeSkeletonEntity> root = userQuery.from(SlopeSkeletonEntity.class);
             CriteriaQuery<SlopeSkeletonEntity> userSelect = userQuery.select(root);
             return entityManager.createQuery(userSelect).getResultList();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public GroundSkeletonEntity loadGroundSkeleton() {
+        try {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            // Query for total row count in invitations
+            CriteriaQuery<GroundSkeletonEntity> userQuery = criteriaBuilder.createQuery(GroundSkeletonEntity.class);
+            Root<GroundSkeletonEntity> from = userQuery.from(GroundSkeletonEntity.class);
+            CriteriaQuery<GroundSkeletonEntity> userSelect = userQuery.select(from);
+            return entityManager.createQuery(userSelect).getSingleResult();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

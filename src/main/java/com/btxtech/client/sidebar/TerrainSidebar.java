@@ -1,8 +1,10 @@
 package com.btxtech.client.sidebar;
 
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.terrain.GroundSkeletonFactory;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.GroundConfigEntity;
+import com.btxtech.shared.GroundSkeletonEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -97,6 +99,9 @@ public class TerrainSidebar extends Composite {
     private Button sculptButton;
     @Inject
     @DataField
+    private Button updateButton;
+    @Inject
+    @DataField
     private Button saveButton;
 
     @PostConstruct
@@ -115,8 +120,19 @@ public class TerrainSidebar extends Composite {
         }).loadGroundConfig();
     }
 
+    @EventHandler("updateButton")
+    private void updateButtonClick(ClickEvent event) {
+        GroundConfigEntity groundConfigEntity = groundConfigEntityDataBinder.getModel();
+        GroundSkeletonEntity groundSkeletonEntity = groundConfigEntity.getGroundSkeletonEntity();
+        groundSkeletonEntity.setValues(groundConfigEntity);
+        terrainSurface.setGroundSkeletonEntity(groundSkeletonEntity);
+    }
+
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
+        GroundConfigEntity groundConfigEntity = groundConfigEntityDataBinder.getModel();
+        GroundSkeletonFactory.sculpt(groundConfigEntity);
+        terrainSurface.setGroundSkeletonEntity(groundConfigEntity.getGroundSkeletonEntity());
         terrainSurface.fillBuffers();
     }
 

@@ -11,5 +11,7 @@ import java.util.Collection;
  */
 @Remote
 public interface TerrainService {
-    Collection<SlopeSkeletonEntity> loadSlopeConfigEntities();
+    Collection<SlopeSkeletonEntity> loadSlopeSkeleton();
+
+    GroundSkeletonEntity loadGroundSkeleton();
 }

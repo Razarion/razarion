@@ -8,10 +8,7 @@ import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.client.terrain.slope.SlopeWater;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.shared.GroundConfigEntity;
-import com.btxtech.shared.GroundHeightEntry;
 import com.btxtech.shared.GroundSkeletonEntity;
-import com.btxtech.shared.GroundSplattingEntry;
 import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Ray3d;
@@ -19,13 +16,11 @@ import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -52,22 +47,7 @@ public class TerrainSurface {
     private final double lowestPointInView = -9; // Should be calculated
     private Map<Integer, SlopeSkeletonEntity> slopeSkeletonMap = new HashMap<>();
     private Map<Integer, Slope> slopeMap = new HashMap<>();
-    private GroundConfigEntity groundConfigEntity;
     private GroundSkeletonEntity groundSkeletonEntity;
-
-    public TerrainSurface() {
-        groundConfigEntity = new GroundConfigEntity();
-        groundConfigEntity.setSplattingDistance(0.5);
-        groundConfigEntity.setBumpMapDepth(2);
-        groundConfigEntity.setSpecularHardness(5);
-        groundConfigEntity.setSpecularIntensity(0.25);
-        groundConfigEntity.setHeightXCount(20);
-        groundConfigEntity.setHeightYCount(20);
-        groundConfigEntity.setSplattingXCount(30);
-        groundConfigEntity.setSplattingYCount(30);
-        groundConfigEntity.setSplattingFractalMin(0);
-        groundConfigEntity.setSplattingFractalMax(1);
-    }
 
     public void init() {
         logger.severe("Start setup surface");
@@ -128,30 +108,8 @@ public class TerrainSurface {
     }
 
     private void setupGround(int xCount, int yCount) {
-        groundSkeletonEntity = new GroundSkeletonEntity();
-        FractalField heightField = FractalField.createSaveFractalField(groundConfigEntity.getHeightXCount(), groundConfigEntity.getHeightYCount(), groundConfigEntity.getHeightFractalRoughness(), -groundConfigEntity.getHeightFractalShift() / 2.0, groundConfigEntity.getHeightFractalShift());
-        List<GroundHeightEntry> groundHeightEntries = new ArrayList<>();
-        for (int x = 0; x < groundConfigEntity.getHeightXCount(); x++) {
-            for (int y = 0; y < groundConfigEntity.getHeightYCount(); y++) {
-                groundHeightEntries.add(new GroundHeightEntry(x, y, heightField.getValue(x, y)));
-            }
-        }
-        FractalField splattingField = FractalField.createSaveFractalField(groundConfigEntity.getSplattingXCount(), groundConfigEntity.getSplattingYCount(), groundConfigEntity.getSplattingFractalRoughness(), groundConfigEntity.getSplattingFractalMin(), groundConfigEntity.getSplattingFractalMax());
-        List<GroundSplattingEntry> groundSplattingEntries = new ArrayList<>();
-        for (int x = 0; x < groundConfigEntity.getSplattingXCount(); x++) {
-            for (int y = 0; y < groundConfigEntity.getSplattingYCount(); y++) {
-                groundSplattingEntries.add(new GroundSplattingEntry(x, y, splattingField.getValue(x, y)));
-            }
-        }
-        groundSkeletonEntity.setValues(groundSplattingEntries, groundHeightEntries, groundConfigEntity);
-        groundConfigEntity.setGroundSkeletonEntity(groundSkeletonEntity);
-        ///////////////
         groundMesh = groundSkeletonEntity.generateGroundMesh(xCount, yCount);
         groundMesh.setupNorms();
-    }
-
-    public GroundConfigEntity getGroundConfigEntity() {
-        return groundConfigEntity;
     }
 
     public void fillBuffers() {
@@ -213,6 +171,10 @@ public class TerrainSurface {
 
     public GroundSkeletonEntity getGroundSkeletonEntity() {
         return groundSkeletonEntity;
+    }
+
+    public void setGroundSkeletonEntity(GroundSkeletonEntity groundSkeletonEntity) {
+        this.groundSkeletonEntity = groundSkeletonEntity;
     }
 
     public void handlePickRay(Ray3d worldPickRay) {

@@ -26,6 +26,7 @@ public class RenderService {
     public static final int DEPTH_BUFFER_SIZE = 1024;
     public static final int RENDER_FRAME_COUNT = 1;
     public static final int RENDER_FRAME_COUNT_MILLIS = RENDER_FRAME_COUNT * 1000;
+    private Logger logger = Logger.getLogger(RenderService.class.getName());
     @Inject
     private Instance<Renderer> renderInstance;
     @Inject
@@ -41,7 +42,6 @@ public class RenderService {
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
-    private Logger logger = Logger.getLogger(RenderService.class.getName());
     private boolean showMonitor = false;
     private boolean showNorm = false;
     private boolean showDeep = false;
@@ -147,7 +147,7 @@ public class RenderService {
         if (lastTime == 0) {
             lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
         } else if (lastTime < System.currentTimeMillis()) {
-            logger.severe("Frames per seonds: " + (double) framesCount / (double) RENDER_FRAME_COUNT);
+            // logger.severe("Frames per seonds: " + (double) framesCount / (double) RENDER_FRAME_COUNT);
             framesCount = 0;
             lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
         }
