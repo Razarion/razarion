@@ -1,10 +1,23 @@
 package com.btxtech.shared;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Created by Beat
  * 02.05.2016.
  */
+@Portable
+@Entity
+@Table(name = "GROUND_SPLATTING_ENTRY")
 public class GroundSplattingEntry {
+    @Id
+    @GeneratedValue
+    private Long id;
     private int xIndex;
     private int yIndex;
     private double splatting;
@@ -43,5 +56,23 @@ public class GroundSplattingEntry {
 
     public void setSplatting(double splatting) {
         this.splatting = splatting;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        GroundSplattingEntry that = (GroundSplattingEntry) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : System.identityHashCode(this);
     }
 }

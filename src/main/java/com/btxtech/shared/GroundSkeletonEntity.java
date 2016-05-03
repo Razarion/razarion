@@ -4,7 +4,15 @@ import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -12,18 +20,32 @@ import java.util.logging.Logger;
  * Created by Beat
  * 02.05.2016.
  */
+@Portable
+@Entity
+@Table(name = "GROUND_SKELETON")
 public class GroundSkeletonEntity {
     // private Logger logger = Logger.getLogger(GroundSkeletonEntity.class.getName());
+    @Id
+    @GeneratedValue
+    private Long id;
     private double splattingDistance;
     private double bumpMapDepth;
     private double specularHardness;
     private double specularIntensity;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     private List<GroundSplattingEntry> splattings;
     private int splattingXCount;
     private int splattingYCount;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     private List<GroundHeightEntry> heights;
     private int heightXCount;
     private int heightYCount;
+
+    public Long getId() {
+        return id;
+    }
 
     public void setValues(GroundConfigEntity groundConfigEntity) {
         splattingDistance = groundConfigEntity.getSplattingDistance();
@@ -81,5 +103,23 @@ public class GroundSkeletonEntity {
 
     public double getSpecularIntensity() {
         return specularIntensity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        GroundSkeletonEntity that = (GroundSkeletonEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : System.identityHashCode(this);
     }
 }

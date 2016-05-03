@@ -1,10 +1,5 @@
 package com.btxtech.shared.primitives;
 
-import com.btxtech.client.terrain.TextureCoordinateCalculator;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.TerrainMeshVertex;
-
 import java.util.List;
 import java.util.logging.Logger;
 

@@ -1,4 +1,4 @@
-package com.btxtech.client.slopeeditor;
+package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;

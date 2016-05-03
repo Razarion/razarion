@@ -12,9 +12,13 @@ import java.util.Collection;
 public interface TerrainEditorService {
     Collection<SlopeNameId> getSlopeNameIds();
 
-    SlopeConfigEntity load(int id);
+    SlopeConfigEntity loadSlopeConfig(int id);
 
-    SlopeConfigEntity save(SlopeConfigEntity slopeConfigEntity);
+    SlopeConfigEntity saveSlopeConfig(SlopeConfigEntity slopeConfigEntity);
 
-    void delete(SlopeConfigEntity slopeConfigEntity);
+    void deleteSlopeConfig(SlopeConfigEntity slopeConfigEntity);
+
+    GroundConfigEntity loadGroundConfig();
+
+    GroundConfigEntity saveGroundConfig(GroundConfigEntity slopeConfigEntity);
 }

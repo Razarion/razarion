@@ -1,7 +1,5 @@
-package com.btxtech.client.slopeeditor;
+package com.btxtech.client.sidebar.slopeeditor;
 
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeNameId;
@@ -121,10 +119,10 @@ public class SlopeConfigPanelContainer extends Composite {
             }, new ErrorCallback<Object>() {
                 @Override
                 public boolean error(Object message, Throwable throwable) {
-                    logger.log(Level.SEVERE, "delete failed: " + message, throwable);
+                    logger.log(Level.SEVERE, "deleteSlopeConfig failed: " + message, throwable);
                     return false;
                 }
-            }).delete(slopeConfigEntity);
+            }).deleteSlopeConfig(slopeConfigEntity);
         }
     }
 
@@ -139,10 +137,10 @@ public class SlopeConfigPanelContainer extends Composite {
         }, new ErrorCallback<Object>() {
             @Override
             public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "save failed: " + message, throwable);
+                logger.log(Level.SEVERE, "saveSlopeConfig failed: " + message, throwable);
                 return false;
             }
-        }).save(getSlopeConfigEntity());
+        }).saveSlopeConfig(getSlopeConfigEntity());
     }
 
     private void loadSlopeConfigEntity(SlopeNameId value) {
@@ -156,10 +154,10 @@ public class SlopeConfigPanelContainer extends Composite {
         }, new ErrorCallback<Object>() {
             @Override
             public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "load failed: " + message, throwable);
+                logger.log(Level.SEVERE, "loadSlopeConfig failed: " + message, throwable);
                 return false;
             }
-        }).load(value.getId());
+        }).loadSlopeConfig(value.getId());
 
     }
 

@@ -1,17 +1,14 @@
-package com.btxtech.client.slopeeditor;
+package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.game.jsre.client.common.Index;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.MouseDownEvent;
 import elemental.client.Browser;
 import elemental.events.Event;
 import elemental.events.EventListener;
 import elemental.events.EventRemover;
 import elemental.events.MouseEvent;
 import elemental.svg.SVGCircleElement;
-
-import java.util.logging.Logger;
 
 /**
  * Created by Beat

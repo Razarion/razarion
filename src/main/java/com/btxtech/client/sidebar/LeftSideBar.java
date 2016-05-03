@@ -1,5 +1,6 @@
-package com.btxtech.client;
+package com.btxtech.client.sidebar;
 
+import com.btxtech.client.SideBarPanel;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 

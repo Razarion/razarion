@@ -1,7 +1,15 @@
 package com.btxtech.shared;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.util.List;
 
 /**
@@ -9,7 +17,13 @@ import java.util.List;
  * 02.05.2016.
  */
 @Bindable
+@Portable
+@Entity
+@Table(name = "GROUND_CONFIG")
 public class GroundConfigEntity {
+    @Id
+    @GeneratedValue
+    private Long id;
     private double splattingDistance;
     private double splattingFractalMin;
     private double splattingFractalMax;
@@ -23,7 +37,13 @@ public class GroundConfigEntity {
     private double heightFractalRoughness;
     private int heightXCount;
     private int heightYCount;
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
     private GroundSkeletonEntity groundSkeletonEntity;
+
+    public Long getId() {
+        return id;
+    }
 
     public double getSplattingDistance() {
         return splattingDistance;
@@ -135,5 +155,23 @@ public class GroundConfigEntity {
 
     public void setGroundSkeletonEntity(GroundSkeletonEntity groundSkeletonEntity) {
         this.groundSkeletonEntity = groundSkeletonEntity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        GroundConfigEntity that = (GroundConfigEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : System.identityHashCode(this);
     }
 }

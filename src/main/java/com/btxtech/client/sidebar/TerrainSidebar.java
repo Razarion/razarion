@@ -1,16 +1,17 @@
-package com.btxtech.client.menu;
+package com.btxtech.client.sidebar;
 
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.GroundConfigEntity;
-import com.btxtech.shared.GroundSkeletonEntity;
-import com.btxtech.shared.SlopeConfigEntity;
-import com.google.gwt.event.dom.client.ChangeEvent;
+import com.btxtech.shared.TerrainEditorService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -20,18 +21,22 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 06.11.2015.
  */
-@Templated("TerrainMenu.html#menu-terrain")
-public class TerrainMenu extends Composite {
-    // private Logger logger = Logger.getLogger(TerrainMenu.class.getName());
+@Templated("TerrainSidebar.html#terrain")
+public class TerrainSidebar extends Composite {
+    private Logger logger = Logger.getLogger(TerrainSidebar.class.getName());
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
     private RenderService renderService;
+    @Inject
+    private Caller<TerrainEditorService> terrainEditorService;
     @Inject
     @AutoBound
     private DataBinder<GroundConfigEntity> groundConfigEntityDataBinder;
@@ -96,7 +101,18 @@ public class TerrainMenu extends Composite {
 
     @PostConstruct
     public void init() {
-        groundConfigEntityDataBinder.setModel(terrainSurface.getGroundConfigEntity());
+        terrainEditorService.call(new RemoteCallback<GroundConfigEntity>() {
+            @Override
+            public void callback(GroundConfigEntity groundConfigEntity) {
+                groundConfigEntityDataBinder.setModel(groundConfigEntity);
+            }
+        }, new ErrorCallback<Object>() {
+            @Override
+            public boolean error(Object message, Throwable throwable) {
+                logger.log(Level.SEVERE, "loadGroundConfig failed: " + message, throwable);
+                return false;
+            }
+        }).loadGroundConfig();
     }
 
     @EventHandler("sculptButton")
@@ -106,6 +122,17 @@ public class TerrainMenu extends Composite {
 
     @EventHandler("saveButton")
     private void saveButtonClick(ClickEvent event) {
-        // terrainSurface.saveTerrain();
+        terrainEditorService.call(new RemoteCallback<GroundConfigEntity>() {
+            @Override
+            public void callback(GroundConfigEntity groundConfigEntity) {
+                groundConfigEntityDataBinder.setModel(groundConfigEntity);
+            }
+        }, new ErrorCallback<Object>() {
+            @Override
+            public boolean error(Object message, Throwable throwable) {
+                logger.log(Level.SEVERE, "saveGroundConfig failed: " + message, throwable);
+                return false;
+            }
+        }).saveGroundConfig(groundConfigEntityDataBinder.getModel());
     }
 }

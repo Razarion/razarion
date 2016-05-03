@@ -1,8 +1,7 @@
 package com.btxtech.server.terrain;
 
-import com.btxtech.shared.SlopeSkeletonEntity;
-import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
 import com.btxtech.server.ExceptionHandler;
+import com.btxtech.shared.GroundConfigEntity;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeConfigEntity_;
 import com.btxtech.shared.SlopeNameId;
@@ -60,7 +59,7 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public SlopeConfigEntity load(int id) {
+    public SlopeConfigEntity loadSlopeConfig(int id) {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             // Query for total row count in invitations
@@ -77,7 +76,7 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public SlopeConfigEntity save(SlopeConfigEntity slopeConfigEntity) {
+    public SlopeConfigEntity saveSlopeConfig(SlopeConfigEntity slopeConfigEntity) {
         try {
             Gson gson = new Gson();
             String json = gson.toJson(slopeConfigEntity);
@@ -93,9 +92,36 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public void delete(SlopeConfigEntity slopeConfigEntity) {
+    public void deleteSlopeConfig(SlopeConfigEntity slopeConfigEntity) {
         try {
             entityManager.remove(entityManager.contains(slopeConfigEntity) ? slopeConfigEntity : entityManager.merge(slopeConfigEntity));
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public GroundConfigEntity loadGroundConfig() {
+        try {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            // Query for total row count in invitations
+            CriteriaQuery<GroundConfigEntity> userQuery = criteriaBuilder.createQuery(GroundConfigEntity.class);
+            Root<GroundConfigEntity> from = userQuery.from(GroundConfigEntity.class);
+            CriteriaQuery<GroundConfigEntity> userSelect = userQuery.select(from);
+            return entityManager.createQuery(userSelect).getSingleResult();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public GroundConfigEntity saveGroundConfig(GroundConfigEntity groundConfigEntity) {
+        try {
+            return entityManager.merge(groundConfigEntity);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

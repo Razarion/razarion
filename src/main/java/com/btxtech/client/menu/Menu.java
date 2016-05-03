@@ -1,7 +1,8 @@
 package com.btxtech.client.menu;
 
-import com.btxtech.client.LeftSideBar;
-import com.btxtech.client.slopeeditor.SlopeConfigPanelContainer;
+import com.btxtech.client.sidebar.LeftSideBar;
+import com.btxtech.client.sidebar.TerrainSidebar;
+import com.btxtech.client.sidebar.slopeeditor.SlopeConfigPanelContainer;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineHyperlink;
@@ -30,7 +31,7 @@ public class Menu extends Composite {
     private CameraMenu cameraMenu;
     @Inject
     @DataField("menu-terrain")
-    private TerrainMenu terrainMenu;
+    private InlineHyperlink terrainMenu;
     @Inject
     @DataField("menu-slope")
     private InlineHyperlink slopeMenu;
@@ -43,7 +44,14 @@ public class Menu extends Composite {
     @Inject
     private LeftSideBar leftSideBar;
     @Inject
+    private Instance<TerrainSidebar> terrainSidebarInstance;
+    @Inject
     private Instance<SlopeConfigPanelContainer> panelContainerInstance;
+
+    @EventHandler("menu-terrain")
+    private void terrainMenuClick(ClickEvent event) {
+        leftSideBar.show(terrainSidebarInstance.get());
+    }
 
     @EventHandler("menu-slope")
     private void slopeMenuClick(ClickEvent event) {

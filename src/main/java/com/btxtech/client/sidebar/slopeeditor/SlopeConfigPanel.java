@@ -1,4 +1,4 @@
-package com.btxtech.client.slopeeditor;
+package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
@@ -22,7 +22,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
