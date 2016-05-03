@@ -47,7 +47,6 @@ public class Mesh {
                     Vertex center = getVertexSave(x, y);
                     nodes[x][y].setNorm(groundMesh.getInterpolatedNorm(center.toXY()));
                     nodes[x][y].setTangent(groundMesh.getInterpolatedTangent(center.toXY()));
-                    System.out.println(y + " tangent: " + groundMesh.getInterpolatedTangent(center.toXY()));
                 } else {
                     Vertex center = getVertexSave(x, y);
                     Vertex top = getVertexSave(x, y + 1);

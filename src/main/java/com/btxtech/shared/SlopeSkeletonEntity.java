@@ -110,11 +110,7 @@ public class SlopeSkeletonEntity {
     }
 
     private float setupSplatting(Vertex vertex, float slopeFactor, GroundMesh groundMesh) {
-        if (MathHelper.compareWithPrecision(1.0, slopeFactor)) {
-            return 0;
-        } else {
-            return (float) groundMesh.getInterpolatedSplatting(vertex.toXY());
-        }
+        return (float) groundMesh.getInterpolatedSplatting(vertex.toXY());
     }
 
     public int getRowCount() {
