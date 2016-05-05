@@ -67,7 +67,7 @@ public class SlopeSkeletonEntity {
 
     }
 
-    public void generateMesh(Mesh mesh, List<AbstractBorder> skeleton, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMesh) {
+    public void generateMesh(Mesh mesh, List<AbstractBorder> borders, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMesh) {
         SlopeSkeletonEntry[][] nodes = new SlopeSkeletonEntry[segmentCount][rowCount];
         for (SlopeSkeletonEntry slopeSkeletonEntry : slopeSkeletonEntries) {
             nodes[slopeSkeletonEntry.getColumnIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry;
@@ -75,8 +75,8 @@ public class SlopeSkeletonEntity {
 
         int templateSegment = 0;
         int meshColumn = 0;
-        for (AbstractBorder abstractBorder : skeleton) {
-            for (VerticalSegment verticalSegment : abstractBorder.getVerticalSegments()) {
+        for (AbstractBorder border : borders) {
+            for (VerticalSegment verticalSegment : border.getVerticalSegments()) {
                 Matrix4 transformationMatrix = verticalSegment.getTransformation();
                 for (int row = 0; row < rowCount; row++) {
                     SlopeSkeletonEntry slopeSkeletonEntry = nodes[templateSegment][row];

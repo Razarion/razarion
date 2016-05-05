@@ -3,10 +3,10 @@ package com.btxtech.client.terrain.slope;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.GroundSlopeConnector;
-import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -21,6 +21,7 @@ import java.util.List;
 public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private SlopeSkeletonEntity slopeSkeletonEntity;
+    private List<DecimalPosition> corners;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
@@ -37,6 +38,7 @@ public class Slope {
 
     public Slope(SlopeSkeletonEntity slopeSkeletonEntity, List<DecimalPosition> corners) {
         this.slopeSkeletonEntity = slopeSkeletonEntity;
+        this.corners = corners;
 
         if (slopeSkeletonEntity.getWidth() > 0) {
             setupSlopingBorder(corners);
@@ -200,5 +202,13 @@ public class Slope {
 
     public GroundSlopeConnector getGroundPlateauConnector() {
         return groundPlateauConnector;
+    }
+
+    public List<Vertex> getCorners() {
+        List<Vertex> corners = new ArrayList<>();
+        for (DecimalPosition corner : this.corners) {
+            corners.add(new Vertex(corner.getX(), corner.getY(), 0));
+        }
+        return corners;
     }
 }

@@ -23,7 +23,6 @@ public class SlopeSkeletonFactory {
 
         List<SlopeSkeletonEntry> slopeSkeletonEntries = new ArrayList<>();
         FractalField fractalField = FractalField.createSaveFractalField(shape.getShiftableCount(), segments, roughness, -shift / 2.0, shift / 2.0);
-        fractalField.process();
         for (int column = 0; column < segments; column++) {
             for (int row = 0; row < rows; row++) {
                 SlopeSkeletonEntry slopeSkeletonEntry = new SlopeSkeletonEntry(column, row);
