@@ -1,6 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +22,9 @@ public abstract class AbstractBorder {
 
     protected abstract int getSegmentLength(int count);
 
-    protected abstract DecimalPosition setupInnerPointFormStart(int verticalSpace, int count);
+    protected abstract Index setupInnerPointFormStart(int verticalSpace, int count);
 
-    protected abstract DecimalPosition setupOuterPointFormStart(int verticalSpace, int count);
+    protected abstract Index setupOuterPointFormStart(int verticalSpace, int count);
 
     public double getDistance() {
         return distance;

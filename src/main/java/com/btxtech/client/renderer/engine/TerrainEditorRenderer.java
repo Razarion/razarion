@@ -1,13 +1,14 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
+import com.btxtech.client.editor.terrain.TerrainEditorSlopeModifiedEvent;
 import com.btxtech.client.editor.terrain.TerrainEditorSlopeSelectedEvent;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.shared.primitives.Polygon2D;
+import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 
@@ -47,9 +48,12 @@ public class TerrainEditorRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        Polygon2D polygon2D = terrainEditor.getSlopePolygon(getId());
+        fillBuffers(terrainEditor.getSlopePolygon(getId()));
+    }
+
+    private void fillBuffers(Polygon2I polygon) {
         List<Vertex> corners = new ArrayList<>();
-        for (DecimalPosition position : polygon2D.getCorners()) {
+        for (Index position : polygon.getCorners()) {
             corners.add(new Vertex(position.getX(), position.getY(), 0));
         }
         vertices.fillBuffer(corners);
@@ -58,6 +62,12 @@ public class TerrainEditorRenderer extends AbstractRenderer {
 
     public void onTerrainEditorSlopeSelectedEvent(@Observes TerrainEditorSlopeSelectedEvent terrainEditorSlopeSelectedEvent) {
         selected = getId() == terrainEditorSlopeSelectedEvent.getSlopeId();
+    }
+
+    public void onTerrainEditorSlopeModifiedEvent(@Observes TerrainEditorSlopeModifiedEvent terrainEditorSlopeModifiedEvent) {
+        if (getId() == terrainEditorSlopeModifiedEvent.getSlopeId()) {
+            fillBuffers(terrainEditorSlopeModifiedEvent.getSlope());
+        }
     }
 
     @Override

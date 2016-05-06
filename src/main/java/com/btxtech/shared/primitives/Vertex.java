@@ -1,6 +1,7 @@
 package com.btxtech.shared.primitives;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -31,6 +32,12 @@ public class Vertex {
     }
 
     public Vertex(DecimalPosition xy, double z) {
+        this.x = xy.getX();
+        this.y = xy.getY();
+        this.z = z;
+    }
+
+    public Vertex(Index xy, double z) {
         this.x = xy.getX();
         this.y = xy.getY();
         this.z = z;

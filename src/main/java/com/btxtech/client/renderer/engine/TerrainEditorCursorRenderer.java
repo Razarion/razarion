@@ -8,9 +8,9 @@ import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Polygon2D;
+import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 
@@ -55,11 +55,11 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
         fillBuffer(terrainEditor.getCursor());
     }
 
-    private void fillBuffer(Polygon2D cursor) {
+    private void fillBuffer(Polygon2I cursor) {
         List<Vertex> triangleFan = new ArrayList<>();
         triangleFan.add(new Vertex(0, 0, 0));
-        List<DecimalPosition> cursorPositions = cursor.getCorners();
-        for (DecimalPosition cursorPosition : cursorPositions) {
+        List<Index> cursorPositions = cursor.getCorners();
+        for (Index cursorPosition : cursorPositions) {
             triangleFan.add(new Vertex(cursorPosition, 0));
         }
         triangleFan.add(new Vertex(cursorPositions.get(0), 0));

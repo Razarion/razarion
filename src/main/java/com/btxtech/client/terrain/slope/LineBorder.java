@@ -1,17 +1,17 @@
 package com.btxtech.client.terrain.slope;
 
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 
 /**
  * Created by Beat
  * 23.01.2016.
  */
 public class LineBorder extends AbstractBorder {
-    private DecimalPosition innerStart;
-    private DecimalPosition innerEnd;
-    private DecimalPosition outerStart;
-    private DecimalPosition outerEnd;
+    private Index innerStart;
+    private Index innerEnd;
+    private Index outerStart;
+    private Index outerEnd;
 
     public LineBorder(AbstractCornerBorder current, AbstractCornerBorder next, double distance) {
         super(distance);
@@ -21,7 +21,7 @@ public class LineBorder extends AbstractBorder {
         outerEnd = next.getOuterStart();
     }
 
-    public LineBorder(DecimalPosition current, DecimalPosition next) {
+    public LineBorder(Index current, Index next) {
         super(0);
         innerStart = current;
         innerEnd = next;
@@ -33,8 +33,8 @@ public class LineBorder extends AbstractBorder {
     @Override
     protected int getSegmentCount(int verticalSpace) {
         double distance = innerStart.getDistance(innerEnd);
-        int segments =  (int) Math.round(distance / verticalSpace);
-        if(segments > 0) {
+        int segments = (int) Math.round(distance / verticalSpace);
+        if (segments > 0) {
             return segments;
         } else {
             return 1;
@@ -43,16 +43,16 @@ public class LineBorder extends AbstractBorder {
 
     @Override
     protected int getSegmentLength(int segmentCount) {
-        return (int)Math.round(innerStart.getDistance(innerEnd) / (double)segmentCount);
+        return (int) Math.round(innerStart.getDistance(innerEnd) / (double) segmentCount);
     }
 
     @Override
-    protected DecimalPosition setupInnerPointFormStart(int verticalSpace, int count) {
+    protected Index setupInnerPointFormStart(int verticalSpace, int count) {
         return innerStart.getPointWithDistance(verticalSpace * count, innerEnd, true);
     }
 
     @Override
-    protected DecimalPosition setupOuterPointFormStart(int verticalSpace, int count) {
+    protected Index setupOuterPointFormStart(int verticalSpace, int count) {
         return outerStart.getPointWithDistance(verticalSpace * count, outerEnd, true);
     }
 }

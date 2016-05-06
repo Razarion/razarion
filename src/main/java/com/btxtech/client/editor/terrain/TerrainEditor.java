@@ -7,8 +7,11 @@ import com.btxtech.client.terrain.TerrainInitializedEvent;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.TerrainSlopePositionEntity;
 import com.btxtech.shared.primitives.Polygon2D;
+import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -38,12 +41,14 @@ public class TerrainEditor {
     @Inject
     private Event<TerrainEditorSlopeSelectedEvent> terrainEditorSlopeSelectedEvent;
     @Inject
+    private Event<TerrainEditorSlopeModifiedEvent> terrainEditorSlopeModifiedEvent;
+    @Inject
     private TerrainSurface terrainSurface;
     @Inject
     private RenderService renderService;
     private boolean active;
-    private Map<Integer, Polygon2D> slopePolygons = new HashMap<>();
-    private Polygon2D cursor;
+    private Map<Integer, Polygon2I> slopePolygons = new HashMap<>();
+    private Polygon2I cursor;
     private int cursorRadius = 50;
     private int cursorCorners = 6;
     private int selectedSlopeId = NO_SELECTION;
@@ -53,9 +58,9 @@ public class TerrainEditor {
     }
 
     public void init(@Observes TerrainInitializedEvent terrainInitializedEvent) {
-        for (Integer id : terrainSurface.getSlopeIds()) {
-            Slope slope = terrainSurface.getSlope(id);
-            slopePolygons.put(id, new Polygon2D(slope.getCorner2d()));
+        for (Integer id : terrainSurface.getTerrainSlopePositionIds()) {
+            TerrainSlopePositionEntity slopePositionEntity = terrainSurface.getTerrainSlopePositionEntity(id);
+            slopePolygons.put(id, new Polygon2I(slopePositionEntity.getPolygon()));
         }
     }
 
@@ -67,8 +72,8 @@ public class TerrainEditor {
             terrainEditorCursorPositionEvent.fire(new TerrainEditorCursorPositionEvent(terrainPosition));
             // Handle inside polygon
             int selectedSlopeId = NO_SELECTION;
-            Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
-            for (Map.Entry<Integer, Polygon2D> entry : slopePolygons.entrySet()) {
+            Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().getPosition());
+            for (Map.Entry<Integer, Polygon2I> entry : slopePolygons.entrySet()) {
                 if (entry.getValue().adjoins(movedCursor)) {
                     selectedSlopeId = entry.getKey();
                     break;
@@ -82,13 +87,15 @@ public class TerrainEditor {
     }
 
     public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
-//        if (active) {
-//            doPaint = true;
-//            // Cursor
-//            Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-//            Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(ray3d);
-//            terrainMouseMoveEventEvent.fire(new TerrainEditorCursorEvent(terrainPosition));
-//        }
+        if (active && hasSelection()) {
+            Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
+            Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(ray3d);
+            Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().getPosition());
+
+            Polygon2I newPolygon = getSlopePolygon(selectedSlopeId).combine(movedCursor);
+            slopePolygons.put(selectedSlopeId, newPolygon);
+            terrainEditorSlopeModifiedEvent.fire(new TerrainEditorSlopeModifiedEvent(selectedSlopeId, newPolygon));
+        }
     }
 
     public void activate() {
@@ -105,7 +112,7 @@ public class TerrainEditor {
         return slopePolygons.keySet();
     }
 
-    public Polygon2D getSlopePolygon(int id) {
+    public Polygon2I getSlopePolygon(int id) {
         return slopePolygons.get(id);
     }
 
@@ -132,16 +139,27 @@ public class TerrainEditor {
         terrainEditorCursorShapeEvent.fire(new TerrainEditorCursorShapeEvent(cursor));
     }
 
-    private Polygon2D setupCursor() {
-        List<DecimalPosition> corners = new ArrayList<>();
+    private Polygon2I setupCursor() {
+        List<Index> corners = new ArrayList<>();
         double deltaAngle = MathHelper.ONE_RADIANT / cursorCorners;
         for (int i = 0; i < cursorCorners; i++) {
-            corners.add(DecimalPosition.createVector(deltaAngle * i, cursorRadius));
+            corners.add(Index.createVector(deltaAngle * i, cursorRadius));
         }
-        return new Polygon2D(corners);
+        return new Polygon2I(corners);
     }
 
-    public Polygon2D getCursor() {
+    public Polygon2I getCursor() {
         return cursor;
+    }
+
+    private boolean hasSelection() {
+        return selectedSlopeId != NO_SELECTION;
+    }
+
+    public void updateTerrainSurface() {
+        for (Map.Entry<Integer, Polygon2I> entry : slopePolygons.entrySet()) {
+            TerrainSlopePositionEntity slopePositionEntity = terrainSurface.getTerrainSlopePositionEntity(entry.getKey());
+            slopePositionEntity.setPolygon(entry.getValue().getCorners());
+        }
     }
 }

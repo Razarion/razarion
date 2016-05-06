@@ -1,6 +1,7 @@
 package com.btxtech.client.sidebar;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
+import com.btxtech.client.terrain.TerrainSurface;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -22,6 +23,8 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     // private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
     @Inject
     private TerrainEditor terrainEditor;
+    @Inject
+    private TerrainSurface terrainSurface;
     @Inject
     @DataField
     private IntegerBox cursorRadius;
@@ -59,6 +62,8 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
 
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
+        terrainEditor.updateTerrainSurface();
+        terrainSurface.fillBuffers();
     }
 
     @EventHandler("saveButton")

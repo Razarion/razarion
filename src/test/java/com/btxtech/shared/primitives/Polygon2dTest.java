@@ -43,4 +43,11 @@ public class Polygon2dTest {
         Assert.assertFalse(polygon2D.isInside(new DecimalPosition(384, 64)));
     }
 
+    @Test
+    public void combine() {
+        Polygon2D poly1 = new Polygon2D(Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
+        Polygon2D poly2 = new Polygon2D(Arrays.asList(new DecimalPosition(700.2491159541822, 652.9908027857709), new DecimalPosition(675.2491159541822, 696.2920729749928), new DecimalPosition(625.2491159541822, 696.2920729749928), new DecimalPosition(600.2491159541822, 652.9908027857709), new DecimalPosition(625.2491159541822, 609.689532596549), new DecimalPosition(675.2491159541822, 609.689532596549)));
+        Polygon2D polyResult = poly1.combine(poly2);
+    }
+
 }

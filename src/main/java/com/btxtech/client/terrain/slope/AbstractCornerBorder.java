@@ -1,7 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 
 /**
  * Created by Beat
@@ -12,13 +12,13 @@ public abstract class AbstractCornerBorder extends AbstractBorder {
         super(distance);
     }
 
-    public abstract DecimalPosition getInnerStart();
+    public abstract Index getInnerStart();
 
-    public abstract DecimalPosition getInnerEnd();
+    public abstract Index getInnerEnd();
 
-    public abstract DecimalPosition getOuterStart();
+    public abstract Index getOuterStart();
 
-    public abstract DecimalPosition getOuterEnd();
+    public abstract Index getOuterEnd();
 
     protected abstract double getAngle();
 

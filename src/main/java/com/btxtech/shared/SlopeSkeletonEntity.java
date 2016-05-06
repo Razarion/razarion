@@ -11,7 +11,10 @@ import com.btxtech.shared.primitives.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -27,9 +30,16 @@ import java.util.List;
 @Entity
 @Table(name = "SLOPE_SKELETON")
 public class SlopeSkeletonEntity {
+    public enum Type {
+        LAND,
+        WATER
+    }
     @Id
     @GeneratedValue
     private Long id;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Type type;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<SlopeSkeletonEntry> slopeSkeletonEntries;
@@ -64,7 +74,7 @@ public class SlopeSkeletonEntity {
         bumpMapDepth = slopeConfigEntity.getBumpMapDepth();
         specularIntensity = slopeConfigEntity.getSpecularIntensity();
         specularHardness = slopeConfigEntity.getSpecularHardness();
-
+        type = slopeConfigEntity.getType();
     }
 
     public void generateMesh(Mesh mesh, List<AbstractBorder> borders, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMesh) {
@@ -111,6 +121,10 @@ public class SlopeSkeletonEntity {
 
     private float setupSplatting(Vertex vertex, float slopeFactor, GroundMesh groundMesh) {
         return (float) groundMesh.getInterpolatedSplatting(vertex.toXY());
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public int getRowCount() {

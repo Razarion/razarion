@@ -3,7 +3,6 @@ package com.btxtech.client.terrain.slope;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.GroundSlopeConnector;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.SlopeSkeletonEntity;
@@ -21,7 +20,7 @@ import java.util.List;
 public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private SlopeSkeletonEntity slopeSkeletonEntity;
-    private List<DecimalPosition> corners;
+    private List<Index> corners;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
@@ -36,7 +35,7 @@ public class Slope {
     private ImageDescriptor slopeBumpImageDescriptor;
     private GroundSlopeConnector groundPlateauConnector;
 
-    public Slope(SlopeSkeletonEntity slopeSkeletonEntity, List<DecimalPosition> corners) {
+    public Slope(SlopeSkeletonEntity slopeSkeletonEntity, List<Index> corners) {
         this.slopeSkeletonEntity = slopeSkeletonEntity;
         this.corners = corners;
 
@@ -53,21 +52,25 @@ public class Slope {
         }
     }
 
-    private void setupStraightBorder(List<DecimalPosition> corners) {
+    public List<AbstractBorder> getBorders() {
+        return borders;
+    }
+
+    private void setupStraightBorder(List<Index> corners) {
         for (int i = 0; i < corners.size(); i++) {
-            DecimalPosition current = corners.get(i);
-            DecimalPosition next = corners.get((i + 1) % corners.size());
+            Index current = corners.get(i);
+            Index next = corners.get((i + 1) % corners.size());
             borders.add(new LineBorder(current, next));
         }
     }
 
-    private void setupSlopingBorder(List<DecimalPosition> corners) {
+    private void setupSlopingBorder(List<Index> corners) {
         // Setup inner and outer corner
         List<AbstractCornerBorder> cornerBorders = new ArrayList<>();
         for (int i = 0; i < corners.size(); i++) {
-            DecimalPosition previous = corners.get((i - 1 + corners.size()) % corners.size());
-            DecimalPosition current = corners.get(i);
-            DecimalPosition next = corners.get((i + 1) % corners.size());
+            Index previous = corners.get((i - 1 + corners.size()) % corners.size());
+            Index current = corners.get(i);
+            Index next = corners.get((i + 1) % corners.size());
             if (current.getAngle(next, previous) > MathHelper.HALF_RADIANT) {
                 cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeletonEntity.getWidth()));
             } else {
@@ -204,13 +207,13 @@ public class Slope {
         return groundPlateauConnector;
     }
 
-    public List<DecimalPosition> getCorner2d() {
+    public List<Index> getCorner2d() {
         return corners;
     }
 
     public List<Vertex> getCorner3d() {
         List<Vertex> corners = new ArrayList<>();
-        for (DecimalPosition corner : this.corners) {
+        for (Index corner : this.corners) {
             corners.add(new Vertex(corner.getX(), corner.getY(), 0));
         }
         return corners;

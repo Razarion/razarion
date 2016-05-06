@@ -1,6 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Matrix4;
 
 /**
@@ -8,10 +9,10 @@ import com.btxtech.shared.primitives.Matrix4;
  * 23.01.2016.
  */
 public class VerticalSegment {
-    private DecimalPosition inner;
-    private DecimalPosition outer;
+    private Index inner;
+    private Index outer;
 
-    public VerticalSegment(DecimalPosition inner, DecimalPosition outer) {
+    public VerticalSegment(Index inner, Index outer) {
         this.inner = inner;
         this.outer = outer;
     }
@@ -23,5 +24,13 @@ public class VerticalSegment {
         }
         Matrix4 rotationMatrix = Matrix4.createZRotation(outer.getAngleToNorth(inner));
         return translationMatrix.multiply(rotationMatrix);
+    }
+
+    public Index getInner() {
+        return inner;
+    }
+
+    public Index getOuter() {
+        return outer;
     }
 }

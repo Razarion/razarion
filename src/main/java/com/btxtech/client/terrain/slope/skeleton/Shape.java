@@ -45,7 +45,7 @@ public class Shape {
         Index next = entries.get(row + 1).getPosition();
 
         double deltaAngle = current.getAngle(next, previous) / 2.0;
-        double angle = current.getAngleToNord(next) + deltaAngle;
+        double angle = current.getAngleToNorth(next) + deltaAngle;
         return toVertex(current.getPointFromAngleRound(angle, distance));
     }
 

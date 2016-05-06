@@ -4,7 +4,10 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -33,6 +36,9 @@ public class SlopeConfigEntity {
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private SlopeSkeletonEntity slopeSkeletonEntity;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SlopeSkeletonEntity.Type type;
     private String internalName;
     private double slopeGroundSplattingBumpDepth;
     private double slopeFactorDistance;
@@ -152,6 +158,14 @@ public class SlopeConfigEntity {
         this.slopeSkeletonEntity = slopeSkeletonEntity;
     }
 
+    public SlopeSkeletonEntity.Type getType() {
+        return type;
+    }
+
+    public void setType(SlopeSkeletonEntity.Type type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "SlopeConfigEntity{" +
@@ -167,6 +181,7 @@ public class SlopeConfigEntity {
                 ", fractalRoughness=" + fractalRoughness +
                 ", verticalSpace=" + verticalSpace +
                 ", segments=" + segments +
+                ", type=" + type +
                 ", slopeSkeletonEntity=" + (slopeSkeletonEntity != null ? slopeSkeletonEntity.getId() : "-") +
                 '}';
     }

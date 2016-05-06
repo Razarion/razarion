@@ -4,6 +4,7 @@ import com.btxtech.server.ExceptionHandler;
 import com.btxtech.shared.GroundSkeletonEntity;
 import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.shared.TerrainService;
+import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -36,7 +37,17 @@ public class TerrainServiceImpl implements TerrainService {
             CriteriaQuery<SlopeSkeletonEntity> userQuery = criteriaBuilder.createQuery(SlopeSkeletonEntity.class);
             Root<SlopeSkeletonEntity> root = userQuery.from(SlopeSkeletonEntity.class);
             CriteriaQuery<SlopeSkeletonEntity> userSelect = userQuery.select(root);
-            return entityManager.createQuery(userSelect).getResultList();
+            Collection<SlopeSkeletonEntity> groundSkeletonEntitys = entityManager.createQuery(userSelect).getResultList();
+
+            Gson gson = new Gson();
+            for (SlopeSkeletonEntity groundSkeletonEntity : groundSkeletonEntitys) {
+                System.out.println("--------------------------------------------------------");
+                String json = gson.toJson(groundSkeletonEntity);
+                System.out.println(json);
+                System.out.println("--------------------------------------------------------");
+            }
+
+            return groundSkeletonEntitys;
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

@@ -1,7 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 
 /**
@@ -9,36 +9,36 @@ import com.btxtech.game.jsre.common.MathHelper;
  * 23.01.2016.
  */
 public class InnerCornerBorder extends AbstractCornerBorder {
-    private DecimalPosition innerCenter;
-    private DecimalPosition outerStart;
-    private DecimalPosition outerEnd;
+    private Index innerCenter;
+    private Index outerStart;
+    private Index outerEnd;
 
-    public InnerCornerBorder(DecimalPosition current, DecimalPosition previous, DecimalPosition next, double distance) {
+    public InnerCornerBorder(Index current, Index previous, Index next, double distance) {
         super(distance);
         innerCenter = current;
         double startAngle = current.getAngleToNorth(previous) + MathHelper.QUARTER_RADIANT;
-        outerStart = current.getPointFromAngelToNord(startAngle, distance);
+        outerStart = current.getPointFromAngleRound(startAngle, distance);
         double endAngle = current.getAngleToNorth(next) - MathHelper.QUARTER_RADIANT;
-        outerEnd = current.getPointFromAngelToNord(endAngle, distance);
+        outerEnd = current.getPointFromAngleRound(endAngle, distance);
     }
 
     @Override
-    public DecimalPosition getInnerStart() {
+    public Index getInnerStart() {
         return innerCenter;
     }
 
     @Override
-    public DecimalPosition getInnerEnd() {
+    public Index getInnerEnd() {
         return innerCenter;
     }
 
     @Override
-    public DecimalPosition getOuterStart() {
+    public Index getOuterStart() {
         return outerStart;
     }
 
     @Override
-    public DecimalPosition getOuterEnd() {
+    public Index getOuterEnd() {
         return outerEnd;
     }
 
@@ -48,16 +48,16 @@ public class InnerCornerBorder extends AbstractCornerBorder {
     }
 
     @Override
-    protected DecimalPosition setupInnerPointFormStart(int verticalSpace, int count) {
+    protected Index setupInnerPointFormStart(int verticalSpace, int count) {
         return innerCenter;
     }
 
     @Override
-    protected DecimalPosition setupOuterPointFormStart(int verticalSpace, int count) {
+    protected Index setupOuterPointFormStart(int verticalSpace, int count) {
         if (count == 0) {
             return outerStart;
         }
         double totalAngle = innerCenter.getAngleToNorth(outerStart) + getSegmentAngle(verticalSpace) * count;
-        return innerCenter.getPointFromAngelToNord(totalAngle, getDistance());
+        return innerCenter.getPointFromAngleRound(totalAngle, getDistance());
     }
 }

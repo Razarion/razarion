@@ -5,13 +5,17 @@ import com.btxtech.game.jsre.client.common.Line;
 import com.btxtech.game.jsre.common.MathHelper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 11.03.2016.
  */
 public class Polygon2D {
+    private static final String SPACE = "               ";
+    private Logger logger = Logger.getLogger(Polygon2D.class.getName());
     private List<DecimalPosition> corners = new ArrayList<>();
     private List<Line> lines = new ArrayList<>();
 
@@ -38,32 +42,6 @@ public class Polygon2D {
             }
         }
         return c;
-    }
-
-    public boolean adjoins(Polygon2D other) {
-        for (DecimalPosition corner : getCorners()) {
-            if (other.isInside(corner)) {
-                return true;
-            }
-        }
-        for (DecimalPosition corner : other.getCorners()) {
-            if (isInside(corner)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public List<Line> getLines() {
-        return lines;
-    }
-
-    public List<DecimalPosition> getCorners() {
-        return corners;
-    }
-
-    public int size() {
-        return corners.size();
     }
 
     public boolean isLineCrossing(Line testLine) {
@@ -108,6 +86,53 @@ public class Polygon2D {
         return correctedIndex;
     }
 
+
+    public boolean adjoins(Polygon2D other) {
+        for (DecimalPosition corner : getCorners()) {
+            if (other.isInside(corner)) {
+                return true;
+            }
+        }
+        for (DecimalPosition corner : other.getCorners()) {
+            if (isInside(corner)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<Integer> getInsideCorners(Polygon2D other) {
+        List<Integer> insideCorners = new ArrayList<>();
+        for (int i = 0; i < other.getCorners().size(); i++) {
+            DecimalPosition otherCorner = other.getCorners().get(i);
+            if (isInside(otherCorner)) {
+                insideCorners.add(i);
+            }
+        }
+        return insideCorners;
+    }
+
+    private void dumpCombineTestCase(Polygon2D other) {
+        logger.severe(SPACE + "@Test");
+        logger.severe(SPACE + "public void combine() {");
+        logger.severe(SPACE + " Polygon2D poly1 = " + testString() + ";");
+        logger.severe(SPACE + " Polygon2D poly2 = " + other.testString() + ";");
+        logger.severe(SPACE + " Polygon2D polyResult = poly1.combine(poly2);\n");
+        logger.severe(SPACE + "}");
+    }
+
+    public List<Line> getLines() {
+        return lines;
+    }
+
+    public List<DecimalPosition> getCorners() {
+        return corners;
+    }
+
+    public int size() {
+        return corners.size();
+    }
+
     public Polygon2D createReducedPolygon(int indexToReduce) {
         List<DecimalPosition> corners = new ArrayList<>(this.corners);
         corners.remove(indexToReduce);
@@ -122,6 +147,11 @@ public class Polygon2D {
         return new Polygon2D(movedCorners);
     }
 
+    public Polygon2D combine(Polygon2D other) {
+        List<DecimalPosition> corners = new ArrayList<>(this.corners);
+        corners.addAll(other.getCorners());
+        return new Polygon2D(ConvexHull.convexHull2D(corners));
+    }
 
     //
 //    boolean pnpoly(int nvert, float[] vertx, float[] verty, float testx, float testy) {
@@ -134,5 +164,16 @@ public class Polygon2D {
 //        return c;
 //    }
 
-
+    public String testString() {
+        String testString = "new Polygon2D(Arrays.asList(";
+        for (Iterator<DecimalPosition> iterator = corners.iterator(); iterator.hasNext(); ) {
+            DecimalPosition corner = iterator.next();
+            testString += corner.testString();
+            if (iterator.hasNext()) {
+                testString += ", ";
+            }
+        }
+        testString += "))";
+        return testString;
+    }
 }

@@ -61,14 +61,14 @@ public class Mesh {
                     Vertex norm = sum(norms);
                     double normMagnitude = norm.magnitude();
                     if (normMagnitude == 0.0) {
-                        throw new IllegalArgumentException("Norm magnitude is zero " + x + ":" + y + " center: " + center);
+                       // throw new IllegalArgumentException("Norm magnitude is zero " + x + ":" + y + " center: " + center);
                     }
                     nodes[x][y].setNorm(norm.divide(normMagnitude));
 
                     Vertex tangent = setupTangent(center, left, right);
                     double tangentMagnitude = tangent.magnitude();
                     if (tangentMagnitude == 0.0) {
-                        throw new IllegalArgumentException("Tangent magnitude is zero " + x + ":" + y + " center: " + center);
+                      //  throw new IllegalArgumentException("Tangent magnitude is zero " + x + ":" + y + " center: " + center);
                     }
                     nodes[x][y].setTangent(tangent.divide(tangentMagnitude));
                 }
