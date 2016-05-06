@@ -5,7 +5,6 @@ import com.btxtech.game.jsre.client.common.Line;
 import com.btxtech.game.jsre.common.MathHelper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -27,33 +26,6 @@ public class Polygon2D {
         }
     }
 
-    private boolean isInside2(DecimalPosition position) {
-        Collection<DecimalPosition> crossPoints = new ArrayList<>();
-        Line testLine = new Line(position, MathHelper.EIGHTH_RADIANT, Integer.MAX_VALUE);
-
-        for (Line line : lines) {
-            if (line.getPoint1().equals(position)) {
-                return true;
-            }
-            if (line.isPointInLineInclusive(position)) {
-                return true;
-                // throw new IllegalStateException("Point is on line. Don't know what to do...");
-            }
-
-            if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
-                continue;
-            }
-            DecimalPosition crossPoint = line.getCrossInfinite(testLine);
-            if (crossPoint != null) {
-                if (line.isPointInLineInclusive(crossPoint) && testLine.isPointInLineInclusive(crossPoint)) {
-                    crossPoints.add(crossPoint);
-                }
-            }
-        }
-        // crossPoints = DecimalPosition.removeSimilarPoints(crossPoints, CollisionConstants.SAFETY_DISTANCE);
-        return crossPoints.size() % 2 != 0;
-    }
-
     public boolean isInside(DecimalPosition position) {
         int i, j;
         boolean c = false;
@@ -61,11 +33,25 @@ public class Polygon2D {
             DecimalPosition start = corners.get(i);
             DecimalPosition end = corners.get(j);
 
-            if (((start.getY() > position.getY()) != (end.getY() > position.getY()))
-                    && (position.getX() < (end.getX() - start.getX()) * (position.getY() - start.getY()) / (end.getY() - start.getY()) + start.getX()))
+            if (((start.getY() > position.getY()) != (end.getY() > position.getY())) && (position.getX() < (end.getX() - start.getX()) * (position.getY() - start.getY()) / (end.getY() - start.getY()) + start.getX())) {
                 c = !c;
+            }
         }
         return c;
+    }
+
+    public boolean adjoins(Polygon2D other) {
+        for (DecimalPosition corner : getCorners()) {
+            if (other.isInside(corner)) {
+                return true;
+            }
+        }
+        for (DecimalPosition corner : other.getCorners()) {
+            if (isInside(corner)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<Line> getLines() {
@@ -126,6 +112,14 @@ public class Polygon2D {
         List<DecimalPosition> corners = new ArrayList<>(this.corners);
         corners.remove(indexToReduce);
         return new Polygon2D(corners);
+    }
+
+    public Polygon2D translate(DecimalPosition translation) {
+        List<DecimalPosition> movedCorners = new ArrayList<>();
+        for (DecimalPosition corner : corners) {
+            movedCorners.add(corner.add(translation));
+        }
+        return new Polygon2D(movedCorners);
     }
 
 
