@@ -204,7 +204,11 @@ public class Slope {
         return groundPlateauConnector;
     }
 
-    public List<Vertex> getCorners() {
+    public List<DecimalPosition> getCorner2d() {
+        return corners;
+    }
+
+    public List<Vertex> getCorner3d() {
         List<Vertex> corners = new ArrayList<>();
         for (DecimalPosition corner : this.corners) {
             corners.add(new Vertex(corner.getX(), corner.getY(), 0));

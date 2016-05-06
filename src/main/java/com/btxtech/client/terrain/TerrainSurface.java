@@ -4,7 +4,6 @@ import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.GroundMesh;
-import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.client.terrain.slope.SlopeWater;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
@@ -14,6 +13,7 @@ import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
@@ -35,6 +35,8 @@ public class TerrainSurface {
     private GameCanvas gameCanvas;
     @Inject
     private RenderService renderService;
+    @Inject
+    private Event<TerrainInitializedEvent> terrainInitializedEvent;
     private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
     // private ImageDescriptor blenderImageDescriptor = ImageDescriptor.GREY;
@@ -57,6 +59,7 @@ public class TerrainSurface {
         slopeMap.clear();
         setupPlateau(2005, Arrays.asList(new DecimalPosition(580, 500), new DecimalPosition(1000, 500), new DecimalPosition(1000, 1120)));
         setupBeach(12514, Arrays.asList(new DecimalPosition(2000, 1000), new DecimalPosition(3000, 1000), new DecimalPosition(3000, 1500), new DecimalPosition(2000, 1500)));
+        terrainInitializedEvent.fire(new TerrainInitializedEvent());
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }
 
@@ -177,16 +180,16 @@ public class TerrainSurface {
         this.groundSkeletonEntity = groundSkeletonEntity;
     }
 
-    public void handlePickRay(Ray3d worldPickRay) {
+    public Vertex calculatePositionOnTerrain(Ray3d worldPickRay) {
         // Find multiplier where the ray hits the ground (z = 0). start + m*direction -> z = 0
         double m = -worldPickRay.getStart().getZ() / worldPickRay.getDirection().getZ();
-        Vertex pointOnGround = worldPickRay.getPoint(m);
-        logger.severe("Point On Ground: " + pointOnGround);
-        VertexData vertexData = groundMesh.getVertexFromAbsoluteXY(pointOnGround.toXY());
-        if (vertexData != null) {
-            logger.severe("Ground VertexData: " + vertexData);
-        } else {
-            logger.severe("Position not on ground");
-        }
+        return worldPickRay.getPoint(m);
+//        logger.severe("Point On Ground: " + pointOnGround);
+//        VertexData vertexData = originalGroundMesh.getVertexFromAbsoluteXY(pointOnGround.toXY());
+//        if (vertexData != null) {
+//            logger.severe("Ground VertexData: " + vertexData);
+//        } else {
+//            logger.severe("Position not on ground");
+//        }
     }
 }

@@ -1,5 +1,7 @@
 package com.btxtech.client;
 
+import com.btxtech.client.sidebar.LeftSideBar;
+import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -19,18 +21,21 @@ import javax.inject.Inject;
 @Templated("SideBarPanel.html#sideBarPanel")
 public class SideBarPanel extends Composite {
     @Inject
+    private LeftSideBar leftSideBar;
+    @Inject
     @DataField
     private SimplePanel content;
     @Inject
     @DataField
     private Button closeButton;
 
-    public void setContent(Widget widget) {
-        content.setWidget(widget);
+    public void setContent(LeftSideBarContent leftSideBarContent) {
+        content.setWidget(leftSideBarContent);
     }
 
     @EventHandler("closeButton")
     private void closeButtonButtonClick(ClickEvent event) {
+        leftSideBar.onClose((LeftSideBarContent)content.getWidget());
         content.clear();
         getElement().getStyle().setDisplay(Style.Display.NONE);
     }

@@ -30,6 +30,12 @@ public class Vertex {
         this.z = z;
     }
 
+    public Vertex(DecimalPosition xy, double z) {
+        this.x = xy.getX();
+        this.y = xy.getY();
+        this.z = z;
+    }
+
     public double getX() {
         return x;
     }

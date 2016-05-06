@@ -1,5 +1,6 @@
 package com.btxtech.client.sidebar.slopeeditor;
 
+import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
 import com.btxtech.shared.SlopeNameId;
@@ -34,9 +35,9 @@ import java.util.logging.Logger;
  * Created by Beat
  * 22.11.2015.
  */
-@Templated("SlopeConfigPanelContainer.html#editorPanelContainer")
-public class SlopeConfigPanelContainer extends Composite {
-    private Logger logger = Logger.getLogger(SlopeConfigPanelContainer.class.getName());
+@Templated("SlopeConfigSidebar.html#slopeConfigSidebar")
+public class SlopeConfigSidebar extends Composite implements LeftSideBarContent {
+    private Logger logger = Logger.getLogger(SlopeConfigSidebar.class.getName());
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
@@ -69,6 +70,11 @@ public class SlopeConfigPanelContainer extends Composite {
                 loadSlopeConfigEntity(slopeSelection.getValue());
             }
         });
+    }
+
+    @Override
+    public void onClose() {
+        // Ignore
     }
 
     private void updateSlopeSelection() {

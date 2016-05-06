@@ -18,8 +18,12 @@ public class LeftSideBar {
         this.sideBarPanel = sideBarPanel;
     }
 
-    public void show(Widget widget) {
+    public void show(LeftSideBarContent leftSideBarContent) {
         sideBarPanel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        sideBarPanel.setContent(widget);
+        sideBarPanel.setContent(leftSideBarContent);
+    }
+
+    public void onClose(LeftSideBarContent leftSideBarContent) {
+        leftSideBarContent.onClose();
     }
 }

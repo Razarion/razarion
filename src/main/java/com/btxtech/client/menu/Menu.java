@@ -1,8 +1,10 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.sidebar.LeftSideBar;
+import com.btxtech.client.sidebar.LeftSideBarContent;
+import com.btxtech.client.sidebar.TerrainEditorSidebar;
 import com.btxtech.client.sidebar.TerrainSidebar;
-import com.btxtech.client.sidebar.slopeeditor.SlopeConfigPanelContainer;
+import com.btxtech.client.sidebar.slopeeditor.SlopeConfigSidebar;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineHyperlink;
@@ -42,20 +44,26 @@ public class Menu extends Composite {
     @DataField("menu-unit")
     private UnitMenu unitMenu;
     @Inject
+    @DataField("menu-editor")
+    private InlineHyperlink editorMenu;
+    @Inject
     private LeftSideBar leftSideBar;
     @Inject
-    private Instance<TerrainSidebar> terrainSidebarInstance;
-    @Inject
-    private Instance<SlopeConfigPanelContainer> panelContainerInstance;
+    private Instance<LeftSideBarContent> leftSideBarContentInstance;
 
     @EventHandler("menu-terrain")
     private void terrainMenuClick(ClickEvent event) {
-        leftSideBar.show(terrainSidebarInstance.get());
+        leftSideBar.show(leftSideBarContentInstance.select(TerrainSidebar.class).get());
     }
 
     @EventHandler("menu-slope")
     private void slopeMenuClick(ClickEvent event) {
-        leftSideBar.show(panelContainerInstance.get());
+        leftSideBar.show(leftSideBarContentInstance.select(SlopeConfigSidebar.class).get());
+    }
+
+    @EventHandler("menu-editor")
+    private void editorMenuClick(ClickEvent event) {
+        leftSideBar.show(leftSideBarContentInstance.select(TerrainEditorSidebar.class).get());
     }
 
 }

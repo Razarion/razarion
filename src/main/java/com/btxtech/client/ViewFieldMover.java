@@ -9,17 +9,22 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Ray3d;
+import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import elemental.html.WebGLRenderingContext;
 import elemental.js.html.JsUint8Array;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.logging.Logger;
@@ -39,6 +44,12 @@ public class ViewFieldMover {
     private TerrainSurface terrainSurface;
     @Inject
     private GameCanvas gameCanvas;
+    @Inject
+    private Event<TerrainMouseMoveEvent> terrainMouseMoveEvent;
+    @Inject
+    private Event<TerrainMouseDownEvent> terrainMouseDownEvent;
+    @Inject
+    private Event<TerrainMouseUpEvent> terrainMouseUpEvent;
     private Index startMoveXY;
     private Integer startMoveZ;
     private double factor = 0.5;
@@ -70,6 +81,9 @@ public class ViewFieldMover {
                 } else {
                     startMoveZ = null;
                 }
+                // Send pick ray event
+                Ray3d worldPickRay = setupTerrainRay3d(event, canvas);
+                terrainMouseMoveEvent.fire(new TerrainMouseMoveEvent(worldPickRay));
             }
         });
         canvas.addMouseDownHandler(new MouseDownHandler() {
@@ -83,7 +97,8 @@ public class ViewFieldMover {
                         webglPosition = webglPosition.sub(1, 1);
                         Ray3d pickRay = projectionTransformation.createPickRay(webglPosition);
                         Ray3d worldPickRay = camera.toWorld(pickRay);
-                        terrainSurface.handlePickRay(worldPickRay);
+                        Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(worldPickRay);
+                        logger.severe("Terrain Position: " + terrainPosition);
                     }
                     if (eventIsAltPressed(event.getNativeEvent())) {
                         JsUint8Array uint8Array = WebGlUtil.createUint8Array(4);
@@ -95,11 +110,21 @@ public class ViewFieldMover {
                         double z = uint8Array.numberAt(2) / 255.0 * 2.0 - 1.0;
                         logger.severe("x=" + x + " y=" + y + " z=" + z);
                     }
+                    Ray3d worldPickRay = setupTerrainRay3d(event, canvas);
+                    terrainMouseDownEvent.fire(new TerrainMouseDownEvent(worldPickRay));
                 } else if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
                     startMoveZ = event.getY();
                 }
             }
         });
+        canvas.addMouseUpHandler(new MouseUpHandler() {
+            @Override
+            public void onMouseUp(MouseUpEvent event) {
+                Ray3d worldPickRay = setupTerrainRay3d(event, canvas);
+                terrainMouseUpEvent.fire(new TerrainMouseUpEvent(worldPickRay));
+            }
+        });
+
         canvas.addMouseWheelHandler(new MouseWheelHandler() {
             @Override
             public void onMouseWheel(MouseWheelEvent event) {
@@ -125,6 +150,14 @@ public class ViewFieldMover {
                 }
             }
         });
+    }
+
+    private Ray3d setupTerrainRay3d(MouseEvent event, Canvas canvas) {
+        DecimalPosition webglPosition = new DecimalPosition((double) event.getX() / (double) canvas.getCoordinateSpaceWidth(), 1.0 - (double) event.getY() / (double) canvas.getCoordinateSpaceHeight());
+        webglPosition = webglPosition.multiply(2.0);
+        webglPosition = webglPosition.sub(1, 1);
+        Ray3d pickRay = projectionTransformation.createPickRay(webglPosition);
+        return camera.toWorld(pickRay);
     }
 
     public native int eventGetButton(NativeEvent evt) /*-{

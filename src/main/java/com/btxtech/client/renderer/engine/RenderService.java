@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.webgl.WebGlException;
@@ -13,6 +14,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,6 +39,8 @@ public class RenderService {
     private UnitService unitService;
     @Inject
     private TerrainSurface terrainSurface;
+    @Inject
+    private TerrainEditor terrainEditor;
     private List<RenderSwitch> renderQueue = new ArrayList<>();
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
@@ -45,18 +49,26 @@ public class RenderService {
     private boolean showMonitor = false;
     private boolean showNorm = false;
     private boolean showDeep = false;
+    private boolean showEditor = false;
     private RenderSwitch monitor;
     private RenderSwitch terrainNorm;
     private RenderSwitch unitNorm;
     private int framesCount = 0;
     private long lastTime = 0;
-
+    private Collection<TerrainEditorRenderer> terrainEditorRenderers;
+    private TerrainEditorCursorRenderer terrainEditorCursorRenderer;
 
     public void init() {
         initFrameBuffer();
         createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class, 0);
         for (int id : terrainSurface.getSlopeIds()) {
             createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, id);
+        }
+        terrainEditorRenderers = new ArrayList<>();
+        for (int id : terrainEditor.getSlopePolygonIds()) {
+            TerrainEditorRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorRenderer.class).get();
+            terrainEditorRenderer.setId(id);
+            terrainEditorRenderers.add(terrainEditorRenderer);
         }
         createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, 0);
         createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, 0);
@@ -65,6 +77,8 @@ public class RenderService {
         monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null, 0);
         terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class, 0);
         unitNorm = createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, 0);
+        terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorRenderer.class).get();
+        terrainEditorCursorRenderer.fillBuffers();
     }
 
     private RenderSwitch createAndAddRenderSwitch(Class<? extends Renderer> normalRendererClass, Class<? extends Renderer> depthBufferRendererClass, Class<? extends Renderer> wireRendererClass, int id) {
@@ -143,6 +157,16 @@ public class RenderService {
         gameCanvas.getCtx3d().depthMask(true);
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
 
+        // Dirty way to render terrain editor
+        if (showEditor) {
+            gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
+            for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
+                terrainEditorRenderer.draw();
+            }
+            terrainEditorCursorRenderer.draw();
+            gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
+        }
+
         framesCount++;
         if (lastTime == 0) {
             lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
@@ -159,6 +183,15 @@ public class RenderService {
                 renderSwitch.fillBuffers();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "fillBuffers failed", t);
+            }
+        }
+        if (terrainEditorRenderers != null) {
+            for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
+                try {
+                    terrainEditorRenderer.fillBuffers();
+                } catch (Throwable t) {
+                    logger.log(Level.SEVERE, "fillBuffers failed", t);
+                }
             }
         }
     }
@@ -240,5 +273,9 @@ public class RenderService {
 
     public void setShowDeep(boolean showDeep) {
         this.showDeep = showDeep;
+    }
+
+    public void setShowEditor(boolean showEditor) {
+        this.showEditor = showEditor;
     }
 }

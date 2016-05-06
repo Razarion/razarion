@@ -70,4 +70,16 @@ public interface Shaders extends ClientBundle {
 
     @Source("Slope.frag")
     TextResource slopeFragmentShader();
+
+    @Source("TerrainEditor.vert")
+    TextResource terrainEditorVertexShader();
+
+    @Source("TerrainEditor.frag")
+    TextResource terrainEditorFragmentShader();
+
+    @Source("TerrainEditorCursor.vert")
+    TextResource terrainEditorCursorVertexShader();
+
+    @Source("TerrainEditorCursor.frag")
+    TextResource terrainEditorCursorFragmentShader();
 }
