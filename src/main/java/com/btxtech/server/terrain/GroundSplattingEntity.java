@@ -10,7 +10,7 @@ import javax.persistence.Table;
  * 02.05.2016.
  */
 @Entity
-@Table(name = "GROUND_SPLATTING_ENTRY")
+@Table(name = "GROUND_SPLATTING")
 public class GroundSplattingEntity {
     @Id
     @GeneratedValue
