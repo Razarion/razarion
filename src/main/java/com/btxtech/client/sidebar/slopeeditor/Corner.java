@@ -1,7 +1,7 @@
 package com.btxtech.client.sidebar.slopeeditor;
 
-import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.dto.SlopeShape;
 import com.google.gwt.dom.client.Style;
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -20,18 +20,18 @@ public class Corner {
     private static final String COLOR_SELECT = "red";
     private static final float RADIUS = 5;
     private SVGCircleElement circle;
-    private SlopeShapeEntity slopeShapeEntity;
+    private SlopeShape slopeShape;
     private EventRemover onMouseMoveEventRemover;
     private EventRemover onMouseUpEventRemover;
     private Model model;
     private Index mouseOffset;
 
-    public Corner(SlopeShapeEntity slopeShapeEntity, Model model) {
-        this.slopeShapeEntity = slopeShapeEntity;
+    public Corner(SlopeShape slopeShape, Model model) {
+        this.slopeShape = slopeShape;
         this.model = model;
         circle = Browser.getDocument().createSVGCircleElement();
-        circle.getCx().getBaseVal().setValue(slopeShapeEntity.getPosition().getX());
-        circle.getCy().getBaseVal().setValue(slopeShapeEntity.getPosition().getY());
+        circle.getCx().getBaseVal().setValue(slopeShape.getPosition().getX());
+        circle.getCy().getBaseVal().setValue(slopeShape.getPosition().getY());
         circle.getR().getBaseVal().setValue(RADIUS);
         circle.addEventListener("mousedown", new EventListener() {
             @Override
@@ -44,7 +44,7 @@ public class Corner {
     }
 
     public void move(Index position) {
-        slopeShapeEntity.setPosition(position);
+        slopeShape.setPosition(position);
         circle.getCx().getBaseVal().setValue(position.getX());
         circle.getCy().getBaseVal().setValue(position.getY());
     }
@@ -52,7 +52,7 @@ public class Corner {
     private void move(MouseEvent event) {
         Index mousePosition = model.convertMouseToSvg(event);
         if(mouseOffset == null) {
-            mouseOffset = mousePosition.sub(slopeShapeEntity.getPosition());
+            mouseOffset = mousePosition.sub(slopeShape.getPosition());
         }
         model.cornerMoved(mousePosition.sub(mouseOffset), this);
     }
@@ -89,8 +89,8 @@ public class Corner {
         return circle;
     }
 
-    public SlopeShapeEntity getSlopeShapeEntity() {
-        return slopeShapeEntity;
+    public SlopeShape getSlopeShape() {
+        return slopeShape;
     }
 
     public void setSelected(boolean selected) {

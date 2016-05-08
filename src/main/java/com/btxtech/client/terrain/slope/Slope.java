@@ -5,7 +5,7 @@ import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.GroundSlopeConnector;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.SlopeSkeletonEntity;
+import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
-    private SlopeSkeletonEntity slopeSkeletonEntity;
+    private SlopeSkeleton slopeSkeleton;
     private List<Index> corners;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
@@ -35,11 +35,11 @@ public class Slope {
     private ImageDescriptor slopeBumpImageDescriptor;
     private GroundSlopeConnector groundPlateauConnector;
 
-    public Slope(SlopeSkeletonEntity slopeSkeletonEntity, List<Index> corners) {
-        this.slopeSkeletonEntity = slopeSkeletonEntity;
+    public Slope(SlopeSkeleton slopeSkeleton, List<Index> corners) {
+        this.slopeSkeleton = slopeSkeleton;
         this.corners = corners;
 
-        if (slopeSkeletonEntity.getWidth() > 0) {
+        if (slopeSkeleton.getWidth() > 0) {
             setupSlopingBorder(corners);
         } else {
             setupStraightBorder(corners);
@@ -48,7 +48,7 @@ public class Slope {
         // Setup vertical segments
         xVertices = 0;
         for (AbstractBorder border : borders) {
-            xVertices += border.setupVerticalSegments(slopeSkeletonEntity.getVerticalSpace());
+            xVertices += border.setupVerticalSegments(slopeSkeleton.getVerticalSpace());
         }
     }
 
@@ -72,9 +72,9 @@ public class Slope {
             Index current = corners.get(i);
             Index next = corners.get((i + 1) % corners.size());
             if (current.getAngle(next, previous) > MathHelper.HALF_RADIANT) {
-                cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeletonEntity.getWidth()));
+                cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeleton.getWidth()));
             } else {
-                cornerBorders.add(new InnerCornerBorder(current, previous, next, slopeSkeletonEntity.getWidth()));
+                cornerBorders.add(new InnerCornerBorder(current, previous, next, slopeSkeleton.getWidth()));
             }
         }
         // Setup whole contour
@@ -82,15 +82,15 @@ public class Slope {
             AbstractCornerBorder current = cornerBorders.get(i);
             AbstractCornerBorder next = cornerBorders.get((i + 1) % cornerBorders.size());
             borders.add(current);
-            borders.add(new LineBorder(current, next, slopeSkeletonEntity.getWidth()));
+            borders.add(new LineBorder(current, next, slopeSkeleton.getWidth()));
         }
     }
 
     public void wrap(GroundMesh groundMesh) {
-        mesh = new Mesh(xVertices, slopeSkeletonEntity.getRowCount());
+        mesh = new Mesh(xVertices, slopeSkeleton.getRows());
         innerLineMeshIndex = new ArrayList<>();
         outerLineMeshIndex = new ArrayList<>();
-        slopeSkeletonEntity.generateMesh(mesh, borders, innerLineMeshIndex, outerLineMeshIndex, groundMesh);
+        SlopeModeler.generateMesh(mesh, slopeSkeleton, borders, innerLineMeshIndex, outerLineMeshIndex, groundMesh);
         mesh.setupValues(groundMesh);
         // Setup helper lists
         innerLine = new ArrayList<>();
@@ -139,7 +139,7 @@ public class Slope {
     }
 
     public double getHeight() {
-        return slopeSkeletonEntity.getHeight();
+        return slopeSkeleton.getHeight();
     }
 
     public List<Vertex> getInnerLine() {
@@ -186,12 +186,8 @@ public class Slope {
         return 0;
     }
 
-    public SlopeSkeletonEntity getSlopeSkeletonEntity() {
-        return slopeSkeletonEntity;
-    }
-
-    public void setSlopeSkeletonEntity(SlopeSkeletonEntity slopeSkeletonEntity) {
-        this.slopeSkeletonEntity = slopeSkeletonEntity;
+    public SlopeSkeleton getSlopeSkeleton() {
+        return slopeSkeleton;
     }
 
     public MeshEntry pick(Vertex pointOnGround) {
@@ -217,5 +213,9 @@ public class Slope {
             corners.add(new Vertex(corner.getX(), corner.getY(), 0));
         }
         return corners;
+    }
+
+    public void updateSlopeSkeleton(SlopeSkeleton slopeSkeleton) {
+        this.slopeSkeleton = slopeSkeleton;
     }
 }

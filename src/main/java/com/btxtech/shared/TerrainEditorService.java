@@ -1,6 +1,7 @@
 package com.btxtech.shared;
 
 import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNameId;
 import org.jboss.errai.bus.server.annotations.Remote;
 
@@ -14,13 +15,13 @@ import java.util.Collection;
 public interface TerrainEditorService {
     Collection<SlopeNameId> getSlopeNameIds();
 
-    SlopeConfigEntity loadSlopeConfig(int id);
+    SlopeConfig loadSlopeConfig(int id);
 
-    SlopeConfigEntity saveSlopeConfig(SlopeConfigEntity slopeConfigEntity);
+    SlopeConfig saveSlopeConfig(SlopeConfig slopeConfig);
 
-    void deleteSlopeConfig(SlopeConfigEntity slopeConfigEntity);
+    void deleteSlopeConfig(SlopeConfig slopeConfig);
 
     GroundConfig loadGroundConfig();
 
-    GroundConfig saveGroundConfig(GroundConfig slopeConfigEntity);
+    GroundConfig saveGroundConfig(GroundConfig slopeConfig);
 }

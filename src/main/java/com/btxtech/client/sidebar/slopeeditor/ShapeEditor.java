@@ -1,8 +1,8 @@
 package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.SlopeConfigEntity;
-import com.btxtech.shared.SlopeShapeEntity;
+import com.btxtech.shared.dto.SlopeConfig;
+import com.btxtech.shared.dto.SlopeShape;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -33,13 +33,13 @@ public class ShapeEditor implements Model {
     private SVGTransform translateTransform;
     private SVGTransform scaleTransform;
     private Index lastScrollPosition;
-    private SlopeConfigEntity slopeConfigEntity;
+    private SlopeConfig slopeConfig;
     private SelectedCornerListener selectedCornerListener;
     private SVGLineElement helperLine;
     private Corner selected;
 
-    protected void init(Element svgElement, SlopeConfigEntity slopeConfigEntity, SelectedCornerListener selectedCornerListener, Double scale) {
-        this.slopeConfigEntity = slopeConfigEntity;
+    protected void init(Element svgElement, SlopeConfig slopeConfig, SelectedCornerListener selectedCornerListener, Double scale) {
+        this.slopeConfig = slopeConfig;
         this.selectedCornerListener = selectedCornerListener;
         this.svg = (SVGSVGElement) svgElement;
 
@@ -85,10 +85,10 @@ public class ShapeEditor implements Model {
         svg.getStyle().setCursor("all-scroll");
         svg.appendChild(group);
 
-        setup(slopeConfigEntity.getShape());
+        setup(slopeConfig.getShape());
     }
 
-    private void setup(List<SlopeShapeEntity> shapeEntryEntities) {
+    private void setup(List<SlopeShape> shapeEntry) {
         // remove old
         for (Corner corner : corners) {
             group.removeChild(corner.getSvgElement());
@@ -99,11 +99,11 @@ public class ShapeEditor implements Model {
         }
         lines.clear();
         // setup
-        for (int i = 0; i < shapeEntryEntities.size(); i++) {
-            Corner corner = new Corner(shapeEntryEntities.get(i), this);
+        for (int i = 0; i < shapeEntry.size(); i++) {
+            Corner corner = new Corner(shapeEntry.get(i), this);
             corners.add(corner);
-            if (i + 1 < shapeEntryEntities.size()) {
-                lines.add(new Line(corner, shapeEntryEntities.get(i + 1).getPosition(), this));
+            if (i + 1 < shapeEntry.size()) {
+                lines.add(new Line(corner, shapeEntry.get(i + 1).getPosition(), this));
             }
         }
         // append. zIndex does not work in SVG 1.1. Append order is used. First added first draw. Latter added are draw on top.
@@ -138,17 +138,16 @@ public class ShapeEditor implements Model {
     @Override
     public void createCorner(Index position, Corner previous) {
         selectionChanged(null);
-        int index = slopeConfigEntity.getShape().indexOf(previous.getSlopeShapeEntity());
-        SlopeShapeEntity shapeEntryEntity = new SlopeShapeEntity(position, 0f);
-        slopeConfigEntity.getShape().add(index + 1, shapeEntryEntity);
-        setup(slopeConfigEntity.getShape());
+        int index = slopeConfig.getShape().indexOf(previous.getSlopeShape());
+        slopeConfig.getShape().add(index + 1, new SlopeShape(position, 0));
+        setup(slopeConfig.getShape());
     }
 
     public void deleteSelectedCorner() {
-        SlopeShapeEntity slopeShapeEntity = selected.getSlopeShapeEntity();
+        SlopeShape slopeShape = selected.getSlopeShape();
         selectionChanged(null);
-        slopeConfigEntity.getShape().remove(slopeShapeEntity);
-        setup(slopeConfigEntity.getShape());
+        slopeConfig.getShape().remove(slopeShape);
+        setup(slopeConfig.getShape());
     }
 
     @Override
@@ -169,7 +168,7 @@ public class ShapeEditor implements Model {
     }
 
     public void setSlopeFactorSelected(double slopeFactor) {
-        selected.getSlopeShapeEntity().setSlopeFactor((float) slopeFactor);
+        selected.getSlopeShape().setSlopeFactor((float) slopeFactor);
     }
 
     public void zoomIn() {

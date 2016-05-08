@@ -1,10 +1,6 @@
 package com.btxtech.client.terrain.slope;
 
-import com.btxtech.shared.SlopeSkeletonEntry;
-import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
 import org.junit.Test;
-
-import java.lang.reflect.Field;
 
 /**
  * Created by Beat
@@ -80,13 +76,13 @@ public class SlopeSkeletonEntityFactoryTest {
 //        }
     }
 
-    private SlopeSkeletonEntry[][] getNodes(SlopeSkeletonFactory slopeSkeletonFactory) throws NoSuchFieldException, IllegalAccessException {
-        Field field = slopeSkeletonFactory.getClass().getDeclaredField("nodes");
-        field.setAccessible(true);
-        SlopeSkeletonEntry[][] nodes = (SlopeSkeletonEntry[][]) field.get(slopeSkeletonFactory);
-        field.setAccessible(false);
-
-        return nodes;
-    }
+//    private SlopeSkeletonEntry[][] getNodes(SlopeModeler slopeModeler) throws NoSuchFieldException, IllegalAccessException {
+//        Field field = slopeModeler.getClass().getDeclaredField("nodes");
+//        field.setAccessible(true);
+//        SlopeSkeletonEntry[][] nodes = (SlopeSkeletonEntry[][]) field.get(slopeModeler);
+//        field.setAccessible(false);
+//
+//        return nodes;
+//    }
 
 }

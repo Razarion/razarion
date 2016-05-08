@@ -1,7 +1,7 @@
-package com.btxtech.client.terrain.slope.skeleton;
+package com.btxtech.shared;
 
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.SlopeShapeEntity;
+import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.List;
@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class Shape {
     private double distance;
-    private List<SlopeShapeEntity> entries;
+    private List<SlopeShape> entries;
 
-    public Shape(List<SlopeShapeEntity> entries) {
+    public Shape(List<SlopeShape> entries) {
         this.entries = entries;
         distance = Math.abs(entries.get(0).getPosition().getX() - entries.get(entries.size() - 1).getPosition().getX());
     }

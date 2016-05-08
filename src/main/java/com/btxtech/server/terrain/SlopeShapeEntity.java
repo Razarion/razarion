@@ -1,6 +1,7 @@
-package com.btxtech.shared;
+package com.btxtech.server.terrain;
 
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.dto.SlopeShape;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import javax.persistence.Embedded;
@@ -15,7 +16,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Portable
-@Table(name = "slope_shape_entry")
+@Table(name = "slope_shape_entry") // TODO rename
 public class SlopeShapeEntity {
     @Id
     @GeneratedValue
@@ -27,31 +28,13 @@ public class SlopeShapeEntity {
      */
     private float slopeFactor;
 
-    /**
-     * Used by Errai and JPA
-     */
-    public SlopeShapeEntity() {
+    public SlopeShape toSlopeShape() {
+        return new SlopeShape(position, slopeFactor);
     }
 
-    public SlopeShapeEntity(Index position, float slopeFactor) {
-        this.position = position;
-        this.slopeFactor = slopeFactor;
-    }
-
-    public Index getPosition() {
-        return position;
-    }
-
-    public void setPosition(Index position) {
-        this.position = position;
-    }
-
-    public float getSlopeFactor() {
-        return slopeFactor;
-    }
-
-    public void setSlopeFactor(float slopeFactor) {
-        this.slopeFactor = slopeFactor;
+    public void fromSlopeShape(SlopeShape slopeShape) {
+        position = slopeShape.getPosition();
+        slopeFactor = slopeShape.getSlopeFactor();
     }
 
     @Override

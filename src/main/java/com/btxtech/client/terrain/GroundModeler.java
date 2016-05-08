@@ -11,7 +11,7 @@ import com.btxtech.shared.dto.GroundSkeleton;
  * Created by Beat
  * 03.05.2016.
  */
-public class GroundSkeletonModeler {
+public class GroundModeler {
     public static void sculptSkeleton(GroundConfig groundConfig) {
         FractalField heightField = FractalField.createSaveFractalField(groundConfig.getGroundSkeleton().getHeightXCount(), groundConfig.getGroundSkeleton().getHeightYCount(), groundConfig.getHeightFractalRoughness(), -groundConfig.getHeightFractalShift() / 2.0, groundConfig.getHeightFractalShift());
         double[][] heights = new double[groundConfig.getGroundSkeleton().getHeightXCount()][groundConfig.getGroundSkeleton().getHeightYCount()];

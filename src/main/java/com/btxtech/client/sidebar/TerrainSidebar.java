@@ -1,11 +1,10 @@
 package com.btxtech.client.sidebar;
 
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.terrain.GroundSkeletonModeler;
+import com.btxtech.client.terrain.GroundModeler;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.GroundSkeleton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -15,8 +14,6 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.marshalling.client.Marshalling;
-import org.jboss.errai.marshalling.client.api.Marshaller;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -25,9 +22,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -139,7 +133,7 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        GroundSkeletonModeler.sculptSkeleton(groundConfig);
+        GroundModeler.sculptSkeleton(groundConfig);
         terrainSurface.setGroundSkeleton(groundConfig.getGroundSkeleton());
         terrainSurface.fillBuffers();
     }

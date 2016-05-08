@@ -17,8 +17,8 @@ public class Line {
 
     public Line(final Corner previous, Index next, final Model model) {
         line = Browser.getDocument().createSVGLineElement();
-        line.getX1().getBaseVal().setValue(previous.getSlopeShapeEntity().getPosition().getX());
-        line.getY1().getBaseVal().setValue(previous.getSlopeShapeEntity().getPosition().getY());
+        line.getX1().getBaseVal().setValue(previous.getSlopeShape().getPosition().getX());
+        line.getY1().getBaseVal().setValue(previous.getSlopeShape().getPosition().getY());
         line.getX2().getBaseVal().setValue(next.getX());
         line.getY2().getBaseVal().setValue(next.getY());
         line.getStyle().setProperty("stroke", "blue");

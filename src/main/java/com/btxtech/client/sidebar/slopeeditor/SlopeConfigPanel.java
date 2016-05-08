@@ -1,9 +1,9 @@
 package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.terrain.slope.skeleton.SlopeSkeletonFactory;
+import com.btxtech.client.terrain.slope.SlopeModeler;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.SlopeConfigEntity;
+import com.btxtech.shared.dto.SlopeConfig;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -34,7 +34,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     private TerrainSurface terrainSurface;
     @Inject
     @AutoBound
-    private DataBinder<SlopeConfigEntity> plateauConfigEntityDataBinder;
+    private DataBinder<SlopeConfig> slopeConfigDataBinder;
     @Inject
     @Bound
     @DataField
@@ -44,23 +44,23 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @DataField
     private TextBox internalName;
     @Inject
-    @Bound
+    @Bound(property = "slopeSkeleton.slopeGroundSplattingBumpDepth")
     @DataField
     private DoubleBox slopeGroundSplattingBumpDepth;
     @Inject
-    @Bound
+    @Bound(property = "slopeSkeleton.slopeFactorDistance")
     @DataField
     private DoubleBox slopeFactorDistance;
     @Inject
-    @Bound
+    @Bound(property = "slopeSkeleton.bumpMapDepth")
     @DataField
     private DoubleBox bumpMapDepth;
     @Inject
-    @Bound
+    @Bound(property = "slopeSkeleton.specularIntensity")
     @DataField
     private DoubleBox specularIntensity;
     @Inject
-    @Bound
+    @Bound(property = "slopeSkeleton.specularHardness")
     @DataField
     private DoubleBox specularHardness;
     @Inject
@@ -72,11 +72,11 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @DataField
     private DoubleBox fractalRoughness;
     @Inject
-    @Bound
+    @Bound(property = "slopeSkeleton.verticalSpace")
     @DataField
     private IntegerBox verticalSpace;
     @Inject
-    @Bound
+    @Bound(property = "slopeSkeleton.segments")
     @DataField
     private IntegerBox segments;
     @DataField
@@ -111,10 +111,9 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @DataField
     private Button update;
 
-
-    public void init(SlopeConfigEntity slopeConfigEntity, Double zoom) {
-        plateauConfigEntityDataBinder.setModel(slopeConfigEntity);
-        shapeEditor.init(svgElement, slopeConfigEntity, this, zoom);
+    public void init(SlopeConfig slopeConfig, Double zoom) {
+        slopeConfigDataBinder.setModel(slopeConfig);
+        shapeEditor.init(svgElement, slopeConfig, this, zoom);
     }
 
     public double getZoom() {
@@ -136,16 +135,16 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
         shapeEditor.setHelperLine(helperLine.getValue());
     }
 
-    public SlopeConfigEntity getSlopeConfigEntity() {
-        return plateauConfigEntityDataBinder.getModel();
+    public SlopeConfig getSlopeConfig() {
+        return slopeConfigDataBinder.getModel();
     }
 
     @Override
     public void onSelectionChanged(Corner corner) {
         if (corner != null) {
-            selectedXPos.setValue(corner.getSlopeShapeEntity().getPosition().getX());
-            selectedYPos.setValue(corner.getSlopeShapeEntity().getPosition().getY());
-            selectedSlopeFactor.setValue((double) corner.getSlopeShapeEntity().getSlopeFactor());
+            selectedXPos.setValue(corner.getSlopeShape().getPosition().getX());
+            selectedYPos.setValue(corner.getSlopeShape().getPosition().getY());
+            selectedSlopeFactor.setValue((double) corner.getSlopeShape().getSlopeFactor());
         } else {
             selectedXPos.setValue(null);
             selectedXPos.setReadOnly(true);
@@ -178,16 +177,15 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
 
     @EventHandler("update")
     private void updateButtonClick(ClickEvent event) {
-        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
-        slopeConfigEntity.getSlopeSkeletonEntity().setValues(slopeConfigEntity);
-        terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
+        SlopeConfig slopeConfig = getSlopeConfig();
+        terrainSurface.setSlopeSkeleton(slopeConfig.getSlopeSkeleton());
     }
 
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
-        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
-        SlopeSkeletonFactory.sculpt(slopeConfigEntity);
-        terrainSurface.setSlopeSkeletonEntity(slopeConfigEntity.getSlopeSkeletonEntity());
+        SlopeConfig slopeConfig = getSlopeConfig();
+        SlopeModeler.sculpt(slopeConfig);
+        terrainSurface.setSlopeSkeleton(slopeConfig.getSlopeSkeleton());
         terrainSurface.fillBuffers();
     }
 }

@@ -7,10 +7,10 @@ import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.client.terrain.slope.SlopeWater;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.shared.TerrainSlopePositionEntity;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.dto.GroundSkeleton;
+import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -47,14 +47,14 @@ public class TerrainSurface {
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private final double highestPointInView = 101; // Should be calculated
     private final double lowestPointInView = -9; // Should be calculated
-    private Map<Integer, SlopeSkeletonEntity> slopeSkeletonMap = new HashMap<>();
+    private Map<Integer, SlopeSkeleton> slopeSkeletonMap = new HashMap<>();
     private Map<Integer, Slope> slopeMap = new HashMap<>();
     private Map<Integer, TerrainSlopePositionEntity> terrainSlopePositionEntities = new HashMap<>();
     private GroundSkeleton groundSkeleton;
 
     public TerrainSurface() {
-        terrainSlopePositionEntities.put(1, new TerrainSlopePositionEntity(1, 2005, Arrays.asList(new Index(580, 500), new Index(1000, 500), new Index(1000, 1120))));
-        terrainSlopePositionEntities.put(2, new TerrainSlopePositionEntity(2, 12514, Arrays.asList(new Index(2000, 1000), new Index(3000, 1000), new Index(2000, 1500))));
+        terrainSlopePositionEntities.put(1, new TerrainSlopePositionEntity(1, 2706, Arrays.asList(new Index(580, 500), new Index(1000, 500), new Index(1000, 1120))));
+        terrainSlopePositionEntities.put(2, new TerrainSlopePositionEntity(2, 12517, Arrays.asList(new Index(2000, 1000), new Index(3000, 1000), new Index(2000, 1500))));
     }
 
     public void init() {
@@ -73,54 +73,54 @@ public class TerrainSurface {
     }
 
     public void setupPlateau(TerrainSlopePositionEntity terrainSlopePositionEntity) {
-        SlopeSkeletonEntity slopeSkeletonEntity = getSlopeSkeleton(terrainSlopePositionEntity.getSlopeId());
+        SlopeSkeleton slopeSkeleton = getSlopeSkeleton(terrainSlopePositionEntity.getSlopeId());
         Slope slope;
-        if (slopeSkeletonEntity.getType() == SlopeSkeletonEntity.Type.WATER) {
-            slope = new SlopeWater(water, slopeSkeletonEntity, terrainSlopePositionEntity.getPolygon());
+        if (slopeSkeleton.getType() == SlopeSkeleton.Type.WATER) {
+            slope = new SlopeWater(water, slopeSkeleton, terrainSlopePositionEntity.getPolygon());
             slope.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
             slope.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
             slope.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
-        } else if (slopeSkeletonEntity.getType() == SlopeSkeletonEntity.Type.LAND) {
-            slope = new Slope(slopeSkeletonEntity, terrainSlopePositionEntity.getPolygon());
+        } else if (slopeSkeleton.getType() == SlopeSkeleton.Type.LAND) {
+            slope = new Slope(slopeSkeleton, terrainSlopePositionEntity.getPolygon());
             slope.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
             slope.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
             slope.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
             slope.wrap(groundMesh);
         } else {
-            throw new IllegalStateException("Unknown enum type: " + slopeSkeletonEntity.getType());
+            throw new IllegalStateException("Unknown enum type: " + slopeSkeleton.getType());
         }
         slope.wrap(groundMesh);
         slope.setupGroundConnection(groundMesh);
         slopeMap.put(terrainSlopePositionEntity.getId(), slope);
     }
 
-    private SlopeSkeletonEntity getSlopeSkeleton(int id) {
-        SlopeSkeletonEntity slopeSkeletonEntity = slopeSkeletonMap.get(id);
-        if (slopeSkeletonEntity == null) {
+    private SlopeSkeleton getSlopeSkeleton(int id) {
+        SlopeSkeleton slopeSkeleton = slopeSkeletonMap.get(id);
+        if (slopeSkeleton == null) {
             throw new IllegalArgumentException("No entry in integerSlopeSkeletonMap for id: " + id);
         }
-        return slopeSkeletonEntity;
+        return slopeSkeleton;
     }
 
-    public void setAllSlopeSkeletonEntities(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
+    public void setAllSlopeSkeletons(Collection<SlopeSkeleton> slopeSkeletons) {
         slopeSkeletonMap.clear();
-        for (SlopeSkeletonEntity slopeSkeletonEntity : slopeSkeletonEntities) {
-            slopeSkeletonMap.put(slopeSkeletonEntity.getId().intValue(), slopeSkeletonEntity);
+        for (SlopeSkeleton slopeSkeleton : slopeSkeletons) {
+            slopeSkeletonMap.put(slopeSkeleton.getId(), slopeSkeleton);
         }
     }
 
-    public void setSlopeSkeletonEntity(SlopeSkeletonEntity slopeSkeletonEntity) {
-        slopeSkeletonMap.put(slopeSkeletonEntity.getId().intValue(), slopeSkeletonEntity);
+    public void setSlopeSkeleton(SlopeSkeleton slopeSkeleton) {
+        slopeSkeletonMap.put(slopeSkeleton.getId(), slopeSkeleton);
         for (Slope slope : slopeMap.values()) {
-            if (slope.getSlopeSkeletonEntity().equals(slopeSkeletonEntity)) {
-                slope.setSlopeSkeletonEntity(slopeSkeletonEntity);
+            if (slope.getSlopeSkeleton().getId() == slopeSkeleton.getId()) {
+                slope.updateSlopeSkeleton(slopeSkeleton);
+                logger.severe("setSlopeSkeleton " + slopeSkeleton.getId() + " size: " + slopeSkeletonMap.size() + " SlopeFactorDistance: " + slopeSkeleton.getSlopeFactorDistance());
             }
         }
-        logger.severe("setSlopeSkeletonEntity " + slopeSkeletonEntity.getId() + " size: " + slopeSkeletonMap.size() + " SlopeFactorDistance: " + slopeSkeletonEntity.getSlopeFactorDistance());
     }
 
     private void setupGround(int xCount, int yCount) {
-        groundMesh = GroundSkeletonModeler.generateGroundMesh(groundSkeleton, xCount, yCount);
+        groundMesh = GroundModeler.generateGroundMesh(groundSkeleton, xCount, yCount);
         groundMesh.setupNorms();
     }
 

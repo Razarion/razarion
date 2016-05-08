@@ -1,10 +1,9 @@
 package com.btxtech.server.terrain;
 
 import com.btxtech.server.ExceptionHandler;
-import com.btxtech.shared.SlopeConfigEntity;
-import com.btxtech.shared.SlopeConfigEntity_;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNameId;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -59,15 +58,9 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public SlopeConfigEntity loadSlopeConfig(int id) {
+    public SlopeConfig loadSlopeConfig(int id) {
         try {
-            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            // Query for total row count in invitations
-            CriteriaQuery<SlopeConfigEntity> userQuery = criteriaBuilder.createQuery(SlopeConfigEntity.class);
-            Root<SlopeConfigEntity> from = userQuery.from(SlopeConfigEntity.class);
-            userQuery.where(criteriaBuilder.equal(from.get(SlopeConfigEntity_.id), id));
-            CriteriaQuery<SlopeConfigEntity> userSelect = userQuery.select(from);
-            return entityManager.createQuery(userSelect).getSingleResult();
+            return entityManager.find(SlopeConfigEntity.class, (long) id).toSlopeConfig();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -76,14 +69,23 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public SlopeConfigEntity saveSlopeConfig(SlopeConfigEntity slopeConfigEntity) {
+    public SlopeConfig saveSlopeConfig(SlopeConfig slopeConfig) {
         try {
             Gson gson = new Gson();
-            String json = gson.toJson(slopeConfigEntity);
+            String json = gson.toJson(slopeConfig);
             System.out.println("--------------------------------------------------------");
             System.out.println(json);
             System.out.println("--------------------------------------------------------");
-            return entityManager.merge(slopeConfigEntity);
+
+            SlopeConfigEntity slopeConfigEntity;
+            if (slopeConfig.hasId()) {
+                slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) slopeConfig.getId());
+            } else {
+                slopeConfigEntity = new SlopeConfigEntity();
+            }
+            slopeConfigEntity.fromSlopeConfig(slopeConfig);
+
+            return entityManager.merge(slopeConfigEntity).toSlopeConfig();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -92,9 +94,10 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public void deleteSlopeConfig(SlopeConfigEntity slopeConfigEntity) {
+    public void deleteSlopeConfig(SlopeConfig slopeConfig) {
         try {
-            entityManager.remove(entityManager.contains(slopeConfigEntity) ? slopeConfigEntity : entityManager.merge(slopeConfigEntity));
+            SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) slopeConfig.getId());
+            entityManager.remove(slopeConfigEntity);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

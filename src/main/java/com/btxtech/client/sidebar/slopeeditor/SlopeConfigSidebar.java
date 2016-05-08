@@ -2,10 +2,11 @@ package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.SlopeConfigEntity;
-import com.btxtech.shared.dto.SlopeNameId;
-import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.dto.SlopeConfig;
+import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.dto.SlopeSkeleton;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -67,7 +68,7 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
         slopeSelection.addValueChangeHandler(new ValueChangeHandler<SlopeNameId>() {
             @Override
             public void onValueChange(ValueChangeEvent<SlopeNameId> event) {
-                loadSlopeConfigEntity(slopeSelection.getValue());
+                loadSlopeConfig(slopeSelection.getValue());
             }
         });
     }
@@ -83,9 +84,9 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
             @Override
             public void callback(Collection<SlopeNameId> slopeNameIds) {
                 slopeSelection.setAcceptableValues(slopeNameIds);
-                SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
-                if (slopeConfigEntity != null && slopeConfigEntity.hasId()) {
-                    slopeSelection.setValue(slopeConfigEntity.createSlopeNameId());
+                SlopeConfig slopeConfig = getSlopeConfig();
+                if (slopeConfig != null && slopeConfig.hasId()) {
+                    slopeSelection.setValue(slopeConfig.createSlopeNameId());
                 }
 
             }
@@ -100,23 +101,24 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
 
     @EventHandler("newSlope")
     private void newSlopeButtonClick(ClickEvent event) {
-        SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
-        slopeConfigEntity.setSegments(1);
-        slopeConfigEntity.setVerticalSpace(30);
-        List<SlopeShapeEntity> slopeShapeEntityList = new ArrayList<>();
-        slopeShapeEntityList.add(new SlopeShapeEntity(new Index(0, 0), 0));
-        slopeShapeEntityList.add(new SlopeShapeEntity(new Index(20, 20), 0));
-        slopeConfigEntity.setShape(slopeShapeEntityList);
-        initEditor(slopeConfigEntity);
+        SlopeConfig slopeConfig = new SlopeConfig();
+        slopeConfig.setSlopeSkeleton(new SlopeSkeleton());
+        slopeConfig.getSlopeSkeleton().setSegments(1);
+        slopeConfig.getSlopeSkeleton().setVerticalSpace(30);
+        List<SlopeShape> slopeShapes = new ArrayList<>();
+        slopeShapes.add(new SlopeShape(new Index(0, 0), 0));
+        slopeShapes.add(new SlopeShape(new Index(20, 20), 0));
+        slopeConfig.setShape(slopeShapes);
+        initEditor(slopeConfig);
         slopeSelection.setValue(null);
     }
 
     @EventHandler("delete")
     private void deleteButtonClick(ClickEvent event) {
         // TODO are you sure dialog
-        SlopeConfigEntity slopeConfigEntity = getSlopeConfigEntity();
+        SlopeConfig slopeConfig = getSlopeConfig();
         hideEditor();
-        if (slopeConfigEntity.hasId()) {
+        if (slopeConfig.hasId()) {
             terrainEditorService.call(new RemoteCallback<Void>() {
                 @Override
                 public void callback(Void response) {
@@ -128,16 +130,16 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
                     logger.log(Level.SEVERE, "deleteSlopeConfig failed: " + message, throwable);
                     return false;
                 }
-            }).deleteSlopeConfig(slopeConfigEntity);
+            }).deleteSlopeConfig(slopeConfig);
         }
     }
 
     @EventHandler("save")
     private void saveButtonClick(ClickEvent event) {
-        terrainEditorService.call(new RemoteCallback<SlopeConfigEntity>() {
+        terrainEditorService.call(new RemoteCallback<SlopeConfig>() {
             @Override
-            public void callback(SlopeConfigEntity slopeConfigEntity) {
-                initEditor(slopeConfigEntity);
+            public void callback(SlopeConfig slopeConfig) {
+                initEditor(slopeConfig);
                 updateSlopeSelection();
             }
         }, new ErrorCallback<Object>() {
@@ -146,16 +148,16 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
                 logger.log(Level.SEVERE, "saveSlopeConfig failed: " + message, throwable);
                 return false;
             }
-        }).saveSlopeConfig(getSlopeConfigEntity());
+        }).saveSlopeConfig(getSlopeConfig());
     }
 
-    private void loadSlopeConfigEntity(SlopeNameId value) {
+    private void loadSlopeConfig(SlopeNameId value) {
         loadingLabel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        terrainEditorService.call(new RemoteCallback<SlopeConfigEntity>() {
+        terrainEditorService.call(new RemoteCallback<SlopeConfig>() {
             @Override
-            public void callback(SlopeConfigEntity slopeConfigEntity) {
+            public void callback(SlopeConfig slopeConfig) {
                 loadingLabel.getElement().getStyle().setDisplay(Style.Display.NONE);
-                initEditor(slopeConfigEntity);
+                initEditor(slopeConfig);
             }
         }, new ErrorCallback<Object>() {
             @Override
@@ -167,17 +169,21 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
 
     }
 
-    private void initEditor(SlopeConfigEntity slopeConfigEntity) {
-        Double zoom = null;
-        if(content.getWidget() != null) {
-            zoom = ((SlopeConfigPanel)content.getWidget()).getZoom();
-        }
+    private void initEditor(SlopeConfig slopeConfig) {
+        try {
+            Double zoom = null;
+            if (content.getWidget() != null) {
+                zoom = ((SlopeConfigPanel) content.getWidget()).getZoom();
+            }
 
-        SlopeConfigPanel slopeConfigPanel = plateauPanelInstance.get();
-        slopeConfigPanel.init(slopeConfigEntity, zoom);
-        content.setWidget(slopeConfigPanel);
-        delete.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        save.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+            SlopeConfigPanel slopeConfigPanel = plateauPanelInstance.get();
+            slopeConfigPanel.init(slopeConfig, zoom);
+            content.setWidget(slopeConfigPanel);
+            delete.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+            save.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        } catch(Exception e) {
+            logger.log(Level.SEVERE, "loadSlopeConfig failed: " + e.getMessage(), e);
+        }
     }
 
     private void hideEditor() {
@@ -186,7 +192,7 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
         save.getElement().getStyle().setDisplay(Style.Display.NONE);
     }
 
-    private SlopeConfigEntity getSlopeConfigEntity() {
-        return ((SlopeConfigPanel) content.getWidget()).getSlopeConfigEntity();
+    private SlopeConfig getSlopeConfig() {
+        return ((SlopeConfigPanel) content.getWidget()).getSlopeConfig();
     }
 }

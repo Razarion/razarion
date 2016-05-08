@@ -1,8 +1,8 @@
 package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.shared.TerrainService;
+import com.btxtech.shared.dto.SlopeSkeleton;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -28,19 +28,19 @@ public class LoadSlopeSkeletonTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        terrainServiceCaller.call(new RemoteCallback<Collection<SlopeSkeletonEntity>>() {
+        terrainServiceCaller.call(new RemoteCallback<Collection<SlopeSkeleton>>() {
             @Override
-            public void callback(Collection<SlopeSkeletonEntity> slopeSkeletonEntities) {
-                terrainSurface.setAllSlopeSkeletonEntities(slopeSkeletonEntities);
+            public void callback(Collection<SlopeSkeleton> slopeSkeletons) {
+                terrainSurface.setAllSlopeSkeletons(slopeSkeletons);
                 deferredStartup.finished();
             }
         }, new ErrorCallback<Object>() {
             @Override
             public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "loadSlopeSkeleton failed: " + message, throwable);
+                logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
                 deferredStartup.failed(throwable);
                 return false;
             }
-        }).loadSlopeSkeleton();
+        }).loadSlopeSkeletons();
     }
 }
