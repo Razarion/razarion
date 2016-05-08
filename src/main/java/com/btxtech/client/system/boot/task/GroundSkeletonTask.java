@@ -1,8 +1,8 @@
 package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.shared.GroundSkeletonEntity;
 import com.btxtech.shared.TerrainService;
+import com.btxtech.shared.dto.GroundSkeleton;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -27,11 +27,11 @@ public class GroundSkeletonTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        terrainServiceCaller.call(new RemoteCallback<GroundSkeletonEntity>() {
+        terrainServiceCaller.call(new RemoteCallback<GroundSkeleton>() {
             @Override
-            public void callback(GroundSkeletonEntity groundSkeletonEntity) {
+            public void callback(GroundSkeleton groundSkeleton) {
                 try {
-                    terrainSurface.setGroundSkeletonEntity(groundSkeletonEntity);
+                    terrainSurface.setGroundSkeleton(groundSkeleton);
                     deferredStartup.finished();
                 } catch (Throwable throwable) {
                     logger.log(Level.SEVERE, throwable.getMessage(), throwable);

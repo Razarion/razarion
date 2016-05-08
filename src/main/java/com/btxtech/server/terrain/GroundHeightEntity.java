@@ -1,6 +1,4 @@
-package com.btxtech.shared;
-
-import org.jboss.errai.common.client.api.annotations.Portable;
+package com.btxtech.server.terrain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,10 +9,9 @@ import javax.persistence.Table;
  * Created by Beat
  * 02.05.2016.
  */
-@Portable
 @Entity
 @Table(name = "GROUND_HEIGHT_ENTRY")
-public class GroundHeightEntry {
+public class GroundHeightEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -25,10 +22,10 @@ public class GroundHeightEntry {
     /**
      * Used by GWT and errai
      */
-    public GroundHeightEntry() {
+    public GroundHeightEntity() {
     }
 
-    public GroundHeightEntry(int xIndex, int yIndex, double height) {
+    public GroundHeightEntity(int xIndex, int yIndex, double height) {
         this.xIndex = xIndex;
         this.yIndex = yIndex;
         this.height = height;
@@ -71,7 +68,7 @@ public class GroundHeightEntry {
             return false;
         }
 
-        GroundHeightEntry that = (GroundHeightEntry) o;
+        GroundHeightEntity that = (GroundHeightEntity) o;
         return id != null && id.equals(that.id);
     }
 

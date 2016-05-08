@@ -3,7 +3,7 @@ package com.btxtech.client.sidebar.slopeeditor;
 import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.SlopeConfigEntity;
-import com.btxtech.shared.SlopeNameId;
+import com.btxtech.shared.dto.SlopeNameId;
 import com.btxtech.shared.SlopeShapeEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.google.gwt.dom.client.Style;

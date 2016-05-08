@@ -1,11 +1,11 @@
 package com.btxtech.client.sidebar;
 
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.terrain.GroundSkeletonFactory;
+import com.btxtech.client.terrain.GroundSkeletonModeler;
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.shared.GroundConfigEntity;
-import com.btxtech.shared.GroundSkeletonEntity;
 import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.dto.GroundSkeleton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -15,6 +15,8 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.marshalling.client.Marshalling;
+import org.jboss.errai.marshalling.client.api.Marshaller;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -23,6 +25,9 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,17 +46,17 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
     @AutoBound
-    private DataBinder<GroundConfigEntity> groundConfigEntityDataBinder;
+    private DataBinder<GroundConfig> groundConfigDataBinder;
     @Inject
-    @Bound
+    @Bound(property = "groundSkeleton.splattingDistance")
     @DataField
     private DoubleBox splattingDistance;
     @Inject
-    @Bound
+    @Bound(property = "groundSkeleton.splattingXCount")
     @DataField
     private IntegerBox splattingXCount;
     @Inject
-    @Bound
+    @Bound(property = "groundSkeleton.splattingYCount")
     @DataField
     private IntegerBox splattingYCount;
     @Inject
@@ -67,23 +72,23 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @DataField
     private DoubleBox splattingFractalRoughness;
     @Inject
-    @Bound
+    @Bound(property = "groundSkeleton.bumpMapDepth")
     @DataField
     private DoubleBox bumpMapDepth;
     @Inject
-    @Bound
+    @Bound(property = "groundSkeleton.specularIntensity")
     @DataField
     private DoubleBox specularIntensity;
     @Inject
-    @Bound
+    @Bound(property = "groundSkeleton.specularHardness")
     @DataField
     private DoubleBox specularHardness;
     @Inject
-    @Bound
+    @Bound(property = "groundSkeleton.heightXCount")
     @DataField
     private IntegerBox heightXCount;
     @Inject
-    @Bound
+    @Bound(property = "groundSkeleton.heightYCount")
     @DataField
     private IntegerBox heightYCount;
     @Inject
@@ -106,10 +111,10 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
 
     @PostConstruct
     public void init() {
-        terrainEditorService.call(new RemoteCallback<GroundConfigEntity>() {
+        terrainEditorService.call(new RemoteCallback<GroundConfig>() {
             @Override
-            public void callback(GroundConfigEntity groundConfigEntity) {
-                groundConfigEntityDataBinder.setModel(groundConfigEntity);
+            public void callback(GroundConfig groundConfig) {
+                groundConfigDataBinder.setModel(groundConfig);
             }
         }, new ErrorCallback<Object>() {
             @Override
@@ -127,26 +132,24 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
 
     @EventHandler("updateButton")
     private void updateButtonClick(ClickEvent event) {
-        GroundConfigEntity groundConfigEntity = groundConfigEntityDataBinder.getModel();
-        GroundSkeletonEntity groundSkeletonEntity = groundConfigEntity.getGroundSkeletonEntity();
-        groundSkeletonEntity.setValues(groundConfigEntity);
-        terrainSurface.setGroundSkeletonEntity(groundSkeletonEntity);
+        GroundConfig groundConfig = groundConfigDataBinder.getModel();
+        terrainSurface.setGroundSkeleton(groundConfig.getGroundSkeleton());
     }
 
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
-        GroundConfigEntity groundConfigEntity = groundConfigEntityDataBinder.getModel();
-        GroundSkeletonFactory.sculpt(groundConfigEntity);
-        terrainSurface.setGroundSkeletonEntity(groundConfigEntity.getGroundSkeletonEntity());
+        GroundConfig groundConfig = groundConfigDataBinder.getModel();
+        GroundSkeletonModeler.sculptSkeleton(groundConfig);
+        terrainSurface.setGroundSkeleton(groundConfig.getGroundSkeleton());
         terrainSurface.fillBuffers();
     }
 
     @EventHandler("saveButton")
     private void saveButtonClick(ClickEvent event) {
-        terrainEditorService.call(new RemoteCallback<GroundConfigEntity>() {
+        terrainEditorService.call(new RemoteCallback<GroundConfig>() {
             @Override
-            public void callback(GroundConfigEntity groundConfigEntity) {
-                groundConfigEntityDataBinder.setModel(groundConfigEntity);
+            public void callback(GroundConfig groundConfig) {
+                groundConfigDataBinder.setModel(groundConfig);
             }
         }, new ErrorCallback<Object>() {
             @Override
@@ -154,6 +157,6 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
                 logger.log(Level.SEVERE, "saveGroundConfig failed: " + message, throwable);
                 return false;
             }
-        }).saveGroundConfig(groundConfigEntityDataBinder.getModel());
+        }).saveGroundConfig(groundConfigDataBinder.getModel());
     }
 }

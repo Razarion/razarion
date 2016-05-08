@@ -1,6 +1,7 @@
 package com.btxtech.shared;
 
 import com.btxtech.shared.SlopeConfigEntity;
+import com.btxtech.shared.dto.GroundSkeleton;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 import java.util.Collection;
@@ -13,5 +14,5 @@ import java.util.Collection;
 public interface TerrainService {
     Collection<SlopeSkeletonEntity> loadSlopeSkeleton();
 
-    GroundSkeletonEntity loadGroundSkeleton();
+    GroundSkeleton loadGroundSkeleton();
 }

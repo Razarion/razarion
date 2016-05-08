@@ -1,5 +1,6 @@
 package com.btxtech.shared;
 
+import com.btxtech.shared.dto.SlopeNameId;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 

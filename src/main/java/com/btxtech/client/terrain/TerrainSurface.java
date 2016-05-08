@@ -7,10 +7,10 @@ import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.client.terrain.slope.SlopeWater;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.GroundSkeletonEntity;
 import com.btxtech.shared.SlopeSkeletonEntity;
 import com.btxtech.shared.TerrainSlopePositionEntity;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
@@ -50,7 +50,7 @@ public class TerrainSurface {
     private Map<Integer, SlopeSkeletonEntity> slopeSkeletonMap = new HashMap<>();
     private Map<Integer, Slope> slopeMap = new HashMap<>();
     private Map<Integer, TerrainSlopePositionEntity> terrainSlopePositionEntities = new HashMap<>();
-    private GroundSkeletonEntity groundSkeletonEntity;
+    private GroundSkeleton groundSkeleton;
 
     public TerrainSurface() {
         terrainSlopePositionEntities.put(1, new TerrainSlopePositionEntity(1, 2005, Arrays.asList(new Index(580, 500), new Index(1000, 500), new Index(1000, 1120))));
@@ -120,7 +120,7 @@ public class TerrainSurface {
     }
 
     private void setupGround(int xCount, int yCount) {
-        groundMesh = groundSkeletonEntity.generateGroundMesh(xCount, yCount);
+        groundMesh = GroundSkeletonModeler.generateGroundMesh(groundSkeleton, xCount, yCount);
         groundMesh.setupNorms();
     }
 
@@ -181,12 +181,12 @@ public class TerrainSurface {
         return water;
     }
 
-    public GroundSkeletonEntity getGroundSkeletonEntity() {
-        return groundSkeletonEntity;
+    public GroundSkeleton getGroundSkeleton() {
+        return groundSkeleton;
     }
 
-    public void setGroundSkeletonEntity(GroundSkeletonEntity groundSkeletonEntity) {
-        this.groundSkeletonEntity = groundSkeletonEntity;
+    public void setGroundSkeleton(GroundSkeleton groundSkeleton) {
+        this.groundSkeleton = groundSkeleton;
     }
 
     public Collection<Integer> getTerrainSlopePositionIds() {

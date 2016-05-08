@@ -1,6 +1,4 @@
-package com.btxtech.shared;
-
-import org.jboss.errai.common.client.api.annotations.Portable;
+package com.btxtech.server.terrain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,10 +9,9 @@ import javax.persistence.Table;
  * Created by Beat
  * 02.05.2016.
  */
-@Portable
 @Entity
 @Table(name = "GROUND_SPLATTING_ENTRY")
-public class GroundSplattingEntry {
+public class GroundSplattingEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -25,10 +22,10 @@ public class GroundSplattingEntry {
     /**
      * Used by GWT and errai
      */
-    public GroundSplattingEntry() {
+    public GroundSplattingEntity() {
     }
 
-    public GroundSplattingEntry(int xIndex, int yIndex, double splatting) {
+    public GroundSplattingEntity(int xIndex, int yIndex, double splatting) {
         this.xIndex = xIndex;
         this.yIndex = yIndex;
         this.splatting = splatting;
@@ -67,7 +64,7 @@ public class GroundSplattingEntry {
             return false;
         }
 
-        GroundSplattingEntry that = (GroundSplattingEntry) o;
+        GroundSplattingEntity that = (GroundSplattingEntity) o;
         return id != null && id.equals(that.id);
     }
 

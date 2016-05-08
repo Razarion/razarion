@@ -1,4 +1,4 @@
-package com.btxtech.shared;
+package com.btxtech.shared.dto;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
