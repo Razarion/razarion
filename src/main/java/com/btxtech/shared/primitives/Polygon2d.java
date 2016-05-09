@@ -101,26 +101,6 @@ public class Polygon2D {
         return false;
     }
 
-    private List<Integer> getInsideCorners(Polygon2D other) {
-        List<Integer> insideCorners = new ArrayList<>();
-        for (int i = 0; i < other.getCorners().size(); i++) {
-            DecimalPosition otherCorner = other.getCorners().get(i);
-            if (isInside(otherCorner)) {
-                insideCorners.add(i);
-            }
-        }
-        return insideCorners;
-    }
-
-    private void dumpCombineTestCase(Polygon2D other) {
-        logger.severe(SPACE + "@Test");
-        logger.severe(SPACE + "public void combine() {");
-        logger.severe(SPACE + " Polygon2D poly1 = " + testString() + ";");
-        logger.severe(SPACE + " Polygon2D poly2 = " + other.testString() + ";");
-        logger.severe(SPACE + " Polygon2D polyResult = poly1.combine(poly2);\n");
-        logger.severe(SPACE + "}");
-    }
-
     public List<Line> getLines() {
         return lines;
     }
