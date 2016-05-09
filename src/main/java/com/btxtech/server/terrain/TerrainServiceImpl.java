@@ -4,6 +4,7 @@ import com.btxtech.server.ExceptionHandler;
 import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
 
@@ -17,6 +18,7 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -45,7 +47,7 @@ public class TerrainServiceImpl implements TerrainService {
             for (SlopeConfigEntity slopeConfigEntity : slopeConfigEntities) {
                 SlopeSkeleton slopeSkeleton = slopeConfigEntity.toSlopeSkeleton();
                 slopeSkeletons.add(slopeSkeleton);
-                System.out.println("--------------------------------------------------------");
+                System.out.println("loadSlopeSkeletons --------------------------------------------------------");
                 String json = gson.toJson(slopeSkeleton);
                 System.out.println(json);
                 System.out.println("--------------------------------------------------------");
@@ -68,7 +70,34 @@ public class TerrainServiceImpl implements TerrainService {
             Root<GroundConfigEntity> from = userQuery.from(GroundConfigEntity.class);
             CriteriaQuery<GroundConfigEntity> userSelect = userQuery.select(from);
             GroundConfigEntity groundSkeletonEntity = entityManager.createQuery(userSelect).getSingleResult();
+            System.out.println("loadGroundSkeleton --------------------------------------------------------");
+            Gson gson = new Gson();
+            String json = gson.toJson(groundSkeletonEntity.generateGroundSkeleton());
+            System.out.println(json);
+            System.out.println("--------------------------------------------------------");
+
             return groundSkeletonEntity.generateGroundSkeleton();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public Collection<TerrainSlopePosition> loadTerrainSlopePositions() {
+        try {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            // Query for total row count in invitations
+            CriteriaQuery<TerrainSlopePositionEntity> userQuery = criteriaBuilder.createQuery(TerrainSlopePositionEntity.class);
+            Root<TerrainSlopePositionEntity> from = userQuery.from(TerrainSlopePositionEntity.class);
+            CriteriaQuery<TerrainSlopePositionEntity> userSelect = userQuery.select(from);
+            List<TerrainSlopePositionEntity> terrainSlopePositionEntities = entityManager.createQuery(userSelect).getResultList();
+            Collection<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
+            for (TerrainSlopePositionEntity terrainSlopePositionEntity : terrainSlopePositionEntities) {
+                terrainSlopePositions.add(terrainSlopePositionEntity.generateTerrainSlopePosition());
+            }
+            return terrainSlopePositions;
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

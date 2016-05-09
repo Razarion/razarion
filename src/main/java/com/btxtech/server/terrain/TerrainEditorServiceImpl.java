@@ -5,6 +5,7 @@ import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
 
@@ -132,6 +133,28 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
             GroundConfigEntity groundConfigEntity = entityManager.createQuery(userSelect).getSingleResult();
             groundConfigEntity.fromGroundConfig(groundConfig);
             return entityManager.merge(groundConfigEntity).toGroundConfig();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public void saveTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions) {
+        try {
+            for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
+                TerrainSlopePositionEntity terrainSlopePositionEntity;
+                if(terrainSlopePosition.hasId()) {
+                    terrainSlopePositionEntity = entityManager.find(TerrainSlopePositionEntity.class, (long) terrainSlopePosition.getId());
+                } else {
+                    terrainSlopePositionEntity = new TerrainSlopePositionEntity();
+                }
+                SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) terrainSlopePosition.getSlopeId());
+                terrainSlopePositionEntity.setSlopeConfigEntity(slopeConfigEntity);
+                terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon());
+                entityManager.merge(terrainSlopePositionEntity);
+            }
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

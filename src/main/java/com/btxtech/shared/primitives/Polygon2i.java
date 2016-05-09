@@ -1,12 +1,12 @@
 package com.btxtech.shared.primitives;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.JavaUtils;
 import com.btxtech.game.jsre.client.common.Line2I;
 import com.btxtech.game.jsre.common.MathHelper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -125,5 +125,17 @@ public class Polygon2I {
         } else {
             throw new IllegalStateException("angleSum is odd: " + angleSum + " (" + MathHelper.radToGrad(angleSum) + ") ");
         }
+    }
+
+    public String testString() {
+        String s = " new Polygon(";
+        for (Iterator<Index> iterator = corners.iterator(); iterator.hasNext(); ) {
+            s += iterator.next().testString();
+            if (iterator.hasNext()) {
+                s += ", ";
+            }
+        }
+        s += ")";
+        return s;
     }
 }

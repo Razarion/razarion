@@ -41,7 +41,9 @@ public class RenderService {
     private TerrainSurface terrainSurface;
     @Inject
     private TerrainEditor terrainEditor;
-    private List<RenderSwitch> renderQueue = new ArrayList<>();
+    private List<RenderSwitch> renderQueue;
+    private Collection<TerrainEditorRenderer> terrainEditorRenderers;
+    private TerrainEditorCursorRenderer terrainEditorCursorRenderer;
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
@@ -55,11 +57,10 @@ public class RenderService {
     private RenderSwitch unitNorm;
     private int framesCount = 0;
     private long lastTime = 0;
-    private Collection<TerrainEditorRenderer> terrainEditorRenderers;
-    private TerrainEditorCursorRenderer terrainEditorCursorRenderer;
 
-    public void init() {
+    public void setupRenderers() {
         initFrameBuffer();
+        renderQueue = new ArrayList<>();
         createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class, 0);
         for (int id : terrainSurface.getSlopeIds()) {
             createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, id);
@@ -79,6 +80,13 @@ public class RenderService {
         unitNorm = createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, 0);
         terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorRenderer.class).get();
         terrainEditorCursorRenderer.fillBuffers();
+    }
+
+    public void createTerrainEditorRenderer(int id) {
+        TerrainEditorRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorRenderer.class).get();
+        terrainEditorRenderer.setId(id);
+        terrainEditorRenderers.add(terrainEditorRenderer);
+        terrainEditorRenderer.fillBuffers();
     }
 
     private RenderSwitch createAndAddRenderSwitch(Class<? extends Renderer> normalRendererClass, Class<? extends Renderer> depthBufferRendererClass, Class<? extends Renderer> wireRendererClass, int id) {

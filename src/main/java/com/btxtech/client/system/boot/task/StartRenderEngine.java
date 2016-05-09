@@ -24,7 +24,7 @@ public class StartRenderEngine extends AbstractStartupTask{
     protected void privateStart(DeferredStartup deferredStartup) {
         terrainSurface.init();
         gameCanvas.init();
-        renderService.init();
+        renderService.setupRenderers();
         renderService.fillBuffers();
         gameCanvas.startRenderLoop();
     }

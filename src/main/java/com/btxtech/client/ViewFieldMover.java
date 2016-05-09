@@ -111,7 +111,7 @@ public class ViewFieldMover {
                         logger.severe("x=" + x + " y=" + y + " z=" + z);
                     }
                     Ray3d worldPickRay = setupTerrainRay3d(event, canvas);
-                    terrainMouseDownEvent.fire(new TerrainMouseDownEvent(worldPickRay));
+                    terrainMouseDownEvent.fire(new TerrainMouseDownEvent(worldPickRay, event));
                 } else if ((eventGetButton(event.getNativeEvent()) & NativeEvent.BUTTON_RIGHT) == NativeEvent.BUTTON_RIGHT) {
                     startMoveZ = event.getY();
                 }
@@ -160,15 +160,15 @@ public class ViewFieldMover {
         return camera.toWorld(pickRay);
     }
 
-    public native int eventGetButton(NativeEvent evt) /*-{
+    public static native int eventGetButton(NativeEvent evt) /*-{
         return evt.buttons;
     }-*/;
 
-    public native boolean eventIsShiftPressed(NativeEvent evt) /*-{
+    public static native boolean eventIsShiftPressed(NativeEvent evt) /*-{
         return evt.shiftKey;
     }-*/;
 
-    public native boolean eventIsAltPressed(NativeEvent evt) /*-{
+    public static native boolean eventIsAltPressed(NativeEvent evt) /*-{
         return evt.altKey;
     }-*/;
 

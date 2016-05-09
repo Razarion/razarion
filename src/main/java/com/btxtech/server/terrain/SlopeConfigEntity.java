@@ -51,6 +51,10 @@ public class SlopeConfigEntity {
     @JoinColumn(nullable = false)
     private List<SlopeNodeEntity> slopeSkeletonEntries;
 
+    public Long getId() {
+        return id;
+    }
+
     public SlopeSkeleton toSlopeSkeleton() {
         SlopeSkeleton slopeSkeleton = new SlopeSkeleton();
         slopeSkeleton.setId(id.intValue());

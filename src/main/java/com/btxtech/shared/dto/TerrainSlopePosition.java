@@ -1,6 +1,7 @@
-package com.btxtech.shared;
+package com.btxtech.shared.dto;
 
 import com.btxtech.game.jsre.client.common.Index;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
 
@@ -8,19 +9,30 @@ import java.util.List;
  * Created by Beat
  * 06.05.2016.
  */
-public class TerrainSlopePositionEntity {
-    private int id;
+@Portable
+public class TerrainSlopePosition {
+    private Integer id;
     private int slopeId;
     private List<Index> polygon;
 
-    public TerrainSlopePositionEntity(int id, int slopeId, List<Index> polygon) {
+    /**
+     * Used by errai
+     */
+    public TerrainSlopePosition() {
+    }
+
+    public TerrainSlopePosition(Integer id, int slopeId, List<Index> polygon) {
         this.id = id;
         this.slopeId = slopeId;
         this.polygon = polygon;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
+    }
+
+    public boolean hasId() {
+        return id != null;
     }
 
     public void setId(int id) {

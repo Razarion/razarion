@@ -1,18 +1,31 @@
 package com.btxtech.client.sidebar;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
+import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.dto.SlopeConfig;
+import com.btxtech.shared.dto.SlopeNameId;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IntegerBox;
+import com.google.gwt.user.client.ui.ValueListBox;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -20,9 +33,13 @@ import javax.inject.Inject;
  */
 @Templated("TerrainEditorSidebar.html#terrainEditor")
 public class TerrainEditorSidebar extends Composite implements LeftSideBarContent {
-    // private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
+    private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
+    @Inject
+    private RenderService renderService;
     @Inject
     private TerrainEditor terrainEditor;
+    @Inject
+    private Caller<TerrainEditorService> terrainEditorService;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -31,6 +48,9 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     @Inject
     @DataField
     private IntegerBox cursorCorners;
+    @Inject
+    @DataField
+    private ValueListBox<SlopeNameId> slopeSelection;
     @Inject
     @DataField
     private Button sculptButton;
@@ -43,6 +63,28 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
         terrainEditor.activate();
         cursorRadius.setValue(terrainEditor.getCursorRadius());
         cursorCorners.setValue(terrainEditor.getCursorCorners());
+        slopeSelection.addValueChangeHandler(new ValueChangeHandler<SlopeNameId>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<SlopeNameId> event) {
+                terrainEditor.setSlope4New(slopeSelection.getValue());
+            }
+        });
+        terrainEditorService.call(new RemoteCallback<Collection<SlopeNameId>>() {
+            @Override
+            public void callback(Collection<SlopeNameId> slopeNameIds) {
+                SlopeNameId slopeNameId = slopeNameIds.iterator().next();
+                slopeSelection.setAcceptableValues(slopeNameIds);
+                slopeSelection.setValue(slopeNameId);
+                terrainEditor.setSlope4New(slopeNameId);
+            }
+        }, new ErrorCallback<Object>() {
+            @Override
+            public boolean error(Object message, Throwable throwable) {
+                logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
+                return false;
+            }
+        }).getSlopeNameIds();
+
     }
 
     @Override
@@ -63,10 +105,13 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
         terrainEditor.updateTerrainSurface();
-        terrainSurface.fillBuffers();
+        terrainSurface.init();
+        renderService.setupRenderers();
+        renderService.fillBuffers();
     }
 
     @EventHandler("saveButton")
     private void saveButtonClick(ClickEvent event) {
+        terrainEditor.save();
     }
 }

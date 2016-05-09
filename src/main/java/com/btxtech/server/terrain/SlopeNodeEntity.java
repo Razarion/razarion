@@ -14,7 +14,6 @@ import javax.persistence.Table;
  * Created by Beat
  * 13.02.2016.
  */
-@Portable
 @Entity
 @Table(name = "SLOPE_NODE")
 public class SlopeNodeEntity {

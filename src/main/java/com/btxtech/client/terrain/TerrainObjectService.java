@@ -71,39 +71,39 @@ public class TerrainObjectService {
 
     @AfterInitialization
     public void afterInitialization() {
-        serviceCaller.call(new RemoteCallback<List<VertexList>>() {
-            @Override
-            public void callback(final List<VertexList> vertexLists) {
-                try {
-                    for (VertexList vertexList : vertexLists) {
-                        switch (vertexList.getName()) {
-                            case TRUNK_MESH:
-                                opaqueVertexList = vertexList;
-                                break;
-                            case TWIG_MESH:
-                                transparentVertexList = vertexList;
-                                break;
-                            case SHADOW_MESH:
-                                shadowTransparentVertexList = vertexList;
-                                break;
-
-                        }
-                        logger.severe("TerrainObjectService loaded: " + vertexList.getName() + " size: " + vertexList.getVertices().size());
-                    }
-                    setupTriangles();
-                    renderService.fillBuffers();
-                } catch(Throwable throwable) {
-                    logger.log(Level.SEVERE, throwable.getMessage(), throwable);
-                }
-            }
-        }, new ErrorCallback() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "message: " + message, throwable);
-                return false;
-            }
-
-        }).getVertexList();
+//        serviceCaller.call(new RemoteCallback<List<VertexList>>() {
+//            @Override
+//            public void callback(final List<VertexList> vertexLists) {
+//                try {
+//                    for (VertexList vertexList : vertexLists) {
+//                        switch (vertexList.getName()) {
+//                            case TRUNK_MESH:
+//                                opaqueVertexList = vertexList;
+//                                break;
+//                            case TWIG_MESH:
+//                                transparentVertexList = vertexList;
+//                                break;
+//                            case SHADOW_MESH:
+//                                shadowTransparentVertexList = vertexList;
+//                                break;
+//
+//                        }
+//                        logger.severe("TerrainObjectService loaded: " + vertexList.getName() + " size: " + vertexList.getVertices().size());
+//                    }
+//                    setupTriangles();
+//                    renderService.fillBuffers();
+//                } catch(Throwable throwable) {
+//                    logger.log(Level.SEVERE, throwable.getMessage(), throwable);
+//                }
+//            }
+//        }, new ErrorCallback() {
+//            @Override
+//            public boolean error(Object message, Throwable throwable) {
+//                logger.log(Level.SEVERE, "message: " + message, throwable);
+//                return false;
+//            }
+//
+//        }).getVertexList();
     }
 
     private void setupTriangles() {
@@ -112,9 +112,9 @@ public class TerrainObjectService {
                 double angleZ = Math.random() * MathHelper.ONE_RADIANT;
                 double translateX = Math.random() * TerrainSurface.MESH_NODES;
                 double translateY = Math.random() * TerrainSurface.MESH_NODES;
-                if(!terrainSurface.isFree(x * TerrainSurface.MESH_NODES + translateX, y * TerrainSurface.MESH_NODES + translateY)) {
-                    continue;
-                }
+//    TODO            if(!terrainSurface.isFree(x * TerrainSurface.MESH_NODES + translateX, y * TerrainSurface.MESH_NODES + translateY)) {
+//    TODO                continue;
+//     TODO           }
                 Matrix4 matrix4 = Matrix4.createTranslation(x * TerrainSurface.MESH_NODES + translateX, y * TerrainSurface.MESH_NODES + translateY, 0);
                 double scale = Math.random() * 0.5 + 0.4;
                 matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));

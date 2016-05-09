@@ -3,6 +3,7 @@ package com.btxtech.shared;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 import java.util.Collection;
@@ -24,4 +25,6 @@ public interface TerrainEditorService {
     GroundConfig loadGroundConfig();
 
     GroundConfig saveGroundConfig(GroundConfig slopeConfig);
+
+    void saveTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions);
 }

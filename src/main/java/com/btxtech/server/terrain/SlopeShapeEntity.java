@@ -15,7 +15,6 @@ import javax.persistence.Table;
  * 13.02.2016.
  */
 @Entity
-@Portable
 @Table(name = "slope_shape_entry") // TODO rename
 public class SlopeShapeEntity {
     @Id
