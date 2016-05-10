@@ -47,11 +47,6 @@ public class TerrainSurface {
     private Collection<TerrainSlopePosition> terrainSlopePositions;
     private GroundSkeleton groundSkeleton;
 
-//    public TerrainSurface() {
-//        terrainSlopePositions.put(1, new TerrainSlopePosition(1, 2706, Arrays.asList(new Index(580, 500), new Index(1000, 500), new Index(1000, 1120))));
-//        terrainSlopePositions.put(2, new TerrainSlopePosition(2, 12517, Arrays.asList(new Index(2000, 1000), new Index(3000, 1000), new Index(2000, 1500))));
-//    }
-
     public void setAllSlopeSkeletons(Collection<SlopeSkeleton> slopeSkeletons) {
         slopeSkeletonMap.clear();
         for (SlopeSkeleton slopeSkeleton : slopeSkeletons) {
