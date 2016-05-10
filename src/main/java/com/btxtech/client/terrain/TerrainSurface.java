@@ -184,12 +184,12 @@ public class TerrainSurface {
         groundMesh.setupNorms();
     }
 
-    public VertexList getVertexList() {
+    public VertexList getGroundVertexList() {
         VertexList vertexList = groundMesh.provideVertexList();
         for (Slope slope : slopeMap.values()) {
             if (!slope.hasWater()) {
                 vertexList.append(slope.getGroundPlateauConnector().getTopMesh().provideVertexList());
-                vertexList.append(slope.getGroundPlateauConnector().getConnectionVertexList());
+                vertexList.append(slope.getGroundPlateauConnector().getInnerConnectionVertexList());
             }
             vertexList.append(slope.getGroundPlateauConnector().getOuterConnectionVertexList());
         }

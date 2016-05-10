@@ -4,6 +4,7 @@ import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.GroundSlopeConnector;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.game.jsre.client.common.JavaUtils;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.primitives.Polygon2D;
@@ -37,12 +38,12 @@ public class Slope {
 
     public Slope(SlopeSkeleton slopeSkeleton, List<Index> corners) {
         this.slopeSkeleton = slopeSkeleton;
-        this.corners = corners;
+        this.corners = new ArrayList<>(corners);
 
         if (slopeSkeleton.getWidth() > 0) {
-            setupSlopingBorder(corners);
+            setupSlopingBorder(this.corners);
         } else {
-            setupStraightBorder(corners);
+            setupStraightBorder(this.corners);
         }
 
         // Setup vertical segments
@@ -59,18 +60,42 @@ public class Slope {
     private void setupStraightBorder(List<Index> corners) {
         for (int i = 0; i < corners.size(); i++) {
             Index current = corners.get(i);
-            Index next = corners.get((i + 1) % corners.size());
+            Index next = corners.get(JavaUtils.getCorrectedIndex(i + 1, corners.size()));
             borders.add(new LineBorder(current, next));
         }
     }
 
     private void setupSlopingBorder(List<Index> corners) {
+        // Correct the borders. Outer corners can not be too close to other corners. Id needs some safty distance
+        boolean violationsFound = true;
+        while (violationsFound) {
+            violationsFound = false;
+            for (int i = 0; i < corners.size(); i++) {
+                Index previous = corners.get(JavaUtils.getCorrectedIndex(i - 1, corners.size()));
+                Index current = corners.get(i);
+                Index next = corners.get(JavaUtils.getCorrectedIndex(i + 1, corners.size()));
+                double innerAngle = current.getAngle(next, previous);
+                if (innerAngle > MathHelper.HALF_RADIANT) {
+                    double safetyDistance = (double)slopeSkeleton.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
+                    if(current.getDistance(previous) < safetyDistance) {
+                        violationsFound = true;
+                        corners.remove(i);
+                        break;
+                    }
+                    if(current.getDistance(next) < safetyDistance) {
+                        violationsFound = true;
+                        corners.remove(i);
+                        break;
+                    }
+                }
+            }
+        }
         // Setup inner and outer corner
         List<AbstractCornerBorder> cornerBorders = new ArrayList<>();
         for (int i = 0; i < corners.size(); i++) {
-            Index previous = corners.get((i - 1 + corners.size()) % corners.size());
+            Index previous = corners.get(JavaUtils.getCorrectedIndex(i - 1, corners.size()));
             Index current = corners.get(i);
-            Index next = corners.get((i + 1) % corners.size());
+            Index next = corners.get(JavaUtils.getCorrectedIndex(i + 1, corners.size()));
             if (current.getAngle(next, previous) > MathHelper.HALF_RADIANT) {
                 cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeleton.getWidth()));
             } else {
@@ -80,7 +105,7 @@ public class Slope {
         // Setup whole contour
         for (int i = 0; i < cornerBorders.size(); i++) {
             AbstractCornerBorder current = cornerBorders.get(i);
-            AbstractCornerBorder next = cornerBorders.get((i + 1) % cornerBorders.size());
+            AbstractCornerBorder next = cornerBorders.get(JavaUtils.getCorrectedIndex(i + 1, cornerBorders.size()));
             borders.add(current);
             borders.add(new LineBorder(current, next, slopeSkeleton.getWidth()));
         }

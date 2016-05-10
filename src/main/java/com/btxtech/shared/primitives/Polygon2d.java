@@ -63,7 +63,7 @@ public class Polygon2D {
                 continue;
             }
             DecimalPosition cross = line.getCrossInclusive(testLine);
-            if (cross != null && !cross.equalsDelta(testLine.getPoint1()) && !cross.equalsDelta(testLine.getPoint2())) {
+            if (cross != null && !cross.equalsDelta(testLine.getPoint1(), 1.0) && !cross.equalsDelta(testLine.getPoint2(), 1.0)) {
                 return true;
             }
         }

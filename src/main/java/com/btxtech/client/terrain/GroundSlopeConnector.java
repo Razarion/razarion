@@ -14,19 +14,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 05.03.2016.
  */
 public class GroundSlopeConnector {
+    private final static Logger LOGGER = Logger.getLogger(GroundSlopeConnector.class.getName());
     private final GroundMesh groundMesh;
     private final GroundMesh groundMeshOriginal;
     private final Slope slope;
     private GroundMesh topMesh;
-    private List<VertexDataObject> innerEdges;
-    private List<VertexDataObject> outerEdges;
-    private VertexList connectionVertexList;
+    private List<VertexDataObject> innerGroundEdges;
+    private List<VertexDataObject> innerSlopeEdges;
+    private List<VertexDataObject> outerGroundEdges;
+    private List<VertexDataObject> outerSlopeEdges;
+    private VertexList innerConnectionVertexList;
     private VertexList outerConnectionVertexList;
     private List<Index> topIndices;
     private List<Index> bottomIndices;
@@ -38,41 +43,45 @@ public class GroundSlopeConnector {
     }
 
     public void stampOut(final boolean hasTop) {
+        outerConnectionVertexList = new VertexList();
         if (hasTop) {
+            innerConnectionVertexList = new VertexList();
             topMesh = new GroundMesh();
             topIndices = new ArrayList<>();
         }
         bottomIndices = new ArrayList<>();
-        groundMesh.iterate(new GroundMesh.VertexVisitor() {
-            @Override
-            public void onVisit(Index index, Vertex vertex) {
-                if (hasTop && slope.isInsideInner(vertex)) {
-                    topMesh.createVertexData(index, groundMesh);
-                    topMesh.getVertexDataSafe(index).addZ(slope.getHeight());
-                    topIndices.add(index);
+        try {
+            groundMesh.iterate(new GroundMesh.VertexVisitor() {
+                @Override
+                public void onVisit(Index index, Vertex vertex) {
+                    if (hasTop && slope.isInsideInner(vertex)) {
+                        topMesh.createVertexData(index, groundMesh);
+                        topMesh.getVertexDataSafe(index).addZ(slope.getHeight());
+                        topIndices.add(index);
+                    }
+                    if (slope.isInsideOuter(vertex)) {
+                        bottomIndices.add(index);
+                        groundMesh.remove(index);
+                    }
                 }
-                if (slope.isInsideOuter(vertex)) {
-                    bottomIndices.add(index);
-                    groundMesh.remove(index);
-                }
+            });
+
+            if (hasTop) {
+                topMesh.setupNorms();
+                setupInnerConnections();
             }
-        });
 
-        if (hasTop) {
-            topMesh.setupNorms();
-            setupInnerConnections();
+            setupOuterConnections();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
-
-        setupOuterConnections();
     }
 
     private void setupOuterConnections() {
-        outerEdges = setupGroundEdgeList(bottomIndices, groundMesh);
+        outerGroundEdges = setupGroundEdgeList(bottomIndices, groundMesh);
+        outerSlopeEdges = setupSlopeEdgeList(slope.getOuterLineMeshIndex(), groundMeshOriginal, outerGroundEdges.get(0));
 
-        List<VertexDataObject> slopeOuterLine = setupSlopeEdgeList(slope.getOuterLineMeshIndex(), groundMeshOriginal, outerEdges.get(0));
-
-        outerConnectionVertexList = new VertexList();
-        triangulation(outerConnectionVertexList, outerEdges, slopeOuterLine, true);
+        triangulation(outerConnectionVertexList, outerGroundEdges, outerSlopeEdges, true);
     }
 
     private List<VertexDataObject> setupGroundEdgeList(List<Index> indices, GroundMesh groundMesh) {
@@ -240,11 +249,10 @@ public class GroundSlopeConnector {
             }
         }
 
-        innerEdges = setupGroundEdgeList(topIndices, topMesh);
-        List<VertexDataObject> slopeInnerLine = setupSlopeEdgeList(slope.getInnerLineMeshIndex(), groundMeshOriginal, innerEdges.get(0));
+        innerGroundEdges = setupGroundEdgeList(topIndices, topMesh);
+        innerSlopeEdges = setupSlopeEdgeList(slope.getInnerLineMeshIndex(), groundMeshOriginal, innerGroundEdges.get(0));
 
-        connectionVertexList = new VertexList();
-        triangulation(connectionVertexList, innerEdges, slopeInnerLine, false);
+        triangulation(innerConnectionVertexList, innerGroundEdges, innerSlopeEdges, false);
     }
 
 
@@ -279,16 +287,24 @@ public class GroundSlopeConnector {
         return topMesh;
     }
 
-    public List<VertexDataObject> getInnerEdges() {
-        return innerEdges;
+    public List<VertexDataObject> getInnerGroundEdges() {
+        return innerGroundEdges;
     }
 
-    public VertexList getConnectionVertexList() {
-        return connectionVertexList;
+    public List<VertexDataObject> getInnerSlopeEdges() {
+        return innerSlopeEdges;
     }
 
-    public List<VertexDataObject> getOuterEdges() {
-        return outerEdges;
+    public VertexList getInnerConnectionVertexList() {
+        return innerConnectionVertexList;
+    }
+
+    public List<VertexDataObject> getOuterGroundEdges() {
+        return outerGroundEdges;
+    }
+
+    public List<VertexDataObject> getOuterSlopeEdges() {
+        return outerSlopeEdges;
     }
 
     public VertexList getOuterConnectionVertexList() {

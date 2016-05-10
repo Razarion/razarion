@@ -51,7 +51,7 @@ public class TerrainNormRenderer extends AbstractRenderer {
     public void fillBuffers() {
         List<Vertex> vectors = new ArrayList<>();
 
-        VertexList vertexList = terrainSurface.getVertexList();
+        VertexList vertexList = terrainSurface.getGroundVertexList();
         appendVectors(vectors, vertexList.getVertices(), vertexList.getNormVertices(), vertexList.getTangentVertices());
 
         for (int id : terrainSurface.getSlopeIds()) {

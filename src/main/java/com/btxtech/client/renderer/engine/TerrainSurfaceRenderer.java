@@ -63,7 +63,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = terrainSurface.getVertexList();
+        VertexList vertexList = terrainSurface.getGroundVertexList();
 
         vertices.fillBuffer(vertexList.getVertices());
         normals.fillBuffer(vertexList.getNormVertices());

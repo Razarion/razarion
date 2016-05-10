@@ -301,4 +301,8 @@ public class Polygon2I {
     public int hashCode() {
         return corners.hashCode();
     }
+
+    public Polygon2I removeSpikes() {
+        return null;
+    }
 }

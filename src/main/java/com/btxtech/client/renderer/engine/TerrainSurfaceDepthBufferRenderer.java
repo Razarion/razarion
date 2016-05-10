@@ -64,7 +64,7 @@ public class TerrainSurfaceDepthBufferRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = terrainSurface.getVertexList();
+        VertexList vertexList = terrainSurface.getGroundVertexList();
         // vertices
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, verticesBuffer);
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32Doubles(vertexList.createPositionDoubles()), WebGLRenderingContext.STATIC_DRAW);

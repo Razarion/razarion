@@ -52,8 +52,8 @@ public class TerrainEditor {
     private RenderService renderService;
     private boolean active;
     private Polygon2I cursor;
-    private int cursorRadius = 50;
-    private int cursorCorners = 6;
+    private int cursorRadius = 200;
+    private int cursorCorners = 20;
     private int selectedSlopeId = NO_SELECTION;
     private SlopeNameId slope4New;
     private Map<Integer, ModifiedTerrainSlopePosition> modifiedTerrainSlopePositions = new HashMap<>();
