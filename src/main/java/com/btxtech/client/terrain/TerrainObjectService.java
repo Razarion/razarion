@@ -1,17 +1,16 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.renderer.DepthSorter;
-import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Matrix4;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -20,48 +19,45 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainObjectService {
-    // private static final int EDGE_COUNT = 10;
-    private static final double EDGE_COUNT = 20;
-    private static final String TRUNK_MESH = "Trunk Mesh";
-    private static final String TWIG_MESH = "Twig Mesh";
-    private static final String SHADOW_MESH = "Shadow Mesh";
     private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
-    @Inject
-    private RenderService renderService;
-    @Inject
-    private TerrainSurface terrainSurface;
-    @Inject
-    private Camera camera;
-    private VertexList opaqueVertexList;
-    private VertexList totalOpaqueVertexList = new VertexList();
-    private VertexList transparentVertexList;
-    private VertexList totalTransparentVertexList = new VertexList();
-    private VertexList shadowTransparentVertexList;
-    private VertexList totalShadowTransparentVertexList = new VertexList();
     private ImageDescriptor opaqueDescriptor = ImageDescriptor.SAND_2;
     private ImageDescriptor transparentDescriptor = ImageDescriptor.BRANCH_01;
-    private List<VertexList> terrainObjects;
+    private Map<Integer, TerrainObject> terrainObjects;
+    private Collection<TerrainObjectPosition> terrainObjectPositions;
+    private Map<Integer, VertexContainer> opaqueIds;
+    private Map<Integer, VertexContainer> transparentNoShadowIds;
+    private Map<Integer, VertexContainer> transparentOnlyShadowIds;
+    private Map<Integer, Collection<Matrix4>> objectIdMatrices;
 
     public void init() {
-        try {
-            for (VertexList vertexList : terrainObjects) {
-                switch (vertexList.getName()) {
-                    case TRUNK_MESH:
-                        opaqueVertexList = vertexList;
-                        break;
-                    case TWIG_MESH:
-                        transparentVertexList = vertexList;
-                        break;
-                    case SHADOW_MESH:
-                        shadowTransparentVertexList = vertexList;
-                        break;
-
-                }
-                logger.severe("TerrainObjectService loaded: " + vertexList.getName() + " size: " + vertexList.getVertices().size());
+        objectIdMatrices = new HashMap<>();
+        for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
+            Collection<Matrix4> matrices = objectIdMatrices.get(terrainObjectPosition.getTerrainObjectId());
+            if (matrices == null) {
+                matrices = new ArrayList<>();
+                objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), matrices);
             }
-            setupTriangles();
-        } catch (Throwable throwable) {
-            logger.log(Level.SEVERE, throwable.getMessage(), throwable);
+            matrices.add(terrainObjectPosition.createModelMatrix());
+        }
+        opaqueIds = new HashMap<>();
+        transparentNoShadowIds = new HashMap<>();
+        transparentOnlyShadowIds = new HashMap<>();
+        for (Map.Entry<Integer, TerrainObject> entry : terrainObjects.entrySet()) {
+            for (VertexContainer vertexContainer : entry.getValue().getVertexContainers()) {
+                switch (vertexContainer.getType()) {
+                    case OPAQUE:
+                        opaqueIds.put(entry.getKey(), vertexContainer);
+                        break;
+                    case TRANSPARENT_NO_SHADOW_CAST:
+                        transparentNoShadowIds.put(entry.getKey(), vertexContainer);
+                        break;
+                    case TRANSPARENT_SHADOW_CAST_ONLY:
+                        transparentOnlyShadowIds.put(entry.getKey(), vertexContainer);
+                        break;
+                    default:
+                        logger.severe("Can not handle: " + vertexContainer.getType());
+                }
+            }
         }
     }
 
@@ -73,38 +69,39 @@ public class TerrainObjectService {
         return transparentDescriptor;
     }
 
-    public VertexList getTotalTransparentVertexList() {
-        return totalTransparentVertexList;
+    public Collection<Integer> getOpaqueIds() {
+        return opaqueIds.keySet();
     }
 
-    public VertexList getTotalOpaqueVertexList() {
-        return totalOpaqueVertexList;
+    public VertexContainer getOpaqueVertexContainer(int id) {
+        return opaqueIds.get(id);
     }
 
-    public VertexList getTotalShadowTransparentVertexList() {
-        return totalShadowTransparentVertexList;
+    public Collection<Integer> getTransparentNoShadowIds() {
+        return transparentNoShadowIds.keySet();
     }
 
-    private void setupTriangles() {
-        for (int x = 0; x < EDGE_COUNT; x++) {
-            for (int y = 0; y < EDGE_COUNT; y++) {
-                double angleZ = Math.random() * MathHelper.ONE_RADIANT;
-                double translateX = Math.random() * TerrainSurface.MESH_NODES * TerrainSurface.MESH_NODE_EDGE_LENGTH;
-                double translateY = Math.random() * TerrainSurface.MESH_NODES * TerrainSurface.MESH_NODE_EDGE_LENGTH;
-                Matrix4 matrix4 = Matrix4.createTranslation((double) x / EDGE_COUNT * TerrainSurface.MESH_NODES * TerrainSurface.MESH_NODE_EDGE_LENGTH + translateX, (double) y / EDGE_COUNT * TerrainSurface.MESH_NODES * TerrainSurface.MESH_NODE_EDGE_LENGTH + translateY, 0);
-                double scale = Math.random() * 0.5 + 0.4;
-                matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
-                // matrix4 = base.multiply(matrix4);
-                matrix4 = matrix4.multiply(Matrix4.createZRotation(angleZ));
-                totalTransparentVertexList.append(matrix4, transparentVertexList);
-                totalOpaqueVertexList.append(matrix4, opaqueVertexList);
-                totalShadowTransparentVertexList.append(matrix4, shadowTransparentVertexList);
-            }
+    public VertexContainer getTransparentNoShadow(int id) {
+        return transparentNoShadowIds.get(id);
+    }
+
+    public VertexContainer getTransparentOnlyShadow(int id) {
+        return transparentOnlyShadowIds.get(id);
+    }
+
+
+    public void setTerrainObjectPositions(Collection<TerrainObjectPosition> terrainObjectPositions) {
+        this.terrainObjectPositions = terrainObjectPositions;
+    }
+
+    public void setTerrainObjects(Collection<TerrainObject> terrainObjects) {
+        this.terrainObjects = new HashMap<>();
+        for (TerrainObject terrainObject : terrainObjects) {
+            this.terrainObjects.put(terrainObject.getId(), terrainObject);
         }
-        totalTransparentVertexList = DepthSorter.depthSort(totalTransparentVertexList, camera.createMatrix());
     }
 
-    public void setTerrainObject(List<VertexList> terrainObjects) {
-        this.terrainObjects = terrainObjects;
+    public Collection<Matrix4> getObjectIdMatrices(int terrainObjectId) {
+        return objectIdMatrices.get(terrainObjectId);
     }
 }

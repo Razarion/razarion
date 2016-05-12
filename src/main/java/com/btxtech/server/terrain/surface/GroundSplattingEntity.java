@@ -1,4 +1,4 @@
-package com.btxtech.server.terrain;
+package com.btxtech.server.terrain.surface;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,29 +10,25 @@ import javax.persistence.Table;
  * 02.05.2016.
  */
 @Entity
-@Table(name = "GROUND_HEIGHT")
-public class GroundHeightEntity {
+@Table(name = "GROUND_SPLATTING")
+public class GroundSplattingEntity {
     @Id
     @GeneratedValue
     private Long id;
     private int xIndex;
     private int yIndex;
-    private double height;
+    private double splatting;
 
     /**
      * Used by GWT and errai
      */
-    public GroundHeightEntity() {
+    public GroundSplattingEntity() {
     }
 
-    public GroundHeightEntity(int xIndex, int yIndex, double height) {
+    public GroundSplattingEntity(int xIndex, int yIndex, double splatting) {
         this.xIndex = xIndex;
         this.yIndex = yIndex;
-        this.height = height;
-    }
-
-    public Long getId() {
-        return id;
+        this.splatting = splatting;
     }
 
     public int getXIndex() {
@@ -51,12 +47,12 @@ public class GroundHeightEntity {
         this.yIndex = yIndex;
     }
 
-    public double getHeight() {
-        return height;
+    public double getSplatting() {
+        return splatting;
     }
 
-    public void setHeight(double height) {
-        this.height = height;
+    public void setSplatting(double splatting) {
+        this.splatting = splatting;
     }
 
     @Override
@@ -68,7 +64,7 @@ public class GroundHeightEntity {
             return false;
         }
 
-        GroundHeightEntity that = (GroundHeightEntity) o;
+        GroundSplattingEntity that = (GroundSplattingEntity) o;
         return id != null && id.equals(that.id);
     }
 

@@ -60,6 +60,6 @@ public class UnitMenu extends Composite {
 
     @EventHandler("reload")
     private void reloadButtonClick(ClickEvent event) {
-        unitService.reloadModel();
+        // unitService.reloadModel();
     }
 }

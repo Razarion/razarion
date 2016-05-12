@@ -1,11 +1,10 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.TerrainObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +18,6 @@ public class Collada extends ColladaXml {
     private Map<String, Geometry> geometries = new HashMap<>();
     private Map<String, VisualScene> visualScenes = new HashMap<>();
     private Scene scene;
-    private Asset asset;
 
     public Collada(Document doc) {
         Node collada = getChild(doc, ELEMENT_COLLADA);
@@ -36,21 +34,21 @@ public class Collada extends ColladaXml {
         LOGGER.finest("scene: " + scene);
     }
 
-    public List<VertexList> generateVertexList() {
-        LOGGER.finest("generateVertexList");
+    public TerrainObject generateTerrainObject(ColladaConverterControl colladaConverterControl) {
+        LOGGER.finest("generateTerrainObject");
         VisualScene visualScene = visualScenes.get(scene.getVisualSceneUrl());
         if (visualScene == null) {
             throw new ColladaRuntimeException("No visual scene found for url: " + scene.getVisualSceneUrl());
         }
 
-        return visualScene.generateVertexList(geometries);
+        return visualScene.generateTerrainObjectEntity(geometries, colladaConverterControl);
     }
 
     private void readAsset(Document doc) {
         LOGGER.finest("readAsset");
         try {
             Node assetNode = getSingleTopLevelNode(doc, ELEMENT_ASSET);
-            asset = new Asset(assetNode);
+            Asset asset = new Asset(assetNode);
             LOGGER.finest("asset: " + asset);
         } catch (ColladaRuntimeException e) {
             LOGGER.log(Level.SEVERE, "readAsset failed", e);

@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
  * Created by Beat
  * 19.08.2015.
  */
-public class InstanceGeometry extends ColladaXml{
+public class InstanceGeometry extends ColladaXml {
     private String url;
 
     public InstanceGeometry(Node node) {

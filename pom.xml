@@ -169,7 +169,8 @@
                     </filesets>
                 </configuration>
             </plugin>
-            <!--<plugin> Somehow crashes with ERRAI marshalling -->
+            <!--<plugin>-->
+                <!--&lt;!&ndash;Somehow crashes with ERRAI marshalling&ndash;&gt;-->
                 <!--<inherited>true</inherited>-->
                 <!--<groupId>org.apache.maven.plugins</groupId>-->
                 <!--<artifactId>maven-compiler-plugin</artifactId>-->

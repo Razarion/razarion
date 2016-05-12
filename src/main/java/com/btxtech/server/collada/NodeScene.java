@@ -1,6 +1,7 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.primitives.Matrix4;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
@@ -14,14 +15,14 @@ import java.util.logging.Logger;
  */
 public class NodeScene extends NameIdColladaXml {
     private static Logger LOGGER = Logger.getLogger(NodeScene.class.getName());
-    private Collection<Matrix> matrices;
+    private Collection<Matrix4> matrices;
     private Collection<InstanceGeometry> instanceGeometries;
 
     public NodeScene(Node node) {
         super(node);
         matrices = new ArrayList<>();
         for (Node matrixNode : getChildren(node, ELEMENT_MATRIX)) {
-            matrices.add(new Matrix(matrixNode));
+            matrices.add(new Matrix(matrixNode).getMatrix4());
         }
         instanceGeometries = new ArrayList<>();
         for (Node instanceGeometryNode : getChildren(node, ELEMENT_INSTANCE_GEOMETRIES)) {
@@ -29,28 +30,22 @@ public class NodeScene extends NameIdColladaXml {
         }
     }
 
-    public VertexList processGeometry(Map<String, Geometry> geometries) {
-        VertexList vertexList = null;
+    public Collection<VertexContainer> processGeometry(ColladaConverterControl colladaConverterControl, Map<String, Geometry> geometries) {
+        if (instanceGeometries.isEmpty()) {
+            return null;
+        }
+        Collection<VertexContainer> vertexContainers = new ArrayList<>();
         for (InstanceGeometry instanceGeometry : instanceGeometries) {
             Geometry geometry = geometries.get(instanceGeometry.getUrl());
             if (geometry == null) {
                 throw new ColladaRuntimeException("No geometry for url found: " + instanceGeometry.getUrl());
             }
-            VertexList meshVertex = geometry.getMesh().getVertexList();
-            if(vertexList == null) {
-                vertexList = new VertexList(geometry.getName());
-            }
             LOGGER.finest("--:processGeometry:  " + geometry);
-            if(matrices.isEmpty()) {
-                vertexList.append(meshVertex);
-            } else {
-                for (Matrix matrix : matrices) {
-                    meshVertex.multiply(matrix.getMatrix4());
-                    vertexList.append(meshVertex);
-                }
-            }
+            VertexContainer vertexContainer = new VertexContainer(colladaConverterControl.nameToType(geometry.getName()));
+            geometry.getMesh().fillVertexContainer(matrices, vertexContainer);
+            vertexContainers.add(vertexContainer);
         }
-        return vertexList;
+        return vertexContainers;
     }
 
     @Override

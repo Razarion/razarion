@@ -1,8 +1,7 @@
-package com.btxtech.server.terrain;
+package com.btxtech.server.terrain.surface;
 
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.dto.SlopeShape;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;

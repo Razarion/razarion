@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.terrain.TerrainObjectService;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexContainer;
 
 import javax.enterprise.context.Dependent;
 
@@ -12,7 +12,7 @@ import javax.enterprise.context.Dependent;
 @Dependent
 public class TransparentTerrainObjectWireRender extends AbstractTerrainObjectWireRender {
     @Override
-    protected VertexList getVertexList(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getTotalTransparentVertexList();
+    protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService) {
+        return terrainObjectService.getTransparentOnlyShadow(getId());
     }
 }

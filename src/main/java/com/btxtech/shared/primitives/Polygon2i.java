@@ -1,7 +1,7 @@
 package com.btxtech.shared.primitives;
 
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.client.common.JavaUtils;
+import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.game.jsre.client.common.Line2I;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.common.utils.PairHolder;
@@ -154,11 +154,11 @@ public class Polygon2I {
         int thisEnd = -1;
         for (int i = size() - 1; i >= 0; i--) {
             if (insideIndices.contains(i)) {
-                if (!insideIndices.contains(JavaUtils.getCorrectedIndex(i - 1, size()))) {
-                    thisEnd = JavaUtils.getCorrectedIndex(i - 1, size());
+                if (!insideIndices.contains(CollectionUtils.getCorrectedIndex(i - 1, size()))) {
+                    thisEnd = CollectionUtils.getCorrectedIndex(i - 1, size());
                 }
             } else {
-                if (insideIndices.contains(JavaUtils.getCorrectedIndex(i - 1, size()))) {
+                if (insideIndices.contains(CollectionUtils.getCorrectedIndex(i - 1, size()))) {
                     thisBegin = i;
                 }
             }
@@ -241,7 +241,7 @@ public class Polygon2I {
     }
 
     public int getCorrectedIndex(int index) {
-        return JavaUtils.getCorrectedIndex(index, corners.size());
+        return CollectionUtils.getCorrectedIndex(index, corners.size());
     }
 
     public Polygon2I translate(Index translation) {
@@ -255,9 +255,9 @@ public class Polygon2I {
     public static boolean isCounterClock(List<Index> corners) {
         double angleSum = 0;
         for (int i = 0; i < corners.size(); i++) {
-            Index lastCorner = corners.get(JavaUtils.getCorrectedIndex(i - 1, corners.size()));
-            Index currentCorner = corners.get(JavaUtils.getCorrectedIndex(i, corners.size()));
-            Index nextCorner = corners.get(JavaUtils.getCorrectedIndex(i + 1, corners.size()));
+            Index lastCorner = corners.get(CollectionUtils.getCorrectedIndex(i - 1, corners.size()));
+            Index currentCorner = corners.get(CollectionUtils.getCorrectedIndex(i, corners.size()));
+            Index nextCorner = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
             angleSum += currentCorner.getAngle(nextCorner, lastCorner);
         }
         double angleSumCalculated = MathHelper.HALF_RADIANT * (corners.size() - 2);

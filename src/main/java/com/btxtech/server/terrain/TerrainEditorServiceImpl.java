@@ -1,6 +1,10 @@
 package com.btxtech.server.terrain;
 
 import com.btxtech.server.ExceptionHandler;
+import com.btxtech.server.terrain.surface.GroundConfigEntity;
+import com.btxtech.server.terrain.surface.SlopeConfigEntity;
+import com.btxtech.server.terrain.surface.SlopeConfigEntity_;
+import com.btxtech.server.terrain.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeConfig;

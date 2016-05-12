@@ -8,12 +8,13 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Matrix4;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -41,8 +42,9 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
+    private Collection<Matrix4> modelMatrices;
 
-    abstract protected VertexList getVertexList(TerrainObjectService terrainObjectService);
+    abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
 
     @PostConstruct
     public void init() {
@@ -65,16 +67,18 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = getVertexList(terrainObjectService);
-        if (vertexList == null) {
+        VertexContainer vertexContainer = getVertexContainer(terrainObjectService);
+        if (vertexContainer == null) {
             elementCount = 0;
             return;
         }
-        positions.fillBuffer(vertexList.getVertices());
-        barycentric.fillBuffer(vertexList.getBarycentric());
-        textureCoordinate.fillBuffer(vertexList.getTextureCoordinates());
+        positions.fillBuffer(vertexContainer.getVertices());
+        barycentric.fillBuffer(vertexContainer.generateBarycentric());
+        textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 
-        elementCount = vertexList.getVerticesCount();
+        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+
+        elementCount = vertexContainer.getVerticesCount();
     }
 
     @Override
@@ -83,7 +87,6 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
 
         uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, projectionTransformation.createMatrix());
         uniformMatrix4fv(VIEW_UNIFORM_NAME, camera.createMatrix());
-        uniformMatrix4fv(MODEL_UNIFORM_NAME, Matrix4.createIdentity());
 
         positions.activate();
         barycentric.activate();
@@ -91,8 +94,14 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
 
         webGLTexture.activate();
 
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+
+        if (modelMatrices != null) {
+            for (Matrix4 modelMatrix : modelMatrices) {
+                uniformMatrix4fv(MODEL_UNIFORM_NAME, modelMatrix);
+                gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
+                WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+            }
+        }
     }
 
 }

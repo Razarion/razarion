@@ -10,8 +10,7 @@ import java.util.List;
  * 15.08.2015.
  */
 @Remote
+@Deprecated
 public interface VertexListService {
-    List<VertexList> getVertexList();
-
     List<VertexList> getUnit();
 }

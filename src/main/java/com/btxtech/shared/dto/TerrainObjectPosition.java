@@ -1,0 +1,64 @@
+package com.btxtech.shared.dto;
+
+import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Vertex;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
+/**
+ * Created by Beat
+ * 10.05.2016.
+ */
+@Portable
+public class TerrainObjectPosition {
+    private int id;
+    private int terrainObjectId;
+    private Vertex position;
+    private double scale;
+    private double zRotation;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getTerrainObjectId() {
+        return terrainObjectId;
+    }
+
+    public void setTerrainObjectId(int terrainObjectId) {
+        this.terrainObjectId = terrainObjectId;
+    }
+
+    public Vertex getPosition() {
+        return position;
+    }
+
+    public void setPosition(Vertex position) {
+        this.position = position;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
+
+    public double getZRotation() {
+        return zRotation;
+    }
+
+    public void setZRotation(double zRotation) {
+        this.zRotation = zRotation;
+    }
+
+    public Matrix4 createModelMatrix() {
+        Matrix4 matrix4 = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ());
+        matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
+        return matrix4.multiply(Matrix4.createZRotation(zRotation));
+    }
+}

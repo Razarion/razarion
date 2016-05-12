@@ -3,6 +3,7 @@ package com.btxtech.client.sidebar;
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNameId;
@@ -72,7 +73,7 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
         terrainEditorService.call(new RemoteCallback<Collection<SlopeNameId>>() {
             @Override
             public void callback(Collection<SlopeNameId> slopeNameIds) {
-                SlopeNameId slopeNameId = slopeNameIds.iterator().next();
+                SlopeNameId slopeNameId = CollectionUtils.getFirst(slopeNameIds);
                 slopeSelection.setAcceptableValues(slopeNameIds);
                 slopeSelection.setValue(slopeNameId);
                 terrainEditor.setSlope4New(slopeNameId);

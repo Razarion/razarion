@@ -1,8 +1,8 @@
 package com.btxtech.server;
 
-import com.btxtech.shared.VertexListService;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.VertexListService;
 import org.jboss.errai.bus.server.annotations.Service;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -16,31 +16,19 @@ import java.util.List;
  */
 @Service
 @ApplicationScoped
+@Deprecated
 public class VertexListServiceImpl implements VertexListService {
     @Inject
     private ExceptionHandler exceptionHandler;
 
     @Override
-    public List<VertexList> getVertexList() {
-        try {
-            // FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\bush1.dae");
-            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\tree03.dae");
-            return ColladaConverter.read(fileInputStream);
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
-            return null;
-        }
-    }
-
-    @Override
     public List<VertexList> getUnit() {
-        try {
-            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\ViperBeat1.dae");
-            // FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\SimpleCuboid.dae");
-            return ColladaConverter.read(fileInputStream);
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
+//        try {
+//            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\ViperBeat1.dae");
+//            return ColladaConverter.convertToTerrainObject(fileInputStream);
+//        } catch (Exception e) {
+//            exceptionHandler.handleException(e);
             return null;
-        }
+ //       }
     }
 }

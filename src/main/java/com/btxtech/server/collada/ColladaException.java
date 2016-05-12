@@ -10,5 +10,4 @@ public class ColladaException extends Exception {
     }
 
 
-
 }

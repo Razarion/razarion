@@ -8,13 +8,14 @@ import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -47,8 +48,9 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private Lighting lighting;
+    private Collection<Matrix4> modelMatrices;
 
-    abstract protected VertexList getVertexList(TerrainObjectService terrainObjectService);
+    abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
 
     abstract protected ImageDescriptor getImageDescriptor(TerrainObjectService terrainObjectService);
 
@@ -73,16 +75,18 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = getVertexList(terrainObjectService);
-        if (vertexList == null) {
+        VertexContainer vertexContainer = getVertexContainer(terrainObjectService);
+        if (vertexContainer == null) {
             elementCount = 0;
             return;
         }
-        positions.fillBuffer(vertexList.getVertices());
-        normals.fillBuffer(vertexList.getNormVertices());
-        textureCoordinate.fillBuffer(vertexList.getTextureCoordinates());
+        positions.fillBuffer(vertexContainer.getVertices());
+        normals.fillBuffer(vertexContainer.getNorms());
+        textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 
-        elementCount = vertexList.getVerticesCount();
+        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+
+        elementCount = vertexContainer.getVerticesCount();
     }
 
 
@@ -94,7 +98,6 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
 
         uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, projectionTransformation.createMatrix());
         uniformMatrix4fv(VIEW_UNIFORM_NAME, camera.createMatrix());
-        uniformMatrix4fv(MODEL_UNIFORM_NAME, Matrix4.createIdentity());
         uniform3f(UNIFORM_AMBIENT_COLOR, lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
         Vertex direction = lighting.getLightDirection();
         uniform3f(UNIFORM_LIGHTING_DIRECTION, direction.getX(), direction.getY(), direction.getZ());
@@ -106,8 +109,11 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
 
         webGLTexture.activate();
 
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        for (Matrix4 modelMatrix : modelMatrices) {
+            uniformMatrix4fv(MODEL_UNIFORM_NAME, modelMatrix);
+            gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
+            WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        }
 
         postDraw(gameCanvas.getCtx3d());
     }

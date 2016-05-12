@@ -1,4 +1,4 @@
-package com.btxtech.server.terrain;
+package com.btxtech.server.terrain.surface;
 
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.dto.TerrainSlopePosition;

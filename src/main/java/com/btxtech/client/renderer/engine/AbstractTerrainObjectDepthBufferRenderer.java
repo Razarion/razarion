@@ -7,12 +7,13 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Matrix4;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -36,8 +37,9 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
     private Camera camera;
     @Inject
     private Lighting lighting;
+    private Collection<Matrix4> modelMatrices;
 
-    abstract protected VertexList getVertexList(TerrainObjectService terrainObjectService);
+    abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
 
     @PostConstruct
     public void init() {
@@ -57,15 +59,17 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = getVertexList(terrainObjectService);
-        if (vertexList == null) {
+        VertexContainer vertexContainer = getVertexContainer(terrainObjectService);
+        if (vertexContainer == null) {
             elementCount = 0;
             return;
         }
-        positions.fillBuffer(vertexList.getVertices());
-        barycentric.fillBuffer(vertexList.getBarycentric());
+        positions.fillBuffer(vertexContainer.getVertices());
+        barycentric.fillBuffer(vertexContainer.generateBarycentric());
 
-        elementCount = vertexList.getVerticesCount();
+        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+
+        elementCount = vertexContainer.getVerticesCount();
     }
 
     @Override
@@ -76,13 +80,14 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
         useProgram();
         uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, lighting.createProjectionTransformation());
         uniformMatrix4fv(VIEW_UNIFORM_NAME, lighting.createViewTransformation());
-        uniformMatrix4fv(MODEL_UNIFORM_NAME, Matrix4.createIdentity());
 
         positions.activate();
         barycentric.activate();
 
-        // Draw
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        for (Matrix4 modelMatrix : modelMatrices) {
+            uniformMatrix4fv(MODEL_UNIFORM_NAME, modelMatrix);
+            gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
+            WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        }
     }
 }

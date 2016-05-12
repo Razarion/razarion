@@ -1,9 +1,17 @@
 package com.btxtech.server.terrain;
 
 import com.btxtech.server.ExceptionHandler;
+import com.btxtech.server.collada.ColladaConverter;
+import com.btxtech.server.terrain.object.TerrainObjectEntity;
+import com.btxtech.server.terrain.object.TerrainObjectPositionEntity;
+import com.btxtech.server.terrain.surface.GroundConfigEntity;
+import com.btxtech.server.terrain.surface.SlopeConfigEntity;
+import com.btxtech.server.terrain.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -103,4 +111,61 @@ public class TerrainServiceImpl implements TerrainService {
             throw e;
         }
     }
+
+    @Override
+    @Transactional
+    public Collection<TerrainObject> loadTerrainObjects() {
+        try {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            // Query for total row count in invitations
+            CriteriaQuery<TerrainObjectEntity> userQuery = criteriaBuilder.createQuery(TerrainObjectEntity.class);
+            Root<TerrainObjectEntity> from = userQuery.from(TerrainObjectEntity.class);
+            CriteriaQuery<TerrainObjectEntity> userSelect = userQuery.select(from);
+            List<TerrainObjectEntity> terrainObjectEntities = entityManager.createQuery(userSelect).getResultList();
+
+            Collection<TerrainObject> terrainObjects = new ArrayList<>();
+            for (TerrainObjectEntity terrainObjectEntity : terrainObjectEntities) {
+                terrainObjects.add(ColladaConverter.convertToTerrainObject(terrainObjectEntity));
+            }
+            return terrainObjects;
+
+        } catch (RuntimeException e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+            throw new RuntimeException(e);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public Collection<TerrainObjectPosition> loadTerrainObjectPositions() {
+        try {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            // Query for total row count in invitations
+            CriteriaQuery<TerrainObjectPositionEntity> userQuery = criteriaBuilder.createQuery(TerrainObjectPositionEntity.class);
+            Root<TerrainObjectPositionEntity> from = userQuery.from(TerrainObjectPositionEntity.class);
+            CriteriaQuery<TerrainObjectPositionEntity> userSelect = userQuery.select(from);
+            List<TerrainObjectPositionEntity> terrainObjectPositionEntities = entityManager.createQuery(userSelect).getResultList();
+
+            Collection<TerrainObjectPosition> objectPositions = new ArrayList<>();
+            for (TerrainObjectPositionEntity terrainObjectPositionEntity : terrainObjectPositionEntities) {
+                TerrainObjectPosition objectPosition = new TerrainObjectPosition();
+                objectPosition.setId(terrainObjectPositionEntity.getId().intValue());
+                objectPosition.setTerrainObjectId(terrainObjectPositionEntity.getTerrainObjectEntity().getObjectId());
+                objectPosition.setScale(terrainObjectPositionEntity.getScale());
+                objectPosition.setZRotation(terrainObjectPositionEntity.getZRotation());
+                objectPosition.setPosition(terrainObjectPositionEntity.getPosition());
+                objectPositions.add(objectPosition);
+            }
+            return objectPositions;
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
 }

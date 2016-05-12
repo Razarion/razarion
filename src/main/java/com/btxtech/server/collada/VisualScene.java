@@ -1,11 +1,11 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.dto.VertexContainer;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -26,18 +26,19 @@ public class VisualScene extends NameIdColladaXml {
         }
     }
 
-    public List<VertexList> generateVertexList(Map<String, Geometry> geometries) {
-        List<VertexList> vertexLists = new ArrayList<>();
-
+    public TerrainObject generateTerrainObjectEntity(Map<String, Geometry> geometries, ColladaConverterControl colladaConverterControl) {
+        Collection<VertexContainer> allVertexContainers = new ArrayList<>();
         for (NodeScene nodeScene : nodeScenes) {
             LOGGER.finest("-:process node : " + nodeScene);
-            VertexList vertexList = nodeScene.processGeometry(geometries);
-            if (vertexList != null) {
-                vertexLists.add(vertexList);
+            Collection<VertexContainer> vertexContainers = nodeScene.processGeometry(colladaConverterControl, geometries);
+            if (vertexContainers != null) {
+                allVertexContainers.addAll(vertexContainers);
             }
         }
-
-        return vertexLists;
+        TerrainObject terrainObject = new TerrainObject();
+        terrainObject.setId(colladaConverterControl.getObjectId());
+        terrainObject.setVertexContainers(allVertexContainers);
+        return terrainObject;
     }
 
     @Override

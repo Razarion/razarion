@@ -1,4 +1,4 @@
-package com.btxtech.server.terrain;
+package com.btxtech.server.terrain.surface;
 
 import com.btxtech.shared.Shape;
 import com.btxtech.shared.dto.SlopeConfig;

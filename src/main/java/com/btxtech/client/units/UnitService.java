@@ -38,30 +38,30 @@ public class UnitService {
     private RenderService renderService;
 
 
-    @AfterInitialization
-    public void afterInitialization() {
-        reloadModel();
-    }
-
-    public void reloadModel() {
-        vertexListService.call(new RemoteCallback<List<VertexList>>() {
-            @Override
-            public void callback(List<VertexList> response) {
-                vertexList = new VertexList();
-                for (VertexList vertexList : response) {
-                    logger.severe("vertexList: " + vertexList.getName() + ":" + vertexList.getVertices().size());
-                    UnitService.this.vertexList.append(vertexList);
-                }
-                renderService.fillBuffers();
-            }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, message != null ? message.toString() : "Message is null", throwable);
-                return false;
-            }
-        }).getUnit();
-    }
+//    @AfterInitialization
+//    public void afterInitialization() {
+//        reloadModel();
+//    }
+//
+//    public void reloadModel() {
+//        vertexListService.call(new RemoteCallback<List<VertexList>>() {
+//            @Override
+//            public void callback(List<VertexList> response) {
+//                vertexList = new VertexList();
+//                for (VertexList vertexList : response) {
+//                    logger.severe("vertexList: " + vertexList.getName() + ":" + vertexList.getVertices().size());
+//                    UnitService.this.vertexList.append(vertexList);
+//                }
+//                renderService.fillBuffers();
+//            }
+//        }, new ErrorCallback<Object>() {
+//            @Override
+//            public boolean error(Object message, Throwable throwable) {
+//                logger.log(Level.SEVERE, message != null ? message.toString() : "Message is null", throwable);
+//                return false;
+//            }
+//        }).getUnit();
+//    }
 
     public VertexList getVertexList() {
         return vertexList;

@@ -4,6 +4,7 @@ import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.webgl.WebGlException;
+import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.units.UnitService;
 import elemental.html.WebGLFramebuffer;
@@ -40,6 +41,8 @@ public class RenderService {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
+    private TerrainObjectService terrainObjectService;
+    @Inject
     private TerrainEditor terrainEditor;
     private List<RenderSwitch> renderQueue;
     private Collection<TerrainEditorRenderer> terrainEditorRenderers;
@@ -71,10 +74,14 @@ public class RenderService {
             terrainEditorRenderer.setId(id);
             terrainEditorRenderers.add(terrainEditorRenderer);
         }
-        createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, 0);
+        for (int id : terrainObjectService.getOpaqueIds()) {
+            createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, id);
+        }
         createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, 0);
         createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);
-        createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class, 0);
+        for (int id : terrainObjectService.getTransparentNoShadowIds()) {
+            createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class, id);
+        }
         monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null, 0);
         terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class, 0);
         unitNorm = createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, 0);

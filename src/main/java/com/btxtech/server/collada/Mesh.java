@@ -1,10 +1,11 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.primitives.Matrix4;
 import org.w3c.dom.Node;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,33 +13,33 @@ import java.util.Map;
  * 14.08.2015.
  */
 public class Mesh extends ColladaXml {
-    private VertexList vertexList;
+    private Polylist polylist;
+    private Map<String, Source> sources;
+    private Vertices vertices;
 
     public Mesh(Node node) {
-        Map<String, Source> sources = new HashMap<>();
+        sources = new HashMap<>();
         for (Node sourceNode : getChildren(node, ELEMENT_SOURCE)) {
             Source source = new Source(sourceNode);
             sources.put(source.getId(), source);
         }
 
-        Vertices vertices = new Vertices(getChild(node, ELEMENT_VERTICES));
+        vertices = new Vertices(getChild(node, ELEMENT_VERTICES));
         if (!vertices.getInput().getSemantic().equals(SEMANTIC_POSITION)) {
             throw new ColladaRuntimeException("Semantics must be POSITION. " + node);
         }
 
-        List<Node> polylists = getChildren(node, ELEMENT_POLYLIST);
-        Polylist polylist = new Polylist(getChild(node, ELEMENT_POLYLIST));
-        vertexList = polylist.toTriangleVertexList(sources, vertices);
+        polylist = new Polylist(getChild(node, ELEMENT_POLYLIST));
     }
 
-    public VertexList getVertexList() {
-        return vertexList;
+    public void fillVertexContainer(Collection<Matrix4> matrices, VertexContainer vertexContainer) {
+        polylist.toTriangleVertexContainer(sources, vertices, matrices, vertexContainer);
     }
 
     @Override
     public String toString() {
         return "Mesh{" +
-                "vertexList=" + vertexList +
+                "polylist=" + polylist +
                 '}';
     }
 }
