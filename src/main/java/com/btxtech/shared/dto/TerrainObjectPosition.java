@@ -10,7 +10,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  */
 @Portable
 public class TerrainObjectPosition {
-    private int id;
+    private Integer id;
     private int terrainObjectId;
     private Vertex position;
     private double scale;
@@ -22,6 +22,10 @@ public class TerrainObjectPosition {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean hasId() {
+        return id != null;
     }
 
     public int getTerrainObjectId() {

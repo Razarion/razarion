@@ -65,6 +65,10 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
         webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
     }
 
+    public void updateModelMatrices() {
+        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+    }
+
     @Override
     public void fillBuffers() {
         VertexContainer vertexContainer = getVertexContainer(terrainObjectService);
@@ -76,7 +80,7 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
         barycentric.fillBuffer(vertexContainer.generateBarycentric());
         textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 
-        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+        updateModelMatrices();
 
         elementCount = vertexContainer.getVerticesCount();
     }

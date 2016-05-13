@@ -3,6 +3,7 @@ package com.btxtech.client.menu;
 import com.btxtech.client.sidebar.LeftSideBar;
 import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.btxtech.client.sidebar.TerrainEditorSidebar;
+import com.btxtech.client.sidebar.TerrainObjectEditorSidebar;
 import com.btxtech.client.sidebar.TerrainSidebar;
 import com.btxtech.client.sidebar.slopeeditor.SlopeConfigSidebar;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -47,6 +48,9 @@ public class Menu extends Composite {
     @DataField("menu-editor")
     private InlineHyperlink editorMenu;
     @Inject
+    @DataField("menu-object-editor")
+    private InlineHyperlink objectEditorMenu;
+    @Inject
     private LeftSideBar leftSideBar;
     @Inject
     private Instance<LeftSideBarContent> leftSideBarContentInstance;
@@ -64,6 +68,11 @@ public class Menu extends Composite {
     @EventHandler("menu-editor")
     private void editorMenuClick(ClickEvent event) {
         leftSideBar.show(leftSideBarContentInstance.select(TerrainEditorSidebar.class).get());
+    }
+
+    @EventHandler("menu-object-editor")
+    private void objectEditorMenuClick(ClickEvent event) {
+        leftSideBar.show(leftSideBarContentInstance.select(TerrainObjectEditorSidebar.class).get());
     }
 
 }

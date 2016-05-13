@@ -56,4 +56,16 @@ public class RenderSwitch {
             current = normalRenderer;
         }
     }
+
+    public void updateObjectModelMatrices() {
+        if(normalRenderer instanceof AbstractTerrainObjectRenderer) {
+            ((AbstractTerrainObjectRenderer)normalRenderer).updateModelMatrices();
+        }
+        if(depthBufferRenderer instanceof AbstractTerrainObjectDepthBufferRenderer) {
+            ((AbstractTerrainObjectDepthBufferRenderer)depthBufferRenderer).updateModelMatrices();
+        }
+        if(wireRenderer instanceof AbstractTerrainObjectWireRender) {
+            ((AbstractTerrainObjectWireRender)wireRenderer).updateModelMatrices();
+        }
+    }
 }

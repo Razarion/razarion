@@ -1,6 +1,10 @@
 package com.btxtech.server.terrain;
 
 import com.btxtech.server.ExceptionHandler;
+import com.btxtech.server.terrain.object.TerrainObjectEntity;
+import com.btxtech.server.terrain.object.TerrainObjectEntity_;
+import com.btxtech.server.terrain.object.TerrainObjectPositionEntity;
+import com.btxtech.server.terrain.object.TerrainObjectPositionEntity_;
 import com.btxtech.server.terrain.surface.GroundConfigEntity;
 import com.btxtech.server.terrain.surface.SlopeConfigEntity;
 import com.btxtech.server.terrain.surface.SlopeConfigEntity_;
@@ -9,6 +13,7 @@ import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -19,7 +24,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -149,7 +156,7 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
         try {
             for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
                 TerrainSlopePositionEntity terrainSlopePositionEntity;
-                if(terrainSlopePosition.hasId()) {
+                if (terrainSlopePosition.hasId()) {
                     terrainSlopePositionEntity = entityManager.find(TerrainSlopePositionEntity.class, (long) terrainSlopePosition.getId());
                 } else {
                     terrainSlopePositionEntity = new TerrainSlopePositionEntity();
@@ -163,5 +170,73 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
             exceptionHandler.handleException(e);
             throw e;
         }
+    }
+
+    @Override
+    @Transactional
+    public Collection<SlopeNameId> getTerrainObjectNameIds() {
+        try {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+            Root<TerrainObjectEntity> root = cq.from(TerrainObjectEntity.class);
+            cq.multiselect(root.get(TerrainObjectEntity_.id), root.get(TerrainObjectEntity_.internalName));
+            List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
+            Collection<SlopeNameId> slopeNameIds = new ArrayList<>();
+            for (Tuple t : tupleResult) {
+                slopeNameIds.add(new SlopeNameId(((Long) t.get(0)).intValue(), (String) t.get(1)));
+            }
+            return slopeNameIds;
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public void saveTerrainObjectPositions(Collection<TerrainObjectPosition> terrainObjectPositions) {
+        Collection<Long> idToDelete = getTerrainObjectPositionIds();
+        try {
+            // Save or create
+            for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
+                TerrainObjectPositionEntity terrainSlopePositionEntity;
+                if (objectPosition.hasId()) {
+                    terrainSlopePositionEntity = entityManager.find(TerrainObjectPositionEntity.class, (long) objectPosition.getId());
+                    idToDelete.remove((long) objectPosition.getId());
+                } else {
+                    terrainSlopePositionEntity = new TerrainObjectPositionEntity();
+                }
+                terrainSlopePositionEntity.setTerrainObjectEntity(entityManager.find(TerrainObjectEntity.class, (long) objectPosition.getTerrainObjectId()));
+                terrainSlopePositionEntity.setPosition(objectPosition.getPosition());
+                terrainSlopePositionEntity.setScale(objectPosition.getScale());
+                terrainSlopePositionEntity.setZRotation(objectPosition.getZRotation());
+                entityManager.merge(terrainSlopePositionEntity);
+            }
+            // Delete the rest
+            if (!idToDelete.isEmpty()) {
+                CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+                CriteriaDelete<TerrainObjectPositionEntity> delete = criteriaBuilder.createCriteriaDelete(TerrainObjectPositionEntity.class);
+                Root<TerrainObjectPositionEntity> root = delete.from(TerrainObjectPositionEntity.class);
+                Expression<Long> exp = root.get(TerrainObjectPositionEntity_.id);
+                delete.where(exp.in(idToDelete));
+                entityManager.createQuery(delete).executeUpdate();
+            }
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    private Collection<Long> getTerrainObjectPositionIds() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+        Root<TerrainObjectPositionEntity> root = cq.from(TerrainObjectPositionEntity.class);
+        cq.multiselect(root.get(TerrainObjectPositionEntity_.id));
+        List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
+        Collection<Long> ids = new ArrayList<>();
+        for (Tuple t : tupleResult) {
+            ids.add((Long) t.get(0));
+        }
+        return ids;
     }
 }

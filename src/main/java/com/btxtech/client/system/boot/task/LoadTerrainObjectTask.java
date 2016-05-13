@@ -2,8 +2,6 @@ package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.shared.TerrainService;
-import com.btxtech.shared.VertexList;
-import com.btxtech.shared.VertexListService;
 import com.btxtech.shared.dto.TerrainObject;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -12,7 +10,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

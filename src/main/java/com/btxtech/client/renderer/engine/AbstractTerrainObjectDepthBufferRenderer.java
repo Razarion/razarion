@@ -57,6 +57,10 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
 
     }
 
+    public void updateModelMatrices() {
+        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+    }
+
     @Override
     public void fillBuffers() {
         VertexContainer vertexContainer = getVertexContainer(terrainObjectService);
@@ -67,7 +71,7 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
         positions.fillBuffer(vertexContainer.getVertices());
         barycentric.fillBuffer(vertexContainer.generateBarycentric());
 
-        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+        updateModelMatrices();
 
         elementCount = vertexContainer.getVerticesCount();
     }

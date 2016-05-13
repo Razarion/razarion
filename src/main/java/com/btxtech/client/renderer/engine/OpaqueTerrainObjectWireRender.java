@@ -13,6 +13,6 @@ import javax.enterprise.context.Dependent;
 public class OpaqueTerrainObjectWireRender extends AbstractTerrainObjectWireRender {
     @Override
     protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getTransparentNoShadow(getId());
+        return terrainObjectService.getOpaqueVertexContainer(getId());
     }
 }

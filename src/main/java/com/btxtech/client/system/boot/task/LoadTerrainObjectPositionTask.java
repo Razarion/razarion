@@ -1,5 +1,6 @@
 package com.btxtech.client.system.boot.task;
 
+import com.btxtech.client.editor.object.TerrainObjectEditor;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -22,6 +23,8 @@ public class LoadTerrainObjectPositionTask extends AbstractStartupTask {
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject
+    private TerrainObjectEditor terrainObjectEditor;
+    @Inject
     private Caller<TerrainService> terrainServiceCaller;
     private Logger logger = Logger.getLogger(LoadTerrainObjectPositionTask.class.getName());
 
@@ -32,6 +35,7 @@ public class LoadTerrainObjectPositionTask extends AbstractStartupTask {
             @Override
             public void callback(Collection<TerrainObjectPosition> terrainObjectPositions) {
                 terrainObjectService.setTerrainObjectPositions(terrainObjectPositions);
+                terrainObjectEditor.setTerrainObjects(terrainObjectPositions);
                 deferredStartup.finished();
             }
         }, new ErrorCallback() {
@@ -41,7 +45,6 @@ public class LoadTerrainObjectPositionTask extends AbstractStartupTask {
                 deferredStartup.failed(throwable);
                 return false;
             }
-
         }).loadTerrainObjectPositions();
     }
 }

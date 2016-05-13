@@ -293,4 +293,10 @@ public class RenderService {
     public void setShowEditor(boolean showEditor) {
         this.showEditor = showEditor;
     }
+
+    public void updateObjectModelMatrices() {
+        for (RenderSwitch renderSwitch : renderQueue) {
+            renderSwitch.updateObjectModelMatrices();
+        }
+    }
 }

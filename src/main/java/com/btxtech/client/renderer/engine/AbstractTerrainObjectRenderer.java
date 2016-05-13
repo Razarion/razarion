@@ -84,11 +84,14 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
         normals.fillBuffer(vertexContainer.getNorms());
         textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 
-        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+        updateModelMatrices();
 
         elementCount = vertexContainer.getVerticesCount();
     }
 
+    public void updateModelMatrices() {
+        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
+    }
 
     @Override
     public void draw() {

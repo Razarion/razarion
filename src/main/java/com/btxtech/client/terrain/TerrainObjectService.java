@@ -1,16 +1,24 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
+import com.btxtech.game.jsre.client.common.CollectionUtils;
+import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.dto.SlopeNameId;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Matrix4;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
+import org.jboss.errai.common.client.api.RemoteCallback;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,15 +38,7 @@ public class TerrainObjectService {
     private Map<Integer, Collection<Matrix4>> objectIdMatrices;
 
     public void init() {
-        objectIdMatrices = new HashMap<>();
-        for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
-            Collection<Matrix4> matrices = objectIdMatrices.get(terrainObjectPosition.getTerrainObjectId());
-            if (matrices == null) {
-                matrices = new ArrayList<>();
-                objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), matrices);
-            }
-            matrices.add(terrainObjectPosition.createModelMatrix());
-        }
+        setupModelMatrices(terrainObjectPositions);
         opaqueIds = new HashMap<>();
         transparentNoShadowIds = new HashMap<>();
         transparentOnlyShadowIds = new HashMap<>();
@@ -58,6 +58,18 @@ public class TerrainObjectService {
                         logger.severe("Can not handle: " + vertexContainer.getType());
                 }
             }
+        }
+    }
+
+    public void setupModelMatrices(Collection<TerrainObjectPosition> terrainObjectPositions) {
+        objectIdMatrices = new HashMap<>();
+        for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
+            Collection<Matrix4> matrices = objectIdMatrices.get(terrainObjectPosition.getTerrainObjectId());
+            if (matrices == null) {
+                matrices = new ArrayList<>();
+                objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), matrices);
+            }
+            matrices.add(terrainObjectPosition.createModelMatrix());
         }
     }
 
