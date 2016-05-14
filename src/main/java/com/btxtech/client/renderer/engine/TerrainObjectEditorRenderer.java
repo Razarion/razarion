@@ -42,7 +42,9 @@ public class TerrainObjectEditorRenderer extends AbstractRenderer {
     public void onTerrainEditorCursorShapeEvent(@Observes TerrainObjectEditorSelectedEvent terrainObjectEditorSelectedEvent) {
         cursoType = terrainObjectEditorSelectedEvent.getCursorType().ordinal();
         Vertex position = terrainObjectEditorSelectedEvent.getPosition();
-        modelPosition = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ());
+        if (position != null) {
+            modelPosition = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ());
+        }
     }
 
     @Override

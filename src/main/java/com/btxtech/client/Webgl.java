@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +24,8 @@ import java.util.logging.Logger;
 public class Webgl {
     @Inject
     private ClientRunner clientRunner;
+    @Inject
+    private KeyboardEventHandler keyboardEventHandler;
     // @Inject
     private Logger logger = Logger.getLogger(Webgl.class.getName());
 
@@ -37,6 +40,11 @@ public class Webgl {
                 }
             }
         });
+    }
+
+    @PostConstruct
+    public void init() {
+        keyboardEventHandler.init();
     }
 
     @AfterInitialization

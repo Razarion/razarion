@@ -1,5 +1,7 @@
 package com.btxtech.client.editor.object;
 
+import com.btxtech.client.TerrainKeyDownEvent;
+import com.btxtech.client.TerrainKeyUpEvent;
 import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
 import com.btxtech.client.TerrainMouseUpEvent;
@@ -12,6 +14,7 @@ import com.btxtech.shared.dto.SlopeNameId;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
+import elemental.events.KeyboardEvent;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -34,7 +37,9 @@ public class TerrainObjectEditor {
     public enum CursorType {
         NORMAL,
         HOVER,
-        SELECTED
+        DELETE_MODE,
+        SELECTED,
+        DELETE_SELECTED
     }
 
     private Logger logger = Logger.getLogger(TerrainObjectEditor.class.getName());
@@ -54,6 +59,8 @@ public class TerrainObjectEditor {
     private Collection<TerrainObjectPosition> terrainObjects;
     private boolean active;
     private TerrainObjectPosition selected;
+    private boolean deletePressed;
+    private boolean hover;
 
     public void onTerrainMouseMove(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
         if (active) {
@@ -61,15 +68,25 @@ public class TerrainObjectEditor {
             Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(ray3d);
 
             CursorType cursorType;
+            hover = false;
             if (selected != null) {
                 selected.setPosition(terrainPosition);
                 terrainObjectService.setupModelMatrices(terrainObjects);
                 renderService.updateObjectModelMatrices();
                 cursorType = CursorType.SELECTED;
             } else if (getAtTerrain(terrainPosition) != null) {
-                cursorType = CursorType.HOVER;
+                hover = true;
+                if (deletePressed) {
+                    cursorType = CursorType.DELETE_SELECTED;
+                } else {
+                    cursorType = CursorType.HOVER;
+                }
             } else {
-                cursorType = CursorType.NORMAL;
+                if (deletePressed) {
+                    cursorType = CursorType.DELETE_MODE;
+                } else {
+                    cursorType = CursorType.NORMAL;
+                }
             }
             terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(cursorType, terrainPosition));
         }
@@ -83,7 +100,7 @@ public class TerrainObjectEditor {
 
             selected = getAtTerrain(terrainPosition);
 
-            if (selected == null) {
+            if (selected == null && !deletePressed) {
                 // Create new terrain object position
                 TerrainObjectPosition objectPosition = new TerrainObjectPosition();
                 if (randomScale < 1.0) {
@@ -98,10 +115,20 @@ public class TerrainObjectEditor {
                 terrainObjectService.setupModelMatrices(terrainObjects);
                 renderService.updateObjectModelMatrices();
                 terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.SELECTED, terrainPosition));
+            } else if (selected != null && deletePressed) {
+                deleteSelected();
             }
 
             // terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(terrainPosition));
         }
+    }
+
+    private void deleteSelected() {
+        terrainObjects.remove(selected);
+        selected = null;
+        terrainObjectService.setupModelMatrices(terrainObjects);
+        renderService.updateObjectModelMatrices();
+        terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.NORMAL, null));
     }
 
     public void onTerrainMouseUp(@Observes TerrainMouseUpEvent terrainMouseDownEvent) {
@@ -114,6 +141,31 @@ public class TerrainObjectEditor {
         }
     }
 
+
+    public void onTerrainKeyDown(@Observes TerrainKeyDownEvent terrainKeyDownEvent) {
+        if (terrainKeyDownEvent.getKeyboardEvent().getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+            deletePressed = true;
+            if (selected != null) {
+                deleteSelected();
+            } else if (hover) {
+                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.DELETE_SELECTED, null));
+            } else {
+                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.DELETE_MODE, null));
+            }
+        }
+    }
+
+    public void onTerrainKeyUp(@Observes TerrainKeyUpEvent terrainKeyUpEvent) {
+        if (terrainKeyUpEvent.getKeyboardEvent().getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+            deletePressed = false;
+            if (selected != null) {
+                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.SELECTED, null));
+            } else if (hover) {
+                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.HOVER, null));
+            }
+        }
+
+    }
 
     private TerrainObjectPosition getAtTerrain(Vertex terrainPosition) {
         for (TerrainObjectPosition terrainObject : terrainObjects) {
