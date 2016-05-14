@@ -47,6 +47,7 @@ public class RenderService {
     private List<RenderSwitch> renderQueue;
     private Collection<TerrainEditorRenderer> terrainEditorRenderers;
     private TerrainEditorCursorRenderer terrainEditorCursorRenderer;
+    private TerrainObjectEditorRenderer terrainObjectEditorRenderer;
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
@@ -54,7 +55,8 @@ public class RenderService {
     private boolean showMonitor = false;
     private boolean showNorm = false;
     private boolean showDeep = false;
-    private boolean showEditor = false;
+    private boolean showSlopeEditor = false;
+    private boolean showObjectEditor = false;
     private RenderSwitch monitor;
     private RenderSwitch terrainNorm;
     private RenderSwitch unitNorm;
@@ -87,6 +89,8 @@ public class RenderService {
         unitNorm = createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, 0);
         terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorRenderer.class).get();
         terrainEditorCursorRenderer.fillBuffers();
+        terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorRenderer.class).get();
+        terrainObjectEditorRenderer.fillBuffers();
     }
 
     public void createTerrainEditorRenderer(int id) {
@@ -173,12 +177,17 @@ public class RenderService {
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
 
         // Dirty way to render terrain editor
-        if (showEditor) {
+        if (showSlopeEditor) {
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
             for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
                 terrainEditorRenderer.draw();
             }
             terrainEditorCursorRenderer.draw();
+            gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
+        }
+        if (showObjectEditor) {
+            gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
+            terrainObjectEditorRenderer.draw();
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
         }
 
@@ -290,8 +299,12 @@ public class RenderService {
         this.showDeep = showDeep;
     }
 
-    public void setShowEditor(boolean showEditor) {
-        this.showEditor = showEditor;
+    public void setShowSlopeEditor(boolean showSlopeEditor) {
+        this.showSlopeEditor = showSlopeEditor;
+    }
+
+    public void setShowObjectEditor(boolean showObjectEditor) {
+        this.showObjectEditor = showObjectEditor;
     }
 
     public void updateObjectModelMatrices() {

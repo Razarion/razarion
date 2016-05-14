@@ -116,7 +116,7 @@ public class TerrainEditor {
             return;
         }
         active = true;
-        renderService.setShowEditor(true);
+        renderService.setShowSlopeEditor(true);
     }
 
     public void deactivate() {
@@ -124,7 +124,7 @@ public class TerrainEditor {
             return;
         }
         active = false;
-        renderService.setShowEditor(false);
+        renderService.setShowSlopeEditor(false);
     }
 
     public Collection<Integer> getSlopePolygonIds() {

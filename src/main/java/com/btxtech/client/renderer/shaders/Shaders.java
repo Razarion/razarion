@@ -82,4 +82,11 @@ public interface Shaders extends ClientBundle {
 
     @Source("TerrainEditorCursor.frag")
     TextResource terrainEditorCursorFragmentShader();
+
+    @Source("TerrainObjectEditor.vert")
+    TextResource terrainObjectEditorVertexShader();
+
+    @Source("TerrainObjectEditor.frag")
+    TextResource terrainObjectEditorFragmentShader();
+
 }
