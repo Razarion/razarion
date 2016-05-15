@@ -6,6 +6,7 @@ import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 import org.junit.Assert;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
@@ -90,4 +91,15 @@ public class TestHelper {
         }
         return doubleArray;
     }
+
+    public static void setPrivateField(Object object, String fieldName, Object value) throws Exception {
+//        if (AopUtils.isJdkDynamicProxy(object)) {
+//            object = ((Advised) object).getTargetSource().getTarget();
+//        }
+        Field field = object.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(object, value);
+        field.setAccessible(false);
+    }
+
 }

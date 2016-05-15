@@ -1,6 +1,5 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.dto.TerrainObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -34,14 +33,14 @@ public class Collada extends ColladaXml {
         LOGGER.finest("scene: " + scene);
     }
 
-    public TerrainObject generateTerrainObject(ColladaConverterControl colladaConverterControl) {
-        LOGGER.finest("generateTerrainObject");
+    public void convert(ColladaConverterControl colladaConverterControl) {
+        LOGGER.finest("convert");
         VisualScene visualScene = visualScenes.get(scene.getVisualSceneUrl());
         if (visualScene == null) {
             throw new ColladaRuntimeException("No visual scene found for url: " + scene.getVisualSceneUrl());
         }
 
-        return visualScene.generateTerrainObjectEntity(geometries, colladaConverterControl);
+        visualScene.convert(geometries, colladaConverterControl);
     }
 
     private void readAsset(Document doc) {

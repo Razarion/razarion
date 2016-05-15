@@ -1,7 +1,5 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.dto.TerrainObject;
-import com.btxtech.shared.dto.VertexContainer;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
@@ -26,19 +24,12 @@ public class VisualScene extends NameIdColladaXml {
         }
     }
 
-    public TerrainObject generateTerrainObjectEntity(Map<String, Geometry> geometries, ColladaConverterControl colladaConverterControl) {
-        Collection<VertexContainer> allVertexContainers = new ArrayList<>();
+    public void convert(Map<String, Geometry> geometries, ColladaConverterControl colladaConverterControl) {
+        //Collection<TerrainObjectVertexContainer> allTerrainObjectVertexContainers = new ArrayList<>();
         for (NodeScene nodeScene : nodeScenes) {
-            LOGGER.finest("-:process node : " + nodeScene);
-            Collection<VertexContainer> vertexContainers = nodeScene.processGeometry(colladaConverterControl, geometries);
-            if (vertexContainers != null) {
-                allVertexContainers.addAll(vertexContainers);
-            }
+            LOGGER.finest("-:convert node : " + nodeScene);
+            nodeScene.convert(colladaConverterControl, geometries);
         }
-        TerrainObject terrainObject = new TerrainObject();
-        terrainObject.setId(colladaConverterControl.getObjectId());
-        terrainObject.setVertexContainers(allVertexContainers);
-        return terrainObject;
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.btxtech.server.terrain.object;
 
-import com.btxtech.server.collada.ColladaConverterControl;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.dto.TerrainObject;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -22,7 +21,7 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "TERRAIN_OBJECT")
-public class TerrainObjectEntity implements ColladaConverterControl {
+public class TerrainObjectEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -33,13 +32,16 @@ public class TerrainObjectEntity implements ColladaConverterControl {
     @ElementCollection
     @CollectionTable(name = "TERRAIN_OBJECT_TYPE_MAP", joinColumns = @JoinColumn(name = "OWNER_ID"))
     @Enumerated(EnumType.STRING)
-    private Map<String, VertexContainer.Type> typeMap;
+    private Map<String, TerrainObject.Type> typeMap;
+
+    public Long getId() {
+        return id;
+    }
 
     public String getInternalName() {
         return internalName;
     }
 
-    @Override
     public String getColladaString() {
         return colladaString;
     }
@@ -48,19 +50,13 @@ public class TerrainObjectEntity implements ColladaConverterControl {
         this.colladaString = colladaString;
     }
 
-    @Override
-    public int getObjectId() {
-        return id.intValue();
-    }
-
-    @Override
-    public VertexContainer.Type nameToType(String name) {
-        for (Map.Entry<String, VertexContainer.Type> entry : typeMap.entrySet()) {
+    public TerrainObject.Type nameToType(String name) {
+        for (Map.Entry<String, TerrainObject.Type> entry : typeMap.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(name)) {
                 return entry.getValue();
             }
         }
-        return null;
+        throw new IllegalArgumentException("No type for name: " + name);
     }
 
     @Override
@@ -80,4 +76,5 @@ public class TerrainObjectEntity implements ColladaConverterControl {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
+
 }

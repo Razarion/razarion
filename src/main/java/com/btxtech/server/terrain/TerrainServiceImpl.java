@@ -155,7 +155,7 @@ public class TerrainServiceImpl implements TerrainService {
             for (TerrainObjectPositionEntity terrainObjectPositionEntity : terrainObjectPositionEntities) {
                 TerrainObjectPosition objectPosition = new TerrainObjectPosition();
                 objectPosition.setId(terrainObjectPositionEntity.getId().intValue());
-                objectPosition.setTerrainObjectId(terrainObjectPositionEntity.getTerrainObjectEntity().getObjectId());
+                objectPosition.setTerrainObjectId(terrainObjectPositionEntity.getTerrainObjectEntity().getId().intValue());
                 objectPosition.setScale(terrainObjectPositionEntity.getScale());
                 objectPosition.setZRotation(terrainObjectPositionEntity.getZRotation());
                 objectPosition.setPosition(terrainObjectPositionEntity.getPosition());

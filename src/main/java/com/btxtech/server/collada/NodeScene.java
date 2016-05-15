@@ -1,6 +1,5 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Matrix4;
 import org.w3c.dom.Node;
 
@@ -30,22 +29,21 @@ public class NodeScene extends NameIdColladaXml {
         }
     }
 
-    public Collection<VertexContainer> processGeometry(ColladaConverterControl colladaConverterControl, Map<String, Geometry> geometries) {
+    public void convert(ColladaConverterControl colladaConverterControl, Map<String, Geometry> geometries) {
         if (instanceGeometries.isEmpty()) {
-            return null;
+            return;
         }
-        Collection<VertexContainer> vertexContainers = new ArrayList<>();
+
         for (InstanceGeometry instanceGeometry : instanceGeometries) {
             Geometry geometry = geometries.get(instanceGeometry.getUrl());
             if (geometry == null) {
                 throw new ColladaRuntimeException("No geometry for url found: " + instanceGeometry.getUrl());
             }
-            LOGGER.finest("--:processGeometry:  " + geometry);
-            VertexContainer vertexContainer = new VertexContainer(colladaConverterControl.nameToType(geometry.getName()));
-            geometry.getMesh().fillVertexContainer(matrices, vertexContainer);
-            vertexContainers.add(vertexContainer);
+            LOGGER.finest("--:convert:  " + geometry);
+            colladaConverterControl.createVertexContainer(geometry.getName());
+            geometry.getMesh().fillVertexContainer(matrices, colladaConverterControl);
+            colladaConverterControl.vertexContainerCreated();
         }
-        return vertexContainers;
     }
 
     @Override

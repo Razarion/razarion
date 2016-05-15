@@ -1,6 +1,5 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Matrix4;
 import org.w3c.dom.Node;
 
@@ -32,8 +31,8 @@ public class Mesh extends ColladaXml {
         polylist = new Polylist(getChild(node, ELEMENT_POLYLIST));
     }
 
-    public void fillVertexContainer(Collection<Matrix4> matrices, VertexContainer vertexContainer) {
-        polylist.toTriangleVertexContainer(sources, vertices, matrices, vertexContainer);
+    public void fillVertexContainer(Collection<Matrix4> matrices, ColladaConverterControl colladaConverterControl) {
+        polylist.toTriangleVertexContainer(sources, vertices, matrices, colladaConverterControl);
     }
 
     @Override

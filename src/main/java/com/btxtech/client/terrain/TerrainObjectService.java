@@ -1,24 +1,16 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.game.jsre.client.common.CollectionUtils;
-import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.dto.SlopeNameId;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Matrix4;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.common.client.api.RemoteCallback;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -42,20 +34,20 @@ public class TerrainObjectService {
         opaqueIds = new HashMap<>();
         transparentNoShadowIds = new HashMap<>();
         transparentOnlyShadowIds = new HashMap<>();
-        for (Map.Entry<Integer, TerrainObject> entry : terrainObjects.entrySet()) {
-            for (VertexContainer vertexContainer : entry.getValue().getVertexContainers()) {
-                switch (vertexContainer.getType()) {
+        for (Map.Entry<Integer, TerrainObject> terrainObjectEntry : terrainObjects.entrySet()) {
+            for (Map.Entry<TerrainObject.Type, VertexContainer> vertexContainerEntry : terrainObjectEntry.getValue().getVertexContainers().entrySet()) {
+                switch (vertexContainerEntry.getKey()) {
                     case OPAQUE:
-                        opaqueIds.put(entry.getKey(), vertexContainer);
+                        opaqueIds.put(terrainObjectEntry.getKey(), vertexContainerEntry.getValue());
                         break;
                     case TRANSPARENT_NO_SHADOW_CAST:
-                        transparentNoShadowIds.put(entry.getKey(), vertexContainer);
+                        transparentNoShadowIds.put(terrainObjectEntry.getKey(), vertexContainerEntry.getValue());
                         break;
                     case TRANSPARENT_SHADOW_CAST_ONLY:
-                        transparentOnlyShadowIds.put(entry.getKey(), vertexContainer);
+                        transparentOnlyShadowIds.put(terrainObjectEntry.getKey(), vertexContainerEntry.getValue());
                         break;
                     default:
-                        logger.severe("Can not handle: " + vertexContainer.getType());
+                        logger.severe("Can not handle: " + vertexContainerEntry.getKey());
                 }
             }
         }
