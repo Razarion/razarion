@@ -33,6 +33,20 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- REMOVE -->
+        <dependency>
+            <groupId>org.dyn4j</groupId>
+            <artifactId>dyn4j</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6</version>
+        </dependency>
+        <!-- REMOVE ENDS -->
+
+
         <!-- GWT -->
         <dependency>
             <groupId>com.google.gwt</groupId>
