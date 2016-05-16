@@ -73,7 +73,7 @@ public class Pathing {
         return iObstacles;
     }
 
-    public void loop(double factor) {
+    public void tick(double factor) {
         // saveContext();
         synchronized (units) {
             for (Unit unit : units) {
@@ -129,7 +129,7 @@ public class Pathing {
 //            System.out.println(" pathing.createObstacle(" +
 //                    obstacle.testString() + ");");
 //        }
-//        System.out.println(" pathing.loop(XXX.FACTOR);");
+//        System.out.println(" pathing.tick(XXX.FACTOR);");
 //        System.out.println(" }");
 //    }
 //

@@ -86,7 +86,7 @@ public class GameCanvas {
     }
 
     public void startRenderLoop() {
-        // Start render loop
+        // Start render tick
         AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
             @Override
             public void execute(double timestamp) {
