@@ -7,8 +7,9 @@ import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.units.UnitService;
-import com.btxtech.shared.VertexList;
+import com.btxtech.client.units.ItemService;
+import com.btxtech.client.units.ModelMatrices;
+import com.btxtech.shared.dto.VertexContainer;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -21,14 +22,14 @@ import javax.inject.Inject;
  */
 @Dependent
 public class UnitWireRenderer extends AbstractRenderer {
+    // private Logger logger = Logger.getLogger(UnitWireRenderer.class.getName());
     private VertexShaderAttribute positions;
     private VertexShaderAttribute barycentrics;
     private ShaderTextureCoordinateAttribute textureCoordinate;
     private WebGlUniformTexture webGLTexture;
     private int elementCount;
-    // private Logger logger = Logger.getLogger(UnitWireRenderer.class.getName());
     @Inject
-    private UnitService unitService;
+    private ItemService itemService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -55,23 +56,22 @@ public class UnitWireRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = unitService.getVertexList();
-        if (vertexList == null) {
-            elementCount = 0;
+        VertexContainer vertexContainer = itemService.getItemTypeVertexContainer(getId());
+        if (vertexContainer == null) {
             return;
         }
-        positions.fillBuffer(vertexList.getVertices());
-        barycentrics.fillBuffer(vertexList.getBarycentric());
-        textureCoordinate.fillBuffer(vertexList.getTextureCoordinates());
 
-        elementCount = vertexList.getVerticesCount();
+        positions.fillBuffer(vertexContainer.getVertices());
+        barycentrics.fillBuffer(vertexContainer.generateBarycentric());
+        textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
+
+        elementCount = vertexContainer.getVerticesCount();
     }
 
     @Override
     public void draw() {
         useProgram();
 
-        uniformMatrix4fv("uMMatrix", unitService.getModelMatrix());
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
 
@@ -80,7 +80,11 @@ public class UnitWireRenderer extends AbstractRenderer {
         textureCoordinate.activate();
         webGLTexture.activate();
 
-        getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        for (ModelMatrices modelMatrices : itemService.getModelMatrices(getId())) {
+            uniformMatrix4fv("uMMatrix", modelMatrices.getVertex());
+
+            getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
+            WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        }
     }
 }

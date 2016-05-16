@@ -6,7 +6,7 @@ import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.units.UnitService;
+import com.btxtech.client.units.ItemService;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
@@ -37,7 +37,7 @@ public class RenderService {
     @Inject
     private Camera camera;
     @Inject
-    private UnitService unitService;
+    private ItemService itemService;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -59,13 +59,14 @@ public class RenderService {
     private boolean showObjectEditor = false;
     private RenderSwitch monitor;
     private RenderSwitch terrainNorm;
-    private RenderSwitch unitNorm;
+    private Collection<RenderSwitch> unitNorms;
     private int framesCount = 0;
     private long lastTime = 0;
 
     public void setupRenderers() {
         initFrameBuffer();
         renderQueue = new ArrayList<>();
+        unitNorms = new ArrayList<>();
         createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class, 0);
         for (int id : terrainSurface.getSlopeIds()) {
             createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, id);
@@ -79,14 +80,17 @@ public class RenderService {
         for (int id : terrainObjectService.getOpaqueIds()) {
             createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, id);
         }
-        createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, 0);
+        for (int id : itemService.getItemTypeIds()) {
+            createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, id);
+            unitNorms.add(createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, id));
+        }
+
         createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);
         for (int id : terrainObjectService.getTransparentNoShadowIds()) {
             createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class, id);
         }
         monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null, 0);
         terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class, 0);
-        unitNorm = createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, 0);
         terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorRenderer.class).get();
         terrainEditorCursorRenderer.fillBuffers();
         terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorRenderer.class).get();
@@ -125,7 +129,7 @@ public class RenderService {
     }
 
     public void draw() {
-        unitService.tick();
+        itemService.tick();
 
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, shadowFrameBuffer);
         gameCanvas.getCtx3d().viewport(0, 0, DEPTH_BUFFER_SIZE, DEPTH_BUFFER_SIZE);
@@ -144,7 +148,7 @@ public class RenderService {
             if (!showMonitor && renderSwitch == monitor) {
                 continue;
             }
-            if (!showNorm && (renderSwitch == terrainNorm || renderSwitch == unitNorm)) {
+            if (!showNorm && (renderSwitch == terrainNorm || unitNorms.contains(renderSwitch))) {
                 continue;
             }
             try {
@@ -163,7 +167,7 @@ public class RenderService {
             if (!showMonitor && renderSwitch == monitor) {
                 continue;
             }
-            if (!showNorm && (renderSwitch == terrainNorm || renderSwitch == unitNorm)) {
+            if (!showNorm && (renderSwitch == terrainNorm || unitNorms.contains(renderSwitch))) {
                 continue;
             }
             try {

@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.units.ItemService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -22,9 +23,12 @@ public class StartRenderEngine extends AbstractStartupTask{
     private TerrainSurface terrainSurface;
     @Inject
     private TerrainObjectService terrainObjectService;
+    @Inject
+    private ItemService itemService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
+        itemService.init();
         terrainSurface.init();
         terrainObjectService.init();
         gameCanvas.init();

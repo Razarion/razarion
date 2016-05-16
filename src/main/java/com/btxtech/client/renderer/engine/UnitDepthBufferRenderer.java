@@ -6,9 +6,9 @@ import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.units.UnitService;
-import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.client.units.ItemService;
+import com.btxtech.client.units.ModelMatrices;
+import com.btxtech.shared.dto.VertexContainer;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -21,8 +21,9 @@ import javax.inject.Inject;
  */
 @Dependent
 public class UnitDepthBufferRenderer extends AbstractRenderer {
+    // private Logger logger = Logger.getLogger(UnitDepthBufferRenderer.class.getName());
     @Inject
-    private UnitService unitService;
+    private ItemService itemService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -32,7 +33,6 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
     private VertexShaderAttribute positions;
     private VertexShaderAttribute barycentric;
     private int elementCount;
-    // private Logger logger = Logger.getLogger(UnitDepthBufferRenderer.class.getName());
 
     @PostConstruct
     public void init() {
@@ -52,13 +52,14 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = unitService.getVertexList();
-        if (vertexList == null) {
+        VertexContainer vertexContainer = itemService.getItemTypeVertexContainer(getId());
+        if (vertexContainer == null) {
             return;
         }
-        positions.fillBuffer(vertexList.getVertices());
-        barycentric.fillBuffer(vertexList.getBarycentric());
-        elementCount = vertexList.getVerticesCount();
+
+        positions.fillBuffer(vertexContainer.getVertices());
+        barycentric.fillBuffer(vertexContainer.generateBarycentric());
+        elementCount = vertexContainer.getVerticesCount();
     }
 
     @Override
@@ -69,13 +70,15 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
         useProgram();
         uniformMatrix4fv("uPMatrix", lighting.createProjectionTransformation());
         uniformMatrix4fv("uVMatrix", lighting.createViewTransformation());
-        uniformMatrix4fv("uMMatrix", unitService.getModelMatrix());
 
         positions.activate();
         barycentric.activate();
 
-        // Draw
-        getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays",getCtx3d());
+        for (ModelMatrices modelMatrices : itemService.getModelMatrices(getId())) {
+            uniformMatrix4fv("uMMatrix", modelMatrices.getVertex());
+
+            getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
+            WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        }
     }
 }

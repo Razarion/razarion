@@ -42,8 +42,8 @@ public class Menu extends Composite {
     @DataField("menu-water")
     private WaterMenu waterMenu;
     @Inject
-    @DataField("menu-unit")
-    private UnitMenu unitMenu;
+    @DataField("menu-item")
+    private ItemMenu itemMenu;
     @Inject
     @DataField("menu-editor")
     private InlineHyperlink editorMenu;

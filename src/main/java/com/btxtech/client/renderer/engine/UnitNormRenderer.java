@@ -1,14 +1,12 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.units.UnitService;
-import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.client.units.ItemService;
+import com.btxtech.client.units.ModelMatrices;
+import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 
@@ -17,6 +15,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -24,15 +23,13 @@ import java.util.List;
  */
 @Dependent
 public class UnitNormRenderer extends AbstractRenderer {
+    private Logger logger = Logger.getLogger(UnitNormRenderer.class.getName());
     @Inject
-    private UnitService unitService;
-    @Inject
-    private GameCanvas gameCanvas;
+    private ItemService itemService;
     @Inject
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
-    // private Logger logger = Logger.getLogger(NormRenderer.class.getName());
     private int elementCount;
     private VertexShaderAttribute vertices;
 
@@ -49,12 +46,12 @@ public class UnitNormRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = unitService.getVertexList();
-        if(vertexList == null) {
+        VertexContainer vertexContainer = itemService.getItemTypeVertexContainer(getId());
+        if (vertexContainer == null) {
             return;
         }
-        List<Vertex> vertices = vertexList.getVertices();
-        List<Vertex> norms = vertexList.getNormVertices();
+        List<Vertex> vertices = vertexContainer.getVertices();
+        List<Vertex> norms = vertexContainer.getNorms();
         // List<Vertex> tangents = vertexList.getTangentVertices();
 
         List<Vertex> vectors = new ArrayList<>();
@@ -69,25 +66,28 @@ public class UnitNormRenderer extends AbstractRenderer {
         }
 
         this.vertices.fillBuffer(vectors);
-        elementCount = vertexList.getVerticesCount() /* * 2*/;
+        elementCount = vertexContainer.getVerticesCount() /* * 2*/;
     }
 
     @Override
     public void draw() {
-        gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
-        gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
+        getCtx3d().disable(WebGLRenderingContext.BLEND);
+        getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
 
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
-        uniformMatrix4fv("uMMatrix", unitService.getModelMatrix());
 
         vertices.activate();
 
-        // Draw
-        gameCanvas.getCtx3d().lineWidth(30);
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.LINES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        getCtx3d().lineWidth(30);
+
+        for (ModelMatrices modelMatrices : itemService.getModelMatrices(getId())) {
+            uniformMatrix4fv("uMMatrix", modelMatrices.getVertex());
+
+            getCtx3d().drawArrays(WebGLRenderingContext.LINES, 0, elementCount);
+            WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        }
     }
 }

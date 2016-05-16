@@ -19,7 +19,7 @@ float setupSpecularLight(vec3 correctedLigtDirection) {
 }
 
 void main(void) {
-    vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightingDirection, 1.0)).xyz;
+    vec3 correctedLigtDirection = -(uNVMatrix * vec4(uLightingDirection, 1.0)).xyz;
     vec4 texColor = texture2D(uSampler, vTextureCoord);
 
     vec3 ambient = uAmbientColor * texColor.rgb;

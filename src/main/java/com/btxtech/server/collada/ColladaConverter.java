@@ -1,8 +1,12 @@
 package com.btxtech.server.collada;
 
+import com.btxtech.server.itemtype.ItemTypeEntity;
 import com.btxtech.server.terrain.object.TerrainObjectEntity;
+import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.primitives.TextureCoordinate;
+import com.btxtech.shared.primitives.Vertex;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -12,7 +16,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -24,12 +30,7 @@ public class ColladaConverter {
     private static Logger LOGGER = Logger.getLogger(ColladaConverter.class.getName());
 
     public static TerrainObject convertToTerrainObject(final TerrainObjectEntity terrainObjectEntity) throws ParserConfigurationException, SAXException, ColladaException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(new InputSource(new StringReader(terrainObjectEntity.getColladaString())));
-
-        LOGGER.finest("Start Parsing");
-        Collada collada = new Collada(doc);
+        Collada collada = createCollada(terrainObjectEntity.getColladaString());
 
         final Map<TerrainObject.Type, VertexContainer> containers = new HashMap<>();
         collada.convert(new ColladaConverterControl() {
@@ -42,4 +43,30 @@ public class ColladaConverter {
         return new TerrainObject(terrainObjectEntity.getId().intValue(), containers);
     }
 
+    public static ItemType convertToItemType(ItemTypeEntity itemTypeEntity) throws ParserConfigurationException, SAXException, ColladaException, IOException {
+        Collada collada = createCollada(itemTypeEntity.getColladaString());
+
+        final List<Vertex> vertices = new ArrayList<>();
+        final List<Vertex> norms = new ArrayList<>();
+        final List<TextureCoordinate> textureCoordinates = new ArrayList<>();
+
+        collada.convert(new ColladaConverterControl() {
+            @Override
+            protected void onNewVertexContainer(String name, VertexContainer vertexContainer) {
+                vertices.addAll(vertexContainer.getVertices());
+                norms.addAll(vertexContainer.getNorms());
+                textureCoordinates.addAll(vertexContainer.getTextureCoordinates());
+            }
+        });
+        return new ItemType(itemTypeEntity.getId().intValue(), new VertexContainer(vertices, norms, textureCoordinates));
+    }
+
+    private static Collada createCollada(String colladaString) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(new InputSource(new StringReader(colladaString)));
+
+        LOGGER.finest("Start Parsing");
+        return new Collada(doc);
+    }
 }
