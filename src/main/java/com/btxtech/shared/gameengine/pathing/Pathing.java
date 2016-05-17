@@ -18,7 +18,7 @@ public class Pathing {
     public static final double PENETRATION_TOLERANCE = 1;
     private final List<Unit> units = new ArrayList<>();
     // private List<UnitDataHolder> unitsContext;
-    private List<Obstacle> obstacles = new ArrayList<>();
+    private final List<Obstacle> obstacles = new ArrayList<>();
     private long tickCount;
 
     public void stop() {
@@ -53,21 +53,15 @@ public class Pathing {
     }
 
     public List<Unit> getUnits() {
-        List<Unit> units = new ArrayList<>();
-        synchronized (this.units) {
-            for (Unit unit : this.units) {
-                units.add(unit);
-            }
+        synchronized (units) {
+            return new ArrayList<>(units);
         }
-        return units;
     }
 
     public List<Obstacle> getObstacles() {
-        List<Obstacle> iObstacles = new ArrayList<>();
-        for (Obstacle obstacle : obstacles) {
-            iObstacles.add(obstacle);
+        synchronized (obstacles) {
+            return new ArrayList<>(obstacles);
         }
-        return iObstacles;
     }
 
     public void tick(double factor) {
@@ -334,6 +328,10 @@ public class Pathing {
                 unit.implementPosition(tickCount);
             }
         }
+    }
+
+    public long getTickCount() {
+        return tickCount;
     }
 
     public static double correctAngle(double angle) {
