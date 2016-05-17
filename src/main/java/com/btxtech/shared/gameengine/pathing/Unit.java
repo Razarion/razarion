@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import org.dyn4j.geometry.Vector2;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,15 +24,15 @@ public class Unit {
     private final int id;
     private final boolean canMove;
     private final double radius;
-    private Vector2 position;
-    private Vector2 velocity;
-    private Vector2 destination;
-    private Vector2 lastDestination;
+    private DecimalPosition position;
+    private DecimalPosition velocity;
+    private DecimalPosition destination;
+    private DecimalPosition lastDestination;
     private long lastTickPositionImproved;
     private double nearestDistance;
     private double angle;
 
-    public Unit(int id, boolean canMove, double radius, Vector2 position, Vector2 destination, Vector2 lastDestination, long tickCount) {
+    public Unit(int id, boolean canMove, double radius, DecimalPosition position, DecimalPosition destination, DecimalPosition lastDestination, long tickCount) {
         if (destination != null && !canMove) {
             throw new IllegalArgumentException();
         }
@@ -43,7 +43,7 @@ public class Unit {
         this.destination = destination;
         this.lastDestination = lastDestination;
         if (destination != null) {
-            nearestDistance = position.distance(destination);
+            nearestDistance = position.getDistance(destination);
             lastTickPositionImproved = tickCount;
         }
     }
@@ -60,18 +60,18 @@ public class Unit {
         return radius;
     }
 
-    public Vector2 getCenter() {
+    public DecimalPosition getPosition() {
         return position;
     }
 
-    public void addToCenter(Vector2 delta, long tickCount) {
-        position = position.sum(delta);
+    public void addToCenter(DecimalPosition delta, long tickCount) {
+        position = position.add(delta);
         updateNearestDistance(tickCount);
     }
 
     private void updateNearestDistance(long tickCount) {
         if (destination != null) {
-            double newDistance = position.distance(destination);
+            double newDistance = position.getDistance(destination);
             if (newDistance < nearestDistance) {
                 nearestDistance = newDistance;
             }
@@ -84,13 +84,12 @@ public class Unit {
         if (distance >= 0) {
             return null;
         }
-        Vector2 norm = position.difference(other.getCenter());
-        norm.normalize();
+        DecimalPosition norm = position.sub(other.getPosition()).normalize();
         return new Contact(this, other, norm);
     }
 
     public double getDistance(Unit other) {
-        return position.distance(other.getCenter()) - radius - other.getRadius();
+        return position.getDistance(other.getPosition()) - radius - other.getRadius();
     }
 
     public void implementPosition(long tickCount) {
@@ -102,11 +101,11 @@ public class Unit {
         debugHelper.dump();
     }
 
-    public Vector2 getDesiredPosition() {
-        Vector2 desiredPosition = new Vector2(position);
+    public DecimalPosition getDesiredPosition() {
+        DecimalPosition desiredPosition = new DecimalPosition(position);
         if (velocity != null) {
             desiredPosition =
-                    desiredPosition.sum(velocity.product(Pathing.FACTOR));
+                    desiredPosition.add(velocity.multiply(Pathing.FACTOR));
         }
         return desiredPosition;
     }
@@ -115,12 +114,12 @@ public class Unit {
         return destination != null;
     }
 
-    public Vector2 getDestination() {
+    public DecimalPosition getDestination() {
         return destination;
     }
 
     public boolean isMoving() {
-        return velocity != null && !velocity.isZero();
+        return velocity != null && !velocity.equalsDeltaZero();
     }
 
     public double getAngle() {
@@ -135,43 +134,35 @@ public class Unit {
     public void setupForTick(List<Unit> units, long tickCount) {
         DebugHelper debugHelper = new DebugHelper("setupForTick", this, false);
         if (destination != null) {
-            Vector2 desiredVelocity = destination.difference(position);
-            desiredVelocity.setMagnitude(SPEED);
+            DecimalPosition desiredVelocity = destination.sub(position).normalize(SPEED);
             debugHelper.append("desired vl", desiredVelocity);
             if (velocity == null) {
-                velocity = new Vector2(0.001, 0);
-                velocity.setDirection(angle);
+                velocity = DecimalPosition.createVector(angle, 0.001);
             }
-            debugHelper.appendAngle("angle from v", velocity.getDirection());
-            desiredVelocity = forwardLooking(desiredVelocity, units, tickCount);
-            desiredVelocity.setMagnitude(SPEED);
-            double desiredAngle = desiredVelocity.getDirection();
+            debugHelper.appendAngle("angle from v", velocity.getAngle());
+            desiredVelocity = forwardLooking(desiredVelocity, units, tickCount).normalize(SPEED);
+            double desiredAngle = desiredVelocity.getAngle();
             debugHelper.append("desired v", desiredVelocity);
-            debugHelper.appendAngle("desired a", desiredVelocity.getDirection());
+            debugHelper.appendAngle("desired a", desiredVelocity.getAngle());
             // double deltaAngle = velocity.getAngleBetween(desiredVelocity);
-            double deltaAngle = Pathing.correctAngle(desiredVelocity.getDirection() - angle);
+            double deltaAngle = Pathing.correctAngle(desiredVelocity.getAngle() - angle);
             debugHelper.appendAngle("deltaAngle", deltaAngle);
             // Fix angle
-            Vector2 fixedVelocity = new Vector2(desiredVelocity);
             double angleSpeedFactor = 1.0;
             if (Math.abs(deltaAngle) > ANGULAR_VELOCITY * Pathing.FACTOR) {
                 debugHelper.append("angle too big");
                 double possibleAngle = Pathing.correctAngle(angle + Math.signum(deltaAngle) * ANGULAR_VELOCITY * Pathing.FACTOR);
                 debugHelper.appendAngle("possibleAngle", possibleAngle);
                 angle = possibleAngle;
-                fixedVelocity.setDirection(possibleAngle);
-                Vector2 desiredVelocityNorm = new Vector2(desiredVelocity);
-                desiredVelocityNorm.normalize();
-                Vector2 fixedAngleVelocityNorm = new Vector2(fixedVelocity);
-                fixedAngleVelocityNorm.normalize();
-                angleSpeedFactor = Math.max(0.0, Math.min(1.0, fixedAngleVelocityNorm.dot(desiredVelocityNorm)));
+                DecimalPosition desiredVelocityNorm = desiredVelocity.normalize();
+                DecimalPosition fixedAngleVelocityNorm = DecimalPosition.createVector(possibleAngle, 1.0);
+                angleSpeedFactor = Math.max(0.0, Math.min(1.0, fixedAngleVelocityNorm.dotProduct(desiredVelocityNorm)));
             } else {
                 angle = desiredAngle;
-                fixedVelocity.setDirection(desiredAngle);
             }
             debugHelper.appendAngle("angle", angle);
             // Fix velocity
-            double originalSpeed = velocity.getMagnitude(); // TODO That is wrong
+            double originalSpeed = velocity.magnitude(); // TODO That is wrong
             debugHelper.append("originalSpeed", originalSpeed);
             double possibleSpeed = Math.max(MIN_SPEED, angleSpeedFactor * SPEED);
             debugHelper.append("possibleSpeed", possibleSpeed);
@@ -189,32 +180,30 @@ public class Unit {
                 speed = possibleSpeed;
             }
             // Check if destination too near to turn
-            deltaAngle = Pathing.correctAngle(desiredVelocity.getDirection() - angle);
+            deltaAngle = Pathing.correctAngle(desiredVelocity.getAngle() - angle);
             double turnSteps = Math.abs(deltaAngle) / (ANGULAR_VELOCITY * Pathing.FACTOR);
             double distance = turnSteps * speed * Pathing.FACTOR;
-            if (distance > position.distance(destination)) {
+            if (distance > position.getDistance(destination)) {
                 speed = originalSpeed - ACCELERATION * Pathing.FACTOR;
                 debugHelper.append("turn angle too big");
             }
             speed = Math.min(SPEED, speed);
             speed = Math.max(0.0, speed);
-            fixedVelocity.setMagnitude(speed);
-            fixedVelocity.setDirection(angle);
-            velocity = fixedVelocity;
+            velocity = DecimalPosition.createVector(angle, speed);
 
-            debugHelper.append("magnitude", velocity.getMagnitude());
+            debugHelper.append("magnitude", velocity.magnitude());
         } else {
             if (velocity == null) {
                 debugHelper.dump();
                 return;
             }
-            double magnitude = velocity.getMagnitude();
+            double magnitude = velocity.magnitude();
             double acceleration = ACCELERATION * Pathing.FACTOR;
             if (acceleration >= magnitude) {
                 velocity = null;
             } else {
-                velocity.setMagnitude(magnitude - acceleration);
-                if (velocity.isZero()) {
+                velocity = velocity.normalize(magnitude - acceleration);
+                if (velocity.equalsDeltaZero()) {
                     velocity = null;
                 }
             }
@@ -222,9 +211,9 @@ public class Unit {
         debugHelper.dump();
     }
 
-    private Vector2 forwardLooking(Vector2 desiredVelocity, List<Unit> units, long tickCount) {
+    private DecimalPosition forwardLooking(DecimalPosition desiredVelocity, List<Unit> units, long tickCount) {
         DebugHelper debugHelper = new DebugHelper("forwardLooking", this, true);
-        debugHelper.appendAngle("input", desiredVelocity.getDirection());
+        debugHelper.appendAngle("input", desiredVelocity.getAngle());
         ClearanceHole clearanceHole = new ClearanceHole(this);
         for (Unit other : units) {
             if (this == other) {
@@ -240,17 +229,15 @@ public class Unit {
             // Check other destination
             if (other.hasDestination()) {
                 // Similar destination
-                if (other.destination.difference(destination).getMagnitude() <= getRadius() + other.getRadius()) {
+                if (other.destination.sub(destination).magnitude() <= getRadius() + other.getRadius()) {
                     // debugHelper.append("Similar destination.");
                     continue;
                 }
 
                 // Other moves to destination in same direction
-                Vector2 relativeDestination = destination.difference(position);
-                relativeDestination.normalize();
-                Vector2 relativeDestinationOther = other.destination.difference(other.position);
-                relativeDestinationOther.normalize();
-                double deltaAngle = Math.acos(relativeDestination.dot(relativeDestinationOther));
+                DecimalPosition relativeDestination = destination.sub(position).normalize();;
+                DecimalPosition relativeDestinationOther = other.destination.sub(other.position).normalize();
+                double deltaAngle = Math.acos(relativeDestination.dotProduct(relativeDestinationOther));
                 if (deltaAngle < Math.PI / 2.0) {
                     // debugHelper.append("move to same direction");
                     continue;
@@ -258,19 +245,19 @@ public class Unit {
             }
 
 //                // Check if other is in front
-//                Vector2 relativePosition = other.getCenter().difference(position);
-//                relativePosition.normalize();
+//                DecimalPosition relativePosition = other.getPosition().sub(position);
+//                !relativePosition.normalize();
 //                if (Math.acos(normalizedVelocity.dot(relativePosition)) > Math.PI / 4.0) {
 //                    debugHelper.append("not in front.");
 //                    continue;
 //                }
 
             //Check if destination is nearer than other
-            if (position.distance(destination) < position.distance(other.position)) {
+            if (position.getDistance(destination) < position.getDistance(other.position)) {
                 continue;
             }
 
-            if (!other.hasDestination() && other.lastDestination != null && other.lastDestination.difference(destination).getMagnitude() <= getRadius() + other.getRadius()) {
+            if (!other.hasDestination() && other.lastDestination != null && other.lastDestination.sub(destination).magnitude() <= getRadius() + other.getRadius()) {
                 continue;
             }
 
@@ -278,13 +265,10 @@ public class Unit {
             debugHelper.append("dangerous", other);
             clearanceHole.addOther(other);
         }
-        double direction = clearanceHole.getFreeAngle(desiredVelocity.getDirection());
+        double direction = clearanceHole.getFreeAngle(desiredVelocity.getAngle());
         debugHelper.appendAngle("direction", direction);
-        Vector2 fixedDesiredVelocity = new Vector2(0, 1);
-        fixedDesiredVelocity.setMagnitude(desiredVelocity.getMagnitude());
-        fixedDesiredVelocity.setDirection(direction);
         debugHelper.dump();
-        return fixedDesiredVelocity;
+        return DecimalPosition.createVector(direction, desiredVelocity.magnitude());
     }
 
     public boolean isIndirectOnDestination(Unit other, List<Unit> units, int depth) {
@@ -295,7 +279,7 @@ public class Unit {
         if (depth < 0) {
             return false;
         }
-        if (other.getCenter().distance(destination) <= other.getRadius() + UNIT_DISTANCE_DESTINATION_CHECK) {
+        if (other.getPosition().getDistance(destination) <= other.getRadius() + UNIT_DISTANCE_DESTINATION_CHECK) {
             return true;
         }
         if (depth == 0) {
@@ -307,7 +291,7 @@ public class Unit {
             if (this == unit) {
                 continue;
             }
-            if (other.getCenter().distance(unit.getCenter()) > other.getRadius() + unit.getRadius() + UNIT_DISTANCE_DESTINATION_CHECK) {
+            if (other.getPosition().getDistance(unit.getPosition()) > other.getRadius() + unit.getRadius() + UNIT_DISTANCE_DESTINATION_CHECK) {
                 continue;
             }
             count++;
@@ -322,11 +306,11 @@ public class Unit {
         return found && count < 2;
     }
 
-    public Vector2 getVelocity() {
+    public DecimalPosition getVelocity() {
         return velocity;
     }
 
-    public void setVelocity(Vector2 velocity) {
+    public void setVelocity(DecimalPosition velocity) {
         this.velocity = velocity;
     }
 
@@ -336,9 +320,9 @@ public class Unit {
 
     public boolean checkDestinationReached(Collection<Unit> units) {
         DebugHelper debugHelper = new DebugHelper("dest", this, false);
-        debugHelper.append("distance: " + position.distance(destination));
+        debugHelper.append("distance: " + position.getDistance(destination));
         // 1) Position reached directly
-        if (position.distance(destination) < radius + 1) {
+        if (position.getDistance(destination) < radius + 1) {
             debugHelper.append("true");
             debugHelper.dump();
             return true;
@@ -375,16 +359,16 @@ public class Unit {
         return neighbors;
     }
 
-    private boolean isDirectNeighborInDestination(Collection<Unit> units, Vector2 destination) {
+    private boolean isDirectNeighborInDestination(Collection<Unit> units, DecimalPosition destination) {
         for (Unit neighbor : getNeighbors(units)) {
-            if (!neighbor.hasDestination() && neighbor.getCenter().distance(destination) < neighbor.getRadius() + 1) {
+            if (!neighbor.hasDestination() && neighbor.getPosition().getDistance(destination) < neighbor.getRadius() + 1) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isIndirectNeighborInDestination(Collection<Unit> units, Collection<Unit> expandedUnits, Vector2 destination) {
+    private boolean isIndirectNeighborInDestination(Collection<Unit> units, Collection<Unit> expandedUnits, DecimalPosition destination) {
         Collection<Unit> neighbors = getNeighbors(units);
         for (Unit neighbor : neighbors) {
             if (neighbor.isDirectNeighborInDestination(units, destination)) {

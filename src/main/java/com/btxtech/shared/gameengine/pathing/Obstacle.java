@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import org.dyn4j.geometry.Rectangle;
-import org.dyn4j.geometry.Vector2;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Rectangle;
 
 /**
  * Created by Beat
@@ -10,13 +10,8 @@ import org.dyn4j.geometry.Vector2;
 public class Obstacle {
     private Rectangle rectangle;
 
-    public Obstacle(double x, double y, double width, double height) {
-        rectangle = new Rectangle(width, height);
-        rectangle.translate(x + width / 2.0, y + height / 2.0);
-    }
-
-    public Vector2 getCenter() {
-        return rectangle.getCenter();
+    public Obstacle(int x, int y, int width, int height) {
+        rectangle = new Rectangle(x, y, width, height);
     }
 
     public double getWidth() {
@@ -32,28 +27,23 @@ public class Obstacle {
     }
 
     public Contact hasContact(Unit unit) {
-        if (rectangle.contains(unit.getCenter())) {
+        if (rectangle.contains2(unit.getPosition())) {
             throw new IllegalStateException();
         }
-        Vector2 projection = Pathing.projectOnRectangle(rectangle, unit.getCenter());
-        double distance = projection.distance(unit.getCenter());
+        DecimalPosition projection = rectangle.getNearestPoint(unit.getPosition());
+        double distance = projection.getDistance(unit.getPosition());
         if (distance >= unit.getRadius()) {
             return null;
         }
-        Vector2 normal = unit.getCenter().difference(projection);
-        normal.normalize();
+        DecimalPosition normal = unit.getPosition().sub(projection).normalize();
         return new Contact(unit, this, normal);
     }
 
     public double getDistance(Unit unit) {
-        if (rectangle.contains(unit.getCenter())) {
+        if (rectangle.contains2(unit.getPosition())) {
             throw new IllegalStateException();
         }
-        Vector2 projection = Pathing.projectOnRectangle(rectangle, unit.getCenter());
-        return projection.distance(unit.getCenter()) - unit.getRadius();
-    }
-
-    public String testString() {
-        return String.valueOf(getCenter().x - getWidth() / 2.0) + ", " + (getCenter().y - getHeight() / 2.0) + ", " + getWidth() + ", " + getHeight();
+        DecimalPosition projection = rectangle.getNearestPoint(unit.getPosition());
+        return projection.getDistance(unit.getPosition()) - unit.getRadius();
     }
 }

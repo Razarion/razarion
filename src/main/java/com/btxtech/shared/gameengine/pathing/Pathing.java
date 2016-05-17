@@ -1,9 +1,6 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import org.apache.commons.math3.geometry.euclidean.twod.Line;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-import org.dyn4j.geometry.Rectangle;
-import org.dyn4j.geometry.Vector2;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +30,7 @@ public class Pathing {
         tickCount = 0;
     }
 
-    public Unit createUnit(int id, boolean canMove, double radius, Vector2 position, Vector2 velocity, Vector2 destination, Vector2 lastDestination) {
+    public Unit createUnit(int id, boolean canMove, double radius, DecimalPosition position, DecimalPosition velocity, DecimalPosition destination, DecimalPosition lastDestination) {
         if (velocity != null && !canMove) {
             throw new IllegalArgumentException();
         }
@@ -45,11 +42,11 @@ public class Pathing {
         return unit;
     }
 
-    public Unit createUnit(int id, boolean canMove, double radius, Vector2 position, Vector2 destination, Vector2 lastDestination) {
+    public Unit createUnit(int id, boolean canMove, double radius, DecimalPosition position, DecimalPosition destination, DecimalPosition lastDestination) {
         return createUnit(id, canMove, radius, position, null, destination, lastDestination);
     }
 
-    public Obstacle createObstacle(double x, double y, double width, double height) {
+    public Obstacle createObstacle(int x, int y, int width, int height) {
         Obstacle obstacle = new Obstacle(x, y, width, height);
         obstacles.add(obstacle);
         return obstacle;
@@ -219,35 +216,35 @@ public class Pathing {
                     debugHelper2.dump();
                     continue;
                 }
-                Vector2 relativeVelocity = unit1.getVelocity();
+                DecimalPosition relativeVelocity = unit1.getVelocity();
                 if (unit2.getVelocity() != null) {
-                    relativeVelocity = relativeVelocity.difference(unit2.getVelocity());
+                    relativeVelocity = relativeVelocity.sub(unit2.getVelocity());
                 }
                 debugHelper1.append("rv", relativeVelocity);
-                double projection = contact.getNormal().dot(relativeVelocity);
+                double projection = contact.getNormal().dotProduct(relativeVelocity);
                 debugHelper1.append("p", projection);
-                Vector2 pushAway = contact.getNormal().product(-projection / 2.0);
+                DecimalPosition pushAway = contact.getNormal().multiply(-projection / 2.0);
                 debugHelper1.append("pwy", pushAway);
-                Vector2 newVelocity1 = unit1.getVelocity().sum(pushAway);
+                DecimalPosition newVelocity1 = unit1.getVelocity().add(pushAway);
                 unit1.setVelocity(newVelocity1);
                 debugHelper1.append("nv", newVelocity1);
-                Vector2 velocity2 = unit2.getVelocity();
+                DecimalPosition velocity2 = unit2.getVelocity();
                 if (velocity2 == null) {
-                    velocity2 = new Vector2(0, 0);
+                    velocity2 = new DecimalPosition(0, 0);
                 }
-                Vector2 newVelocity2 = velocity2.sum(pushAway.product(-1));
+                DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1));
                 unit2.setVelocity(newVelocity2);
                 debugHelper2.append("nv", newVelocity2);
                 debugHelper1.dump();
                 debugHelper2.dump();
             } else {
                 DebugHelper debugHelper = new DebugHelper("ol", unit1, false);
-                Vector2 velocity = unit1.getVelocity();
-                double projection = contact.getNormal().dot(velocity);
+                DecimalPosition velocity = unit1.getVelocity();
+                double projection = contact.getNormal().dotProduct(velocity);
                 debugHelper.append("p", projection);
-                Vector2 pushAway = contact.getNormal().product(-projection);
+                DecimalPosition pushAway = contact.getNormal().multiply(-projection);
                 debugHelper.append("pwy", pushAway);
-                Vector2 newVelocity = velocity.sum(pushAway);
+                DecimalPosition newVelocity = velocity.add(pushAway);
                 debugHelper.append("nv", newVelocity);
                 unit1.setVelocity(newVelocity);
                 debugHelper.dump();
@@ -275,11 +272,11 @@ public class Pathing {
                     penetration = MAXIMUM_CORRECTION;
                 }
                 if (unit2.isCanMove()) {
-                    Vector2 pushAway = unit1.getCenter().difference(unit2.getCenter()).setMagnitude(penetration / 2.0);
+                    DecimalPosition pushAway = unit1.getPosition().sub(unit2.getPosition()).normalize(penetration / 2.0);
                     unit1.addToCenter(pushAway, tickCount);
-                    unit2.addToCenter(pushAway.product(-1.0), tickCount);
+                    unit2.addToCenter(pushAway.multiply(-1.0), tickCount);
                 } else {
-                    Vector2 pushAway = unit1.getCenter().difference(unit2.getCenter()).setMagnitude(penetration);
+                    DecimalPosition pushAway = unit1.getPosition().sub(unit2.getPosition()).normalize(penetration);
                     unit1.addToCenter(pushAway, tickCount);
                 }
             }
@@ -288,11 +285,11 @@ public class Pathing {
         synchronized (units) {
             for (Unit unit : units) {
                 for (Obstacle obstacle : obstacles) {
-                    if (obstacle.getRectangle().contains(unit.getCenter())) {
+                    if (obstacle.getRectangle().contains2(unit.getPosition())) {
                         throw new IllegalStateException();
                     }
-                    Vector2 projection = Pathing.projectOnRectangle(obstacle.getRectangle(), unit.getCenter());
-                    double distance = projection.distance(unit.getCenter()) - unit.getRadius();
+                    DecimalPosition projection = obstacle.getRectangle().getNearestPoint(unit.getPosition());
+                    double distance = projection.getDistance(unit.getPosition()) - unit.getRadius();
                     if (distance >= -PENETRATION_TOLERANCE) {
                         continue;
                     }
@@ -301,7 +298,7 @@ public class Pathing {
                     if (penetration > MAXIMUM_CORRECTION) {
                         penetration = MAXIMUM_CORRECTION;
                     }
-                    Vector2 pushAway = unit.getCenter().difference(projection).setMagnitude(penetration);
+                    DecimalPosition pushAway = unit.getPosition().sub(projection).normalize(penetration);
                     unit.addToCenter(pushAway, tickCount);
                 }
             }
@@ -324,7 +321,7 @@ public class Pathing {
     }
 
     private double calculateNewPenetration(Unit unit1, Unit unit2) {
-        double distance = unit1.getDesiredPosition().distance(unit2.getDesiredPosition()) - unit1.getRadius() - unit2.getRadius();
+        double distance = unit1.getDesiredPosition().getDistance(unit2.getDesiredPosition()) - unit1.getRadius() - unit2.getRadius();
         if (distance > 0) {
             return 0;
         }
@@ -337,87 +334,6 @@ public class Pathing {
                 unit.implementPosition(tickCount);
             }
         }
-    }
-
-    public static Vector2 projectOnRectangle(Rectangle rectangle, Vector2 point) {
-        Vector2 half1 = new Vector2(rectangle.getWidth() / 2.0, rectangle.getHeight() / 2.0);
-        Vector2 half2 = new Vector2(rectangle.getWidth() / 2.0, -rectangle.getHeight() / 2.0);
-        Vector2 cornerA = rectangle.getCenter().difference(half1);
-        Vector2 cornerB = rectangle.getCenter().sum(half2);
-        Vector2 cornerC = rectangle.getCenter().sum(half1);
-        Vector2 cornerD = rectangle.getCenter().difference(half2);
-        Line line1 = Pathing.createLine(cornerA, cornerB);
-        Line line2 = Pathing.createLine(cornerB, cornerC);
-        Line line3 = Pathing.createLine(cornerC, cornerD);
-        Line line4 = Pathing.createLine(cornerD, cornerA);
-
-        List<Vector2> projections = new ArrayList<>();
-
-        Vector2D position = new Vector2D(point.x, point.y);
-        // Check top line
-        Vector2D projection = (Vector2D) line1.project(position);
-        if (projection.getX() < cornerA.x) {
-            projections.add(cornerA);
-        } else if (projection.getX() > cornerB.x) {
-            projections.add(cornerB);
-        } else {
-            projections.add(new Vector2(projection.getX(), projection.getY()));
-        }
-        // Check right line
-        projection = (Vector2D) line2.project(position);
-        if (projection.getY() < cornerB.y) {
-            projections.add(cornerB);
-        } else if (projection.getY() > cornerC.y) {
-            projections.add(cornerC);
-        } else {
-            projections.add(new Vector2(projection.getX(), projection.getY()));
-        }
-        // Check bottom 1ine
-        projection = (Vector2D) line3.project(position);
-        if (projection.getX() < cornerD.x) {
-            projections.add(cornerD);
-        } else if (projection.getX() > cornerC.x) {
-            projections.add(cornerC);
-        } else {
-            projections.add(new Vector2(projection.getX(), projection.getY()));
-        }
-        // Check left 1ine
-        projection = (Vector2D) line4.project(position);
-        if (projection.getY() < cornerA.y) {
-            projections.add(cornerA);
-        } else if (projection.getY() > cornerD.y) {
-            projections.add(cornerD);
-        } else {
-            projections.add(new Vector2(projection.getX(), projection.getY()));
-        }
-        // Find nearest point
-        double min = Double.MAX_VALUE;
-        Vector2 nearestProjection = null;
-        for (Vector2 projectionOnRect : projections) {
-            double distance = point.distance(projectionOnRect);
-            if (distance < min) {
-                nearestProjection = projectionOnRect;
-                min = distance;
-            }
-        }
-        if (nearestProjection == null) {
-            throw new IllegalArgumentException();
-        }
-        return nearestProjection;
-    }
-
-    @SuppressWarnings("SuspiciousNameCombination")
-    public static Vector2 rotate90Dec(Vector2 vector) {
-        return new Vector2(-vector.y, vector.x);
-    }
-
-    @SuppressWarnings("SuspiciousNameCombination")
-    public static Vector2 rotateMinus90Dec(Vector2 vector) {
-        return new Vector2(vector.y, -vector.x);
-    }
-
-    public static Line createLine(Vector2 start, Vector2 end) {
-        return new Line(new Vector2D(start.x, start.y), new Vector2D(end.x, end.y), 0.1);
     }
 
     public static double correctAngle(double angle) {
@@ -440,14 +356,6 @@ public class Pathing {
             angle2 = angle2 + 2.0 * Math.PI;
         }
         return Math.abs(correctAngle(Math.abs(angle1 - angle2)));
-    }
-
-    public static String toVector2String(Vector2 vector) {
-        if (vector != null) {
-            return String.format("(%.2f:%.2f)", vector.x, vector.y);
-        } else {
-            return "(-:-)";
-        }
     }
 
 }

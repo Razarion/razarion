@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import org.dyn4j.geometry.Vector2;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 
 /**
  * Created by Beat
@@ -10,21 +10,21 @@ public class Contact {
     private Unit unit1;
     private Unit unit2;
     private Obstacle obstacle;
-    private Vector2 normal;
+    private DecimalPosition normal;
 
-    public Contact(Unit unit1, Unit unit2, Vector2 normal) {
+    public Contact(Unit unit1, Unit unit2, DecimalPosition normal) {
         this.unit1 = unit1;
         this.unit2 = unit2;
         this.normal = normal;
     }
 
-    public Contact(Unit unit, Obstacle obstacle, Vector2 normal) {
+    public Contact(Unit unit, Obstacle obstacle, DecimalPosition normal) {
         this.unit1 = unit;
         this.obstacle = obstacle;
         this.normal = normal;
     }
 
-    public Vector2 getNormal() {
+    public DecimalPosition getNormal() {
         return normal;
     }
 

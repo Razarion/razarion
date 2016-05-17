@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import org.dyn4j.geometry.Vector2;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 
 /**
  * Created by Beat
@@ -20,7 +20,7 @@ public class DebugHelper {
         stringBuilder.append(description);
         stringBuilder.append(" id: ");
         stringBuilder.append(protagonist.getId());
-        append("cfw", protagonist.getCenter());
+        append("cfw", protagonist.getPosition());
         append("v", protagonist.getVelocity());
         append("d", protagonist.getDestination());
         appendAngle("a", protagonist.getAngle());
@@ -32,11 +32,16 @@ public class DebugHelper {
         stringBuilder.append(" obstacle");
     }
 
-    public void append(String description, Vector2 vector) {
+    public void append(String description, DecimalPosition vector) {
         stringBuilder.append(" ");
         stringBuilder.append(description);
         stringBuilder.append(": ");
-        stringBuilder.append(Pathing.toVector2String(vector));
+        if (vector != null) {
+            stringBuilder.append(String.format("(%.2f:%.2f)", vector.getY(), vector.getY()));
+        } else {
+            stringBuilder.append("(-:-)");
+        }
+
     }
 
     public void append(String description, double value) {
@@ -59,7 +64,7 @@ public class DebugHelper {
         stringBuilder.append(description);
         stringBuilder.append(": [id: ");
         stringBuilder.append(other.getId());
-        append("cfw", other.getCenter());
+        append("cfw", other.getPosition());
         append("v", other.getVelocity());
         stringBuilder.append("]");
     }

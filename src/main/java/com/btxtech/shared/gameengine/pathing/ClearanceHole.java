@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import org.dyn4j.geometry.Vector2;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +18,8 @@ public class ClearanceHole {
     }
 
     public void addOther(Unit other) {
-        Vector2 distanceVector = other.getCenter().difference(unit.getCenter());
-        double distance = distanceVector.getMagnitude();
+        DecimalPosition distanceVector = other.getPosition().sub(unit.getPosition());
+        double distance = distanceVector.magnitude();
         double radius = unit.getRadius() + other.getRadius();
         double halfBlockingAngle;
         if (radius < distance) {
@@ -27,7 +27,7 @@ public class ClearanceHole {
         } else {
             halfBlockingAngle = Math.PI / 2.0;
         }
-        angleSegments.add(new AngleSegment(distanceVector.getDirection(), halfBlockingAngle));
+        angleSegments.add(new AngleSegment(distanceVector.getAngle(), halfBlockingAngle));
     }
 
     public double getFreeAngle(double desiredAngle) {
