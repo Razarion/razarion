@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.pathing;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Line2I;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,8 +47,8 @@ public class Pathing {
         return createUnit(id, canMove, radius, position, null, destination, lastDestination);
     }
 
-    public Obstacle createObstacle(int x, int y, int width, int height) {
-        Obstacle obstacle = new Obstacle(x, y, width, height);
+    public Obstacle createObstacle(Line2I line, DecimalPosition normOutside) {
+        Obstacle obstacle = new Obstacle(line, normOutside);
         obstacles.add(obstacle);
         return obstacle;
     }
@@ -56,6 +57,14 @@ public class Pathing {
         synchronized (units) {
             return new ArrayList<>(units);
         }
+    }
+
+    public void restore(Collection<Unit> units, long tickCount) {
+        synchronized (this.units) {
+            this.units.clear();
+            this.units.addAll(units);
+        }
+        this.tickCount = tickCount;;
     }
 
     public List<Obstacle> getObstacles() {
@@ -72,7 +81,7 @@ public class Pathing {
             }
         }
         Collection<Contact> contacts = findContacts();
-        // dumpContacts(contacts);
+        dumpContacts(contacts);
         for (int i = 0; i < 10; i++) {
             solveVelocityContacts(contacts);
         }
@@ -199,7 +208,7 @@ public class Pathing {
         for (Contact contact : contacts) {
             Unit unit1 = contact.getUnit1();
             if (contact.hasUnit2AndCanMove()) {
-                DebugHelper debugHelper1 = new DebugHelper("ul", unit1, false);
+                DebugHelper debugHelper1 = new DebugHelper("solveVelocityContacts ul", unit1, false);
                 Unit unit2 = contact.getUnit2();
                 DebugHelper debugHelper2 = new DebugHelper("u2", unit2, false);
                 double newPenetration = calculateNewPenetration(unit1, unit2);
@@ -232,14 +241,19 @@ public class Pathing {
                 debugHelper1.dump();
                 debugHelper2.dump();
             } else {
-                DebugHelper debugHelper = new DebugHelper("ol", unit1, false);
+                DebugHelper debugHelper = new DebugHelper("solveVelocityContacts ol", unit1, true);
+                if(contact.getUnit2() != null) {
+                    debugHelper.append("unit", contact.getUnit2());
+                } else {
+                    debugHelper.append("obstacle", contact.getObstacle());
+                }
                 DecimalPosition velocity = unit1.getVelocity();
                 double projection = contact.getNormal().dotProduct(velocity);
-                debugHelper.append("p", projection);
+                debugHelper.append("projection", projection);
                 DecimalPosition pushAway = contact.getNormal().multiply(-projection);
-                debugHelper.append("pwy", pushAway);
+                debugHelper.append("pushAway", pushAway);
                 DecimalPosition newVelocity = velocity.add(pushAway);
-                debugHelper.append("nv", newVelocity);
+                debugHelper.append("newVelocity", newVelocity);
                 unit1.setVelocity(newVelocity);
                 debugHelper.dump();
             }
@@ -279,10 +293,8 @@ public class Pathing {
         synchronized (units) {
             for (Unit unit : units) {
                 for (Obstacle obstacle : obstacles) {
-                    if (obstacle.getRectangle().contains2(unit.getPosition())) {
-                        throw new IllegalStateException();
-                    }
-                    DecimalPosition projection = obstacle.getRectangle().getNearestPoint(unit.getPosition());
+                    // There is no check if the unit is inside the restricted area
+                    DecimalPosition projection = obstacle.project(unit.getPosition());
                     double distance = projection.getDistance(unit.getPosition()) - unit.getRadius();
                     if (distance >= -PENETRATION_TOLERANCE) {
                         continue;

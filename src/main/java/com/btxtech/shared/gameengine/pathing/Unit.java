@@ -118,6 +118,10 @@ public class Unit {
         return destination;
     }
 
+    public DecimalPosition getLastDestination() {
+        return lastDestination;
+    }
+
     public boolean isMoving() {
         return velocity != null && !velocity.equalsDeltaZero();
     }
@@ -235,7 +239,8 @@ public class Unit {
                 }
 
                 // Other moves to destination in same direction
-                DecimalPosition relativeDestination = destination.sub(position).normalize();;
+                DecimalPosition relativeDestination = destination.sub(position).normalize();
+                ;
                 DecimalPosition relativeDestinationOther = other.destination.sub(other.position).normalize();
                 double deltaAngle = Math.acos(relativeDestination.dotProduct(relativeDestinationOther));
                 if (deltaAngle < Math.PI / 2.0) {
@@ -391,13 +396,21 @@ public class Unit {
         return false;
     }
 
+    public Unit getCopy() {
+        Unit unit = new Unit(id, canMove, radius, position, destination, lastDestination, lastTickPositionImproved);
+        unit.velocity = velocity;
+        unit.nearestDistance = nearestDistance;
+        unit.angle = angle;
+        return unit;
+    }
+
     @Override
     public String toString() {
         return "Unit{" +
                 "id=" + id +
-                ", CFw=" + position +
+                ", position=" + position +
                 ", velocity=" + velocity +
-                ", dest=" + destination +
+                ", destination=" + destination +
                 '}';
     }
 }

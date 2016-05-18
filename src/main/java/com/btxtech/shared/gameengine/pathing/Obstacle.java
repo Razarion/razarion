@@ -1,49 +1,54 @@
 package com.btxtech.shared.gameengine.pathing;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Rectangle;
+import com.btxtech.game.jsre.client.common.Line2I;
 
 /**
  * Created by Beat
  * 16.05.2016.
  */
 public class Obstacle {
-    private Rectangle rectangle;
+    private Line2I line;
+    private DecimalPosition normOutside;
 
-    public Obstacle(int x, int y, int width, int height) {
-        rectangle = new Rectangle(x, y, width, height);
-    }
-
-    public double getWidth() {
-        return rectangle.getWidth();
-    }
-
-    public double getHeight() {
-        return rectangle.getHeight();
-    }
-
-    public Rectangle getRectangle() {
-        return rectangle;
+    public Obstacle(Line2I line, DecimalPosition normOutside) {
+        this.line = line;
+        this.normOutside = normOutside;
     }
 
     public Contact hasContact(Unit unit) {
-        if (rectangle.contains2(unit.getPosition())) {
-            throw new IllegalStateException();
-        }
-        DecimalPosition projection = rectangle.getNearestPoint(unit.getPosition());
-        double distance = projection.getDistance(unit.getPosition());
-        if (distance >= unit.getRadius()) {
+        // There is no check if the unit is inside the restricted area
+        DecimalPosition pointOnLine = project(unit.getPosition());
+        DecimalPosition sub = unit.getPosition().sub(pointOnLine);
+        if (sub.magnitude() >= unit.getRadius()) {
             return null;
         }
-        DecimalPosition normal = unit.getPosition().sub(projection).normalize();
-        return new Contact(unit, this, normal);
+        return new Contact(unit, this, sub.normalize());
     }
 
     public double getDistance(Unit unit) {
-        if (rectangle.contains2(unit.getPosition())) {
-            throw new IllegalStateException();
-        }
-        DecimalPosition projection = rectangle.getNearestPoint(unit.getPosition());
-        return projection.getDistance(unit.getPosition()) - unit.getRadius();
+        // There is no check if the unit is inside the restricted area
+        DecimalPosition pointOnLine = project(unit.getPosition());
+        return pointOnLine.getDistance(unit.getPosition()) - unit.getRadius();
+    }
+
+    public DecimalPosition project(DecimalPosition point) {
+        return line.getNearestPointOnLine(point);
+    }
+
+    public Line2I getLine() {
+        return line;
+    }
+
+    public DecimalPosition getNormOutside() {
+        return normOutside;
+    }
+
+    @Override
+    public String toString() {
+        return "Obstacle{" +
+                "line=" + line +
+                ", normOutside=" + normOutside +
+                '}';
     }
 }

@@ -26,22 +26,15 @@ public class DebugHelper {
         appendAngle("a", protagonist.getAngle());
     }
 
-    public DebugHelper(String description, Obstacle obstacle, boolean active) {
-        this.active = active;
-        stringBuilder.append(description);
-        stringBuilder.append(" obstacle");
-    }
-
     public void append(String description, DecimalPosition vector) {
         stringBuilder.append(" ");
         stringBuilder.append(description);
         stringBuilder.append(": ");
         if (vector != null) {
-            stringBuilder.append(String.format("(%.2f:%.2f)", vector.getY(), vector.getY()));
+            stringBuilder.append(String.format("(%.2f:%.2f)", vector.getX(), vector.getY()));
         } else {
             stringBuilder.append("(-:-)");
         }
-
     }
 
     public void append(String description, double value) {
@@ -67,6 +60,13 @@ public class DebugHelper {
         append("cfw", other.getPosition());
         append("v", other.getVelocity());
         stringBuilder.append("]");
+    }
+
+    public void append(String description, Obstacle obstacle) {
+        stringBuilder.append(" ");
+        stringBuilder.append(description);
+        stringBuilder.append(": ");
+        stringBuilder.append(obstacle);
     }
 
     public void append(String s) {

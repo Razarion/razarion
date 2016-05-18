@@ -48,7 +48,7 @@ public class Contact {
     public String toString() {
         return "Contact{" +
                 "unit1=" + unit1 +
-                ", unit2=" + unit2 +
+                (unit2 != null ? (", unit2=" + unit2):(", obstacle=" + obstacle)) +
                 " normal=" + normal +
                 '}';
     }
