@@ -10,11 +10,13 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -189,5 +191,13 @@ public class TerrainSurface {
             vertexList.append(slope.getGroundPlateauConnector().getOuterConnectionVertexList());
         }
         return vertexList;
+    }
+
+    public Collection<Obstacle> getAllObstacles() {
+        Collection<Obstacle> obstacles = new ArrayList<>();
+        for (Slope slope : slopeMap.values()) {
+            obstacles.addAll(slope.generateObstacles());
+        }
+        return obstacles;
     }
 }

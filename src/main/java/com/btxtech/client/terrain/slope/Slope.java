@@ -3,14 +3,17 @@ package com.btxtech.client.terrain.slope;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.GroundSlopeConnector;
-import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
+import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.game.jsre.client.common.Line2I;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -76,13 +79,13 @@ public class Slope {
                 Index next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
                 double innerAngle = current.getAngle(next, previous);
                 if (innerAngle > MathHelper.HALF_RADIANT) {
-                    double safetyDistance = (double)slopeSkeleton.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
-                    if(current.getDistance(previous) < safetyDistance) {
+                    double safetyDistance = (double) slopeSkeleton.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
+                    if (current.getDistance(previous) < safetyDistance) {
                         violationsFound = true;
                         corners.remove(i);
                         break;
                     }
-                    if(current.getDistance(next) < safetyDistance) {
+                    if (current.getDistance(next) < safetyDistance) {
                         violationsFound = true;
                         corners.remove(i);
                         break;
@@ -242,5 +245,41 @@ public class Slope {
 
     public void updateSlopeSkeleton(SlopeSkeleton slopeSkeleton) {
         this.slopeSkeleton = slopeSkeleton;
+    }
+
+    public Collection<Obstacle> generateObstacles() {
+        Collection<Obstacle> obstacles = new ArrayList<>();
+
+        fillObstacle(innerLine, obstacles);
+        fillObstacle(outerLine, obstacles);
+
+//        Index last = innerLine.get(0).toXY().getPositionRound();
+//        for (int i = 0; i < innerLine.size(); i++) {
+//            Index next = innerLine.get(CollectionUtils.getCorrectedIndex(i + 1, innerLine.size())).toXY().getPositionRound();;
+//            if(last.equals(next)) {
+//                continue;
+//            }
+//            obstacles.add(new Obstacle(new Line2I(last, next)));
+//            last = next;
+//        }
+//        for (int i = 0; i < outerLine.size(); i++) {
+//            Vertex current = outerLine.get(i);
+//            Vertex next = outerLine.get(CollectionUtils.getCorrectedIndex(i + 1, outerLine.size()));
+//            obstacles.add(new Obstacle(new Line2I(current.toXY().getPositionRound(), next.toXY().getPositionRound())));
+//        }
+
+        return obstacles;
+    }
+
+    private void fillObstacle(List<Vertex> polygon, Collection<Obstacle> obstacles) {
+        Index last = polygon.get(0).toXY().getPositionRound();
+        for (int i = 0; i < polygon.size(); i++) {
+            Index next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY().getPositionRound();;
+            if(last.equals(next)) {
+                continue;
+            }
+            obstacles.add(new Obstacle(new Line2I(last, next)));
+            last = next;
+        }
     }
 }

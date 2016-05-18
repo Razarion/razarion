@@ -9,11 +9,9 @@ import com.btxtech.game.jsre.client.common.Line2I;
  */
 public class Obstacle {
     private Line2I line;
-    private DecimalPosition normOutside;
 
-    public Obstacle(Line2I line, DecimalPosition normOutside) {
+    public Obstacle(Line2I line) {
         this.line = line;
-        this.normOutside = normOutside;
     }
 
     public Contact hasContact(Unit unit) {
@@ -40,15 +38,10 @@ public class Obstacle {
         return line;
     }
 
-    public DecimalPosition getNormOutside() {
-        return normOutside;
-    }
-
     @Override
     public String toString() {
         return "Obstacle{" +
                 "line=" + line +
-                ", normOutside=" + normOutside +
                 '}';
     }
 }

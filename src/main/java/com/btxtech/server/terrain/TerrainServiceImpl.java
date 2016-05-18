@@ -105,6 +105,11 @@ public class TerrainServiceImpl implements TerrainService {
             for (TerrainSlopePositionEntity terrainSlopePositionEntity : terrainSlopePositionEntities) {
                 terrainSlopePositions.add(terrainSlopePositionEntity.generateTerrainSlopePosition());
             }
+            System.out.println("TerrainSlopePosition------------------------------------");
+            Gson gson = new Gson();
+            String json = gson.toJson(terrainSlopePositions);
+            System.out.println(json);
+            System.out.println("--------------------------------------------------------");
             return terrainSlopePositions;
         } catch (Throwable e) {
             exceptionHandler.handleException(e);

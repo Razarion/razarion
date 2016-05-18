@@ -31,7 +31,8 @@ public class DebugHelper {
         stringBuilder.append(description);
         stringBuilder.append(": ");
         if (vector != null) {
-            stringBuilder.append(String.format("(%.2f:%.2f)", vector.getX(), vector.getY()));
+            // TODO  stringBuilder.append(String.format("(%.2f:%.2f)", vector.getX(), vector.getY()));
+            stringBuilder.append(vector.getX() + ":" + vector.getY());
         } else {
             stringBuilder.append("(-:-)");
         }
@@ -40,13 +41,15 @@ public class DebugHelper {
     public void append(String description, double value) {
         stringBuilder.append(" ");
         stringBuilder.append(description);
-        stringBuilder.append(String.format(": %.2f", value));
+        // TODO stringBuilder.append(String.format(": %.2f", value));
+        stringBuilder.append(value);
     }
 
     public void appendAngle(String description, double angleInRad) {
         stringBuilder.append(" ");
         stringBuilder.append(description);
-        stringBuilder.append(String.format(": %.2f", Math.toDegrees(angleInRad)));
+        // TODO stringBuilder.append(String.format(": %.2f", Math.toDegrees(angleInRad)));
+        stringBuilder.append(Math.toDegrees(angleInRad));
     }
 
     public void append(String description, Unit other) {

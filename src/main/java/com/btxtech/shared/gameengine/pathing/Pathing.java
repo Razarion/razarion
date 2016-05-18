@@ -47,10 +47,14 @@ public class Pathing {
         return createUnit(id, canMove, radius, position, null, destination, lastDestination);
     }
 
-    public Obstacle createObstacle(Line2I line, DecimalPosition normOutside) {
-        Obstacle obstacle = new Obstacle(line, normOutside);
+    public Obstacle createObstacle(Line2I line) {
+        Obstacle obstacle = new Obstacle(line);
         obstacles.add(obstacle);
         return obstacle;
+    }
+
+    public void addObstacle(Obstacle obstacle) {
+        obstacles.add(obstacle);
     }
 
     public List<Unit> getUnits() {
@@ -64,7 +68,8 @@ public class Pathing {
             this.units.clear();
             this.units.addAll(units);
         }
-        this.tickCount = tickCount;;
+        this.tickCount = tickCount;
+        ;
     }
 
     public List<Obstacle> getObstacles() {
@@ -242,7 +247,7 @@ public class Pathing {
                 debugHelper2.dump();
             } else {
                 DebugHelper debugHelper = new DebugHelper("solveVelocityContacts ol", unit1, true);
-                if(contact.getUnit2() != null) {
+                if (contact.getUnit2() != null) {
                     debugHelper.append("unit", contact.getUnit2());
                 } else {
                     debugHelper.append("obstacle", contact.getObstacle());
