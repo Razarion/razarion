@@ -52,10 +52,6 @@ public class Unit {
         return id;
     }
 
-    public boolean isMarked() {
-        return Pathing.DEBUG_SELECTIVE_FILTER != null && Pathing.DEBUG_SELECTIVE_FILTER == id;
-    }
-
     public double getRadius() {
         return radius;
     }
@@ -176,7 +172,7 @@ public class Unit {
                     debugHelper.append("accelerate");
                     speed = originalSpeed + ACCELERATION * Pathing.FACTOR;
                 } else {
-                    debugHelper.append("s1ow down");
+                    debugHelper.append("slow down");
                     speed = originalSpeed - ACCELERATION * Pathing.FACTOR;
                 }
             } else {
@@ -216,7 +212,7 @@ public class Unit {
     }
 
     private DecimalPosition forwardLooking(DecimalPosition desiredVelocity, List<Unit> units, long tickCount) {
-        DebugHelper debugHelper = new DebugHelper("forwardLooking", this, true);
+        DebugHelper debugHelper = new DebugHelper("forwardLooking", this, false);
         debugHelper.appendAngle("input", desiredVelocity.getAngle());
         ClearanceHole clearanceHole = new ClearanceHole(this);
         for (Unit other : units) {
@@ -402,6 +398,29 @@ public class Unit {
         unit.nearestDistance = nearestDistance;
         unit.angle = angle;
         return unit;
+    }
+
+    public boolean isInside(DecimalPosition position) {
+        return this.position.getDistance(position) <= radius;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Unit unit = (Unit) o;
+        return id == unit.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     @Override

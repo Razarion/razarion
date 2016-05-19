@@ -7,23 +7,26 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
  * 16.05.2016.
  */
 public class DebugHelper {
+    private static Integer debugAllFilter = null;
+    private static Integer debugSelectiveFilter = null;
     private boolean active;
     private StringBuilder stringBuilder = new StringBuilder();
 
     public DebugHelper(String description, Unit protagonist, boolean active) {
         this.active = active;
-        if (Pathing.DEBUG_ALL_FILTER != null && protagonist.getId() == Pathing.DEBUG_ALL_FILTER) {
+        if (debugAllFilter != null && protagonist.getId() == debugAllFilter) {
             this.active = true;
-        } else if (Pathing.DEBUG_SELECTIVE_FILTER != null && active) {
-            this.active = protagonist.getId() == Pathing.DEBUG_SELECTIVE_FILTER;
+        } else if (debugSelectiveFilter != null && active) {
+            this.active = protagonist.getId() == debugSelectiveFilter;
         }
         stringBuilder.append(description);
-        stringBuilder.append(" id: ");
+        stringBuilder.append(" [id: ");
         stringBuilder.append(protagonist.getId());
-        append("cfw", protagonist.getPosition());
-        append("v", protagonist.getVelocity());
-        append("d", protagonist.getDestination());
-        appendAngle("a", protagonist.getAngle());
+        append("position", protagonist.getPosition());
+        append("velocity", protagonist.getVelocity());
+        append("destination", protagonist.getDestination());
+        appendAngle("angle", protagonist.getAngle());
+        stringBuilder.append("]");
     }
 
     public void append(String description, DecimalPosition vector) {
@@ -31,8 +34,8 @@ public class DebugHelper {
         stringBuilder.append(description);
         stringBuilder.append(": ");
         if (vector != null) {
-            // TODO  stringBuilder.append(String.format("(%.2f:%.2f)", vector.getX(), vector.getY()));
-            stringBuilder.append(vector.getX() + ":" + vector.getY());
+            stringBuilder.append(String.format("(%.2f:%.2f)", vector.getX(), vector.getY()));
+            // stringBuilder.append(vector.getX() + ":" + vector.getY());
         } else {
             stringBuilder.append("(-:-)");
         }
@@ -41,27 +44,27 @@ public class DebugHelper {
     public void append(String description, double value) {
         stringBuilder.append(" ");
         stringBuilder.append(description);
-        // TODO stringBuilder.append(String.format(": %.2f", value));
-        stringBuilder.append(value);
+        stringBuilder.append(String.format(": %.2f", value));
+        // stringBuilder.append(value);
     }
 
     public void appendAngle(String description, double angleInRad) {
         stringBuilder.append(" ");
         stringBuilder.append(description);
-        // TODO stringBuilder.append(String.format(": %.2f", Math.toDegrees(angleInRad)));
-        stringBuilder.append(Math.toDegrees(angleInRad));
+        stringBuilder.append(String.format(": %.2f", Math.toDegrees(angleInRad)));
+        // stringBuilder.append(Math.toDegrees(angleInRad));
     }
 
     public void append(String description, Unit other) {
-        if (Pathing.DEBUG_ALL_FILTER != null && other.getId() == Pathing.DEBUG_ALL_FILTER) {
+        if (debugAllFilter != null && other.getId() == debugAllFilter) {
             active = true;
         }
         stringBuilder.append(" ");
         stringBuilder.append(description);
         stringBuilder.append(": [id: ");
         stringBuilder.append(other.getId());
-        append("cfw", other.getPosition());
-        append("v", other.getVelocity());
+        append("position", other.getPosition());
+        append("velocity", other.getVelocity());
         stringBuilder.append("]");
     }
 
@@ -81,5 +84,13 @@ public class DebugHelper {
         if (active) {
             System.out.println(stringBuilder);
         }
+    }
+
+    public static void setDebugAllFilter(Integer debugAllFilter) {
+        DebugHelper.debugAllFilter = debugAllFilter;
+    }
+
+    public static void setDebugSelectiveFilter(Integer debugSelectiveFilter) {
+        DebugHelper.debugSelectiveFilter = debugSelectiveFilter;
     }
 }

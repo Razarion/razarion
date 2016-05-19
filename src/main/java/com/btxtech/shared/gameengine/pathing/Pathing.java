@@ -13,8 +13,6 @@ public class Pathing {
     public static final double FACTOR = 1.0 / (double) PER_S;
     public static final int MILLI_S = 1000 / PER_S;
 
-    public static final Integer DEBUG_ALL_FILTER = null;
-    public static final Integer DEBUG_SELECTIVE_FILTER = null;
     public static final double MAXIMUM_CORRECTION = 0.2;
     public static final double PENETRATION_TOLERANCE = 1;
     private final List<Unit> units = new ArrayList<>();
@@ -86,7 +84,7 @@ public class Pathing {
             }
         }
         Collection<Contact> contacts = findContacts();
-        dumpContacts(contacts);
+        //dumpContacts(contacts);
         for (int i = 0; i < 10; i++) {
             solveVelocityContacts(contacts);
         }
@@ -103,9 +101,9 @@ public class Pathing {
                 }
             }
         }
-        if (runningCount > 0) {
-            System.out.println(tickCount + ":" + runningCount + " ------------------------------------ --");
-        }
+//        if (runningCount > 0) {
+//            System.out.println(tickCount + ":" + runningCount + " ------------------------------------ --");
+//        }
         tickCount++;
     }
 
@@ -215,13 +213,14 @@ public class Pathing {
             if (contact.hasUnit2AndCanMove()) {
                 DebugHelper debugHelper1 = new DebugHelper("solveVelocityContacts ul", unit1, false);
                 Unit unit2 = contact.getUnit2();
-                DebugHelper debugHelper2 = new DebugHelper("u2", unit2, false);
+                // DebugHelper debugHelper2 = new DebugHelper("u2", unit2, false);
+                debugHelper1.append("other unit", unit2);
                 double newPenetration = calculateNewPenetration(unit1, unit2);
                 debugHelper1.append("np", newPenetration);
                 if (newPenetration == 0) {
                     debugHelper1.append("Not needed");
                     debugHelper1.dump();
-                    debugHelper2.dump();
+                    //debugHelper2.dump();
                     continue;
                 }
                 DecimalPosition relativeVelocity = unit1.getVelocity();
@@ -242,11 +241,10 @@ public class Pathing {
                 }
                 DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1));
                 unit2.setVelocity(newVelocity2);
-                debugHelper2.append("nv", newVelocity2);
+                debugHelper1.append("unit2 nv", newVelocity2);
                 debugHelper1.dump();
-                debugHelper2.dump();
             } else {
-                DebugHelper debugHelper = new DebugHelper("solveVelocityContacts ol", unit1, true);
+                DebugHelper debugHelper = new DebugHelper("solveVelocityContacts ol", unit1, false);
                 if (contact.getUnit2() != null) {
                     debugHelper.append("unit", contact.getUnit2());
                 } else {
@@ -255,11 +253,15 @@ public class Pathing {
                 DecimalPosition velocity = unit1.getVelocity();
                 double projection = contact.getNormal().dotProduct(velocity);
                 debugHelper.append("projection", projection);
-                DecimalPosition pushAway = contact.getNormal().multiply(-projection);
-                debugHelper.append("pushAway", pushAway);
-                DecimalPosition newVelocity = velocity.add(pushAway);
-                debugHelper.append("newVelocity", newVelocity);
-                unit1.setVelocity(newVelocity);
+                if(projection >= 0) {
+                    debugHelper.append("doo nothing");
+                } else {
+                    DecimalPosition pushAway = contact.getNormal().multiply(-projection);
+                    debugHelper.append("pushAway", pushAway);
+                    DecimalPosition newVelocity = velocity.add(pushAway);
+                    debugHelper.append("newVelocity", newVelocity);
+                    unit1.setVelocity(newVelocity);
+                }
                 debugHelper.dump();
             }
         }
@@ -373,6 +375,14 @@ public class Pathing {
         return Math.abs(correctAngle(Math.abs(angle1 - angle2)));
     }
 
+    public Unit getUnit(DecimalPosition position) {
+        for (Unit unit : getUnits()) {
+            if (unit.isInside(position)) {
+                return unit;
+            }
+        }
+        return null;
+    }
 }
 
 // TODO make two units dest in middle (both point to the destination before start)
