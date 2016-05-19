@@ -20,17 +20,11 @@ public class StartRenderEngine extends AbstractStartupTask{
     @Inject
     private RenderService renderService;
     @Inject
-    private TerrainSurface terrainSurface;
-    @Inject
-    private TerrainObjectService terrainObjectService;
-    @Inject
     private ItemService itemService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        itemService.init();
-        terrainSurface.init();
-        terrainObjectService.init();
+        itemService.start();
         gameCanvas.init();
         renderService.setupRenderers();
         renderService.fillBuffers();

@@ -1,6 +1,8 @@
 package com.btxtech.shared.gameengine.pathing;
 
+import com.btxtech.client.units.ModelMatrices;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.primitives.Matrix4;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -402,6 +404,13 @@ public class Unit {
 
     public boolean isInside(DecimalPosition position) {
         return this.position.getDistance(position) <= radius;
+    }
+
+    public ModelMatrices generateModelMatrices() {
+        Matrix4 rotation = Matrix4.createZRotation(angle);
+        // Matrix4 transformation = rotation.multiply(Matrix4.createTranslation(position.getX(), position.getY(), 5));
+        Matrix4 transformation = Matrix4.createTranslation(position.getX(), position.getY(), 5).multiply(rotation);
+        return new ModelMatrices(transformation, rotation);
     }
 
     @Override

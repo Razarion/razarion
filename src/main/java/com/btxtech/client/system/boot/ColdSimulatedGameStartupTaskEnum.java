@@ -20,6 +20,8 @@ import com.btxtech.client.system.boot.task.LoadSlopeSkeletonTask;
 import com.btxtech.client.system.boot.task.LoadTerrainObjectPositionTask;
 import com.btxtech.client.system.boot.task.LoadTerrainObjectTask;
 import com.btxtech.client.system.boot.task.LoadTerrainSlopePositionTask;
+import com.btxtech.client.system.boot.task.SetupGameEngineTask;
+import com.btxtech.client.system.boot.task.SetupTerrainTask;
 import com.btxtech.client.system.boot.task.StartRenderEngine;
 
 /**
@@ -34,6 +36,8 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
     LOAD_TERRAIN_OBJECT(LoadTerrainObjectTask.class),
     LOAD_TERRAIN_OBJECT_POSITIONS(LoadTerrainObjectPositionTask.class),
     LOAD_ITEM_TYPE(LoadItemTypeTask.class),
+    SETUP_TERRAIN(SetupTerrainTask.class),
+    SETUP_GAME_ENGINE(SetupGameEngineTask.class),
     START_RENDER_ENGINE(StartRenderEngine.class);
 
     private Class<? extends AbstractStartupTask> taskClass;

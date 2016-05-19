@@ -2,6 +2,7 @@ package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.units.ItemService;
 import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.dto.TerrainSlopePosition;
