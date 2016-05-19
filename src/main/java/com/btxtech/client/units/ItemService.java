@@ -36,8 +36,8 @@ public class ItemService {
     private Collection<ItemType> itemTypes;
     private Map<Integer, VertexContainer> vertexContainers;
     private Map<Integer, Collection<ModelMatrices>> unitIdModelMatrices;
-    private boolean moving = true;
     private Pathing pathing;
+    private Integer timerHandler;
 
     public void setItemTypes(Collection<ItemType> itemTypes) {
         this.itemTypes = itemTypes;
@@ -55,20 +55,14 @@ public class ItemService {
         for (Obstacle obstacle : obstacles) {
             pathing.addObstacle(obstacle);
         }
-        // Setup items
-        int syncItemId = 1;
-        DecimalPosition destination = new DecimalPosition(2700, 1700);
-        pathing.createUnit(syncItemId++, true, 10, new DecimalPosition(200, 200), destination, null);
-//        for (int x = -2; x < 3; x++) {
-//            for (int y = -2; y < 3; y++) {
-//                pathing.createUnit(syncItemId++, true, 10, new DecimalPosition(20 * x, 20 * y).add(200, 200), destination, null);
-//            }
-//        }
-        unitIdModelMatrices = new HashMap<>();
+        setupItems();
     }
 
     public void start() {
-        Browser.getWindow().setInterval(new TimeoutHandler() {
+        if (timerHandler != null) {
+            return;
+        }
+        timerHandler = Browser.getWindow().setInterval(new TimeoutHandler() {
             @Override
             public void onTimeoutHandler() {
                 try {
@@ -90,6 +84,14 @@ public class ItemService {
         }, 100);
     }
 
+    public void stop() {
+        if (timerHandler == null) {
+            return;
+        }
+        Browser.getWindow().clearInterval(timerHandler);
+        timerHandler = null;
+    }
+
     public Collection<Integer> getItemTypeIds() {
         return vertexContainers.keySet();
     }
@@ -102,12 +104,16 @@ public class ItemService {
         return unitIdModelMatrices.get(itemTypeId);
     }
 
-    public boolean isMoving() {
-        return moving;
+    public boolean isRunning() {
+        return timerHandler != null;
     }
 
-    public void setMoving(boolean moving) {
-        this.moving = moving;
+    public void setRunning(boolean running) {
+        if (running) {
+            start();
+        } else {
+            stop();
+        }
     }
 
     public ImageDescriptor getImageDescriptor() {
@@ -128,5 +134,20 @@ public class ItemService {
 
     public void setSpecularHardness(double specularHardness) {
         this.specularHardness = specularHardness;
+    }
+
+    public void setupItems() {
+        // Setup items
+        int syncItemId = 1;
+        pathing.removeAllUnits();
+        DecimalPosition destination = new DecimalPosition(2700, 1700);
+        pathing.createUnit(syncItemId++, true, 10, new DecimalPosition(200, 200), destination, null);
+//        for (int x = -2; x < 3; x++) {
+//            for (int y = -2; y < 3; y++) {
+//                pathing.createUnit(syncItemId++, true, 10, new DecimalPosition(20 * x, 20 * y).add(200, 200), destination, null);
+//            }
+//        }
+        unitIdModelMatrices = new HashMap<>();
+
     }
 }

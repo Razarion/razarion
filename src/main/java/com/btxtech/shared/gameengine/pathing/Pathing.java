@@ -383,6 +383,12 @@ public class Pathing {
         }
         return null;
     }
+
+    public void removeAllUnits() {
+        synchronized (units) {
+            units.clear();
+        }
+    }
 }
 
 // TODO make two units dest in middle (both point to the destination before start)

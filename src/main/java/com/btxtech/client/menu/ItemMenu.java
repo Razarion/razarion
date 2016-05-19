@@ -30,16 +30,16 @@ public class ItemMenu extends Composite {
     private DoubleBox specularHardness;
     @Inject
     @DataField
-    private CheckBox moving;
+    private CheckBox running;
     @Inject
     @DataField
-    private Button reload;
+    private Button restart;
 
     @PostConstruct
     public void init() {
         specularIntensity.setValue(itemService.getSpecularIntensity());
         specularHardness.setValue(itemService.getSpecularHardness());
-        moving.setValue(itemService.isMoving());
+        running.setValue(itemService.isRunning());
     }
 
     @EventHandler("specularIntensity")
@@ -52,13 +52,13 @@ public class ItemMenu extends Composite {
         itemService.setSpecularHardness(specularHardness.getValue());
     }
 
-    @EventHandler("moving")
+    @EventHandler("running")
     public void movingChanged(ChangeEvent e) {
-        itemService.setMoving(moving.getValue());
+        itemService.setRunning(running.getValue());
     }
 
-    @EventHandler("reload")
-    private void reloadButtonClick(ClickEvent event) {
-        // itemService.reloadModel();
+    @EventHandler("restart")
+    private void restartButtonClick(ClickEvent event) {
+        itemService.setupItems();
     }
 }
