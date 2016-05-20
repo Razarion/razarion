@@ -21,14 +21,6 @@ public class GroundModeler {
             }
         }
         groundConfig.getGroundSkeleton().setHeights(heights);
-        FractalField splattingField = FractalField.createSaveFractalField(groundConfig.getGroundSkeleton().getSplattingXCount(), groundConfig.getGroundSkeleton().getSplattingYCount(), groundConfig.getSplattingFractalRoughness(), groundConfig.getSplattingFractalMin(), groundConfig.getSplattingFractalMax());
-        double[][] splattings = new double[groundConfig.getGroundSkeleton().getSplattingXCount()][groundConfig.getGroundSkeleton().getSplattingYCount()];
-        for (int x = 0; x < groundConfig.getGroundSkeleton().getSplattingXCount(); x++) {
-            for (int y = 0; y < groundConfig.getGroundSkeleton().getSplattingYCount(); y++) {
-                splattings[x][y] = splattingField.getValue(x, y);
-            }
-        }
-        groundConfig.getGroundSkeleton().setSplattings(splattings);
     }
 
     public static GroundMesh generateGroundMesh(GroundSkeleton groundSkeleton, int xCount, int yCount) {

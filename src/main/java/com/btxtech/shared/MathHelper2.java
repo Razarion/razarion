@@ -27,6 +27,12 @@ public class MathHelper2 {
         return (y2 - y1) / (x2 - x1) * (distance - x1) + y1;
     }
 
+    public static double interpolate(double minOut, double maxOut, double minIn, double maxIn, double value) {
+        double m = (maxOut - minOut) / (maxIn - minIn);
+        double b = (minOut * maxIn - minIn * maxOut) / (maxIn - minIn);
+        return m * value + b;
+    }
+
     private static double getReference(int x, List<Double> references) {
         if (x < 0) {
             return references.get(0);
@@ -57,5 +63,9 @@ public class MathHelper2 {
             last = Math.min(last, value);
         }
         return last;
+    }
+
+    public static double mix(double value1, double value2, double mix) {
+        return value1 * (1 - mix) + value2 * mix;
     }
 }

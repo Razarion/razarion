@@ -1,6 +1,9 @@
 package com.btxtech.client.sidebar;
 
+import com.btxtech.client.dialog.ModalDialog;
+import com.btxtech.client.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.terrain.FractalFiledConfig;
 import com.btxtech.client.terrain.GroundModeler;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.TerrainEditorService;
@@ -35,6 +38,8 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
+    private ModalDialog modalDialog;
+    @Inject
     private RenderService renderService;
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
@@ -42,29 +47,12 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @AutoBound
     private DataBinder<GroundConfig> groundConfigDataBinder;
     @Inject
+    @DataField
+    private Button fractalSplatting;
+    @Inject
     @Bound(property = "groundSkeleton.splattingDistance")
     @DataField
     private DoubleBox splattingDistance;
-    @Inject
-    @Bound(property = "groundSkeleton.splattingXCount")
-    @DataField
-    private IntegerBox splattingXCount;
-    @Inject
-    @Bound(property = "groundSkeleton.splattingYCount")
-    @DataField
-    private IntegerBox splattingYCount;
-    @Inject
-    @Bound
-    @DataField
-    private DoubleBox splattingFractalMin;
-    @Inject
-    @Bound
-    @DataField
-    private DoubleBox splattingFractalMax;
-    @Inject
-    @Bound
-    @DataField
-    private DoubleBox splattingFractalRoughness;
     @Inject
     @Bound(property = "groundSkeleton.bumpMapDepth")
     @DataField
@@ -153,4 +141,34 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
             }
         }).saveGroundConfig(groundConfigDataBinder.getModel());
     }
+
+    @EventHandler("fractalSplatting")
+    private void fractalSplattingButtonClick(ClickEvent event) {
+        GroundConfig groundConfig = groundConfigDataBinder.getModel();
+        final FractalFiledConfig fractalFiledConfig = new FractalFiledConfig();
+        fractalFiledConfig.setFractalMin(groundConfig.getSplattingFractalMin());
+        fractalFiledConfig.setFractalMax(groundConfig.getSplattingFractalMax());
+        fractalFiledConfig.setClampMin(groundConfig.getSplattingFractalClampMin());
+        fractalFiledConfig.setClampMax(groundConfig.getSplattingFractalClampMax());
+        fractalFiledConfig.setXCount(groundConfig.getGroundSkeleton().getSplattingXCount());
+        fractalFiledConfig.setYCount(groundConfig.getGroundSkeleton().getSplattingYCount());
+        fractalFiledConfig.setFractalRoughness(groundConfig.getSplattingFractalRoughness());
+        fractalFiledConfig.setFractalField(groundConfig.getGroundSkeleton().getSplattings());
+        modalDialog.show("Fractal Dialog", FractalDialog.class, fractalFiledConfig, new Runnable() {
+            @Override
+            public void run() {
+                GroundConfig groundConfig = groundConfigDataBinder.getModel();
+                groundConfig.setSplattingFractalMin(fractalFiledConfig.getFractalMin());
+                groundConfig.setSplattingFractalMax(fractalFiledConfig.getFractalMax());
+                groundConfig.setSplattingFractalClampMin(fractalFiledConfig.getClampMin());
+                groundConfig.setSplattingFractalClampMax(fractalFiledConfig.getClampMax());
+                groundConfig.setSplattingFractalRoughness(fractalFiledConfig.getFractalRoughness());
+                groundConfig.getGroundSkeleton().setSplattingXCount(fractalFiledConfig.getXCount());
+                groundConfig.getGroundSkeleton().setSplattingYCount(fractalFiledConfig.getYCount());
+                groundConfig.getGroundSkeleton().setSplattings(fractalFiledConfig.getClampedFractalField());
+            }
+        });
+    }
+
+
 }

@@ -16,6 +16,8 @@ public class GroundConfig {
     private double splattingFractalRoughness;
     private double splattingFractalMin;
     private double splattingFractalMax;
+    private double splattingFractalClampMin;
+    private double splattingFractalClampMax;
 
     public GroundSkeleton getGroundSkeleton() {
         return groundSkeleton;
@@ -63,5 +65,21 @@ public class GroundConfig {
 
     public void setSplattingFractalMax(double splattingFractalMax) {
         this.splattingFractalMax = splattingFractalMax;
+    }
+
+    public double getSplattingFractalClampMin() {
+        return splattingFractalClampMin;
+    }
+
+    public void setSplattingFractalClampMin(double splattingFractalClampMin) {
+        this.splattingFractalClampMin = splattingFractalClampMin;
+    }
+
+    public double getSplattingFractalClampMax() {
+        return splattingFractalClampMax;
+    }
+
+    public void setSplattingFractalClampMax(double splattingFractalClampMax) {
+        this.splattingFractalClampMax = splattingFractalClampMax;
     }
 }

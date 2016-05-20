@@ -28,6 +28,8 @@ public class GroundConfigEntity {
     private double splattingDistance;
     private double splattingFractalMin;
     private double splattingFractalMax;
+    private double splattingFractalClampMin;
+    private double splattingFractalClampMax;
     private double splattingFractalRoughness;
     private int splattingXCount;
     private int splattingYCount;
@@ -55,6 +57,8 @@ public class GroundConfigEntity {
         groundConfig.setSplattingFractalRoughness(splattingFractalRoughness);
         groundConfig.setSplattingFractalMin(splattingFractalMin);
         groundConfig.setSplattingFractalMax(splattingFractalMax);
+        groundConfig.setSplattingFractalClampMin(splattingFractalClampMin);
+        groundConfig.setSplattingFractalClampMax(splattingFractalClampMax);
         return groundConfig;
     }
 
@@ -65,6 +69,8 @@ public class GroundConfigEntity {
         splattingDistance = groundConfig.getGroundSkeleton().getSplattingDistance();
         splattingFractalMin = groundConfig.getSplattingFractalMin();
         splattingFractalMax = groundConfig.getSplattingFractalMax();
+        splattingFractalClampMin = groundConfig.getSplattingFractalClampMin();
+        splattingFractalClampMax = groundConfig.getSplattingFractalClampMax();
         splattingFractalRoughness = groundConfig.getSplattingFractalRoughness();
         splattingXCount = groundConfig.getGroundSkeleton().getSplattingXCount();
         splattingYCount = groundConfig.getGroundSkeleton().getSplattingYCount();
