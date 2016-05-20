@@ -14,6 +14,7 @@ import elemental.html.WebGLRenderingContext;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -64,6 +65,10 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
 
     @Override
     public void draw() {
+        Collection<ModelMatrices> modelMatrices = itemService.getModelMatrices(getId());
+        if (modelMatrices == null || modelMatrices.isEmpty()) {
+            return;
+        }
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
@@ -74,8 +79,8 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
         positions.activate();
         barycentric.activate();
 
-        for (ModelMatrices modelMatrices : itemService.getModelMatrices(getId())) {
-            uniformMatrix4fv("uMMatrix", modelMatrices.getVertex());
+        for (ModelMatrices model : modelMatrices) {
+            uniformMatrix4fv("uMMatrix", model.getVertex());
 
             getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

@@ -1,15 +1,15 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.renderer.model.GroundMesh;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.client.terrain.slope.SlopeWater;
-import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
@@ -33,15 +33,12 @@ public class TerrainSurface {
     private static final double HIGHEST_POINT_IN_VIEW = 101; // Should be calculated
     private static final double LOWEST_POINT_IN_VIEW = -9; // Should be calculated
     @Inject
-    private GameCanvas gameCanvas;
-    @Inject
     private RenderService renderService;
     private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
-    // private ImageDescriptor blenderImageDescriptor = ImageDescriptor.GREY;
     private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_5;
     private ImageDescriptor groundBmImageDescriptor = ImageDescriptor.GROUND_BM_5;
-    private GroundMesh groundMesh = new GroundMesh();
+    private GroundMesh groundMesh;
     private Water water = new Water(-7, -20); // Init here due to the editor
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
     private Map<Integer, SlopeSkeleton> slopeSkeletonMap = new HashMap<>();
@@ -199,5 +196,13 @@ public class TerrainSurface {
             obstacles.addAll(slope.generateObstacles());
         }
         return obstacles;
+    }
+
+    public Vertex getInterpolatedNorm(DecimalPosition absoluteXY) {
+        return groundMesh.getInterpolatedNorm(absoluteXY);
+    }
+
+    public double getInterpolatedHeight(DecimalPosition absoluteXY) {
+        return groundMesh.getInterpolatedHeight(absoluteXY);
     }
 }

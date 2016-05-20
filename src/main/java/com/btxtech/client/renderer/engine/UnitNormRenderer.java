@@ -14,8 +14,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 @Dependent
 public class UnitNormRenderer extends AbstractRenderer {
-    private Logger logger = Logger.getLogger(UnitNormRenderer.class.getName());
+    // private Logger logger = Logger.getLogger(UnitNormRenderer.class.getName());
     @Inject
     private ItemService itemService;
     @Inject
@@ -71,6 +71,11 @@ public class UnitNormRenderer extends AbstractRenderer {
 
     @Override
     public void draw() {
+        Collection<ModelMatrices> modelMatrices = itemService.getModelMatrices(getId());
+        if (modelMatrices == null || modelMatrices.isEmpty()) {
+            return;
+        }
+
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
@@ -83,8 +88,8 @@ public class UnitNormRenderer extends AbstractRenderer {
 
         getCtx3d().lineWidth(30);
 
-        for (ModelMatrices modelMatrices : itemService.getModelMatrices(getId())) {
-            uniformMatrix4fv("uMMatrix", modelMatrices.getVertex());
+        for (ModelMatrices model : modelMatrices) {
+            uniformMatrix4fv("uMMatrix", model.getVertex());
 
             getCtx3d().drawArrays(WebGLRenderingContext.LINES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

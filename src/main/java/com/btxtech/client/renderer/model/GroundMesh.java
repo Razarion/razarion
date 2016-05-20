@@ -266,8 +266,36 @@ public class GroundMesh {
         return tangentBL.add(tangentBR).add(tangentTR).add(tangentTL);
     }
 
+    /**
+     * Bilinear interpolation of height
+     * <p/>
+     * Only works if the grid is Unit Square
+     * https://en.wikipedia.org/wiki/Bilinear_interpolation
+     *
+     * @param absoluteXY input
+     * @return interpolated height
+     */
+    public double getInterpolatedHeight(DecimalPosition absoluteXY) {
+        Index bottomLeftIndex = absoluteToIndex(absoluteXY);
+        VertexData vertexDataBL = getVertexDataSafe(bottomLeftIndex);
+        VertexData vertexDataBR = getVertexDataSafe(bottomLeftIndex.add(1, 0));
+        VertexData vertexDataTR = getVertexDataSafe(bottomLeftIndex.add(1, 1));
+        VertexData vertexDataTL = getVertexDataSafe(bottomLeftIndex.add(0, 1));
+
+        DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
+        DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
+        DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
+
+        double heightBL = vertexDataBL.getVertex().getZ() * (1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY());
+        double heightBR = vertexDataBR.getVertex().getZ() * normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY());
+        double heightTR = vertexDataTR.getVertex().getZ() * normalizedInterpolated.getX() * normalizedInterpolated.getY();
+        double heightTL = vertexDataTL.getVertex().getZ() * (1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY();
+
+        return heightBL + heightBR + heightTR + heightTL;
+    }
+
     private Index absoluteToIndex(DecimalPosition absoluteXY) {
-        if(edgeLength == 0) {
+        if (edgeLength == 0) {
             throw new IllegalStateException("edgeLength == 0");
         }
         int x = (int) (absoluteXY.getX() / (double) edgeLength);

@@ -15,6 +15,7 @@ import elemental.html.WebGLRenderingContext;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -70,6 +71,11 @@ public class UnitWireRenderer extends AbstractRenderer {
 
     @Override
     public void draw() {
+        Collection<ModelMatrices> modelMatrices = itemService.getModelMatrices(getId());
+        if (modelMatrices == null || modelMatrices.isEmpty()) {
+            return;
+        }
+
         useProgram();
 
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
@@ -80,8 +86,8 @@ public class UnitWireRenderer extends AbstractRenderer {
         textureCoordinate.activate();
         webGLTexture.activate();
 
-        for (ModelMatrices modelMatrices : itemService.getModelMatrices(getId())) {
-            uniformMatrix4fv("uMMatrix", modelMatrices.getVertex());
+        for (ModelMatrices model : modelMatrices) {
+            uniformMatrix4fv("uMMatrix", model.getVertex());
 
             getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

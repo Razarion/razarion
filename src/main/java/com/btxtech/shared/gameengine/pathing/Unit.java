@@ -406,13 +406,6 @@ public class Unit {
         return this.position.getDistance(position) <= radius;
     }
 
-    public ModelMatrices generateModelMatrices() {
-        Matrix4 rotation = Matrix4.createZRotation(angle);
-        // Matrix4 transformation = rotation.multiply(Matrix4.createTranslation(position.getX(), position.getY(), 5));
-        Matrix4 transformation = Matrix4.createTranslation(position.getX(), position.getY(), 5).multiply(rotation);
-        return new ModelMatrices(transformation, rotation);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -17,6 +17,11 @@ import java.util.List;
 @Portable
 @Embeddable
 public class Vertex {
+    public static final Vertex ZERO = new Vertex(0, 0, 0);
+    public static final Vertex X_NORM = new Vertex(1, 0, 0);
+    public static final Vertex Y_NORM = new Vertex(0, 1, 0);
+    public static final Vertex Z_NORM = new Vertex(0, 0, 1);
+
     private double x;
     private double y;
     private double z;
