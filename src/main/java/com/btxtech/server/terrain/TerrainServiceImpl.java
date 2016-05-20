@@ -147,6 +147,7 @@ public class TerrainServiceImpl implements TerrainService {
     }
 
     @Override
+    @Transactional
     public Collection<TerrainObjectPosition> loadTerrainObjectPositions() {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

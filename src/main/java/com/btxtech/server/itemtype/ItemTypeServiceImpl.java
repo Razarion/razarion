@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +43,7 @@ public class ItemTypeServiceImpl implements ItemTypeService {
     }
 
     @Override
+    @Transactional
     public Collection<ItemType> loadItemTypes() {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
