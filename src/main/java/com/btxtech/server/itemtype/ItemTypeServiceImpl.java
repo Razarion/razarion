@@ -31,17 +31,6 @@ public class ItemTypeServiceImpl implements ItemTypeService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    // @Override
-    public List<VertexList> getItemTypes() {
-//        try {
-//            FileInputStream fileInputStream = new FileInputStream("C:\\dev\\projects\\razarion\\code\\experimental-webgl\\src\\main\\resources\\collada\\ViperBeat1.dae");
-//            return ColladaConverter.convertToTerrainObject(fileInputStream);
-//        } catch (Exception e) {
-//            exceptionHandler.handleException(e);
-        return null;
-        //       }
-    }
-
     @Override
     @Transactional
     public Collection<ItemType> loadItemTypes() {
