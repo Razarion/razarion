@@ -1,5 +1,8 @@
 package com.btxtech.client.sidebar.slopeeditor;
 
+import com.btxtech.client.dialog.ModalDialog;
+import com.btxtech.client.dialog.content.fractal.FractalDialog;
+import com.btxtech.client.terrain.FractalFieldConfig;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.SlopeModeler;
 import com.btxtech.game.jsre.client.common.Index;
@@ -33,6 +36,8 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
+    private ModalDialog modalDialog;
+    @Inject
     @AutoBound
     private DataBinder<SlopeConfig> slopeConfigDataBinder;
     @Inject
@@ -64,21 +69,12 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @DataField
     private DoubleBox specularHardness;
     @Inject
-    @Bound
-    @DataField
-    private DoubleBox fractalShift;
-    @Inject
-    @Bound
-    @DataField
-    private DoubleBox fractalRoughness;
-    @Inject
     @Bound(property = "slopeSkeleton.verticalSpace")
     @DataField
     private IntegerBox verticalSpace;
     @Inject
-    @Bound(property = "slopeSkeleton.segments")
     @DataField
-    private IntegerBox segments;
+    private Button fractalFieldButton;
     @DataField
     private Element svgElement = (Element) Browser.getDocument().createSVGElement();
     @Inject
@@ -110,10 +106,26 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @Inject
     @DataField
     private Button update;
+    private FractalFieldConfig fractalFieldConfig;
 
     public void init(SlopeConfig slopeConfig, Double zoom) {
         slopeConfigDataBinder.setModel(slopeConfig);
         shapeEditor.init(svgElement, slopeConfig, this, zoom);
+    }
+
+    @EventHandler("fractalFieldButton")
+    private void fractalFieldButtonClick(ClickEvent event) {
+        SlopeConfig slopeConfig = slopeConfigDataBinder.getModel();
+        if (fractalFieldConfig == null) {
+            fractalFieldConfig = slopeConfig.toFractalFiledConfig();
+        }
+        modalDialog.show("Fractal Dialog", FractalDialog.class, fractalFieldConfig, new Runnable() {
+            @Override
+            public void run() {
+                SlopeConfig slopeConfig = slopeConfigDataBinder.getModel();
+                slopeConfig.fromFractalFiledConfig(fractalFieldConfig);
+            }
+        });
     }
 
     public double getZoom() {
@@ -184,7 +196,11 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
         SlopeConfig slopeConfig = getSlopeConfig();
-        SlopeModeler.sculpt(slopeConfig);
+        FractalFieldConfig fractalFieldConfig = this.fractalFieldConfig;
+        if (fractalFieldConfig == null) {
+            fractalFieldConfig = slopeConfig.toFractalFiledConfig();
+        }
+        SlopeModeler.sculpt(slopeConfig, fractalFieldConfig);
         terrainSurface.setSlopeSkeleton(slopeConfig.getSlopeSkeleton());
         terrainSurface.fillBuffers();
     }

@@ -1,6 +1,6 @@
 package com.btxtech.client.dialog.content.fractal;
 
-import com.btxtech.client.terrain.FractalFiledConfig;
+import com.btxtech.client.terrain.FractalFieldConfig;
 import com.btxtech.shared.MathHelper2;
 import com.google.gwt.dom.client.Element;
 import elemental.html.CanvasElement;
@@ -18,25 +18,25 @@ public class FractalDisplay {
         this.canvasElement = (CanvasElement) canvasElement;
     }
 
-    public void display(FractalFiledConfig fractalFiledConfig) {
+    public void display(FractalFieldConfig fractalFieldConfig) {
         CanvasRenderingContext2D ctx = (CanvasRenderingContext2D) canvasElement.getContext("2d");
 
         ctx.clearRect(0, 0, canvasElement.getWidth(), canvasElement.getHeight());
 
-        if (fractalFiledConfig.getClampedFractalField() == null) {
+        if (fractalFieldConfig.getClampedFractalField() == null) {
             return;
         }
 
         ctx.save();
-        int pixelCount = Math.max(fractalFiledConfig.getXCount(), fractalFiledConfig.getYCount());
+        int pixelCount = Math.max(fractalFieldConfig.getXCount(), fractalFieldConfig.getYCount());
         int dimension = Math.max(canvasElement.getWidth(), canvasElement.getHeight());
         float scale = (float) dimension / (float) pixelCount;
         ctx.scale(scale, scale);
 
-        for (int x = 0; x < fractalFiledConfig.getXCount(); x++) {
-            for (int y = 0; y < fractalFiledConfig.getYCount(); y++) {
-                double f = fractalFiledConfig.getClampedFractalField()[x][y];
-                int c = (int) MathHelper2.interpolate(0, 255, fractalFiledConfig.getFractalMin(), fractalFiledConfig.getFractalMax(), f);
+        for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
+            for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
+                double f = fractalFieldConfig.getClampedFractalField()[x][y];
+                int c = (int) MathHelper2.interpolate(0, 255, fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax(), f);
                 if (c < 0 || c > 255) {
                     throw new IllegalArgumentException("f=" + f + " c=" + c);
                 }

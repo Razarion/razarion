@@ -43,7 +43,10 @@ public class SlopeConfigEntity {
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
-    private double fractalShift;
+    private double fractalMin;
+    private double fractalMax;
+    private double fractalClampMin;
+    private double fractalClampMax;
     private double fractalRoughness;
     private int verticalSpace;
     private int segments;
@@ -81,7 +84,10 @@ public class SlopeConfigEntity {
     public SlopeConfig toSlopeConfig() {
         SlopeConfig slopeConfig = new SlopeConfig();
         slopeConfig.setId(id.intValue());
-        slopeConfig.setFractalShift(fractalShift);
+        slopeConfig.setFractalMin(fractalMin);
+        slopeConfig.setFractalMax(fractalMax);
+        slopeConfig.setFractalClampMin(fractalClampMin);
+        slopeConfig.setFractalClampMax(fractalClampMax);
         slopeConfig.setFractalRoughness(fractalRoughness);
         slopeConfig.setInternalName(internalName);
         slopeConfig.setSlopeSkeleton(toSlopeSkeleton());
@@ -97,7 +103,10 @@ public class SlopeConfigEntity {
             shape.add(slopeShapeEntity);
         }
         internalName = slopeConfig.getInternalName();
-        fractalShift = slopeConfig.getFractalShift();
+        fractalMin = slopeConfig.getFractalMin();
+        fractalMax = slopeConfig.getFractalMax();
+        fractalClampMin = slopeConfig.getFractalClampMin();
+        fractalClampMax = slopeConfig.getFractalClampMax();
         fractalRoughness = slopeConfig.getFractalRoughness();
         type = slopeConfig.getSlopeSkeleton().getType();
         slopeGroundSplattingBumpDepth = slopeConfig.getSlopeSkeleton().getSlopeGroundSplattingBumpDepth();
@@ -136,7 +145,10 @@ public class SlopeConfigEntity {
                 ", bumpMapDepth=" + bumpMapDepth +
                 ", specularIntensity=" + specularIntensity +
                 ", specularHardness=" + specularHardness +
-                ", fractalShift=" + fractalShift +
+                ", fractalMin=" + fractalMin +
+                ", fractalMax=" + fractalMax +
+                ", fractalClampMin=" + fractalClampMin +
+                ", fractalClampMax=" + fractalClampMax +
                 ", fractalRoughness=" + fractalRoughness +
                 ", verticalSpace=" + verticalSpace +
                 ", segments=" + segments +

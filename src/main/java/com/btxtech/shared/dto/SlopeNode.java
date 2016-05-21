@@ -11,7 +11,6 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class SlopeNode {
     private Vertex position;
     private double slopeFactor;
-    private double normShift;
 
     public void setSlopeFactor(double slopeFactor) {
         this.slopeFactor = slopeFactor;
@@ -27,13 +26,5 @@ public class SlopeNode {
 
     public Vertex getPosition() {
         return position;
-    }
-
-    public void setNormShift(double normShift) {
-        this.normShift = normShift;
-    }
-
-    public double getNormShift() {
-        return normShift;
     }
 }

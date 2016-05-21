@@ -134,27 +134,18 @@ public class FractalField {
         return MathHelper.nearestPowerOf2Number(maxNumber) + 1;
     }
 
-    @Deprecated
-    public static FractalField createSaveFractalField(int nodeCount1, int nodeCount2, double roughness, double minValue, double maxValue) {
+    public static void createSaveFractalField(FractalFieldConfig fractalFieldConfig) {
         // long time = System.currentTimeMillis();
-        FractalField fractalField = new FractalField(nearestPossibleNumber(nodeCount1, nodeCount2), roughness, minValue, maxValue);
+        FractalField fractalField = new FractalField(nearestPossibleNumber(fractalFieldConfig.getXCount(), fractalFieldConfig.getYCount()), fractalFieldConfig.getFractalRoughness(), fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax());
         // time = System.currentTimeMillis();
         fractalField.process();
-        return fractalField;
-    }
-
-    public static void createSaveFractalField(FractalFiledConfig fractalFiledConfig) {
-        // long time = System.currentTimeMillis();
-        FractalField fractalField = new FractalField(nearestPossibleNumber(fractalFiledConfig.getXCount(), fractalFiledConfig.getYCount()), fractalFiledConfig.getFractalRoughness(), fractalFiledConfig.getFractalMin(), fractalFiledConfig.getFractalMax());
-        // time = System.currentTimeMillis();
-        fractalField.process();
-        double[][] values = new double[fractalFiledConfig.getXCount()][fractalFiledConfig.getYCount()];
-        for (int x = 0; x < fractalFiledConfig.getXCount(); x++) {
-            for (int y = 0; y < fractalFiledConfig.getYCount(); y++) {
+        double[][] values = new double[fractalFieldConfig.getXCount()][fractalFieldConfig.getYCount()];
+        for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
+            for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
                 values[x][y] = fractalField.getValue(x, y);
             }
         }
 
-        fractalFiledConfig.setFractalField(values);
+        fractalFieldConfig.setFractalField(values);
     }
 }

@@ -1,7 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.client.renderer.model.GroundMesh;
-import com.btxtech.client.terrain.FractalField;
+import com.btxtech.client.terrain.FractalFieldConfig;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.Shape;
@@ -19,26 +19,25 @@ import java.util.List;
  */
 public class SlopeModeler {
     // private Logger logger = Logger.getLogger(ShapeTemplate.class.getName());
-    public static void sculpt(SlopeConfig slopeConfig) {
+    public static void sculpt(SlopeConfig slopeConfig, FractalFieldConfig fractalFieldConfig) {
         int segments = slopeConfig.getSlopeSkeleton().getSegments();
         Shape shape = new Shape(slopeConfig.getShape());
         int rows = shape.getVertexCount();
-        double shift = slopeConfig.getFractalShift();
-        double roughness = slopeConfig.getFractalRoughness();
 
         SlopeNode[][] slopeNodes = new SlopeNode[segments][rows];
-        FractalField fractalField = FractalField.createSaveFractalField(shape.getShiftableCount(), segments, roughness, -shift / 2.0, shift / 2.0);
+        // FractalField fractalField = FractalField.createSaveFractalField(shape.getShiftableCount(), segments, roughness, -shift / 2.0, shift / 2.0);
         for (int column = 0; column < segments; column++) {
             for (int row = 0; row < rows; row++) {
                 SlopeNode slopeNode = new SlopeNode();
                 slopeNode.setSlopeFactor(shape.getSlopeFactor(row));
                 if (shape.isShiftableEntry(row)) {
-                    double normShift = fractalField.getValue(column, row - shape.getShiftableOffset());
+                    double normShift = 0;
+                    if (fractalFieldConfig.getClampedFractalField() != null) {
+                        normShift = fractalFieldConfig.getClampedFractalField()[column][row - shape.getShiftableOffset()];
+                    }
                     slopeNode.setPosition(shape.getNormShiftedVertex(row, normShift));
-                    slopeNode.setNormShift(normShift);
                 } else {
                     slopeNode.setPosition(shape.getVertex(row));
-                    slopeNode.setNormShift(0);
                 }
                 slopeNodes[column][row] = slopeNode;
             }
@@ -85,7 +84,7 @@ public class SlopeModeler {
         }
         // Why -shapeTemplateEntry.getNormShift() and not + is unclear
         // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
-        return (float)slopeNode.getSlopeFactor();
+        return (float) slopeNode.getSlopeFactor();
     }
 
     private static float setupSplatting(Vertex vertex, double slopeFactor, GroundMesh groundMesh) {

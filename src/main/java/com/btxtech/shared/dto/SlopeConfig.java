@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.client.terrain.FractalFieldConfig;
+import com.btxtech.shared.Shape;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 
@@ -16,7 +18,10 @@ public class SlopeConfig {
     private String internalName;
     private List<SlopeShape> shape;
     private SlopeSkeleton slopeSkeleton;
-    private double fractalShift;
+    private double fractalMin;
+    private double fractalMax;
+    private double fractalClampMin;
+    private double fractalClampMax;
     private double fractalRoughness;
 
     public Integer getId() {
@@ -55,14 +60,6 @@ public class SlopeConfig {
         this.slopeSkeleton = slopeSkeleton;
     }
 
-    public double getFractalShift() {
-        return fractalShift;
-    }
-
-    public void setFractalShift(double fractalShift) {
-        this.fractalShift = fractalShift;
-    }
-
     public double getFractalRoughness() {
         return fractalRoughness;
     }
@@ -73,5 +70,59 @@ public class SlopeConfig {
 
     public SlopeNameId createSlopeNameId() {
         return new SlopeNameId(id, internalName);
+    }
+
+    public double getFractalMin() {
+        return fractalMin;
+    }
+
+    public void setFractalMin(double fractalMin) {
+        this.fractalMin = fractalMin;
+    }
+
+    public double getFractalMax() {
+        return fractalMax;
+    }
+
+    public void setFractalMax(double fractalMax) {
+        this.fractalMax = fractalMax;
+    }
+
+    public double getFractalClampMin() {
+        return fractalClampMin;
+    }
+
+    public void setFractalClampMin(double fractalClampMin) {
+        this.fractalClampMin = fractalClampMin;
+    }
+
+    public double getFractalClampMax() {
+        return fractalClampMax;
+    }
+
+    public void setFractalClampMax(double fractalClampMax) {
+        this.fractalClampMax = fractalClampMax;
+    }
+
+    public FractalFieldConfig toFractalFiledConfig() {
+        FractalFieldConfig fractalFieldConfig = new FractalFieldConfig();
+        fractalFieldConfig.setFractalMin(fractalMin);
+        fractalFieldConfig.setFractalMax(fractalMax);
+        fractalFieldConfig.setClampMin(fractalClampMin);
+        fractalFieldConfig.setClampMax(fractalClampMax);
+        fractalFieldConfig.setXCount(slopeSkeleton.getSegments());
+        Shape shape = new Shape(this.shape);
+        fractalFieldConfig.setYCount(shape.getShiftableCount());
+        fractalFieldConfig.setFractalRoughness(fractalRoughness);
+        return fractalFieldConfig;
+    }
+
+    public void fromFractalFiledConfig(FractalFieldConfig fractalFieldConfig) {
+        fractalMin = fractalFieldConfig.getFractalMin();
+        fractalMax = fractalFieldConfig.getFractalMax();
+        fractalClampMin = fractalFieldConfig.getClampMin();
+        fractalClampMax = fractalFieldConfig.getClampMax();
+        fractalRoughness = fractalFieldConfig.getFractalRoughness();
+        slopeSkeleton.setSegments(fractalFieldConfig.getXCount());
     }
 }

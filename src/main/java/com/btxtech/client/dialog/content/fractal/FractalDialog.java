@@ -2,7 +2,7 @@ package com.btxtech.client.dialog.content.fractal;
 
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.terrain.FractalField;
-import com.btxtech.client.terrain.FractalFiledConfig;
+import com.btxtech.client.terrain.FractalFieldConfig;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -25,10 +25,10 @@ import javax.inject.Inject;
  * 20.05.2016.
  */
 @Templated("FractalDialog.html#fractal-dialog")
-public class FractalDialog extends Composite implements ModalDialogContent<FractalFiledConfig> {
+public class FractalDialog extends Composite implements ModalDialogContent<FractalFieldConfig> {
     @Inject
     @AutoBound
-    private DataBinder<FractalFiledConfig> fractalConfigDataBinder;
+    private DataBinder<FractalFieldConfig> fractalConfigDataBinder;
     @Inject
     @Bound
     @DataField
@@ -63,40 +63,40 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
     private FractalDisplay fractalDisplay;
 
     @Override
-    public void init(FractalFiledConfig fractalFiledConfig) {
-        clampMin.setValue(fractalFiledConfig.getClampMin());
-        clampMax.setValue(fractalFiledConfig.getClampMax());
-        fractalConfigDataBinder.setModel(fractalFiledConfig);
+    public void init(FractalFieldConfig fractalFieldConfig) {
+        clampMin.setValue(fractalFieldConfig.getClampMin());
+        clampMax.setValue(fractalFieldConfig.getClampMax());
+        fractalConfigDataBinder.setModel(fractalFieldConfig);
         fractalDisplay = new FractalDisplay(canvasElement);
-        fractalDisplay.display(fractalFiledConfig);
+        fractalDisplay.display(fractalFieldConfig);
     }
 
     @EventHandler("generateButton")
     private void generateButtonClick(ClickEvent event) {
-        FractalFiledConfig fractalFiledConfig = fractalConfigDataBinder.getModel();
-        FractalField.createSaveFractalField(fractalFiledConfig);
-        fractalFiledConfig.clamp();
-        fractalDisplay.display(fractalFiledConfig);
+        FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
+        FractalField.createSaveFractalField(fractalFieldConfig);
+        fractalFieldConfig.clamp();
+        fractalDisplay.display(fractalFieldConfig);
     }
 
     @EventHandler("clampMin")
     public void clampMinChanged(ChangeEvent e) {
-        FractalFiledConfig fractalFiledConfig = fractalConfigDataBinder.getModel();
-        fractalFiledConfig.setClampMin(clampMin.getValue());
+        FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
+        fractalFieldConfig.setClampMin(clampMin.getValue());
         clamp();
     }
 
     @EventHandler("clampMax")
     public void clampMaxChanged(ChangeEvent e) {
-        FractalFiledConfig fractalFiledConfig = fractalConfigDataBinder.getModel();
-        fractalFiledConfig.setClampMax(clampMax.getValue());
+        FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
+        fractalFieldConfig.setClampMax(clampMax.getValue());
         clamp();
     }
 
     private void clamp() {
-        FractalFiledConfig fractalFiledConfig = fractalConfigDataBinder.getModel();
-        fractalFiledConfig.clamp();
-        fractalDisplay.display(fractalFiledConfig);
+        FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
+        fractalFieldConfig.clamp();
+        fractalDisplay.display(fractalFieldConfig);
     }
 
     @Override

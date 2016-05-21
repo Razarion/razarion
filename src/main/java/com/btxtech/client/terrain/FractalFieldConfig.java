@@ -11,8 +11,8 @@ import java.util.logging.Logger;
  * 20.05.2016.
  */
 @Bindable
-public class FractalFiledConfig {
-    // private Logger logger = Logger.getLogger(FractalFiledConfig.class.getName());
+public class FractalFieldConfig {
+    // private Logger logger = Logger.getLogger(FractalFieldConfig.class.getName());
     private int xCount;
     private int yCount;
     private double fractalMin;

@@ -3,8 +3,7 @@ package com.btxtech.client.sidebar;
 import com.btxtech.client.dialog.ModalDialog;
 import com.btxtech.client.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.terrain.FractalFiledConfig;
-import com.btxtech.client.terrain.GroundModeler;
+import com.btxtech.client.terrain.FractalFieldConfig;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
@@ -127,31 +126,28 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
         }).saveGroundConfig(groundConfigDataBinder.getModel());
     }
 
-    // TODO fractalHeightButtonClick + slope
-
     @EventHandler("fractalSplatting")
     private void fractalSplattingButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        final FractalFiledConfig fractalFiledConfig = groundConfig.toSplattingFractalFiledConfig();
-        modalDialog.show("Splatting Fractal Dialog", FractalDialog.class, fractalFiledConfig, new Runnable() {
+        final FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
+        modalDialog.show("Splatting Fractal Dialog", FractalDialog.class, fractalFieldConfig, new Runnable() {
             @Override
             public void run() {
                 GroundConfig groundConfig = groundConfigDataBinder.getModel();
-                groundConfig.fromSplattingFractalFiledConfig(fractalFiledConfig);
+                groundConfig.fromSplattingFractalFiledConfig(fractalFieldConfig);
             }
         });
     }
 
-
     @EventHandler("fractalHeight")
     private void fractalHeightButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        final FractalFiledConfig fractalFiledConfig = groundConfig.toHeightFractalFiledConfig();
-        modalDialog.show("Height Fractal Dialog", FractalDialog.class, fractalFiledConfig, new Runnable() {
+        final FractalFieldConfig fractalFieldConfig = groundConfig.toHeightFractalFiledConfig();
+        modalDialog.show("Height Fractal Dialog", FractalDialog.class, fractalFieldConfig, new Runnable() {
             @Override
             public void run() {
                 GroundConfig groundConfig = groundConfigDataBinder.getModel();
-                groundConfig.fromHeightFractalFiledConfig(fractalFiledConfig);
+                groundConfig.fromHeightFractalFiledConfig(fractalFieldConfig);
             }
         });
     }

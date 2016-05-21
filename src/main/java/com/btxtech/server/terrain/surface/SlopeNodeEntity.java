@@ -24,7 +24,6 @@ public class SlopeNodeEntity {
     @Embedded
     private Vertex position;
     private double slopeFactor;
-    private double normShift;
 
     public int getSegmentIndex() {
         return segmentIndex;
@@ -38,7 +37,6 @@ public class SlopeNodeEntity {
         SlopeNode slopeNode = new SlopeNode();
         slopeNode.setPosition(position);
         slopeNode.setSlopeFactor(slopeFactor);
-        slopeNode.setNormShift(normShift);
         return slopeNode;
     }
 
@@ -47,7 +45,6 @@ public class SlopeNodeEntity {
         this.rowIndex = rowIndex;
         position = slopeNode.getPosition();
         slopeFactor = slopeNode.getSlopeFactor();
-        normShift = slopeNode.getNormShift();
     }
 
     @Override
