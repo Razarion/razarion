@@ -33,7 +33,10 @@ public class GroundConfigEntity {
     private double splattingFractalRoughness;
     private int splattingXCount;
     private int splattingYCount;
-    private double heightFractalShift;
+    private double heightFractalMin;
+    private double heightFractalMax;
+    private double heightFractalClampMin;
+    private double heightFractalClampMax;
     private double heightFractalRoughness;
     private int heightXCount;
     private int heightYCount;
@@ -52,8 +55,10 @@ public class GroundConfigEntity {
         GroundConfig groundConfig = new GroundConfig();
         groundConfig.setGroundSkeleton(generateGroundSkeleton());
         groundConfig.setHeightFractalRoughness(heightFractalRoughness);
-        groundConfig.setHeightFractalShift(heightFractalShift);
-        groundConfig.setHeightFractalRoughness(heightFractalRoughness);
+        groundConfig.setHeightFractalMin(heightFractalMin);
+        groundConfig.setHeightFractalMax(heightFractalMax);
+        groundConfig.setHeightFractalClampMin(heightFractalClampMin);
+        groundConfig.setHeightFractalClampMax(heightFractalClampMax);
         groundConfig.setSplattingFractalRoughness(splattingFractalRoughness);
         groundConfig.setSplattingFractalMin(splattingFractalMin);
         groundConfig.setSplattingFractalMax(splattingFractalMax);
@@ -80,7 +85,10 @@ public class GroundConfigEntity {
                 splattings.add(new GroundSplattingEntity(x, y, groundConfig.getGroundSkeleton().getSplattings()[x][y]));
             }
         }
-        heightFractalShift = groundConfig.getHeightFractalShift();
+        heightFractalMin= groundConfig.getHeightFractalMin();
+        heightFractalMax= groundConfig.getHeightFractalMax();
+        heightFractalClampMin= groundConfig.getHeightFractalClampMin();
+        heightFractalClampMax= groundConfig.getHeightFractalClampMax();
         heightFractalRoughness = groundConfig.getHeightFractalRoughness();
         heightXCount = groundConfig.getGroundSkeleton().getHeightXCount();
         heightYCount = groundConfig.getGroundSkeleton().getHeightYCount();

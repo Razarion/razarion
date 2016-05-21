@@ -12,17 +12,6 @@ import com.btxtech.shared.dto.GroundSkeleton;
  * 03.05.2016.
  */
 public class GroundModeler {
-    public static void sculptSkeleton(GroundConfig groundConfig) {
-        FractalField heightField = FractalField.createSaveFractalField(groundConfig.getGroundSkeleton().getHeightXCount(), groundConfig.getGroundSkeleton().getHeightYCount(), groundConfig.getHeightFractalRoughness(), -groundConfig.getHeightFractalShift() / 2.0, groundConfig.getHeightFractalShift());
-        double[][] heights = new double[groundConfig.getGroundSkeleton().getHeightXCount()][groundConfig.getGroundSkeleton().getHeightYCount()];
-        for (int x = 0; x < groundConfig.getGroundSkeleton().getHeightXCount(); x++) {
-            for (int y = 0; y < groundConfig.getGroundSkeleton().getHeightYCount(); y++) {
-                heights[x][y] = heightField.getValue(x, y);
-            }
-        }
-        groundConfig.getGroundSkeleton().setHeights(heights);
-    }
-
     public static GroundMesh generateGroundMesh(GroundSkeleton groundSkeleton, int xCount, int yCount) {
         GroundMesh groundMesh = new GroundMesh();
         groundMesh.reset(TerrainSurface.MESH_NODE_EDGE_LENGTH, xCount, yCount, 0);

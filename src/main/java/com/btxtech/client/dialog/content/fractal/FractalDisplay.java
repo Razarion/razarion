@@ -23,6 +23,10 @@ public class FractalDisplay {
 
         ctx.clearRect(0, 0, canvasElement.getWidth(), canvasElement.getHeight());
 
+        if (fractalFiledConfig.getClampedFractalField() == null) {
+            return;
+        }
+
         ctx.save();
         int pixelCount = Math.max(fractalFiledConfig.getXCount(), fractalFiledConfig.getYCount());
         int dimension = Math.max(canvasElement.getWidth(), canvasElement.getHeight());

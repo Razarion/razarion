@@ -12,7 +12,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.IntegerBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -50,6 +49,9 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @DataField
     private Button fractalSplatting;
     @Inject
+    @DataField
+    private Button fractalHeight;
+    @Inject
     @Bound(property = "groundSkeleton.splattingDistance")
     @DataField
     private DoubleBox splattingDistance;
@@ -65,22 +67,6 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @Bound(property = "groundSkeleton.specularHardness")
     @DataField
     private DoubleBox specularHardness;
-    @Inject
-    @Bound(property = "groundSkeleton.heightXCount")
-    @DataField
-    private IntegerBox heightXCount;
-    @Inject
-    @Bound(property = "groundSkeleton.heightYCount")
-    @DataField
-    private IntegerBox heightYCount;
-    @Inject
-    @Bound
-    @DataField
-    private DoubleBox heightFractalShift;
-    @Inject
-    @Bound
-    @DataField
-    private DoubleBox heightFractalRoughness;
     @Inject
     @DataField
     private Button sculptButton;
@@ -121,7 +107,6 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        GroundModeler.sculptSkeleton(groundConfig);
         terrainSurface.setGroundSkeleton(groundConfig.getGroundSkeleton());
         terrainSurface.fillBuffers();
     }
@@ -142,33 +127,33 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
         }).saveGroundConfig(groundConfigDataBinder.getModel());
     }
 
+    // TODO fractalHeightButtonClick + slope
+
     @EventHandler("fractalSplatting")
     private void fractalSplattingButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        final FractalFiledConfig fractalFiledConfig = new FractalFiledConfig();
-        fractalFiledConfig.setFractalMin(groundConfig.getSplattingFractalMin());
-        fractalFiledConfig.setFractalMax(groundConfig.getSplattingFractalMax());
-        fractalFiledConfig.setClampMin(groundConfig.getSplattingFractalClampMin());
-        fractalFiledConfig.setClampMax(groundConfig.getSplattingFractalClampMax());
-        fractalFiledConfig.setXCount(groundConfig.getGroundSkeleton().getSplattingXCount());
-        fractalFiledConfig.setYCount(groundConfig.getGroundSkeleton().getSplattingYCount());
-        fractalFiledConfig.setFractalRoughness(groundConfig.getSplattingFractalRoughness());
-        fractalFiledConfig.setFractalField(groundConfig.getGroundSkeleton().getSplattings());
-        modalDialog.show("Fractal Dialog", FractalDialog.class, fractalFiledConfig, new Runnable() {
+        final FractalFiledConfig fractalFiledConfig = groundConfig.toSplattingFractalFiledConfig();
+        modalDialog.show("Splatting Fractal Dialog", FractalDialog.class, fractalFiledConfig, new Runnable() {
             @Override
             public void run() {
                 GroundConfig groundConfig = groundConfigDataBinder.getModel();
-                groundConfig.setSplattingFractalMin(fractalFiledConfig.getFractalMin());
-                groundConfig.setSplattingFractalMax(fractalFiledConfig.getFractalMax());
-                groundConfig.setSplattingFractalClampMin(fractalFiledConfig.getClampMin());
-                groundConfig.setSplattingFractalClampMax(fractalFiledConfig.getClampMax());
-                groundConfig.setSplattingFractalRoughness(fractalFiledConfig.getFractalRoughness());
-                groundConfig.getGroundSkeleton().setSplattingXCount(fractalFiledConfig.getXCount());
-                groundConfig.getGroundSkeleton().setSplattingYCount(fractalFiledConfig.getYCount());
-                groundConfig.getGroundSkeleton().setSplattings(fractalFiledConfig.getClampedFractalField());
+                groundConfig.fromSplattingFractalFiledConfig(fractalFiledConfig);
             }
         });
     }
 
+
+    @EventHandler("fractalHeight")
+    private void fractalHeightButtonClick(ClickEvent event) {
+        GroundConfig groundConfig = groundConfigDataBinder.getModel();
+        final FractalFiledConfig fractalFiledConfig = groundConfig.toHeightFractalFiledConfig();
+        modalDialog.show("Height Fractal Dialog", FractalDialog.class, fractalFiledConfig, new Runnable() {
+            @Override
+            public void run() {
+                GroundConfig groundConfig = groundConfigDataBinder.getModel();
+                groundConfig.fromHeightFractalFiledConfig(fractalFiledConfig);
+            }
+        });
+    }
 
 }
