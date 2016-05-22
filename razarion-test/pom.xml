@@ -5,14 +5,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-	<parent>
+    <parent>
         <groupId>com.btxtech</groupId>
         <artifactId>razarion</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>razarion-dev-tools</artifactId>
+    <artifactId>razarion-test</artifactId>
     <packaging>jar</packaging>
-    <name>Razarion Development Tools</name>
-	
+    <name>Razarion utilities for testing</name>
+
 </project>

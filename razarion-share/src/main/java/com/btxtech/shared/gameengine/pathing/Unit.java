@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import com.btxtech.client.units.ModelMatrices;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.primitives.Matrix4;
 

@@ -4,7 +4,6 @@ import com.btxtech.client.system.boot.task.AbstractStartupTask;
 import com.btxtech.client.system.boot.task.DeferredStartup;
 import com.btxtech.game.jsre.client.GwtCommon;
 import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.StartupTaskInfo;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;

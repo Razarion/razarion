@@ -7,8 +7,8 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.units.ItemService;
-import com.btxtech.client.units.ModelMatrices;
 import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

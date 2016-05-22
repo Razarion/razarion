@@ -1,7 +1,5 @@
 package com.btxtech.client.terrain;
 
-import com.btxtech.client.renderer.model.GroundMesh;
-import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.client.terrain.slope.Slope;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Line;

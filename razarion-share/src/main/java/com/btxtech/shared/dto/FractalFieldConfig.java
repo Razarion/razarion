@@ -1,4 +1,4 @@
-package com.btxtech.client.terrain;
+package com.btxtech.shared.dto;
 
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.MathHelper2;

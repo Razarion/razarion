@@ -1,7 +1,6 @@
 package com.btxtech.shared.primitives;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Line;
 
 /**
  * Created by Beat

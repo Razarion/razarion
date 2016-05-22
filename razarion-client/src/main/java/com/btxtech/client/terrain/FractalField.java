@@ -2,6 +2,7 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.dto.FractalFieldConfig;
 
 /**
  * Created by Beat

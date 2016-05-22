@@ -1,10 +1,10 @@
 package com.btxtech.client.terrain.slope;
 
-import com.btxtech.client.renderer.model.GroundMesh;
-import com.btxtech.client.terrain.FractalFieldConfig;
+import com.btxtech.client.terrain.GroundMesh;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.Shape;
+import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeleton;

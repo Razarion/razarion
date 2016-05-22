@@ -1,6 +1,5 @@
 package com.btxtech.shared.primitives;
 
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.shared.VertexList;
 
 /**
@@ -14,7 +13,7 @@ public class Plane {
         this.size = size;
     }
 
-    public VertexList provideVertexList(ImageDescriptor imageDescriptor) {
+    public VertexList provideVertexList(/* ImageDescriptor imageDescriptor */) {
         double halfSize = size / 2.0;
         // Vertical
 //        Vertex vertexA = new Vertex(0, -halfSize, -halfSize);
@@ -39,7 +38,7 @@ public class Plane {
         VertexList vertexList = new VertexList();
         vertexList.add(triangle1);
         vertexList.add(triangle2);
-        vertexList.normalize(imageDescriptor);
+        // vertexList.normalize(imageDescriptor);
 
         return vertexList;
     }

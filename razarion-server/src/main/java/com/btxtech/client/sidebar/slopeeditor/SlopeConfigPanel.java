@@ -2,10 +2,11 @@ package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.client.dialog.ModalDialog;
 import com.btxtech.client.dialog.content.fractal.FractalDialog;
-import com.btxtech.client.terrain.FractalFieldConfig;
+import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.SlopeModeler;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -33,6 +34,8 @@ import javax.inject.Inject;
 @Templated("SlopeConfigPanel.html#slope")
 public class SlopeConfigPanel extends Composite implements SelectedCornerListener {
     // private Logger logger = Logger.getLogger(SlopePanel.class.getName());
+    @Inject
+    private RenderService renderService;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -202,6 +205,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
         }
         SlopeModeler.sculpt(slopeConfig, fractalFieldConfig);
         terrainSurface.setSlopeSkeleton(slopeConfig.getSlopeSkeleton());
-        terrainSurface.fillBuffers();
+        terrainSurface.init();
+        renderService.fillBuffers();
     }
 }

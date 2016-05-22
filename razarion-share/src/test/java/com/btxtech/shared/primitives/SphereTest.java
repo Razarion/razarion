@@ -1,6 +1,5 @@
 package com.btxtech.shared.primitives;
 
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.shared.VertexList;
 import org.junit.Assert;
 import org.junit.Test;

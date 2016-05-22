@@ -1,6 +1,6 @@
 package com.btxtech.shared;
 
-import com.btxtech.client.ImageDescriptor;
+// import com.btxtech.client.ImageDescriptor;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Triangle;
@@ -139,13 +139,13 @@ public class VertexList {
         return doubleList;
     }
 
-    public void normalize(ImageDescriptor imageDescriptor) {
-        List<TextureCoordinate> normalized = new ArrayList<>();
-        for (TextureCoordinate textureCoordinate : textureCoordinates) {
-            normalized.add(textureCoordinate.divide(imageDescriptor.getQuadraticEdge()));
-        }
-        textureCoordinates = normalized;
-    }
+//    public void normalize(ImageDescriptor imageDescriptor) {
+//        List<TextureCoordinate> normalized = new ArrayList<>();
+//        for (TextureCoordinate textureCoordinate : textureCoordinates) {
+//            normalized.add(textureCoordinate.divide(imageDescriptor.getQuadraticEdge()));
+//        }
+//        textureCoordinates = normalized;
+//    }
 
     public void storeVertices() {
         storedVertices = new ArrayList<>(vertices);

@@ -2,7 +2,7 @@ package com.btxtech.client.dialog.content.fractal;
 
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.terrain.FractalField;
-import com.btxtech.client.terrain.FractalFieldConfig;
+import com.btxtech.shared.dto.FractalFieldConfig;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;

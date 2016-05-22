@@ -1,4 +1,4 @@
-package com.btxtech.client.renderer.model;
+package com.btxtech.client.terrain;
 
 import com.btxtech.shared.primitives.Vertex;
 

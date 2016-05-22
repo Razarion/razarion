@@ -1,7 +1,6 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.client.system.boot.task.AbstractStartupTask;
-import com.btxtech.shared.StartupTaskInfo;
 
 import java.util.List;
 

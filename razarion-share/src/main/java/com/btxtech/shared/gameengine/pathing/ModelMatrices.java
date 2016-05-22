@@ -1,4 +1,4 @@
-package com.btxtech.client.units;
+package com.btxtech.shared.gameengine.pathing;
 
 import com.btxtech.shared.primitives.Matrix4;
 

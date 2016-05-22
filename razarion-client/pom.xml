@@ -6,6 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
 	<parent>
+        <groupId>com.btxtech</groupId>
         <artifactId>razarion</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -13,5 +14,15 @@
     <artifactId>razarion-client</artifactId>
     <packaging>jar</packaging>
     <name>Razarion Client Code</name>
-	
+
+    <dependencies>
+        <!-- GWT -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-share</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
 </project>

@@ -14,7 +14,7 @@
 package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.system.boot.StartupTaskEnum;
-import com.btxtech.shared.StartupTaskInfo;
+import com.btxtech.client.system.boot.StartupTaskInfo;
 
 /**
  * User: beat

@@ -1,6 +1,5 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.client.terrain.FractalFieldConfig;
 import com.btxtech.shared.Shape;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;

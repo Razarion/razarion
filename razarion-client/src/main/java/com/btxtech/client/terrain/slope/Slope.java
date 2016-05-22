@@ -1,7 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.renderer.model.GroundMesh;
+import com.btxtech.client.terrain.GroundMesh;
 import com.btxtech.client.terrain.GroundSlopeConnector;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.game.jsre.client.common.Index;

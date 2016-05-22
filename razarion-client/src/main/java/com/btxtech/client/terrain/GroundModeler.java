@@ -1,10 +1,7 @@
 package com.btxtech.client.terrain;
 
 
-import com.btxtech.client.renderer.model.GroundMesh;
-import com.btxtech.client.renderer.model.VertexData;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeleton;
 
 /**

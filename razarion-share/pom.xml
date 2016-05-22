@@ -6,6 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
+        <groupId>com.btxtech</groupId>
         <artifactId>razarion</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -13,6 +14,32 @@
     <artifactId>razarion-share</artifactId>
     <packaging>jar</packaging>
     <name>Razarion shared Code</name>
-	
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-common</artifactId>
+            <version>${errai.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-data-binding</artifactId>
+            <version>${errai.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-bus</artifactId>
+            <version>${errai.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
 </project>

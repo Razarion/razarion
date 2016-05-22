@@ -3,7 +3,7 @@ package com.btxtech.client.sidebar;
 import com.btxtech.client.dialog.ModalDialog;
 import com.btxtech.client.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.terrain.FractalFieldConfig;
+import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
@@ -107,7 +107,8 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     private void sculptButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         terrainSurface.setGroundSkeleton(groundConfig.getGroundSkeleton());
-        terrainSurface.fillBuffers();
+        terrainSurface.init();
+        renderService.fillBuffers();
     }
 
     @EventHandler("saveButton")
