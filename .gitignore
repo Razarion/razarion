@@ -2,6 +2,11 @@
 .gwt/
 .idea/
 razarion.iml
+razarion-client/razarion-client.iml
+razarion-dev-tools/razarion-dev-tools.iml
+razarion-server/razarion-server.iml
+razarion-share/razarion-share.iml
+razarion-test/razarion-test.iml
 target/
 /src/main/gwt-unitCache
 src/main/webapp/WEB-INF/classes/
