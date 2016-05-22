@@ -5,13 +5,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.btxtech</groupId>
-    <artifactId>razarion</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <name>Razarion Parent</name>
+	<parent>
+        <artifactId>razarion</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-	<modules>
-        <module>razarion-server</module>
-    </modules>
+    <artifactId>razarion-client</artifactId>
+    <packaging>jar</packaging>
+    <name>Razarion Client Code</name>
+	
 </project>
