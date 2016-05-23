@@ -26,9 +26,25 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <!-- use for GWT compilation only -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-client</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <!-- use for GWT compilation only -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-share</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+            <classifier>sources</classifier>
         </dependency>
         <!-- GWT -->
         <dependency>
@@ -66,10 +82,6 @@
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-cdi-jboss</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-javaee-all</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.errai</groupId>
@@ -121,19 +133,6 @@
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>1.0.2.Final</version>
                 <extensions>false</extensions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.version}</version>
-                <configuration>
-                    <logLevel>INFO</logLevel>
-                    <noServer>true</noServer>
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M</extraJvmArgs>
-                    <runTarget>webgl.html</runTarget>
-                    <hostedWebapp>src/main/webapp</hostedWebapp>
-                    <strict>true</strict>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>

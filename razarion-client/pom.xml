@@ -24,6 +24,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!-- use for GWT compilation only -->
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-share</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-test</artifactId>
             <version>${project.version}</version>

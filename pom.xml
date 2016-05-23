@@ -38,6 +38,11 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Errai -->
+        <dependency>
+            <groupId>org.jboss.errai</groupId>
+            <artifactId>errai-javaee-all</artifactId>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -45,6 +50,24 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>${gwt.version}</version>
+                <configuration>
+                    <logLevel>INFO</logLevel>
+                    <noServer>true</noServer>
+                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M</extraJvmArgs>
+                    <runTarget>webgl.html</runTarget>
+                    <hostedWebapp>src/main/webapp</hostedWebapp>
+                    <strict>true</strict>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <modules>
         <module>razarion-client</module>
