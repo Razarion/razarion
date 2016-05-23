@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.gameengine.pathing.PathingMonitorController">
+    <center>
+        <FlowPane fx:id="centerPanel" columnHalignment="CENTER" BorderPane.alignment="CENTER">
+            <children>
+                <Canvas fx:id="canvas" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMove" onMouseReleased="#onMouseReleased" onMousePressed="#onMousePressed" BorderPane.alignment="CENTER" />
+            </children>
+        </FlowPane>
+    </center>
+   <top>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="Test">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#onCreateTestCase" text="Create Test Case" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+              <ToolBar prefHeight="40.0" prefWidth="200.0">
+                  <items>
+                      <HBox alignment="CENTER" spacing="5.0">
+                          <children>
+                              <Button mnemonicParsing="false" onAction="#onRun" text="Run" />
+                              <Button mnemonicParsing="false" onAction="#onTurbo" text="Turbo" />
+                              <Button mnemonicParsing="false" onAction="#onHold" text="Hold" />
+                        <Button mnemonicParsing="false" onAction="#onStep" text="S+" />
+                        <Button mnemonicParsing="false" onAction="#onStepBackward" text="S-" />
+                              <TextField fx:id="stepField" editable="false" prefColumnCount="5" />
+                              <Button mnemonicParsing="false" onAction="#onPrevScenario" text="Prev" />
+                              <Button mnemonicParsing="false" onAction="#onRestartScenario" text="Restart" />
+                              <Button mnemonicParsing="false" onAction="#onNextScenario" text="Next" />
+                              <TextField fx:id="scenarioField" editable="false" prefColumnCount="5" />
+                          </children>
+                      </HBox>
+                  <TextField fx:id="mouseField" alignment="TOP_RIGHT" editable="false" prefColumnCount="8" />
+                  <Button mnemonicParsing="false" onAction="#onZoomIn" text="Z+" />
+                  <Button mnemonicParsing="false" onAction="#onZoomOut" text="Z-" />
+                  </items>
+              </ToolBar>
+         </children>
+      </VBox>
+   </top>
+   <left>
+      <Pane fx:id="leftSidePanel" prefWidth="150" BorderPane.alignment="CENTER" />
+   </left>
+</BorderPane>
