@@ -1,11 +1,11 @@
-package com.btxtech.renderer.emulation.razarion;
+package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.DrawScenes;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.renderer.emulation.webgl.VertexShader;
-import com.btxtech.renderer.emulation.webgl.WebGlEmulator;
+import com.btxtech.webglemulator.webgl.VertexShader;
+import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.dto.TerrainSlopePosition;

@@ -1,27 +1,19 @@
-package com.btxtech.renderer;
+package com.btxtech.webglemulator;
 
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.renderer.emulation.razarion.RazarionEmulator;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.shared.primitives.Vertex4;
+import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Beat

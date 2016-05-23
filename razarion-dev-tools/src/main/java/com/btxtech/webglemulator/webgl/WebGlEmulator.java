@@ -1,10 +1,11 @@
-package com.btxtech.renderer.emulation.webgl;
+package com.btxtech.webglemulator.webgl;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.shared.primitives.Vertex4;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import javax.inject.Singleton;
@@ -75,14 +76,14 @@ public class WebGlEmulator {
 
             drawTriangle(gc, vertexA, vertexB, vertexC);
         }
-        System.out.println("--------------------------------------------");
-        System.out.println("minDepth: " + minDepth);
-        System.out.println("maxDepth: " + maxDepth);
-        if (maxDepth != null && minDepth != null) {
-            System.out.println("delta: " + (maxDepth - minDepth));
-            System.out.println("factor: " + 2.0 / (maxDepth - minDepth));
-        }
-        System.out.println("--------------------------------------------");
+//        System.out.println("--------------------------------------------");
+//        System.out.println("minDepth: " + minDepth);
+//        System.out.println("maxDepth: " + maxDepth);
+//        if (maxDepth != null && minDepth != null) {
+//            System.out.println("delta: " + (maxDepth - minDepth));
+//            System.out.println("factor: " + 2.0 / (maxDepth - minDepth));
+//        }
+//        System.out.println("--------------------------------------------");
 
         gc.restore();
     }
@@ -133,5 +134,17 @@ public class WebGlEmulator {
 
     public double getAspectRatio() {
         return canvas.getWidth() / canvas.getHeight();
+    }
+
+    public DecimalPosition toClipCoordinates(DecimalPosition canvasPosition) {
+        double canvasWidth = canvas.getWidth();
+        double canvasHeight = canvas.getHeight();
+
+        double xScale = canvasWidth / 2.0;
+        double xOffset = canvasWidth / 2.0;
+        double yScale = -canvasHeight / 2.0;
+        double yOffset = canvasHeight / 2.0;
+
+        return new DecimalPosition((canvasPosition.getX() - xOffset) / xScale, (canvasPosition.getY() - yOffset) / yScale);
     }
 }

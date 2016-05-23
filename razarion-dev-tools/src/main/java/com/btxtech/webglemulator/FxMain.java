@@ -1,4 +1,4 @@
-package com.btxtech.renderer;
+package com.btxtech.webglemulator;
 
 import javafx.application.Application;
 import javafx.stage.Stage;

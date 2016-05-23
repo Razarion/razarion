@@ -1,4 +1,4 @@
-package com.btxtech.renderer.emulation.webgl;
+package com.btxtech.webglemulator.webgl;
 
 import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.shared.primitives.Vertex4;
