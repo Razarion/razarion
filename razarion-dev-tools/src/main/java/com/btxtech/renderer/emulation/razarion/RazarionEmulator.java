@@ -38,7 +38,6 @@ public class RazarionEmulator {
 
     public void process() {
         setupTerrain();
-        projectionTransformation.setAspectRatio(webGlEmulator.getAspectRatio());
         webGlEmulator.setVertexShader(new VertexShader() {
             @Override
             public Vertex4 process(Vertex vertex) {

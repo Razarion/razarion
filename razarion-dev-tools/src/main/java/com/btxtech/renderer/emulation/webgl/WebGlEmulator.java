@@ -78,8 +78,10 @@ public class WebGlEmulator {
         System.out.println("--------------------------------------------");
         System.out.println("minDepth: " + minDepth);
         System.out.println("maxDepth: " + maxDepth);
-        System.out.println("delta: " + (maxDepth - minDepth));
-        System.out.println("factor: " + 2.0 / (maxDepth - minDepth));
+        if (maxDepth != null && minDepth != null) {
+            System.out.println("delta: " + (maxDepth - minDepth));
+            System.out.println("factor: " + 2.0 / (maxDepth - minDepth));
+        }
         System.out.println("--------------------------------------------");
 
         gc.restore();
@@ -101,6 +103,7 @@ public class WebGlEmulator {
         gc.strokeLine(ndcA.getX(), ndcA.getY(), ndcB.getX(), ndcB.getY());
         gc.strokeLine(ndcB.getX(), ndcB.getY(), ndcC.getX(), ndcC.getY());
         gc.strokeLine(ndcC.getX(), ndcC.getY(), ndcA.getX(), ndcA.getY());
+        //gc.strokeText("X", ndcA.getX(), ndcA.getY(), 0.001);
     }
 
     private DecimalPosition toNdcVertex(Vertex4 vertex4) {
