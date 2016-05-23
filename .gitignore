@@ -10,6 +10,7 @@ razarion-dev-tools/target/
 razarion-server/razarion-server.iml
 razarion-server/target/
 razarion-server/src/main/webapp/WEB-INF/classes/
+razarion-server/src/main/webapp/razarionServer
 razarion-server/src/main/webapp/WEB-INF/lib
 razarion-server/src/main/webapp/webgl
 razarion-server/src/main/gwt-unitCache
