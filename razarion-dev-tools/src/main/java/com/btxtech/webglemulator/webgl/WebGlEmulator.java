@@ -5,7 +5,6 @@ import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.shared.primitives.Vertex4;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import javax.inject.Singleton;
@@ -66,8 +65,6 @@ public class WebGlEmulator {
         gc.scale(xScale, yScale);
         gc.setLineWidth(1.0 / Math.min(Math.abs(xScale), Math.abs(yScale)));
 
-        // TODO projectionTransformation.setAspectRatio(canvas.getWidth() / canvas.getHeight());
-
         for (int i = 0; i < doubles.size() / 9; i++) {
             int base = i * 9;
             Vertex vertexA = new Vertex(doubles.get(base), doubles.get(base + 1), doubles.get(base + 2));
@@ -97,6 +94,10 @@ public class WebGlEmulator {
         DecimalPosition ndcB = toNdcVertex(clipB);
         DecimalPosition ndcC = toNdcVertex(clipC);
 
+        if (ndcA == null || ndcB == null || ndcC == null) {
+            return;
+        }
+
         gc.setStroke(Color.BLUE);
         // Polygon and translate does not work in JavaFX 2.2
         // http://stackoverflow.com/questions/13236523/unexpected-behaviour-of-javafx-graphicscontext-translate
@@ -108,18 +109,31 @@ public class WebGlEmulator {
     }
 
     private DecimalPosition toNdcVertex(Vertex4 vertex4) {
-        DecimalPosition normalizedDeviceCoordinates = new DecimalPosition(vertex4.getX() / vertex4.getW(), vertex4.getY() / vertex4.getW());
+        double ndcX = vertex4.getX() / vertex4.getW();
+        double ndcY = vertex4.getY() / vertex4.getW();
+        double ndcZ = vertex4.getZ() / vertex4.getW();
 
-        double depth = vertex4.getZ() / vertex4.getW();
+        DecimalPosition normalizedDeviceCoordinates = new DecimalPosition(ndcX, ndcY);
+
         if (minDepth == null) {
-            minDepth = depth;
+            minDepth = ndcZ;
         } else {
-            minDepth = Math.min(minDepth, depth);
+            minDepth = Math.min(minDepth, ndcZ);
         }
         if (maxDepth == null) {
-            maxDepth = depth;
+            maxDepth = ndcZ;
         } else {
-            maxDepth = Math.max(maxDepth, depth);
+            maxDepth = Math.max(maxDepth, ndcZ);
+        }
+
+        if (ndcX > 1 || ndcX < -1) {
+            return null;
+        }
+        if (ndcY > 1 || ndcY < -1) {
+            return null;
+        }
+        if (ndcZ > 1 || ndcZ < -1) {
+            return null;
         }
 
         return normalizedDeviceCoordinates;
