@@ -14,9 +14,9 @@
     <properties>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
-            <errai.version>3.2.1.Final</errai.version>
-            <gwt.version>2.7.0</gwt.version>
-            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <errai.version>3.2.1.Final</errai.version>
+        <gwt.version>2.7.0</gwt.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencyManagement>
