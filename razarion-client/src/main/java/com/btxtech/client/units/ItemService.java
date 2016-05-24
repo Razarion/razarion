@@ -87,7 +87,7 @@ public class ItemService {
             Matrix4 translation = Matrix4.createTranslation(unit.getPosition().getX(), unit.getPosition().getY(), height).multiply(rotation);
             itemMatrices.add(new ModelMatrices(translation, rotation));
         }
-        unitIdModelMatrices.put(2, itemMatrices);
+        unitIdModelMatrices.put(1, itemMatrices);
     }
 
     public Collection<Integer> getItemTypeIds() {
@@ -127,8 +127,7 @@ public class ItemService {
         int syncItemId = 1;
         pathing.removeAllUnits();
 
-        pathing.createUnit(syncItemId++, true, 10, new DecimalPosition(893, 32), new DecimalPosition(1073, 485), null);
-
+        pathing.createUnit(syncItemId++, true, 10, new DecimalPosition(893, 32), new DecimalPosition(2000, 32), null);
 //        DecimalPosition destination = new DecimalPosition(2700, 1700);
 //        pathing.createUnit(syncItemId++, true, 10, new DecimalPosition(200, 200), destination, null);
 //        for (int x = -2; x < 3; x++) {
