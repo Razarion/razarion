@@ -4,6 +4,7 @@ import com.btxtech.InstanceStringGenerator;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.units.ItemService;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
@@ -48,6 +49,8 @@ public class WebGlEmulatorController implements Initializable {
     private Camera camera;
     @Inject
     private TerrainSurface terrainSurface;
+    @Inject
+    private ItemService itemService;
     public Canvas canvas;
     private DecimalPosition lastCanvasPosition;
 
@@ -73,6 +76,16 @@ public class WebGlEmulatorController implements Initializable {
                 webGlEmulator.drawArrays();
             }
         });
+
+        ////////
+//        camera.setTranslateX(970);
+//        camera.setTranslateY(-80);
+//        camera.setTranslateZ(0);
+//        camera.setRotateX(Math.toRadians(90));
+//        camera.setRotateZ(Math.toRadians(0));
+//        projectionTransformation.setFovY(Math.toRadians(110));
+        ////////
+
         fovSlider.valueProperty().set(Math.toDegrees(projectionTransformation.getFovY()));
         fovSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -108,11 +121,7 @@ public class WebGlEmulatorController implements Initializable {
         MouseEvent mouseEvent = (MouseEvent) event;
         DecimalPosition canvasPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
 
-        // DecimalPosition terrainPosition = getTerrainPosition(event).toXY();
-        // System.out.println("terrainPosition: " + terrainPosition);
-
         if (lastCanvasPosition != null) {
-            DecimalPosition deltaCanvas = canvasPosition.sub(lastCanvasPosition);
             DecimalPosition terrainOld = getTerrainPosition(lastCanvasPosition).toXY();
             DecimalPosition terrainNew = getTerrainPosition(canvasPosition).toXY();
             DecimalPosition deltaTerrain = terrainNew.sub(terrainOld);
@@ -130,13 +139,20 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onMousePressed(Event event) {
+        MouseEvent mouseEvent = (MouseEvent) event;
+        DecimalPosition canvasPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
+        DecimalPosition clipXY = webGlEmulator.toClipCoordinates(canvasPosition);
+        Ray3d pickRay = projectionTransformation.createPickRay(clipXY);
+        Ray3d worldPickRay = camera.toWorld(pickRay);
+        Vertex groundMeshPosition = terrainSurface.calculatePositionGroundMesh(worldPickRay);
+        System.out.println("Ground Mesh position: " + groundMeshPosition);
     }
 
     private Vertex getTerrainPosition(DecimalPosition canvasPosition) {
         DecimalPosition clipXY = webGlEmulator.toClipCoordinates(canvasPosition);
         Ray3d pickRay = projectionTransformation.createPickRay(clipXY);
         Ray3d worldPickRay = camera.toWorld(pickRay);
-        return terrainSurface.calculatePositionOnTerrain(worldPickRay);
+        return terrainSurface.calculatePositionOnZeroLevel(worldPickRay);
     }
 
     public void onMouseReleased(Event event) {
@@ -175,6 +191,16 @@ public class WebGlEmulatorController implements Initializable {
 
     public void zTranslationFieldChanged(ActionEvent actionEvent) {
         camera.setTranslateZ(Double.parseDouble(zTranslationField.getText()));
+        webGlEmulator.drawArrays();
+    }
+
+    public void onTickButtonClicked(ActionEvent actionEvent) {
+        itemService.tick();
+        webGlEmulator.drawArrays();
+    }
+
+    public void onRestartButtonClicked(ActionEvent actionEvent) {
+        itemService.setupItems();
         webGlEmulator.drawArrays();
     }
 }

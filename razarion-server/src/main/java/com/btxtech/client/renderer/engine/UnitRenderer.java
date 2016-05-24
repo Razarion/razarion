@@ -87,7 +87,7 @@ public class UnitRenderer extends AbstractRenderer {
         texture.activate();
 
         for (ModelMatrices model : modelMatrices) {
-            uniformMatrix4fv("uMMatrix", model.getVertex());
+            uniformMatrix4fv("uMMatrix", model.getModel());
             uniformMatrix4fv("uNMMatrix", model.getNorm());
 
             getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);

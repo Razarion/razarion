@@ -31,6 +31,8 @@
                     </children>
                 </HBox>
             <Button mnemonicParsing="false" onAction="#onTestCaseButtonClicked" text="Test Case" />
+            <Button mnemonicParsing="false" onAction="#onTickButtonClicked" text="Tick" />
+            <Button mnemonicParsing="false" onAction="#onRestartButtonClicked" text="Restart" />
             </items>
         </ToolBar>
     </top>
@@ -90,7 +92,7 @@
                                         <Label text="Z Translate" GridPane.rowIndex="3" />
                                         <Label text="X Rotation" GridPane.rowIndex="4" />
                                         <Label text="Z Rotation" GridPane.rowIndex="5" />
-                                        <TextField fx:id="xTranslationField" onAction="#xTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <TextField onAction="#xTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="xTranslationField" />
                                         <TextField fx:id="yTranslationField" onAction="#yTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                         <TextField fx:id="zTranslationField" onAction="#zTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                         <Slider fx:id="cameraXRotationSlider" majorTickUnit="45.0" max="90.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />

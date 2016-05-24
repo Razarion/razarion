@@ -97,7 +97,7 @@ public class ViewFieldMover {
                         webglPosition = webglPosition.sub(1, 1);
                         Ray3d pickRay = projectionTransformation.createPickRay(webglPosition);
                         Ray3d worldPickRay = camera.toWorld(pickRay);
-                        Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(worldPickRay);
+                        Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(worldPickRay);
                         logger.severe("Terrain Position: " + terrainPosition);
                     }
                     if (eventIsAltPressed(event.getNativeEvent())) {

@@ -1,10 +1,8 @@
 package com.btxtech.client.system.boot.task;
 
+import com.btxtech.client.ItemServiceRunner;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.terrain.TerrainObjectService;
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.units.ItemService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -14,17 +12,17 @@ import javax.inject.Inject;
  * 07.02.2016.
  */
 @Dependent
-public class StartRenderEngine extends AbstractStartupTask{
+public class StartRenderEngine extends AbstractStartupTask {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
     private RenderService renderService;
     @Inject
-    private ItemService itemService;
+    private ItemServiceRunner itemServiceRunner;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        itemService.start();
+        itemServiceRunner.start();
         gameCanvas.init();
         renderService.setupRenderers();
         renderService.fillBuffers();

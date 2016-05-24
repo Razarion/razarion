@@ -19,6 +19,8 @@ public class TestProjectionTransformation {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
         TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
         TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
@@ -39,6 +41,8 @@ public class TestProjectionTransformation {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
         TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
         TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
@@ -59,6 +63,8 @@ public class TestProjectionTransformation {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
         TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
         TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
@@ -79,6 +85,8 @@ public class TestProjectionTransformation {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
         TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
         TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
@@ -99,6 +107,8 @@ public class TestProjectionTransformation {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
         TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
         TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 

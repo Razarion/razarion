@@ -7,16 +7,16 @@ import com.btxtech.shared.primitives.Matrix4;
  * 15.05.2016.
  */
 public class ModelMatrices {
-    private Matrix4 vertex;
+    private Matrix4 model;
     private Matrix4 norm;
 
-    public ModelMatrices(Matrix4 vertex, Matrix4 norm) {
-        this.vertex = vertex;
+    public ModelMatrices(Matrix4 model, Matrix4 norm) {
+        this.model = model;
         this.norm = norm;
     }
 
-    public Matrix4 getVertex() {
-        return vertex;
+    public Matrix4 getModel() {
+        return model;
     }
 
     public Matrix4 getNorm() {

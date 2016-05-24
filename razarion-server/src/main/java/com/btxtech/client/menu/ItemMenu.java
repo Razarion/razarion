@@ -1,5 +1,6 @@
 package com.btxtech.client.menu;
 
+import com.btxtech.client.ItemServiceRunner;
 import com.btxtech.client.units.ItemService;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,6 +24,8 @@ public class ItemMenu extends Composite {
     @Inject
     private ItemService itemService;
     @Inject
+    private ItemServiceRunner itemServiceRunner;
+    @Inject
     @DataField
     private DoubleBox specularIntensity;
     @Inject
@@ -39,7 +42,7 @@ public class ItemMenu extends Composite {
     public void init() {
         specularIntensity.setValue(itemService.getSpecularIntensity());
         specularHardness.setValue(itemService.getSpecularHardness());
-        running.setValue(itemService.isRunning());
+        running.setValue(itemServiceRunner.isRunning());
     }
 
     @EventHandler("specularIntensity")
@@ -54,7 +57,7 @@ public class ItemMenu extends Composite {
 
     @EventHandler("running")
     public void movingChanged(ChangeEvent e) {
-        itemService.setRunning(running.getValue());
+        itemServiceRunner.setRunning(running.getValue());
     }
 
     @EventHandler("restart")

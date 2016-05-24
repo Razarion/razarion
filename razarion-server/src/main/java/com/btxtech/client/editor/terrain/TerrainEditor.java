@@ -65,7 +65,7 @@ public class TerrainEditor {
     public void onTerrainMouseMoved(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(ray3d);
+            Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(ray3d);
             // Cursor
             terrainEditorCursorPositionEvent.fire(new TerrainEditorCursorPositionEvent(terrainPosition));
             // Handle inside polygon
@@ -87,7 +87,7 @@ public class TerrainEditor {
     public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(ray3d);
+            Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(ray3d);
             Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().getPosition());
             if(hasSelection()) {
                 ModifiedTerrainSlopePosition slopePosition = modifiedTerrainSlopePositions.get(selectedSlopeId);

@@ -5,7 +5,7 @@ import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.shared.primitives.Vertex4;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -17,32 +17,23 @@ import java.util.List;
  */
 @Singleton
 public class WebGlEmulator {
-    private List<Double> doubles = new ArrayList<>();
+    private List<WebGlProgramEmulator> webGlProgramEmulators = new ArrayList<>();
     private Double minDepth;
     private Double maxDepth;
     private Canvas canvas;
-    private VertexShader vertexShader;
 
     public void init(Canvas canvas) {
         this.canvas = canvas;
     }
 
-    public void setVertexShader(VertexShader vertexShader) {
-        this.vertexShader = vertexShader;
-    }
-
-    public void fillBuffer(List<Double> doubles) {
-        this.doubles.addAll(doubles);
+    public void fillBufferAndShader(VertexShader vertexShader, List<Double> doubles, Paint paint) {
+        webGlProgramEmulators.add(new WebGlProgramEmulator(vertexShader, doubles, paint));
     }
 
     public void drawArrays() {
-        if (doubles == null || doubles.isEmpty()) {
+        if (webGlProgramEmulators.isEmpty()) {
             System.out.println("Nothing to draw");
         }
-        if (doubles.size() % 9 != 0) {
-            throw new IllegalArgumentException("List must be a multiple of 9 because there are 3 corners with x,y,z in a triangle: " + doubles.size());
-        }
-
         double canvasWidth = canvas.getWidth();
         double canvasHeight = canvas.getHeight();
 
@@ -65,13 +56,20 @@ public class WebGlEmulator {
         gc.scale(xScale, yScale);
         gc.setLineWidth(1.0 / Math.min(Math.abs(xScale), Math.abs(yScale)));
 
-        for (int i = 0; i < doubles.size() / 9; i++) {
-            int base = i * 9;
-            Vertex vertexA = new Vertex(doubles.get(base), doubles.get(base + 1), doubles.get(base + 2));
-            Vertex vertexB = new Vertex(doubles.get(base + 3), doubles.get(base + 4), doubles.get(base + 5));
-            Vertex vertexC = new Vertex(doubles.get(base + 6), doubles.get(base + 7), doubles.get(base + 8));
+        for (WebGlProgramEmulator webGlProgramEmulator : webGlProgramEmulators) {
+            drawArrays(gc, webGlProgramEmulator);
+        }
+        gc.restore();
+    }
 
-            drawTriangle(gc, vertexA, vertexB, vertexC);
+    private void drawArrays(GraphicsContext gc, WebGlProgramEmulator webGlProgramEmulator) {
+        for (int i = 0; i < webGlProgramEmulator.bufferSize() / 9; i++) {
+            int base = i * 9;
+            Vertex vertexA = new Vertex(webGlProgramEmulator.getBufferElement(base), webGlProgramEmulator.getBufferElement(base + 1), webGlProgramEmulator.getBufferElement(base + 2));
+            Vertex vertexB = new Vertex(webGlProgramEmulator.getBufferElement(base + 3), webGlProgramEmulator.getBufferElement(base + 4), webGlProgramEmulator.getBufferElement(base + 5));
+            Vertex vertexC = new Vertex(webGlProgramEmulator.getBufferElement(base + 6), webGlProgramEmulator.getBufferElement(base + 7), webGlProgramEmulator.getBufferElement(base + 8));
+
+            drawTriangle(gc, webGlProgramEmulator.getVertexShader(), webGlProgramEmulator.getPaint(), vertexA, vertexB, vertexC);
         }
 //        System.out.println("--------------------------------------------");
 //        System.out.println("minDepth: " + minDepth);
@@ -82,13 +80,12 @@ public class WebGlEmulator {
 //        }
 //        System.out.println("--------------------------------------------");
 
-        gc.restore();
     }
 
-    private void drawTriangle(GraphicsContext gc, Vertex vertexA, Vertex vertexB, Vertex vertexC) {
-        Vertex4 clipA = toClip(vertexA);
-        Vertex4 clipB = toClip(vertexB);
-        Vertex4 clipC = toClip(vertexC);
+    private void drawTriangle(GraphicsContext gc, VertexShader vertexShader, Paint paint, Vertex vertexA, Vertex vertexB, Vertex vertexC) {
+        Vertex4 clipA = vertexShader.process(vertexA);
+        Vertex4 clipB = vertexShader.process(vertexB);
+        Vertex4 clipC = vertexShader.process(vertexC);
 
         Vertex ndcA = toNdcVertex(clipA);
         Vertex ndcB = toNdcVertex(clipB);
@@ -100,7 +97,7 @@ public class WebGlEmulator {
 
         //double c = 0.5 * ndcA.getZ() + 0.5;
         // gc.setStroke(new Color(c, c, c, 1));
-        gc.setStroke(Color.BLUE);
+        gc.setStroke(paint);
         // Polygon and translate does not work in JavaFX 2.2
         // http://stackoverflow.com/questions/13236523/unexpected-behaviour-of-javafx-graphicscontext-translate
         // http://javafx-jira.kenai.com/browse/RT-26119
@@ -137,13 +134,6 @@ public class WebGlEmulator {
         }
 
         return new Vertex(ndcX, ndcY, ndcZ);
-    }
-
-    private Vertex4 toClip(Vertex vertex) {
-        if (vertexShader == null) {
-            throw new IllegalStateException("Vertex has not been set");
-        }
-        return vertexShader.process(vertex);
     }
 
     public double getAspectRatio() {

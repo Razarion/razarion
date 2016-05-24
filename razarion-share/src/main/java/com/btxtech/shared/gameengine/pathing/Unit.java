@@ -431,6 +431,7 @@ public class Unit {
                 ", position=" + position +
                 ", velocity=" + velocity +
                 ", destination=" + destination +
+                ", angle=" + Math.toDegrees(angle) +
                 '}';
     }
 }

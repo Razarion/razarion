@@ -12,7 +12,6 @@ import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,8 +27,10 @@ import java.util.logging.Logger;
 public class TerrainSurface {
     public static final int MESH_NODE_EDGE_LENGTH = 64;
     public static final int MESH_NODES = 64;
-    private static final double HIGHEST_POINT_IN_VIEW = 101; // Should be calculated
-    private static final double LOWEST_POINT_IN_VIEW = -9; // Should be calculated
+    private static final double HIGHEST_POINT_IN_VIEW = 200;
+    private static final double LOWEST_POINT_IN_VIEW = -20;
+    private double highestPointInView; // Should be calculated
+    private double lowestPointInView; // Should be calculated
     private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
     private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
     private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_5;
@@ -78,6 +79,9 @@ public class TerrainSurface {
             setupPlateau(terrainSlopePosition);
         }
 
+        highestPointInView = HIGHEST_POINT_IN_VIEW;
+        lowestPointInView = LOWEST_POINT_IN_VIEW;
+
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }
 
@@ -98,11 +102,11 @@ public class TerrainSurface {
     }
 
     public double getHighestPointInView() {
-        return HIGHEST_POINT_IN_VIEW;
+        return highestPointInView;
     }
 
     public double getLowestPointInView() {
-        return LOWEST_POINT_IN_VIEW;
+        return lowestPointInView;
     }
 
     public Slope getSlope(int id) {
@@ -121,7 +125,7 @@ public class TerrainSurface {
         return groundSkeleton;
     }
 
-    public Vertex calculatePositionOnTerrain(Ray3d worldPickRay) {
+    public Vertex calculatePositionOnZeroLevel(Ray3d worldPickRay) {
         // Find multiplier where the ray hits the ground (z = 0). start + m*direction -> z = 0
         double m = -worldPickRay.getStart().getZ() / worldPickRay.getDirection().getZ();
         return worldPickRay.getPoint(m);
@@ -132,6 +136,12 @@ public class TerrainSurface {
 //        } else {
 //            logger.severe("Position not on ground");
 //        }
+    }
+
+    public Vertex calculatePositionGroundMesh(Ray3d worldPickRay) {
+        DecimalPosition zeroLevel = calculatePositionOnZeroLevel(worldPickRay).toXY();
+        double height = groundMesh.getInterpolatedHeight(zeroLevel);
+        return new Vertex(zeroLevel, height);
     }
 
     private void setupPlateau(TerrainSlopePosition terrainSlopePosition) {

@@ -1,5 +1,7 @@
 package com.btxtech.game.jsre.client.common;
 
+import com.btxtech.shared.primitives.Vertex;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,6 +53,14 @@ public class CollectionUtils {
             list.add(d);
         }
         return list;
+    }
+
+    public static List<Double> verticesToDoubles(List<Vertex> vertices) {
+        List<Double> doubleList = new ArrayList<>();
+        for (Vertex vertex : vertices) {
+            vertex.appendTo(doubleList);
+        }
+        return doubleList;
     }
 
     public static <T> T getFirst(Iterable<T> iterable) {

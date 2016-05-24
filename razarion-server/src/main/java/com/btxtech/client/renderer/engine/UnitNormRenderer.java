@@ -89,7 +89,7 @@ public class UnitNormRenderer extends AbstractRenderer {
         getCtx3d().lineWidth(30);
 
         for (ModelMatrices model : modelMatrices) {
-            uniformMatrix4fv("uMMatrix", model.getVertex());
+            uniformMatrix4fv("uMMatrix", model.getModel());
 
             getCtx3d().drawArrays(WebGLRenderingContext.LINES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

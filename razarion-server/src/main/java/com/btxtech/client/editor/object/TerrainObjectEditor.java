@@ -65,7 +65,7 @@ public class TerrainObjectEditor {
     public void onTerrainMouseMove(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(ray3d);
+            Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(ray3d);
 
             CursorType cursorType;
             hover = false;
@@ -96,7 +96,7 @@ public class TerrainObjectEditor {
     public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(ray3d);
+            Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(ray3d);
 
             selected = getAtTerrain(terrainPosition);
 
@@ -133,7 +133,7 @@ public class TerrainObjectEditor {
 
     public void onTerrainMouseUp(@Observes TerrainMouseUpEvent terrainMouseDownEvent) {
         Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-        Vertex terrainPosition = terrainSurface.calculatePositionOnTerrain(ray3d);
+        Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(ray3d);
 
         if (selected != null) {
             selected = null;

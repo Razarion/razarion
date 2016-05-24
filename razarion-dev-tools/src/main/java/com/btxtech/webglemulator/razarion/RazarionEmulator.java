@@ -1,25 +1,29 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.DrawScenes;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.webglemulator.webgl.VertexShader;
-import com.btxtech.webglemulator.webgl.WebGlEmulator;
+import com.btxtech.client.units.ItemService;
+import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.dto.GroundSkeleton;
+import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.shared.primitives.Vertex4;
+import com.btxtech.webglemulator.webgl.VertexShader;
+import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -36,26 +40,41 @@ public class RazarionEmulator {
     private Camera camera;
     @Inject
     private TerrainSurface terrainSurface;
+    @Inject
+    private ItemService itemService;
 
     public void process() {
         setupTerrain();
-        webGlEmulator.setVertexShader(new VertexShader() {
+        setupItems();
+        webGlEmulator.fillBufferAndShader(new VertexShader() {
             @Override
             public Vertex4 process(Vertex vertex) {
                 Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix());
                 return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
             }
-        });
-        webGlEmulator.fillBuffer(terrainSurface.getGroundVertexList().createPositionDoubles());
+        }, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
+
+        final Integer itemTypeId = 2;
+        webGlEmulator.fillBufferAndShader(new VertexShader() {
+            @Override
+            public Vertex4 process(Vertex vertex) {
+                Collection<ModelMatrices> modelMatrices = itemService.getModelMatrices(itemTypeId);
+                ModelMatrices model = CollectionUtils.getFirst(modelMatrices);
+                Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix().multiply(model.getModel()));
+                return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
+            }
+        }, CollectionUtils.verticesToDoubles(itemService.getItemTypeVertexContainer(itemTypeId).getVertices()), Color.BLACK);
+
         webGlEmulator.drawArrays();
     }
 
     private void setupTerrain() {
         Gson gson = new Gson();
-        SlopeSkeleton slopeSkeletonBeach = gson.fromJson(new InputStreamReader(DrawScenes.class.getResourceAsStream("/SlopeSkeletonBeach.json")), SlopeSkeleton.class);
-        SlopeSkeleton slopeSkeletonSlope = gson.fromJson(new InputStreamReader(DrawScenes.class.getResourceAsStream("/SlopeSkeletonSlope.json")), SlopeSkeleton.class);
-        GroundSkeleton groundSkeleton = gson.fromJson(new InputStreamReader(DrawScenes.class.getResourceAsStream("/GroundSkeleton.json")), GroundSkeleton.class);
-        List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(DrawScenes.class.getResourceAsStream("/TerrainSlopePositions.json")), new TypeToken<List<TerrainSlopePosition>>(){}.getType());
+        SlopeSkeleton slopeSkeletonBeach = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/SlopeSkeletonBeach.json")), SlopeSkeleton.class);
+        SlopeSkeleton slopeSkeletonSlope = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/SlopeSkeletonSlope.json")), SlopeSkeleton.class);
+        GroundSkeleton groundSkeleton = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/GroundSkeleton.json")), GroundSkeleton.class);
+        List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/TerrainSlopePositions.json")), new TypeToken<List<TerrainSlopePosition>>() {
+        }.getType());
 
         // Setup terrain surface
         try {
@@ -63,6 +82,19 @@ public class RazarionEmulator {
             terrainSurface.setAllSlopeSkeletons(Arrays.asList(slopeSkeletonSlope, slopeSkeletonBeach));
             terrainSurface.setTerrainSlopePositions(terrainSlopePositions);
             terrainSurface.init();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    private void setupItems() {
+        Gson gson = new Gson();
+        List<ItemType> itemTypes = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/ItemType.json")), new TypeToken<List<ItemType>>() {
+        }.getType());
+        try {
+            itemService.setItemTypes(itemTypes);
+            itemService.init();
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

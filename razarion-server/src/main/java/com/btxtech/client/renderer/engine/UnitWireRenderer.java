@@ -87,7 +87,7 @@ public class UnitWireRenderer extends AbstractRenderer {
         webGLTexture.activate();
 
         for (ModelMatrices model : modelMatrices) {
-            uniformMatrix4fv("uMMatrix", model.getVertex());
+            uniformMatrix4fv("uMMatrix", model.getModel());
 
             getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
