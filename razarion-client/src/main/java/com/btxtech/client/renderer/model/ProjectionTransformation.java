@@ -9,7 +9,6 @@ import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -96,13 +95,13 @@ public class ProjectionTransformation {
         double zNear2 = leg2 * Math.cos(fovY / 2.0);
 
         if (Math.abs(angle1) >= MathHelper.QUARTER_RADIANT) {
-            return zNear2;
+            return Math.max(zNear2, Z_NEAR_FALLBACK);
         }
         if (Math.abs(angle2) >= MathHelper.QUARTER_RADIANT) {
-            return zNear1;
+            return Math.max(zNear1, Z_NEAR_FALLBACK);
         }
 
-        return Math.min(zNear1, zNear2);
+        return Math.max(Math.min(zNear1, zNear2), Z_NEAR_FALLBACK);
     }
 
     /**

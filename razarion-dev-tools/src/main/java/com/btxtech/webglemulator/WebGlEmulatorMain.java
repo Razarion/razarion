@@ -8,7 +8,7 @@ import org.jboss.weld.environment.se.Weld;
  * Created by Beat
  * 18.09.2015.
  */
-public class FxMain extends Application {
+public class WebGlEmulatorMain extends Application {
     private Weld weld;
 
     @Override

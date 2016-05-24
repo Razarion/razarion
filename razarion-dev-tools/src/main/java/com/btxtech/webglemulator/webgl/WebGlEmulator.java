@@ -98,8 +98,9 @@ public class WebGlEmulator {
             return;
         }
 
-        double c = 0.5 * ndcA.getZ() + 0.5;
-        gc.setStroke(new Color(c, c, c, 1));
+        //double c = 0.5 * ndcA.getZ() + 0.5;
+        // gc.setStroke(new Color(c, c, c, 1));
+        gc.setStroke(Color.BLUE);
         // Polygon and translate does not work in JavaFX 2.2
         // http://stackoverflow.com/questions/13236523/unexpected-behaviour-of-javafx-graphicscontext-translate
         // http://javafx-jira.kenai.com/browse/RT-26119

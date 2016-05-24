@@ -94,6 +94,26 @@ public class TestProjectionTransformation {
         TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
+    @Test
+    public void cameraExtremelyClose() throws Exception {
+        Camera camera = new Camera();
+        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
+        TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TestHelper.setPrivateField(projectionTransformation, "camera", camera);
+
+        camera.setTranslateX(1027);
+        camera.setTranslateY(884);
+        camera.setTranslateZ(1);
+        camera.setRotateX(Math.toRadians(81.61290322580645));
+        camera.setRotateZ(Math.toRadians(0));
+        projectionTransformation.setFovY(Math.toRadians(45.0));
+        projectionTransformation.setAspectRatio(0.9982078853046595);
+        Matrix4 actual = projectionTransformation.createMatrix();
+
+        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+    }
+
      @Test
     public void makePerspective() {
         Matrix4 actual = ProjectionTransformation.makePerspectiveFrustum(Math.toRadians(45), 480.0 / 480.0, 0.1, 100.0);
