@@ -12,11 +12,11 @@ import java.io.File;
  * Created by Beat
  * 18.04.2015.
  */
-@WebServlet(urlPatterns = "/webgl/remote_logging")
+@WebServlet(urlPatterns = "/razarionServer/remote_logging")
 public class GwtSuperDevModeLoggingServlet extends RemoteLoggingServiceImpl {
     private final static String TEMP_DIR = "C:\\Users\\Beat\\AppData\\Local\\Temp";
-    private final static String MODULE_NAME = "com.btxtech.Webgl";
-    private final static String SIMPLE_MODULE_NAME = "webgl";
+    private final static String MODULE_NAME = "com.btxtech.Razarion-Server";
+    private final static String SIMPLE_MODULE_NAME = "razarionServer";
     private String path = null;
 
     @Override
