@@ -1,5 +1,7 @@
 package com.btxtech.shared.primitives;
 
+import com.btxtech.game.jsre.common.MathHelper;
+
 import java.util.Arrays;
 
 /**
@@ -210,6 +212,25 @@ public class Matrix4 {
                 + Arrays.toString(numbers[3])
                 + "]}";
     }
+
+    public boolean equalsDelta(Matrix4 other, double delta) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+
+        for (int column = 0; column < ROWS; column++) {
+            for (int row = 0; row < ROWS; row++) {
+                if (!MathHelper.compareWithPrecision(numbers[row][column], other.numbers[row][column], delta)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 
     @Override
     public boolean equals(Object o) {

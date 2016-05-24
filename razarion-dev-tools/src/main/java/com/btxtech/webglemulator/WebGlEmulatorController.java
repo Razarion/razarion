@@ -1,5 +1,6 @@
 package com.btxtech.webglemulator;
 
+import com.btxtech.InstanceStringGenerator;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.terrain.TerrainSurface;
@@ -10,10 +11,13 @@ import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
@@ -28,6 +32,12 @@ import java.util.ResourceBundle;
 public class WebGlEmulatorController implements Initializable {
     public AnchorPane centerPanel;
     public Slider fovSlider;
+    public Label aspectRatioLabel;
+    public TextField xTranslationField;
+    public TextField yTranslationField;
+    public TextField zTranslationField;
+    public Slider cameraZRotationSlider;
+    public Slider cameraXRotationSlider;
     @Inject
     private WebGlEmulator webGlEmulator;
     @Inject
@@ -49,6 +59,7 @@ public class WebGlEmulatorController implements Initializable {
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
                 canvas.setWidth(width.doubleValue());
                 projectionTransformation.setAspectRatio(webGlEmulator.getAspectRatio());
+                aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
                 webGlEmulator.drawArrays();
             }
         });
@@ -58,6 +69,7 @@ public class WebGlEmulatorController implements Initializable {
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
                 canvas.setHeight(height.doubleValue());
                 projectionTransformation.setAspectRatio(webGlEmulator.getAspectRatio());
+                aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
                 webGlEmulator.drawArrays();
             }
         });
@@ -69,6 +81,25 @@ public class WebGlEmulatorController implements Initializable {
                 webGlEmulator.drawArrays();
             }
         });
+        cameraXRotationSlider.valueProperty().set(Math.toDegrees(camera.getRotateX()));
+        cameraXRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
+                camera.setRotateX(Math.toRadians(cameraXRotationSlider.getValue()));
+                webGlEmulator.drawArrays();
+            }
+        });
+        cameraZRotationSlider.valueProperty().set(Math.toDegrees(camera.getRotateZ()));
+        cameraZRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
+                camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
+                webGlEmulator.drawArrays();
+            }
+        });
+        xTranslationField.setText(Double.toString(camera.getTranslateX()));
+        yTranslationField.setText(Double.toString(camera.getTranslateY()));
+        zTranslationField.setText(Double.toString(camera.getTranslateZ()));
 
         webGlEmulator.init(canvas);
     }
@@ -87,6 +118,8 @@ public class WebGlEmulatorController implements Initializable {
             DecimalPosition deltaTerrain = terrainNew.sub(terrainOld);
             camera.setTranslateX(camera.getTranslateX() - deltaTerrain.getX());
             camera.setTranslateY(camera.getTranslateY() - deltaTerrain.getY());
+            xTranslationField.setText(Double.toString(camera.getTranslateX()));
+            yTranslationField.setText(Double.toString(camera.getTranslateY()));
             webGlEmulator.drawArrays();
         }
         lastCanvasPosition = canvasPosition;
@@ -108,5 +141,40 @@ public class WebGlEmulatorController implements Initializable {
 
     public void onMouseReleased(Event event) {
         lastCanvasPosition = null;
+    }
+
+    public void onDumpProjectionTransformatioClicked(ActionEvent actionEvent) {
+        System.out.println("-----------Projection Transformation-----------------");
+        System.out.println(projectionTransformation);
+        System.out.println("-----------------------------------------------------");
+    }
+
+    public void onDumpCameraClicked(ActionEvent actionEvent) {
+        System.out.println("---------------------Camera--------------------------");
+        System.out.println(camera);
+        System.out.println("-----------------------------------------------------");
+    }
+
+    public void onTestCaseButtonClicked(ActionEvent actionEvent) {
+        System.out.println("---------------------Test Case-----------------------");
+        System.out.println(camera);
+        System.out.println(projectionTransformation);
+        System.out.println(InstanceStringGenerator.generate(projectionTransformation.createMatrix()));
+        System.out.println("-----------------------------------------------------");
+    }
+
+    public void xTranslationFieldChanged(ActionEvent actionEvent) {
+        camera.setTranslateX(Double.parseDouble(xTranslationField.getText()));
+        webGlEmulator.drawArrays();
+    }
+
+    public void yTranslationFieldChanged(ActionEvent actionEvent) {
+        camera.setTranslateY(Double.parseDouble(yTranslationField.getText()));
+        webGlEmulator.drawArrays();
+    }
+
+    public void zTranslationFieldChanged(ActionEvent actionEvent) {
+        camera.setTranslateZ(Double.parseDouble(zTranslationField.getText()));
+        webGlEmulator.drawArrays();
     }
 }

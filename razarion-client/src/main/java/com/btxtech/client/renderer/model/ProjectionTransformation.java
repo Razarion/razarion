@@ -2,12 +2,14 @@ package com.btxtech.client.renderer.model;
 
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -17,6 +19,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ProjectionTransformation {
+    private static final int Z_NEAR_FALLBACK = 10;
+    private static final int Z_FAR_FALLBACK = 5000000;
     // private Logger logger = Logger.getLogger(ProjectionTransformation.class.getName());
     private double fovY;
     private double aspectRatio;
@@ -59,6 +63,11 @@ public class ProjectionTransformation {
     private double calculateZFar() {
         double angle1 = camera.getRotateX() + fovY / 2.0;
         double angle2 = camera.getRotateX() - fovY / 2.0;
+
+        if (Math.abs(angle1) >= MathHelper.QUARTER_RADIANT || Math.abs(angle2) >= MathHelper.QUARTER_RADIANT) {
+            return Z_FAR_FALLBACK;
+        }
+
         double height = camera.getTranslateZ() - terrainSurface.getLowestPointInView();
 
         double leg1 = height / Math.cos(angle1);
@@ -73,6 +82,11 @@ public class ProjectionTransformation {
     private double calculateZNear() {
         double angle1 = camera.getRotateX() + fovY / 2.0;
         double angle2 = camera.getRotateX() - fovY / 2.0;
+
+        if (Math.abs(angle1) >= MathHelper.QUARTER_RADIANT && Math.abs(angle2) >= MathHelper.QUARTER_RADIANT) {
+            return Z_NEAR_FALLBACK;
+        }
+
         double height = camera.getTranslateZ() - terrainSurface.getHighestPointInView();
 
         double leg1 = height / Math.cos(angle1);
@@ -80,6 +94,13 @@ public class ProjectionTransformation {
 
         double zNear1 = leg1 * Math.cos(fovY / 2.0);
         double zNear2 = leg2 * Math.cos(fovY / 2.0);
+
+        if (Math.abs(angle1) >= MathHelper.QUARTER_RADIANT) {
+            return zNear2;
+        }
+        if (Math.abs(angle2) >= MathHelper.QUARTER_RADIANT) {
+            return zNear1;
+        }
 
         return Math.min(zNear1, zNear2);
     }
@@ -159,5 +180,13 @@ public class ProjectionTransformation {
         Matrix4 rotation = Matrix4.createXRotation(rotateX).multiply(Matrix4.createYRotation(rotateY));
         direction = rotation.multiply(direction, 1.0);
         return new Ray3d(new Vertex(0, 0, 0), direction);
+    }
+
+    @Override
+    public String toString() {
+        return "ProjectionTransformation{" +
+                "fovY=" + Math.toDegrees(fovY) +
+                ", aspectRatio=" + aspectRatio +
+                '}';
     }
 }

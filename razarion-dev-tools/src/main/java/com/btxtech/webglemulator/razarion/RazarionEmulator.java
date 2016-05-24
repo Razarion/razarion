@@ -4,6 +4,7 @@ import com.btxtech.DrawScenes;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import com.btxtech.shared.dto.GroundSkeleton;

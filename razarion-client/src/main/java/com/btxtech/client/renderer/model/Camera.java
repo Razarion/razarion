@@ -124,4 +124,15 @@ public class Camera {
     public void testPrint() {
         logger.severe("translateX = " + translateX + "; translateY = " + translateY + "; translateZ = " + translateZ + "; rotateX = Math.toRadians(" + Math.toDegrees(rotateX) + "); rotateZ = Math.toRadians(" + Math.toDegrees(rotateZ) + ");");
     }
+
+    @Override
+    public String toString() {
+        return "Camera{" +
+                "translateX=" + translateX +
+                ", translateY=" + translateY +
+                ", translateZ=" + translateZ +
+                ", rotateX=" + Math.toDegrees(rotateX) +
+                ", rotateZ=" + Math.toDegrees(rotateZ) +
+                '}';
+    }
 }

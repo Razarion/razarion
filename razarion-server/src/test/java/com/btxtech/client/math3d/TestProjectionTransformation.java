@@ -1,6 +1,9 @@
 package com.btxtech.client.math3d;
 
+import com.btxtech.TestHelper;
+import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.primitives.Matrix4;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,6 +15,86 @@ import org.junit.Test;
 public class TestProjectionTransformation {
 
     @Test
+    public void gameCamera() throws Exception {
+        Camera camera = new Camera();
+        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
+        TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TestHelper.setPrivateField(projectionTransformation, "camera", camera);
+
+        camera.setTranslateX(1104.0);
+        camera.setTranslateY(-218);
+        camera.setTranslateZ(720.0);
+        camera.setRotateX(Math.toRadians(40.0));
+        camera.setRotateZ(Math.toRadians(0));
+        projectionTransformation.setFovY(Math.toRadians(45.0));
+        projectionTransformation.setAspectRatio(0.9982078853046595);
+        Matrix4 actual = projectionTransformation.createMatrix();
+
+        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -2.3962, -2036.4613}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+    }
+
+    @Test
+    public void gameCameraTopView() throws Exception {
+        Camera camera = new Camera();
+        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
+        TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TestHelper.setPrivateField(projectionTransformation, "camera", camera);
+
+        camera.setTranslateX(1200);
+        camera.setTranslateY(1000);
+        camera.setTranslateZ(720.0);
+        camera.setRotateX(Math.toRadians(0));
+        camera.setRotateZ(Math.toRadians(0));
+        projectionTransformation.setFovY(Math.toRadians(45.0));
+        projectionTransformation.setAspectRatio(0.9982078853046595);
+        Matrix4 actual = projectionTransformation.createMatrix();
+
+        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -12.2545, -8204.5636}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+    }
+
+    @Test
+    public void shallowCamera() throws Exception {
+        Camera camera = new Camera();
+        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
+        TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TestHelper.setPrivateField(projectionTransformation, "camera", camera);
+
+        camera.setTranslateX(1104.0);
+        camera.setTranslateY(-218);
+        camera.setTranslateZ(720.0);
+        camera.setRotateX(Math.toRadians(73.87096774193549));
+        camera.setRotateZ(Math.toRadians(0));
+        projectionTransformation.setFovY(Math.toRadians(45.0));
+        projectionTransformation.setAspectRatio(0.9982078853046595);
+        Matrix4 actual = projectionTransformation.createMatrix();
+
+        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0004, -1832.4801}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+    }
+
+    @Test
+    public void cameraInTheSky() throws Exception {
+        Camera camera = new Camera();
+        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
+        TerrainSurface terrainSurface = new TerrainSurface();
+        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TestHelper.setPrivateField(projectionTransformation, "camera", camera);
+
+        camera.setTranslateX(1104.0);
+        camera.setTranslateY(-218);
+        camera.setTranslateZ(720.0);
+        camera.setRotateX(Math.toRadians(125.16129032258061));
+        camera.setRotateZ(Math.toRadians(0));
+        projectionTransformation.setFovY(Math.toRadians(45.0));
+        projectionTransformation.setAspectRatio(0.9982078853046595);
+        Matrix4 actual = projectionTransformation.createMatrix();
+
+        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+    }
+
+     @Test
     public void makePerspective() {
         Matrix4 actual = ProjectionTransformation.makePerspectiveFrustum(Math.toRadians(45), 480.0 / 480.0, 0.1, 100.0);
         Matrix4 expected = new Matrix4(new double[][]{
@@ -42,41 +125,4 @@ public class TestProjectionTransformation {
         });
         Assert.assertEquals(expected, actual);
     }
-
-    // @Test
-    public void createDefault() {
-        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
-        Matrix4 expected = new Matrix4(new double[][]{
-                {1.8106601717798214, 0.0, 0.0, 0.0},
-                {0.0, 2.4142135623730954, 0.0, 0.0},
-                {0.0, 0.0, -1.001000500250125, -0.2001000500250125},
-                {0.0, 0.0, -1.0, 0.0}
-        });
-        Assert.assertEquals(expected, projectionTransformation.createMatrix());
-
-    }
-
-
-//    @Test
-//    public void setterGetters() {
-//        ProjectionTransformation projectionTransformation = new ProjectionTransformation();
-//        projectionTransformation.setZNear(-0.1);
-//        projectionTransformation.setZFar(-100);
-//        projectionTransformation.setAspectRatio(3.0 / 4.0);
-//        projectionTransformation.setFovY(Math.toRadians(33));
-//        Assert.assertEquals(-0.1, projectionTransformation.getZNear(), 0.0001);
-//        Assert.assertEquals(-100, projectionTransformation.getZFar(), 0.0001);
-//        Assert.assertEquals(3.0 / 4.0, projectionTransformation.getAspectRatio(), 0.0001);
-//        Assert.assertEquals(Math.toRadians(33), projectionTransformation.getFovY(), 0.0001);
-//        Matrix4 expected = new Matrix4(new double[][]{
-//                {4.501257896788329, 0.0, 0.0, 0.0},
-//                {0.0, 3.3759434225912464, 0.0, 0.0},
-//                {0.0, 0.0, -1.002002002002002, 0.20020020020020018},
-//                {0.0, 0.0, -1.0, 0.0}
-//        });
-//        Assert.assertEquals(expected, projectionTransformation.createMatrix());
-//
-//    }
-
-
 }

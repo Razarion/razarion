@@ -1,6 +1,7 @@
 package com.btxtech;
 
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
@@ -39,36 +40,11 @@ public class TestHelper {
         assertVertex(message, expected.getVertexC(), vertexes.get(2));
     }
 
-    public static String toVertexDoubleString(List<Vertex> vertices) {
-        String s = "new double[]{";
-        for (Iterator<Vertex> iterator = vertices.iterator(); iterator.hasNext(); ) {
-            s += toSimpleString(iterator.next());
-            if (iterator.hasNext()) {
-                s += ", ";
-            }
+    public static void assertMatrix(Matrix4 expected, Matrix4 actual, double delta) {
+        if(expected.equalsDelta(actual, delta)) {
+            return;
         }
-        s += "}";
-        return s;
-    }
-
-    public static String toSimpleString(Vertex vertex) {
-        return String.format("%.2f, %.2f, %.2f", vertex.getX(), vertex.getY(), vertex.getZ());
-    }
-
-    public static String toTextureCoordinateDoubleString(List<TextureCoordinate> textureCoordinates) {
-        String s = "new double[]{";
-        for (Iterator<TextureCoordinate> iterator = textureCoordinates.iterator(); iterator.hasNext(); ) {
-            s += toSimpleString(iterator.next());
-            if (iterator.hasNext()) {
-                s += ", ";
-            }
-        }
-        s += "}";
-        return s;
-    }
-
-    public static String toSimpleString(TextureCoordinate textureCoordinate) {
-        return String.format("%.4f, %.4f", textureCoordinate.getS(), textureCoordinate.getT());
+        Assert.fail("Matrices are not equal. Expected: " + expected + " Actual:" + actual);
     }
 
     public static double[] vertices2DoubleArray(List<Vertex> vertices) {

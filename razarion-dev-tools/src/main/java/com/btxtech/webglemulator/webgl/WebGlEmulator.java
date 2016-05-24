@@ -90,15 +90,16 @@ public class WebGlEmulator {
         Vertex4 clipB = toClip(vertexB);
         Vertex4 clipC = toClip(vertexC);
 
-        DecimalPosition ndcA = toNdcVertex(clipA);
-        DecimalPosition ndcB = toNdcVertex(clipB);
-        DecimalPosition ndcC = toNdcVertex(clipC);
+        Vertex ndcA = toNdcVertex(clipA);
+        Vertex ndcB = toNdcVertex(clipB);
+        Vertex ndcC = toNdcVertex(clipC);
 
         if (ndcA == null || ndcB == null || ndcC == null) {
             return;
         }
 
-        gc.setStroke(Color.BLUE);
+        double c = 0.5 * ndcA.getZ() + 0.5;
+        gc.setStroke(new Color(c, c, c, 1));
         // Polygon and translate does not work in JavaFX 2.2
         // http://stackoverflow.com/questions/13236523/unexpected-behaviour-of-javafx-graphicscontext-translate
         // http://javafx-jira.kenai.com/browse/RT-26119
@@ -108,12 +109,10 @@ public class WebGlEmulator {
         //gc.strokeText("X", ndcA.getX(), ndcA.getY(), 0.001);
     }
 
-    private DecimalPosition toNdcVertex(Vertex4 vertex4) {
+    private Vertex toNdcVertex(Vertex4 vertex4) {
         double ndcX = vertex4.getX() / vertex4.getW();
         double ndcY = vertex4.getY() / vertex4.getW();
         double ndcZ = vertex4.getZ() / vertex4.getW();
-
-        DecimalPosition normalizedDeviceCoordinates = new DecimalPosition(ndcX, ndcY);
 
         if (minDepth == null) {
             minDepth = ndcZ;
@@ -136,7 +135,7 @@ public class WebGlEmulator {
             return null;
         }
 
-        return normalizedDeviceCoordinates;
+        return new Vertex(ndcX, ndcY, ndcZ);
     }
 
     private Vertex4 toClip(Vertex vertex) {
