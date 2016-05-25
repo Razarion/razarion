@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.webglemulator.WebGlEmulatorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.webglemulator.WebGlEmulatorController">
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
@@ -37,7 +37,7 @@
         </ToolBar>
     </top>
     <center>
-        <SplitPane dividerPositions="0.29797979797979796" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <SplitPane dividerPositions="0.1636060100166945" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <children>
@@ -96,7 +96,7 @@
                                         <TextField fx:id="yTranslationField" onAction="#yTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                         <TextField fx:id="zTranslationField" onAction="#zTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                         <Slider fx:id="cameraXRotationSlider" majorTickUnit="45.0" max="90.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                        <Slider fx:id="cameraZRotationSlider" majorTickUnit="45.0" max="90.0" min="-90.0" prefHeight="19.0" prefWidth="108.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                        <Slider fx:id="cameraZRotationSlider" majorTickUnit="45.0" max="180.0" min="-180.0" prefHeight="19.0" prefWidth="108.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                         <Button mnemonicParsing="false" onAction="#onDumpCameraClicked" text="Dump" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
                                     </children>
                                 </GridPane>

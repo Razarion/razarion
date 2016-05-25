@@ -42,19 +42,25 @@ public class RazarionEmulator {
     private TerrainSurface terrainSurface;
     @Inject
     private ItemService itemService;
+    private VertexShader terrainShader = new VertexShader() {
+        @Override
+        public Vertex4 process(Vertex vertex) {
+            Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix());
+            return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
+        }
+    };
 
     public void process() {
         setupTerrain();
         setupItems();
-        webGlEmulator.fillBufferAndShader(new VertexShader() {
-            @Override
-            public Vertex4 process(Vertex vertex) {
-                Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix());
-                return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
-            }
-        }, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
-
-        final Integer itemTypeId = 2;
+        // Ground
+        webGlEmulator.fillBufferAndShader(terrainShader, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
+        // Slopes
+        for (Integer slopeId : terrainSurface.getSlopeIds()) {
+            webGlEmulator.fillBufferAndShader(terrainShader, CollectionUtils.verticesToDoubles(terrainSurface.getSlope(slopeId).getMesh().getVertices()), Color.RED);
+        }
+        // Items
+        final Integer itemTypeId = 1;
         webGlEmulator.fillBufferAndShader(new VertexShader() {
             @Override
             public Vertex4 process(Vertex vertex) {

@@ -22,9 +22,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// import elemental.client.Browser;
-// import elemental.dom.TimeoutHandler;
-
 /**
  * Created by Beat
  * 28.12.2015.
