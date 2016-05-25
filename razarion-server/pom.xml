@@ -163,6 +163,33 @@
                     <runTarget>webgl.html</runTarget>
                     <hostedWebapp>src/main/webapp</hostedWebapp>
                     <strict>true</strict>
+                    <!-- Only work with modified gwt-maven-plugin -->
+                    <!-- mvn gwt:run-codeserver -->
+                    <!-- Adds addition -src to the CodeServer -->
+                    <!-- Modified -->
+                    <!-- org.codehaus.mojo.gwt.shell.SuperDevModeMojo-->
+                    <!-- 1) Add new class attribute
+                         /**
+                           * A directory containing GWT source to be prepended to the classpath for compiling.
+                           * <p>
+                           * Can be set from command line using '-Dgwt.sources=...'
+                           */
+                           @Parameter(property = "gwt.sources")
+                           private String[] sources;
+
+                           2) set -src cmd arguments before calling CodeServer
+                           if(sources != null) {
+                               for (String source : sources) {
+                                   cmd.arg( "-src" ).arg(source);
+                                   System.out.println("add source: " + source);
+                               }
+                           }
+                           System.out.println(cmd);
+                           -->
+                    <sources>
+                        <source>${project.parent.basedir}/razarion-share/src/main/java</source>
+                        <source>${project.parent.basedir}/razarion-client/src/main/java</source>
+                    </sources>
                 </configuration>
             </plugin>
         </plugins>
