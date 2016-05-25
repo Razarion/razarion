@@ -57,6 +57,12 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
     private DoubleBox clampMax;
     @Inject
     @DataField
+    private DoubleBox fillValue;
+    @Inject
+    @DataField
+    private Button fillButton;
+    @Inject
+    @DataField
     private Button generateButton;
     @DataField
     private Element canvasElement = (Element) Browser.getDocument().createCanvasElement();
@@ -68,6 +74,15 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
         clampMax.setValue(fractalFieldConfig.getClampMax());
         fractalConfigDataBinder.setModel(fractalFieldConfig);
         fractalDisplay = new FractalDisplay(canvasElement);
+        fractalDisplay.display(fractalFieldConfig);
+        fillValue.setValue((fractalFieldConfig.getFractalMax() + fractalFieldConfig.getFractalMin()) / 2.0);
+    }
+
+    @EventHandler("fillButton")
+    private void fillButtonClick(ClickEvent event) {
+        FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
+        FractalField.createFlatField(fractalFieldConfig, fillValue.getValue());
+        fractalFieldConfig.clamp();
         fractalDisplay.display(fractalFieldConfig);
     }
 

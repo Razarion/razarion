@@ -149,4 +149,14 @@ public class FractalField {
 
         fractalFieldConfig.setFractalField(values);
     }
+    public static void createFlatField(FractalFieldConfig fractalFieldConfig, double value) {
+        double[][] values = new double[fractalFieldConfig.getXCount()][fractalFieldConfig.getYCount()];
+        for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
+            for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
+                values[x][y] = value;
+            }
+        }
+
+        fractalFieldConfig.setFractalField(values);
+    }
 }
