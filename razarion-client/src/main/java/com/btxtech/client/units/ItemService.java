@@ -73,12 +73,8 @@ public class ItemService {
         Collection<ModelMatrices> itemMatrices = new ArrayList<>();
         for (Unit unit : pathing.getUnits()) {
             Vertex norm = terrainSurface.getInterpolatedNorm(unit.getPosition());
-            System.out.println("norm: " + norm);
-            System.out.println("unit: " + unit);
             Vertex direction = new Vertex(DecimalPosition.createVector(unit.getAngle(), 1.0), 0);
-            System.out.println("direction: " + direction);
             double yRotation = direction.unsignedAngle(norm) - MathHelper.QUARTER_RADIANT;
-            System.out.println("yRotation: " + Math.toDegrees(yRotation));
             Matrix4 rotation = Matrix4.createZRotation(unit.getAngle()).multiply(Matrix4.createYRotation(-yRotation));
             double height = terrainSurface.getInterpolatedHeight(unit.getPosition());
             Matrix4 translation = Matrix4.createTranslation(unit.getPosition().getX(), unit.getPosition().getY(), height).multiply(rotation);
