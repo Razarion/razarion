@@ -26,8 +26,8 @@ public class WebGlEmulator {
         this.canvas = canvas;
     }
 
-    public void fillBufferAndShader(VertexShader vertexShader, List<Double> doubles, Paint paint) {
-        webGlProgramEmulators.add(new WebGlProgramEmulator(vertexShader, doubles, paint));
+    public void fillBufferAndShader(RenderMode renderMode, VertexShader vertexShader, List<Double> doubles, Paint paint) {
+        webGlProgramEmulators.add(new WebGlProgramEmulator(renderMode, vertexShader, doubles, paint));
     }
 
     public void drawArrays() {
@@ -57,20 +57,19 @@ public class WebGlEmulator {
         gc.setLineWidth(1.0 / Math.min(Math.abs(xScale), Math.abs(yScale)));
 
         for (WebGlProgramEmulator webGlProgramEmulator : webGlProgramEmulators) {
-            drawArrays(gc, webGlProgramEmulator);
+            switch (webGlProgramEmulator.getRenderMode()) {
+                case TRIANGLES:
+                    drawTriangles(gc, webGlProgramEmulator);
+                    break;
+                case LINES:
+                    drawLines(gc, webGlProgramEmulator);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown render mode: " + webGlProgramEmulator.getRenderMode());
+            }
         }
         gc.restore();
-    }
 
-    private void drawArrays(GraphicsContext gc, WebGlProgramEmulator webGlProgramEmulator) {
-        for (int i = 0; i < webGlProgramEmulator.bufferSize() / 9; i++) {
-            int base = i * 9;
-            Vertex vertexA = new Vertex(webGlProgramEmulator.getBufferElement(base), webGlProgramEmulator.getBufferElement(base + 1), webGlProgramEmulator.getBufferElement(base + 2));
-            Vertex vertexB = new Vertex(webGlProgramEmulator.getBufferElement(base + 3), webGlProgramEmulator.getBufferElement(base + 4), webGlProgramEmulator.getBufferElement(base + 5));
-            Vertex vertexC = new Vertex(webGlProgramEmulator.getBufferElement(base + 6), webGlProgramEmulator.getBufferElement(base + 7), webGlProgramEmulator.getBufferElement(base + 8));
-
-            drawTriangle(gc, webGlProgramEmulator.getVertexShader(), webGlProgramEmulator.getPaint(), vertexA, vertexB, vertexC);
-        }
 //        System.out.println("--------------------------------------------");
 //        System.out.println("minDepth: " + minDepth);
 //        System.out.println("maxDepth: " + maxDepth);
@@ -80,6 +79,42 @@ public class WebGlEmulator {
 //        }
 //        System.out.println("--------------------------------------------");
 
+    }
+
+    private void drawLines(GraphicsContext gc, WebGlProgramEmulator webGlProgramEmulator) {
+        for (int i = 0; i < webGlProgramEmulator.bufferSize() / 6; i++) {
+            int base = i * 6;
+            Vertex vertexA = new Vertex(webGlProgramEmulator.getBufferElement(base), webGlProgramEmulator.getBufferElement(base + 1), webGlProgramEmulator.getBufferElement(base + 2));
+            Vertex vertexB = new Vertex(webGlProgramEmulator.getBufferElement(base + 3), webGlProgramEmulator.getBufferElement(base + 4), webGlProgramEmulator.getBufferElement(base + 5));
+
+            drawLine(gc, webGlProgramEmulator.getVertexShader(), webGlProgramEmulator.getPaint(), vertexA, vertexB);
+        }
+    }
+
+    private void drawTriangles(GraphicsContext gc, WebGlProgramEmulator webGlProgramEmulator) {
+        for (int i = 0; i < webGlProgramEmulator.bufferSize() / 9; i++) {
+            int base = i * 9;
+            Vertex vertexA = new Vertex(webGlProgramEmulator.getBufferElement(base), webGlProgramEmulator.getBufferElement(base + 1), webGlProgramEmulator.getBufferElement(base + 2));
+            Vertex vertexB = new Vertex(webGlProgramEmulator.getBufferElement(base + 3), webGlProgramEmulator.getBufferElement(base + 4), webGlProgramEmulator.getBufferElement(base + 5));
+            Vertex vertexC = new Vertex(webGlProgramEmulator.getBufferElement(base + 6), webGlProgramEmulator.getBufferElement(base + 7), webGlProgramEmulator.getBufferElement(base + 8));
+
+            drawTriangle(gc, webGlProgramEmulator.getVertexShader(), webGlProgramEmulator.getPaint(), vertexA, vertexB, vertexC);
+        }
+    }
+
+    private void drawLine(GraphicsContext gc, VertexShader vertexShader, Paint paint, Vertex vertexA, Vertex vertexB) {
+        Vertex4 clipA = vertexShader.process(vertexA);
+        Vertex4 clipB = vertexShader.process(vertexB);
+
+        Vertex ndcA = toNdcVertex(clipA);
+        Vertex ndcB = toNdcVertex(clipB);
+
+        if (ndcA == null || ndcB == null) {
+            return;
+        }
+
+        gc.setStroke(paint);
+        gc.strokeLine(ndcA.getX(), ndcA.getY(), ndcB.getX(), ndcB.getY());
     }
 
     private void drawTriangle(GraphicsContext gc, VertexShader vertexShader, Paint paint, Vertex vertexA, Vertex vertexB, Vertex vertexC) {

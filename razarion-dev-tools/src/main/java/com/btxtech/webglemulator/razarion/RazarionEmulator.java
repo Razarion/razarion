@@ -3,6 +3,7 @@ package com.btxtech.webglemulator.razarion;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.terrain.slope.Mesh;
 import com.btxtech.client.units.ItemService;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.dto.GroundSkeleton;
@@ -13,6 +14,7 @@ import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.shared.primitives.Vertex4;
+import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import com.google.gson.Gson;
@@ -22,6 +24,7 @@ import javafx.scene.paint.Color;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -54,14 +57,17 @@ public class RazarionEmulator {
         setupTerrain();
         setupItems();
         // Ground
-        webGlEmulator.fillBufferAndShader(terrainShader, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
+        webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
+        webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainSurface.getGroundVertexList().getVertices(), terrainSurface.getGroundVertexList().getNormVertices()), Color.BROWN);
         // Slopes
         for (Integer slopeId : terrainSurface.getSlopeIds()) {
-            webGlEmulator.fillBufferAndShader(terrainShader, CollectionUtils.verticesToDoubles(terrainSurface.getSlope(slopeId).getMesh().getVertices()), Color.RED);
+            Mesh mesh = terrainSurface.getSlope(slopeId).getMesh();
+            webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
+            webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(mesh.getVertices(), mesh.getNorms()), Color.GREEN);
         }
         // Items
         final Integer itemTypeId = 1;
-        webGlEmulator.fillBufferAndShader(new VertexShader() {
+        webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, new VertexShader() {
             @Override
             public Vertex4 process(Vertex vertex) {
                 Collection<ModelMatrices> modelMatrices = itemService.getModelMatrices(itemTypeId);
@@ -72,6 +78,17 @@ public class RazarionEmulator {
         }, CollectionUtils.verticesToDoubles(itemService.getItemTypeVertexContainer(itemTypeId).getVertices()), Color.BLACK);
 
         webGlEmulator.drawArrays();
+    }
+
+    private List<Double> setupNormDoubles(List<Vertex> vertices, List<Vertex> norms) {
+        List<Double> normDoubles = new ArrayList<>();
+        for (int i = 0; i < vertices.size(); i++) {
+            Vertex vertex = vertices.get(i);
+            Vertex norm = norms.get(i);
+            vertex.appendTo(normDoubles);
+            vertex.add(norm.multiply(10)).appendTo(normDoubles);
+        }
+        return normDoubles;
     }
 
     private void setupTerrain() {
