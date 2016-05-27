@@ -33,7 +33,7 @@ import javax.inject.Inject;
  */
 @Templated("SlopeConfigPanel.html#slope")
 public class SlopeConfigPanel extends Composite implements SelectedCornerListener {
-    // private Logger logger = Logger.getLogger(SlopePanel.class.getName());
+    // private Logger logger = Logger.getLogger(SlopeConfigPanel.class.getName());
     @Inject
     private RenderService renderService;
     @Inject
@@ -52,13 +52,9 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @DataField
     private TextBox internalName;
     @Inject
-    @Bound(property = "slopeSkeleton.slopeGroundSplattingBumpDepth")
+    @Bound(property = "slopeSkeleton.slopeGroundBlur")
     @DataField
-    private DoubleBox slopeGroundSplattingBumpDepth;
-    @Inject
-    @Bound(property = "slopeSkeleton.slopeFactorDistance")
-    @DataField
-    private DoubleBox slopeFactorDistance;
+    private DoubleBox slopeGroundBlur;
     @Inject
     @Bound(property = "slopeSkeleton.bumpMapDepth")
     @DataField

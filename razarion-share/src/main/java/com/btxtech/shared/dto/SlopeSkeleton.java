@@ -20,8 +20,7 @@ public class SlopeSkeleton {
     private int width;
     private int height;
     private int verticalSpace;
-    private double slopeGroundSplattingBumpDepth;
-    private double slopeFactorDistance;
+    private double slopeGroundBlur;
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
@@ -68,20 +67,12 @@ public class SlopeSkeleton {
         return height;
     }
 
-    public double getSlopeGroundSplattingBumpDepth() {
-        return slopeGroundSplattingBumpDepth;
+    public double getSlopeGroundBlur() {
+        return slopeGroundBlur;
     }
 
-    public void setSlopeGroundSplattingBumpDepth(double slopeGroundSplattingBumpDepth) {
-        this.slopeGroundSplattingBumpDepth = slopeGroundSplattingBumpDepth;
-    }
-
-    public double getSlopeFactorDistance() {
-        return slopeFactorDistance;
-    }
-
-    public void setSlopeFactorDistance(double slopeFactorDistance) {
-        this.slopeFactorDistance = slopeFactorDistance;
+    public void setSlopeGroundBlur(double slopeGroundBlur) {
+        this.slopeGroundBlur = slopeGroundBlur;
     }
 
     public double getBumpMapDepth() {

@@ -38,8 +38,7 @@ public class SlopeConfigEntity {
     @Column(nullable = false)
     private SlopeSkeleton.Type type;
     private String internalName;
-    private double slopeGroundSplattingBumpDepth;
-    private double slopeFactorDistance;
+    private double slopeGroundBlur;
     private double bumpMapDepth;
     private double specularIntensity;
     private double specularHardness;
@@ -67,8 +66,7 @@ public class SlopeConfigEntity {
         slopeSkeleton.setWidth((int) shape.getDistance());
         slopeSkeleton.setHeight((int) shape.getZInner());
         slopeSkeleton.setVerticalSpace(verticalSpace);
-        slopeSkeleton.setSlopeGroundSplattingBumpDepth(slopeGroundSplattingBumpDepth);
-        slopeSkeleton.setSlopeFactorDistance(slopeFactorDistance);
+        slopeSkeleton.setSlopeGroundBlur(slopeGroundBlur);
         slopeSkeleton.setBumpMapDepth(bumpMapDepth);
         slopeSkeleton.setSpecularIntensity(specularIntensity);
         slopeSkeleton.setSpecularHardness(specularHardness);
@@ -109,8 +107,7 @@ public class SlopeConfigEntity {
         fractalClampMax = slopeConfig.getFractalClampMax();
         fractalRoughness = slopeConfig.getFractalRoughness();
         type = slopeConfig.getSlopeSkeleton().getType();
-        slopeGroundSplattingBumpDepth = slopeConfig.getSlopeSkeleton().getSlopeGroundSplattingBumpDepth();
-        slopeFactorDistance = slopeConfig.getSlopeSkeleton().getSlopeFactorDistance();
+        slopeGroundBlur = slopeConfig.getSlopeSkeleton().getSlopeGroundBlur();
         bumpMapDepth = slopeConfig.getSlopeSkeleton().getBumpMapDepth();
         specularIntensity = slopeConfig.getSlopeSkeleton().getSpecularIntensity();
         specularHardness = slopeConfig.getSlopeSkeleton().getSpecularHardness();
@@ -140,8 +137,7 @@ public class SlopeConfigEntity {
                 "id=" + id +
                 ", shape=" + shape +
                 ", internalName='" + internalName + '\'' +
-                ", slopeGroundSplattingBumpDepth=" + slopeGroundSplattingBumpDepth +
-                ", slopeFactorDistance=" + slopeFactorDistance +
+                ", slopeGroundBlur=" + slopeGroundBlur +
                 ", bumpMapDepth=" + bumpMapDepth +
                 ", specularIntensity=" + specularIntensity +
                 ", specularHardness=" + specularHardness +

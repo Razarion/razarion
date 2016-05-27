@@ -12,10 +12,7 @@ uniform highp mat4 uNMatrix;
 uniform vec3 uLightingDirection;
 uniform float diffuseWeightFactor;
 uniform vec3 uAmbientColor;
-uniform float uSlopeFactorDistance;
-uniform sampler2D uSlopeGroundSplatting;
-uniform int uSlopeGroundSplattingSize;
-uniform float uSlopeGroundSplattingBumpDepth;
+uniform float uSlopeGroundBlur;
 uniform sampler2D uSamplerSlopeTexture;
 uniform int uSamplerSlopeTextureSize;
 uniform sampler2D uSamplerBumpMapSlopeTexture;
@@ -61,17 +58,16 @@ vec4 triPlanarTextureMapping(sampler2D sampler, float size, vec2 addCoord) {
 }
 
 vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float size) {
-      vec3 normal = normalize(vVertexNormal);
-      vec3 tangent = normalize(vVertexTangent);
-      vec3 binormal = cross(normal, tangent);
+    vec3 normal = normalize(vVertexNormal);
+    vec3 tangent = normalize(vVertexTangent);
+    vec3 binormal = cross(normal, tangent);
 
-      float bm0 = triPlanarTextureMapping(sampler, size, vec2(0, 0)).r;
-      float bmUp = triPlanarTextureMapping(sampler, size, vec2(0.0, 1.0/size)).r;
-      float bmRight = triPlanarTextureMapping(sampler, size, vec2(1.0/size, 0.0)).r;
+    float bm0 = triPlanarTextureMapping(sampler, size, vec2(0, 0)).r;
+    float bmUp = triPlanarTextureMapping(sampler, size, vec2(0.0, 1.0/size)).r;
+    float bmRight = triPlanarTextureMapping(sampler, size, vec2(1.0/size, 0.0)).r;
 
-      vec3 bumpVector = (bmRight - bm0) * tangent + (bmUp - bm0)*binormal;
-      normal -= bumpMapDepth * bumpVector;
-      return normalize(normal);
+    vec3 bumpVector = (bm0 - bmRight) * tangent + (bm0 - bmUp) * binormal;
+    return normalize(normal + bumpMapDepth * bumpVector);
 }
 
 vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
@@ -148,26 +144,31 @@ void main(void) {
      }
    } else {
        // Transition
-       // Setup slope factor
-       float slopeGroundSplatting = triPlanarTextureMapping(uSlopeGroundSplatting, float(uSlopeGroundSplattingSize), vec2(0,0)).r;
-       float slopeGroundSplattingFactor = (vSlopeFactor + slopeGroundSplatting) / 2.0;
-       float slopeGroundSplattinSmoothStep = 0.5 - clamp(uSlopeFactorDistance / 2.0, 0.0, 0.5);
-       float correctedSlopeFactor = smoothstep(slopeGroundSplattinSmoothStep, 1.0 - slopeGroundSplattinSmoothStep, slopeGroundSplattingFactor);
-       // Mix slope and ground
        float splattingFactor = setupGroundSplattingFactor();
-       vec4 groundColor = setupGroundColor(splattingFactor);
-       vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
-       textureColor = mix(groundColor, slopeColor, correctedSlopeFactor);
        vec3 groundNorm = setupGroundNorm(splattingFactor);
        vec3 slopeNorm = bumpMapNorm(uSamplerBumpMapSlopeTexture, uBumpMapSlopeDepth, float(uSamplerBumpMapSlopeTextureSize));
-       vec3 slopeGrounsPlattingNaorm = bumpMapNorm(uSlopeGroundSplatting, uSlopeGroundSplattingBumpDepth, float(uSlopeGroundSplattingSize));
-       correctedNorm = mix(groundNorm, slopeNorm, correctedSlopeFactor) /*+ slopeGrounsPlattingNaorm*/;
+       vec3 perpendicular = normalize((uNMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz);
+       float fall = 1.0 - max(dot(slopeNorm, perpendicular), 0.0);
+       float slopeFactor;
+       float invertedVSlopeFactor = (1.0 - vSlopeFactor);
+       if(fall > invertedVSlopeFactor + uSlopeGroundBlur) {
+           slopeFactor = 1.0;
+       } else if(fall < invertedVSlopeFactor - uSlopeGroundBlur) {
+           slopeFactor = 0.0;
+       } else {
+           slopeFactor = fall;
+       }
+       // Mix slope and ground
+       vec4 groundColor = setupGroundColor(splattingFactor);
+       vec4 slopeColor = triPlanarTextureMapping(uSamplerSlopeTexture, float(uSamplerSlopeTextureSize), vec2(0,0));
+       textureColor = mix(groundColor, slopeColor, slopeFactor);
+       correctedNorm = mix(groundNorm, slopeNorm, slopeFactor);
        vec4 specularSlope = setupSpecularLight(correctedLightDirection, slopeNorm, slopeSpecularIntensity, slopeSpecularHardness);
        vec4 specularGround = setupSpecularLight(correctedLightDirection, groundNorm, uGroundSpecularIntensity, uGroundSpecularHardness);
-       specular = mix(specularGround, specularSlope, correctedSlopeFactor);
+       specular = mix(specularGround, specularSlope, slopeFactor);
     }
 
-    // Light
+   // Light
     vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
     vec4 diffuse = vec4(max(dot(normalize(correctedNorm), -correctedLightDirection), 0.0) * diffuseWeightFactor * textureColor.rgb, 1.0);
     gl_FragColor = ambient + diffuse + specular;

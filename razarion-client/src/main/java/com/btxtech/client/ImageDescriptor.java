@@ -52,6 +52,8 @@ public class ImageDescriptor {
     public static final ImageDescriptor CIRCLE_1 = new ImageDescriptor("circle.png", 512, 512);
     public static final ImageDescriptor CIRCLE_2 = new ImageDescriptor("circle2.png", 512, 512);
     public static final ImageDescriptor GREY = new ImageDescriptor("grey.jpg", 512, 512);
+    public static final ImageDescriptor ROCK_TEXTURE_1 = new ImageDescriptor("RockTexture1.png", 512, 512);
+    public static final ImageDescriptor ROCK_BM_1 = new ImageDescriptor("RockBm1.png", 512, 512);
 
     private String url;
     private int width;

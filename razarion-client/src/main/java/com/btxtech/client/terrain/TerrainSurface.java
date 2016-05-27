@@ -63,7 +63,6 @@ public class TerrainSurface {
         for (Slope slope : slopeMap.values()) {
             if (slope.getSlopeSkeleton().getId() == slopeSkeleton.getId()) {
                 slope.updateSlopeSkeleton(slopeSkeleton);
-                logger.severe("setSlopeSkeleton " + slopeSkeleton.getId() + " size: " + slopeSkeletonMap.size() + " SlopeFactorDistance: " + slopeSkeleton.getSlopeFactorDistance());
             }
         }
     }
@@ -154,8 +153,8 @@ public class TerrainSurface {
             slope.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
         } else if (slopeSkeleton.getType() == SlopeSkeleton.Type.LAND) {
             slope = new Slope(slopeSkeleton, terrainSlopePosition.getPolygon());
-            slope.setSlopeImageDescriptor(ImageDescriptor.ROCK_5);
-            slope.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_04);
+            slope.setSlopeImageDescriptor(ImageDescriptor.ROCK_TEXTURE_1);
+            slope.setSlopeBumpImageDescriptor(ImageDescriptor.ROCK_BM_1);
             slope.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
             slope.wrap(groundMesh);
         } else {
