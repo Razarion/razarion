@@ -1,9 +1,11 @@
 package com.btxtech.server.terrain.surface;
 
+import com.btxtech.server.terrain.LightConfigEmbeddable;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeleton;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -22,9 +24,9 @@ public class GroundConfigEntity {
     @Id
     @GeneratedValue
     private Long id;
+    @Embedded
+    private LightConfigEmbeddable lightConfigEmbeddable;
     private double bumpMapDepth;
-    private double specularHardness;
-    private double specularIntensity;
     private double splattingDistance;
     private double splattingFractalMin;
     private double splattingFractalMax;
@@ -69,8 +71,7 @@ public class GroundConfigEntity {
 
     public void fromGroundConfig(GroundConfig groundConfig) {
         bumpMapDepth = groundConfig.getGroundSkeleton().getBumpMapDepth();
-        specularHardness = groundConfig.getGroundSkeleton().getSpecularHardness();
-        specularIntensity = groundConfig.getGroundSkeleton().getSpecularIntensity();
+        lightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeleton().getLightConfig());
         splattingDistance = groundConfig.getGroundSkeleton().getSplattingDistance();
         splattingFractalMin = groundConfig.getSplattingFractalMin();
         splattingFractalMax = groundConfig.getSplattingFractalMax();
@@ -105,8 +106,7 @@ public class GroundConfigEntity {
         groundSkeleton.setId(id.intValue());
         groundSkeleton.setBumpMapDepth(bumpMapDepth);
         groundSkeleton.setSplattingDistance(splattingDistance);
-        groundSkeleton.setSpecularHardness(specularHardness);
-        groundSkeleton.setSpecularIntensity(specularIntensity);
+        groundSkeleton.setLightConfig(lightConfigEmbeddable.toLightConfig());
         groundSkeleton.setSplattingXCount(splattingXCount);
         groundSkeleton.setSplattingYCount(splattingYCount);
         double[][] splattingNodes = new double[splattingXCount][splattingYCount];

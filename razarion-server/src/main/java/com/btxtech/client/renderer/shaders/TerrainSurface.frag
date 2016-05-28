@@ -7,12 +7,15 @@ varying vec4 vVertexPosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
 varying float vGroundSplatting;
+//Light
+uniform vec3 uLightDirection;
+uniform vec3 uLightDiffuse;
+uniform vec3 uLightAmbient;
+uniform float uLightSpecularIntensity;
+uniform float uLightSpecularHardness;
 
 uniform highp mat4 uNMatrix;
-uniform vec3 uLightingDirection;
-uniform float diffuseWeightFactor;
 uniform float uShadowAlpha;
-uniform vec3 uAmbientColor;
 uniform sampler2D uGroundTopTexture;
 uniform int uGroundTopTextureSize;
 uniform sampler2D uGroundBottomTexture;
@@ -23,8 +26,6 @@ uniform sampler2D uGroundBottomMap;
 uniform int uGroundBottomMapSize;
 uniform float uGroundBottomMapDepth;
 uniform float uGroundSplattingDistance;
-uniform float uGroundSpecularIntensity;
-uniform float uGroundSpecularHardness;
 uniform sampler2D uSamplerShadow;
 
 const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
@@ -74,8 +75,8 @@ float calculateShadowFactor() {
 }
 
 vec4 renderGround(vec3 correctedLigtDirection, float shadowFactor, vec4 splatteredColorGround, vec3 groundNorm) {
-    vec4 ambient = vec4(uAmbientColor, 1.0) * splatteredColorGround;
-    vec4 diffuse = vec4(max(dot(normalize(groundNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * diffuseWeightFactor * splatteredColorGround.rgb, 1.0);
+    vec4 ambient = vec4(uLightAmbient, 1.0) * splatteredColorGround;
+    vec4 diffuse = vec4(max(dot(normalize(groundNorm), normalize(correctedLigtDirection)), 0.0) * shadowFactor * uLightDiffuse * splatteredColorGround.rgb, 1.0);
     return ambient + diffuse;
 }
 
@@ -106,14 +107,14 @@ vec3 setupGroundNorm(float splattingFactor) {
 
 void main(void) {
     float shadowFactor = calculateShadowFactor();
-    vec3 correctedLightDirection = normalize((uNMatrix * vec4(uLightingDirection, 1.0)).xyz);
+    vec3 correctedLightDirection = normalize((uNMatrix * vec4(uLightDirection, 1.0)).xyz);
 
     float splattingFactor = setupGroundSplattingFactor();
     vec4 textureColor = setupGroundColor(splattingFactor);
     vec3 correctedNorm = setupGroundNorm(splattingFactor);
-    vec4 specular = setupSpecularLight(correctedLightDirection, correctedNorm, uGroundSpecularIntensity, uGroundSpecularHardness);
+    vec4 specular = setupSpecularLight(correctedLightDirection, correctedNorm, uLightSpecularIntensity, uLightSpecularHardness);
     // Light
-    vec4 ambient = vec4(uAmbientColor, 1.0) * textureColor;
-    vec4 diffuse = vec4(max(dot(normalize(correctedNorm), -correctedLightDirection), 0.0) * diffuseWeightFactor * textureColor.rgb, 1.0);
+    vec4 ambient = vec4(uLightAmbient, 1.0) * textureColor;
+    vec4 diffuse = vec4(max(dot(normalize(correctedNorm), -correctedLightDirection), 0.0) * uLightDiffuse * textureColor.rgb, 1.0);
     gl_FragColor = ambient + diffuse * shadowFactor + specular * shadowFactor;
 }

@@ -5,6 +5,8 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.game.jsre.common.ImageLoader;
+import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.dom.client.ImageElement;
@@ -89,6 +91,10 @@ public abstract class AbstractRenderer implements Renderer {
         uniform3f(uniformName, vertex.getX(), vertex.getY(), vertex.getZ());
     }
 
+    protected void uniform3fNoAlpha(String uniformName, Color color) {
+        uniform3f(uniformName, color.getR(), color.getG(), color.getB());
+    }
+
     protected void uniform1f(String uniformName, double value) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
         gameCanvas.getCtx3d().uniform1f(uniformLocation, (float) value);
@@ -117,6 +123,17 @@ public abstract class AbstractRenderer implements Renderer {
 
     protected TextureIdHandler.WebGlTextureId createWebGlTextureId() {
         return textureIdHandler.create();
+    }
+
+    protected void setLightUniforms(String postfix, LightConfig lightConfig) {
+        if (postfix == null) {
+            postfix = "";
+        }
+        uniform3f("uLightDirection" + postfix, lightConfig.getDirection());
+        uniform3fNoAlpha("uLightDiffuse" + postfix, lightConfig.getDiffuse());
+        uniform3fNoAlpha("uLightAmbient" + postfix, lightConfig.getAmbient());
+        uniform1f("uLightSpecularIntensity" + postfix, lightConfig.getSpecularIntensity());
+        uniform1f("uLightSpecularHardness" + postfix, lightConfig.getSpecularHardness());
     }
 
     protected WebGLTexture setupTexture(final ImageDescriptor imageDescriptor) {

@@ -3,6 +3,7 @@ package com.btxtech.client.sidebar;
 import com.btxtech.client.dialog.ModalDialog;
 import com.btxtech.client.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.widgets.LightWidget;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.TerrainEditorService;
@@ -46,6 +47,9 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     private DataBinder<GroundConfig> groundConfigDataBinder;
     @Inject
     @DataField
+    private LightWidget lightConfig;
+    @Inject
+    @DataField
     private Button fractalSplatting;
     @Inject
     @DataField
@@ -58,14 +62,6 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @Bound(property = "groundSkeleton.bumpMapDepth")
     @DataField
     private DoubleBox bumpMapDepth;
-    @Inject
-    @Bound(property = "groundSkeleton.specularIntensity")
-    @DataField
-    private DoubleBox specularIntensity;
-    @Inject
-    @Bound(property = "groundSkeleton.specularHardness")
-    @DataField
-    private DoubleBox specularHardness;
     @Inject
     @DataField
     private Button sculptButton;
@@ -82,6 +78,7 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
             @Override
             public void callback(GroundConfig groundConfig) {
                 groundConfigDataBinder.setModel(groundConfig);
+                lightConfig.setModel(groundConfig.getGroundSkeleton().getLightConfig());
             }
         }, new ErrorCallback<Object>() {
             @Override
@@ -117,6 +114,7 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
             @Override
             public void callback(GroundConfig groundConfig) {
                 groundConfigDataBinder.setModel(groundConfig);
+                lightConfig.setModel(groundConfig.getGroundSkeleton().getLightConfig());
             }
         }, new ErrorCallback<Object>() {
             @Override

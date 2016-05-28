@@ -104,8 +104,8 @@ public class DrawScenes {
 
         SlopeSkeleton slopeSkeleton = new SlopeSkeleton();
         slopeSkeleton.setBumpMapDepth(0.5);
-        slopeSkeleton.setSpecularHardness(0.2);
-        slopeSkeleton.setSpecularIntensity(1.0);
+//        slopeSkeleton.setSpecularHardness(0.2);
+//        slopeSkeleton.setSpecularIntensity(1.0);
         slopeSkeleton.setVerticalSpace(100);
         slopeSkeleton.setSegments(100);
         List<SlopeShape> shape = new ArrayList<>();

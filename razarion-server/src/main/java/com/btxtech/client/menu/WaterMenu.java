@@ -2,6 +2,8 @@ package com.btxtech.client.menu;
 
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.Water;
+import com.btxtech.client.widgets.LightWidget;
+import com.btxtech.shared.dto.LightConfig;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -23,16 +25,13 @@ public class WaterMenu extends Composite {
     private TerrainSurface terrainSurface;
     @Inject
     @DataField
+    private LightWidget lightWidget;
+    @Inject
+    @DataField
     private DoubleBox transparency;
     @Inject
     @DataField
     private DoubleBox bumpMap;
-    @Inject
-    @DataField
-    private DoubleBox specularIntensity;
-    @Inject
-    @DataField
-    private DoubleBox specularHardness;
     @Inject
     @DataField
     private DoubleBox level;
@@ -45,10 +44,9 @@ public class WaterMenu extends Composite {
         Water water = terrainSurface.getWater();
         transparency.setValue(water.getWaterTransparency());
         bumpMap.setValue(water.getWaterBumpMapDepth());
-        specularIntensity.setValue(water.getWaterSpecularIntensity());
-        specularHardness.setValue(water.getWaterSpecularHardness());
         level.setValue(water.getLevel());
         ground.setValue(water.getGround());
+        lightWidget.setModel(water.getLightConfig());
     }
 
     @EventHandler("transparency")
@@ -59,16 +57,6 @@ public class WaterMenu extends Composite {
     @EventHandler("bumpMap")
     public void bumpMapChanged(ChangeEvent e) {
         terrainSurface.getWater().setWaterBumpMapDepth(bumpMap.getValue());
-    }
-
-    @EventHandler("specularIntensity")
-    public void specularIntensityChanged(ChangeEvent e) {
-        terrainSurface.getWater().setWaterSpecularIntensity(specularIntensity.getValue());
-    }
-
-    @EventHandler("specularHardness")
-    public void specularHardnessChanged(ChangeEvent e) {
-        terrainSurface.getWater().setWaterSpecularHardness(specularHardness.getValue());
     }
 
     @EventHandler("level")

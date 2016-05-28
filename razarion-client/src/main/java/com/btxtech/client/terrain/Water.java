@@ -2,31 +2,46 @@ package com.btxtech.client.terrain;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 10.04.2016.
  */
 public class Water {
+    private Logger logger = Logger.getLogger(Water.class.getName());
     private double level;
     private double ground;
     // Water, should not be in here
     private double waterTransparency = 0.75;
     private double waterBumpMapDepth = 20;
-    private double waterSpecularIntensity = 0.4;
-    private double waterSpecularHardness = 0.8;
     private List<Vertex> vertices = new ArrayList<>();
     private List<Vertex> norms = new ArrayList<>();
     private List<Vertex> tangents = new ArrayList<>();
     private List<Vertex> barycentric = new ArrayList<>();
+    private LightConfig lightConfig;
 
     public Water(double level, double ground) {
         this.level = level;
         this.ground = ground;
+        try {
+            lightConfig = new LightConfig();
+            lightConfig.setDiffuse(new Color());
+            lightConfig.setAmbient(new Color());
+            lightConfig.setXRotation(Math.toRadians(-10));
+            lightConfig.setYRotation(Math.toRadians(-10));
+            lightConfig.setSpecularIntensity(0.4);
+            lightConfig.setSpecularHardness(0.8);
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, t.getMessage(), t);
+        }
     }
 
     public double getLevel() {
@@ -63,22 +78,6 @@ public class Water {
 
     public void setWaterBumpMapDepth(double waterBumpMapDepth) {
         this.waterBumpMapDepth = waterBumpMapDepth;
-    }
-
-    public double getWaterSpecularIntensity() {
-        return waterSpecularIntensity;
-    }
-
-    public void setWaterSpecularIntensity(double waterSpecularIntensity) {
-        this.waterSpecularIntensity = waterSpecularIntensity;
-    }
-
-    public double getWaterSpecularHardness() {
-        return waterSpecularHardness;
-    }
-
-    public void setWaterSpecularHardness(double waterSpecularHardness) {
-        this.waterSpecularHardness = waterSpecularHardness;
     }
 
     public void clearAllTriangles() {
@@ -140,5 +139,9 @@ public class Water {
 
     public double getWaterAnimation(long millis, int durationMs, int offsetMs) {
         return Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT);
+    }
+
+    public LightConfig getLightConfig() {
+        return lightConfig;
     }
 }

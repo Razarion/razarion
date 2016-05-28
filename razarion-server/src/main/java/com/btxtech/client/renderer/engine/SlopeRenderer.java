@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -29,8 +28,6 @@ public class SlopeRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
-    @Inject
-    private Lighting lighting;
     private int elementCount;
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute normals;
@@ -91,24 +88,22 @@ public class SlopeRenderer extends AbstractRenderer {
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
         uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
-        uniform3f("uAmbientColor", lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
-        Vertex direction = lighting.getLightDirection();
-        uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
-        uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
+
+        setLightUniforms("Slope", slope.getSlopeSkeleton().getLightConfig());
+
+        uniform1f("uLightSpecularIntensityGround", 0); // TODO
+        uniform1f("uLightSpecularHardnessGround", 0); // TODO
+
         uniform1f("uSlopeGroundBlur", slope.getSlopeSkeleton().getSlopeGroundBlur());
         uniform1i("uSamplerSlopeTextureSize", slope.getSlopeImageDescriptor().getQuadraticEdge());
         uniform1i("uSamplerBumpMapSlopeTextureSize", slope.getSlopeBumpImageDescriptor().getQuadraticEdge());
         uniform1f("uBumpMapSlopeDepth", slope.getSlopeSkeleton().getBumpMapDepth());
-        uniform1f("slopeSpecularIntensity", slope.getSlopeSkeleton().getSpecularIntensity());
-        uniform1f("slopeSpecularHardness", slope.getSlopeSkeleton().getSpecularHardness());
         uniform1i("uGroundSplattingSize", terrainSurface.getBlenderImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundTopTextureSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
         uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundSkeleton().getBumpMapDepth());
         uniform1f("uGroundSplattingDistance", terrainSurface.getGroundSkeleton().getSplattingDistance());
-        uniform1f("uGroundSpecularHardness", terrainSurface.getGroundSkeleton().getSpecularHardness());
-        uniform1f("uGroundSpecularIntensity", terrainSurface.getGroundSkeleton().getSpecularIntensity());
         uniform1b("uHasWater", slope.hasWater());
         uniform1f("uWaterLevel", slope.getWaterLevel());
         uniform1f("uWaterGround", slope.getWaterGround());

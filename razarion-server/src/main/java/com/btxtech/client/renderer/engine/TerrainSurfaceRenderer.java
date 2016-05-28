@@ -8,6 +8,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
@@ -84,14 +85,10 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
         uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
-        uniform3f("uAmbientColor", lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
-        Vertex direction = lighting.getLightDirection();
-        uniform3f("uLightingDirection", direction.getX(), direction.getY(), direction.getZ());
-        uniform1f("diffuseWeightFactor", lighting.getDiffuseIntensity());
+
+        setLightUniforms(null, terrainSurface.getGroundSkeleton().getLightConfig());
         uniform1f("uGroundSplattingDistance", terrainSurface.getGroundSkeleton().getSplattingDistance());
         uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundSkeleton().getBumpMapDepth());
-        uniform1f("uGroundSpecularIntensity", terrainSurface.getGroundSkeleton().getSpecularIntensity());
-        uniform1f("uGroundSpecularHardness", terrainSurface.getGroundSkeleton().getSpecularHardness());
         uniform1i("uGroundTopTextureSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());
         uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());

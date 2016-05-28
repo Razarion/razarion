@@ -5,6 +5,7 @@ import com.btxtech.client.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.SlopeModeler;
+import com.btxtech.client.widgets.LightWidget;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.SlopeConfig;
@@ -52,6 +53,9 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @DataField
     private TextBox internalName;
     @Inject
+    @DataField
+    private LightWidget lightConfig;
+    @Inject
     @Bound(property = "slopeSkeleton.slopeGroundBlur")
     @DataField
     private DoubleBox slopeGroundBlur;
@@ -59,14 +63,6 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @Bound(property = "slopeSkeleton.bumpMapDepth")
     @DataField
     private DoubleBox bumpMapDepth;
-    @Inject
-    @Bound(property = "slopeSkeleton.specularIntensity")
-    @DataField
-    private DoubleBox specularIntensity;
-    @Inject
-    @Bound(property = "slopeSkeleton.specularHardness")
-    @DataField
-    private DoubleBox specularHardness;
     @Inject
     @Bound(property = "slopeSkeleton.verticalSpace")
     @DataField
@@ -109,6 +105,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
 
     public void init(SlopeConfig slopeConfig, Double zoom) {
         slopeConfigDataBinder.setModel(slopeConfig);
+        lightConfig.setModel(slopeConfig.getSlopeSkeleton().getLightConfig());
         shapeEditor.init(svgElement, slopeConfig, this, zoom);
     }
 

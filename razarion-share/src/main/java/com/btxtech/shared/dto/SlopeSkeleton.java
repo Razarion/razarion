@@ -22,10 +22,9 @@ public class SlopeSkeleton {
     private int verticalSpace;
     private double slopeGroundBlur;
     private double bumpMapDepth;
-    private double specularIntensity;
-    private double specularHardness;
     private Type type;
     private SlopeNode[][] slopeNodes;
+    private LightConfig lightConfig;
 
     public int getId() {
         return id;
@@ -83,22 +82,6 @@ public class SlopeSkeleton {
         this.bumpMapDepth = bumpMapDepth;
     }
 
-    public double getSpecularIntensity() {
-        return specularIntensity;
-    }
-
-    public void setSpecularIntensity(double specularIntensity) {
-        this.specularIntensity = specularIntensity;
-    }
-
-    public double getSpecularHardness() {
-        return specularHardness;
-    }
-
-    public void setSpecularHardness(double specularHardness) {
-        this.specularHardness = specularHardness;
-    }
-
     public int getVerticalSpace() {
         return verticalSpace;
     }
@@ -121,6 +104,14 @@ public class SlopeSkeleton {
 
     public void setSlopeNodes(SlopeNode[][] slopeNodes) {
         this.slopeNodes = slopeNodes;
+    }
+
+    public LightConfig getLightConfig() {
+        return lightConfig;
+    }
+
+    public void setLightConfig(LightConfig lightConfig) {
+        this.lightConfig = lightConfig;
     }
 
     @Override

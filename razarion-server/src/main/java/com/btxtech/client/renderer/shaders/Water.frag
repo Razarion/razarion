@@ -5,16 +5,18 @@ varying vec3 vVertexTangent;
 varying vec3 vVertexPosition;
 varying vec3 vWorldVertexPosition;
 
+// Light
+uniform vec3 uLightDirection;
+uniform vec3 uLightDiffuse;
+uniform vec3 uLightAmbient;
+uniform float uLightSpecularIntensity;
+uniform float uLightSpecularHardness;
+
 uniform highp mat4 uNMatrix;
 uniform float uTransparency;
 uniform sampler2D uSamplerBumpMap;
 uniform int uBumpMapSize;
 uniform float uBumpMapDepth;
-uniform vec3 uAmbientColor;
-uniform vec3 uLightingDirection;
-uniform vec3 uLightingColor;
-uniform float uSlopeSpecularHardness;
-uniform float uSlopeSpecularIntensity;
 uniform float animation;
 uniform float animation2;
 
@@ -55,11 +57,11 @@ vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
 
 void main(void) {
     vec3 norm = bumpMapNorm(float(uBumpMapSize));
-    vec3 correctedLigtDirection = (uNMatrix * vec4(uLightingDirection, 1.0)).xyz;
+    vec3 correctedLigtDirection = (uNMatrix * vec4(uLightDirection, 1.0)).xyz;
 
-    vec3 ambient = uAmbientColor * WATER_COLOR;
-    vec3 diffuse = max(dot(normalize(norm), normalize(-correctedLigtDirection)), 0.0) /* * shadowFactor */* uLightingColor * WATER_COLOR;
-    vec3 specular = setupSpecularLight(correctedLigtDirection, norm, uSlopeSpecularIntensity, uSlopeSpecularHardness) /* * shadowFactor */;
+    vec3 ambient = uLightAmbient * WATER_COLOR;
+    vec3 diffuse = max(dot(normalize(norm), normalize(-correctedLigtDirection)), 0.0)* uLightDiffuse * WATER_COLOR /* * shadowFactor */ ;
+    vec3 specular = setupSpecularLight(correctedLigtDirection, norm, uLightSpecularHardness, uLightSpecularIntensity) /* * shadowFactor */;
     gl_FragColor = vec4(ambient + diffuse + specular, uTransparency);
 }
 

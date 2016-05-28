@@ -13,8 +13,6 @@ public class GroundSkeleton {
     private int id;
     private double splattingDistance;
     private double bumpMapDepth;
-    private double specularIntensity;
-    private double specularHardness;
     // errai: setter and getter must be available for arrays.Otherwise the array is always null
     private double[][] heights;
     private int heightXCount;
@@ -23,6 +21,7 @@ public class GroundSkeleton {
     private double[][] splattings;
     private int splattingXCount;
     private int splattingYCount;
+    private LightConfig lightConfig;
 
     public int getId() {
         return id;
@@ -96,20 +95,11 @@ public class GroundSkeleton {
         this.bumpMapDepth = bumpMapDepth;
     }
 
-    public double getSpecularIntensity() {
-        return specularIntensity;
+    public LightConfig getLightConfig() {
+        return lightConfig;
     }
 
-    public void setSpecularIntensity(double specularIntensity) {
-        this.specularIntensity = specularIntensity;
+    public void setLightConfig(LightConfig lightConfig) {
+        this.lightConfig = lightConfig;
     }
-
-    public double getSpecularHardness() {
-        return specularHardness;
-    }
-
-    public void setSpecularHardness(double specularHardness) {
-        this.specularHardness = specularHardness;
-    }
-
 }

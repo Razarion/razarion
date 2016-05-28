@@ -2,7 +2,6 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Lighting;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -33,8 +32,6 @@ public class WaterRenderer extends AbstractRenderer {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
-    @Inject
-    private Lighting lighting;
 
     @PostConstruct
     public void init() {
@@ -46,7 +43,7 @@ public class WaterRenderer extends AbstractRenderer {
 
     @Override
     public void setupImages() {
-        bumpMap = createWebGLBumpMapTexture(terrainSurface.getWater().getBumpMap(), "uSamplerBumpMap"); // TODO
+        bumpMap = createWebGLBumpMapTexture(terrainSurface.getWater().getBumpMap(), "uSamplerBumpMap");
     }
 
     @Override
@@ -70,17 +67,14 @@ public class WaterRenderer extends AbstractRenderer {
 
         useProgram();
 
+        setLightUniforms(null, terrainSurface.getWater().getLightConfig());
+
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
         uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
-        uniform3f("uLightingDirection", lighting.getLightDirection());
-        uniform3f("uLightingColor", lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity());
-        uniform3f("uAmbientColor", lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
         uniform1i("uBumpMapSize", terrainSurface.getWater().getBumpMap().getQuadraticEdge());
         uniform1f("uTransparency", terrainSurface.getWater().getWaterTransparency());
         uniform1f("uBumpMapDepth", terrainSurface.getWater().getWaterBumpMapDepth());
-        uniform1f("uSlopeSpecularHardness", terrainSurface.getWater().getWaterSpecularHardness());
-        uniform1f("uSlopeSpecularIntensity", terrainSurface.getWater().getWaterSpecularIntensity());
         uniform1f("animation", terrainSurface.getWater().getWaterAnimation());
         uniform1f("animation2", terrainSurface.getWater().getWaterAnimation2());
 

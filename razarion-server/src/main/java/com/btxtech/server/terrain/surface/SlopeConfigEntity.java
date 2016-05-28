@@ -1,5 +1,6 @@
 package com.btxtech.server.terrain.surface;
 
+import com.btxtech.server.terrain.LightConfigEmbeddable;
 import com.btxtech.shared.Shape;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
@@ -8,6 +9,7 @@ import com.btxtech.shared.dto.SlopeSkeleton;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,6 +32,9 @@ public class SlopeConfigEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private String internalName;
+    @Embedded
+    private LightConfigEmbeddable lightConfigEmbeddable;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     @OrderColumn(name = "orderColumn")
@@ -37,11 +42,8 @@ public class SlopeConfigEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SlopeSkeleton.Type type;
-    private String internalName;
     private double slopeGroundBlur;
     private double bumpMapDepth;
-    private double specularIntensity;
-    private double specularHardness;
     private double fractalMin;
     private double fractalMax;
     private double fractalClampMin;
@@ -62,14 +64,13 @@ public class SlopeConfigEntity {
         slopeSkeleton.setId(id.intValue());
         slopeSkeleton.setSegments(segments);
         Shape shape = new Shape(toSlopeShapes());
+        slopeSkeleton.setLightConfig(lightConfigEmbeddable.toLightConfig());
         slopeSkeleton.setRows(shape.getVertexCount());
         slopeSkeleton.setWidth((int) shape.getDistance());
         slopeSkeleton.setHeight((int) shape.getZInner());
         slopeSkeleton.setVerticalSpace(verticalSpace);
         slopeSkeleton.setSlopeGroundBlur(slopeGroundBlur);
         slopeSkeleton.setBumpMapDepth(bumpMapDepth);
-        slopeSkeleton.setSpecularIntensity(specularIntensity);
-        slopeSkeleton.setSpecularHardness(specularHardness);
         slopeSkeleton.setType(type);
         SlopeNode[][] slopeNodes = new SlopeNode[segments][shape.getVertexCount()];
         for (SlopeNodeEntity slopeSkeletonEntry : slopeSkeletonEntries) {
@@ -101,6 +102,7 @@ public class SlopeConfigEntity {
             shape.add(slopeShapeEntity);
         }
         internalName = slopeConfig.getInternalName();
+        lightConfigEmbeddable.fromLightConfig(slopeConfig.getSlopeSkeleton().getLightConfig());
         fractalMin = slopeConfig.getFractalMin();
         fractalMax = slopeConfig.getFractalMax();
         fractalClampMin = slopeConfig.getFractalClampMin();
@@ -109,8 +111,6 @@ public class SlopeConfigEntity {
         type = slopeConfig.getSlopeSkeleton().getType();
         slopeGroundBlur = slopeConfig.getSlopeSkeleton().getSlopeGroundBlur();
         bumpMapDepth = slopeConfig.getSlopeSkeleton().getBumpMapDepth();
-        specularIntensity = slopeConfig.getSlopeSkeleton().getSpecularIntensity();
-        specularHardness = slopeConfig.getSlopeSkeleton().getSpecularHardness();
         verticalSpace = slopeConfig.getSlopeSkeleton().getVerticalSpace();
         segments = slopeConfig.getSlopeSkeleton().getSegments();
         slopeSkeletonEntries.clear();
@@ -135,12 +135,11 @@ public class SlopeConfigEntity {
     public String toString() {
         return "SlopeConfigEntity{" +
                 "id=" + id +
-                ", shape=" + shape +
                 ", internalName='" + internalName + '\'' +
+                ", lightConfigEmbeddable=" + lightConfigEmbeddable +
+                ", shape=" + shape +
                 ", slopeGroundBlur=" + slopeGroundBlur +
                 ", bumpMapDepth=" + bumpMapDepth +
-                ", specularIntensity=" + specularIntensity +
-                ", specularHardness=" + specularHardness +
                 ", fractalMin=" + fractalMin +
                 ", fractalMax=" + fractalMax +
                 ", fractalClampMin=" + fractalClampMin +

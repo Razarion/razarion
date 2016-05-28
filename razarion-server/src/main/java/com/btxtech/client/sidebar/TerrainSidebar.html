@@ -11,6 +11,10 @@
 <body>
 
 <table id="terrain" style="border-spacing: 0; border-collapse: separate; margin: 5px">
+
+    <tr>
+        <td colspan="2"><div id="lightConfig"></div></td>
+    </tr>
     <tr>
         <td>Splatting Fractal</td>
         <td><button id="fractalSplatting">Open</button></td>
@@ -22,14 +26,6 @@
     <tr>
         <td>Bump Map</td>
         <td><input id="bumpMapDepth" type="range" min="0" max="10" step="0.01"></td>
-    </tr>
-    <tr>
-        <td>Specular Intensity</td>
-        <td><input id="specularIntensity" type="range" max="1.0" min="0.0" step="0.01"></td>
-    </tr>
-    <tr>
-        <td>Specular Hardness</td>
-        <td><input id="specularHardness" type="number" min="0" step="0.1"></td>
     </tr>
     <tr>
         <td>Height Fractal</td>
