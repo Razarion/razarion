@@ -15,23 +15,21 @@ public class WebGlUniformTexture {
     private AbstractRenderer abstractRenderer;
     private WebGLTexture webGLTexture;
     private String samplerUniformName;
-    private final int textureId;
-    private final int uniformValue;
+    private TextureIdHandler.WebGlTextureId webGlTextureId;
 
-    public WebGlUniformTexture(WebGLRenderingContext ctx3d, AbstractRenderer abstractRenderer, WebGLTexture webGLTexture, String samplerUniformName, int textureId, int uniformValue) {
+    public WebGlUniformTexture(WebGLRenderingContext ctx3d, AbstractRenderer abstractRenderer, WebGLTexture webGLTexture, String samplerUniformName, TextureIdHandler.WebGlTextureId webGlTextureId) {
         this.ctx3d = ctx3d;
         this.abstractRenderer = abstractRenderer;
         this.webGLTexture = webGLTexture;
         this.samplerUniformName = samplerUniformName;
-        this.textureId = textureId;
-        this.uniformValue = uniformValue;
+        this.webGlTextureId = webGlTextureId;
     }
 
     public void activate() {
         WebGLUniformLocation tUniform = abstractRenderer.getUniformLocation(samplerUniformName);
-        ctx3d.uniform1i(tUniform, uniformValue);
+        ctx3d.uniform1i(tUniform, webGlTextureId.getUniformValue());
         WebGlUtil.checkLastWebGlError("uniform1i", ctx3d);
-        ctx3d.activeTexture(textureId);
+        ctx3d.activeTexture(webGlTextureId.getWebGlTextureId());
         WebGlUtil.checkLastWebGlError("activeTexture", ctx3d);
         ctx3d.bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
         WebGlUtil.checkLastWebGlError("bindTexture", ctx3d);

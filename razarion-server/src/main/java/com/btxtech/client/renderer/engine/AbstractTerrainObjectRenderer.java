@@ -70,7 +70,7 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
 
     @Override
     public void setupImages() {
-        webGLTexture = createWebGLTexture(getImageDescriptor(terrainObjectService), SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
+        webGLTexture = createWebGLTexture(getImageDescriptor(terrainObjectService), SAMPLER_UNIFORM_NAME);
     }
 
     @Override

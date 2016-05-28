@@ -46,7 +46,7 @@ public class WaterRenderer extends AbstractRenderer {
 
     @Override
     public void setupImages() {
-        bumpMap = createWebGLBumpMapTexture(terrainSurface.getWater().getBumpMap(), "uSamplerBumpMap", WebGLRenderingContext.TEXTURE0, 0); // TODO
+        bumpMap = createWebGLBumpMapTexture(terrainSurface.getWater().getBumpMap(), "uSamplerBumpMap"); // TODO
     }
 
     @Override

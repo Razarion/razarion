@@ -29,6 +29,7 @@ public abstract class AbstractRenderer implements Renderer {
     @Inject
     private GameCanvas gameCanvas;
     private int id;
+    private TextureIdHandler textureIdHandler = new TextureIdHandler();
 
     @Override
     public void setId(int id) {
@@ -106,12 +107,16 @@ public abstract class AbstractRenderer implements Renderer {
         WebGlUtil.checkLastWebGlError("uniform1b", gameCanvas.getCtx3d());
     }
 
-    protected WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName, int textureId, int uniformValue) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureId, uniformValue);
+    protected WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureIdHandler.create());
     }
 
-    protected WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName, int textureId, int uniformValue) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureId, uniformValue);
+    protected WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureIdHandler.create());
+    }
+
+    protected TextureIdHandler.WebGlTextureId createWebGlTextureId() {
+        return textureIdHandler.create();
     }
 
     protected WebGLTexture setupTexture(final ImageDescriptor imageDescriptor) {

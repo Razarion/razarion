@@ -46,7 +46,7 @@ public class UnitRenderer extends AbstractRenderer {
 
     @Override
     public void setupImages() {
-        texture = createWebGLTexture(itemService.getImageDescriptor(), "uSampler", WebGLRenderingContext.TEXTURE0, 0);
+        texture = createWebGLTexture(itemService.getImageDescriptor(), "uSampler");
     }
 
     @Override

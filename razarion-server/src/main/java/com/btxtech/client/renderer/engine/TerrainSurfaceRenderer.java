@@ -43,6 +43,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private RenderService renderService;
+    private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
 
     @PostConstruct
     public void init() {
@@ -55,10 +56,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
     @Override
     public void setupImages() {
-        coverWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), "uGroundTopTexture", WebGLRenderingContext.TEXTURE1, 1);
-        blenderWebGLTexture = createWebGLTexture(terrainSurface.getBlenderImageDescriptor(), "uGroundSplatting", WebGLRenderingContext.TEXTURE2, 2);
-        groundWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), "uGroundBottomTexture", WebGLRenderingContext.TEXTURE3, 3);
-        groundBmWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getGroundBmImageDescriptor(), "uGroundBottomMap", WebGLRenderingContext.TEXTURE4, 4);
+        coverWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), "uGroundTopTexture");
+        blenderWebGLTexture = createWebGLTexture(terrainSurface.getBlenderImageDescriptor(), "uGroundSplatting");
+        groundWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), "uGroundBottomTexture");
+        groundBmWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getGroundBmImageDescriptor(), "uGroundBottomMap");
+        shadowWebGlTextureId = createWebGlTextureId();
     }
 
     @Override
@@ -99,9 +101,9 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         // TODO make simpler
         uniformMatrix4fv("uMVPDepthBias", lighting.createViewProjectionTransformation());
         WebGLUniformLocation shadowMapUniform = getUniformLocation("uSamplerShadow");
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0);
+        gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
-        gameCanvas.getCtx3d().uniform1i(shadowMapUniform, 0);
+        gameCanvas.getCtx3d().uniform1i(shadowMapUniform, shadowWebGlTextureId.getUniformValue());
         WebGLUniformLocation uniformShadowAlpha = getUniformLocation("uShadowAlpha");
         gameCanvas.getCtx3d().uniform1f(uniformShadowAlpha, (float) lighting.getShadowAlpha());
 

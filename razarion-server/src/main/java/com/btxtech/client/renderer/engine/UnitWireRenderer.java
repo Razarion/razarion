@@ -52,7 +52,7 @@ public class UnitWireRenderer extends AbstractRenderer {
 
     @Override
     public void setupImages() {
-        webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, "uSampler", WebGLRenderingContext.TEXTURE0, 0);
+        webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, "uSampler");
     }
 
     @Override

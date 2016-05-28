@@ -92,12 +92,12 @@ public class MonitorRenderer extends AbstractRenderer {
 
         // Color Texture
         WebGLUniformLocation tColorUniform = getUniformLocation(COLOR_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE0); // TODO use TextureIdHandler
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getColorTexture());
         gameCanvas.getCtx3d().uniform1i(tColorUniform, 0);
         // Deep Texture
         WebGLUniformLocation tUniform = getUniformLocation(DEEP_SAMPLER_UNIFORM_NAME);
-        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE1);
+        gameCanvas.getCtx3d().activeTexture(WebGLRenderingContext.TEXTURE1); // TODO use TextureIdHandler
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
         gameCanvas.getCtx3d().uniform1i(tUniform, 1);
 

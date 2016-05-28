@@ -62,7 +62,7 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
 
     @Override
     public void setupImages() {
-        webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, SAMPLER_UNIFORM_NAME, WebGLRenderingContext.TEXTURE0, 0);
+        webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, SAMPLER_UNIFORM_NAME);
     }
 
     public void updateModelMatrices() {
