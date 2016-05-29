@@ -11,8 +11,8 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Portable
 public class GroundSkeleton {
     private int id;
-    private double splattingDistance;
-    private double bumpMapDepth;
+    private double topBmDepth;
+    private double bottomBmDepth;
     // errai: setter and getter must be available for arrays.Otherwise the array is always null
     private double[][] heights;
     private int heightXCount;
@@ -79,20 +79,20 @@ public class GroundSkeleton {
         this.splattingYCount = splattingYCount;
     }
 
-    public double getSplattingDistance() {
-        return splattingDistance;
+    public double getTopBmDepth() {
+        return topBmDepth;
     }
 
-    public void setSplattingDistance(double splattingDistance) {
-        this.splattingDistance = splattingDistance;
+    public void setTopBmDepth(double topBmDepth) {
+        this.topBmDepth = topBmDepth;
     }
 
-    public double getBumpMapDepth() {
-        return bumpMapDepth;
+    public double getBottomBmDepth() {
+        return bottomBmDepth;
     }
 
-    public void setBumpMapDepth(double bumpMapDepth) {
-        this.bumpMapDepth = bumpMapDepth;
+    public void setBottomBmDepth(double bottomBmDepth) {
+        this.bottomBmDepth = bottomBmDepth;
     }
 
     public LightConfig getLightConfig() {

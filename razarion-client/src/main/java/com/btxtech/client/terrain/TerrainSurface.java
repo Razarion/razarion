@@ -31,10 +31,11 @@ public class TerrainSurface {
     private static final double LOWEST_POINT_IN_VIEW = -20;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
-    private ImageDescriptor coverImageDescriptor = ImageDescriptor.GRASS_1;
-    private ImageDescriptor blenderImageDescriptor = ImageDescriptor.BLEND_3;
-    private ImageDescriptor groundImageDescriptor = ImageDescriptor.GROUND_5;
-    private ImageDescriptor groundBmImageDescriptor = ImageDescriptor.GROUND_BM_5;
+    private ImageDescriptor topTexture = ImageDescriptor.GRASS_TEXTURE_2;
+    private ImageDescriptor topBm = ImageDescriptor.GRASS_BM_1;
+    private ImageDescriptor splatting = ImageDescriptor.BLEND_3;
+    private ImageDescriptor groundTexture = ImageDescriptor.GROUND_6_TEXTURE_2;
+    private ImageDescriptor groundBm = ImageDescriptor.GROUND_6_BM_2;
     private GroundMesh groundMesh;
     private Water water = new Water(-7, -20); // Init here due to the editor
     private Logger logger = Logger.getLogger(TerrainSurface.class.getName());
@@ -84,20 +85,24 @@ public class TerrainSurface {
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }
 
-    public ImageDescriptor getGroundImageDescriptor() {
-        return groundImageDescriptor;
+    public ImageDescriptor getGroundTexture() {
+        return groundTexture;
     }
 
-    public ImageDescriptor getGroundBmImageDescriptor() {
-        return groundBmImageDescriptor;
+    public ImageDescriptor getGroundBm() {
+        return groundBm;
     }
 
-    public ImageDescriptor getCoverImageDescriptor() {
-        return coverImageDescriptor;
+    public ImageDescriptor getTopTexture() {
+        return topTexture;
     }
 
-    public ImageDescriptor getBlenderImageDescriptor() {
-        return blenderImageDescriptor;
+    public ImageDescriptor getTopBm() {
+        return topBm;
+    }
+
+    public ImageDescriptor getSplatting() {
+        return splatting;
     }
 
     public double getHighestPointInView() {

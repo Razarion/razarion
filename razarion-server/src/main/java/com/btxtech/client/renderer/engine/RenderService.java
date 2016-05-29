@@ -67,7 +67,7 @@ public class RenderService {
         initFrameBuffer();
         renderQueue = new ArrayList<>();
         unitNorms = new ArrayList<>();
-        createAndAddRenderSwitch(TerrainSurfaceRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class, 0);
+        createAndAddRenderSwitch(GroundRenderer.class, TerrainSurfaceDepthBufferRenderer.class, TerrainSurfaceWireRender.class, 0);
         for (int id : terrainSurface.getSlopeIds()) {
             createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, id);
         }

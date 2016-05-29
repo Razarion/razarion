@@ -1,0 +1,166 @@
+precision mediump float;
+
+varying vec4 vShadowCoord;
+varying vec3 vVertexNormal;
+varying vec3 vVertexTangent;
+varying vec4 vVertexPosition;
+varying vec3 vVertexPositionCoord;
+varying vec3 vVertexNormCoord;
+varying float vGroundSplatting;
+//Light
+uniform vec3 uLightDirection;
+uniform vec3 uLightDiffuse;
+uniform vec3 uLightAmbient;
+uniform float uLightSpecularIntensity;
+uniform float uLightSpecularHardness;
+
+uniform highp mat4 uNMatrix;
+uniform float uShadowAlpha;
+uniform sampler2D uTopTexture;
+uniform int uTopTextureSize;
+uniform sampler2D uTopBm;
+uniform int uTopBmSize;
+uniform float uTopBmDepth;
+uniform sampler2D uBottomTexture;
+uniform int uBottomTextureSize;
+uniform sampler2D uSplatting;
+uniform int uSplattingSize;
+uniform sampler2D uBottomBm;
+uniform int uBottomBmSize;
+uniform float uBottomBmDepth;
+uniform sampler2D uSamplerShadow;
+
+const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
+const float BIAS = 0.001;
+
+// http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
+vec4 triPlanarTextureMapping(sampler2D sampler, float size, vec2 addCoord) {
+    vec3 blending = abs(vVertexNormCoord);
+
+    float b = (blending.x + blending.y + blending.z);
+    blending /= vec3(b, b, b);
+    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / size + addCoord);
+    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / size + addCoord);
+    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / size + addCoord);
+    return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
+}
+
+vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float size) {
+    vec3 normal = normalize(vVertexNormal);
+    vec3 tangent = normalize(vVertexTangent);
+    vec3 binormal = cross(normal, tangent);
+
+    float bm0 = triPlanarTextureMapping(sampler, size, vec2(0, 0)).r;
+    float bmUp = triPlanarTextureMapping(sampler, size, vec2(0.0, 1.0/size)).r;
+    float bmRight = triPlanarTextureMapping(sampler, size, vec2(1.0/size, 0.0)).r;
+
+    vec3 bumpVector = (bm0 - bmRight) * tangent + (bm0 - bmUp) * binormal;
+    return normalize(normal + bumpMapDepth * bumpVector);
+}
+
+float calculateShadowFactor() {
+    float zNdc = vShadowCoord.z / vShadowCoord.w;
+    zNdc = zNdc * 0.5 + 0.5;
+
+    mat4 coordCorrectionMatrix = mat4(0.5, 0.0, 0.0, 0.0,
+                                 0.0, 0.5, 0.0, 0.0,
+                                 0.0, 0.0, 0.5, 0.0,
+                                 0.5, 0.5, 0.5, 1.0);
+    vec4 coordShadowMap = coordCorrectionMatrix * vShadowCoord;
+    float zMap = texture2D(uSamplerShadow, coordShadowMap.st / coordShadowMap.w).r;
+
+    if(zMap > zNdc - 0.001) {
+        return 1.0;
+    } else {
+        return uShadowAlpha;
+    }
+}
+
+vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
+     vec3 reflectionDirection = normalize(reflect(correctedLightDirection, normalize(correctedNorm)));
+     vec3 eyeDirection = normalize(-vVertexPosition.xyz);
+     float factor = max(pow(dot(reflectionDirection, eyeDirection), hardness), 0.0) * intensity;
+     return SPECULAR_LIGHT_COLOR * factor;
+}
+
+void main(void) {
+    float shadowFactor = calculateShadowFactor();
+    vec3 correctedLightDirection = normalize((uNMatrix * vec4(uLightDirection, 1.0)).xyz);
+
+    vec4 colorTop = triPlanarTextureMapping(uTopTexture, float(uTopTextureSize), vec2(0,0));
+    vec3 normTop = bumpMapNorm(uTopBm, uTopBmDepth, float(uTopBmSize));
+    vec4 colorBottom = triPlanarTextureMapping(uBottomTexture, float(uBottomTextureSize), vec2(0,0));
+    vec3 normBottom = bumpMapNorm(uBottomBm, uBottomBmDepth, float(uBottomBmSize));
+    float splatting = triPlanarTextureMapping(uSplatting, float(uSplattingSize), vec2(0,0)).r;
+
+     vec3 norm;
+     vec4 textureColor;
+
+    // Bottom top splatting
+    if(vGroundSplatting + BIAS >= 1.0) {
+        norm = normTop;
+        textureColor = colorTop;
+    } else if(vGroundSplatting <= BIAS) {
+        norm = normBottom;
+        textureColor = colorBottom;
+    } else {
+        float topBmValue = triPlanarTextureMapping(uTopBm, float(uTopBmSize), vec2(0,0)).r;
+        float bottomBmValue = triPlanarTextureMapping(uBottomBm, float(uBottomBmSize), vec2(0,0)).r;
+
+        if(topBmValue + splatting > vGroundSplatting) {
+            norm = normTop;
+            textureColor = colorTop;
+        } else {
+            norm = normBottom;
+            textureColor = colorBottom;
+        }
+    }
+
+    // Light
+    vec4 ambient = vec4(uLightAmbient, 1.0) * textureColor;
+    vec4 diffuse = vec4(max(dot(norm, -correctedLightDirection), 0.0) * uLightDiffuse * textureColor.rgb, 1.0);
+    vec4 specular = setupSpecularLight(correctedLightDirection, norm, uLightSpecularIntensity, uLightSpecularHardness);
+    gl_FragColor = ambient + diffuse * shadowFactor + specular * shadowFactor;
+}
+
+
+////------------------------------------------------------------------------------------------
+//// Patches are pumped out
+////------------------------------------------------------------------------------------------
+//    if(vGroundSplatting + BIAS >= 1.0) {
+//        norm = normTop;
+//        textureColor = colorTop;
+//    } else if(vGroundSplatting <= BIAS) {
+//        norm = normBottom;
+//        textureColor = colorBottom;
+//    } else {
+//        float delta = 0.05;
+//        float step = vGroundSplatting;
+//        if(splatting > step + delta) {
+//            norm = normTop;
+//            textureColor = colorTop;
+//        } else if(splatting < step - delta){
+//            norm = normBottom;
+//            textureColor = colorBottom;
+//        } else {
+//            vec3 slpattingNorm = bumpMapNorm(uSplatting, 10.0, float(uSplattingSize));
+//
+//            float y = (splatting + delta - step) / (2.0 * delta);
+//            norm = mix(slpattingNorm, normTop, y);
+//            // textureColor = mix(colorBottom, colorTop, y);
+//            textureColor = colorTop;
+//
+////            if(y > 1.0) {
+////                gl_FragColor = vec4(1.0, 0.0, 0.0,1.0);
+////            } else if(y < 0.0) {
+////                gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+////            } else {
+////                gl_FragColor = vec4(y, y, y, 1.0);
+////            }
+////            return;
+//
+//        }
+//    }
+////------------------------------------------------------------------------------------------
+//// ENDS Patches are pumped out ENDS
+////------------------------------------------------------------------------------------------

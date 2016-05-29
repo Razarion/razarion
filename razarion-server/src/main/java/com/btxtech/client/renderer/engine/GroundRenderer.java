@@ -8,8 +8,6 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.dto.LightConfig;
-import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
@@ -22,15 +20,16 @@ import javax.inject.Inject;
  * 01.05.2015.
  */
 @Dependent
-public class TerrainSurfaceRenderer extends AbstractRenderer {
+public class GroundRenderer extends AbstractRenderer {
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute normals;
     private VertexShaderAttribute tangents;
     private FloatShaderAttribute splattings;
-    private WebGlUniformTexture coverWebGLTexture;
-    private WebGlUniformTexture blenderWebGLTexture;
-    private WebGlUniformTexture groundWebGLTexture;
-    private WebGlUniformTexture groundBmWebGLTexture;
+    private WebGlUniformTexture topTexture;
+    private WebGlUniformTexture topBm;
+    private WebGlUniformTexture splattingTexture;
+    private WebGlUniformTexture bottomTexture;
+    private WebGlUniformTexture bottomBm;
     private int elementCount;
     @Inject
     private TerrainSurface terrainSurface;
@@ -48,7 +47,7 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
     @PostConstruct
     public void init() {
-        createProgram(Shaders.INSTANCE.terrainSurfaceVertexShader(), Shaders.INSTANCE.terrainSurfaceFragmentShader());
+        createProgram(Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader());
         vertices = createVertexShaderAttribute("aVertexPosition");
         normals = createVertexShaderAttribute("aVertexNormal");
         tangents = createVertexShaderAttribute("aVertexTangent");
@@ -57,10 +56,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
 
     @Override
     public void setupImages() {
-        coverWebGLTexture = createWebGLTexture(terrainSurface.getCoverImageDescriptor(), "uGroundTopTexture");
-        blenderWebGLTexture = createWebGLTexture(terrainSurface.getBlenderImageDescriptor(), "uGroundSplatting");
-        groundWebGLTexture = createWebGLTexture(terrainSurface.getGroundImageDescriptor(), "uGroundBottomTexture");
-        groundBmWebGLTexture = createWebGLBumpMapTexture(terrainSurface.getGroundBmImageDescriptor(), "uGroundBottomMap");
+        topTexture = createWebGLTexture(terrainSurface.getTopTexture(), "uTopTexture");
+        topBm = createWebGLBumpMapTexture(terrainSurface.getTopBm(), "uTopBm");
+        splattingTexture = createWebGLTexture(terrainSurface.getSplatting(), "uSplatting");
+        bottomTexture = createWebGLTexture(terrainSurface.getGroundTexture(), "uBottomTexture");
+        bottomBm = createWebGLBumpMapTexture(terrainSurface.getGroundBm(), "uBottomBm");
         shadowWebGlTextureId = createWebGlTextureId();
     }
 
@@ -87,12 +87,13 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
 
         setLightUniforms(null, terrainSurface.getGroundSkeleton().getLightConfig());
-        uniform1f("uGroundSplattingDistance", terrainSurface.getGroundSkeleton().getSplattingDistance());
-        uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundSkeleton().getBumpMapDepth());
-        uniform1i("uGroundTopTextureSize", terrainSurface.getCoverImageDescriptor().getQuadraticEdge());
-        uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundImageDescriptor().getQuadraticEdge());
-        uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBmImageDescriptor().getQuadraticEdge());
-        uniform1i("uGroundSplattingSize", terrainSurface.getBlenderImageDescriptor().getQuadraticEdge());
+        uniform1f("uTopBmDepth", terrainSurface.getGroundSkeleton().getTopBmDepth());
+        uniform1f("uBottomBmDepth", terrainSurface.getGroundSkeleton().getBottomBmDepth());
+        uniform1i("uTopTextureSize", terrainSurface.getTopTexture().getQuadraticEdge());
+        uniform1i("uBottomTextureSize", terrainSurface.getGroundTexture().getQuadraticEdge());
+        uniform1i("uTopBmSize", terrainSurface.getTopBm().getQuadraticEdge());
+        uniform1i("uBottomBmSize", terrainSurface.getGroundBm().getQuadraticEdge());
+        uniform1i("uSplattingSize", terrainSurface.getSplatting().getQuadraticEdge());
 
         // Shadow
         // TODO make simpler
@@ -109,10 +110,11 @@ public class TerrainSurfaceRenderer extends AbstractRenderer {
         tangents.activate();
         splattings.activate();
 
-        coverWebGLTexture.activate();
-        blenderWebGLTexture.activate();
-        groundWebGLTexture.activate();
-        groundBmWebGLTexture.activate();
+        topTexture.activate();
+        topBm.activate();
+        splattingTexture.activate();
+        bottomTexture.activate();
+        bottomBm.activate();
 
         // Draw
         gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);

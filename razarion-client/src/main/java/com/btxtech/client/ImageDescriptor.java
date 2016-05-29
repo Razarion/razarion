@@ -54,6 +54,10 @@ public class ImageDescriptor {
     public static final ImageDescriptor GREY = new ImageDescriptor("grey.jpg", 512, 512);
     public static final ImageDescriptor ROCK_TEXTURE_1 = new ImageDescriptor("RockTexture1.png", 512, 512);
     public static final ImageDescriptor ROCK_BM_1 = new ImageDescriptor("RockBm1.png", 512, 512);
+    public static final ImageDescriptor GRASS_TEXTURE_2 = new ImageDescriptor("GrassTexture2.png", 512, 512);
+    public static final ImageDescriptor GRASS_BM_1 = new ImageDescriptor("GrassBm1.png", 512, 512);
+    public static final ImageDescriptor GROUND_6_TEXTURE_2 = new ImageDescriptor("Ground6Texture2.png", 512, 512);
+    public static final ImageDescriptor GROUND_6_BM_2 = new ImageDescriptor("Ground6Bm2.png", 512, 512);
 
     private String url;
     private int width;

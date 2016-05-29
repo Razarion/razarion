@@ -26,8 +26,8 @@ public class GroundConfigEntity {
     private Long id;
     @Embedded
     private LightConfigEmbeddable lightConfigEmbeddable;
-    private double bumpMapDepth;
-    private double splattingDistance;
+    private double topBmDepth;
+    private double bottomBmDepth;
     private double splattingFractalMin;
     private double splattingFractalMax;
     private double splattingFractalClampMin;
@@ -70,9 +70,9 @@ public class GroundConfigEntity {
     }
 
     public void fromGroundConfig(GroundConfig groundConfig) {
-        bumpMapDepth = groundConfig.getGroundSkeleton().getBumpMapDepth();
+        topBmDepth = groundConfig.getGroundSkeleton().getTopBmDepth();
+        bottomBmDepth = groundConfig.getGroundSkeleton().getBottomBmDepth();
         lightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeleton().getLightConfig());
-        splattingDistance = groundConfig.getGroundSkeleton().getSplattingDistance();
         splattingFractalMin = groundConfig.getSplattingFractalMin();
         splattingFractalMax = groundConfig.getSplattingFractalMax();
         splattingFractalClampMin = groundConfig.getSplattingFractalClampMin();
@@ -104,8 +104,8 @@ public class GroundConfigEntity {
     public GroundSkeleton generateGroundSkeleton() {
         GroundSkeleton groundSkeleton = new GroundSkeleton();
         groundSkeleton.setId(id.intValue());
-        groundSkeleton.setBumpMapDepth(bumpMapDepth);
-        groundSkeleton.setSplattingDistance(splattingDistance);
+        groundSkeleton.setTopBmDepth(topBmDepth);
+        groundSkeleton.setBottomBmDepth(bottomBmDepth);
         groundSkeleton.setLightConfig(lightConfigEmbeddable.toLightConfig());
         groundSkeleton.setSplattingXCount(splattingXCount);
         groundSkeleton.setSplattingYCount(splattingYCount);

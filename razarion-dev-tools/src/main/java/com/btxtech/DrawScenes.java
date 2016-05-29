@@ -139,7 +139,7 @@ public class DrawScenes {
         groundMesh.reset(MESH_NODE_EDGE_LENGTH, MESH_NODES, MESH_NODES, 0);
 
 //        SlopeSkeleton beachSlopeConfigEntity = new SlopeSkeleton();
-//        beachSlopeConfigEntity.setBumpMapDepth(0.5);
+//        beachSlopeConfigEntity.setBottomBmDepth(0.5);
 //        beachSlopeConfigEntity.setFractalRoughness(0);
 //        beachSlopeConfigEntity.setFractalShift(0);
 //        beachSlopeConfigEntity.setSpecularHardness(0.2);
@@ -176,7 +176,7 @@ public class DrawScenes {
         groundMesh.setupNorms();
 
 //        SlopeSkeleton plateauSlopeConfigEntity = new SlopeSkeleton();
-//        plateauSlopeConfigEntity.setBumpMapDepth(7.5);
+//        plateauSlopeConfigEntity.setBottomBmDepth(7.5);
 //        plateauSlopeConfigEntity.setFractalRoughness(1);
 //        plateauSlopeConfigEntity.setFractalShift(12);
 //        plateauSlopeConfigEntity.setSpecularHardness(1);

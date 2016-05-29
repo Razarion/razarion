@@ -23,11 +23,11 @@ public interface Shaders extends ClientBundle {
     @Source("ModelViewPerspectiveWire.frag")
     TextResource modelViewPerspectiveWireFragmentShader();
 
-    @Source("TerrainSurface.vert")
-    TextResource terrainSurfaceVertexShader();
+    @Source("Ground.vert")
+    TextResource groundVertexShader();
 
-    @Source("TerrainSurface.frag")
-    TextResource terrainSurfaceFragmentShader();
+    @Source("Ground.frag")
+    TextResource groundFragmentShader();
 
     @Source("TerrainObject.vert")
     TextResource terrainObjectVertexShader();

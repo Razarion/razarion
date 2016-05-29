@@ -55,13 +55,13 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @DataField
     private Button fractalHeight;
     @Inject
-    @Bound(property = "groundSkeleton.splattingDistance")
+    @Bound(property = "groundSkeleton.topBmDepth")
     @DataField
-    private DoubleBox splattingDistance;
+    private DoubleBox topBmDepth;
     @Inject
-    @Bound(property = "groundSkeleton.bumpMapDepth")
+    @Bound(property = "groundSkeleton.bottomBmDepth")
     @DataField
-    private DoubleBox bumpMapDepth;
+    private DoubleBox bottomBmDepth;
     @Inject
     @DataField
     private Button sculptButton;
