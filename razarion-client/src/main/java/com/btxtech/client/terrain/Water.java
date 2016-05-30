@@ -20,8 +20,8 @@ public class Water {
     private double level;
     private double ground;
     // Water, should not be in here
-    private double waterTransparency = 0.75;
-    private double waterBumpMapDepth = 20;
+    private double waterTransparency = 0.65;
+    private double waterBumpMapDepth = 10;
     private List<Vertex> vertices = new ArrayList<>();
     private List<Vertex> norms = new ArrayList<>();
     private List<Vertex> tangents = new ArrayList<>();
@@ -33,12 +33,12 @@ public class Water {
         this.ground = ground;
         try {
             lightConfig = new LightConfig();
-            lightConfig.setDiffuse(new Color());
-            lightConfig.setAmbient(new Color());
-            lightConfig.setXRotation(Math.toRadians(-10));
-            lightConfig.setYRotation(Math.toRadians(-10));
-            lightConfig.setSpecularIntensity(0.4);
-            lightConfig.setSpecularHardness(0.8);
+            lightConfig.setDiffuse(new Color(1, 1, 1));
+            lightConfig.setAmbient(new Color(1, 1, 1));
+            lightConfig.setXRotation(Math.toRadians(-20));
+            lightConfig.setYRotation(Math.toRadians(-20));
+            lightConfig.setSpecularIntensity(1.0);
+            lightConfig.setSpecularHardness(0.5);
         } catch (Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
         }

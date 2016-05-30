@@ -28,10 +28,6 @@ vec3 bumpMapNorm(float scale) {
     vec3 tangent = normalize(vVertexTangent);
     vec3 binormal = cross(normal, tangent);
 
-//     float bm0 = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(animation / 100.0, 0)).r;
-//     float bmUp = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.0, 1.0/scale)+ vec2(animation/ 100.0, 0)).r;
-//     float bmRight = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(1.0/scale, 0.0)+ vec2(animation/ 100.0, 0)).r;
-
     float bm0 = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale).r;
     float bm0Up = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.0, 1.0/scale)).r;
     float bm0Right = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(1.0/scale, 0.0)).r;
@@ -40,12 +36,9 @@ vec3 bumpMapNorm(float scale) {
     float bm1Up = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1) + vec2(0.0, 1.0/scale)).r;
     float bm1Right = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1) + vec2(1.0/scale, 0.0)).r;
 
-    vec3 bump0Vector = (bm0Right - bm0)*tangent + (bm0Up - bm0)*binormal;
-    vec3 bump1Vector = (bm1Right - bm1)*tangent + (bm1Up - bm1)*binormal;
-    normal -= uBumpMapDepth * (bump0Vector * animation + bump1Vector * animation2);
-
-    //normal -= uBumpMapDepth * bumpVector;
-    return normalize(normal);
+    vec3 bump0Vector = (bm0 - bm0Right) * tangent + (bm0 - bm0Up) * binormal;
+    vec3 bump1Vector = (bm1 - bm1Right) * tangent + (bm1 - bm1Up) * binormal;
+    return normalize(normal + uBumpMapDepth * (bump0Vector * animation + bump1Vector * animation2));
 }
 
 vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
