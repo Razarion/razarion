@@ -1,6 +1,6 @@
 package com.btxtech.client.menu;
 
-import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -18,10 +18,10 @@ import javax.inject.Inject;
  * Created by Beat
  * 07.11.2015.
  */
-@Templated("LightMenu.html#menu-terrain")
-public class LightMenu extends Composite {
+@Templated("ShadowMenu.html#menu-shadow")
+public class ShadowMenu extends Composite {
     @Inject
-    private Lighting lighting;
+    private ShadowUiService shadowUiService;
     @Inject
     @DataField
     private DoubleBox lightRotateX;
@@ -53,54 +53,54 @@ public class LightMenu extends Composite {
     @PostConstruct
     public void init() {
         displayLightDirectionLabel();
-        lightRotateX.setValue(Math.toDegrees(lighting.getRotateX()));
-        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(lighting.getRotateX())));
-        lightRotateY.setValue(Math.toDegrees(lighting.getRotateY()));
-        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(lighting.getRotateY())));
-        shadowProjectionTransformationZNear.setValue(lighting.getZNear());
-        shadowAlpha.setValue(lighting.getShadowAlpha());
-        ambientIntensity.setValue(lighting.getAmbientIntensity());
-        diffuseIntensity.setValue(lighting.getDiffuseIntensity());
+        lightRotateX.setValue(Math.toDegrees(shadowUiService.getRotateX()));
+        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getRotateX())));
+        lightRotateY.setValue(Math.toDegrees(shadowUiService.getRotateY()));
+        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getRotateY())));
+        shadowProjectionTransformationZNear.setValue(shadowUiService.getZNear());
+        shadowAlpha.setValue(shadowUiService.getShadowAlpha());
+        ambientIntensity.setValue(shadowUiService.getAmbientIntensity());
+        diffuseIntensity.setValue(shadowUiService.getDiffuseIntensity());
     }
 
     private void displayLightDirectionLabel() {
-        Vertex lightDirection = lighting.getLightDirection();
+        Vertex lightDirection = shadowUiService.getLightDirection();
         NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
         lightLabel.setText("Light Direction (" + decimalFormat.format(lightDirection.getX()) + ":" + decimalFormat.format(lightDirection.getY()) + ":" + decimalFormat.format(lightDirection.getZ()) + ")");
     }
 
     @EventHandler("lightRotateX")
     public void lightRotateXChanged(ChangeEvent e) {
-        lighting.setRotateX(Math.toRadians(lightRotateX.getValue()));
-        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(lighting.getRotateX())));
+        shadowUiService.setRotateX(Math.toRadians(lightRotateX.getValue()));
+        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getRotateX())));
         displayLightDirectionLabel();
     }
 
     @EventHandler("lightRotateY")
     public void lightRotateYChanged(ChangeEvent e) {
-        lighting.setRotateY(Math.toRadians(lightRotateY.getValue()));
-        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(lighting.getRotateY())));
+        shadowUiService.setRotateY(Math.toRadians(lightRotateY.getValue()));
+        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getRotateY())));
         displayLightDirectionLabel();
     }
 
     @EventHandler("shadowProjectionTransformationZNear")
     public void shadowProjectionTransformationZNearChanged(ChangeEvent e) {
-        lighting.setZNear(shadowProjectionTransformationZNear.getValue());
+        shadowUiService.setZNear(shadowProjectionTransformationZNear.getValue());
     }
 
     @EventHandler("shadowAlpha")
     public void shadowAlphaChanged(ChangeEvent e) {
-        lighting.setShadowAlpha(shadowAlpha.getValue());
+        shadowUiService.setShadowAlpha(shadowAlpha.getValue());
     }
 
     @EventHandler("ambientIntensity")
     public void ambientIntensityChanged(ChangeEvent e) {
-        lighting.setAmbientIntensity(ambientIntensity.getValue());
+        shadowUiService.setAmbientIntensity(ambientIntensity.getValue());
     }
 
     @EventHandler("diffuseIntensity")
     public void diffuseIntensityChanged(ChangeEvent e) {
-        lighting.setDiffuseIntensity(diffuseIntensity.getValue());
+        shadowUiService.setDiffuseIntensity(diffuseIntensity.getValue());
     }
 
 }

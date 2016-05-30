@@ -12,7 +12,7 @@ import java.util.List;
  * 20.05.2015.
  */
 @Dependent
-public class TerrainSurfaceWireRender extends AbstractViewPerspectiveWireRenderer {
+public class GroundWireRender extends AbstractViewPerspectiveWireRenderer {
     @Inject
     private TerrainSurface terrainSurface;
 

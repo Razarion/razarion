@@ -1,20 +1,16 @@
 package com.btxtech.client.math3d;
 
-import com.btxtech.client.renderer.model.Lighting;
-import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.primitives.Vertex;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Created by Beat
  * 24.06.2015.
  */
-public class TestLighting {
+public class TestShadowUiService {
 
     @Test
     public void directional() {
-//        Lighting lighting = new Lighting();
+//        ShadowUiService lighting = new ShadowUiService();
 //        lighting.setAzimuth(0);
 //        // Change azimuth
 //        lighting.setAltitude(0);

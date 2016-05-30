@@ -2,7 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -36,7 +36,7 @@ public class GroundRenderer extends AbstractRenderer {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private Lighting lighting;
+    private ShadowUiService shadowUiService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -97,13 +97,13 @@ public class GroundRenderer extends AbstractRenderer {
 
         // Shadow
         // TODO make simpler
-        uniformMatrix4fv("uMVPDepthBias", lighting.createViewProjectionTransformation());
+        uniformMatrix4fv("uMVPDepthBias", shadowUiService.createViewProjectionTransformation());
         WebGLUniformLocation shadowMapUniform = getUniformLocation("uSamplerShadow");
         gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
         gameCanvas.getCtx3d().uniform1i(shadowMapUniform, shadowWebGlTextureId.getUniformValue());
         WebGLUniformLocation uniformShadowAlpha = getUniformLocation("uShadowAlpha");
-        gameCanvas.getCtx3d().uniform1f(uniformShadowAlpha, (float) lighting.getShadowAlpha());
+        gameCanvas.getCtx3d().uniform1f(uniformShadowAlpha, (float) shadowUiService.getShadowAlpha());
 
         vertices.activate();
         normals.activate();

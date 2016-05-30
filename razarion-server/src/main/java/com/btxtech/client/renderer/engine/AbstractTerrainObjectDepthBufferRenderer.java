@@ -2,7 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -36,7 +36,7 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
     @Inject
     private Camera camera;
     @Inject
-    private Lighting lighting;
+    private ShadowUiService shadowUiService;
     private Collection<Matrix4> modelMatrices;
 
     abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
@@ -82,8 +82,8 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
-        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, lighting.createProjectionTransformation());
-        uniformMatrix4fv(VIEW_UNIFORM_NAME, lighting.createViewTransformation());
+        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, shadowUiService.createProjectionTransformation());
+        uniformMatrix4fv(VIEW_UNIFORM_NAME, shadowUiService.createViewTransformation());
 
         positions.activate();
         barycentric.activate();

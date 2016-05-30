@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
@@ -30,7 +30,7 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
     @Inject
     private Camera camera;
     @Inject
-    private Lighting lighting;
+    private ShadowUiService shadowUiService;
     private VertexShaderAttribute positions;
     private VertexShaderAttribute barycentric;
     private int elementCount;
@@ -73,8 +73,8 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
-        uniformMatrix4fv("uPMatrix", lighting.createProjectionTransformation());
-        uniformMatrix4fv("uVMatrix", lighting.createViewTransformation());
+        uniformMatrix4fv("uPMatrix", shadowUiService.createProjectionTransformation());
+        uniformMatrix4fv("uVMatrix", shadowUiService.createViewTransformation());
 
         positions.activate();
         barycentric.activate();

@@ -3,7 +3,7 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -47,7 +47,7 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
     @Inject
     private Camera camera;
     @Inject
-    private Lighting lighting;
+    private ShadowUiService shadowUiService;
     private Collection<Matrix4> modelMatrices;
 
     abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
@@ -101,10 +101,10 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
 
         uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, projectionTransformation.createMatrix());
         uniformMatrix4fv(VIEW_UNIFORM_NAME, camera.createMatrix());
-        uniform3f(UNIFORM_AMBIENT_COLOR, lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
-        Vertex direction = lighting.getLightDirection();
+        uniform3f(UNIFORM_AMBIENT_COLOR, shadowUiService.getAmbientIntensity(), shadowUiService.getAmbientIntensity(), shadowUiService.getAmbientIntensity());
+        Vertex direction = shadowUiService.getLightDirection();
         uniform3f(UNIFORM_LIGHTING_DIRECTION, direction.getX(), direction.getY(), direction.getZ());
-        uniform3f(UNIFORM_DIRECTIONAL_COLOR, lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity());
+        uniform3f(UNIFORM_DIRECTIONAL_COLOR, shadowUiService.getDiffuseIntensity(), shadowUiService.getDiffuseIntensity(), shadowUiService.getDiffuseIntensity());
 
         positions.activate();
         normals.activate();

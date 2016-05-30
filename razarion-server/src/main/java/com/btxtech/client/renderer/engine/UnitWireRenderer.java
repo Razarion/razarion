@@ -2,7 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
@@ -36,7 +36,7 @@ public class UnitWireRenderer extends AbstractRenderer {
     @Inject
     private Camera camera;
     @Inject
-    private Lighting lighting;
+    private ShadowUiService shadowUiService;
 
     @PostConstruct
     public void init() {

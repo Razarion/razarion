@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.Lighting;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
@@ -29,7 +29,7 @@ public class UnitRenderer extends AbstractRenderer {
     @Inject
     private Camera camera;
     @Inject
-    private Lighting lighting;
+    private ShadowUiService shadowUiService;
     private VertexShaderAttribute positions;
     private VertexShaderAttribute norms;
     private ShaderTextureCoordinateAttribute textureCoordinateAttribute;
@@ -75,9 +75,9 @@ public class UnitRenderer extends AbstractRenderer {
         uniformMatrix4fv("uVMatrix", camera.createMatrix());
         uniformMatrix4fv("uNVMatrix", camera.createNormMatrix());
         uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
-        uniform3f("uAmbientColor", lighting.getAmbientIntensity(), lighting.getAmbientIntensity(), lighting.getAmbientIntensity());
-        uniform3f("uLightingDirection", lighting.getLightDirection());
-        uniform3f("uLightingColor", lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity(), lighting.getDiffuseIntensity());
+        uniform3f("uAmbientColor", shadowUiService.getAmbientIntensity(), shadowUiService.getAmbientIntensity(), shadowUiService.getAmbientIntensity());
+        uniform3f("uLightingDirection", shadowUiService.getLightDirection());
+        uniform3f("uLightingColor", shadowUiService.getDiffuseIntensity(), shadowUiService.getDiffuseIntensity(), shadowUiService.getDiffuseIntensity());
         uniform1f("uSpecularHardness", itemService.getSpecularHardness());
         uniform1f("uSpecularIntensity", itemService.getSpecularIntensity());
 

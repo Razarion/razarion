@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  * 23.06.2015.
  */
 @Singleton
-public class Lighting {
+public class ShadowUiService {
     @Inject
     private Camera camera;
     @Inject
@@ -23,13 +23,13 @@ public class Lighting {
     private TerrainSurface terrainSurface;
     private double zNear = 10;
     private double shadowAlpha = 0.2;
-    private Logger logger = Logger.getLogger(Lighting.class.getName());
+    private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
     private double rotateX = -Math.toRadians(10);
     private double rotateY = -Math.toRadians(10);
     private double ambientIntensity;
     private double diffuseIntensity;
 
-    public Lighting() {
+    public ShadowUiService() {
         setGame();
     }
 
