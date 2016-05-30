@@ -24,6 +24,7 @@ public class SlopeSkeleton {
     private Type type;
     private SlopeNode[][] slopeNodes;
     private LightConfig lightConfig;
+    private boolean slopeOriented;
 
     public int getId() {
         return id;
@@ -103,6 +104,14 @@ public class SlopeSkeleton {
 
     public void setLightConfig(LightConfig lightConfig) {
         this.lightConfig = lightConfig;
+    }
+
+    public boolean isSlopeOriented() {
+        return slopeOriented;
+    }
+
+    public void setSlopeOriented(boolean slopeOriented) {
+        this.slopeOriented = slopeOriented;
     }
 
     @Override

@@ -22,10 +22,7 @@ uniform vec3 uLightAmbientGround;
 uniform float uLightSpecularIntensityGround;
 uniform float uLightSpecularHardnessGround;
 
-
-// ?????
-uniform float uSlopeGroundBlur;
-
+uniform bool slopeOriented;
 
 //Slope
 uniform sampler2D uSlopeTexture;
@@ -205,11 +202,20 @@ void main(void) {
        vec4 slopeColor = triPlanarTextureMapping(uSlopeTexture, float(uSlopeTextureSize), vec2(0,0));
        float slopeBmFactor = triPlanarTextureMapping(uSlopeBm, float(uSlopeBmSize), vec2(0,0)).r;
 
+       bool renderSlope;
+       if(slopeOriented) {
+           vec3 perpendicular = normalize((uNMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz);
+           float flatFactor = max(dot(slopeNorm, perpendicular), 0.0) - slopeBmFactor;
+           renderSlope = flatFactor < vSlopeFactor;
+       } else {
+           float groundTopBmValue = triPlanarTextureMapping(uGroundTopBm, float(uGroundTopBmSize), vec2(0,0)).r;
+           float groundBottomBmValue = triPlanarTextureMapping(uGroundBottomBm, float(uGroundBottomBmSize), vec2(0,0)).r;
+           float correctedSlopeFactor = vSlopeFactor - 0.5;
+           renderSlope = (slopeBmFactor + correctedSlopeFactor > groundBottomBmValue) && (slopeBmFactor + correctedSlopeFactor > groundTopBmValue);
+       }
+
        // Caluclate transition
-       vec3 perpendicular = normalize((uNMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz);
-       float fall = 1.0 - max(dot(slopeNorm, perpendicular), 0.0) + slopeBmFactor;
-       float invertedSlopeFactor = (1.0 - vSlopeFactor);
-       if(fall > invertedSlopeFactor) {
+       if(renderSlope) {
            ambient = vec4(uLightAmbientSlope, 1.0) * slopeColor;
            diffuse = vec4(max(dot(normalize(slopeNorm), -correctedLightSlope), 0.0) * uLightDiffuseSlope * slopeColor.rgb, 1.0);
            specular = setupSpecularLight(correctedLightSlope, slopeNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);

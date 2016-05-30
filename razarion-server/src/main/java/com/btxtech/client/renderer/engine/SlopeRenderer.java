@@ -94,6 +94,8 @@ public class SlopeRenderer extends AbstractRenderer {
         setLightUniforms("Slope", slope.getSlopeSkeleton().getLightConfig());
         setLightUniforms("Ground", terrainSurface.getGroundSkeleton().getLightConfig());
 
+        uniform1b("slopeOriented", slope.getSlopeSkeleton().isSlopeOriented());
+
         // Slope
         uniform1i("uSlopeTextureSize", slope.getSlopeImageDescriptor().getQuadraticEdge());
         uniform1i("uSlopeBmSize", slope.getSlopeBumpImageDescriptor().getQuadraticEdge());

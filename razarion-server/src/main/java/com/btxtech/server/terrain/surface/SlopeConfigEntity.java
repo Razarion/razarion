@@ -50,6 +50,7 @@ public class SlopeConfigEntity {
     private double fractalRoughness;
     private int verticalSpace;
     private int segments;
+    private boolean slopeOriented;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<SlopeNodeEntity> slopeSkeletonEntries;
@@ -70,6 +71,7 @@ public class SlopeConfigEntity {
         slopeSkeleton.setVerticalSpace(verticalSpace);
         slopeSkeleton.setBumpMapDepth(bumpMapDepth);
         slopeSkeleton.setType(type);
+        slopeSkeleton.setSlopeOriented(slopeOriented);
         SlopeNode[][] slopeNodes = new SlopeNode[segments][shape.getVertexCount()];
         for (SlopeNodeEntity slopeSkeletonEntry : slopeSkeletonEntries) {
             slopeNodes[slopeSkeletonEntry.getSegmentIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry.toSlopeNode();
@@ -109,6 +111,7 @@ public class SlopeConfigEntity {
         type = slopeConfig.getSlopeSkeleton().getType();
         bumpMapDepth = slopeConfig.getSlopeSkeleton().getBumpMapDepth();
         verticalSpace = slopeConfig.getSlopeSkeleton().getVerticalSpace();
+        slopeOriented = slopeConfig.getSlopeSkeleton().isSlopeOriented();
         segments = slopeConfig.getSlopeSkeleton().getSegments();
         slopeSkeletonEntries.clear();
         for (int x = 0; x < segments; x++) {
@@ -142,6 +145,7 @@ public class SlopeConfigEntity {
                 ", fractalClampMax=" + fractalClampMax +
                 ", fractalRoughness=" + fractalRoughness +
                 ", verticalSpace=" + verticalSpace +
+                ", slopeOriented=" + slopeOriented +
                 ", segments=" + segments +
                 ", type=" + type +
                 '}';
