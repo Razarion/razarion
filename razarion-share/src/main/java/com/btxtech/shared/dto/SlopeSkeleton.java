@@ -20,7 +20,6 @@ public class SlopeSkeleton {
     private int width;
     private int height;
     private int verticalSpace;
-    private double slopeGroundBlur;
     private double bumpMapDepth;
     private Type type;
     private SlopeNode[][] slopeNodes;
@@ -64,14 +63,6 @@ public class SlopeSkeleton {
 
     public int getHeight() {
         return height;
-    }
-
-    public double getSlopeGroundBlur() {
-        return slopeGroundBlur;
-    }
-
-    public void setSlopeGroundBlur(double slopeGroundBlur) {
-        this.slopeGroundBlur = slopeGroundBlur;
     }
 
     public double getBumpMapDepth() {

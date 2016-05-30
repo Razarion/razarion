@@ -42,7 +42,6 @@ public class SlopeConfigEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SlopeSkeleton.Type type;
-    private double slopeGroundBlur;
     private double bumpMapDepth;
     private double fractalMin;
     private double fractalMax;
@@ -69,7 +68,6 @@ public class SlopeConfigEntity {
         slopeSkeleton.setWidth((int) shape.getDistance());
         slopeSkeleton.setHeight((int) shape.getZInner());
         slopeSkeleton.setVerticalSpace(verticalSpace);
-        slopeSkeleton.setSlopeGroundBlur(slopeGroundBlur);
         slopeSkeleton.setBumpMapDepth(bumpMapDepth);
         slopeSkeleton.setType(type);
         SlopeNode[][] slopeNodes = new SlopeNode[segments][shape.getVertexCount()];
@@ -109,7 +107,6 @@ public class SlopeConfigEntity {
         fractalClampMax = slopeConfig.getFractalClampMax();
         fractalRoughness = slopeConfig.getFractalRoughness();
         type = slopeConfig.getSlopeSkeleton().getType();
-        slopeGroundBlur = slopeConfig.getSlopeSkeleton().getSlopeGroundBlur();
         bumpMapDepth = slopeConfig.getSlopeSkeleton().getBumpMapDepth();
         verticalSpace = slopeConfig.getSlopeSkeleton().getVerticalSpace();
         segments = slopeConfig.getSlopeSkeleton().getSegments();
@@ -138,7 +135,6 @@ public class SlopeConfigEntity {
                 ", internalName='" + internalName + '\'' +
                 ", lightConfigEmbeddable=" + lightConfigEmbeddable +
                 ", shape=" + shape +
-                ", slopeGroundBlur=" + slopeGroundBlur +
                 ", bumpMapDepth=" + bumpMapDepth +
                 ", fractalMin=" + fractalMin +
                 ", fractalMax=" + fractalMax +

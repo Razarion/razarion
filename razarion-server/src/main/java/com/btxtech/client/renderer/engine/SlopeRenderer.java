@@ -34,12 +34,13 @@ public class SlopeRenderer extends AbstractRenderer {
     private VertexShaderAttribute tangents;
     private FloatShaderAttribute slopeFactors;
     private FloatShaderAttribute groundSplatting;
-    private WebGlUniformTexture slopeWebGLTexture;
-    private WebGlUniformTexture slopeBumpWebGLTexture;
+    private WebGlUniformTexture slopeTexture;
+    private WebGlUniformTexture uSlopeBm;
     private WebGlUniformTexture groundSplattingTexture;
-    private WebGlUniformTexture groundTopWebGLTexture;
-    private WebGlUniformTexture groundBottomWebGLTexture;
-    private WebGlUniformTexture bumpMapGroundWebGlTexture;
+    private WebGlUniformTexture groundTopTexture;
+    private WebGlUniformTexture groundTopBm;
+    private WebGlUniformTexture groundBottomTexture;
+    private WebGlUniformTexture groundBottomBm;
 
     @PostConstruct
     public void init() {
@@ -54,12 +55,13 @@ public class SlopeRenderer extends AbstractRenderer {
     @Override
     public void setupImages() {
         Slope slope = terrainSurface.getSlope(getId());
-        slopeWebGLTexture = createWebGLTexture(slope.getSlopeImageDescriptor(), "uSamplerSlopeTexture");
-        slopeBumpWebGLTexture = createWebGLBumpMapTexture(slope.getSlopeBumpImageDescriptor(), "uSamplerBumpMapSlopeTexture");
+        slopeTexture = createWebGLTexture(slope.getSlopeImageDescriptor(), "uSlopeTexture");
+        uSlopeBm = createWebGLBumpMapTexture(slope.getSlopeBumpImageDescriptor(), "uSlopeBm");
         groundSplattingTexture = createWebGLTexture(terrainSurface.getSplatting(), "uGroundSplatting");
-        groundTopWebGLTexture = createWebGLTexture(terrainSurface.getTopTexture(), "uGroundTopTexture");
-        groundBottomWebGLTexture = createWebGLTexture(terrainSurface.getGroundTexture(), "uGroundBottomTexture");
-        bumpMapGroundWebGlTexture = createWebGLTexture(terrainSurface.getGroundBm(), "uGroundBottomMap");
+        groundTopTexture = createWebGLTexture(terrainSurface.getTopTexture(), "uGroundTopTexture");
+        groundTopBm = createWebGLTexture(terrainSurface.getTopBm(), "uGroundTopBm");
+        groundBottomTexture = createWebGLTexture(terrainSurface.getGroundTexture(), "uGroundBottomTexture");
+        groundBottomBm = createWebGLTexture(terrainSurface.getGroundBm(), "uGroundBottomBm");
     }
 
     @Override
@@ -90,20 +92,21 @@ public class SlopeRenderer extends AbstractRenderer {
         uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
 
         setLightUniforms("Slope", slope.getSlopeSkeleton().getLightConfig());
+        setLightUniforms("Ground", terrainSurface.getGroundSkeleton().getLightConfig());
 
-        uniform1f("uLightSpecularIntensityGround", 0); // TODO
-        uniform1f("uLightSpecularHardnessGround", 0); // TODO
-        uniform1f("uGroundSplattingDistance", 1); // TODO
-
-        uniform1f("uSlopeGroundBlur", slope.getSlopeSkeleton().getSlopeGroundBlur());
-        uniform1i("uSamplerSlopeTextureSize", slope.getSlopeImageDescriptor().getQuadraticEdge());
-        uniform1i("uSamplerBumpMapSlopeTextureSize", slope.getSlopeBumpImageDescriptor().getQuadraticEdge());
-        uniform1f("uBumpMapSlopeDepth", slope.getSlopeSkeleton().getBumpMapDepth());
+        // Slope
+        uniform1i("uSlopeTextureSize", slope.getSlopeImageDescriptor().getQuadraticEdge());
+        uniform1i("uSlopeBmSize", slope.getSlopeBumpImageDescriptor().getQuadraticEdge());
+        uniform1f("uSlopeBmDepth", slope.getSlopeSkeleton().getBumpMapDepth());
+        //Ground
         uniform1i("uGroundSplattingSize", terrainSurface.getSplatting().getQuadraticEdge());
         uniform1i("uGroundTopTextureSize", terrainSurface.getTopTexture().getQuadraticEdge());
+        uniform1i("uGroundTopBmSize", terrainSurface.getTopBm().getQuadraticEdge());
+        uniform1f("uGroundTopBmDepth", terrainSurface.getGroundSkeleton().getTopBmDepth());
         uniform1i("uGroundBottomTextureSize", terrainSurface.getGroundTexture().getQuadraticEdge());
-        uniform1i("uGroundBottomMapSize", terrainSurface.getGroundBm().getQuadraticEdge());
-        uniform1f("uGroundBottomMapDepth", terrainSurface.getGroundSkeleton().getBottomBmDepth());
+        uniform1i("uGroundBottomBmSize", terrainSurface.getGroundBm().getQuadraticEdge());
+        uniform1f("uGroundBottomBmDepth", terrainSurface.getGroundSkeleton().getBottomBmDepth());
+        // Water
         uniform1b("uHasWater", slope.hasWater());
         uniform1f("uWaterLevel", slope.getWaterLevel());
         uniform1f("uWaterGround", slope.getWaterGround());
@@ -114,12 +117,13 @@ public class SlopeRenderer extends AbstractRenderer {
         slopeFactors.activate();
         groundSplatting.activate();
 
-        slopeWebGLTexture.activate();
-        slopeBumpWebGLTexture.activate();
+        slopeTexture.activate();
+        uSlopeBm.activate();
         groundSplattingTexture.activate();
-        groundTopWebGLTexture.activate();
-        groundBottomWebGLTexture.activate();
-        bumpMapGroundWebGlTexture.activate();
+        groundTopTexture.activate();
+        groundBottomTexture.activate();
+        groundBottomBm.activate();
+        groundTopBm.activate();
 
         getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

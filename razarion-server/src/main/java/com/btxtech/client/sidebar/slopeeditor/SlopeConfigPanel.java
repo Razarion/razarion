@@ -56,10 +56,6 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @DataField
     private LightWidget lightConfig;
     @Inject
-    @Bound(property = "slopeSkeleton.slopeGroundBlur")
-    @DataField
-    private DoubleBox slopeGroundBlur;
-    @Inject
     @Bound(property = "slopeSkeleton.bumpMapDepth")
     @DataField
     private DoubleBox bumpMapDepth;

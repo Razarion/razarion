@@ -105,7 +105,6 @@ void main(void) {
         textureColor = colorBottom;
     } else {
         float topBmValue = triPlanarTextureMapping(uTopBm, float(uTopBmSize), vec2(0,0)).r;
-        float bottomBmValue = triPlanarTextureMapping(uBottomBm, float(uBottomBmSize), vec2(0,0)).r;
 
         if(topBmValue + splatting > vGroundSplatting) {
             norm = normTop;
