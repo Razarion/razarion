@@ -111,7 +111,7 @@ public class SlopeConfigEntity {
         type = slopeConfig.getSlopeSkeleton().getType();
         bumpMapDepth = slopeConfig.getSlopeSkeleton().getBumpMapDepth();
         verticalSpace = slopeConfig.getSlopeSkeleton().getVerticalSpace();
-        slopeOriented = slopeConfig.getSlopeSkeleton().isSlopeOriented();
+        slopeOriented = slopeConfig.getSlopeSkeleton().getSlopeOriented();
         segments = slopeConfig.getSlopeSkeleton().getSegments();
         slopeSkeletonEntries.clear();
         for (int x = 0; x < segments; x++) {

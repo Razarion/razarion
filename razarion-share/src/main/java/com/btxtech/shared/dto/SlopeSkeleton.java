@@ -106,7 +106,8 @@ public class SlopeSkeleton {
         this.lightConfig = lightConfig;
     }
 
-    public boolean isSlopeOriented() {
+    // Errai can not handle is-getter
+    public boolean getSlopeOriented() {
         return slopeOriented;
     }
 
