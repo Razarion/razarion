@@ -2,14 +2,12 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
 import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -36,14 +34,9 @@ public class GroundRenderer extends AbstractRenderer {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ShadowUiService shadowUiService;
-    @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
-    @Inject
-    private RenderService renderService;
-    private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
 
     @PostConstruct
     public void init() {
@@ -61,7 +54,7 @@ public class GroundRenderer extends AbstractRenderer {
         splattingTexture = createWebGLTexture(terrainSurface.getSplatting(), "uSplatting");
         bottomTexture = createWebGLTexture(terrainSurface.getGroundTexture(), "uBottomTexture");
         bottomBm = createWebGLBumpMapTexture(terrainSurface.getGroundBm(), "uBottomBm");
-        shadowWebGlTextureId = createWebGlTextureId();
+        enableShadow();
     }
 
     @Override
@@ -95,15 +88,7 @@ public class GroundRenderer extends AbstractRenderer {
         uniform1i("uBottomBmSize", terrainSurface.getGroundBm().getQuadraticEdge());
         uniform1i("uSplattingSize", terrainSurface.getSplatting().getQuadraticEdge());
 
-        // Shadow
-        // TODO make simpler
-        uniformMatrix4fv("uMVPDepthBias", shadowUiService.createViewProjectionTransformation());
-        WebGLUniformLocation shadowMapUniform = getUniformLocation("uSamplerShadow");
-        gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
-        gameCanvas.getCtx3d().uniform1i(shadowMapUniform, shadowWebGlTextureId.getUniformValue());
-        WebGLUniformLocation uniformShadowAlpha = getUniformLocation("uShadowAlpha");
-        gameCanvas.getCtx3d().uniform1f(uniformShadowAlpha, (float) shadowUiService.getShadowAlpha());
+        activateShadow();
 
         vertices.activate();
         normals.activate();

@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.game.jsre.common.ImageLoader;
@@ -30,8 +31,13 @@ public abstract class AbstractRenderer implements Renderer {
     private Instance<WebGlProgram> webGlProgramInstance;
     @Inject
     private GameCanvas gameCanvas;
+    @Inject
+    private ShadowUiService shadowUiService;
+    @Inject
+    private RenderService renderService;
     private int id;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
+    private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
 
     @Override
     public void setId(int id) {
@@ -192,5 +198,20 @@ public abstract class AbstractRenderer implements Renderer {
 
     protected WebGLRenderingContext getCtx3d() {
         return gameCanvas.getCtx3d();
+    }
+
+    protected void enableShadow() {
+        shadowWebGlTextureId = createWebGlTextureId();
+    }
+
+    protected void activateShadow() {
+        if(shadowWebGlTextureId == null) {
+            throw new IllegalStateException("Shadow must be enabled before");
+        }
+        uniformMatrix4fv("uShadowMatrix", shadowUiService.createShadowLookupTransformation());
+        uniform1f("uShadowAlpha", (float) shadowUiService.getShadowAlpha());
+        uniform1i("uShadowTexture", shadowWebGlTextureId.getUniformValue());
+        gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
     }
 }

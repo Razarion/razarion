@@ -69,7 +69,7 @@ public class RenderService {
         unitNorms = new ArrayList<>();
         createAndAddRenderSwitch(GroundRenderer.class, GroundDepthBufferRenderer.class, GroundWireRender.class, 0);
         for (int id : terrainSurface.getSlopeIds()) {
-            createAndAddRenderSwitch(SlopeRenderer.class, null, SlopeWireRenderer.class, id);
+            createAndAddRenderSwitch(SlopeRenderer.class, SlopeDepthBufferRenderer.class, SlopeWireRenderer.class, id);
         }
         terrainEditorRenderers = new ArrayList<>();
         for (int id : terrainEditor.getSlopePolygonIds()) {

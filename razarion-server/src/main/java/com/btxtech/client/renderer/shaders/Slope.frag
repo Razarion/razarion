@@ -21,6 +21,10 @@ uniform vec3 uLightDiffuseGround;
 uniform vec3 uLightAmbientGround;
 uniform float uLightSpecularIntensityGround;
 uniform float uLightSpecularHardnessGround;
+// Shadow
+varying vec4 vShadowCoord;
+uniform float uShadowAlpha;
+uniform sampler2D uShadowTexture;
 
 uniform bool slopeOriented;
 
@@ -90,9 +94,22 @@ vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
      return SPECULAR_LIGHT_COLOR * factor;
 }
 
+
+float calculateShadowFactor() {
+    float zMap = texture2D(uShadowTexture, vShadowCoord.st).r;
+
+    if(zMap > vShadowCoord.z - 0.001) {
+        return 1.0;
+    } else {
+        return uShadowAlpha;
+    }
+}
+
 void main(void) {
     vec3 correctedLightSlope = normalize((uNMatrix * vec4(uLightDirectionSlope, 1.0)).xyz);
     vec3 correctedLightGround = normalize((uNMatrix * vec4(uLightDirectionGround, 1.0)).xyz);
+
+    float shadowFactor = calculateShadowFactor();
 
     vec4 ambient;
     vec4 diffuse;
@@ -146,17 +163,17 @@ void main(void) {
                 vec4 slopeColor = triPlanarTextureMapping(uSlopeTexture, float(uSlopeTextureSize), vec2(0,0));
                 vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth * (1.0 - slopeFadeoutFactor), float(uSlopeBmSize));
                 vec4 ambient = vec4(uLightAmbientSlope, 1.0) * slopeColor /* * colorSlopeFadeoutFactor*/;
-                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(-correctedLightSlope)), 0.0) /* * shadowFactor */ * uLightDiffuseSlope * /*colorSlopeFadeoutFactor * */slopeColor.rgb, 1.0);
-                vec4 specular = setupSpecularLight(correctedLightSlope, slopeNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope) /* * shadowFactor */;
-                gl_FragColor = ambient + diffuse + specular;
+                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(-correctedLightSlope)), 0.0) * uLightDiffuseSlope * slopeColor.rgb, 1.0);
+                vec4 specular = setupSpecularLight(correctedLightSlope, slopeNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
+                gl_FragColor = ambient + diffuse * shadowFactor + specular * shadowFactor;
                 return;
             } else {
                 // Under water level: render slope fadeout
                 float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
                 vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, float(uSlopeBmSize));
                 vec3 ambient = uLightAmbientSlope * UNDER_WATER_COLOR * underWaterFactor;
-                vec3 diffuse = vec3(max(dot(normalize(slopeNorm), normalize(-correctedLightSlope)), 0.0) * underWaterFactor /* * shadowFactor*/ * uLightDiffuseSlope * UNDER_WATER_COLOR);
-                gl_FragColor = vec4(vec3(ambient + diffuse), 1.0);
+                vec3 diffuse = vec3(max(dot(normalize(slopeNorm), normalize(-correctedLightSlope)), 0.0) * underWaterFactor * uLightDiffuseSlope * UNDER_WATER_COLOR);
+                gl_FragColor = vec4(vec3(ambient + diffuse), 1.0) * shadowFactor;
                 return;
             }
         } else {
@@ -227,5 +244,5 @@ void main(void) {
    }
 
    // Light
-    gl_FragColor = ambient + diffuse + specular;
+    gl_FragColor = ambient + diffuse * shadowFactor + specular * shadowFactor;
 }

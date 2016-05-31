@@ -1,21 +1,23 @@
 precision mediump float;
 
-varying vec4 vShadowCoord;
 varying vec3 vVertexNormal;
 varying vec3 vVertexTangent;
 varying vec4 vVertexPosition;
 varying vec3 vVertexPositionCoord;
 varying vec3 vVertexNormCoord;
 varying float vGroundSplatting;
-//Light
+// Light
 uniform vec3 uLightDirection;
 uniform vec3 uLightDiffuse;
 uniform vec3 uLightAmbient;
 uniform float uLightSpecularIntensity;
 uniform float uLightSpecularHardness;
+// Shadow
+varying vec4 vShadowCoord;
+uniform float uShadowAlpha;
+uniform sampler2D uShadowTexture;
 
 uniform highp mat4 uNMatrix;
-uniform float uShadowAlpha;
 uniform sampler2D uTopTexture;
 uniform int uTopTextureSize;
 uniform sampler2D uTopBm;
@@ -28,7 +30,6 @@ uniform int uSplattingSize;
 uniform sampler2D uBottomBm;
 uniform int uBottomBmSize;
 uniform float uBottomBmDepth;
-uniform sampler2D uSamplerShadow;
 
 const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
 const float BIAS = 0.001;
@@ -59,17 +60,9 @@ vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float size) {
 }
 
 float calculateShadowFactor() {
-    float zNdc = vShadowCoord.z / vShadowCoord.w;
-    zNdc = zNdc * 0.5 + 0.5;
+    float zMap = texture2D(uShadowTexture, vShadowCoord.st).r;
 
-    mat4 coordCorrectionMatrix = mat4(0.5, 0.0, 0.0, 0.0,
-                                 0.0, 0.5, 0.0, 0.0,
-                                 0.0, 0.0, 0.5, 0.0,
-                                 0.5, 0.5, 0.5, 1.0);
-    vec4 coordShadowMap = coordCorrectionMatrix * vShadowCoord;
-    float zMap = texture2D(uSamplerShadow, coordShadowMap.st / coordShadowMap.w).r;
-
-    if(zMap > zNdc - 0.001) {
+    if(zMap > vShadowCoord.z - 0.001) {
         return 1.0;
     } else {
         return uShadowAlpha;

@@ -15,18 +15,25 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class ShadowUiService {
+    private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
+    private static final Matrix4 TEXTURE_COORDINATE_TRANSFORMATION = new Matrix4(new double[][]{
+            {0.5, 0.0, 0.0, 0.5},
+            {0.0, 0.5, 0.0, 0.5},
+            {0.0, 0.0, 0.5, 0.5},
+            {0.0, 0.0, 0.0, 1.0}});
     @Inject
     private Camera camera;
     @Inject
-    private ProjectionTransformation normalProjectionTransformation;
+    private ProjectionTransformation projectionTransformation;
     @Inject
     private TerrainSurface terrainSurface;
     private double zNear = 10;
     private double shadowAlpha = 0.2;
-    private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
     private double rotateX = -Math.toRadians(10);
     private double rotateY = -Math.toRadians(10);
+    @Deprecated
     private double ambientIntensity;
+    @Deprecated
     private double diffuseIntensity;
 
     public ShadowUiService() {
@@ -42,23 +49,28 @@ public class ShadowUiService {
         return createRotationMatrix().multiply(new Vertex(0, 0, -1), 1.0);
     }
 
+    @Deprecated
     public void setGame() {
         diffuseIntensity = 0.6;
         ambientIntensity = 0.4;
     }
 
+    @Deprecated
     public double getAmbientIntensity() {
         return ambientIntensity;
     }
 
+    @Deprecated
     public void setAmbientIntensity(double ambientIntensity) {
         this.ambientIntensity = ambientIntensity;
     }
 
+    @Deprecated
     public double getDiffuseIntensity() {
         return diffuseIntensity;
     }
 
+    @Deprecated
     public void setDiffuseIntensity(double diffuseIntensity) {
         this.diffuseIntensity = diffuseIntensity;
     }
@@ -106,14 +118,14 @@ public class ShadowUiService {
         return rotationMatrix.multiply(Matrix4.createYRotation(rotateY));
     }
 
-    public Matrix4 createViewProjectionTransformation() {
-        return createProjectionTransformation().multiply(createViewTransformation());
+    public Matrix4 createShadowLookupTransformation() {
+        return TEXTURE_COORDINATE_TRANSFORMATION.multiply(createProjectionTransformation().multiply(createViewTransformation()));
     }
 
     private ViewField calculateYViewField() {
         ViewField yViewField = new ViewField();
-        yViewField.start = Math.tan(camera.getRotateX() - normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
-        yViewField.end = Math.tan(camera.getRotateX() + normalProjectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
+        yViewField.start = Math.tan(camera.getRotateX() - projectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
+        yViewField.end = Math.tan(camera.getRotateX() + projectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
         return yViewField;
     }
 
@@ -121,7 +133,7 @@ public class ShadowUiService {
         // TODO hier
         double maxY = calculateYViewField().calculateMax();
         double z = MathHelper.getPythagorasC(maxY, camera.getTranslateZ());
-        double xHalfViewFiled = Math.tan(normalProjectionTransformation.calculateFovX() / 2.0) * z;
+        double xHalfViewFiled = Math.tan(projectionTransformation.calculateFovX() / 2.0) * z;
         return Math.cos(rotateY) * xHalfViewFiled;
     }
 

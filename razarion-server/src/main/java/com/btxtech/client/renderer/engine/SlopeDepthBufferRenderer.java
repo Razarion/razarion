@@ -5,20 +5,23 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.terrain.slope.Mesh;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by Beat
  * 04.09.2015.
  */
 @Dependent
-public class GroundDepthBufferRenderer extends AbstractRenderer {
+public class SlopeDepthBufferRenderer extends AbstractRenderer {
     // private Logger logger = Logger.getLogger(GroundDepthBufferRenderer.class.getName());
     private static final String A_VERTEX_POSITION = "aVertexPosition";
     private static final String BARYCENTRIC_ATTRIBUTE_NAME = "aBarycentric";
@@ -51,11 +54,12 @@ public class GroundDepthBufferRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexList vertexList = terrainSurface.getGroundVertexList();
-        vertices.fillBuffer(vertexList.getVertices());
-        barycentric.fillBuffer(vertexList.getBarycentric());
+        Mesh mesh = terrainSurface.getSlope(getId()).getMesh();
+        List<Vertex> vertexList = mesh.getVertices();
+        vertices.fillBuffer(vertexList);
+        barycentric.fillBuffer(mesh.getBarycentric());
 
-        elementCount = vertexList.getVerticesCount();
+        elementCount = vertexList.size();
     }
 
     @Override

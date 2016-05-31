@@ -62,6 +62,7 @@ public class SlopeRenderer extends AbstractRenderer {
         groundTopBm = createWebGLTexture(terrainSurface.getTopBm(), "uGroundTopBm");
         groundBottomTexture = createWebGLTexture(terrainSurface.getGroundTexture(), "uGroundBottomTexture");
         groundBottomBm = createWebGLTexture(terrainSurface.getGroundBm(), "uGroundBottomBm");
+        enableShadow();
     }
 
     @Override
@@ -127,6 +128,8 @@ public class SlopeRenderer extends AbstractRenderer {
         groundBottomBm.activate();
         groundTopBm.activate();
 
+        activateShadow();
+        
         getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
     }
