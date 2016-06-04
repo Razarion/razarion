@@ -45,19 +45,15 @@ public class ShadowMenu extends Composite {
     private DoubleBox diffuseIntensity;
     @Inject
     @DataField
-    private DoubleBox shadowProjectionTransformationZNear;
-    @Inject
-    @DataField
     private DoubleBox shadowAlpha;
 
     @PostConstruct
     public void init() {
         displayLightDirectionLabel();
-        lightRotateX.setValue(Math.toDegrees(shadowUiService.getRotateX()));
-        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getRotateX())));
-        lightRotateY.setValue(Math.toDegrees(shadowUiService.getRotateY()));
-        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getRotateY())));
-        shadowProjectionTransformationZNear.setValue(shadowUiService.getZNear());
+        lightRotateX.setValue(Math.toDegrees(shadowUiService.getXAngle()));
+        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getXAngle())));
+        lightRotateY.setValue(Math.toDegrees(shadowUiService.getYAngle()));
+        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getYAngle())));
         shadowAlpha.setValue(shadowUiService.getShadowAlpha());
         ambientIntensity.setValue(shadowUiService.getAmbientIntensity());
         diffuseIntensity.setValue(shadowUiService.getDiffuseIntensity());
@@ -71,21 +67,16 @@ public class ShadowMenu extends Composite {
 
     @EventHandler("lightRotateX")
     public void lightRotateXChanged(ChangeEvent e) {
-        shadowUiService.setRotateX(Math.toRadians(lightRotateX.getValue()));
-        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getRotateX())));
+        shadowUiService.setXAngle(Math.toRadians(lightRotateX.getValue()));
+        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getXAngle())));
         displayLightDirectionLabel();
     }
 
     @EventHandler("lightRotateY")
     public void lightRotateYChanged(ChangeEvent e) {
-        shadowUiService.setRotateY(Math.toRadians(lightRotateY.getValue()));
-        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getRotateY())));
+        shadowUiService.setYAngle(Math.toRadians(lightRotateY.getValue()));
+        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getYAngle())));
         displayLightDirectionLabel();
-    }
-
-    @EventHandler("shadowProjectionTransformationZNear")
-    public void shadowProjectionTransformationZNearChanged(ChangeEvent e) {
-        shadowUiService.setZNear(shadowProjectionTransformationZNear.getValue());
     }
 
     @EventHandler("shadowAlpha")

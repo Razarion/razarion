@@ -104,19 +104,6 @@ public class ExtendedGraphicsContext {
 
     }
 
-    public void strokeCurve(List<com.btxtech.game.jsre.client.common.Line> lines, Paint color) {
-        throw new UnsupportedOperationException();
-//        for (com.btxtech.game.jsre.client.common.Line line : lines) {
-//            LineBuilder lineBuilder = LineBuilder.create();
-//            lineBuilder.startX(line.getPoint1().getX()).startY(line.getPoint1().getY());
-//            lineBuilder.endX(line.getPoint2().getX()).endY(line.getPoint2().getY());
-//            lineBuilder.stroke(color);
-//            lineBuilder.strokeWidth(3);
-//            lineBuilder.fill(Color.TRANSPARENT);
-//            root.getChildren().add(lineBuilder.build());
-//        }
-    }
-
     public void strokeVertex(Vertex vertex, Paint color) {
         gc.setFill(color);
         DecimalPosition point = vertex.toXY();

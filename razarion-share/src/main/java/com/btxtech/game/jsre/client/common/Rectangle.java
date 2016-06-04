@@ -660,16 +660,6 @@ public class Rectangle implements Serializable {
         return false;
     }
 
-    public static Rectangle generateBoundingBox(Collection<Index> points) {
-        if (points == null) {
-            throw new NullPointerException();
-        }
-        if (points.size() < 2) {
-            throw new IllegalArgumentException("At lest two point must be given. Given points: " + points.size());
-        }
-        throw new UnsupportedOperationException("Not done yet...");
-    }
-
     public String testString() {
         return "new Rectangle(" + getX() + ", " + getY() + ", " + getWidth() + ", " + getHeight() + ")";
     }

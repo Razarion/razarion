@@ -2,6 +2,7 @@ package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.Mesh;
 import com.btxtech.client.units.ItemService;
@@ -17,6 +18,7 @@ import com.btxtech.shared.primitives.Vertex4;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
+import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.scene.paint.Color;
@@ -38,6 +40,8 @@ public class RazarionEmulator {
     @Inject
     private WebGlEmulator webGlEmulator;
     @Inject
+    private WebGlEmulatorShadow webGlEmulatorShadow;
+    @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
@@ -45,10 +49,19 @@ public class RazarionEmulator {
     private TerrainSurface terrainSurface;
     @Inject
     private ItemService itemService;
+    @Inject
+    private ShadowUiService shadowUiService;
     private VertexShader terrainShader = new VertexShader() {
         @Override
         public Vertex4 process(Vertex vertex) {
             Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix());
+            return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
+        }
+    };
+    private VertexShader terrainShaderShadow = new VertexShader() {
+        @Override
+        public Vertex4 process(Vertex vertex) {
+            Matrix4 matrix4 = shadowUiService.createDepthProjectionTransformation().multiply(shadowUiService.createDepthViewTransformation());
             return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
         }
     };
@@ -59,11 +72,13 @@ public class RazarionEmulator {
         // Ground
         webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
         webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainSurface.getGroundVertexList().getVertices(), terrainSurface.getGroundVertexList().getNormVertices()), Color.BROWN);
+        webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
         // Slopes
         for (Integer slopeId : terrainSurface.getSlopeIds()) {
             Mesh mesh = terrainSurface.getSlope(slopeId).getMesh();
             webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
             webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(mesh.getVertices(), mesh.getNorms()), Color.GREEN);
+            webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
         }
         // Items
         final Integer itemTypeId = 1;

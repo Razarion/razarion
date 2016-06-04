@@ -7,15 +7,13 @@ import com.btxtech.game.jsre.common.MathHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 11.03.2016.
  */
 public class Polygon2D {
-    private static final String SPACE = "               ";
-    private Logger logger = Logger.getLogger(Polygon2D.class.getName());
+    // private Logger logger = Logger.getLogger(Polygon2D.class.getName());
     private List<DecimalPosition> corners = new ArrayList<>();
     private List<Line> lines = new ArrayList<>();
 
@@ -143,6 +141,14 @@ public class Polygon2D {
 //        }
 //        return c;
 //    }
+
+    @Override
+    public String toString() {
+        return "Polygon2D{" +
+                "corners=" + corners +
+                ", lines=" + lines +
+                '}';
+    }
 
     public String testString() {
         String testString = "new Polygon2D(Arrays.asList(";

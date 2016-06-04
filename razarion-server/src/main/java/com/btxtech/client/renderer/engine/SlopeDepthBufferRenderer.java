@@ -6,7 +6,6 @@ import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.terrain.slope.Mesh;
-import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
@@ -69,8 +68,8 @@ public class SlopeDepthBufferRenderer extends AbstractRenderer {
 
         useProgram();
         // Projection uniform
-        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, shadowUiService.createProjectionTransformation());
-        uniformMatrix4fv(VIEW_UNIFORM_NAME, shadowUiService.createViewTransformation());
+        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, shadowUiService.createDepthProjectionTransformation());
+        uniformMatrix4fv(VIEW_UNIFORM_NAME, shadowUiService.createDepthViewTransformation());
         uniformMatrix4fv(MODEL_UNIFORM_NAME, Matrix4.createIdentity());
 
         vertices.activate();

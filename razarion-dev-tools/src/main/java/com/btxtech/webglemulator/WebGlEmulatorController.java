@@ -3,6 +3,7 @@ package com.btxtech.webglemulator;
 import com.btxtech.InstanceStringGenerator;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.client.units.ItemService;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
@@ -10,19 +11,27 @@ import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
+import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -39,8 +48,12 @@ public class WebGlEmulatorController implements Initializable {
     public TextField zTranslationField;
     public Slider cameraZRotationSlider;
     public Slider cameraXRotationSlider;
+    public Slider shadowXRotationSlider;
+    public Slider shadowYRotationSlider;
     @Inject
     private WebGlEmulator webGlEmulator;
+    @Inject
+    private WebGlEmulatorShadow webGlEmulatorShadow;
     @Inject
     private RazarionEmulator razarionEmulator;
     @Inject
@@ -51,12 +64,17 @@ public class WebGlEmulatorController implements Initializable {
     private TerrainSurface terrainSurface;
     @Inject
     private ItemService itemService;
+    @Inject
+    private ShadowUiService shadowUiService;
+    @Inject
+    private WebGlEmulatorShadowController shadowController;
+    @Inject
+    private WebGlEmulatorSceneController sceneController;
     public Canvas canvas;
     private DecimalPosition lastCanvasPosition;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Only called if gets bigger
         centerPanel.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
@@ -66,7 +84,6 @@ public class WebGlEmulatorController implements Initializable {
                 webGlEmulator.drawArrays();
             }
         });
-        // Only called if gets bigger
         centerPanel.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
@@ -92,6 +109,7 @@ public class WebGlEmulatorController implements Initializable {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
                 projectionTransformation.setFovY(Math.toRadians(fovSlider.getValue()));
                 webGlEmulator.drawArrays();
+                System.out.println("Camera direction: " + camera.getDirection());
             }
         });
         cameraXRotationSlider.valueProperty().set(Math.toDegrees(camera.getRotateX()));
@@ -100,6 +118,11 @@ public class WebGlEmulatorController implements Initializable {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
                 camera.setRotateX(Math.toRadians(cameraXRotationSlider.getValue()));
                 webGlEmulator.drawArrays();
+                System.out.println("X rot: " + cameraXRotationSlider.getValue());
+                System.out.println("Z rot: " + cameraZRotationSlider.getValue());
+                System.out.println("Camera direction: " + camera.getDirection());
+                System.out.println("zNear: " + projectionTransformation.calculateZNear());
+                System.out.println("zFar: " + projectionTransformation.calculateZFar());
             }
         });
         cameraZRotationSlider.valueProperty().set(Math.toDegrees(camera.getRotateZ()));
@@ -108,13 +131,44 @@ public class WebGlEmulatorController implements Initializable {
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
                 camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
                 webGlEmulator.drawArrays();
+                System.out.println("X rot: " + cameraXRotationSlider.getValue());
+                System.out.println("Z rot: " + cameraZRotationSlider.getValue());
+                System.out.println("Camera direction: " + camera.getDirection());
+                System.out.println("zNear: " + projectionTransformation.calculateZNear());
+                System.out.println("zFar: " + projectionTransformation.calculateZFar());
             }
         });
         xTranslationField.setText(Double.toString(camera.getTranslateX()));
         yTranslationField.setText(Double.toString(camera.getTranslateY()));
         zTranslationField.setText(Double.toString(camera.getTranslateZ()));
 
-        webGlEmulator.init(canvas);
+        shadowXRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getXAngle()));
+        shadowXRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
+                shadowUiService.setXAngle(Math.toRadians(shadowXRotationSlider.getValue()));
+                System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
+                System.out.println("Shadow Y rot: " + shadowYRotationSlider.getValue());
+                System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
+                shadowUiService.calculateViewField();
+                webGlEmulatorShadow.drawArrays();
+            }
+        });
+        shadowYRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getXAngle()));
+        shadowYRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
+                shadowUiService.setYAngle(Math.toRadians(shadowYRotationSlider.getValue()));
+                System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
+                System.out.println("Shadow Y rot: " + shadowYRotationSlider.getValue());
+                System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
+                shadowUiService.calculateViewField();
+                webGlEmulatorShadow.drawArrays();
+            }
+        });
+
+
+        webGlEmulator.setCanvas(canvas);
     }
 
     public void onMouseDragged(Event event) {
@@ -134,10 +188,6 @@ public class WebGlEmulatorController implements Initializable {
         lastCanvasPosition = canvasPosition;
     }
 
-    public void onMouseMove(Event event) {
-
-    }
-
     public void onMousePressed(Event event) {
         MouseEvent mouseEvent = (MouseEvent) event;
         DecimalPosition canvasPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
@@ -155,23 +205,23 @@ public class WebGlEmulatorController implements Initializable {
         return terrainSurface.calculatePositionOnZeroLevel(worldPickRay);
     }
 
-    public void onMouseReleased(Event event) {
+    public void onMouseReleased() {
         lastCanvasPosition = null;
     }
 
-    public void onDumpProjectionTransformatioClicked(ActionEvent actionEvent) {
+    public void onDumpProjectionTransformatioClicked() {
         System.out.println("-----------Projection Transformation-----------------");
         System.out.println(projectionTransformation);
         System.out.println("-----------------------------------------------------");
     }
 
-    public void onDumpCameraClicked(ActionEvent actionEvent) {
+    public void onDumpCameraClicked() {
         System.out.println("---------------------Camera--------------------------");
         System.out.println(camera);
         System.out.println("-----------------------------------------------------");
     }
 
-    public void onTestCaseButtonClicked(ActionEvent actionEvent) {
+    public void onTestCaseButtonClicked() {
         System.out.println("---------------------Test Case-----------------------");
         System.out.println(camera);
         System.out.println(projectionTransformation);
@@ -179,28 +229,98 @@ public class WebGlEmulatorController implements Initializable {
         System.out.println("-----------------------------------------------------");
     }
 
-    public void xTranslationFieldChanged(ActionEvent actionEvent) {
+    public void xTranslationFieldChanged() {
         camera.setTranslateX(Double.parseDouble(xTranslationField.getText()));
         webGlEmulator.drawArrays();
     }
 
-    public void yTranslationFieldChanged(ActionEvent actionEvent) {
+    public void yTranslationFieldChanged() {
         camera.setTranslateY(Double.parseDouble(yTranslationField.getText()));
         webGlEmulator.drawArrays();
     }
 
-    public void zTranslationFieldChanged(ActionEvent actionEvent) {
+    public void zTranslationFieldChanged() {
         camera.setTranslateZ(Double.parseDouble(zTranslationField.getText()));
         webGlEmulator.drawArrays();
     }
 
-    public void onTickButtonClicked(ActionEvent actionEvent) {
+    public void onTickButtonClicked() {
         itemService.tick();
         webGlEmulator.drawArrays();
     }
 
-    public void onRestartButtonClicked(ActionEvent actionEvent) {
+    public void onRestartButtonClicked() {
         itemService.setupItems();
         webGlEmulator.drawArrays();
+    }
+
+    public void onShadowButtonClicked(ActionEvent actionEvent) {
+        if (shadowController.getCanvas() != null) {
+            webGlEmulatorShadow.drawArrays();
+            return;
+        }
+        try {
+            final Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WebGlEmulatorShadow.fxml"));
+            loader.setControllerFactory(new Callback<Class<?>, Object>() {
+                @Override
+                public Object call(Class<?> param) {
+                    return shadowController;
+                }
+            });
+            AnchorPane root = (AnchorPane) loader.load();
+            stage.setTitle("Shadow");
+            stage.setScene(new Scene(root));
+            stage.setX(-1288);
+            stage.setY(168);
+            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                public void handle(WindowEvent we) {
+                    webGlEmulatorShadow.setCanvas(null);
+                }
+            });
+            stage.show();
+            webGlEmulatorShadow.setCanvas(shadowController.getCanvas());
+            webGlEmulatorShadow.drawArrays();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onSceneButtonClicked() {
+        if(sceneController.getCanvas() != null) {
+            sceneController.update();
+            return;
+        }
+        try {
+            final Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WebGlEmulatorScene.fxml"));
+            loader.setControllerFactory(new Callback<Class<?>, Object>() {
+                @Override
+                public Object call(Class<?> param) {
+                    return sceneController;
+                }
+            });
+            AnchorPane root = (AnchorPane) loader.load();
+            stage.setTitle("Scene");
+            stage.setScene(new Scene(root));
+            stage.setX(-1288);
+            stage.setY(168);
+            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                public void handle(WindowEvent we) {
+                    sceneController = null;
+                }
+            });
+            stage.show();
+            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                public void handle(WindowEvent we) {
+                    sceneController.setCanvas(null);
+                }
+            });
+
+            sceneController.update();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

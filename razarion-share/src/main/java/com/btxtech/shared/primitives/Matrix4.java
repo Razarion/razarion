@@ -154,8 +154,8 @@ public class Matrix4 {
         double cos = Math.cos(radians);
         double[][] numbers = {
                 {1, 0, 0, 0},
-                {0, cos, sin, 0},
-                {0, -sin, cos, 0},
+                {0, cos, -sin, 0},
+                {0, sin, cos, 0},
                 {0, 0, 0, 1}};
         return new Matrix4(numbers);
     }

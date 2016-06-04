@@ -82,8 +82,8 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
-        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, shadowUiService.createProjectionTransformation());
-        uniformMatrix4fv(VIEW_UNIFORM_NAME, shadowUiService.createViewTransformation());
+        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, shadowUiService.createDepthProjectionTransformation());
+        uniformMatrix4fv(VIEW_UNIFORM_NAME, shadowUiService.createDepthViewTransformation());
 
         positions.activate();
         barycentric.activate();

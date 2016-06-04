@@ -1,8 +1,8 @@
 package com.btxtech.client.renderer.model;
 
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.Plane3d;
 import com.btxtech.shared.primitives.Vertex;
 
 import javax.inject.Inject;
@@ -27,10 +27,9 @@ public class ShadowUiService {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private TerrainSurface terrainSurface;
-    private double zNear = 10;
     private double shadowAlpha = 0.2;
-    private double rotateX = -Math.toRadians(10);
-    private double rotateY = -Math.toRadians(10);
+    private double xAngle = Math.toRadians(5);
+    private double yAngle = Math.toRadians(-30);
     @Deprecated
     private double ambientIntensity;
     @Deprecated
@@ -40,14 +39,7 @@ public class ShadowUiService {
         setGame();
     }
 
-    /**
-     * Return the point on the surface pointing to the sun
-     *
-     * @return direction normalized
-     */
-    public Vertex getLightDirection() {
-        return createRotationMatrix().multiply(new Vertex(0, 0, -1), 1.0);
-    }
+    // ------------------------------------------------------------------------------------------------------------
 
     @Deprecated
     public void setGame() {
@@ -75,6 +67,18 @@ public class ShadowUiService {
         this.diffuseIntensity = diffuseIntensity;
     }
 
+    // ------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Return the point on the surface pointing to the sun
+     *
+     * @return direction normalized
+     */
+    public Vertex getLightDirection() {
+        return Matrix4.createXRotation(xAngle).multiply(Matrix4.createYRotation(yAngle)).multiply(new Vertex(0, 0, -1), 1.0);
+    }
+
+
     public double getShadowAlpha() {
         return shadowAlpha;
     }
@@ -83,114 +87,111 @@ public class ShadowUiService {
         this.shadowAlpha = shadowAlpha;
     }
 
-    public double getRotateX() {
-        return rotateX;
+    public double getXAngle() {
+        return xAngle;
     }
 
-    public void setRotateX(double rotateX) {
-        this.rotateX = rotateX;
+    public void setXAngle(double xAngle) {
+        this.xAngle = xAngle;
     }
 
-    public double getRotateY() {
-        return rotateY;
+    public double getYAngle() {
+        return yAngle;
     }
 
-    public void setRotateY(double rotateY) {
-        this.rotateY = rotateY;
+    public void setYAngle(double yAngle) {
+        this.yAngle = yAngle;
     }
 
-    public Matrix4 createViewTransformation() {
-        double actualLightPosX = camera.getTranslateX() + Math.tan(rotateY) * calculateZ();
-
-        double lightNormalY = camera.getTranslateY() + calculateYViewField().calculateAverage();
-        double actualLightPosY = lightNormalY + Math.tan(rotateX) * calculateZ();
-
-        return createNegatedRotationMatrix().multiply(Matrix4.createTranslation(-actualLightPosX, -actualLightPosY, -calculateZ()));
-    }
-
-    private Matrix4 createNegatedRotationMatrix() {
-        Matrix4 rotationMatrix = Matrix4.createXRotation(-rotateX);
-        return rotationMatrix.multiply(Matrix4.createYRotation(-rotateY));
-    }
-
-    private Matrix4 createRotationMatrix() {
-        Matrix4 rotationMatrix = Matrix4.createXRotation(rotateX);
-        return rotationMatrix.multiply(Matrix4.createYRotation(rotateY));
-    }
+    // ------------------------------------------------------------------------------------------------------------
 
     public Matrix4 createShadowLookupTransformation() {
-        return TEXTURE_COORDINATE_TRANSFORMATION.multiply(createProjectionTransformation().multiply(createViewTransformation()));
+        return TEXTURE_COORDINATE_TRANSFORMATION.multiply(createDepthProjectionTransformation().multiply(createDepthViewTransformation()));
     }
 
-    private ViewField calculateYViewField() {
-        ViewField yViewField = new ViewField();
-        yViewField.start = Math.tan(camera.getRotateX() - projectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
-        yViewField.end = Math.tan(camera.getRotateX() + projectionTransformation.getFovY() / 2.0) * camera.getTranslateZ();
-        return yViewField;
+    public Matrix4 createDepthProjectionTransformation() {
+        ViewField viewField = projectionTransformation.calculateViewField(0).calculateAabb();
+
+        Vertex lightNorm = getLightDirection();
+        Plane3d plane = calculatePlane(viewField, lightNorm);
+
+        Vertex bottomLeftVertex = plane.project(viewField.getBottomLeftVertex());
+        Vertex bottomRightVertex = plane.project(viewField.getBottomRightVertex());
+        Vertex topRightVertex = plane.project(viewField.getTopRightVertex());
+        Vertex topLeftVertex = plane.project(viewField.getTopLeftVertex());
+
+        double right = bottomLeftVertex.distance(bottomRightVertex) / 2.0;
+        double top = bottomLeftVertex.distance(topLeftVertex) / 2.0;
+
+        double zFar = getDistance(bottomLeftVertex, lightNorm, 0);
+        zFar = getDistance(bottomRightVertex, lightNorm, zFar);
+        zFar = getDistance(topRightVertex, lightNorm, zFar);
+        zFar = getDistance(topLeftVertex, lightNorm, zFar);
+
+        return makeBalancedOrthographicFrustum(right, top, 0, zFar);
     }
 
-    private double calculateRight() {
-        // TODO hier
-        double maxY = calculateYViewField().calculateMax();
-        double z = MathHelper.getPythagorasC(maxY, camera.getTranslateZ());
-        double xHalfViewFiled = Math.tan(projectionTransformation.calculateFovX() / 2.0) * z;
-        return Math.cos(rotateY) * xHalfViewFiled;
-    }
+    private Plane3d calculatePlane(ViewField viewField, Vertex lightNorm) {
+        double m = terrainSurface.getHighestPointInView() / lightNorm.getZ();
+        Vertex negLightNorm = lightNorm.multiply(m);
 
-    private double calculateTop() {
-        return Math.cos(rotateX) * calculateYViewField().calculateHalfDifference();
-    }
-
-    private double calculateZ() {
-        double angle = calculateAngle();
-        double z = Math.cos(angle) * MathHelper.getPythagorasC(calculateRight(), calculateTop());
-        return z + terrainSurface.getHighestPointInView() + Math.cos(angle) * zNear;
-    }
-
-    private double calculateZFar() {
-        double angle = calculateAngle();
-        double norm = Math.abs(2.0 * Math.cos(angle) * MathHelper.getPythagorasC(calculateRight(), calculateTop())) + terrainSurface.getHighestPointInView() - terrainSurface.getLowestPointInView();
-        return zNear + Math.abs(norm / Math.cos(angle));
-    }
-
-    private double calculateAngle() {
-        Vertex planeNorm = Matrix4.createXRotation(rotateX).multiply(Matrix4.createYRotation(rotateY)).multiply(new Vertex(0, 0, 1), 1);
-        return planeNorm.unsignedAngle(new Vertex(0, 0, 1));
-    }
-    public double getZNear() {
-        return zNear;
-    }
-
-    public void setZNear(double zNear) {
-        this.zNear = zNear;
-    }
-
-    public Matrix4 createProjectionTransformation() {
-        return ProjectionTransformation.makeBalancedOrthographicFrustum(calculateRight(), calculateTop(), zNear, calculateZFar());
-    }
-
-    public void testPrint() {
-        logger.severe("calculateAngle() = " + Math.toDegrees(calculateAngle()));
-        logger.severe("calculateRight() = " + calculateRight() + "; calculateTop() = " + calculateTop());
-        logger.severe("calculated Z = " + calculateZ() + "; zNear = " + zNear + "; calculated ZFar = " + calculateZFar() + "; rotateX = " + Math.toDegrees(rotateX) + "; rotateY = " + Math.toDegrees(rotateY) + "");
-    }
-
-    private class ViewField {
-        double start;
-        double end;
-
-        public double calculateAverage() {
-            return (end + start) / 2.0;
+        Vertex pointOnPlane;
+        if(lightNorm.getX() >= 0) {
+            if(lightNorm.getY() > 0) {
+                pointOnPlane = viewField.getBottomLeftVertex().add(negLightNorm);
+            } else {
+                pointOnPlane = viewField.getTopLeftVertex().add(negLightNorm);
+            }
+        } else {
+            if(lightNorm.getY() > 0) {
+                pointOnPlane = viewField.getBottomRightVertex().add(negLightNorm);
+            } else {
+                pointOnPlane = viewField.getTopRightVertex().add(negLightNorm);
+            }
         }
 
-        public double calculateHalfDifference() {
-            return Math.abs(start - end) / 2.0;
-        }
-
-        public double calculateMax() {
-            return Math.max(Math.abs(start), Math.abs(end));
-        }
-
+        return new Plane3d(lightNorm, pointOnPlane);
     }
 
+    private double getDistance(Vertex position, Vertex norm, double zFar) {
+        double t = (terrainSurface.getLowestPointInView() - position.getZ()) / norm.getZ();
+        Vertex worldPosition = position.add(norm.multiply(t));
+        double distance = worldPosition.distance(position);
+        return Math.max(distance, zFar);
+    }
+
+    public Matrix4 createDepthViewTransformation() {
+        ViewField viewField = projectionTransformation.calculateViewField(0).calculateAabb();
+
+        Vertex lightNorm = getLightDirection();
+        Plane3d plane = calculatePlane(viewField, lightNorm);
+
+        Vertex bottomLeftVertex = plane.project(viewField.getBottomLeftVertex());
+        Vertex topRightVertex = plane.project(viewField.getTopRightVertex());
+
+        double distance = bottomLeftVertex.distance(topRightVertex);
+        Vertex lightPosition = bottomLeftVertex.add(topRightVertex.sub(bottomLeftVertex).normalize(distance / 2.0));
+
+        return Matrix4.createXRotation(-xAngle).multiply(Matrix4.createYRotation(-yAngle)).multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
+    }
+
+    public ViewField calculateViewField() {
+        return projectionTransformation.calculateViewField(0).calculateAabb();
+    }
+
+    // ------------------------------------------------------------------------------------------------------------
+
+    /**
+     * http://www.songho.ca/opengl/gl_projectionmatrix.html
+     */
+    public static Matrix4 makeBalancedOrthographicFrustum(double right, double top, double zNear, double zFar) {
+        double a = -2.0 / (zFar - zNear);
+        double b = -(zFar + zNear) / (zFar - zNear);
+
+        return new Matrix4(new double[][]{
+                {1.0 / right, 0, 0, 0},
+                {0, 1.0 / top, 0, 0},
+                {0, 0, a, b},
+                {0, 0, 0, 1}});
+    }
 }

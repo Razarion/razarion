@@ -373,8 +373,8 @@ public class TestMatrix4 {
         Matrix4 actual = Matrix4.createXRotation(Math.toRadians(10));
         Matrix4 expected = new Matrix4(new double[][]{
                 {1, 0, 0, 0},
-                {0, 0.984807753012208, 0.17364817766693033, 0},
-                {0, -0.17364817766693033, 0.984807753012208, 0},
+                {0, 0.984807753012208, -0.17364817766693033, 0},
+                {0, 0.17364817766693033, 0.984807753012208, 0},
                 {0, 0, 0, 1}});
         Assert.assertEquals(expected, actual);
     }
@@ -384,8 +384,8 @@ public class TestMatrix4 {
         Matrix4 actual = Matrix4.createXRotation(Math.toRadians(60));
         Matrix4 expected = new Matrix4(new double[][]{
                 {1, 0, 0, 0},
-                {0, 0.5000000000000001, 0.8660254037844386, 0},
-                {0, -0.8660254037844386, 0.5000000000000001, 0},
+                {0, 0.5000000000000001, -0.8660254037844386, 0},
+                {0, 0.8660254037844386, 0.5000000000000001, 0},
                 {0, 0, 0, 1}});
         Assert.assertEquals(expected, actual);
     }
@@ -625,7 +625,7 @@ public class TestMatrix4 {
         Vertex vector2 = new Vertex(0, 1, 0);
         Vertex vector3 = new Vertex(1, 0, 0);
         // Rotation
-        TestVertex.assertVertex(0, 1, 0, Matrix4.createXRotation(Math.toRadians(90)).normTransformation().multiply(vector1, 0));
+        TestVertex.assertVertex(0, -1, 0, Matrix4.createXRotation(Math.toRadians(90)).normTransformation().multiply(vector1, 0));
         // Translation
         TestVertex.assertVertex(0, 0, 1, Matrix4.createTranslation(-1, 4, 16).normTransformation().multiply(vector1, 0));
         // Scale negative scale doe not work
@@ -634,7 +634,7 @@ public class TestMatrix4 {
         TestVertex.assertVertex(vector3, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector3, 0).normalize(1.0));
         TestVertex.assertVertex(vector3, Matrix4.createScale(13, 0.5, 27).normTransformation().multiply(vector3, 0).normalize(1.0));
         // Scale rotation and translation together
-        TestVertex.assertVertex(0, 1, 0, Matrix4.createScale(13, 0.5, 27).multiply(Matrix4.createXRotation(Math.toRadians(90))).multiply(Matrix4.createTranslation(-1, 4, 16)).normTransformation().multiply(vector1, 0).normalize(1.0));
+        TestVertex.assertVertex(0, -1, 0, Matrix4.createScale(13, 0.5, 27).multiply(Matrix4.createXRotation(Math.toRadians(90))).multiply(Matrix4.createTranslation(-1, 4, 16)).normTransformation().multiply(vector1, 0).normalize(1.0));
     }
 
     public static void assertMatrix(Matrix4 expected, Matrix4 received) {

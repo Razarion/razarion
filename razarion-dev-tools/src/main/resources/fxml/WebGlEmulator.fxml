@@ -33,6 +33,8 @@
             <Button mnemonicParsing="false" onAction="#onTestCaseButtonClicked" text="Test Case" />
             <Button mnemonicParsing="false" onAction="#onTickButtonClicked" text="Tick" />
             <Button mnemonicParsing="false" onAction="#onRestartButtonClicked" text="Restart" />
+            <Button mnemonicParsing="false" onAction="#onShadowButtonClicked" text="Shadow" />
+            <Button mnemonicParsing="false" onAction="#onSceneButtonClicked" text="Scene" />
             </items>
         </ToolBar>
     </top>
@@ -95,18 +97,40 @@
                                         <TextField onAction="#xTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="xTranslationField" />
                                         <TextField fx:id="yTranslationField" onAction="#yTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                         <TextField fx:id="zTranslationField" onAction="#zTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                        <Slider fx:id="cameraXRotationSlider" majorTickUnit="45.0" max="90.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                        <Slider fx:id="cameraXRotationSlider" majorTickUnit="45.0" max="360" min="0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                         <Slider fx:id="cameraZRotationSlider" majorTickUnit="45.0" max="180.0" min="-180.0" prefHeight="19.0" prefWidth="108.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                         <Button mnemonicParsing="false" onAction="#onDumpCameraClicked" text="Dump" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
                                     </children>
                                 </GridPane>
+                        <GridPane>
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="103.0" minWidth="10.0" prefWidth="66.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="149.0" minWidth="10.0" prefWidth="149.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Shadow" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label text="X Rotation" GridPane.rowIndex="1" />
+                              <Label text="Y Rotation" GridPane.rowIndex="2" />
+                              <Slider fx:id="shadowXRotationSlider" majorTickUnit="45.0" max="90.0" min="-90.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Slider fx:id="shadowYRotationSlider" majorTickUnit="45.0" max="90.0" min="-90.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                           </children>
+                        </GridPane>
                             </children>
                         </VBox>
                     </children>
                 </AnchorPane>
                 <AnchorPane fx:id="centerPanel" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <children>
-                        <Canvas fx:id="canvas" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMove" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" BorderPane.alignment="CENTER" />
+                        <Canvas fx:id="canvas" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" BorderPane.alignment="CENTER" />
                     </children>
                 </AnchorPane>
             </items>

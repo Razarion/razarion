@@ -65,8 +65,8 @@ public class GroundDepthBufferRenderer extends AbstractRenderer {
 
         useProgram();
         // Projection uniform
-        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, shadowUiService.createProjectionTransformation());
-        uniformMatrix4fv(VIEW_UNIFORM_NAME, shadowUiService.createViewTransformation());
+        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, shadowUiService.createDepthProjectionTransformation());
+        uniformMatrix4fv(VIEW_UNIFORM_NAME, shadowUiService.createDepthViewTransformation());
         uniformMatrix4fv(MODEL_UNIFORM_NAME, Matrix4.createIdentity());
 
         vertices.activate();

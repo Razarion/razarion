@@ -4,6 +4,9 @@ import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.logging.Logger;
 
@@ -13,6 +16,8 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class Camera {
+    @Inject
+    private Event<CameraMovedEvent> cameraMovedEvent;
     private double translateX;
     private double translateY;
     private double translateZ;
@@ -21,9 +26,13 @@ public class Camera {
 
     private Logger logger = Logger.getLogger(Camera.class.getName());
 
-    public Camera() {
-        setGame();
-        // setTop();
+    @PostConstruct
+    public void init() {
+        translateX = 1000;
+        translateY = 500;
+        translateZ = 720;
+        rotateX = Math.toRadians(35);
+        rotateZ = Math.toRadians(0);
     }
 
     public double getTranslateX() {
@@ -72,14 +81,19 @@ public class Camera {
     }
 
     public Matrix4 createMatrix() {
-        Matrix4 matrix4 = Matrix4.createXRotation(rotateX);
-        matrix4 = matrix4.multiply(Matrix4.createZRotation(rotateZ));
-        return matrix4.multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
+        return createNormMatrix().multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
     }
 
     public Matrix4 createNormMatrix() {
-        Matrix4 matrix4 = Matrix4.createXRotation(rotateX);
-        return matrix4.multiply(Matrix4.createZRotation(rotateZ));
+        return Matrix4.createXRotation(-rotateX).multiply(Matrix4.createZRotation(-rotateZ));
+    }
+
+    public Vertex getPosition() {
+        return new Vertex(translateX, translateY, translateZ);
+    }
+
+    public Vertex getDirection() {
+        return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
     public void setTop() {
@@ -103,16 +117,16 @@ public class Camera {
     public void setGame() {
         // translateX = 500;
         // translateY = -140;
-        translateX = 1104;
-        translateY = -218;
-        translateZ = 720;
-        rotateX = Math.toRadians(40);
+        translateX = 1000;
+        translateY = 500;
+        translateZ = -720;
+        rotateX = Math.toRadians(0);
         rotateZ = Math.toRadians(0);
         fireChanged();
     }
 
     private void fireChanged() {
-        // testPrint();
+        // cameraMovedEvent.fire(new CameraMovedEvent());
     }
 
     public Ray3d toWorld(Ray3d pickRay) {

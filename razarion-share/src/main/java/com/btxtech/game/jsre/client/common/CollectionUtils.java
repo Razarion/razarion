@@ -21,7 +21,7 @@ public class CollectionUtils {
     }
 
     public static double[][] to2dArray(List<List<Double>> list) {
-        if(list == null) {
+        if (list == null) {
             return new double[0][0];
         }
         double[][] result = new double[list.size()][];
@@ -71,5 +71,12 @@ public class CollectionUtils {
         return new ArrayList<T>(collection).get(index);
     }
 
-
+    public static boolean hasNullElements(Collection collection) {
+        for (Object o : collection) {
+            if (o == null) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

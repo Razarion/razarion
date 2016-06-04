@@ -73,8 +73,8 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
-        uniformMatrix4fv("uPMatrix", shadowUiService.createProjectionTransformation());
-        uniformMatrix4fv("uVMatrix", shadowUiService.createViewTransformation());
+        uniformMatrix4fv("uPMatrix", shadowUiService.createDepthProjectionTransformation());
+        uniformMatrix4fv("uVMatrix", shadowUiService.createDepthViewTransformation());
 
         positions.activate();
         barycentric.activate();
