@@ -78,6 +78,10 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
 
     @Override
     public void draw() {
+        if(elementCount == 0) {
+            return;
+        }
+
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 

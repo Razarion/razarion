@@ -35,6 +35,9 @@ public class TerrainObjectService {
         transparentNoShadowIds = new HashMap<>();
         transparentOnlyShadowIds = new HashMap<>();
         for (Map.Entry<Integer, TerrainObject> terrainObjectEntry : terrainObjects.entrySet()) {
+            if(!objectIdMatrices.containsKey(terrainObjectEntry.getKey())) {
+                continue;
+            }
             for (Map.Entry<TerrainObject.Type, VertexContainer> vertexContainerEntry : terrainObjectEntry.getValue().getVertexContainers().entrySet()) {
                 switch (vertexContainerEntry.getKey()) {
                     case OPAQUE:

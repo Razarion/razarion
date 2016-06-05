@@ -7,7 +7,7 @@ import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Ray3d;
@@ -55,7 +55,7 @@ public class TerrainEditor {
     private int cursorRadius = 200;
     private int cursorCorners = 20;
     private int selectedSlopeId = NO_SELECTION;
-    private SlopeNameId slope4New;
+    private ObjectNameId slope4New;
     private Map<Integer, ModifiedTerrainSlopePosition> modifiedTerrainSlopePositions = new HashMap<>();
 
     public TerrainEditor() {
@@ -203,7 +203,7 @@ public class TerrainEditor {
         }).saveTerrainSlopePositions(terrainSlopePositions);
     }
 
-    public void setSlope4New(SlopeNameId slope4New) {
+    public void setSlope4New(ObjectNameId slope4New) {
         this.slope4New = slope4New;
     }
 }

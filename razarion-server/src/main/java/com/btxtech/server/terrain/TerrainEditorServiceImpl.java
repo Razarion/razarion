@@ -12,7 +12,7 @@ import com.btxtech.server.terrain.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeConfig;
-import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.google.gson.Gson;
@@ -50,18 +50,18 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public Collection<SlopeNameId> getSlopeNameIds() {
+    public Collection<ObjectNameId> getSlopeNameIds() {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
             Root<SlopeConfigEntity> root = cq.from(SlopeConfigEntity.class);
             cq.multiselect(root.get(SlopeConfigEntity_.id), root.get(SlopeConfigEntity_.internalName));
             List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
-            Collection<SlopeNameId> slopeNameIds = new ArrayList<>();
+            Collection<ObjectNameId> objectNameIds = new ArrayList<>();
             for (Tuple t : tupleResult) {
-                slopeNameIds.add(new SlopeNameId(((Long) t.get(0)).intValue(), (String) t.get(1)));
+                objectNameIds.add(new ObjectNameId(((Long) t.get(0)).intValue(), (String) t.get(1)));
             }
-            return slopeNameIds;
+            return objectNameIds;
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -174,18 +174,18 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
 
     @Override
     @Transactional
-    public Collection<SlopeNameId> getTerrainObjectNameIds() {
+    public Collection<ObjectNameId> getTerrainObjectNameIds() {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
             Root<TerrainObjectEntity> root = cq.from(TerrainObjectEntity.class);
             cq.multiselect(root.get(TerrainObjectEntity_.id), root.get(TerrainObjectEntity_.internalName));
             List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
-            Collection<SlopeNameId> slopeNameIds = new ArrayList<>();
+            Collection<ObjectNameId> objectNameIds = new ArrayList<>();
             for (Tuple t : tupleResult) {
-                slopeNameIds.add(new SlopeNameId(((Long) t.get(0)).intValue(), (String) t.get(1)));
+                objectNameIds.add(new ObjectNameId(((Long) t.get(0)).intValue(), (String) t.get(1)));
             }
-            return slopeNameIds;
+            return objectNameIds;
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

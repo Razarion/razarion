@@ -10,7 +10,7 @@ import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
@@ -53,7 +53,7 @@ public class TerrainObjectEditor {
     private TerrainObjectService terrainObjectService;
     @Inject
     private Event<TerrainObjectEditorSelectedEvent> terrainObjectEditorSelectedEvent;
-    private SlopeNameId newObjectId;
+    private ObjectNameId newObjectId;
     private double randomZRotation = 1.0;
     private double randomScale = 2.0;
     private Collection<TerrainObjectPosition> terrainObjects;
@@ -176,7 +176,7 @@ public class TerrainObjectEditor {
         return null;
     }
 
-    public void setNewObjectId(SlopeNameId newObjectId) {
+    public void setNewObjectId(ObjectNameId newObjectId) {
         this.newObjectId = newObjectId;
     }
 

@@ -67,8 +67,8 @@ public class SlopeConfig {
         this.fractalRoughness = fractalRoughness;
     }
 
-    public SlopeNameId createSlopeNameId() {
-        return new SlopeNameId(id, internalName);
+    public ObjectNameId createSlopeNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     public double getFractalMin() {

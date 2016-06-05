@@ -7,17 +7,17 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * 23.04.2016.
  */
 @Portable
-public class SlopeNameId {
+public class ObjectNameId {
     private int id;
     private String internalName;
 
     /**
      * Used by GWT
      */
-    public SlopeNameId() {
+    public ObjectNameId() {
     }
 
-    public SlopeNameId(int id, String internalName) {
+    public ObjectNameId(int id, String internalName) {
         this.id = id;
         this.internalName = internalName;
     }
@@ -44,7 +44,7 @@ public class SlopeNameId {
             return false;
         }
 
-        SlopeNameId that = (SlopeNameId) o;
+        ObjectNameId that = (ObjectNameId) o;
 
         return id == that.id;
 

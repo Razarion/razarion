@@ -153,10 +153,10 @@ public class ViewFieldMover {
     }
 
     private Ray3d setupTerrainRay3d(MouseEvent event, Canvas canvas) {
-        DecimalPosition webglPosition = new DecimalPosition((double) event.getX() / (double) canvas.getCoordinateSpaceWidth(), 1.0 - (double) event.getY() / (double) canvas.getCoordinateSpaceHeight());
-        webglPosition = webglPosition.multiply(2.0);
-        webglPosition = webglPosition.sub(1, 1);
-        Ray3d pickRay = projectionTransformation.createPickRay(webglPosition);
+        DecimalPosition webglClipPosition = new DecimalPosition((double) event.getX() / (double) canvas.getCoordinateSpaceWidth(), 1.0 - (double) event.getY() / (double) canvas.getCoordinateSpaceHeight());
+        webglClipPosition = webglClipPosition.multiply(2.0);
+        webglClipPosition = webglClipPosition.sub(1, 1);
+        Ray3d pickRay = projectionTransformation.createPickRay(webglClipPosition);
         return camera.toWorld(pickRay);
     }
 

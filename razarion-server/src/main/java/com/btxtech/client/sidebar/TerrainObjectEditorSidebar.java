@@ -3,7 +3,7 @@ package com.btxtech.client.sidebar;
 import com.btxtech.client.editor.object.TerrainObjectEditor;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -38,7 +38,7 @@ public class TerrainObjectEditorSidebar extends Composite implements LeftSideBar
     private TerrainObjectEditor terrainObjectEditor;
     @Inject
     @DataField
-    private ValueListBox<SlopeNameId> terrainObjectSelection;
+    private ValueListBox<ObjectNameId> terrainObjectSelection;
     @Inject
     @DataField
     private DoubleBox randomZRotation;
@@ -53,19 +53,19 @@ public class TerrainObjectEditorSidebar extends Composite implements LeftSideBar
     public void init() {
         randomZRotation.setValue(terrainObjectEditor.getRandomZRotation());
         randomScale.setValue(terrainObjectEditor.getRandomScale());
-        terrainObjectSelection.addValueChangeHandler(new ValueChangeHandler<SlopeNameId>() {
+        terrainObjectSelection.addValueChangeHandler(new ValueChangeHandler<ObjectNameId>() {
             @Override
-            public void onValueChange(ValueChangeEvent<SlopeNameId> event) {
+            public void onValueChange(ValueChangeEvent<ObjectNameId> event) {
                 terrainObjectEditor.setNewObjectId(terrainObjectSelection.getValue());
             }
         });
-        terrainEditorService.call(new RemoteCallback<Collection<SlopeNameId>>() {
+        terrainEditorService.call(new RemoteCallback<Collection<ObjectNameId>>() {
             @Override
-            public void callback(Collection<SlopeNameId> slopeNameIds) {
-                SlopeNameId slopeNameId = CollectionUtils.getFirst(slopeNameIds);
-                terrainObjectSelection.setAcceptableValues(slopeNameIds);
-                terrainObjectSelection.setValue(slopeNameId);
-                terrainObjectEditor.setNewObjectId(slopeNameId);
+            public void callback(Collection<ObjectNameId> objectNameIds) {
+                ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
+                terrainObjectSelection.setAcceptableValues(objectNameIds);
+                terrainObjectSelection.setValue(objectNameId);
+                terrainObjectEditor.setNewObjectId(objectNameId);
             }
         }, new ErrorCallback<Object>() {
             @Override

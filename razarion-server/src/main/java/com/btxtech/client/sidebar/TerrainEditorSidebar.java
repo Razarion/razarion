@@ -5,8 +5,7 @@ import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.dto.SlopeConfig;
-import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -51,7 +50,7 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     private IntegerBox cursorCorners;
     @Inject
     @DataField
-    private ValueListBox<SlopeNameId> slopeSelection;
+    private ValueListBox<ObjectNameId> slopeSelection;
     @Inject
     @DataField
     private Button sculptButton;
@@ -64,19 +63,19 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
         terrainEditor.activate();
         cursorRadius.setValue(terrainEditor.getCursorRadius());
         cursorCorners.setValue(terrainEditor.getCursorCorners());
-        slopeSelection.addValueChangeHandler(new ValueChangeHandler<SlopeNameId>() {
+        slopeSelection.addValueChangeHandler(new ValueChangeHandler<ObjectNameId>() {
             @Override
-            public void onValueChange(ValueChangeEvent<SlopeNameId> event) {
+            public void onValueChange(ValueChangeEvent<ObjectNameId> event) {
                 terrainEditor.setSlope4New(slopeSelection.getValue());
             }
         });
-        terrainEditorService.call(new RemoteCallback<Collection<SlopeNameId>>() {
+        terrainEditorService.call(new RemoteCallback<Collection<ObjectNameId>>() {
             @Override
-            public void callback(Collection<SlopeNameId> slopeNameIds) {
-                SlopeNameId slopeNameId = CollectionUtils.getFirst(slopeNameIds);
-                slopeSelection.setAcceptableValues(slopeNameIds);
-                slopeSelection.setValue(slopeNameId);
-                terrainEditor.setSlope4New(slopeNameId);
+            public void callback(Collection<ObjectNameId> objectNameIds) {
+                ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
+                slopeSelection.setAcceptableValues(objectNameIds);
+                slopeSelection.setValue(objectNameId);
+                terrainEditor.setSlope4New(objectNameId);
             }
         }, new ErrorCallback<Object>() {
             @Override

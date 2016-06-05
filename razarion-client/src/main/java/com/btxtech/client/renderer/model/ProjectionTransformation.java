@@ -158,14 +158,14 @@ public class ProjectionTransformation {
     /**
      * Creates the pick ray for converting the mouse position to the model position
      *
-     * @param clip normalized device coordinates (-1 to 1)
+     * @param clip clip coordinates (-1 to 1)
      */
     public Ray3d createPickRay(DecimalPosition clip) {
         double zNear = calculateZNear();
         double top = zNear * Math.tan(fovY / 2.0);
         double y = top * clip.getY();
         double x = clip.getX() * top * aspectRatio;
-        double rotateY = Math.atan(x / zNear);
+        double rotateY = -Math.atan(x / zNear);
         double rotateX = Math.atan(y / zNear);
         Vertex direction = new Vertex(0, 0, -1);
         Matrix4 rotation = Matrix4.createXRotation(rotateX).multiply(Matrix4.createYRotation(rotateY));

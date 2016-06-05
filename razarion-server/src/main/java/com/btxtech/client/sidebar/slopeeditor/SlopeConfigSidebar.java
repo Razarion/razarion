@@ -4,7 +4,7 @@ import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.SlopeConfig;
-import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.google.gwt.dom.client.Style;
@@ -48,7 +48,7 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
     private SimplePanel content;
     @Inject
     @DataField
-    private ValueListBox<SlopeNameId> slopeSelection;
+    private ValueListBox<ObjectNameId> slopeSelection;
     @Inject
     @DataField
     private Button newSlope;
@@ -65,9 +65,9 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
     @PostConstruct
     public void init() {
         updateSlopeSelection();
-        slopeSelection.addValueChangeHandler(new ValueChangeHandler<SlopeNameId>() {
+        slopeSelection.addValueChangeHandler(new ValueChangeHandler<ObjectNameId>() {
             @Override
-            public void onValueChange(ValueChangeEvent<SlopeNameId> event) {
+            public void onValueChange(ValueChangeEvent<ObjectNameId> event) {
                 loadSlopeConfig(slopeSelection.getValue());
             }
         });
@@ -80,10 +80,10 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
 
     private void updateSlopeSelection() {
         slopeSelection.setValue(null);
-        terrainEditorService.call(new RemoteCallback<Collection<SlopeNameId>>() {
+        terrainEditorService.call(new RemoteCallback<Collection<ObjectNameId>>() {
             @Override
-            public void callback(Collection<SlopeNameId> slopeNameIds) {
-                slopeSelection.setAcceptableValues(slopeNameIds);
+            public void callback(Collection<ObjectNameId> objectNameIds) {
+                slopeSelection.setAcceptableValues(objectNameIds);
                 SlopeConfig slopeConfig = getSlopeConfig();
                 if (slopeConfig != null && slopeConfig.hasId()) {
                     slopeSelection.setValue(slopeConfig.createSlopeNameId());
@@ -151,7 +151,7 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
         }).saveSlopeConfig(getSlopeConfig());
     }
 
-    private void loadSlopeConfig(SlopeNameId value) {
+    private void loadSlopeConfig(ObjectNameId value) {
         loadingLabel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         terrainEditorService.call(new RemoteCallback<SlopeConfig>() {
             @Override

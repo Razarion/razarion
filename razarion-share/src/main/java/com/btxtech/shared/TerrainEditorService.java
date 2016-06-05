@@ -2,7 +2,7 @@ package com.btxtech.shared;
 
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeConfig;
-import com.btxtech.shared.dto.SlopeNameId;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import org.jboss.errai.bus.server.annotations.Remote;
@@ -15,7 +15,7 @@ import java.util.Collection;
  */
 @Remote
 public interface TerrainEditorService {
-    Collection<SlopeNameId> getSlopeNameIds();
+    Collection<ObjectNameId> getSlopeNameIds();
 
     SlopeConfig loadSlopeConfig(int id);
 
@@ -29,7 +29,7 @@ public interface TerrainEditorService {
 
     void saveTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions);
 
-    Collection<SlopeNameId> getTerrainObjectNameIds();
+    Collection<ObjectNameId> getTerrainObjectNameIds();
 
     void saveTerrainObjectPositions(Collection<TerrainObjectPosition> terrainObjectPositions);
 }

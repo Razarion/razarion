@@ -87,6 +87,9 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
 
     @Override
     public void draw() {
+        if(elementCount == 0) {
+            return;
+        }
         useProgram();
 
         uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, projectionTransformation.createMatrix());
