@@ -37,6 +37,7 @@ public class ImageDescriptor {
     public static final ImageDescriptor TREE_01 = new ImageDescriptor("tree128.png", 128, 128);
     public static final ImageDescriptor BRANCH_01 = new ImageDescriptor("branch1.png", 512, 512);
     public static final ImageDescriptor TREE_TEXTURE_01 = new ImageDescriptor("TreeTexture01.png", 512, 512);
+    public static final ImageDescriptor TREE_TEXTURE_02 = new ImageDescriptor("TreeTexture02.png", 512, 512);
     public static final ImageDescriptor CHESS_TEXTURE_08 = new ImageDescriptor("chess08.jpg", 512, 512);
     public static final ImageDescriptor CHESS_TEXTURE_32 = new ImageDescriptor("chess32.jpg", 512, 512);
     public static final ImageDescriptor CHESS_TEXTURE_128 = new ImageDescriptor("chess128.jpg", 512, 512);

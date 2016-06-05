@@ -13,7 +13,6 @@ import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * Created by Beat
@@ -37,7 +36,6 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
     private Camera camera;
     @Inject
     private ShadowUiService shadowUiService;
-    private Collection<Matrix4> modelMatrices;
 
     abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
 
@@ -57,10 +55,6 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
 
     }
 
-    public void updateModelMatrices() {
-        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
-    }
-
     @Override
     public void fillBuffers() {
         VertexContainer vertexContainer = getVertexContainer(terrainObjectService);
@@ -71,14 +65,12 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
         positions.fillBuffer(vertexContainer.getVertices());
         barycentric.fillBuffer(vertexContainer.generateBarycentric());
 
-        updateModelMatrices();
-
         elementCount = vertexContainer.getVerticesCount();
     }
 
     @Override
     public void draw() {
-        if(elementCount == 0) {
+        if (elementCount == 0) {
             return;
         }
 
@@ -92,7 +84,7 @@ abstract public class AbstractTerrainObjectDepthBufferRenderer extends AbstractR
         positions.activate();
         barycentric.activate();
 
-        for (Matrix4 modelMatrix : modelMatrices) {
+        for (Matrix4 modelMatrix : terrainObjectService.getObjectIdMatrices(getId())) {
             uniformMatrix4fv(MODEL_UNIFORM_NAME, modelMatrix);
             gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());

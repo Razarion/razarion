@@ -14,7 +14,6 @@ import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * Created by Beat
@@ -42,7 +41,6 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
-    private Collection<Matrix4> modelMatrices;
 
     abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
 
@@ -65,10 +63,6 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
         webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, SAMPLER_UNIFORM_NAME);
     }
 
-    public void updateModelMatrices() {
-        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
-    }
-
     @Override
     public void fillBuffers() {
         VertexContainer vertexContainer = getVertexContainer(terrainObjectService);
@@ -80,14 +74,12 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
         barycentric.fillBuffer(vertexContainer.generateBarycentric());
         textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 
-        updateModelMatrices();
-
         elementCount = vertexContainer.getVerticesCount();
     }
 
     @Override
     public void draw() {
-        if(elementCount == 0) {
+        if (elementCount == 0) {
             return;
         }
         useProgram();
@@ -102,8 +94,8 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
         webGLTexture.activate();
 
 
-        if (modelMatrices != null) {
-            for (Matrix4 modelMatrix : modelMatrices) {
+        if (terrainObjectService.getObjectIdMatrices(getId()) != null) {
+            for (Matrix4 modelMatrix : terrainObjectService.getObjectIdMatrices(getId())) {
                 uniformMatrix4fv(MODEL_UNIFORM_NAME, modelMatrix);
                 gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
                 WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());

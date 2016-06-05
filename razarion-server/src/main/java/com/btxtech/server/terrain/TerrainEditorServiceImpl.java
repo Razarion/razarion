@@ -1,6 +1,7 @@
 package com.btxtech.server.terrain;
 
 import com.btxtech.server.ExceptionHandler;
+import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.terrain.object.TerrainObjectEntity;
 import com.btxtech.server.terrain.object.TerrainObjectEntity_;
 import com.btxtech.server.terrain.object.TerrainObjectPositionEntity;
@@ -13,6 +14,7 @@ import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.google.gson.Gson;
@@ -221,6 +223,24 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
                 delete.where(exp.in(idToDelete));
                 entityManager.createQuery(delete).executeUpdate();
             }
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public TerrainObject colladaConvert(int terrainObjectId, String colladaString) {
+        try {
+            TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long)terrainObjectId);
+            return ColladaConverter.convertToTerrainObject(terrainObjectEntity, colladaString);
+        } catch (RuntimeException e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+            throw new RuntimeException(e);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

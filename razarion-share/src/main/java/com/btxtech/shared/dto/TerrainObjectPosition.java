@@ -60,9 +60,9 @@ public class TerrainObjectPosition {
         this.zRotation = zRotation;
     }
 
-    public Matrix4 createModelMatrix() {
+    public Matrix4 createModelMatrix(double generalScale) {
         Matrix4 matrix4 = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ());
-        matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
+        matrix4 = matrix4.multiply(Matrix4.createScale(scale * generalScale, scale * generalScale, scale * generalScale));
         return matrix4.multiply(Matrix4.createZRotation(zRotation));
     }
 }

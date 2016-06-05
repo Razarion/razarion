@@ -20,8 +20,9 @@ import java.util.logging.Logger;
 @Singleton
 public class TerrainObjectService {
     private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
+    private double generalScale = 10;
     private ImageDescriptor opaqueDescriptor = ImageDescriptor.SAND_2;
-    private ImageDescriptor transparentDescriptor = ImageDescriptor.BRANCH_01;
+    private ImageDescriptor transparentDescriptor = ImageDescriptor.TREE_TEXTURE_02;
     private Map<Integer, TerrainObject> terrainObjects;
     private Collection<TerrainObjectPosition> terrainObjectPositions;
     private Map<Integer, VertexContainer> opaqueIds;
@@ -34,24 +35,28 @@ public class TerrainObjectService {
         opaqueIds = new HashMap<>();
         transparentNoShadowIds = new HashMap<>();
         transparentOnlyShadowIds = new HashMap<>();
-        for (Map.Entry<Integer, TerrainObject> terrainObjectEntry : terrainObjects.entrySet()) {
-            if(!objectIdMatrices.containsKey(terrainObjectEntry.getKey())) {
+        for (TerrainObject terrainObject : terrainObjects.values()) {
+            if (!objectIdMatrices.containsKey(terrainObject.getId())) {
                 continue;
             }
-            for (Map.Entry<TerrainObject.Type, VertexContainer> vertexContainerEntry : terrainObjectEntry.getValue().getVertexContainers().entrySet()) {
-                switch (vertexContainerEntry.getKey()) {
-                    case OPAQUE:
-                        opaqueIds.put(terrainObjectEntry.getKey(), vertexContainerEntry.getValue());
-                        break;
-                    case TRANSPARENT_NO_SHADOW_CAST:
-                        transparentNoShadowIds.put(terrainObjectEntry.getKey(), vertexContainerEntry.getValue());
-                        break;
-                    case TRANSPARENT_SHADOW_CAST_ONLY:
-                        transparentOnlyShadowIds.put(terrainObjectEntry.getKey(), vertexContainerEntry.getValue());
-                        break;
-                    default:
-                        logger.severe("Can not handle: " + vertexContainerEntry.getKey());
-                }
+            putVertexContainer(terrainObject);
+        }
+    }
+
+    public void putVertexContainer(TerrainObject terrainObject) {
+        for (Map.Entry<TerrainObject.Type, VertexContainer> vertexContainerEntry : terrainObject.getVertexContainers().entrySet()) {
+            switch (vertexContainerEntry.getKey()) {
+                case OPAQUE:
+                    opaqueIds.put(terrainObject.getId(), vertexContainerEntry.getValue());
+                    break;
+                case TRANSPARENT_NO_SHADOW_CAST:
+                    transparentNoShadowIds.put(terrainObject.getId(), vertexContainerEntry.getValue());
+                    break;
+                case TRANSPARENT_SHADOW_CAST_ONLY:
+                    transparentOnlyShadowIds.put(terrainObject.getId(), vertexContainerEntry.getValue());
+                    break;
+                default:
+                    logger.severe("Can not handle: " + vertexContainerEntry.getKey());
             }
         }
     }
@@ -64,8 +69,12 @@ public class TerrainObjectService {
                 matrices = new ArrayList<>();
                 objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), matrices);
             }
-            matrices.add(terrainObjectPosition.createModelMatrix());
+            matrices.add(terrainObjectPosition.createModelMatrix(generalScale));
         }
+    }
+
+    public void setupModelMatrices() {
+        setupModelMatrices(terrainObjectPositions);
     }
 
     public ImageDescriptor getOpaqueDescriptor() {
@@ -110,5 +119,13 @@ public class TerrainObjectService {
 
     public Collection<Matrix4> getObjectIdMatrices(int terrainObjectId) {
         return objectIdMatrices.get(terrainObjectId);
+    }
+
+    public double getGeneralScale() {
+        return generalScale;
+    }
+
+    public void setGeneralScale(double generalScale) {
+        this.generalScale = generalScale;
     }
 }

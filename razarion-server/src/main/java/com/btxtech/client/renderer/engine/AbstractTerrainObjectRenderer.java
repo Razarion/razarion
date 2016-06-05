@@ -48,7 +48,6 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private ShadowUiService shadowUiService;
-    private Collection<Matrix4> modelMatrices;
 
     abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
 
@@ -84,13 +83,7 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
         normals.fillBuffer(vertexContainer.getNorms());
         textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 
-        updateModelMatrices();
-
         elementCount = vertexContainer.getVerticesCount();
-    }
-
-    public void updateModelMatrices() {
-        modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
     }
 
     @Override
@@ -112,7 +105,7 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
 
         webGLTexture.activate();
 
-        for (Matrix4 modelMatrix : modelMatrices) {
+        for (Matrix4 modelMatrix : terrainObjectService.getObjectIdMatrices(getId())) {
             uniformMatrix4fv(MODEL_UNIFORM_NAME, modelMatrix);
             gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());

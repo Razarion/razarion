@@ -72,7 +72,6 @@ public class TerrainObjectEditor {
             if (selected != null) {
                 selected.setPosition(terrainPosition);
                 terrainObjectService.setupModelMatrices(terrainObjects);
-                renderService.updateObjectModelMatrices();
                 cursorType = CursorType.SELECTED;
             } else if (getAtTerrain(terrainPosition) != null) {
                 hover = true;
@@ -113,7 +112,6 @@ public class TerrainObjectEditor {
                 terrainObjects.add(objectPosition);
                 selected = objectPosition;
                 terrainObjectService.setupModelMatrices(terrainObjects);
-                renderService.updateObjectModelMatrices();
                 terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.SELECTED, terrainPosition));
             } else if (selected != null && deletePressed) {
                 deleteSelected();
@@ -127,7 +125,6 @@ public class TerrainObjectEditor {
         terrainObjects.remove(selected);
         selected = null;
         terrainObjectService.setupModelMatrices(terrainObjects);
-        renderService.updateObjectModelMatrices();
         terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.NORMAL, null));
     }
 

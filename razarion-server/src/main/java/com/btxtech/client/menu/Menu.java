@@ -1,5 +1,6 @@
 package com.btxtech.client.menu;
 
+import com.btxtech.client.sidebar.ColladaEditorSidebar;
 import com.btxtech.client.sidebar.LeftSideBar;
 import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.btxtech.client.sidebar.TerrainEditorSidebar;
@@ -51,6 +52,10 @@ public class Menu extends Composite {
     @DataField("menu-object-editor")
     private InlineHyperlink objectEditorMenu;
     @Inject
+    @DataField("menu-collada")
+    private InlineHyperlink colladaMenu;
+
+    @Inject
     private LeftSideBar leftSideBar;
     @Inject
     private Instance<LeftSideBarContent> leftSideBarContentInstance;
@@ -73,6 +78,11 @@ public class Menu extends Composite {
     @EventHandler("menu-object-editor")
     private void objectEditorMenuClick(ClickEvent event) {
         leftSideBar.show(leftSideBarContentInstance.select(TerrainObjectEditorSidebar.class).get());
+    }
+
+    @EventHandler("menu-collada")
+    private void colladaMenuClick(ClickEvent event) {
+        leftSideBar.show(leftSideBarContentInstance.select(ColladaEditorSidebar.class).get());
     }
 
 }

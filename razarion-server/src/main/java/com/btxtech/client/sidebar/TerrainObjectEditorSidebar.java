@@ -70,7 +70,7 @@ public class TerrainObjectEditorSidebar extends Composite implements LeftSideBar
         }, new ErrorCallback<Object>() {
             @Override
             public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
+                logger.log(Level.SEVERE, "getTerrainObjectNameIds failed: " + message, throwable);
                 return false;
             }
         }).getTerrainObjectNameIds();

@@ -3,6 +3,7 @@ package com.btxtech.shared;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import org.jboss.errai.bus.server.annotations.Remote;
@@ -32,4 +33,6 @@ public interface TerrainEditorService {
     Collection<ObjectNameId> getTerrainObjectNameIds();
 
     void saveTerrainObjectPositions(Collection<TerrainObjectPosition> terrainObjectPositions);
+
+    TerrainObject colladaConvert(int terrainObjectId, String colladaString);
 }

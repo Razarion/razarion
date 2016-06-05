@@ -89,6 +89,9 @@ public class ColladaXml {
 
     protected List<Double> getElementAsDoubleList(Node node) {
         List<Double> doubles = new ArrayList<>();
+        if(node.getFirstChild() == null) {
+            System.out.println("xxx");
+        }
         String[] floatsStrings = node.getFirstChild().getNodeValue().split(DELIMITER);
         for (String floatsString : floatsStrings) {
             try {

@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 public class ColladaConverter {
     private static Logger LOGGER = Logger.getLogger(ColladaConverter.class.getName());
 
-    public static TerrainObject convertToTerrainObject(final TerrainObjectEntity terrainObjectEntity) throws ParserConfigurationException, SAXException, ColladaException, IOException {
-        Collada collada = createCollada(terrainObjectEntity.getColladaString());
+    public static TerrainObject convertToTerrainObject(final TerrainObjectEntity terrainObjectEntity, String colladaString) throws ParserConfigurationException, SAXException, ColladaException, IOException {
+        Collada collada = createCollada(colladaString);
 
         final Map<TerrainObject.Type, VertexContainer> containers = new HashMap<>();
         collada.convert(new ColladaConverterControl() {
@@ -41,6 +41,10 @@ public class ColladaConverter {
         });
 
         return new TerrainObject(terrainObjectEntity.getId().intValue(), containers);
+    }
+
+    public static TerrainObject convertToTerrainObject(final TerrainObjectEntity terrainObjectEntity) throws ParserConfigurationException, SAXException, ColladaException, IOException {
+        return convertToTerrainObject(terrainObjectEntity, terrainObjectEntity.getColladaString());
     }
 
     public static ItemType convertToItemType(ItemTypeEntity itemTypeEntity) throws ParserConfigurationException, SAXException, ColladaException, IOException {

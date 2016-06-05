@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../../../../../webapp/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <script src="../../../../../webapp/jquery/jquery-1.11.3.min.js"></script>
+    <script src="../../../../../webapp/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    <title></title>
+</head>
+<body>
+
+<table id="colladaEditorSidebar" style="border-spacing: 0; border-collapse: separate; margin: 5px">
+    <tr>
+        <td>General Scale</td>
+        <td><input id="generalScale" type="number"></td>
+    </tr>
+    <tr>
+        <td>Terrain Object</td>
+        <td><select id="terrainObjectSelection" multiple style="text-align: center"></select></td>
+    </tr>
+    <tr>
+        <td>Select Collada File</td>
+        <td><input id="fileElement" type="file"/></td>
+    </tr>
+    <tr>
+        <td>Reload File</td>
+        <td>
+            <button id="reloadButton">Reload</button>
+        </td>
+    </tr>
+    <tr>
+        <td>File loaded</td>
+        <td><span id="loaded"></span></td>
+    </tr>
+    <tr>
+        <td>File last modifed</td>
+        <td><span id="lastModified"></span></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <button id="saveButton">Save</button>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
