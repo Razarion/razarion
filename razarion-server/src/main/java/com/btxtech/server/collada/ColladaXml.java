@@ -22,8 +22,12 @@ public class ColladaXml {
     public static final String ELEMENT_LIBRARY_VISUAL_SCENES = "library_visual_scenes";
     public static final String ELEMENT_VISUAL_SCENE = "visual_scene";
     public static final String ELEMENT_LIBRARY_GEOMETRIES = "library_geometries";
+    public static final String ELEMENT_LIBRARY_MATERIALS = "library_materials";
+    public static final String ELEMENT_LIBRARY_EFFECTS = "library_effects";
     public static final String ELEMENT_INSTANCE_GEOMETRIES = "instance_geometry";
     public static final String ELEMENT_GEOMETRY = "geometry";
+    public static final String ELEMENT_MATERIAL = "material";
+    public static final String ELEMENT_EFFECT = "effect";
     public static final String ELEMENT_MESH = "mesh";
     public static final String ELEMENT_SOURCE = "source";
     public static final String ELEMENT_FLOAT_ARRAY = "float_array";
@@ -37,6 +41,18 @@ public class ColladaXml {
     public static final String ELEMENT_NODE = "node";
     public static final String ELEMENT_P = "p";
     public static final String ELEMENT_MATRIX = "matrix";
+    public static final String ELEMENT_PROFILE_ = "profile_";
+    public static final String ELEMENT_TECHNIQUE = "technique";
+    public static final String ELEMENT_LAMBERT = "lambert";
+    public static final String ELEMENT_PHONG = "phong";
+    public static final String ELEMENT_AMBIENT = "ambient";
+    public static final String ELEMENT_DIFFUSE = "diffuse";
+    public static final String ELEMENT_SPECULAR = "specular";
+    public static final String ELEMENT_EMISSION = "emission";
+    public static final String ELEMENT_COLOR = "color";
+    public static final String ELEMENT_INSTANCE_EFFECT = "instance_effect";
+    public static final String ELEMENT_BIND_MATERIAL = "bind_material";
+    public static final String ELEMENT_INSTANCE_MATERIAL = "instance_material";
     public static final String ATTRIBUTE_VERSION = "version";
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
@@ -49,6 +65,7 @@ public class ColladaXml {
     public static final String ATTRIBUTE_SEMANTIC = "semantic";
     public static final String ATTRIBUTE_OFFSET = "offset";
     public static final String ATTRIBUTE_URL = "url";
+    public static final String ATTRIBUTE_TARGET = "target";
     public static final String SEMANTIC_POSITION = "POSITION";
     public static final String SEMANTIC_VERTEX = "VERTEX";
     public static final String SEMANTIC_NORMAL = "NORMAL";
@@ -76,6 +93,18 @@ public class ColladaXml {
         return childNodes;
     }
 
+    protected List<Node> getChildrenWithPrefix(Node node, String elementNamePrefix) {
+        List<Node> childNodes = new ArrayList<>();
+        NodeList nodeList = node.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node child = nodeList.item(i);
+            if (child.getNodeName().toUpperCase().startsWith(elementNamePrefix.toUpperCase())) {
+                childNodes.add(child);
+            }
+        }
+        return childNodes;
+    }
+
     protected Node getChild(Node node, String elementName) {
         NodeList nodeList = node.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -87,18 +116,48 @@ public class ColladaXml {
         throw new ColladaRuntimeException("No child '" + elementName + "' found in: " + node);
     }
 
+    protected Node getChainedChild(Node node, String... elementNames) {
+        Node nodeToRead = node;
+        for (int i = 0; i < elementNames.length; i++) {
+            String elementName = elementNames[i];
+            List<Node> childNodes = getChildren(nodeToRead, elementName);
+            if (childNodes.isEmpty()) {
+                return null;
+            }
+            nodeToRead = childNodes.get(0);
+            if (i + 1 >= elementNames.length) {
+                return nodeToRead;
+            }
+        }
+        return null;
+    }
+
+
+    protected List<Double> readElementInnerValueAsDoubles(Node node, String... elementNames) {
+        Node chainedChildNode = getChainedChild(node, elementNames);
+        if (chainedChildNode != null && chainedChildNode.getFirstChild() != null) {
+            return parseDoubleString(chainedChildNode.getFirstChild().getNodeValue());
+        } else {
+            return null;
+        }
+    }
+
     protected List<Double> getElementAsDoubleList(Node node) {
-        List<Double> doubles = new ArrayList<>();
-        if(node.getFirstChild() == null) {
+        if (node.getFirstChild() == null) {
             System.out.println("xxx");
         }
-        String[] floatsStrings = node.getFirstChild().getNodeValue().split(DELIMITER);
-        for (String floatsString : floatsStrings) {
+        return parseDoubleString(node.getFirstChild().getNodeValue());
+    }
+
+    protected List<Double> parseDoubleString(String floatsString) {
+        String[] floatsStrings = floatsString.split(DELIMITER);
+        List<Double> doubles = new ArrayList<>();
+        for (String floatString : floatsStrings) {
             try {
-                doubles.add(Double.parseDouble(floatsString));
+                doubles.add(Double.parseDouble(floatString));
             } catch (NumberFormatException e) {
                 e.printStackTrace();
-                throw new ColladaRuntimeException("Error parsing float " + floatsString + " of node " + node, e);
+                throw new ColladaRuntimeException("Error parsing float " + floatString, e);
             }
         }
         return doubles;

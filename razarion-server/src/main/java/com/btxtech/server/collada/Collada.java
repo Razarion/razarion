@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 public class Collada extends ColladaXml {
     private static Logger LOGGER = Logger.getLogger(Collada.class.getName());
     private Map<String, Geometry> geometries = new HashMap<>();
+    private Map<String, Effect> effects = new HashMap<>();
+    private Map<String, Material> materials = new HashMap<>();
     private Map<String, VisualScene> visualScenes = new HashMap<>();
     private Scene scene;
 
@@ -28,6 +30,8 @@ public class Collada extends ColladaXml {
 
         readVisualScenes(doc);
         readGeometries(doc);
+        readMaterials(doc);
+        readEffects(doc);
         scene = new Scene(getChild(collada, ELEMENT_SCENE));
         readAsset(doc);
         LOGGER.finest("scene: " + scene);
@@ -40,7 +44,7 @@ public class Collada extends ColladaXml {
             throw new ColladaRuntimeException("No visual scene found for url: " + scene.getVisualSceneUrl());
         }
 
-        visualScene.convert(geometries, colladaConverterControl);
+        visualScene.convert(geometries, materials, effects, colladaConverterControl);
     }
 
     private void readAsset(Document doc) {
@@ -62,6 +66,28 @@ public class Collada extends ColladaXml {
             Geometry geometry = new Geometry(node);
             LOGGER.finest("-:" + geometry);
             geometries.put(geometry.getId(), geometry);
+        }
+    }
+
+    private void readMaterials(Document doc) {
+        LOGGER.finest("readMaterials");
+        Node libraryMaterials = getSingleTopLevelNode(doc, ELEMENT_LIBRARY_MATERIALS);
+
+        for (Node node : getChildren(libraryMaterials, ELEMENT_MATERIAL)) {
+            Material material = new Material(node);
+            LOGGER.finest("-:" + material);
+            materials.put(material.getId(), material);
+        }
+    }
+
+    private void readEffects(Document doc) {
+        LOGGER.finest("readEffects");
+        Node libraryEffects = getSingleTopLevelNode(doc, ELEMENT_LIBRARY_EFFECTS);
+
+        for (Node node : getChildren(libraryEffects, ELEMENT_EFFECT)) {
+            Effect effect = new Effect(node);
+            LOGGER.finest("-:" + effect);
+            effects.put(effect.getId(), effect);
         }
     }
 

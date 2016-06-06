@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -16,6 +17,10 @@ public class VertexContainer {
     private List<Vertex> vertices;
     private List<Vertex> norms;
     private List<TextureCoordinate> textureCoordinates;
+    private Color ambient;
+    private Color diffuse;
+    private Color specular;
+    private Color emission;
 
     /**
      * Used by errai
@@ -23,10 +28,14 @@ public class VertexContainer {
     public VertexContainer() {
     }
 
-    public VertexContainer(List<Vertex> vertices, List<Vertex> norms, List<TextureCoordinate> textureCoordinates) {
+    public VertexContainer(List<Vertex> vertices, List<Vertex> norms, List<TextureCoordinate> textureCoordinates, Color ambient, Color diffuse, Color specular, Color emission) {
         this.vertices = vertices;
         this.norms = norms;
         this.textureCoordinates = textureCoordinates;
+        this.ambient = ambient;
+        this.diffuse = diffuse;
+        this.specular = specular;
+        this.emission = emission;
     }
 
     public List<Vertex> getVertices() {
@@ -55,12 +64,32 @@ public class VertexContainer {
         return barycentric;
     }
 
+    public Color getAmbient() {
+        return ambient;
+    }
+
+    public Color getDiffuse() {
+        return diffuse;
+    }
+
+    public Color getSpecular() {
+        return specular;
+    }
+
+    public Color getEmission() {
+        return emission;
+    }
+
     @Override
     public String toString() {
         return "VertexContainer{" +
                 "vertices=" + vertices +
                 ", norms=" + norms +
                 ", textureCoordinates=" + textureCoordinates +
+                ", ambient=" + ambient +
+                ", diffuse=" + diffuse +
+                ", specular=" + specular +
+                ", emission=" + emission +
                 '}';
     }
 }

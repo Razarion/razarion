@@ -1,6 +1,7 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Vertex;
@@ -18,18 +19,30 @@ public abstract class ColladaConverterControl {
     private List<Vertex> norms;
     private List<TextureCoordinate> textureCoordinates;
     private String name;
+    private Effect effect;
 
     protected abstract void onNewVertexContainer(String name, VertexContainer vertexContainer);
 
-    void createVertexContainer(String name) {
+    void createVertexContainer(String name, Effect effect) {
         this.name = name;
+        this.effect = effect;
         vertices = new ArrayList<>();
         norms = new ArrayList<>();
         textureCoordinates = new ArrayList<>();
     }
 
     public void vertexContainerCreated() {
-        onNewVertexContainer(name, new VertexContainer(vertices, norms, textureCoordinates));
+        Color ambient = null;
+        Color diffuse = null;
+        Color specular = null;
+        Color emission = null;
+        if (effect != null && effect.getTechnique() != null) {
+            ambient = effect.getTechnique().getAmbient();
+            diffuse = effect.getTechnique().getDiffuse();
+            specular = effect.getTechnique().getSpecular();
+            emission = effect.getTechnique().getEmission();
+        }
+        onNewVertexContainer(name, new VertexContainer(vertices, norms, textureCoordinates, ambient, diffuse, specular, emission));
     }
 
     public void addTriangle(Collection<Matrix4> matrices, Vertex vertexA, Vertex normA, TextureCoordinate textureCoordinateA, Vertex vertexB, Vertex normB, TextureCoordinate textureCoordinateB, Vertex vertexC, Vertex normC, TextureCoordinate textureCoordinateC) {

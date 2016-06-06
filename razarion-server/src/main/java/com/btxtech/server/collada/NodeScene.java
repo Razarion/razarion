@@ -29,7 +29,7 @@ public class NodeScene extends NameIdColladaXml {
         }
     }
 
-    public void convert(ColladaConverterControl colladaConverterControl, Map<String, Geometry> geometries) {
+    public void convert(ColladaConverterControl colladaConverterControl, Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
         if (instanceGeometries.isEmpty()) {
             return;
         }
@@ -39,8 +39,17 @@ public class NodeScene extends NameIdColladaXml {
             if (geometry == null) {
                 throw new ColladaRuntimeException("No geometry for url found: " + instanceGeometry.getUrl());
             }
+            Effect effect = null;
+            String materialUri = instanceGeometry.getMaterialTargetUri();
+            if(materialUri != null) {
+                Material material = materials.get(materialUri);
+                if(material != null) {
+                    effect = effects.get(material.getInstanceEffectUrl());
+                }
+            }
+
             LOGGER.finest("--:convert:  " + geometry);
-            colladaConverterControl.createVertexContainer(geometry.getName());
+            colladaConverterControl.createVertexContainer(geometry.getName(), effect);
             geometry.getMesh().fillVertexContainer(matrices, colladaConverterControl);
             colladaConverterControl.vertexContainerCreated();
         }

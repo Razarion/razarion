@@ -24,11 +24,11 @@ public class VisualScene extends NameIdColladaXml {
         }
     }
 
-    public void convert(Map<String, Geometry> geometries, ColladaConverterControl colladaConverterControl) {
+    public void convert(Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects, ColladaConverterControl colladaConverterControl) {
         //Collection<TerrainObjectVertexContainer> allTerrainObjectVertexContainers = new ArrayList<>();
         for (NodeScene nodeScene : nodeScenes) {
             LOGGER.finest("-:convert node : " + nodeScene);
-            nodeScene.convert(colladaConverterControl, geometries);
+            nodeScene.convert(colladaConverterControl, geometries, materials, effects);
         }
     }
 

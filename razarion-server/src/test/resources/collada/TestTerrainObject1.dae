@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.75.0 commit date:2015-07-07, commit time:14:56, hash:c27589e</authoring_tool>
     </contributor>
-    <created>2016-06-06T12:57:00</created>
-    <modified>2016-06-06T12:57:00</modified>
+    <created>2016-06-06T20:15:20</created>
+    <modified>2016-06-06T20:15:20</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -111,10 +111,10 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1819462 1 0.2208172 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.5579251 0.5579251 0.5579251 1</color>
+              <color sid="diffuse">0.8 0.3 0.2 1</color>
             </diffuse>
             <transparency>
               <float sid="transparency">0.03458214</float>
@@ -131,16 +131,16 @@
         <technique sid="common">
           <phong>
             <emission>
-              <color sid="emission">0 0 0 1</color>
+              <color sid="emission">123 123 123 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.09097311 0.5 0.1104086 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.64 0.64 0.64 1</color>
+              <color sid="diffuse">0 0.4 0.8 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.5 0.5 0.5 1</color>
+              <color sid="specular">0.2 0.3 0.4 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>

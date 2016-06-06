@@ -62,7 +62,7 @@ public class ColladaConverter {
                 textureCoordinates.addAll(vertexContainer.getTextureCoordinates());
             }
         });
-        return new ItemType(itemTypeEntity.getId().intValue(), new VertexContainer(vertices, norms, textureCoordinates));
+        return new ItemType(itemTypeEntity.getId().intValue(), new VertexContainer(vertices, norms, textureCoordinates, null, null, null, null));
     }
 
     private static Collada createCollada(String colladaString) throws ParserConfigurationException, SAXException, IOException {

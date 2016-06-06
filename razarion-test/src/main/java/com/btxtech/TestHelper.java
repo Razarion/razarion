@@ -1,6 +1,7 @@
 package com.btxtech;
 
 import com.btxtech.shared.VertexList;
+import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Triangle;
@@ -48,6 +49,13 @@ public class TestHelper {
             return;
         }
         Assert.fail("Matrices are not equal. Expected: " + expected + " Actual:" + actual);
+    }
+
+    public static void assertColor(Color expected, Color actual) {
+        Assert.assertEquals("R value of color is not the same", expected.getR(), actual.getR(), 0.0001);
+        Assert.assertEquals("G value of color is not the same", expected.getG(), actual.getG(), 0.0001);
+        Assert.assertEquals("B value of color is not the same", expected.getB(), actual.getB(), 0.0001);
+        Assert.assertEquals("A value of color is not the same", expected.getA(), actual.getA(), 0.0001);
     }
 
     public static double[] vertices2DoubleArray(List<Vertex> vertices) {

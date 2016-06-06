@@ -6,6 +6,7 @@ import com.btxtech.server.terrain.object.TerrainObjectEntity;
 import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.primitives.Color;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -60,6 +61,10 @@ public class ColladaConverterTest {
         Assert.assertEquals(3, terrainObject.getVertexContainers().size());
         // No shadow vertex container
         VertexContainer noShadow = terrainObject.getVertexContainers().get(TerrainObject.Type.TRANSPARENT_NO_SHADOW_CAST);
+        TestHelper.assertColor(new Color(0.1819462, 1, 0.2208172, 1), noShadow.getAmbient());
+        TestHelper.assertColor(new Color(0.8, 0.3, 0.2, 1.0), noShadow.getDiffuse());
+        Assert.assertNull(noShadow.getSpecular());
+        TestHelper.assertColor(new Color(0, 0, 0), noShadow.getEmission());
         double[] expectedNoShadow = TestHelper.readArrayFromFile(getClass().getResourceAsStream("TestTerrainObject1TransparentNoShadow.arr"));
         Assert.assertArrayEquals(expectedNoShadow, TestHelper.vertices2DoubleArray(noShadow.getVertices()), 0.01);
         double[] expectedNoShadowNorm = TestHelper.readArrayFromFile(getClass().getResourceAsStream("TestTerrainObject1TransparentNoShadowNorm.arr"));
@@ -74,6 +79,10 @@ public class ColladaConverterTest {
         Assert.assertArrayEquals(expectedOnlyShadowTextureCoordinates, TestHelper.textureCoordinates2DoubleArray(onlyShadow.getTextureCoordinates()), 0.0001);
         // Opaque
         VertexContainer opaque = terrainObject.getVertexContainers().get(TerrainObject.Type.OPAQUE);
+        TestHelper.assertColor(new Color(0.09097311, 0.5, 0.1104086, 1), opaque.getAmbient());
+        TestHelper.assertColor(new Color(0.0, 0.4, 0.8, 1.0), opaque.getDiffuse());
+        TestHelper.assertColor(new Color(0.2, 0.3, 0.4, 1.0), opaque.getSpecular());
+        TestHelper.assertColor(new Color(123, 123, 123), opaque.getEmission());
         double[] expectedOpaque = TestHelper.readArrayFromFile(getClass().getResourceAsStream("TestTerrainObject1Opaque.arr"));
         Assert.assertArrayEquals(expectedOpaque, TestHelper.vertices2DoubleArray(opaque.getVertices()), 0.01);
         double[] expectedOpaqueNorm = TestHelper.readArrayFromFile(getClass().getResourceAsStream("TestTerrainObject1OpaqueNorm.arr"));
