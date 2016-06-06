@@ -7,8 +7,11 @@ import com.btxtech.shared.primitives.Triangle;
 import com.btxtech.shared.primitives.Vertex;
 import org.junit.Assert;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -41,7 +44,7 @@ public class TestHelper {
     }
 
     public static void assertMatrix(Matrix4 expected, Matrix4 actual, double delta) {
-        if(expected.equalsDelta(actual, delta)) {
+        if (expected.equalsDelta(actual, delta)) {
             return;
         }
         Assert.fail("Matrices are not equal. Expected: " + expected + " Actual:" + actual);
@@ -78,4 +81,25 @@ public class TestHelper {
         field.setAccessible(false);
     }
 
+    public static void writeArrayToFile(String fileName, double[] array) {
+        try {
+            FileOutputStream fout = new FileOutputStream(fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            oos.writeObject(array);
+            oos.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static double[] readArrayFromFile(InputStream inputStream) {
+        try {
+            ObjectInputStream ois = new ObjectInputStream(inputStream);
+            double[] array = (double[]) ois.readObject();
+            ois.close();
+            return array;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
