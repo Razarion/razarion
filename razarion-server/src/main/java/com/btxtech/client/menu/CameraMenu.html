@@ -18,19 +18,25 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Camera<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><button id="topButton">Top</button></li>
-                        <li><button id="frontButton">Front</button></li>
-                        <li><button id="gameButton">Game</button></li>
-                        <li><button id="dumpPositionButton">Dump position</button></li>
-                        <li><input id="viewTransformationX" type="number" step="10"></li>
-                        <li><input id="viewTransformationY" type="number" step="10"></li>
-                        <li><input id="viewTransformationZ" type="number" step="10"></li>
-                        <li><label id="viewTransformationRotateXDisplay">90</label></li>
-                        <li><input id="viewTransformationRotateX" type="range" max="90" min="0" step="1"></li>
-                        <li><label id="viewTransformationRotateZDisplay">180</label></li>
-                        <li><input id="viewTransformationRotateZ" type="range" max="360" min="0" step="1"></li>
-                        <li><label id="projectionTransformationZoomDisplay">180</label></li>
-                        <li><input id="projectionTransformationZoom" type="range" max="180" min="0" step="1"></li>
+                        <li>
+                            <button id="topButton">Top</button>
+                        </li>
+                        <li>
+                            <button id="frontButton">Front</button>
+                        </li>
+                        <li>
+                            <button id="gameButton">Game</button>
+                        </li>
+                        <li>
+                            <button id="dumpPositionButton">Dump position</button>
+                        </li>
+                        <li>X Translate:<input id="translateX" type="number" step="10" style="width:5em;"></li>
+                        <li>Y Translate:<input id="translateY" type="number" step="10" style="width:5em;"></li>
+                        <li>Z Translate:<input id="translateZ" type="number" step="10" style="width:5em;"></li>
+                        <li><span id="directionLabel"></span></li>
+                        <li>X Rotate:<input id="rotateXBox" type="number" max="90" min="0" step="1" style="width: 4em"><input id="rotateXSlider" type="range" max="90" min="0" step="1"></li>
+                        <li>Z Rotate:<input id="rotateZBox" type="number" max="360" min="0" step="1" style="width: 4em"><input id="rotateZSlider" type="range" max="360" min="0" step="1"></li>
+                        <li>Y Opening Angle:<input id="openingAngleYBox" type="number" max="180" min="0" step="1" style="width:5em;"><input id="openingAngleYSlider" type="range" max="180" min="0" step="1"></li>
                     </ul>
                 </li>
             </ul>

@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.model;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
+import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
  * 25.04.2015.
  */
 @Singleton
+@Bindable
 public class Camera {
     @Inject
     private Event<CameraMovedEvent> cameraMovedEvent;

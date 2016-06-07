@@ -2,12 +2,20 @@ package com.btxtech.client.menu;
 
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.utils.GradToRadConverter;
+import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.api.PropertyChangeEvent;
+import org.jboss.errai.databinding.client.api.PropertyChangeHandler;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -24,6 +32,9 @@ public class CameraMenu extends Composite {
     @Inject
     private Camera camera;
     @Inject
+    @AutoBound
+    private DataBinder<Camera> cameraDataBinder;
+    @Inject
     private ProjectionTransformation normalProjectionTransformation;
     @Inject
     @DataField("topButton")
@@ -38,62 +49,73 @@ public class CameraMenu extends Composite {
     @DataField("dumpPositionButton")
     private Button dumpPositionButton;
     @Inject
+    @Bound
     @DataField
-    private DoubleBox viewTransformationX;
+    private DoubleBox translateX;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox translateY;
+    @Inject
+    @Bound
+    @DataField
+    private DoubleBox translateZ;
+    @Inject
+    @Bound(property = "rotateX", converter = GradToRadConverter.class)
+    @DataField
+    private DoubleBox rotateXSlider;
+    @Inject
+    @Bound(property = "rotateX", converter = GradToRadConverter.class)
+    @DataField
+    private DoubleBox rotateXBox;
+    @Inject
+    @Bound(property = "rotateZ", converter = GradToRadConverter.class)
+    @DataField
+    private DoubleBox rotateZSlider;
+    @Inject
+    @Bound(property = "rotateZ", converter = GradToRadConverter.class)
+    @DataField
+    private DoubleBox rotateZBox;
     @Inject
     @DataField
-    private DoubleBox viewTransformationY;
+    private Label directionLabel;
     @Inject
     @DataField
-    private DoubleBox viewTransformationZ;
+    private DoubleBox openingAngleYSlider;
     @Inject
     @DataField
-    private Label viewTransformationRotateXDisplay;
-    @Inject
-    @DataField
-    private DoubleBox viewTransformationRotateX;
-    @Inject
-    @DataField
-    private Label viewTransformationRotateZDisplay;
-    @Inject
-    @DataField
-    private DoubleBox viewTransformationRotateZ;
-    @Inject
-    @DataField
-    private Label projectionTransformationZoomDisplay;
-    @Inject
-    @DataField
-    private DoubleBox projectionTransformationZoom;
+    private DoubleBox openingAngleYBox;
 
     @PostConstruct
     public void init() {
-        viewTransformationX.setValue(camera.getTranslateX());
-        viewTransformationY.setValue(camera.getTranslateY());
-        viewTransformationZ.setValue(camera.getTranslateZ());
-        viewTransformationRotateX.setValue(Math.toDegrees(camera.getRotateX()));
-        viewTransformationRotateXDisplay.setText(Double.toString(Math.toDegrees(camera.getRotateX())));
-        viewTransformationRotateZ.setValue(Math.toDegrees(camera.getRotateZ()));
-        viewTransformationRotateZDisplay.setText(Double.toString(Math.toDegrees(camera.getRotateZ())));
-        projectionTransformationZoom.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
-        projectionTransformationZoomDisplay.setText(Double.toString(Math.toDegrees(normalProjectionTransformation.getFovY())));
+        cameraDataBinder.setModel(camera);
+        cameraDataBinder.addPropertyChangeHandler(new PropertyChangeHandler<Object>() {
+            @Override
+            public void onPropertyChange(PropertyChangeEvent<Object> event) {
+                displayLightDirectionLabel();
+            }
+        });
+        displayLightDirectionLabel();
+        openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
+        openingAngleYBox.setText(NumberFormat.getFormat("#.##").format(Math.toDegrees(normalProjectionTransformation.getFovY())));
     }
 
-    @EventHandler("viewTransformationRotateX")
-    public void viewTransformationRotateXChanged(ChangeEvent e) {
-        camera.setRotateX(Math.toRadians(viewTransformationRotateX.getValue()));
-        viewTransformationRotateXDisplay.setText(Double.toString(Math.toDegrees(camera.getRotateX())));
+    private void displayLightDirectionLabel() {
+        Vertex direction = camera.getDirection();
+        NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
+        directionLabel.setText("Light Direction (" + decimalFormat.format(direction.getX()) + ":" + decimalFormat.format(direction.getY()) + ":" + decimalFormat.format(direction.getZ()) + ")");
     }
 
-    @EventHandler("viewTransformationRotateZ")
-    public void viewTransformationRotateZChanged(ChangeEvent e) {
-        camera.setRotateZ(Math.toRadians(viewTransformationRotateZ.getValue()));
-        viewTransformationRotateZDisplay.setText(Double.toString(Math.toDegrees(camera.getRotateZ())));
+    @EventHandler("openingAngleYSlider")
+    public void openingAngleYSliderChanged(ChangeEvent e) {
+        normalProjectionTransformation.setFovY(Math.toRadians(openingAngleYSlider.getValue()));
+        openingAngleYBox.setText(NumberFormat.getFormat("#.##").format(Math.toDegrees(normalProjectionTransformation.getFovY())));
     }
 
-    @EventHandler("projectionTransformationZoom")
-    public void projectionTransformationZoomChanged(ChangeEvent e) {
-        normalProjectionTransformation.setFovY(Math.toRadians(projectionTransformationZoom.getValue()));
-        projectionTransformationZoomDisplay.setText(Double.toString(Math.toDegrees(normalProjectionTransformation.getFovY())));
+    @EventHandler("openingAngleYBox")
+    public void openingAngleYBoxChanged(ChangeEvent e) {
+        normalProjectionTransformation.setFovY(Math.toRadians(openingAngleYBox.getValue()));
+        openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
     }
 
     @EventHandler("topButton")
