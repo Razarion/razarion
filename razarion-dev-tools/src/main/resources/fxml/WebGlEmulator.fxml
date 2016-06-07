@@ -119,9 +119,9 @@
                                  </font>
                               </Label>
                               <Label text="X Rotation" GridPane.rowIndex="1" />
-                              <Label text="Y Rotation" GridPane.rowIndex="2" />
-                              <Slider fx:id="shadowXRotationSlider" majorTickUnit="45.0" max="90.0" min="-90.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Slider fx:id="shadowYRotationSlider" majorTickUnit="45.0" max="90.0" min="-90.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label text="Z Rotation" GridPane.rowIndex="2" />
+                              <Slider fx:id="shadowXRotationSlider" majorTickUnit="45.0" max="90.0" min="0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Slider fx:id="shadowZRotationSlider" majorTickUnit="45.0" max="360" min="0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                         </GridPane>
                             </children>

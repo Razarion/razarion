@@ -1,12 +1,18 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.renderer.model.ShadowUiService;
+import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.api.PropertyChangeEvent;
+import org.jboss.errai.databinding.client.api.PropertyChangeHandler;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -23,20 +29,27 @@ public class ShadowMenu extends Composite {
     @Inject
     private ShadowUiService shadowUiService;
     @Inject
+    @AutoBound
+    private DataBinder<ShadowUiService> shadowUiServiceDataBinder;
+    @Inject
+    @Bound(property = "rotateX", converter = GradToRadConverter.class)
     @DataField
-    private DoubleBox lightRotateX;
+    private DoubleBox rotateXSlider;
+    @Inject
+    @Bound(property = "rotateX", converter = GradToRadConverter.class)
+    @DataField
+    private DoubleBox rotateXBox;
+    @Inject
+    @Bound(property = "rotateZ", converter = GradToRadConverter.class)
+    @DataField
+    private DoubleBox rotateZSlider;
+    @Inject
+    @Bound(property = "rotateZ", converter = GradToRadConverter.class)
+    @DataField
+    private DoubleBox rotateZBox;
     @Inject
     @DataField
-    private Label lightRotateXDisplay;
-    @Inject
-    @DataField
-    private DoubleBox lightRotateY;
-    @Inject
-    @DataField
-    private Label lightRotateYDisplay;
-    @Inject
-    @DataField
-    private Label lightLabel;
+    private Label directionLabel;
     @Inject
     @DataField
     private DoubleBox ambientIntensity;
@@ -44,17 +57,20 @@ public class ShadowMenu extends Composite {
     @DataField
     private DoubleBox diffuseIntensity;
     @Inject
+    @Bound
     @DataField
     private DoubleBox shadowAlpha;
 
     @PostConstruct
     public void init() {
+        shadowUiServiceDataBinder.setModel(shadowUiService);
+        shadowUiServiceDataBinder.addPropertyChangeHandler(new PropertyChangeHandler<Object>() {
+            @Override
+            public void onPropertyChange(PropertyChangeEvent<Object> event) {
+                displayLightDirectionLabel();
+            }
+        });
         displayLightDirectionLabel();
-        lightRotateX.setValue(Math.toDegrees(shadowUiService.getXAngle()));
-        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getXAngle())));
-        lightRotateY.setValue(Math.toDegrees(shadowUiService.getYAngle()));
-        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getYAngle())));
-        shadowAlpha.setValue(shadowUiService.getShadowAlpha());
         ambientIntensity.setValue(shadowUiService.getAmbientIntensity());
         diffuseIntensity.setValue(shadowUiService.getDiffuseIntensity());
     }
@@ -62,26 +78,7 @@ public class ShadowMenu extends Composite {
     private void displayLightDirectionLabel() {
         Vertex lightDirection = shadowUiService.getLightDirection();
         NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
-        lightLabel.setText("Light Direction (" + decimalFormat.format(lightDirection.getX()) + ":" + decimalFormat.format(lightDirection.getY()) + ":" + decimalFormat.format(lightDirection.getZ()) + ")");
-    }
-
-    @EventHandler("lightRotateX")
-    public void lightRotateXChanged(ChangeEvent e) {
-        shadowUiService.setXAngle(Math.toRadians(lightRotateX.getValue()));
-        lightRotateXDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getXAngle())));
-        displayLightDirectionLabel();
-    }
-
-    @EventHandler("lightRotateY")
-    public void lightRotateYChanged(ChangeEvent e) {
-        shadowUiService.setYAngle(Math.toRadians(lightRotateY.getValue()));
-        lightRotateYDisplay.setText(Double.toString(Math.toDegrees(shadowUiService.getYAngle())));
-        displayLightDirectionLabel();
-    }
-
-    @EventHandler("shadowAlpha")
-    public void shadowAlphaChanged(ChangeEvent e) {
-        shadowUiService.setShadowAlpha(shadowAlpha.getValue());
+        directionLabel.setText("Light Direction (" + decimalFormat.format(lightDirection.getX()) + ":" + decimalFormat.format(lightDirection.getY()) + ":" + decimalFormat.format(lightDirection.getZ()) + ")");
     }
 
     @EventHandler("ambientIntensity")

@@ -49,7 +49,7 @@ public class WebGlEmulatorController implements Initializable {
     public Slider cameraZRotationSlider;
     public Slider cameraXRotationSlider;
     public Slider shadowXRotationSlider;
-    public Slider shadowYRotationSlider;
+    public Slider shadowZRotationSlider;
     @Inject
     private WebGlEmulator webGlEmulator;
     @Inject
@@ -142,25 +142,25 @@ public class WebGlEmulatorController implements Initializable {
         yTranslationField.setText(Double.toString(camera.getTranslateY()));
         zTranslationField.setText(Double.toString(camera.getTranslateZ()));
 
-        shadowXRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getXAngle()));
+        shadowXRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getRotateX()));
         shadowXRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
-                shadowUiService.setXAngle(Math.toRadians(shadowXRotationSlider.getValue()));
+                shadowUiService.setRotateX(Math.toRadians(shadowXRotationSlider.getValue()));
                 System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
-                System.out.println("Shadow Y rot: " + shadowYRotationSlider.getValue());
+                System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
                 System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
                 shadowUiService.calculateViewField();
                 webGlEmulatorShadow.drawArrays();
             }
         });
-        shadowYRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getXAngle()));
-        shadowYRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
+        shadowZRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getRotateZ()));
+        shadowZRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
-                shadowUiService.setYAngle(Math.toRadians(shadowYRotationSlider.getValue()));
+                shadowUiService.setRotateZ(Math.toRadians(shadowZRotationSlider.getValue()));
                 System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
-                System.out.println("Shadow Y rot: " + shadowYRotationSlider.getValue());
+                System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
                 System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
                 shadowUiService.calculateViewField();
                 webGlEmulatorShadow.drawArrays();

@@ -4,6 +4,7 @@ import com.btxtech.client.terrain.TerrainSurface;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Plane3d;
 import com.btxtech.shared.primitives.Vertex;
+import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
  * 23.06.2015.
  */
 @Singleton
+@Bindable
 public class ShadowUiService {
     private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
     private static final Matrix4 TEXTURE_COORDINATE_TRANSFORMATION = new Matrix4(new double[][]{
@@ -28,24 +30,14 @@ public class ShadowUiService {
     @Inject
     private TerrainSurface terrainSurface;
     private double shadowAlpha = 0.2;
-    private double xAngle = Math.toRadians(5);
-    private double yAngle = Math.toRadians(-30);
+    private double rotateX = Math.toRadians(25);
+    private double rotateZ = Math.toRadians(250);
     @Deprecated
     private double ambientIntensity;
     @Deprecated
     private double diffuseIntensity;
 
-    public ShadowUiService() {
-        setGame();
-    }
-
     // ------------------------------------------------------------------------------------------------------------
-
-    @Deprecated
-    public void setGame() {
-        diffuseIntensity = 0.6;
-        ambientIntensity = 0.4;
-    }
 
     @Deprecated
     public double getAmbientIntensity() {
@@ -75,7 +67,7 @@ public class ShadowUiService {
      * @return direction normalized
      */
     public Vertex getLightDirection() {
-        return Matrix4.createXRotation(xAngle).multiply(Matrix4.createYRotation(yAngle)).multiply(new Vertex(0, 0, -1), 1.0);
+        return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
 
@@ -87,23 +79,21 @@ public class ShadowUiService {
         this.shadowAlpha = shadowAlpha;
     }
 
-    public double getXAngle() {
-        return xAngle;
+    public double getRotateX() {
+        return rotateX;
     }
 
-    public void setXAngle(double xAngle) {
-        this.xAngle = xAngle;
+    public void setRotateX(double rotateX) {
+        this.rotateX = rotateX;
     }
 
-    public double getYAngle() {
-        return yAngle;
+    public double getRotateZ() {
+        return rotateZ;
     }
 
-    public void setYAngle(double yAngle) {
-        this.yAngle = yAngle;
+    public void setRotateZ(double rotateZ) {
+        this.rotateZ = rotateZ;
     }
-
-    // ------------------------------------------------------------------------------------------------------------
 
     public Matrix4 createShadowLookupTransformation() {
         return TEXTURE_COORDINATE_TRANSFORMATION.multiply(createDepthProjectionTransformation().multiply(createDepthViewTransformation()));
@@ -128,7 +118,7 @@ public class ShadowUiService {
         zFar = getDistance(topRightVertex, lightNorm, zFar);
         zFar = getDistance(topLeftVertex, lightNorm, zFar);
 
-        return makeBalancedOrthographicFrustum(right, top, 0, zFar);
+        return makeBalancedOrthographicFrustum(right, top, 10, zFar);
     }
 
     private Plane3d calculatePlane(ViewField viewField, Vertex lightNorm) {
@@ -172,14 +162,12 @@ public class ShadowUiService {
         double distance = bottomLeftVertex.distance(topRightVertex);
         Vertex lightPosition = bottomLeftVertex.add(topRightVertex.sub(bottomLeftVertex).normalize(distance / 2.0));
 
-        return Matrix4.createXRotation(-xAngle).multiply(Matrix4.createYRotation(-yAngle)).multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
+        return Matrix4.createXRotation(-rotateX).multiply(Matrix4.createZRotation(-rotateZ)).multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
     }
 
     public ViewField calculateViewField() {
         return projectionTransformation.calculateViewField(0).calculateAabb();
     }
-
-    // ------------------------------------------------------------------------------------------------------------
 
     /**
      * http://www.songho.ca/opengl/gl_projectionmatrix.html
