@@ -36,7 +36,7 @@ public class TerrainObjectEditorRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.terrainObjectEditorVertexShader(), Shaders.INSTANCE.terrainObjectEditorFragmentShader());
-        vertices = createVertexShaderAttribute("aVertexPosition");
+        vertices = createVertexShaderAttribute(A_VERTEX_POSITION);
     }
 
     public void onTerrainEditorCursorShapeEvent(@Observes TerrainObjectEditorSelectedEvent terrainObjectEditorSelectedEvent) {
@@ -70,9 +70,9 @@ public class TerrainObjectEditorRenderer extends AbstractRenderer {
     public void draw() {
         useProgram();
 
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
-        uniformMatrix4fv("uMMatrix", modelPosition);
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
+        uniformMatrix4fv(U_MODEL_MATRIX, modelPosition);
 
         uniform1i("uCursorType", cursoType);
 

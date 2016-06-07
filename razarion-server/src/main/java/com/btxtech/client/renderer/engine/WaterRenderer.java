@@ -36,7 +36,7 @@ public class WaterRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader());
-        positions = createVertexShaderAttribute("aVertexPosition");
+        positions = createVertexShaderAttribute(A_VERTEX_POSITION);
         norms = createVertexShaderAttribute("aVertexNormal");
         tangents = createVertexShaderAttribute("aVertexTangent");
     }
@@ -69,8 +69,8 @@ public class WaterRenderer extends AbstractRenderer {
 
         setLightUniforms(null, terrainSurface.getWater().getLightConfig());
 
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
         uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
         uniform1i("uBumpMapSize", terrainSurface.getWater().getBumpMap().getQuadraticEdge());
         uniform1f("uTransparency", terrainSurface.getWater().getWaterTransparency());

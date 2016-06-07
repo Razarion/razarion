@@ -45,7 +45,7 @@ public class SlopeRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader());
-        vertices = createVertexShaderAttribute("aVertexPosition");
+        vertices = createVertexShaderAttribute(A_VERTEX_POSITION);
         normals = createVertexShaderAttribute("aVertexNormal");
         tangents = createVertexShaderAttribute("aVertexTangent");
         slopeFactors = createFloatShaderAttribute("aSlopeFactor");
@@ -88,8 +88,8 @@ public class SlopeRenderer extends AbstractRenderer {
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
         getCtx3d().depthMask(true);
 
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
         uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
 
         setLightUniforms("Slope", slope.getSlopeSkeleton().getLightConfig());
@@ -129,7 +129,7 @@ public class SlopeRenderer extends AbstractRenderer {
         groundTopBm.activate();
 
         activateShadow();
-        
+
         getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
     }

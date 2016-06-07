@@ -39,9 +39,9 @@ public class UnitRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.unitVertexShader(), Shaders.INSTANCE.unitFragmentShader());
-        positions = createVertexShaderAttribute("aVertexPosition");
+        positions = createVertexShaderAttribute(A_VERTEX_POSITION);
         norms = createVertexShaderAttribute("aVertexNormal");
-        textureCoordinateAttribute = createShaderTextureCoordinateAttributee("aTextureCoord");
+        textureCoordinateAttribute = createShaderTextureCoordinateAttributee(A_TEXTURE_COORDINATE);
     }
 
     @Override
@@ -72,9 +72,9 @@ public class UnitRenderer extends AbstractRenderer {
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
         uniformMatrix4fv("uNVMatrix", camera.createNormMatrix());
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         uniform3f("uAmbientColor", shadowUiService.getAmbientIntensity(), shadowUiService.getAmbientIntensity(), shadowUiService.getAmbientIntensity());
         uniform3f("uLightingDirection", shadowUiService.getLightDirection());
         uniform3f("uLightingColor", shadowUiService.getDiffuseIntensity(), shadowUiService.getDiffuseIntensity(), shadowUiService.getDiffuseIntensity());
@@ -87,7 +87,7 @@ public class UnitRenderer extends AbstractRenderer {
         texture.activate();
 
         for (ModelMatrices model : modelMatrices) {
-            uniformMatrix4fv("uMMatrix", model.getModel());
+            uniformMatrix4fv(U_MODEL_MATRIX, model.getModel());
             uniformMatrix4fv("uNMMatrix", model.getNorm());
 
             getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);

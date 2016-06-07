@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.client.units.ItemService;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
@@ -22,10 +23,10 @@ import java.util.List;
  * 08.11.2015.
  */
 @Dependent
-public class UnitNormRenderer extends AbstractRenderer {
-    // private Logger logger = Logger.getLogger(UnitNormRenderer.class.getName());
+public class TerrainObjectNormRenderer extends AbstractRenderer {
+    // private Logger logger = Logger.getLogger(TerrainObjectNormRenderer.class.getName());
     @Inject
-    private ItemService itemService;
+    private TerrainObjectService terrainObjectService;
     @Inject
     private Camera camera;
     @Inject
@@ -46,32 +47,34 @@ public class UnitNormRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexContainer vertexContainer = itemService.getItemTypeVertexContainer(getId());
-        if (vertexContainer == null) {
-            return;
+        List<Vertex> vertices = new ArrayList<>();
+        List<Vertex> norms = new ArrayList<>();
+
+        VertexContainer noShadowVertexContainer = terrainObjectService.getTransparentNoShadow(getId());
+        if(noShadowVertexContainer != null) {
+            vertices.addAll(noShadowVertexContainer.getVertices());
+            norms.addAll(noShadowVertexContainer.getNorms());
         }
-        List<Vertex> vertices = vertexContainer.getVertices();
-        List<Vertex> norms = vertexContainer.getNorms();
-        // List<Vertex> tangents = vertexList.getTangentVertices();
+        VertexContainer opaqueVertexContainer = terrainObjectService.getOpaqueVertexContainer(getId());
+        if(opaqueVertexContainer != null) {
+            vertices.addAll(opaqueVertexContainer.getVertices());
+            norms.addAll(opaqueVertexContainer.getNorms());
+        }
 
         List<Vertex> vectors = new ArrayList<>();
         for (int i = 0; i < vertices.size(); i++) {
             Vertex vertex = vertices.get(i);
-            // Norm
             vectors.add(vertex);
             vectors.add(vertex.add(norms.get(i).multiply(5)));
-            // Tangent
-            // vectors.add(vertex);
-            // vectors.add(vertex.add(tangents.get(i).multiply(5)));
         }
 
         this.vertices.fillBuffer(vectors);
-        elementCount = vertexContainer.getVerticesCount() /* * 2*/;
+        elementCount = vertices.size();
     }
 
     @Override
     public void draw() {
-        Collection<ModelMatrices> modelMatrices = itemService.getModelMatrices(getId());
+        Collection<ModelMatrices> modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
         if (modelMatrices == null || modelMatrices.isEmpty()) {
             return;
         }

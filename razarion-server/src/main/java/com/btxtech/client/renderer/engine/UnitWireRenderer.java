@@ -45,9 +45,9 @@ public class UnitWireRenderer extends AbstractRenderer {
             throw new WebGlException("OES_standard_derivatives is no supported");
         }
         createProgram(Shaders.INSTANCE.modelViewPerspectiveWireVertexShader(), Shaders.INSTANCE.modelViewPerspectiveWireFragmentShader());
-        positions = createVertexShaderAttribute("aVertexPosition");
-        barycentrics = createVertexShaderAttribute("aBarycentric");
-        textureCoordinate = createShaderTextureCoordinateAttributee("aTextureCoord");
+        positions = createVertexShaderAttribute(A_VERTEX_POSITION);
+        barycentrics = createVertexShaderAttribute(A_BARYCENTRIC);
+        textureCoordinate = createShaderTextureCoordinateAttributee(A_TEXTURE_COORDINATE);
     }
 
     @Override
@@ -78,8 +78,8 @@ public class UnitWireRenderer extends AbstractRenderer {
 
         useProgram();
 
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
 
         positions.activate();
         barycentrics.activate();
@@ -87,7 +87,7 @@ public class UnitWireRenderer extends AbstractRenderer {
         webGLTexture.activate();
 
         for (ModelMatrices model : modelMatrices) {
-            uniformMatrix4fv("uMMatrix", model.getModel());
+            uniformMatrix4fv(U_MODEL_MATRIX, model.getModel());
 
             getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

@@ -41,7 +41,7 @@ public class GroundRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader());
-        vertices = createVertexShaderAttribute("aVertexPosition");
+        vertices = createVertexShaderAttribute(A_VERTEX_POSITION);
         normals = createVertexShaderAttribute("aVertexNormal");
         tangents = createVertexShaderAttribute("aVertexTangent");
         splattings = createFloatShaderAttribute("aGroundSplatting");
@@ -75,8 +75,8 @@ public class GroundRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
         uniformMatrix4fv("uNMatrix", camera.createNormMatrix());
 
         setLightUniforms(null, terrainSurface.getGroundSkeleton().getLightConfig());

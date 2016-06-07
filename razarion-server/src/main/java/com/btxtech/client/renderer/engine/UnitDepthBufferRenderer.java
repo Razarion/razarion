@@ -42,8 +42,8 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
             throw new WebGlException("OES_standard_derivatives is no supported");
         }
         createProgram(Shaders.INSTANCE.depthBufferVertexShader(), Shaders.INSTANCE.depthBufferFragmentShader());
-        positions = createVertexShaderAttribute("aVertexPosition");
-        barycentric = createVertexShaderAttribute("aBarycentric");
+        positions = createVertexShaderAttribute(A_VERTEX_POSITION);
+        barycentric = createVertexShaderAttribute(A_BARYCENTRIC);
     }
 
     @Override
@@ -73,14 +73,14 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         useProgram();
-        uniformMatrix4fv("uPMatrix", shadowUiService.createDepthProjectionTransformation());
-        uniformMatrix4fv("uVMatrix", shadowUiService.createDepthViewTransformation());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, shadowUiService.createDepthProjectionTransformation());
+        uniformMatrix4fv(U_VIEW_MATRIX, shadowUiService.createDepthViewTransformation());
 
         positions.activate();
         barycentric.activate();
 
         for (ModelMatrices model : modelMatrices) {
-            uniformMatrix4fv("uMMatrix", model.getModel());
+            uniformMatrix4fv(U_MODEL_MATRIX, model.getModel());
 
             getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
             WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());

@@ -1,15 +1,19 @@
 package com.btxtech.client.sidebar;
 
+import com.btxtech.client.ColladaUiService;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.terrain.TerrainObjectService;
+import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -25,6 +29,11 @@ import elemental.html.InputElement;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.api.PropertyChangeEvent;
+import org.jboss.errai.databinding.client.api.PropertyChangeHandler;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -50,6 +59,31 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
     @Inject
     private RenderService renderService;
     @Inject
+    private ColladaUiService colladaUiService;
+    @Inject
+    @AutoBound
+    private DataBinder<ColladaUiService> colladaUiServiceDataBinder;
+    @Inject
+    @Bound(converter = GradToRadConverter.class, property = "xRotation")
+    @DataField
+    private DoubleBox xRotationSlider;
+    @Inject
+    @Bound(converter = GradToRadConverter.class, property = "xRotation")
+    @DataField
+    private DoubleBox xRotationBox;
+    @Inject
+    @Bound(converter = GradToRadConverter.class, property = "yRotation")
+    @DataField
+    private DoubleBox yRotationSlider;
+    @Inject
+    @Bound(converter = GradToRadConverter.class, property = "yRotation")
+    @DataField
+    private DoubleBox yRotationBox;
+    @Inject
+    @DataField
+    private Label directionLabel;
+    @Inject
+    @Bound
     @DataField
     private DoubleBox generalScale;
     @Inject
@@ -70,7 +104,14 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
 
     @PostConstruct
     public void init() {
-        generalScale.setValue(terrainObjectService.getGeneralScale());
+        colladaUiServiceDataBinder.setModel(colladaUiService);
+        colladaUiServiceDataBinder.addPropertyChangeHandler(new PropertyChangeHandler<Object>() {
+            @Override
+            public void onPropertyChange(PropertyChangeEvent<Object> event) {
+                displayLightDirectionLabel();
+            }
+        });
+        displayLightDirectionLabel();
         terrainEditorService.call(new RemoteCallback<Collection<ObjectNameId>>() {
             @Override
             public void callback(Collection<ObjectNameId> objectNameIds) {
@@ -92,9 +133,14 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
 
     }
 
+    private void displayLightDirectionLabel() {
+        Vertex lightDirection = colladaUiServiceDataBinder.getModel().getDirection();
+        NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
+        directionLabel.setText(decimalFormat.format(lightDirection.getX()) + ":" + decimalFormat.format(lightDirection.getY()) + ":" + decimalFormat.format(lightDirection.getZ()));
+    }
+
     @EventHandler("generalScale")
     public void generalScaleChanged(ChangeEvent e) {
-        terrainObjectService.setGeneralScale(generalScale.getValue());
         terrainObjectService.setupModelMatrices();
     }
 

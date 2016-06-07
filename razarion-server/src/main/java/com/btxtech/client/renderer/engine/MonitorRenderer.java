@@ -22,8 +22,6 @@ import javax.inject.Inject;
 @Dependent
 public class MonitorRenderer extends AbstractRenderer {
     private static final int SIDE_LENGTH = 256;
-    private static final String A_VERTEX_POSITION = "aVertexPosition";
-    private static final String TEXTURE_COORDINATE_ATTRIBUTE_NAME = "aTextureCoord";
     private static final String COLOR_SAMPLER_UNIFORM_NAME = "uColorSampler";
     private static final String DEEP_SAMPLER_UNIFORM_NAME = "uDeepSampler";
     private static final String UNIFORM_DEEP_MAP = "uDeepMap";
@@ -43,7 +41,7 @@ public class MonitorRenderer extends AbstractRenderer {
         verticesBuffer = gameCanvas.getCtx3d().createBuffer();
         vertexPositionAttribute = getAndEnableAttributeLocation(A_VERTEX_POSITION);
         textureCoordinateBuffer = gameCanvas.getCtx3d().createBuffer();
-        textureCoordinatePositionAttribute = getAndEnableAttributeLocation(TEXTURE_COORDINATE_ATTRIBUTE_NAME);
+        textureCoordinatePositionAttribute = getAndEnableAttributeLocation(A_TEXTURE_COORDINATE);
     }
 
     @Override

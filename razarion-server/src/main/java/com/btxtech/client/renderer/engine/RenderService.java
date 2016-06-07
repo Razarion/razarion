@@ -60,6 +60,7 @@ public class RenderService {
     private RenderSwitch monitor;
     private RenderSwitch terrainNorm;
     private Collection<RenderSwitch> unitNorms;
+    private Collection<RenderSwitch> terrainObjectNorms;
     private int framesCount = 0;
     private long lastTime = 0;
 
@@ -67,6 +68,7 @@ public class RenderService {
         initFrameBuffer();
         renderQueue = new ArrayList<>();
         unitNorms = new ArrayList<>();
+        terrainObjectNorms = new ArrayList<>();
         createAndAddRenderSwitch(GroundRenderer.class, GroundDepthBufferRenderer.class, GroundWireRender.class, 0);
         for (int id : terrainSurface.getSlopeIds()) {
             createAndAddRenderSwitch(SlopeRenderer.class, SlopeDepthBufferRenderer.class, SlopeWireRenderer.class, id);
@@ -77,7 +79,9 @@ public class RenderService {
             terrainEditorRenderer.setId(id);
             terrainEditorRenderers.add(terrainEditorRenderer);
         }
+        Collection<Integer> terrainObjectIds = new ArrayList<>();
         for (int id : terrainObjectService.getOpaqueIds()) {
+            terrainObjectIds.add(id);
             createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, id);
         }
         for (int id : itemService.getItemTypeIds()) {
@@ -87,8 +91,15 @@ public class RenderService {
 
         createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);
         for (int id : terrainObjectService.getTransparentNoShadowIds()) {
+            if (!terrainObjectIds.contains(id)) {
+                terrainObjectIds.add(id);
+            }
             createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class, id);
         }
+        for (Integer id : terrainObjectIds) {
+            terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormRenderer.class, null, TerrainObjectNormRenderer.class, id));
+        }
+
         monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null, 0);
         terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class, 0);
         terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorRenderer.class).get();
@@ -146,7 +157,7 @@ public class RenderService {
             if (!showMonitor && renderSwitch == monitor) {
                 continue;
             }
-            if (!showNorm && (renderSwitch == terrainNorm || unitNorms.contains(renderSwitch))) {
+            if (!showNorm && (renderSwitch == terrainNorm || unitNorms.contains(renderSwitch) || terrainObjectNorms.contains(renderSwitch))) {
                 continue;
             }
             try {
@@ -165,7 +176,7 @@ public class RenderService {
             if (!showMonitor && renderSwitch == monitor) {
                 continue;
             }
-            if (!showNorm && (renderSwitch == terrainNorm || unitNorms.contains(renderSwitch))) {
+            if (!showNorm && (renderSwitch == terrainNorm || unitNorms.contains(renderSwitch) || terrainObjectNorms.contains(renderSwitch))) {
                 continue;
             }
             try {

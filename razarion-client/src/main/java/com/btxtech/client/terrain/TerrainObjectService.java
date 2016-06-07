@@ -1,11 +1,13 @@
 package com.btxtech.client.terrain;
 
+import com.btxtech.client.ColladaUiService;
 import com.btxtech.client.ImageDescriptor;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexContainer;
-import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,8 +21,9 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainObjectService {
+    @Inject
+    private ColladaUiService colladaUiService;
     private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
-    private double generalScale = 10;
     private ImageDescriptor opaqueDescriptor = ImageDescriptor.SAND_2;
     private ImageDescriptor transparentDescriptor = ImageDescriptor.TREE_TEXTURE_02;
     private Map<Integer, TerrainObject> terrainObjects;
@@ -28,7 +31,7 @@ public class TerrainObjectService {
     private Map<Integer, VertexContainer> opaqueIds;
     private Map<Integer, VertexContainer> transparentNoShadowIds;
     private Map<Integer, VertexContainer> transparentOnlyShadowIds;
-    private Map<Integer, Collection<Matrix4>> objectIdMatrices;
+    private Map<Integer, Collection<ModelMatrices>> objectIdMatrices;
 
     public void init() {
         setupModelMatrices(terrainObjectPositions);
@@ -64,12 +67,12 @@ public class TerrainObjectService {
     public void setupModelMatrices(Collection<TerrainObjectPosition> terrainObjectPositions) {
         objectIdMatrices = new HashMap<>();
         for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
-            Collection<Matrix4> matrices = objectIdMatrices.get(terrainObjectPosition.getTerrainObjectId());
-            if (matrices == null) {
-                matrices = new ArrayList<>();
-                objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), matrices);
+            Collection<ModelMatrices> modelMatrices = objectIdMatrices.get(terrainObjectPosition.getTerrainObjectId());
+            if (modelMatrices == null) {
+                modelMatrices = new ArrayList<>();
+                objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
             }
-            matrices.add(terrainObjectPosition.createModelMatrix(generalScale));
+            modelMatrices.add(new ModelMatrices(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale()), terrainObjectPosition.createRotationModelMatrix()));
         }
     }
 
@@ -117,15 +120,7 @@ public class TerrainObjectService {
         }
     }
 
-    public Collection<Matrix4> getObjectIdMatrices(int terrainObjectId) {
+    public Collection<ModelMatrices> getObjectIdMatrices(int terrainObjectId) {
         return objectIdMatrices.get(terrainObjectId);
-    }
-
-    public double getGeneralScale() {
-        return generalScale;
-    }
-
-    public void setGeneralScale(double generalScale) {
-        this.generalScale = generalScale;
     }
 }

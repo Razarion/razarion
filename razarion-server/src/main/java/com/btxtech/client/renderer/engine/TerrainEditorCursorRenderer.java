@@ -42,7 +42,7 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.terrainEditorCursorVertexShader(), Shaders.INSTANCE.terrainEditorCursorFragmentShader());
-        vertices = createVertexShaderAttribute("aVertexPosition");
+        vertices = createVertexShaderAttribute(A_VERTEX_POSITION);
     }
 
     @Override
@@ -82,9 +82,9 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
-        uniformMatrix4fv("uMMatrix", modelMatrix);
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
+        uniformMatrix4fv(U_MODEL_MATRIX, modelMatrix);
 
         vertices.activate();
 

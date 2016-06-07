@@ -39,7 +39,7 @@ public class TerrainNormRenderer extends AbstractRenderer {
     @PostConstruct
     public void init() {
         createProgram(Shaders.INSTANCE.debugVectorVertexShader(), Shaders.INSTANCE.debugVectorFragmentShader());
-        vertices = createVertexShaderAttribute("aVertexPosition");
+        vertices = createVertexShaderAttribute(A_VERTEX_POSITION);
     }
 
     @Override
@@ -84,9 +84,9 @@ public class TerrainNormRenderer extends AbstractRenderer {
 
         useProgram();
 
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
-        uniformMatrix4fv("uMMatrix", Matrix4.createIdentity());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
+        uniformMatrix4fv(U_MODEL_MATRIX, Matrix4.createIdentity());
 
         vertices.activate();
 

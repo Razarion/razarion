@@ -20,11 +20,6 @@ import javax.inject.Inject;
 @Dependent
 public class GroundDepthBufferRenderer extends AbstractRenderer {
     // private Logger logger = Logger.getLogger(GroundDepthBufferRenderer.class.getName());
-    private static final String A_VERTEX_POSITION = "aVertexPosition";
-    private static final String BARYCENTRIC_ATTRIBUTE_NAME = "aBarycentric";
-    private static final String PERSPECTIVE_UNIFORM_NAME = "uPMatrix";
-    private static final String VIEW_UNIFORM_NAME = "uVMatrix";
-    private static final String MODEL_UNIFORM_NAME = "uMMatrix";
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute barycentric;
     private int elementCount;
@@ -41,7 +36,7 @@ public class GroundDepthBufferRenderer extends AbstractRenderer {
         }
         createProgram(Shaders.INSTANCE.depthBufferVertexShader(), Shaders.INSTANCE.depthBufferFragmentShader());
         vertices = createVertexShaderAttribute(A_VERTEX_POSITION);
-        barycentric = createVertexShaderAttribute(BARYCENTRIC_ATTRIBUTE_NAME);
+        barycentric = createVertexShaderAttribute(A_BARYCENTRIC);
     }
 
     @Override
@@ -65,9 +60,9 @@ public class GroundDepthBufferRenderer extends AbstractRenderer {
 
         useProgram();
         // Projection uniform
-        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, shadowUiService.createDepthProjectionTransformation());
-        uniformMatrix4fv(VIEW_UNIFORM_NAME, shadowUiService.createDepthViewTransformation());
-        uniformMatrix4fv(MODEL_UNIFORM_NAME, Matrix4.createIdentity());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, shadowUiService.createDepthProjectionTransformation());
+        uniformMatrix4fv(U_VIEW_MATRIX, shadowUiService.createDepthViewTransformation());
+        uniformMatrix4fv(U_MODEL_MATRIX, Matrix4.createIdentity());
 
         vertices.activate();
         barycentric.activate();

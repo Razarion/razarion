@@ -6,12 +6,8 @@ import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Vertex;
-import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -47,8 +43,8 @@ public abstract class AbstractViewPerspectiveWireRenderer extends AbstractRender
 
         createProgram(Shaders.INSTANCE.viewPerspectiveWireVertexShader(), Shaders.INSTANCE.viewPerspectiveWireFragmentShader());
 
-        vertices = createVertexShaderAttribute("aVertexPosition");
-        barycentric = createVertexShaderAttribute("aBarycentric");
+        vertices = createVertexShaderAttribute(A_VERTEX_POSITION);
+        barycentric = createVertexShaderAttribute(A_BARYCENTRIC);
     }
 
     @Override
@@ -69,8 +65,8 @@ public abstract class AbstractViewPerspectiveWireRenderer extends AbstractRender
     public void draw() {
         useProgram();
 
-        uniformMatrix4fv("uPMatrix", projectionTransformation.createMatrix());
-        uniformMatrix4fv("uVMatrix", camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
 
         vertices.activate();
         barycentric.activate();
