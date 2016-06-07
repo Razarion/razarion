@@ -14,8 +14,8 @@ import javax.inject.Singleton;
 @Bindable
 public class ColladaUiService {
     private double generalScale = 10;
-    private double xRotation;
-    private double yRotation;
+    private double rotateX = Math.toRadians(25);
+    private double rotateZ = Math.toRadians(290);
 
     public double getGeneralScale() {
         return generalScale;
@@ -25,24 +25,24 @@ public class ColladaUiService {
         this.generalScale = generalScale;
     }
 
-    public double getXRotation() {
-        return xRotation;
+    public double getRotateX() {
+        return rotateX;
     }
 
-    public void setXRotation(double xRotation) {
-        this.xRotation = xRotation;
+    public void setRotateX(double rotateX) {
+        this.rotateX = rotateX;
     }
 
-    public double getYRotation() {
-        return yRotation;
+    public double getRotateZ() {
+        return rotateZ;
     }
 
-    public void setYRotation(double yRotation) {
-        this.yRotation = yRotation;
+    public void setRotateZ(double rotateZ) {
+        this.rotateZ = rotateZ;
     }
 
     public Vertex getDirection() {
-        return Matrix4.createXRotation(xRotation).multiply(Matrix4.createYRotation(yRotation)).multiply(new Vertex(0, 0, -1), 1.0);
+        return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
 }

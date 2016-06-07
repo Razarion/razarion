@@ -64,21 +64,21 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
     @AutoBound
     private DataBinder<ColladaUiService> colladaUiServiceDataBinder;
     @Inject
-    @Bound(converter = GradToRadConverter.class, property = "xRotation")
+    @Bound(converter = GradToRadConverter.class, property = "rotateX")
     @DataField
-    private DoubleBox xRotationSlider;
+    private DoubleBox rotateXSlider;
     @Inject
-    @Bound(converter = GradToRadConverter.class, property = "xRotation")
+    @Bound(converter = GradToRadConverter.class, property = "rotateX")
     @DataField
-    private DoubleBox xRotationBox;
+    private DoubleBox rotateXBox;
     @Inject
-    @Bound(converter = GradToRadConverter.class, property = "yRotation")
+    @Bound(converter = GradToRadConverter.class, property = "rotateZ")
     @DataField
-    private DoubleBox yRotationSlider;
+    private DoubleBox rotateZSlider;
     @Inject
-    @Bound(converter = GradToRadConverter.class, property = "yRotation")
+    @Bound(converter = GradToRadConverter.class, property = "rotateZ")
     @DataField
-    private DoubleBox yRotationBox;
+    private DoubleBox rotateZBox;
     @Inject
     @DataField
     private Label directionLabel;
