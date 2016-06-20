@@ -11,16 +11,18 @@ import javax.inject.Singleton;
  * 20.05.2016.
  */
 @Singleton
-public class ModalDialog {
+public class ModalDialogManager {
     @Inject
     private Instance<ModalDialogContent> contentInstance;
     @Inject
     private Instance<BootstrapModalDialog> containerInstance;
     private BootstrapModalDialog container;
     private ModalDialogContent content;
-    private Runnable applyListener;
+    private ApplyListener applyListener;
+    private Object applyValue;
 
-    public <T> void show(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, Runnable applyListener) {
+    public <T> void show(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {
+        applyValue = null;
         this.applyListener = applyListener;
         if (content != null || container != null) {
             return;
@@ -30,6 +32,7 @@ public class ModalDialog {
         this.content = content;
         container = containerInstance.get();
         container.init(title, content);
+        content.customize(this);
         RootPanel.get().add(container);
 
     }
@@ -40,6 +43,7 @@ public class ModalDialog {
             container = null;
             content = null;
             applyListener = null;
+            applyValue = null;
         }
     }
 
@@ -47,10 +51,18 @@ public class ModalDialog {
         hide();
     }
 
+    public void setApplyValue(Object applyValue) {
+        this.applyValue = applyValue;
+    }
+
     public void apply() {
         if (applyListener != null) {
-            applyListener.run();
+            applyListener.onApply(applyValue);
         }
         hide();
+    }
+
+    public BootstrapModalDialog getContainer() {
+        return container;
     }
 }

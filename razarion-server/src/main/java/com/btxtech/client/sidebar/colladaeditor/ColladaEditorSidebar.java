@@ -1,19 +1,22 @@
-package com.btxtech.client.sidebar;
+package com.btxtech.client.sidebar.colladaeditor;
 
 import com.btxtech.client.ColladaUiService;
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.btxtech.client.terrain.TerrainObjectService;
+import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -40,8 +43,11 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,6 +58,7 @@ import java.util.logging.Logger;
 @Templated("ColladaEditorSidebar.html#colladaEditorSidebar")
 public class ColladaEditorSidebar extends Composite implements LeftSideBarContent {
     private Logger logger = Logger.getLogger(ColladaEditorSidebar.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
@@ -60,6 +67,7 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
     private RenderService renderService;
     @Inject
     private ColladaUiService colladaUiService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @AutoBound
     private DataBinder<ColladaUiService> colladaUiServiceDataBinder;
@@ -79,6 +87,7 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
     @Bound(converter = GradToRadConverter.class, property = "rotateZ")
     @DataField
     private DoubleBox rotateZBox;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label directionLabel;
@@ -86,21 +95,33 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
     @Bound
     @DataField
     private DoubleBox generalScale;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private ValueListBox<ObjectNameId> terrainObjectSelection;
     @DataField
     private Element fileElement = (Element) Browser.getDocument().createInputElement();
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label loaded;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label lastModified;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button reloadButton;
+    @Inject
+    @DataField
+    private VertexContainerListWidget vertexContainerListWidget;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Button saveButton;
     private File file;
+    private String lastLoadedColladaString;
 
     @PostConstruct
     public void init() {
@@ -115,9 +136,15 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
         terrainEditorService.call(new RemoteCallback<Collection<ObjectNameId>>() {
             @Override
             public void callback(Collection<ObjectNameId> objectNameIds) {
-                ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
-                terrainObjectSelection.setAcceptableValues(objectNameIds);
-                terrainObjectSelection.setValue(objectNameId);
+                try {
+                    ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
+                    terrainObjectSelection.setAcceptableValues(objectNameIds);
+                    terrainObjectSelection.setValue(objectNameId);
+                    TerrainObject terrainObject = terrainObjectService.getTerrainObject(objectNameId.getId());
+                    vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers().values()));
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         }, new ErrorCallback<Object>() {
             @Override
@@ -126,6 +153,16 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
                 return false;
             }
         }).getTerrainObjectNameIds();
+        terrainObjectSelection.addValueChangeHandler(new ValueChangeHandler<ObjectNameId>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<ObjectNameId> event) {
+                TerrainObject terrainObject = terrainObjectService.getTerrainObject(terrainObjectSelection.getValue().getId());
+                vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers().values()));
+                loaded.setText("");
+                lastModified.setText("");
+                lastLoadedColladaString = null;
+            }
+        });
     }
 
     @Override
@@ -135,8 +172,7 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
 
     private void displayLightDirectionLabel() {
         Vertex lightDirection = colladaUiServiceDataBinder.getModel().getDirection();
-        NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
-        directionLabel.setText(decimalFormat.format(lightDirection.getX()) + ":" + decimalFormat.format(lightDirection.getY()) + ":" + decimalFormat.format(lightDirection.getZ()));
+        directionLabel.setText(DisplayUtils.formatVertex(lightDirection));
     }
 
     @EventHandler("generalScale")
@@ -152,6 +188,22 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
         loadFile(file);
     }
 
+    @EventHandler("saveButton")
+    private void saveButtonClick(ClickEvent event) {
+        int terrainObjectId = terrainObjectSelection.getValue().getId();
+        terrainEditorService.call(new RemoteCallback<Collection<ObjectNameId>>() {
+            @Override
+            public void callback(Collection<ObjectNameId> objectNameIds) {
+            }
+        }, new ErrorCallback<Object>() {
+            @Override
+            public boolean error(Object message, Throwable throwable) {
+                logger.log(Level.SEVERE, "saveTerrainObject failed: " + message, throwable);
+                return false;
+            }
+        }).saveTerrainObject(terrainObjectId, lastLoadedColladaString, extractTextureIds(terrainObjectId));
+    }
+
     @EventHandler("reloadButton")
     private void reloadButtonClick(ClickEvent event) {
         if (file != null) {
@@ -164,15 +216,16 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
         fileReader.setOnload(new EventListener() {
             @Override
             public void handleEvent(Event evt) {
+                lastLoadedColladaString = (String) fileReader.getResult();
                 terrainEditorService.call(new RemoteCallback<TerrainObject>() {
                     @Override
                     public void callback(TerrainObject terrainObject) {
                         try {
                             terrainObjectService.putVertexContainer(terrainObject);
                             renderService.fillBuffers();
-                            DateTimeFormat formatter = DateTimeFormat.getFormat("HH:mm:ss dd.MM.yyyy");
-                            loaded.setText(formatter.format(new Date()));
-                            lastModified.setText(formatter.format(getLastModifiedDate(file)));
+                            loaded.setText(DisplayUtils.formatDate(new Date()));
+                            lastModified.setText(DisplayUtils.formatDate(getLastModifiedDate(file)));
+                            vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers().values()));
                         } catch (Exception e) {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
@@ -183,10 +236,19 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
                         logger.log(Level.SEVERE, "colladaConvert failed: " + message, throwable);
                         return false;
                     }
-                }).colladaConvert(terrainObjectSelection.getValue().getId(), (String) fileReader.getResult());
+                }).colladaConvert(terrainObjectSelection.getValue().getId(), lastLoadedColladaString);
             }
         });
         fileReader.readAsText(file, "UFT-8");
+    }
+
+    private Map<String, Integer> extractTextureIds(int terrainObjectId) {
+        Map<String, Integer> textures = new HashMap<>();
+        TerrainObject terrainObject = terrainObjectService.getTerrainObject(terrainObjectId);
+        for (VertexContainer vertexContainer : terrainObject.getVertexContainers().values()) {
+            textures.put(vertexContainer.getMaterialName(), vertexContainer.getTextureId());
+        }
+        return textures;
     }
 
     private Date getLastModifiedDate(File file) {

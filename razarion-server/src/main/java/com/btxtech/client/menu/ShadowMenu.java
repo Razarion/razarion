@@ -1,10 +1,10 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.renderer.model.ShadowUiService;
+import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
@@ -77,8 +77,7 @@ public class ShadowMenu extends Composite {
 
     private void displayLightDirectionLabel() {
         Vertex lightDirection = shadowUiService.getLightDirection();
-        NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
-        directionLabel.setText("Light Direction (" + decimalFormat.format(lightDirection.getX()) + ":" + decimalFormat.format(lightDirection.getY()) + ":" + decimalFormat.format(lightDirection.getZ()) + ")");
+        directionLabel.setText("Light Direction (" + DisplayUtils.NUMBER_FORMATTER_X_XX.format(lightDirection.getX()) + ":" + DisplayUtils.NUMBER_FORMATTER_X_XX.format(lightDirection.getY()) + ":" + DisplayUtils.NUMBER_FORMATTER_X_XX.format(lightDirection.getZ()) + ")");
     }
 
     @EventHandler("ambientIntensity")

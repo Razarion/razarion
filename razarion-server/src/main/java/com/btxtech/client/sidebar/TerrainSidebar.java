@@ -1,12 +1,13 @@
 package com.btxtech.client.sidebar;
 
-import com.btxtech.client.dialog.ModalDialog;
+import com.btxtech.client.dialog.ApplyListener;
+import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.widgets.LightWidget;
-import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.client.widgets.LightWidget;
 import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -37,7 +38,7 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
-    private ModalDialog modalDialog;
+    private ModalDialogManager modalDialogManager;
     @Inject
     private RenderService renderService;
     @Inject
@@ -129,9 +130,9 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     private void fractalSplattingButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
-        modalDialog.show("Splatting Fractal Dialog", FractalDialog.class, fractalFieldConfig, new Runnable() {
+        modalDialogManager.show("Splatting Fractal Dialog", FractalDialog.class, fractalFieldConfig, new ApplyListener<FractalFieldConfig>() {
             @Override
-            public void run() {
+            public void onApply(FractalFieldConfig fractalFieldConfig1) {
                 GroundConfig groundConfig = groundConfigDataBinder.getModel();
                 groundConfig.fromSplattingFractalFiledConfig(fractalFieldConfig);
             }
@@ -142,9 +143,9 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     private void fractalHeightButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toHeightFractalFiledConfig();
-        modalDialog.show("Height Fractal Dialog", FractalDialog.class, fractalFieldConfig, new Runnable() {
+        modalDialogManager.show("Height Fractal Dialog", FractalDialog.class, fractalFieldConfig, new ApplyListener<FractalFieldConfig>() {
             @Override
-            public void run() {
+            public void onApply(FractalFieldConfig fractalFieldConfig1) {
                 GroundConfig groundConfig = groundConfigDataBinder.getModel();
                 groundConfig.fromHeightFractalFiledConfig(fractalFieldConfig);
             }

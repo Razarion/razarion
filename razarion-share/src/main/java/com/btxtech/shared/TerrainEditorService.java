@@ -9,6 +9,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -29,6 +30,8 @@ public interface TerrainEditorService {
     GroundConfig saveGroundConfig(GroundConfig slopeConfig);
 
     void saveTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions);
+
+    void saveTerrainObject(int id, String colladaString, Map<String, Integer> textures);
 
     Collection<ObjectNameId> getTerrainObjectNameIds();
 

@@ -10,4 +10,6 @@ public interface ModalDialogContent<T> extends IsWidget {
     void onClose();
 
     void init(T t);
+
+    void customize(ModalDialogManager modalDialogManager);
 }

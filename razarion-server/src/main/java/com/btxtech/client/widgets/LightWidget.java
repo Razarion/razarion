@@ -1,11 +1,10 @@
 package com.btxtech.client.widgets;
 
+import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.client.utils.HtmlColor2ColorConverter;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.primitives.Vertex;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
@@ -16,7 +15,6 @@ import org.jboss.errai.databinding.client.api.PropertyChangeHandler;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
@@ -78,9 +76,8 @@ public class LightWidget extends Composite {
     }
 
     private void displayLightDirectionLabel() {
-        Vertex lightDirection =lightConfigDataBinder.getModel().getDirection();
-        NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
-        directionLabel.setText(decimalFormat.format(lightDirection.getX()) + ":" + decimalFormat.format(lightDirection.getY()) + ":" + decimalFormat.format(lightDirection.getZ()));
+        Vertex lightDirection = lightConfigDataBinder.getModel().getDirection();
+        directionLabel.setText(DisplayUtils.formatVertex(lightDirection));
     }
 
 }

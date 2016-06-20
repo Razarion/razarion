@@ -2,6 +2,7 @@ package com.btxtech.server.collada;
 
 import com.btxtech.server.itemtype.ItemTypeEntity;
 import com.btxtech.server.terrain.object.TerrainObjectEntity;
+import com.btxtech.server.terrain.object.TerrainObjectMaterialEntity;
 import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;
@@ -36,7 +37,12 @@ public class ColladaConverter {
         collada.convert(new ColladaConverterControl() {
             @Override
             protected void onNewVertexContainer(String name, VertexContainer vertexContainer) {
-                containers.put(terrainObjectEntity.nameToType(name), vertexContainer);
+                TerrainObjectMaterialEntity material = terrainObjectEntity.getMaterial(name);
+                if (material.getImageLibraryEntity() != null) {
+                    vertexContainer.setTextureId(material.getImageLibraryEntity().getId().intValue());
+                }
+                vertexContainer.setMaterialName(name);
+                containers.put(material.getType(), vertexContainer);
             }
         });
 

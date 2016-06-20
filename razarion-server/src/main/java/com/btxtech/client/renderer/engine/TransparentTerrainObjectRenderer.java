@@ -19,11 +19,6 @@ public class TransparentTerrainObjectRenderer extends AbstractTerrainObjectRende
     }
 
     @Override
-    protected ImageDescriptor getImageDescriptor(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getTransparentDescriptor();
-    }
-
-    @Override
     protected void preDraw(WebGLRenderingContext webGLRenderingContext) {
         webGLRenderingContext.blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         webGLRenderingContext.enable(WebGLRenderingContext.BLEND);

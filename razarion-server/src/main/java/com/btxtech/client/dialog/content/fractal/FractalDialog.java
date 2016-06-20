@@ -1,6 +1,7 @@
 package com.btxtech.client.dialog.content.fractal;
 
 import com.btxtech.client.dialog.ModalDialogContent;
+import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.terrain.FractalField;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.google.gwt.dom.client.Element;
@@ -76,6 +77,11 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
         fractalDisplay = new FractalDisplay(canvasElement);
         fractalDisplay.display(fractalFieldConfig);
         fillValue.setValue((fractalFieldConfig.getFractalMax() + fractalFieldConfig.getFractalMin()) / 2.0);
+    }
+
+    @Override
+    public void customize(ModalDialogManager modalDialogManager) {
+        // Ignore
     }
 
     @EventHandler("fillButton")

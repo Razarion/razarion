@@ -24,8 +24,6 @@ public class TerrainObjectService {
     @Inject
     private ColladaUiService colladaUiService;
     private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
-    private ImageDescriptor opaqueDescriptor = ImageDescriptor.SAND_2;
-    private ImageDescriptor transparentDescriptor = ImageDescriptor.TREE_TEXTURE_02;
     private Map<Integer, TerrainObject> terrainObjects;
     private Collection<TerrainObjectPosition> terrainObjectPositions;
     private Map<Integer, VertexContainer> opaqueIds;
@@ -80,14 +78,6 @@ public class TerrainObjectService {
         setupModelMatrices(terrainObjectPositions);
     }
 
-    public ImageDescriptor getOpaqueDescriptor() {
-        return opaqueDescriptor;
-    }
-
-    public ImageDescriptor getTransparentDescriptor() {
-        return transparentDescriptor;
-    }
-
     public Collection<Integer> getOpaqueIds() {
         return opaqueIds.keySet();
     }
@@ -118,6 +108,10 @@ public class TerrainObjectService {
         for (TerrainObject terrainObject : terrainObjects) {
             this.terrainObjects.put(terrainObject.getId(), terrainObject);
         }
+    }
+
+    public TerrainObject getTerrainObject(int id) {
+        return terrainObjects.get(id);
     }
 
     public Collection<ModelMatrices> getObjectIdMatrices(int terrainObjectId) {

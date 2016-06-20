@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.ColladaUiService;
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
@@ -20,7 +19,7 @@ import javax.inject.Inject;
  * 04.09.2015.
  */
 public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
-    // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
+    // private Logger logger = Logger.getLogger(AbstractTerrainObjectRenderer.class.getName());
     private VertexShaderAttribute positions;
     private VertexShaderAttribute normals;
     private ShaderTextureCoordinateAttribute textureCoordinate;
@@ -39,8 +38,6 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
 
     abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
 
-    abstract protected ImageDescriptor getImageDescriptor(TerrainObjectService terrainObjectService);
-
     abstract protected void preDraw(WebGLRenderingContext webGLRenderingContext);
 
     protected void postDraw(WebGLRenderingContext ctx3d) {
@@ -58,7 +55,6 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
     @Override
     public void setupImages() {
         enableShadow();
-        webGLTexture = createWebGLTexture(getImageDescriptor(terrainObjectService), "uTexture");
     }
 
     @Override
@@ -71,7 +67,7 @@ public abstract class AbstractTerrainObjectRenderer extends AbstractRenderer {
         positions.fillBuffer(vertexContainer.getVertices());
         normals.fillBuffer(vertexContainer.getNorms());
         textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
-
+        webGLTexture = createWebGLTexture(vertexContainer.getTextureId(), "uTexture");
         elementCount = vertexContainer.getVerticesCount();
 
         ambient = vertexContainer.getAmbient();

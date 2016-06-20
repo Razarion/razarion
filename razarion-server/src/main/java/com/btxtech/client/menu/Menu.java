@@ -1,11 +1,11 @@
 package com.btxtech.client.menu;
 
-import com.btxtech.client.sidebar.ColladaEditorSidebar;
 import com.btxtech.client.sidebar.LeftSideBar;
 import com.btxtech.client.sidebar.LeftSideBarContent;
 import com.btxtech.client.sidebar.TerrainEditorSidebar;
 import com.btxtech.client.sidebar.TerrainObjectEditorSidebar;
 import com.btxtech.client.sidebar.TerrainSidebar;
+import com.btxtech.client.sidebar.colladaeditor.ColladaEditorSidebar;
 import com.btxtech.client.sidebar.slopeeditor.SlopeConfigSidebar;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;

@@ -1,19 +1,15 @@
 package com.btxtech.server.terrain.object;
 
-import com.btxtech.shared.dto.TerrainObject;
-
 import javax.persistence.Basic;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -29,10 +25,9 @@ public class TerrainObjectEntity {
     @Lob
     @Basic(optional = false)
     private String colladaString;
-    @ElementCollection
-    @CollectionTable(name = "TERRAIN_OBJECT_TYPE_MAP", joinColumns = @JoinColumn(name = "OWNER_ID"))
-    @Enumerated(EnumType.STRING)
-    private Map<String, TerrainObject.Type> typeMap;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
+    private List<TerrainObjectMaterialEntity> materials;
 
     public Long getId() {
         return id;
@@ -50,13 +45,13 @@ public class TerrainObjectEntity {
         this.colladaString = colladaString;
     }
 
-    public TerrainObject.Type nameToType(String name) {
-        for (Map.Entry<String, TerrainObject.Type> entry : typeMap.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(name)) {
-                return entry.getValue();
+    public TerrainObjectMaterialEntity getMaterial(String name) {
+        for (TerrainObjectMaterialEntity material : materials) {
+            if (material.getName().equalsIgnoreCase(name)) {
+                return material;
             }
         }
-        throw new IllegalArgumentException("No type for name: " + name);
+        throw new IllegalArgumentException("No material for name: " + name);
     }
 
     @Override

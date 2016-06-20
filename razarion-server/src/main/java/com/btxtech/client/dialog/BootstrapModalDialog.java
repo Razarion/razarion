@@ -1,8 +1,10 @@
 package com.btxtech.client.dialog;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -10,6 +12,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -17,11 +20,15 @@ import javax.inject.Inject;
  */
 @Templated("BootstrapModalDialog.html#modal-dialog")
 public class BootstrapModalDialog extends Composite {
+    private Logger logger = Logger.getLogger(BootstrapModalDialog.class.getName());
     @Inject
-    private ModalDialog modalDialog;
+    private ModalDialogManager modalDialogManager;
     @Inject
     @DataField
     private Button closeCrossButton;
+    @Inject
+    @DataField
+    private HTML buttonDiv;
     @Inject
     @DataField
     private Button cancelButton;
@@ -37,16 +44,17 @@ public class BootstrapModalDialog extends Composite {
 
     @EventHandler("closeCrossButton")
     private void closeCrossButtonClick(ClickEvent event) {
-        modalDialog.cancel();
+        modalDialogManager.cancel();
     }
+
     @EventHandler("cancelButton")
     private void cancelButtonClick(ClickEvent event) {
-        modalDialog.cancel();
+        modalDialogManager.cancel();
     }
 
     @EventHandler("applyButton")
     private void applyButtonButtonClick(ClickEvent event) {
-        modalDialog.apply();
+        modalDialogManager.apply();
     }
 
     public void init(String title, ModalDialogContent content) {
@@ -54,4 +62,8 @@ public class BootstrapModalDialog extends Composite {
         contentDiv.setWidget(content);
     }
 
+    public void appendWidgetToButtonPanel(Element element) {
+        element.setClassName("btn btn-default");
+        buttonDiv.getElement().appendChild(element);
+    }
 }

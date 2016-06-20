@@ -20,11 +20,6 @@ public class OpaqueTerrainObjectRenderer extends AbstractTerrainObjectRenderer {
     }
 
     @Override
-    protected ImageDescriptor getImageDescriptor(TerrainObjectService terrainObjectService) {
-        return terrainObjectService.getOpaqueDescriptor();
-    }
-
-    @Override
     protected void preDraw(WebGLRenderingContext webGLRenderingContext) {
         webGLRenderingContext.disable(WebGLRenderingContext.BLEND);
         webGLRenderingContext.enable(WebGLRenderingContext.DEPTH_TEST);

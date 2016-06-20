@@ -1,11 +1,13 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.ImageDescriptor;
+import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.game.jsre.common.ImageLoader;
+import com.btxtech.client.imageservice.ImageLoader;
+import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Matrix4;
@@ -35,6 +37,8 @@ public abstract class AbstractRenderer implements Renderer {
     private ShadowUiService shadowUiService;
     @Inject
     private RenderService renderService;
+    @Inject
+    private ImageUiService imageUiService;
     private int id;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
@@ -123,6 +127,10 @@ public abstract class AbstractRenderer implements Renderer {
         return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureIdHandler.create());
     }
 
+    protected WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageId), samplerUniformName, textureIdHandler.create());
+    }
+
     protected WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
         return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureIdHandler.create());
     }
@@ -157,17 +165,32 @@ public abstract class AbstractRenderer implements Renderer {
                     throw new IllegalStateException("Failed loading texture: " + imageDescriptor.getUrl());
                 }
 
-                gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
-                gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
-                gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) WebGlUtil.castElementToElement(imageElement));
-                gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
-                gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR_MIPMAP_NEAREST);
-                gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
-                gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
-                WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
+                bindTexture(imageElement, webGLTexture);
             }
         });
         return webGLTexture;
+    }
+
+    protected WebGLTexture setupTexture(int imageId) {
+        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
+        imageUiService.requestImage(imageId, new ImageUiService.ImageListener() {
+            @Override
+            public void onLoaded(ImageElement imageElement) {
+                bindTexture(imageElement, webGLTexture);
+            }
+        });
+        return webGLTexture;
+    }
+
+    private void bindTexture(ImageElement imageElement, WebGLTexture webGLTexture) {
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
+        gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
+        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) GwtUtils.castElementToElement(imageElement));
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
+        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR_MIPMAP_NEAREST);
+        gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
+        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
+        WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
     }
 
     protected WebGLTexture setupTextureForBumpMap(ImageDescriptor imageDescriptor) {
@@ -187,7 +210,7 @@ public abstract class AbstractRenderer implements Renderer {
 
                 gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
                 gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
-                gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) WebGlUtil.castElementToElement(imageElement));
+                gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) GwtUtils.castElementToElement(imageElement));
                 gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.LINEAR);
                 gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR);
                 gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
@@ -205,7 +228,7 @@ public abstract class AbstractRenderer implements Renderer {
     }
 
     protected void activateShadow() {
-        if(shadowWebGlTextureId == null) {
+        if (shadowWebGlTextureId == null) {
             throw new IllegalStateException("Shadow must be enabled before");
         }
         uniformMatrix4fv("uShadowMatrix", shadowUiService.createShadowLookupTransformation());

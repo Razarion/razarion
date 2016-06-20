@@ -2,6 +2,7 @@ package com.btxtech.server.terrain;
 
 import com.btxtech.server.ExceptionHandler;
 import com.btxtech.server.collada.ColladaConverter;
+import com.btxtech.server.rest.ImageLibraryEntity;
 import com.btxtech.server.terrain.object.TerrainObjectEntity;
 import com.btxtech.server.terrain.object.TerrainObjectEntity_;
 import com.btxtech.server.terrain.object.TerrainObjectPositionEntity;
@@ -34,6 +35,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -167,6 +169,23 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
                 terrainSlopePositionEntity.setSlopeConfigEntity(slopeConfigEntity);
                 terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon());
                 entityManager.merge(terrainSlopePositionEntity);
+            }
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public void saveTerrainObject(int id, String colladaString, Map<String, Integer> textures) {
+        try {
+            TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long)id);
+            if(colladaString != null) {
+                terrainObjectEntity.setColladaString(colladaString);
+            }
+            for (Map.Entry<String, Integer> entry : textures.entrySet()) {
+                terrainObjectEntity.getMaterial(entry.getKey()).setImageLibraryEntity(entityManager.find(ImageLibraryEntity.class, entry.getValue().longValue()));
             }
         } catch (Throwable e) {
             exceptionHandler.handleException(e);

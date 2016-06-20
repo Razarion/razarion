@@ -21,6 +21,8 @@ public class VertexContainer {
     private Color diffuse;
     private Color specular;
     private Color emission;
+    private Integer textureId;
+    private String materialName;
 
     /**
      * Used by errai
@@ -80,6 +82,25 @@ public class VertexContainer {
         return emission;
     }
 
+    public void setTextureId(Integer textureId) {
+        this.textureId = textureId;
+    }
+
+    public int getTextureId() {
+        if(textureId == null) {
+            throw new IllegalStateException("No texture id");
+        }
+        return textureId;
+    }
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
     @Override
     public String toString() {
         return "VertexContainer{" +
@@ -90,6 +111,7 @@ public class VertexContainer {
                 ", diffuse=" + diffuse +
                 ", specular=" + specular +
                 ", emission=" + emission +
+                ", textureId=" + textureId +
                 '}';
     }
 }

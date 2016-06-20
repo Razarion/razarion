@@ -1,4 +1,4 @@
-package com.btxtech.game.jsre.common;
+package com.btxtech.client.imageservice;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -144,8 +144,8 @@ public class ImageLoader<T> {
     }-*/;
 
     private static native void exportStaticMethod() /*-{
-        $wnd.RazOnImageLoadedCallback = $entry(@com.btxtech.game.jsre.common.ImageLoader::onImageLoadedNativeCallback(Lcom/btxtech/game/jsre/common/ImageLoader;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
-        $wnd.RazOnImageFailedCallback = $entry(@com.btxtech.game.jsre.common.ImageLoader::onImageFailedNativeCallback(Lcom/btxtech/game/jsre/common/ImageLoader;Ljava/lang/String;));
+        $wnd.RazOnImageLoadedCallback = $entry(@com.btxtech.client.imageservice.ImageLoader::onImageLoadedNativeCallback(Lcom/btxtech/client/imageservice/ImageLoader;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;));
+        $wnd.RazOnImageFailedCallback = $entry(@com.btxtech.client.imageservice.ImageLoader::onImageFailedNativeCallback(Lcom/btxtech/client/imageservice/ImageLoader;Ljava/lang/String;));
     }-*/;
 
     public static void onImageLoadedNativeCallback(ImageLoader imageLoader, String url, JavaScriptObject imageFromJS) {

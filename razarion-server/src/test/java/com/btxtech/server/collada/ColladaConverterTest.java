@@ -3,6 +3,7 @@ package com.btxtech.server.collada;
 import com.btxtech.TestHelper;
 import com.btxtech.server.itemtype.ItemTypeEntity;
 import com.btxtech.server.terrain.object.TerrainObjectEntity;
+import com.btxtech.server.terrain.object.TerrainObjectMaterialEntity;
 import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;
@@ -12,7 +13,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,9 +95,16 @@ public class ColladaConverterTest {
     }
 
     private static TerrainObject createTestTerrainObject(InputStream colladaInputStream, int id, Map<String, TerrainObject.Type> nameToTypes) throws Exception {
+        List<TerrainObjectMaterialEntity> materials = new ArrayList<>();
+        for (Map.Entry<String, TerrainObject.Type> entry : nameToTypes.entrySet()) {
+            TerrainObjectMaterialEntity terrainObjectMaterialEntity = new TerrainObjectMaterialEntity();
+            TestHelper.setPrivateField(terrainObjectMaterialEntity, "name", entry.getKey());
+            TestHelper.setPrivateField(terrainObjectMaterialEntity, "type", entry.getValue());
+            materials.add(terrainObjectMaterialEntity);
+        }
         TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
         TestHelper.setPrivateField(terrainObjectEntity, "id", (long) id);
-        TestHelper.setPrivateField(terrainObjectEntity, "typeMap", nameToTypes);
+        TestHelper.setPrivateField(terrainObjectEntity, "materials", materials);
         TestHelper.setPrivateField(terrainObjectEntity, "colladaString", IOUtils.toString(colladaInputStream));
         return ColladaConverter.convertToTerrainObject(terrainObjectEntity);
     }

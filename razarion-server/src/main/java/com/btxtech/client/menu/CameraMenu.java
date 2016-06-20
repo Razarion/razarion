@@ -2,11 +2,11 @@ package com.btxtech.client.menu;
 
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.primitives.Vertex;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -97,19 +97,18 @@ public class CameraMenu extends Composite {
         });
         displayLightDirectionLabel();
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
-        openingAngleYBox.setText(NumberFormat.getFormat("#.##").format(Math.toDegrees(normalProjectionTransformation.getFovY())));
+        openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
     }
 
     private void displayLightDirectionLabel() {
         Vertex direction = camera.getDirection();
-        NumberFormat decimalFormat = NumberFormat.getFormat("#.##");
-        directionLabel.setText("Light Direction (" + decimalFormat.format(direction.getX()) + ":" + decimalFormat.format(direction.getY()) + ":" + decimalFormat.format(direction.getZ()) + ")");
+        directionLabel.setText("Light Direction (" + DisplayUtils.formatVertex(direction) + ")");
     }
 
     @EventHandler("openingAngleYSlider")
     public void openingAngleYSliderChanged(ChangeEvent e) {
         normalProjectionTransformation.setFovY(Math.toRadians(openingAngleYSlider.getValue()));
-        openingAngleYBox.setText(NumberFormat.getFormat("#.##").format(Math.toDegrees(normalProjectionTransformation.getFovY())));
+        openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
     }
 
     @EventHandler("openingAngleYBox")

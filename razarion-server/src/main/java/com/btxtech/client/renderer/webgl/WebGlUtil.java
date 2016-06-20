@@ -60,10 +60,6 @@ public class WebGlUtil {
         return new Uint8Array(length);
     }-*/;
 
-    public native static elemental.dom.Element castElementToElement(com.google.gwt.dom.client.Element e) /*-{
-        return e;
-    }-*/;
-
     // http://in2gpu.com/2014/04/11/webgl-transparency/
     // {alpha:false}
     // http://stackoverflow.com/questions/7156971/webgl-readpixels-is-always-returning-0-0-0-0

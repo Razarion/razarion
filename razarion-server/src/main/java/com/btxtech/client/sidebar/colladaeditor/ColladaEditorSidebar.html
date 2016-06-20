@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../../../../../webapp/bootstrap-3.3.5-dist/css/bootstrap.min.css">
-    <script src="../../../../../webapp/jquery/jquery-1.11.3.min.js"></script>
-    <script src="../../../../../webapp/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../../../../../webapp/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+    <script src="../../../../../../webapp/jquery/jquery-1.11.3.min.js"></script>
+    <script src="../../../../../../webapp/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
     <title></title>
 </head>
 <body>
@@ -16,8 +16,11 @@
         <td><input id="generalScale" type="number"></td>
     </tr>
     <tr>
+        <td colspan="2"><hr></td>
+    </tr>
+    <tr>
         <td>Direction</td>
-        <td id="directionLabel"></td>
+        <td><div id="directionLabel"></div></td>
     </tr>
     <tr>
         <td>X Rotation</td>
@@ -26,6 +29,9 @@
     <tr>
         <td>Z Rotation</td>
         <td><input id="rotateZBox" type="number" max="360" min="0" step="1" style="width: 4em"><input id="rotateZSlider" type="range" max="360" min="0" step="1"></td>
+    </tr>
+    <tr>
+        <td colspan="2"><hr></td>
     </tr>
     <tr>
         <td>Terrain Object</td>
@@ -43,11 +49,14 @@
     </tr>
     <tr>
         <td>File loaded</td>
-        <td><span id="loaded"></span></td>
+        <td><div id="loaded"></div></td>
     </tr>
     <tr>
         <td>File last modifed</td>
-        <td><span id="lastModified"></span></td>
+        <td><div id="lastModified"></div></td>
+    </tr>
+    <tr>
+        <td colspan="2"><div id="vertexContainerListWidget"></div></td>
     </tr>
     <tr>
         <td colspan="2">
