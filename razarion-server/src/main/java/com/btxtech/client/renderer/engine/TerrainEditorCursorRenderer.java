@@ -36,7 +36,6 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
     @Inject
     private TerrainEditor terrainEditor;
     private VertexShaderAttribute vertices;
-    private int elementCount;
     private Matrix4 modelMatrix = Matrix4.createIdentity();
 
     @PostConstruct
@@ -64,7 +63,7 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
         }
         triangleFan.add(new Vertex(cursorPositions.get(0), 0));
         vertices.fillBuffer(triangleFan);
-        elementCount = triangleFan.size();
+        setElementCount(triangleFan.size());
     }
 
     public void onTerrainEditorCursorPositionEvent(@Observes TerrainEditorCursorPositionEvent terrainEditorCursorPositionEvent) {
@@ -89,7 +88,6 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
         vertices.activate();
 
         // Draw
-        getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLE_FAN, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLE_FAN);
     }
 }

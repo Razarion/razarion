@@ -30,7 +30,6 @@ public class UnitNormRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
-    private int elementCount;
     private VertexShaderAttribute vertices;
 
     @PostConstruct
@@ -66,7 +65,7 @@ public class UnitNormRenderer extends AbstractRenderer {
         }
 
         this.vertices.fillBuffer(vectors);
-        elementCount = vertexContainer.getVerticesCount() /* * 2*/;
+        setElementCount(vertexContainer);
     }
 
     @Override
@@ -91,8 +90,7 @@ public class UnitNormRenderer extends AbstractRenderer {
         for (ModelMatrices model : modelMatrices) {
             uniformMatrix4fv(U_MODEL_MATRIX, model.getModel());
 
-            getCtx3d().drawArrays(WebGLRenderingContext.LINES, 0, elementCount);
-            WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+            drawArrays(WebGLRenderingContext.LINES);
         }
     }
 }

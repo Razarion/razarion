@@ -14,6 +14,8 @@ import java.util.List;
  */
 @Portable
 public class VertexContainer {
+    private String materialId;
+    private String materialName;
     private List<Vertex> vertices;
     private List<Vertex> norms;
     private List<TextureCoordinate> textureCoordinates;
@@ -22,7 +24,6 @@ public class VertexContainer {
     private Color specular;
     private Color emission;
     private Integer textureId;
-    private String materialName;
 
     /**
      * Used by errai
@@ -30,7 +31,9 @@ public class VertexContainer {
     public VertexContainer() {
     }
 
-    public VertexContainer(List<Vertex> vertices, List<Vertex> norms, List<TextureCoordinate> textureCoordinates, Color ambient, Color diffuse, Color specular, Color emission) {
+    public VertexContainer(String materialId, String materialName, List<Vertex> vertices, List<Vertex> norms, List<TextureCoordinate> textureCoordinates, Color ambient, Color diffuse, Color specular, Color emission) {
+        this.materialId = materialId;
+        this.materialName = materialName;
         this.vertices = vertices;
         this.norms = norms;
         this.textureCoordinates = textureCoordinates;
@@ -86,25 +89,40 @@ public class VertexContainer {
         this.textureId = textureId;
     }
 
-    public int getTextureId() {
-        if(textureId == null) {
-            throw new IllegalStateException("No texture id");
-        }
+    public boolean hasTextureId() {
+        return textureId != null;
+    }
+
+    public Integer getTextureId() {
         return textureId;
+    }
+
+    public String getMaterialId() {
+        return materialId;
     }
 
     public String getMaterialName() {
         return materialName;
     }
 
-    public void setMaterialName(String materialName) {
-        this.materialName = materialName;
+    public boolean isEmpty() {
+        return vertices.isEmpty();
+    }
+
+    public boolean checkWrongTextureSize() {
+        return textureCoordinates == null || textureCoordinates.size() != getVerticesCount();
+    }
+
+    public boolean checkWrongNormSize() {
+        return norms == null || norms.size() != getVerticesCount();
     }
 
     @Override
     public String toString() {
         return "VertexContainer{" +
-                "vertices=" + vertices +
+                "materialId=" + materialId +
+                ", materialName=" + materialName +
+                ", vertices=" + vertices +
                 ", norms=" + norms +
                 ", textureCoordinates=" + textureCoordinates +
                 ", ambient=" + ambient +

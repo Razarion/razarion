@@ -22,7 +22,6 @@ public class GroundDepthBufferRenderer extends AbstractRenderer {
     // private Logger logger = Logger.getLogger(GroundDepthBufferRenderer.class.getName());
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute barycentric;
-    private int elementCount;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -49,8 +48,7 @@ public class GroundDepthBufferRenderer extends AbstractRenderer {
         VertexList vertexList = terrainSurface.getGroundVertexList();
         vertices.fillBuffer(vertexList.getVertices());
         barycentric.fillBuffer(vertexList.getBarycentric());
-
-        elementCount = vertexList.getVerticesCount();
+        setElementCount(vertexList);
     }
 
     @Override
@@ -68,7 +66,6 @@ public class GroundDepthBufferRenderer extends AbstractRenderer {
         barycentric.activate();
 
         // Draw
-        getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

@@ -13,6 +13,7 @@ public interface Renderer {
     // Uniform model matrix
     String U_PERSPECTIVE_MATRIX = "uPMatrix";
     String U_VIEW_MATRIX = "uVMatrix";
+    String U_VIEW_NORM_MATRIX = "uNVMatrix";
     String U_MODEL_MATRIX = "uMMatrix";
     String U_MODEL_NORM_MATRIX = "uNMatrix";
     // Uniform Light
@@ -29,4 +30,6 @@ public interface Renderer {
     void fillBuffers();
 
     void draw();
+
+    boolean hasElements();
 }

@@ -3,9 +3,7 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
-import com.btxtech.client.units.ItemService;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import com.btxtech.shared.primitives.Vertex;
@@ -15,8 +13,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -24,15 +22,15 @@ import java.util.List;
  */
 @Dependent
 public class TerrainObjectNormRenderer extends AbstractRenderer {
-    // private Logger logger = Logger.getLogger(TerrainObjectNormRenderer.class.getName());
+    private Logger logger = Logger.getLogger(TerrainObjectNormRenderer.class.getName());
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
-    private int elementCount;
     private VertexShaderAttribute vertices;
+    private int terrainObjectId;
 
     @PostConstruct
     public void init() {
@@ -47,38 +45,30 @@ public class TerrainObjectNormRenderer extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        List<Vertex> vertices = new ArrayList<>();
-        List<Vertex> norms = new ArrayList<>();
-
-        VertexContainer noShadowVertexContainer = terrainObjectService.getTransparentNoShadow(getId());
-        if(noShadowVertexContainer != null) {
-            vertices.addAll(noShadowVertexContainer.getVertices());
-            norms.addAll(noShadowVertexContainer.getNorms());
+        terrainObjectId = terrainObjectService.getTerrainObjectId4VertexContainer(getId());
+        VertexContainer vertexContainer = terrainObjectService.getVertexContainer(getId());
+        if (vertexContainer == null || vertexContainer.isEmpty()) {
+            logger.warning("No vertices to render");
+            return;
         }
-        VertexContainer opaqueVertexContainer = terrainObjectService.getOpaqueVertexContainer(getId());
-        if(opaqueVertexContainer != null) {
-            vertices.addAll(opaqueVertexContainer.getVertices());
-            norms.addAll(opaqueVertexContainer.getNorms());
+        if (vertexContainer.checkWrongNormSize()) {
+            logger.warning("Normal has not same size as vertices");
+            return;
         }
 
         List<Vertex> vectors = new ArrayList<>();
-        for (int i = 0; i < vertices.size(); i++) {
-            Vertex vertex = vertices.get(i);
+        for (int i = 0; i < vertexContainer.getVertices().size(); i++) {
+            Vertex vertex = vertexContainer.getVertices().get(i);
             vectors.add(vertex);
-            vectors.add(vertex.add(norms.get(i).multiply(5)));
+            vectors.add(vertex.add(vertexContainer.getNorms().get(i).multiply(5)));
         }
 
-        this.vertices.fillBuffer(vectors);
-        elementCount = vertices.size();
+        vertices.fillBuffer(vectors);
+        setElementCount(vertexContainer);
     }
 
     @Override
     public void draw() {
-        Collection<ModelMatrices> modelMatrices = terrainObjectService.getObjectIdMatrices(getId());
-        if (modelMatrices == null || modelMatrices.isEmpty()) {
-            return;
-        }
-
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
@@ -91,11 +81,10 @@ public class TerrainObjectNormRenderer extends AbstractRenderer {
 
         getCtx3d().lineWidth(30);
 
-        for (ModelMatrices model : modelMatrices) {
-            uniformMatrix4fv(U_MODEL_MATRIX, model.getModel());
+        for (ModelMatrices modelMatrix : terrainObjectService.getModelMatrices(terrainObjectId)) {
+            uniformMatrix4fv(U_MODEL_MATRIX, modelMatrix.getModel());
 
-            getCtx3d().drawArrays(WebGLRenderingContext.LINES, 0, elementCount);
-            WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+            drawArrays(WebGLRenderingContext.LINES);
         }
     }
 }

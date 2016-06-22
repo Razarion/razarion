@@ -18,28 +18,28 @@ public class RenderSwitch {
     }
 
     public void draw() {
-        if(current != null) {
+        if (current != null && current.hasElements()) {
             current.draw();
         }
     }
 
     public void drawDepthBuffer() {
-        if(depthBufferRenderer != null) {
+        if (depthBufferRenderer != null && depthBufferRenderer.hasElements()) {
             depthBufferRenderer.draw();
         }
     }
 
     public void drawWire() {
-        if(wireRenderer != null) {
+        if (wireRenderer != null && wireRenderer.hasElements()) {
             wireRenderer.draw();
         }
     }
 
     public void fillBuffers() {
-        if(current != null) {
+        if (current != null) {
             current.fillBuffers();
         }
-        if(depthBufferRenderer != null) {
+        if (depthBufferRenderer != null) {
             depthBufferRenderer.fillBuffers();
         }
     }

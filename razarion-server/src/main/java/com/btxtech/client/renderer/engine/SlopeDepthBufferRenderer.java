@@ -24,7 +24,6 @@ public class SlopeDepthBufferRenderer extends AbstractRenderer {
     // private Logger logger = Logger.getLogger(GroundDepthBufferRenderer.class.getName());
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute barycentric;
-    private int elementCount;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -53,7 +52,7 @@ public class SlopeDepthBufferRenderer extends AbstractRenderer {
         vertices.fillBuffer(vertexList);
         barycentric.fillBuffer(mesh.getBarycentric());
 
-        elementCount = vertexList.size();
+        setElementCount(mesh);
     }
 
     @Override
@@ -71,7 +70,6 @@ public class SlopeDepthBufferRenderer extends AbstractRenderer {
         barycentric.activate();
 
         // Draw
-        getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

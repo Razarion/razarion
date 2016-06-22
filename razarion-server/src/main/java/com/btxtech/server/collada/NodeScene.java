@@ -41,15 +41,19 @@ public class NodeScene extends NameIdColladaXml {
             }
             Effect effect = null;
             String materialUri = instanceGeometry.getMaterialTargetUri();
-            if(materialUri != null) {
+            String materialId = null;
+            String materialName = null;
+            if (materialUri != null) {
                 Material material = materials.get(materialUri);
-                if(material != null) {
+                if (material != null) {
+                    materialId = material.getId();
+                    materialName = material.getName();
                     effect = effects.get(material.getInstanceEffectUrl());
                 }
             }
 
             LOGGER.finest("--:convert:  " + geometry);
-            colladaConverterControl.createVertexContainer(geometry.getName(), effect);
+            colladaConverterControl.createVertexContainer(materialId, materialName, effect);
             geometry.getMesh().fillVertexContainer(matrices, colladaConverterControl);
             colladaConverterControl.vertexContainerCreated();
         }

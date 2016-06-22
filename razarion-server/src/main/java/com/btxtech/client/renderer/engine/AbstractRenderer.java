@@ -7,8 +7,11 @@ import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.imageservice.ImageLoader;
+import com.btxtech.client.terrain.slope.Mesh;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.shared.VertexList;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.primitives.Color;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
@@ -28,6 +31,7 @@ import java.util.Map;
  * 04.09.2015.
  */
 public abstract class AbstractRenderer implements Renderer {
+    // private Logger logger = Logger.getLogger(AbstractRenderer.class.getName());
     private WebGlProgram webGlProgram;
     @Inject
     private Instance<WebGlProgram> webGlProgramInstance;
@@ -42,6 +46,7 @@ public abstract class AbstractRenderer implements Renderer {
     private int id;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
+    private int elementCount;
 
     @Override
     public void setId(int id) {
@@ -50,6 +55,27 @@ public abstract class AbstractRenderer implements Renderer {
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public boolean hasElements() {
+        return elementCount > 0;
+    }
+
+    protected void setElementCount(int elementCount) {
+        this.elementCount = elementCount;
+    }
+
+    protected void setElementCount(VertexContainer vertexContainer) {
+        elementCount = vertexContainer.getVerticesCount();
+    }
+
+    protected void setElementCount(VertexList vertexList) {
+        elementCount = vertexList.getVerticesCount();
+    }
+
+    protected void setElementCount(Mesh mesh) {
+        elementCount = mesh.size();
     }
 
     protected void createProgram(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
@@ -236,5 +262,15 @@ public abstract class AbstractRenderer implements Renderer {
         uniform1i("uShadowTexture", shadowWebGlTextureId.getUniformValue());
         gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
+    }
+
+    protected void drawArrays(int mode, int count) {
+        getCtx3d().drawArrays(mode, 0, count);
+        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+    }
+
+    protected void drawArrays(int mode) {
+        getCtx3d().drawArrays(mode, 0, elementCount);
+        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
     }
 }

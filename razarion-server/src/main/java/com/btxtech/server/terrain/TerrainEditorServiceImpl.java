@@ -13,8 +13,8 @@ import com.btxtech.server.terrain.surface.SlopeConfigEntity_;
 import com.btxtech.server.terrain.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -34,6 +34,7 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -180,13 +181,16 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
     @Transactional
     public void saveTerrainObject(int id, String colladaString, Map<String, Integer> textures) {
         try {
-            TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long)id);
-            if(colladaString != null) {
+            TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) id);
+            if (colladaString != null) {
                 terrainObjectEntity.setColladaString(colladaString);
             }
+            Map<String, ImageLibraryEntity> textureEntities = new HashMap<>();
             for (Map.Entry<String, Integer> entry : textures.entrySet()) {
-                terrainObjectEntity.getMaterial(entry.getKey()).setImageLibraryEntity(entityManager.find(ImageLibraryEntity.class, entry.getValue().longValue()));
+                textureEntities.put(entry.getKey(), entityManager.find(ImageLibraryEntity.class, entry.getValue().longValue()));
             }
+            terrainObjectEntity.setTextures(textureEntities);
+            entityManager.persist(terrainObjectEntity);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -252,7 +256,7 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
     @Transactional
     public TerrainObject colladaConvert(int terrainObjectId, String colladaString) {
         try {
-            TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long)terrainObjectId);
+            TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectId);
             return ColladaConverter.convertToTerrainObject(terrainObjectEntity, colladaString);
         } catch (RuntimeException e) {
             exceptionHandler.handleException(e);

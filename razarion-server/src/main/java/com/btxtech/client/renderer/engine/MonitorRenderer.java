@@ -29,7 +29,6 @@ public class MonitorRenderer extends AbstractRenderer {
     private int vertexPositionAttribute;
     private WebGLBuffer textureCoordinateBuffer;
     private int textureCoordinatePositionAttribute;
-    private int elementCount;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
@@ -70,7 +69,7 @@ public class MonitorRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, textureCoordinateBuffer);
         gameCanvas.getCtx3d().bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32Doubles(vertexList.createTextureDoubles()), WebGLRenderingContext.STATIC_DRAW);
 
-        elementCount = vertexList.getVerticesCount();
+        setElementCount(vertexList);
     }
 
     @Override
@@ -100,7 +99,6 @@ public class MonitorRenderer extends AbstractRenderer {
         gameCanvas.getCtx3d().uniform1i(tUniform, 1);
 
         // Draw
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

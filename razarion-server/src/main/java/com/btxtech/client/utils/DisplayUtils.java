@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public class DisplayUtils {
     public static final NumberFormat NUMBER_FORMATTER_X_XX = NumberFormat.getFormat("#.##");
-    public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("HH:mm:ss dd.MM.yyyy");
+    public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss");
 
     public static String formatVertex(Vertex vertex) {
         return (NUMBER_FORMATTER_X_XX.format(vertex.getX()) + ":" + NUMBER_FORMATTER_X_XX.format(vertex.getY()) + ":" + NUMBER_FORMATTER_X_XX.format(vertex.getZ()));

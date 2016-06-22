@@ -6,7 +6,6 @@ import com.btxtech.client.editor.terrain.TerrainEditorSlopeSelectedEvent;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Vertex;
@@ -32,7 +31,6 @@ public class TerrainEditorRenderer extends AbstractRenderer {
     @Inject
     private TerrainEditor terrainEditor;
     private VertexShaderAttribute vertices;
-    private int elementCount;
     private boolean selected;
 
     @PostConstruct
@@ -57,7 +55,7 @@ public class TerrainEditorRenderer extends AbstractRenderer {
             corners.add(new Vertex(position.getX(), position.getY(), 0));
         }
         vertices.fillBuffer(corners);
-        elementCount = corners.size();
+        setElementCount(corners.size());
     }
 
     public void onTerrainEditorSlopeSelectedEvent(@Observes TerrainEditorSlopeSelectedEvent terrainEditorSlopeSelectedEvent) {
@@ -84,7 +82,6 @@ public class TerrainEditorRenderer extends AbstractRenderer {
         vertices.activate();
 
         // Draw
-        getCtx3d().drawArrays(WebGLRenderingContext.LINE_LOOP, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        drawArrays(WebGLRenderingContext.LINE_LOOP);
     }
 }

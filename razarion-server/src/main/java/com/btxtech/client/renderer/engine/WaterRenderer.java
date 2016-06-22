@@ -4,7 +4,6 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainSurface;
 import elemental.html.WebGLRenderingContext;
 
@@ -18,11 +17,6 @@ import javax.inject.Inject;
  */
 @Dependent
 public class WaterRenderer extends AbstractRenderer {
-    private VertexShaderAttribute positions;
-    private VertexShaderAttribute norms;
-    private VertexShaderAttribute tangents;
-    private WebGlUniformTexture bumpMap;
-    private int elementCount;
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
     @Inject
     private GameCanvas gameCanvas;
@@ -32,6 +26,10 @@ public class WaterRenderer extends AbstractRenderer {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
+    private VertexShaderAttribute positions;
+    private VertexShaderAttribute norms;
+    private VertexShaderAttribute tangents;
+    private WebGlUniformTexture bumpMap;
 
     @PostConstruct
     public void init() {
@@ -49,14 +47,13 @@ public class WaterRenderer extends AbstractRenderer {
     @Override
     public void fillBuffers() {
         if (terrainSurface.getWater().getVertices().isEmpty()) {
-            elementCount = 0;
             return;
         }
         positions.fillBuffer(terrainSurface.getWater().getVertices());
         norms.fillBuffer(terrainSurface.getWater().getNorms());
         tangents.fillBuffer(terrainSurface.getWater().getTangents());
 
-        elementCount = terrainSurface.getWater().getVertices().size();
+        setElementCount(terrainSurface.getWater().getVertices().size());
     }
 
     @Override
@@ -84,8 +81,7 @@ public class WaterRenderer extends AbstractRenderer {
 
         bumpMap.activate();
 
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLES);
 
         gameCanvas.getCtx3d().depthMask(true);
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);

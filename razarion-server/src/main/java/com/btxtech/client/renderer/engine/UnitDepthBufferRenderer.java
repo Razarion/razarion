@@ -1,11 +1,10 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.client.renderer.model.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.units.ItemService;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
@@ -33,7 +32,6 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
     private ShadowUiService shadowUiService;
     private VertexShaderAttribute positions;
     private VertexShaderAttribute barycentric;
-    private int elementCount;
 
     @PostConstruct
     public void init() {
@@ -60,7 +58,7 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
 
         positions.fillBuffer(vertexContainer.getVertices());
         barycentric.fillBuffer(vertexContainer.generateBarycentric());
-        elementCount = vertexContainer.getVerticesCount();
+        setElementCount(vertexContainer);
     }
 
     @Override
@@ -82,8 +80,7 @@ public class UnitDepthBufferRenderer extends AbstractRenderer {
         for (ModelMatrices model : modelMatrices) {
             uniformMatrix4fv(U_MODEL_MATRIX, model.getModel());
 
-            getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-            WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+            drawArrays(WebGLRenderingContext.TRIANGLES);
         }
     }
 }

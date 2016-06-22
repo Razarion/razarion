@@ -24,6 +24,7 @@ import java.util.List;
  */
 @Dependent
 public class TerrainNormRenderer extends AbstractRenderer {
+    // private Logger logger = Logger.getLogger(NormRenderer.class.getName());
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -32,8 +33,6 @@ public class TerrainNormRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
-    // private Logger logger = Logger.getLogger(NormRenderer.class.getName());
-    private int elementCount;
     private VertexShaderAttribute vertices;
 
     @PostConstruct
@@ -62,7 +61,7 @@ public class TerrainNormRenderer extends AbstractRenderer {
         appendVectors(vectors, terrainSurface.getWater().getVertices(), terrainSurface.getWater().getNorms(), terrainSurface.getWater().getTangents());
 
         this.vertices.fillBuffer(vectors);
-        elementCount = vectors.size();
+        setElementCount(vectors.size());
     }
 
     private void appendVectors(List<Vertex> vectors, List<Vertex> vertices, List<Vertex> norms, List<Vertex> tangents) {
@@ -91,7 +90,6 @@ public class TerrainNormRenderer extends AbstractRenderer {
         vertices.activate();
 
         // Draw
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.LINES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        drawArrays(WebGLRenderingContext.LINES);
     }
 }

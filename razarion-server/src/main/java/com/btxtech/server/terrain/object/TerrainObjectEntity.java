@@ -1,15 +1,17 @@
 package com.btxtech.server.terrain.object;
 
+import com.btxtech.server.rest.ImageLibraryEntity;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -25,9 +27,10 @@ public class TerrainObjectEntity {
     @Lob
     @Basic(optional = false)
     private String colladaString;
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false)
-    private List<TerrainObjectMaterialEntity> materials;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    // @MapKey
+    @CollectionTable(name = "TERRAIN_OBJECT_TEXTURES")
+    private Map<String, ImageLibraryEntity> textures;
 
     public Long getId() {
         return id;
@@ -45,13 +48,18 @@ public class TerrainObjectEntity {
         this.colladaString = colladaString;
     }
 
-    public TerrainObjectMaterialEntity getMaterial(String name) {
-        for (TerrainObjectMaterialEntity material : materials) {
-            if (material.getName().equalsIgnoreCase(name)) {
-                return material;
-            }
+    public Integer getTextureId(String materialIdString) {
+        ImageLibraryEntity imageLibraryEntity = textures.get(materialIdString);
+        if (imageLibraryEntity != null) {
+            return imageLibraryEntity.getId().intValue();
+        } else {
+            return null;
         }
-        throw new IllegalArgumentException("No material for name: " + name);
+    }
+
+    public void setTextures(Map<String, ImageLibraryEntity> textures) {
+        this.textures.clear();
+        this.textures.putAll(textures);
     }
 
     @Override

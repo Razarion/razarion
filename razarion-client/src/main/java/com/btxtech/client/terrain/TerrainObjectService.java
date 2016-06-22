@@ -1,7 +1,6 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ColladaUiService;
-import com.btxtech.client.ImageDescriptor;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexContainer;
@@ -11,9 +10,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -21,43 +20,38 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainObjectService {
+    // private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
     @Inject
     private ColladaUiService colladaUiService;
-    private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
-    private Map<Integer, TerrainObject> terrainObjects;
     private Collection<TerrainObjectPosition> terrainObjectPositions;
-    private Map<Integer, VertexContainer> opaqueIds;
-    private Map<Integer, VertexContainer> transparentNoShadowIds;
-    private Map<Integer, VertexContainer> transparentOnlyShadowIds;
+    private Map<Integer, TerrainObject> terrainObjects;
     private Map<Integer, Collection<ModelMatrices>> objectIdMatrices;
+    private Map<Integer, VertexContainer> vertexContainers;
+    private Map<Integer, Integer> vertexContainers2TerrainObject;
+
+    public void setTerrainObjects(Collection<TerrainObject> terrainObjects) {
+        this.terrainObjects = new HashMap<>();
+        for (TerrainObject terrainObject : terrainObjects) {
+            this.terrainObjects.put(terrainObject.getId(), terrainObject);
+        }
+    }
+
+    public void setTerrainObjectPositions(Collection<TerrainObjectPosition> terrainObjectPositions) {
+        this.terrainObjectPositions = terrainObjectPositions;
+    }
 
     public void init() {
         setupModelMatrices(terrainObjectPositions);
-        opaqueIds = new HashMap<>();
-        transparentNoShadowIds = new HashMap<>();
-        transparentOnlyShadowIds = new HashMap<>();
+        vertexContainers = new HashMap<>();
+        vertexContainers2TerrainObject = new HashMap<>();
         for (TerrainObject terrainObject : terrainObjects.values()) {
             if (!objectIdMatrices.containsKey(terrainObject.getId())) {
                 continue;
             }
-            putVertexContainer(terrainObject);
-        }
-    }
-
-    public void putVertexContainer(TerrainObject terrainObject) {
-        for (Map.Entry<TerrainObject.Type, VertexContainer> vertexContainerEntry : terrainObject.getVertexContainers().entrySet()) {
-            switch (vertexContainerEntry.getKey()) {
-                case OPAQUE:
-                    opaqueIds.put(terrainObject.getId(), vertexContainerEntry.getValue());
-                    break;
-                case TRANSPARENT_NO_SHADOW_CAST:
-                    transparentNoShadowIds.put(terrainObject.getId(), vertexContainerEntry.getValue());
-                    break;
-                case TRANSPARENT_SHADOW_CAST_ONLY:
-                    transparentOnlyShadowIds.put(terrainObject.getId(), vertexContainerEntry.getValue());
-                    break;
-                default:
-                    logger.severe("Can not handle: " + vertexContainerEntry.getKey());
+            for (VertexContainer vertexContainer : terrainObject.getVertexContainers()) {
+                int artificialVertexContainerId = vertexContainers.size() + 1;
+                vertexContainers.put(artificialVertexContainerId, vertexContainer);
+                vertexContainers2TerrainObject.put(artificialVertexContainerId, terrainObject.getId());
             }
         }
     }
@@ -78,43 +72,33 @@ public class TerrainObjectService {
         setupModelMatrices(terrainObjectPositions);
     }
 
-    public Collection<Integer> getOpaqueIds() {
-        return opaqueIds.keySet();
-    }
-
-    public VertexContainer getOpaqueVertexContainer(int id) {
-        return opaqueIds.get(id);
-    }
-
-    public Collection<Integer> getTransparentNoShadowIds() {
-        return transparentNoShadowIds.keySet();
-    }
-
-    public VertexContainer getTransparentNoShadow(int id) {
-        return transparentNoShadowIds.get(id);
-    }
-
-    public VertexContainer getTransparentOnlyShadow(int id) {
-        return transparentOnlyShadowIds.get(id);
-    }
-
-
-    public void setTerrainObjectPositions(Collection<TerrainObjectPosition> terrainObjectPositions) {
-        this.terrainObjectPositions = terrainObjectPositions;
-    }
-
-    public void setTerrainObjects(Collection<TerrainObject> terrainObjects) {
-        this.terrainObjects = new HashMap<>();
-        for (TerrainObject terrainObject : terrainObjects) {
-            this.terrainObjects.put(terrainObject.getId(), terrainObject);
-        }
+    public void overrideTerrainObject(TerrainObject terrainObject) {
+        terrainObjects.put(terrainObject.getId(), terrainObject);
+        init();
     }
 
     public TerrainObject getTerrainObject(int id) {
         return terrainObjects.get(id);
     }
 
-    public Collection<ModelMatrices> getObjectIdMatrices(int terrainObjectId) {
-        return objectIdMatrices.get(terrainObjectId);
+    public Collection<Integer> getVertexContainerIds() {
+        return vertexContainers.keySet();
+    }
+
+    public VertexContainer getVertexContainer(int vertexContainerId) {
+        return vertexContainers.get(vertexContainerId);
+    }
+
+    public int getTerrainObjectId4VertexContainer(int vertexContainerId) {
+        return vertexContainers2TerrainObject.get(vertexContainerId);
+    }
+
+    public Collection<ModelMatrices> getModelMatrices(int terrainObjectId) {
+        Collection<ModelMatrices> matrices = objectIdMatrices.get(terrainObjectId);
+        if (matrices != null) {
+            return matrices;
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

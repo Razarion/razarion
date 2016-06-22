@@ -28,7 +28,6 @@ public class SlopeRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
-    private int elementCount;
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute normals;
     private VertexShaderAttribute tangents;
@@ -75,7 +74,7 @@ public class SlopeRenderer extends AbstractRenderer {
         slopeFactors.fillFloatBuffer(mesh.getSlopeFactors());
         groundSplatting.fillFloatBuffer(mesh.getSplatting());
 
-        elementCount = vertexList.size();
+        setElementCount(mesh);
     }
 
 
@@ -130,7 +129,6 @@ public class SlopeRenderer extends AbstractRenderer {
 
         activateShadow();
 
-        getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

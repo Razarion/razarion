@@ -3,7 +3,6 @@ package com.btxtech.shared.dto;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -11,30 +10,40 @@ import java.util.Map;
  */
 @Portable
 public class TerrainObject {
-    public enum Type {
-        OPAQUE,
-        TRANSPARENT_NO_SHADOW_CAST,
-        TRANSPARENT_SHADOW_CAST_ONLY
-    }
     private int id;
-    private Map<Type, VertexContainer> vertexContainers;
-
-    /**
-     * Used by errai
-     */
-    public TerrainObject() {
-    }
-
-    public TerrainObject(int id, Map<Type, VertexContainer> vertexContainers) {
-        this.id = id;
-        this.vertexContainers = vertexContainers;
-    }
+    private Collection<VertexContainer> vertexContainers;
 
     public int getId() {
         return id;
     }
 
-    public Map<Type, VertexContainer> getVertexContainers() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Collection<VertexContainer> getVertexContainers() {
         return vertexContainers;
+    }
+
+    public void setVertexContainers(Collection<VertexContainer> vertexContainers) {
+        this.vertexContainers = vertexContainers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        TerrainObject that = (TerrainObject) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

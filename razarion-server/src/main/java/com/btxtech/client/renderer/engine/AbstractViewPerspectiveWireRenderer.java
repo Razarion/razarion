@@ -5,7 +5,6 @@ import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 
@@ -22,7 +21,6 @@ import java.util.List;
 public abstract class AbstractViewPerspectiveWireRenderer extends AbstractRenderer {
     private VertexShaderAttribute vertices;
     private VertexShaderAttribute barycentric;
-    private int elementCount;
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
     @Inject
     private GameCanvas gameCanvas;
@@ -32,6 +30,7 @@ public abstract class AbstractViewPerspectiveWireRenderer extends AbstractRender
     private Camera camera;
 
     protected abstract List<Vertex> getVertexList();
+
     protected abstract List<Vertex> getBarycentricList();
 
     @PostConstruct
@@ -57,7 +56,7 @@ public abstract class AbstractViewPerspectiveWireRenderer extends AbstractRender
         List<Vertex> vertexList = getVertexList();
         vertices.fillBuffer(vertexList);
         barycentric.fillBuffer(getBarycentricList());
-        elementCount = vertexList.size();
+        setElementCount(vertexList.size());
     }
 
 
@@ -71,8 +70,7 @@ public abstract class AbstractViewPerspectiveWireRenderer extends AbstractRender
         vertices.activate();
         barycentric.activate();
 
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 
 }

@@ -4,7 +4,6 @@ import com.btxtech.client.editor.object.TerrainObjectEditorSelectedEvent;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.primitives.Matrix4;
@@ -28,7 +27,6 @@ public class TerrainObjectEditorRenderer extends AbstractRenderer {
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
-    private int elementCount;
     private VertexShaderAttribute vertices;
     private Matrix4 modelPosition = Matrix4.createIdentity();
     private int cursoType;
@@ -63,7 +61,7 @@ public class TerrainObjectEditorRenderer extends AbstractRenderer {
         }
         triangleFan.add(new Vertex(10, 0, 0));
         vertices.fillBuffer(triangleFan);
-        elementCount = triangleFan.size();
+        setElementCount(triangleFan.size());
     }
 
     @Override
@@ -79,7 +77,6 @@ public class TerrainObjectEditorRenderer extends AbstractRenderer {
         vertices.activate();
 
         // Draw
-        getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLE_FAN, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLE_FAN);
     }
 }

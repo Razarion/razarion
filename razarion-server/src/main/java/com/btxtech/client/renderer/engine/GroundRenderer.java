@@ -28,7 +28,6 @@ public class GroundRenderer extends AbstractRenderer {
     private WebGlUniformTexture splattingTexture;
     private WebGlUniformTexture bottomTexture;
     private WebGlUniformTexture bottomBm;
-    private int elementCount;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject
@@ -66,7 +65,7 @@ public class GroundRenderer extends AbstractRenderer {
         tangents.fillBuffer(vertexList.getTangentVertices());
         splattings.fillDoubleBuffer(vertexList.getEdges());
 
-        elementCount = vertexList.getVerticesCount();
+        setElementCount(vertexList.getVerticesCount());
     }
 
     @Override
@@ -102,7 +101,6 @@ public class GroundRenderer extends AbstractRenderer {
         bottomBm.activate();
 
         // Draw
-        gameCanvas.getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-        WebGlUtil.checkLastWebGlError("drawArrays", gameCanvas.getCtx3d());
+        drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

@@ -199,6 +199,10 @@ public class Mesh {
         return vertices;
     }
 
+    public int size() {
+        return vertices.size();
+    }
+
     public List<Vertex> getBarycentric() {
         return barycentric;
     }

@@ -34,7 +34,6 @@ public class UnitRenderer extends AbstractRenderer {
     private VertexShaderAttribute norms;
     private ShaderTextureCoordinateAttribute textureCoordinateAttribute;
     private WebGlUniformTexture texture;
-    private int elementCount;
 
     @PostConstruct
     public void init() {
@@ -58,7 +57,8 @@ public class UnitRenderer extends AbstractRenderer {
         positions.fillBuffer(vertexContainer.getVertices());
         norms.fillBuffer(vertexContainer.getNorms());
         textureCoordinateAttribute.fillBuffer(vertexContainer.getTextureCoordinates());
-        elementCount = vertexContainer.getVerticesCount();
+
+        setElementCount(vertexContainer);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class UnitRenderer extends AbstractRenderer {
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
         uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
-        uniformMatrix4fv("uNVMatrix", camera.createNormMatrix());
+        uniformMatrix4fv(U_VIEW_NORM_MATRIX, camera.createNormMatrix());
         uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         uniform3f("uAmbientColor", shadowUiService.getAmbientIntensity(), shadowUiService.getAmbientIntensity(), shadowUiService.getAmbientIntensity());
         uniform3f("uLightingDirection", shadowUiService.getLightDirection());
@@ -90,8 +90,7 @@ public class UnitRenderer extends AbstractRenderer {
             uniformMatrix4fv(U_MODEL_MATRIX, model.getModel());
             uniformMatrix4fv("uNMMatrix", model.getNorm());
 
-            getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-            WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+            drawArrays(WebGLRenderingContext.TRIANGLES);
         }
     }
 }

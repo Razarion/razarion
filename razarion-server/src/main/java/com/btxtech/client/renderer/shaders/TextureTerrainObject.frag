@@ -27,11 +27,15 @@ float calculateShadowFactor() {
 
 void main(void) {
     vec4 textureColor = texture2D(uTexture, vTextureCoord.st);
-    vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
-    float shadowFactor = calculateShadowFactor();
+    if(textureColor.a < 0.5) {
+        discard;
+    } else {
+        vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
+        float shadowFactor = calculateShadowFactor();
 
-    vec3 ambient = uLightAmbient * textureColor.rgb;
-    vec3 diffuse = max(dot(vVertexNormal, -correctedLightDirection), 0.0) * uLightDiffuse * textureColor.rgb;
-    gl_FragColor = vec4(ambient + diffuse * shadowFactor, textureColor.a);
+        vec3 ambient = uLightAmbient * textureColor.rgb;
+        vec3 diffuse = max(dot(vVertexNormal, -correctedLightDirection), 0.0) * uLightDiffuse * textureColor.rgb;
+        gl_FragColor = vec4(ambient + diffuse * shadowFactor, textureColor.a);
+    }
 }
 

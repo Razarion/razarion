@@ -62,11 +62,19 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
     private int imageId;
     private ImageItemWidgetListener imageItemWidgetListener;
 
-    public void setImageId(int imageId, ImageItemWidgetListener imageItemWidgetListener) {
-        this.imageId = imageId;
+    public void setImageId(Integer imageId, ImageItemWidgetListener imageItemWidgetListener) {
         this.imageItemWidgetListener = imageItemWidgetListener;
-        id.setText(Integer.toBinaryString(imageId));
-        imageUiService.requestImage(imageId, this);
+        if (imageId != null) {
+            this.imageId = imageId;
+            id.setText(Integer.toBinaryString(imageId));
+            imageUiService.requestImage(imageId, this);
+        } else {
+            id.setText("");
+            dimension.setText("");
+            size.setText("");
+            type.setText("");
+            internalName.setText("");
+        }
     }
 
     @Override

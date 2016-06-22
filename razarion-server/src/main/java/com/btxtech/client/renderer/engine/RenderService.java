@@ -45,6 +45,7 @@ public class RenderService {
     @Inject
     private TerrainEditor terrainEditor;
     private List<RenderSwitch> renderQueue;
+    private Collection<RenderSwitch> terrainObjectRenders;
     private Collection<TerrainEditorRenderer> terrainEditorRenderers;
     private TerrainEditorCursorRenderer terrainEditorCursorRenderer;
     private TerrainObjectEditorRenderer terrainObjectEditorRenderer;
@@ -69,6 +70,7 @@ public class RenderService {
         renderQueue = new ArrayList<>();
         unitNorms = new ArrayList<>();
         terrainObjectNorms = new ArrayList<>();
+        terrainObjectRenders = new ArrayList<>();
         createAndAddRenderSwitch(GroundRenderer.class, GroundDepthBufferRenderer.class, GroundWireRender.class, 0);
         for (int id : terrainSurface.getSlopeIds()) {
             createAndAddRenderSwitch(SlopeRenderer.class, SlopeDepthBufferRenderer.class, SlopeWireRenderer.class, id);
@@ -79,33 +81,33 @@ public class RenderService {
             terrainEditorRenderer.setId(id);
             terrainEditorRenderers.add(terrainEditorRenderer);
         }
-        Collection<Integer> terrainObjectIds = new ArrayList<>();
-        for (int id : terrainObjectService.getOpaqueIds()) {
-            terrainObjectIds.add(id);
-            createAndAddRenderSwitch(OpaqueTerrainObjectRenderer.class, OpaqueTerrainObjectDepthBufferRenderer.class, OpaqueTerrainObjectWireRender.class, id);
-        }
+        setupTerrainObjectRenderer();
         for (int id : itemService.getItemTypeIds()) {
             createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, id);
             unitNorms.add(createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, id));
         }
-
         createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);
-        for (int id : terrainObjectService.getTransparentNoShadowIds()) {
-            if (!terrainObjectIds.contains(id)) {
-                terrainObjectIds.add(id);
-            }
-            createAndAddRenderSwitch(TransparentTerrainObjectRenderer.class, TransparentTerrainObjectDepthBufferRenderer.class, TransparentTerrainObjectWireRender.class, id);
-        }
-        for (Integer id : terrainObjectIds) {
-            terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormRenderer.class, null, TerrainObjectNormRenderer.class, id));
-        }
-
         monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null, 0);
         terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class, 0);
         terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorRenderer.class).get();
         terrainEditorCursorRenderer.fillBuffers();
         terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorRenderer.class).get();
         terrainObjectEditorRenderer.fillBuffers();
+    }
+
+    public void setupTerrainObjectRenderer() {
+        if(terrainObjectRenders != null) {
+            renderQueue.removeAll(terrainObjectRenders);
+            terrainObjectRenders.clear();
+        }
+        if(terrainObjectNorms != null) {
+            renderQueue.removeAll(terrainObjectNorms);
+            terrainObjectNorms.clear();
+        }
+        for (int id : terrainObjectService.getVertexContainerIds()) {
+            terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectRenderer.class, TerrainObjectDepthBufferRenderer.class, TerrainObjectWireRender.class, id));
+            terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormRenderer.class, null, TerrainObjectNormRenderer.class, id));
+        }
     }
 
     public void createTerrainEditorRenderer(int id) {
@@ -193,12 +195,16 @@ public class RenderService {
         if (showSlopeEditor) {
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
             for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
-                terrainEditorRenderer.draw();
+                if (terrainEditorRenderer.hasElements()) {
+                    terrainEditorRenderer.draw();
+                }
             }
-            terrainEditorCursorRenderer.draw();
+            if(terrainEditorCursorRenderer.hasElements()) {
+                terrainEditorCursorRenderer.draw();
+            }
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
         }
-        if (showObjectEditor) {
+        if (showObjectEditor && terrainObjectEditorRenderer.hasElements()) {
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
             terrainObjectEditorRenderer.draw();
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);

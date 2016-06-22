@@ -18,13 +18,15 @@ public abstract class ColladaConverterControl {
     private List<Vertex> vertices;
     private List<Vertex> norms;
     private List<TextureCoordinate> textureCoordinates;
-    private String name;
+    private String materialId;
+    private String materialName;
     private Effect effect;
 
-    protected abstract void onNewVertexContainer(String name, VertexContainer vertexContainer);
+    protected abstract void onNewVertexContainer(VertexContainer vertexContainer);
 
-    void createVertexContainer(String name, Effect effect) {
-        this.name = name;
+    void createVertexContainer(String materialId, String materialName, Effect effect) {
+        this.materialId = materialId;
+        this.materialName = materialName;
         this.effect = effect;
         vertices = new ArrayList<>();
         norms = new ArrayList<>();
@@ -42,7 +44,7 @@ public abstract class ColladaConverterControl {
             specular = effect.getTechnique().getSpecular();
             emission = effect.getTechnique().getEmission();
         }
-        onNewVertexContainer(name, new VertexContainer(vertices, norms, textureCoordinates, ambient, diffuse, specular, emission));
+        onNewVertexContainer(new VertexContainer(materialId, materialName, vertices, norms, textureCoordinates, ambient, diffuse, specular, emission));
     }
 
     public void addTriangle(Collection<Matrix4> matrices, Vertex vertexA, Vertex normA, TextureCoordinate textureCoordinateA, Vertex vertexB, Vertex normB, TextureCoordinate textureCoordinateB, Vertex vertexC, Vertex normC, TextureCoordinate textureCoordinateC) {

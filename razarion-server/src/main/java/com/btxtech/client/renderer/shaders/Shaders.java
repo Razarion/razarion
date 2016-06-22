@@ -29,12 +29,6 @@ public interface Shaders extends ClientBundle {
     @Source("Ground.frag")
     TextResource groundFragmentShader();
 
-    @Source("TerrainObject.vert")
-    TextResource terrainObjectVertexShader();
-
-    @Source("TerrainObject.frag")
-    TextResource terrainObjectFragmentShader();
-
     @Source("Monitor.vert")
     TextResource monitorVertexShader();
 
@@ -89,4 +83,15 @@ public interface Shaders extends ClientBundle {
     @Source("TerrainObjectEditor.frag")
     TextResource terrainObjectEditorFragmentShader();
 
+    @Source("TextureTerrainObject.vert")
+    TextResource textureTerrainObjectVertexShader();
+
+    @Source("TextureTerrainObject.frag")
+    TextResource textureTerrainObjectFragmentShader();
+
+    @Source("TextureTerrainObjectDepth.vert")
+    TextResource textureTerrainObjectDepthVertexShader();
+
+    @Source("TextureTerrainObjectDepth.frag")
+    TextResource textureTerrainObjectDepthFragmentShader();
 }

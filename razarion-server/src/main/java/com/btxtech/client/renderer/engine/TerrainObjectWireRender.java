@@ -5,38 +5,35 @@ import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.terrain.TerrainObjectService;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 20.05.2015.
  */
-abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
-    // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
-    private static final String SAMPLER_UNIFORM_NAME = "uSampler";
-    private static final String PERSPECTIVE_UNIFORM_NAME = U_PERSPECTIVE_MATRIX;
-    private static final String VIEW_UNIFORM_NAME = U_VIEW_MATRIX;
-    private static final String MODEL_UNIFORM_NAME = U_MODEL_MATRIX;
-    private VertexShaderAttribute positions;
-    private VertexShaderAttribute barycentric;
-    private ShaderTextureCoordinateAttribute textureCoordinate;
-    private WebGlUniformTexture webGLTexture;
-    private int elementCount;
+@Dependent
+public class TerrainObjectWireRender extends AbstractRenderer {
+    private Logger logger = Logger.getLogger(TerrainObjectWireRender.class.getName());
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
-
-    abstract protected VertexContainer getVertexContainer(TerrainObjectService terrainObjectService);
+    private static final String SAMPLER_UNIFORM_NAME = "uSampler";
+    private VertexShaderAttribute positions;
+    private VertexShaderAttribute barycentric;
+    private ShaderTextureCoordinateAttribute textureCoordinate;
+    private WebGlUniformTexture webGLTexture;
+    private int terrainObjectId;
 
     @PostConstruct
     public void init() {
@@ -59,27 +56,25 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
 
     @Override
     public void fillBuffers() {
-        VertexContainer vertexContainer = getVertexContainer(terrainObjectService);
-        if (vertexContainer == null) {
-            elementCount = 0;
+        terrainObjectId = terrainObjectService.getTerrainObjectId4VertexContainer(getId());
+        VertexContainer vertexContainer = terrainObjectService.getVertexContainer(getId());
+        if (vertexContainer == null || vertexContainer.isEmpty()) {
+            logger.warning("No vertices to render");
             return;
         }
         positions.fillBuffer(vertexContainer.getVertices());
         barycentric.fillBuffer(vertexContainer.generateBarycentric());
         textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 
-        elementCount = vertexContainer.getVerticesCount();
+        setElementCount(vertexContainer);
     }
 
     @Override
     public void draw() {
-        if (elementCount == 0) {
-            return;
-        }
         useProgram();
 
-        uniformMatrix4fv(PERSPECTIVE_UNIFORM_NAME, projectionTransformation.createMatrix());
-        uniformMatrix4fv(VIEW_UNIFORM_NAME, camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
 
         positions.activate();
         barycentric.activate();
@@ -87,13 +82,9 @@ abstract public class AbstractTerrainObjectWireRender extends AbstractRenderer {
 
         webGLTexture.activate();
 
-
-        if (terrainObjectService.getObjectIdMatrices(getId()) != null) {
-            for (ModelMatrices modelMatrix : terrainObjectService.getObjectIdMatrices(getId())) {
-                uniformMatrix4fv(MODEL_UNIFORM_NAME, modelMatrix.getModel());
-                getCtx3d().drawArrays(WebGLRenderingContext.TRIANGLES, 0, elementCount);
-                WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
-            }
+        for (ModelMatrices modelMatrix : terrainObjectService.getModelMatrices(terrainObjectId)) {
+            uniformMatrix4fv(U_MODEL_MATRIX, modelMatrix.getModel());
+            drawArrays(WebGLRenderingContext.TRIANGLES);
         }
     }
 

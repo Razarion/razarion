@@ -141,7 +141,7 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
                     terrainObjectSelection.setAcceptableValues(objectNameIds);
                     terrainObjectSelection.setValue(objectNameId);
                     TerrainObject terrainObject = terrainObjectService.getTerrainObject(objectNameId.getId());
-                    vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers().values()));
+                    vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers()));
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
@@ -157,7 +157,7 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
             @Override
             public void onValueChange(ValueChangeEvent<ObjectNameId> event) {
                 TerrainObject terrainObject = terrainObjectService.getTerrainObject(terrainObjectSelection.getValue().getId());
-                vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers().values()));
+                vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers()));
                 loaded.setText("");
                 lastModified.setText("");
                 lastLoadedColladaString = null;
@@ -221,11 +221,11 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
                     @Override
                     public void callback(TerrainObject terrainObject) {
                         try {
-                            terrainObjectService.putVertexContainer(terrainObject);
-                            renderService.fillBuffers();
+                            terrainObjectService.overrideTerrainObject(terrainObject);
+                            renderService.setupTerrainObjectRenderer();
                             loaded.setText(DisplayUtils.formatDate(new Date()));
                             lastModified.setText(DisplayUtils.formatDate(getLastModifiedDate(file)));
-                            vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers().values()));
+                            vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers()));
                         } catch (Exception e) {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
@@ -245,8 +245,10 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
     private Map<String, Integer> extractTextureIds(int terrainObjectId) {
         Map<String, Integer> textures = new HashMap<>();
         TerrainObject terrainObject = terrainObjectService.getTerrainObject(terrainObjectId);
-        for (VertexContainer vertexContainer : terrainObject.getVertexContainers().values()) {
-            textures.put(vertexContainer.getMaterialName(), vertexContainer.getTextureId());
+        for (VertexContainer vertexContainer : terrainObject.getVertexContainers()) {
+            if (vertexContainer.hasTextureId()) {
+                textures.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId());
+            }
         }
         return textures;
     }
