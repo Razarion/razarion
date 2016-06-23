@@ -3,13 +3,12 @@ package com.btxtech.server.terrain.object;
 import com.btxtech.server.rest.ImageLibraryEntity;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.Map;
 
@@ -27,8 +26,7 @@ public class TerrainObjectEntity {
     @Lob
     @Basic(optional = false)
     private String colladaString;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    // @MapKey
+    @ManyToMany
     @CollectionTable(name = "TERRAIN_OBJECT_TEXTURES")
     private Map<String, ImageLibraryEntity> textures;
 

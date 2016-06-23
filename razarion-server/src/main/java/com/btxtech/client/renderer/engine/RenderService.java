@@ -96,17 +96,23 @@ public class RenderService {
     }
 
     public void setupTerrainObjectRenderer() {
-        if(terrainObjectRenders != null) {
+        if (terrainObjectRenders != null) {
             renderQueue.removeAll(terrainObjectRenders);
             terrainObjectRenders.clear();
         }
-        if(terrainObjectNorms != null) {
+        if (terrainObjectNorms != null) {
             renderQueue.removeAll(terrainObjectNorms);
             terrainObjectNorms.clear();
         }
         for (int id : terrainObjectService.getVertexContainerIds()) {
             terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectRenderer.class, TerrainObjectDepthBufferRenderer.class, TerrainObjectWireRender.class, id));
             terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormRenderer.class, null, TerrainObjectNormRenderer.class, id));
+        }
+        for (RenderSwitch terrainObjectRender : terrainObjectRenders) {
+            terrainObjectRender.fillBuffers();
+        }
+        for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
+            terrainEditorRenderer.fillBuffers();
         }
     }
 
@@ -199,7 +205,7 @@ public class RenderService {
                     terrainEditorRenderer.draw();
                 }
             }
-            if(terrainEditorCursorRenderer.hasElements()) {
+            if (terrainEditorCursorRenderer.hasElements()) {
                 terrainEditorCursorRenderer.draw();
             }
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
