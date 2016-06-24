@@ -1,7 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
@@ -12,7 +12,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class TerrainObjectPosition {
     private Integer id;
     private int terrainObjectId;
-    private Vertex position;
+    private Index position;
     private double scale;
     private double zRotation;
 
@@ -36,11 +36,11 @@ public class TerrainObjectPosition {
         this.terrainObjectId = terrainObjectId;
     }
 
-    public Vertex getPosition() {
+    public Index getPosition() {
         return position;
     }
 
-    public void setPosition(Vertex position) {
+    public void setPosition(Index position) {
         this.position = position;
     }
 
@@ -64,8 +64,8 @@ public class TerrainObjectPosition {
         return Matrix4.createZRotation(zRotation);
     }
 
-    public Matrix4 createModelMatrix(double generalScale) {
-        Matrix4 matrix4 = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ());
+    public Matrix4 createModelMatrix(double generalScale, int z) {
+        Matrix4 matrix4 = Matrix4.createTranslation(position.getX(), position.getY(), z);
         matrix4 = matrix4.multiply(Matrix4.createScale(scale * generalScale, scale * generalScale, scale * generalScale));
         return matrix4.multiply(createRotationModelMatrix());
     }

@@ -1,9 +1,8 @@
 package com.btxtech.server.itemtype;
 
-import com.btxtech.server.ExceptionHandler;
+import com.btxtech.system.ExceptionHandler;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.shared.ItemTypeService;
-import com.btxtech.shared.VertexList;
 import com.btxtech.shared.dto.ItemType;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;

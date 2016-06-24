@@ -1,6 +1,6 @@
 package com.btxtech.server.terrain;
 
-import com.btxtech.server.ExceptionHandler;
+import com.btxtech.system.ExceptionHandler;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.terrain.object.TerrainObjectEntity;
 import com.btxtech.server.terrain.object.TerrainObjectPositionEntity;

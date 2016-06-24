@@ -1,10 +1,12 @@
 package com.btxtech.client.terrain;
 
 import com.btxtech.client.ColladaUiService;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
+import com.btxtech.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,6 +25,10 @@ public class TerrainObjectService {
     // private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
     @Inject
     private ColladaUiService colladaUiService;
+    @Inject
+    private TerrainSurface terrainSurface;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Collection<TerrainObjectPosition> terrainObjectPositions;
     private Map<Integer, TerrainObject> terrainObjects;
     private Map<Integer, Collection<ModelMatrices>> objectIdMatrices;
@@ -59,12 +65,17 @@ public class TerrainObjectService {
     public void setupModelMatrices(Collection<TerrainObjectPosition> terrainObjectPositions) {
         objectIdMatrices = new HashMap<>();
         for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
-            Collection<ModelMatrices> modelMatrices = objectIdMatrices.get(terrainObjectPosition.getTerrainObjectId());
-            if (modelMatrices == null) {
-                modelMatrices = new ArrayList<>();
-                objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
+            try {
+                Collection<ModelMatrices> modelMatrices = objectIdMatrices.get(terrainObjectPosition.getTerrainObjectId());
+                if (modelMatrices == null) {
+                    modelMatrices = new ArrayList<>();
+                    objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
+                }
+                int z = (int) terrainSurface.getInterpolatedHeight(new DecimalPosition(terrainObjectPosition.getPosition()));
+                modelMatrices.add(new ModelMatrices(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale(), z), terrainObjectPosition.createRotationModelMatrix()));
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
             }
-            modelMatrices.add(new ModelMatrices(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale()), terrainObjectPosition.createRotationModelMatrix()));
         }
     }
 

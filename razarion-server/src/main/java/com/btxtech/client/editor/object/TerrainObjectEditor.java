@@ -43,6 +43,7 @@ public class TerrainObjectEditor {
     }
 
     private Logger logger = Logger.getLogger(TerrainObjectEditor.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
@@ -70,7 +71,7 @@ public class TerrainObjectEditor {
             CursorType cursorType;
             hover = false;
             if (selected != null) {
-                selected.setPosition(terrainPosition);
+                selected.setPosition(terrainPosition.toXY().getPosition());
                 terrainObjectService.setupModelMatrices(terrainObjects);
                 cursorType = CursorType.SELECTED;
             } else if (getAtTerrain(terrainPosition) != null) {
@@ -107,7 +108,7 @@ public class TerrainObjectEditor {
                 }
                 objectPosition.setScale(1.0 / randomScale + (randomScale - 1.0 / randomScale) * Math.random());
                 objectPosition.setZRotation(MathHelper.ONE_RADIANT * Math.random());
-                objectPosition.setPosition(terrainPosition);
+                objectPosition.setPosition(terrainPosition.toXY().getPosition());
                 objectPosition.setTerrainObjectId(newObjectId.getId());
                 terrainObjects.add(objectPosition);
                 selected = objectPosition;
@@ -166,7 +167,7 @@ public class TerrainObjectEditor {
 
     private TerrainObjectPosition getAtTerrain(Vertex terrainPosition) {
         for (TerrainObjectPosition terrainObject : terrainObjects) {
-            if (terrainObject.getPosition().toXY().getDistance(terrainPosition.toXY()) < 10) {
+            if (terrainObject.getPosition().getDistance(terrainPosition.toXY().getPosition()) < 10) {
                 return terrainObject;
             }
         }

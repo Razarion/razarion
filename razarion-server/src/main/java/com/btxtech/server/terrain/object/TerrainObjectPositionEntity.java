@@ -1,7 +1,6 @@
 package com.btxtech.server.terrain.object;
 
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.server.terrain.surface.SlopeConfigEntity;
 import com.btxtech.shared.primitives.Vertex;
 
 import javax.persistence.Embedded;
@@ -27,7 +26,7 @@ public class TerrainObjectPositionEntity {
     @JoinColumn
     private TerrainObjectEntity terrainObjectEntity;
     @Embedded
-    private Vertex position;
+    private Index position;
     private double scale;
     private double zRotation;
 
@@ -43,11 +42,11 @@ public class TerrainObjectPositionEntity {
         this.terrainObjectEntity = terrainObjectEntity;
     }
 
-    public Vertex getPosition() {
+    public Index getPosition() {
         return position;
     }
 
-    public void setPosition(Vertex position) {
+    public void setPosition(Index position) {
         this.position = position;
     }
 
