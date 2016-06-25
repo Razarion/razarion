@@ -1,4 +1,4 @@
-package com.btxtech;
+package com.btxtech.scenariongui;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;

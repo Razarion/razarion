@@ -111,7 +111,9 @@ public class RazarionEmulator {
         SlopeSkeleton slopeSkeletonBeach = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/SlopeSkeletonBeach.json")), SlopeSkeleton.class);
         SlopeSkeleton slopeSkeletonSlope = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/SlopeSkeletonSlope.json")), SlopeSkeleton.class);
         GroundSkeleton groundSkeleton = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/GroundSkeleton.json")), GroundSkeleton.class);
-        List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/TerrainSlopePositions.json")), new TypeToken<List<TerrainSlopePosition>>() {
+        // List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/TerrainSlopePositions.json")), new TypeToken<List<TerrainSlopePosition>>() {
+        // }.getType());
+        List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/TerrainSlopePositions2.json")), new TypeToken<List<TerrainSlopePosition>>() {
         }.getType());
 
         // Setup terrain surface

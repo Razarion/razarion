@@ -1,11 +1,15 @@
-package com.btxtech;
+package com.btxtech.scenariongui;
 
+import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.scenariongui.scenario.TerrainScenario;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -24,7 +28,7 @@ import javafx.stage.WindowEvent;
  * Created by Beat
  * 24.01.2016.
  */
-public class GeometricGui extends Application {
+public class ScenarioGui extends Application {
     private static final int CANVAS_WIDTH = 5000;
     private static final int CANVAS_HEIGHT = 5000;
     private static final int WIDTH = 1200;
@@ -32,8 +36,25 @@ public class GeometricGui extends Application {
     private static final int GRID_SPACING = 100;
     private double scaleDouble = 1;
 
-    @Override
-    public void start(Stage stage) {
+
+    public void start(final Stage stage) throws Exception {
+        stage.setFullScreen(true);
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/ScenarioGui.fxml"));
+        stage.setTitle("Scenario Gui");
+        stage.setScene(new Scene(root));
+        stage.setX(-1288);
+        stage.setY(168);
+        stage.show();
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent we) {
+                System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY());
+            }
+        });
+    }
+
+
+
+    public void start2(Stage stage) {
         final Canvas canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         drawShapes(gc, new Index());
@@ -150,8 +171,8 @@ public class GeometricGui extends Application {
         gc.strokeLine(0, -CANVAS_HEIGHT / 2.0, 0, CANVAS_HEIGHT / 2.0);
 
         ExtendedGraphicsContext extendedGraphicsContext = new ExtendedGraphicsContext(gc);
-        // DrawScenes.drawPolygon2DCombine(extendedGraphicsContext, mousePosition);
-        DrawScenes.drawFromFile(extendedGraphicsContext);
+        // TerrainScenario.drawPolygon2DCombine(extendedGraphicsContext, mousePosition);
+        // TerrainScenario.drawFromFile(extendedGraphicsContext);
 
         gc.restore();
     }

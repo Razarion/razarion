@@ -1,7 +1,6 @@
 package com.btxtech;
 
 import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -10,7 +9,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,10 +19,10 @@ public class GameMock {
     public static TerrainSurface startTerrainSurface(String slopeFile, String beachFile, String groundFile, String terrainSlopePositionFile) {
         // Load terrain data
         Gson gson = new Gson();
-        SlopeSkeleton slopeSkeletonBeach = gson.fromJson(new InputStreamReader(DrawScenes.class.getResourceAsStream(beachFile)), SlopeSkeleton.class);
-        SlopeSkeleton slopeSkeletonSlope = gson.fromJson(new InputStreamReader(DrawScenes.class.getResourceAsStream(slopeFile)), SlopeSkeleton.class);
-        GroundSkeleton groundSkeleton = gson.fromJson(new InputStreamReader(DrawScenes.class.getResourceAsStream(groundFile)), GroundSkeleton.class);
-        List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(DrawScenes.class.getResourceAsStream(terrainSlopePositionFile)), new TypeToken<List<TerrainSlopePosition>>(){}.getType());
+        SlopeSkeleton slopeSkeletonBeach = gson.fromJson(new InputStreamReader(GameMock.class.getResourceAsStream(beachFile)), SlopeSkeleton.class);
+        SlopeSkeleton slopeSkeletonSlope = gson.fromJson(new InputStreamReader(GameMock.class.getResourceAsStream(slopeFile)), SlopeSkeleton.class);
+        GroundSkeleton groundSkeleton = gson.fromJson(new InputStreamReader(GameMock.class.getResourceAsStream(groundFile)), GroundSkeleton.class);
+        List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(GameMock.class.getResourceAsStream(terrainSlopePositionFile)), new TypeToken<List<TerrainSlopePosition>>(){}.getType());
 
         // Setup TerrainSlopePosition
 //        TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition();

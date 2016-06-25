@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator;
 
-import com.btxtech.InstanceStringGenerator;
+import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.client.renderer.model.Camera;
 import com.btxtech.client.renderer.model.ProjectionTransformation;
 import com.btxtech.client.renderer.model.ShadowUiService;
@@ -261,7 +261,7 @@ public class WebGlEmulatorController implements Initializable {
         }
         try {
             final Stage stage = new Stage();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WebGlEmulatorShadow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulatorShadow.fxml"));
             loader.setControllerFactory(new Callback<Class<?>, Object>() {
                 @Override
                 public Object call(Class<?> param) {
@@ -293,7 +293,7 @@ public class WebGlEmulatorController implements Initializable {
         }
         try {
             final Stage stage = new Stage();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WebGlEmulatorScene.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulatorScene.fxml"));
             loader.setControllerFactory(new Callback<Class<?>, Object>() {
                 @Override
                 public Object call(Class<?> param) {

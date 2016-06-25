@@ -1,6 +1,6 @@
 package com.btxtech.gameengine.pathing;
 
-import com.btxtech.InstanceStringGenerator;
+import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.gameengine.pathing.Pathing;
@@ -53,7 +53,7 @@ public class PathingMonitorController implements Initializable {
         scenario = new Scenario();
         pathing = scenario.init(34);
         scenarioField.setText(Integer.toString(scenario.getNumber()));
-        renderer = new JavaFxGameRenderer(canvas);
+        renderer = new JavaFxGameRenderer(canvas, 1.0);
         renderer.render(pathing);
         onRun(null);
 
@@ -166,7 +166,7 @@ public class PathingMonitorController implements Initializable {
             if (unit != null) {
                 if (hoverUnitSidePaneController == null || !hoverUnitSidePaneController.isSame(unit)) {
                     try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UnitSidePane.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/pathing/UnitSidePane.fxml"));
                         FlowPane unitSideBar = (FlowPane) loader.load();
                         hoverUnitSidePaneController = loader.getController();
                         hoverUnitSidePaneController.init(unit);
@@ -205,12 +205,12 @@ public class PathingMonitorController implements Initializable {
     }
 
     public void onZoomIn(ActionEvent actionEvent) {
-        renderer.zoomIn();
+        // TODO renderer.zoomIn();
         renderer.render(pathing);
     }
 
     public void onZoomOut(ActionEvent actionEvent) {
-        renderer.zoomOut();
+        // TODO  renderer.zoomOut();
         renderer.render(pathing);
     }
 

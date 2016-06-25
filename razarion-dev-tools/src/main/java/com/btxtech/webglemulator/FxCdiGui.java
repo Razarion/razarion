@@ -26,7 +26,7 @@ public class FxCdiGui {
 
     public void start(final Stage stage) throws Exception {
         stage.setFullScreen(true);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WebGlEmulator.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulator.fxml"));
         loader.setControllerFactory(new Callback<Class<?>, Object>() {
             @Override
             public Object call(Class<?> param) {

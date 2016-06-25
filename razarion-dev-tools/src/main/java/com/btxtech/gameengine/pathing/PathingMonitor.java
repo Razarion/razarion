@@ -12,7 +12,7 @@ public class PathingMonitor extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/PathingMonitor.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/pathing/PathingMonitor.fxml"));
         primaryStage.setTitle("Razarion Pathing Monitor");
         primaryStage.setScene(new Scene(root, WIDTH, HEIGHT));
         primaryStage.setX(-867);
