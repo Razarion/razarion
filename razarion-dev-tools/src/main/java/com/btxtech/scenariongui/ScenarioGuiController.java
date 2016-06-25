@@ -1,9 +1,9 @@
 package com.btxtech.scenariongui;
 
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.scenariongui.scenario.Scenario;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -25,6 +25,7 @@ public class ScenarioGuiController implements Initializable {
     public ComboBox<Scenario.ScenarioEntry> scenarioBox;
     public Slider zoomSlider;
     public TextField scaleField;
+    public TextField mouseLabel;
     private ScenarioRenderer scenarioRenderer;
 
     @Override
@@ -79,5 +80,10 @@ public class ScenarioGuiController implements Initializable {
     public void scenarioBoxChanged() {
         scenarioRenderer.setScenario(scenarioBox.getValue().getScenario());
         scenarioRenderer.render();
+    }
+
+    public void onMouseMoved(Event event) {
+        Index position = scenarioRenderer.convertMouseToModel(event).getPosition();
+        mouseLabel.setText(String.format("%d:%d", position.getX(), position.getY()));
     }
 }
