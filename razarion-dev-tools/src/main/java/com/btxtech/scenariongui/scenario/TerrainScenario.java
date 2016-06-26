@@ -31,16 +31,16 @@ public class TerrainScenario extends Scenario {
 
         Slope slope = terrainSurface.getSlope(0);
 
-        context.strokeCurve(slope.getGroundPlateauConnector().getOuterGroundEdges(), 1, Color.GREEN, true);
-        context.strokeCurve(slope.getGroundPlateauConnector().getOuterSlopeEdges(), 1, Color.RED, true);
 
-        context.strokeCurve(slope.getGroundPlateauConnector().getInnerGroundEdges(), 1, Color.GREEN, true);
-        context.strokeCurve(slope.getGroundPlateauConnector().getInnerSlopeEdges(), 1, Color.RED, true);
+        // context.strokeCurve(slope.getGroundPlateauConnector().getInnerGroundEdges(), 1, Color.GREEN, true);
+        // context.strokeCurve(slope.getGroundPlateauConnector().getInnerSlopeEdges(), 1, Color.RED, true);
 
         // context.strokeCurveIndex(terrainSlopePosition.getPolygon(), 1.0, Color.BLACK, true);
 
-        context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
+        // context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
         context.fillVertexList(slope.getGroundPlateauConnector().getOuterConnectionVertexList().getVertices(), 2, Color.RED);
+
+        context.strokeVertexList(slope.getMesh().getVertices(), 0.1, Color.PINK);
 
         List<Index> innerBorder = new ArrayList<>();
         List<Index> outerBorder = new ArrayList<>();
@@ -50,10 +50,13 @@ public class TerrainScenario extends Scenario {
                 outerBorder.add(verticalSegment.getOuter());
             }
         }
-        context.strokeCurveIndex(innerBorder, 1, Color.BROWN, true);
-        context.strokeCurveIndex(outerBorder, 1, Color.DARKCYAN, true);
+        context.strokeCurveIndex(innerBorder, 0.1, Color.BROWN, true);
+        context.strokeCurveIndex(outerBorder, 0.1, Color.DARKCYAN, true);
 
 
-        context.strokeVertexList(terrainSurface.getGroundVertexList().getVertices(), 1, Color.BLUE);
+        context.strokeVertexList(terrainSurface.getGroundVertexList().getVertices(), 0.1, Color.BLUE);
+
+        context.strokeCurve(slope.getGroundPlateauConnector().getOuterGroundEdges(), 1, Color.GREEN, true);
+        context.strokeCurve(slope.getGroundPlateauConnector().getOuterSlopeEdges(), 0.1, Color.RED, false);
     }
 }

@@ -69,7 +69,7 @@ public class Slope {
     }
 
     private void setupSlopingBorder(List<Index> corners) {
-        // Correct the borders. Outer corners can not be too close to other corners. Id needs some safty distance
+        // Correct the borders. Outer corners can not be too close to other corners. Id needs some safety distance
         boolean violationsFound = true;
         while (violationsFound) {
             violationsFound = false;

@@ -10,6 +10,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
@@ -85,5 +86,13 @@ public class ScenarioGuiController implements Initializable {
     public void onMouseMoved(Event event) {
         Index position = scenarioRenderer.convertMouseToModel(event).getPosition();
         mouseLabel.setText(String.format("%d:%d", position.getX(), position.getY()));
+    }
+
+    public void onScroll(ScrollEvent scrollEvent) {
+        if (scrollEvent.getDeltaY() > 0) {
+            zoomSlider.setValue(zoomSlider.getValue() + 1);
+        } else {
+            zoomSlider.setValue(zoomSlider.getValue() - 1);
+        }
     }
 }
