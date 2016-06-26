@@ -41,14 +41,16 @@ public class Mesh {
     private void setupNormAndTangent(GroundMesh groundMesh) {
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount; y++) {
+                Vertex center = getVertexSave(x, y);
+                if (center == null) {
+                    continue;
+                }
                 if (y == 0 || y == yCount - 1) {
                     // y == 0: Outer
                     // y == yCount - 1: Inner
-                    Vertex center = getVertexSave(x, y);
                     nodes[x][y].setNorm(groundMesh.getInterpolatedNorm(center.toXY()));
                     nodes[x][y].setTangent(groundMesh.getInterpolatedTangent(center.toXY()));
                 } else {
-                    Vertex center = getVertexSave(x, y);
                     Vertex top = getVertexSave(x, y + 1);
                     Vertex right = getVertexSave(x + 1, y);
                     Vertex bottom = getVertexSave(x, y - 1);
@@ -97,6 +99,9 @@ public class Mesh {
     }
 
     private void appendTriangle(MeshEntry a, MeshEntry b, MeshEntry c) {
+        if (a == null || b == null || c == null) {
+            return;
+        }
         appendTriangleCorner(a);
         appendTriangleCorner(b);
         appendTriangleCorner(c);
@@ -114,9 +119,17 @@ public class Mesh {
     }
 
     private Vertex setupTangent(Vertex center, Vertex left, Vertex right) {
-        Vertex v1 = center.sub(left);
-        Vertex vz = right.sub(center);
-        return v1.add(vz);
+        if (left != null && right != null) {
+            Vertex v1 = center.sub(left);
+            Vertex vz = right.sub(center);
+            return v1.add(vz);
+        } else if (left != null) {
+            return center.sub(left);
+        } else if (right != null) {
+            return right.sub(center);
+        } else {
+            return Vertex.X_NORM;
+        }
     }
 
     private void appendNorm(Collection<Vertex> norms, Vertex center, Vertex point1, Vertex point2) {

@@ -182,32 +182,41 @@ public class GroundMesh {
         return grid.containsKey(index);
     }
 
+
     /**
-     * Bilinear interpolation of splatting
+     * Bilinear interpolation of index
      * <p/>
      * Only works if the grid is Unit Square
      * https://en.wikipedia.org/wiki/Bilinear_interpolation
      *
      * @param absoluteXY input
-     * @return interpolated Splatting
+     * @return InterpolatedVertexData
      */
-    public double getInterpolatedSplatting(DecimalPosition absoluteXY) {
-        Index bottomLeftIndex = absoluteToIndex(absoluteXY);
-        VertexData vertexDataBL = getVertexDataSafe(bottomLeftIndex);
-        VertexData vertexDataBR = getVertexDataSafe(bottomLeftIndex.add(1, 0));
-        VertexData vertexDataTR = getVertexDataSafe(bottomLeftIndex.add(1, 1));
-        VertexData vertexDataTL = getVertexDataSafe(bottomLeftIndex.add(0, 1));
+    public InterpolatedVertexData getInterpolatedVertexData(DecimalPosition absoluteXY) {
+        if (edgeLength == 0) {
+            throw new IllegalStateException("edgeLength == 0");
+        }
+        double x = (absoluteXY.getX() / (double) edgeLength);
+        double y = (absoluteXY.getY() / (double) edgeLength);
 
+        if(x < 0 || y < 0) {
+            return null;
+        }
+        Index bottomLeftIndex = new Index((int)x, (int)y);
+
+        VertexData vertexDataBL = getVertexData(bottomLeftIndex);
+        VertexData vertexDataBR = getVertexData(bottomLeftIndex.add(1, 0));
+        VertexData vertexDataTR = getVertexData(bottomLeftIndex.add(1, 1));
+        VertexData vertexDataTL = getVertexData(bottomLeftIndex.add(0, 1));
+
+        if(vertexDataBL == null || vertexDataBR == null || vertexDataTR == null || vertexDataTL == null) {
+            return null;
+        }
         DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
         DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
         DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
 
-        double splattingBL = vertexDataBL.getSplatting() * (1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY());
-        double splattingBR = vertexDataBR.getSplatting() * normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY());
-        double splattingTR = vertexDataTR.getSplatting() * normalizedInterpolated.getX() * normalizedInterpolated.getY();
-        double splattingTL = vertexDataTL.getSplatting() * (1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY();
-
-        return splattingBL + splattingBR + splattingTR + splattingTL;
+        return new InterpolatedVertexData(vertexDataBL, vertexDataBR, vertexDataTR, vertexDataTL, normalizedInterpolated);
     }
 
     /**

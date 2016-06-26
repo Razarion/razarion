@@ -1,6 +1,7 @@
 package com.btxtech.client.terrain.slope;
 
 import com.btxtech.client.terrain.GroundMesh;
+import com.btxtech.client.terrain.InterpolatedVertexData;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.Shape;
@@ -59,12 +60,14 @@ public class SlopeModeler {
                 for (int row = 0; row < slopeSkeleton.getRows(); row++) {
                     SlopeNode slopeNode = slopeSkeleton.getSlopeNodes()[templateSegment][row];
                     Vertex transformedPoint = transformationMatrix.multiply(slopeNode.getPosition(), 1.0);
-                    float splatting = setupSplatting(transformedPoint, slopeNode.getSlopeFactor(), groundMesh);
-                    mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(slopeNode), splatting);
-                    if (row == 0) {
-                        outerLineMeshIndex.add(new Index(meshColumn, row));
-                    } else if (row + 1 == slopeSkeleton.getRows()) {
-                        innerLineMeshIndex.add(new Index(meshColumn, row));
+                    InterpolatedVertexData interpolatedVertexData = groundMesh.getInterpolatedVertexData(transformedPoint.toXY());
+                    if (interpolatedVertexData != null) {
+                        mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(slopeNode), (float)interpolatedVertexData.getSplatting());
+                        if (row == 0) {
+                            outerLineMeshIndex.add(new Index(meshColumn, row));
+                        } else if (row + 1 == slopeSkeleton.getRows()) {
+                            innerLineMeshIndex.add(new Index(meshColumn, row));
+                        }
                     }
                 }
                 templateSegment++;
@@ -86,9 +89,4 @@ public class SlopeModeler {
         // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
         return (float) slopeNode.getSlopeFactor();
     }
-
-    private static float setupSplatting(Vertex vertex, double slopeFactor, GroundMesh groundMesh) {
-        return (float) groundMesh.getInterpolatedSplatting(vertex.toXY());
-    }
-
 }

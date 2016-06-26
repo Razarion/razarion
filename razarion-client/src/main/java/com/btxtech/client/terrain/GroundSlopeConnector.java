@@ -85,9 +85,19 @@ public class GroundSlopeConnector {
     private List<VertexDataObject> setupGroundEdgeList(List<Index> indices, GroundMesh groundMesh) {
         // Edge detection
         Index start = indices.get(0);
-
+        boolean failed = false;
         while (!groundMesh.contains(start)) {
+            if(start.getX() < 0) {
+                failed = true;
+                break;
+            }
             start = start.sub(1, 0);
+        }
+        if(failed) {
+            start = indices.get(0);
+            while (!groundMesh.contains(start)) {
+                start = start.add(1, 0);
+            }
         }
 
         List<Index> edgeList = new ArrayList<>();
@@ -130,7 +140,7 @@ public class GroundSlopeConnector {
             slopeLine.add(new VertexDataObject(vertex,
                     slope.getMesh().getNormSave(index),
                     slope.getMesh().getTangentSave(index),
-                    groundMesh.getInterpolatedSplatting(vertex.toXY())));
+                    groundMesh.getInterpolatedVertexData(vertex.toXY()).getSplatting()));
         }
 
         // Find nearest point and fix list
