@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.uiservice.terrain.GroundMesh;
+import com.btxtech.uiservice.terrain.ground.GroundMesh;
 import com.btxtech.uiservice.terrain.Water;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.dto.SlopeSkeleton;

@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.terrain;
+package com.btxtech.uiservice.terrain.ground;
 
 import com.btxtech.shared.primitives.Vertex;
 

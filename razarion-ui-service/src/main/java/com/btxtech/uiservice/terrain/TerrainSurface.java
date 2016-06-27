@@ -1,6 +1,8 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.uiservice.terrain.ground.GroundMesh;
+import com.btxtech.uiservice.terrain.ground.GroundModeler;
 import com.btxtech.uiservice.terrain.slope.Slope;
 import com.btxtech.uiservice.terrain.slope.SlopeWater;
 import com.btxtech.game.jsre.client.common.DecimalPosition;

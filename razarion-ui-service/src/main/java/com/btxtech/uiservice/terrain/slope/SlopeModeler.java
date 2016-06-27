@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.uiservice.terrain.GroundMesh;
-import com.btxtech.uiservice.terrain.InterpolatedVertexData;
+import com.btxtech.uiservice.terrain.ground.GroundMesh;
+import com.btxtech.uiservice.terrain.ground.InterpolatedVertexData;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.Shape;

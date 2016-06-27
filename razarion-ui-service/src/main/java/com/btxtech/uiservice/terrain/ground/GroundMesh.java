@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.terrain;
+package com.btxtech.uiservice.terrain.ground;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
