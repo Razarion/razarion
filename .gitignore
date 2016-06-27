@@ -3,7 +3,7 @@
 .idea/
 razarion.iml
 target/
-razarion-ui-service/razarion-client.iml
+razarion-ui-service/razarion-ui-service.iml
 razarion-ui-service/target/
 razarion-dev-tools/razarion-dev-tools.iml
 razarion-dev-tools/target/
