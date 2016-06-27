@@ -3,7 +3,7 @@ package com.btxtech.client.editor.terrain;
 import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.TerrainEditorService;

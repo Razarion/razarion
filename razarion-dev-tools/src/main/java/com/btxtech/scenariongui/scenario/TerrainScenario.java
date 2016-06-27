@@ -2,22 +2,14 @@ package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.GameMock;
-import com.btxtech.client.terrain.GroundMesh;
-import com.btxtech.client.terrain.GroundSlopeConnector;
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.terrain.Water;
-import com.btxtech.client.terrain.slope.AbstractBorder;
-import com.btxtech.client.terrain.slope.Slope;
-import com.btxtech.client.terrain.slope.SlopeWater;
-import com.btxtech.client.terrain.slope.VerticalSegment;
+import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.slope.AbstractBorder;
+import com.btxtech.uiservice.terrain.slope.Slope;
+import com.btxtech.uiservice.terrain.slope.VerticalSegment;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.SlopeSkeleton;
-import com.btxtech.shared.primitives.Polygon2I;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

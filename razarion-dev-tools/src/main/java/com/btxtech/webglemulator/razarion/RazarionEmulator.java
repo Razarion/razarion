@@ -1,11 +1,11 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.model.ShadowUiService;
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.terrain.slope.Mesh;
-import com.btxtech.client.units.ItemService;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.slope.Mesh;
+import com.btxtech.uiservice.units.ItemService;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.ItemType;

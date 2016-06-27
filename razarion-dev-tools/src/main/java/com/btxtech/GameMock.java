@@ -1,6 +1,6 @@
 package com.btxtech;
 
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.dto.TerrainSlopePosition;

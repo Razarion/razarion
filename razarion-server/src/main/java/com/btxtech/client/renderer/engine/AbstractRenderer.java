@@ -1,13 +1,13 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.ImageDescriptor;
+import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.model.ShadowUiService;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.imageservice.ImageLoader;
-import com.btxtech.client.terrain.slope.Mesh;
+import com.btxtech.uiservice.terrain.slope.Mesh;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.dto.LightConfig;

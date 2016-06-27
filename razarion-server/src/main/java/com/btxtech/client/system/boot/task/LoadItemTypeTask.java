@@ -1,6 +1,6 @@
 package com.btxtech.client.system.boot.task;
 
-import com.btxtech.client.units.ItemService;
+import com.btxtech.uiservice.units.ItemService;
 import com.btxtech.shared.ItemTypeService;
 import com.btxtech.shared.dto.ItemType;
 import org.jboss.errai.common.client.api.Caller;

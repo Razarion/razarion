@@ -1,7 +1,7 @@
 package com.btxtech.gameengine.pathing;
 
 import com.btxtech.GameMock;
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Line2I;

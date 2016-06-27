@@ -4,7 +4,7 @@ import com.btxtech.client.dialog.ApplyListener;
 import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.client.widgets.LightWidget;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.FractalFieldConfig;

@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.client.units.ItemService;
+import com.btxtech.uiservice.units.ItemService;
 import elemental.client.Browser;
 import elemental.dom.TimeoutHandler;
 

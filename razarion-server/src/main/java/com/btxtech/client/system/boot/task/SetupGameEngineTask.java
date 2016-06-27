@@ -1,8 +1,6 @@
 package com.btxtech.client.system.boot.task;
 
-import com.btxtech.client.terrain.TerrainObjectService;
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.units.ItemService;
+import com.btxtech.uiservice.units.ItemService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

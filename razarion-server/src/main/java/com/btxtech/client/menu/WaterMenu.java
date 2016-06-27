@@ -1,13 +1,11 @@
 package com.btxtech.client.menu;
 
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.terrain.Water;
+import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.Water;
 import com.btxtech.client.widgets.LightWidget;
-import com.btxtech.shared.dto.LightConfig;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.IntegerBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;

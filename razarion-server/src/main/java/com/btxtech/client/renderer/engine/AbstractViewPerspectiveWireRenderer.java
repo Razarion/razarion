@@ -1,8 +1,8 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.shared.primitives.Vertex;

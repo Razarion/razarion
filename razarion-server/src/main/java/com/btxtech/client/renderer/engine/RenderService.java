@@ -2,11 +2,11 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.model.Camera;
+import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.client.renderer.webgl.WebGlException;
-import com.btxtech.client.terrain.TerrainObjectService;
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.units.ItemService;
+import com.btxtech.uiservice.terrain.TerrainObjectService;
+import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.units.ItemService;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;

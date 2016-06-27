@@ -1,12 +1,12 @@
 package com.btxtech.webglemulator;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.CameraMovedEvent;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.model.ShadowUiService;
-import com.btxtech.client.renderer.model.ViewField;
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.CameraMovedEvent;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

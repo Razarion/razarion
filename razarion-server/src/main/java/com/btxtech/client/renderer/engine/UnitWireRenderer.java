@@ -1,12 +1,12 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.ImageDescriptor;
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.renderer.model.ShadowUiService;
+import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
-import com.btxtech.client.units.ItemService;
+import com.btxtech.uiservice.units.ItemService;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import elemental.html.WebGLRenderingContext;

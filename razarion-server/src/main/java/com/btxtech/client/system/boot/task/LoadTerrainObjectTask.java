@@ -1,6 +1,6 @@
 package com.btxtech.client.system.boot.task;
 
-import com.btxtech.client.terrain.TerrainObjectService;
+import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.dto.TerrainObject;
 import org.jboss.errai.common.client.api.Caller;

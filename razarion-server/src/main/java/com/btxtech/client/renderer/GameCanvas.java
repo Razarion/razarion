@@ -2,7 +2,7 @@ package com.btxtech.client.renderer;
 
 import com.btxtech.client.ViewFieldMover;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.canvas.client.Canvas;

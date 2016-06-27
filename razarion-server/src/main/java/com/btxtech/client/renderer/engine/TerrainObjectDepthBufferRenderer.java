@@ -1,8 +1,8 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.renderer.model.ShadowUiService;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.terrain.TerrainObjectService;
+import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import elemental.html.WebGLRenderingContext;

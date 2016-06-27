@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.model;
 
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import org.junit.Ignore;
 
 import javax.inject.Inject;

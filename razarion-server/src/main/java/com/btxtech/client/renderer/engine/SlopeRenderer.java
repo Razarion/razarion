@@ -1,12 +1,11 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.terrain.TerrainSurface;
-import com.btxtech.client.terrain.slope.Mesh;
-import com.btxtech.client.terrain.slope.Slope;
+import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.slope.Mesh;
+import com.btxtech.uiservice.terrain.slope.Slope;
 import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
 

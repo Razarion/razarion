@@ -1,10 +1,10 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.ColladaUiService;
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.uiservice.ColladaUiService;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.terrain.TerrainObjectService;
+import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import com.btxtech.shared.primitives.Color;

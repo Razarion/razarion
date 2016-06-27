@@ -2,7 +2,7 @@ package com.btxtech.client.sidebar;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.ObjectNameId;

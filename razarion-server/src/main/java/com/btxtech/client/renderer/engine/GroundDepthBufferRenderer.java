@@ -1,10 +1,9 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.renderer.model.ShadowUiService;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Matrix4;
 import elemental.html.WebGLRenderingContext;

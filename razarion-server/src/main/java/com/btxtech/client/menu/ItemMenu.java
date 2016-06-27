@@ -1,7 +1,7 @@
 package com.btxtech.client.menu;
 
 import com.btxtech.client.ItemServiceRunner;
-import com.btxtech.client.units.ItemService;
+import com.btxtech.uiservice.units.ItemService;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;

@@ -1,9 +1,9 @@
 package com.btxtech.client.math3d;
 
 import com.btxtech.TestHelper;
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.primitives.Matrix4;
 import org.junit.Assert;
 import org.junit.Test;

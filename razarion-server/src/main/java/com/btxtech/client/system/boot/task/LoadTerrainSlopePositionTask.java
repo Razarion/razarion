@@ -1,7 +1,7 @@
 package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import org.jboss.errai.common.client.api.Caller;

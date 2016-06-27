@@ -1,9 +1,9 @@
 package com.btxtech.client.sidebar.colladaeditor;
 
-import com.btxtech.client.ColladaUiService;
+import com.btxtech.uiservice.ColladaUiService;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.client.sidebar.LeftSideBarContent;
-import com.btxtech.client.terrain.TerrainObjectService;
+import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.game.jsre.client.common.CollectionUtils;

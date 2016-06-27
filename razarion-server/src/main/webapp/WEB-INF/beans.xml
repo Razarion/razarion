@@ -8,5 +8,6 @@
        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://docs.jboss.org/cdi/beans_1_0.xsd http://jboss.org/schema/weld/beans http://jboss.org/schema/weld/beans_1_1.xsd">
     <weld:scan>
         <weld:exclude name="com.btxtech.client.**" />
+        <weld:exclude name="com.btxtech.uiservice.**" />
     </weld:scan>
 </beans>

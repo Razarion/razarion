@@ -1,7 +1,7 @@
 package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.editor.object.TerrainObjectEditor;
-import com.btxtech.client.terrain.TerrainObjectService;
+import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import org.jboss.errai.common.client.api.Caller;

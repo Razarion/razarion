@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator;
 
-import com.btxtech.client.renderer.model.CameraMovedEvent;
+import com.btxtech.uiservice.renderer.CameraMovedEvent;
 import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

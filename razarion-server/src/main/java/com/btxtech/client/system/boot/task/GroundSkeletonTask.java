@@ -1,6 +1,6 @@
 package com.btxtech.client.system.boot.task;
 
-import com.btxtech.client.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.TerrainService;
 import com.btxtech.shared.dto.GroundSkeleton;
 import org.jboss.errai.common.client.api.Caller;

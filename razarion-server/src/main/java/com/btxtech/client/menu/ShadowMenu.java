@@ -1,6 +1,6 @@
 package com.btxtech.client.menu;
 
-import com.btxtech.client.renderer.model.ShadowUiService;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.primitives.Vertex;

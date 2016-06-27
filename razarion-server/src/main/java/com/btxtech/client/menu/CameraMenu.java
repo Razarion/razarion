@@ -1,7 +1,7 @@
 package com.btxtech.client.menu;
 
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.primitives.Vertex;

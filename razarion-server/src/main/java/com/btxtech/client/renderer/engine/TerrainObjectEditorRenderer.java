@@ -1,8 +1,8 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.object.TerrainObjectEditorSelectedEvent;
-import com.btxtech.client.renderer.model.Camera;
-import com.btxtech.client.renderer.model.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
