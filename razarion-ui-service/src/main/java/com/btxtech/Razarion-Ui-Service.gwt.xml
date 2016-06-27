@@ -2,7 +2,7 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.7.0//EN"
         "http://google-web-toolkit.googlecode.com/svn/tags/2.7.0/distro-source/core/src/gwt-module.dtd">
 
-<module rename-to="razarionClient">
+<module rename-to="razarionUiService">
     <source path="uiservice" />
 
     <inherits name="org.jboss.errai.enterprise.All" />

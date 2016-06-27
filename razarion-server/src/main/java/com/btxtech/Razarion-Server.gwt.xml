@@ -10,7 +10,7 @@
     <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
     <inherits name="elemental.Elemental"/>
     <inherits name='com.btxtech.Razarion-Share'/>
-    <inherits name='com.btxtech.Razarion-Client'/>
+    <inherits name='com.btxtech.Razarion-Ui-Service'/>
 
     <!--<replace-with class="org.jboss.errai.demo.client.local.Config">-->
         <!--<when-type-is class="org.jboss.errai.bus.client.framework.Configuration" />-->

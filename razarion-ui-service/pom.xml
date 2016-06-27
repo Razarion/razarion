@@ -11,9 +11,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>razarion-client</artifactId>
+    <artifactId>razarion-ui-service</artifactId>
     <packaging>jar</packaging>
-    <name>Razarion Client Code</name>
+    <name>Razarion UI Service</name>
 
     <dependencies>
         <!-- GWT -->

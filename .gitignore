@@ -3,8 +3,8 @@
 .idea/
 razarion.iml
 target/
-razarion-client/razarion-client.iml
-razarion-client/target/
+razarion-ui-service/razarion-client.iml
+razarion-ui-service/target/
 razarion-dev-tools/razarion-dev-tools.iml
 razarion-dev-tools/target/
 razarion-server/razarion-server.iml
@@ -12,7 +12,6 @@ razarion-server/target/
 razarion-server/src/main/webapp/WEB-INF/classes/
 razarion-server/src/main/webapp/razarionServer
 razarion-server/src/main/webapp/WEB-INF/lib
-razarion-server/src/main/webapp/webgl
 razarion-server/src/main/gwt-unitCache
 razarion-share/razarion-share.iml
 razarion-share/target/

@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.btxtech</groupId>
-            <artifactId>razarion-client</artifactId>
+            <artifactId>razarion-ui-service</artifactId>
             <version>1.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>

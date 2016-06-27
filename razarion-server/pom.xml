@@ -22,13 +22,13 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-client</artifactId>
+            <artifactId>razarion-ui-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <!-- use for GWT compilation only -->
             <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-client</artifactId>
+            <artifactId>razarion-ui-service</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
             <classifier>sources</classifier>
@@ -175,7 +175,7 @@
                            -->
                     <sources>
                         <source>${project.parent.basedir}/razarion-share/src/main/java</source>
-                        <source>${project.parent.basedir}/razarion-client/src/main/java</source>
+                        <source>${project.parent.basedir}/razarion-ui-service/src/main/java</source>
                     </sources>
                 </configuration>
             </plugin>
