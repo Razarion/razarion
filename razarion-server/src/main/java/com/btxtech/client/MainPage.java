@@ -28,6 +28,10 @@ public class MainPage extends Composite {
     @Inject
     private ClientRunner clientRunner;
     @Inject
+    private KeyboardEventHandler keyboardEventHandler;
+    @Inject
+    private MouseEventHandler mouseEventHandler;
+    @Inject
     private LeftSideBar leftSideBar;
     @DataField
     private Canvas canvas = Canvas.createIfSupported();
@@ -48,7 +52,9 @@ public class MainPage extends Composite {
             }
             gameCanvas.setCanvas(canvas);
             leftSideBar.setSideBarPanel(sideBarPanel);
-            clientRunner.guiErrayReady(GameStartupSeq.COLD_SIMULATED);
+            keyboardEventHandler.init();
+            mouseEventHandler.init();
+            clientRunner.start(GameStartupSeq.COLD_SIMULATED);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "MainPage init failed", throwable);
         }

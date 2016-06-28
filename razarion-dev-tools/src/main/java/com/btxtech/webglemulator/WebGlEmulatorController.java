@@ -1,14 +1,15 @@
 package com.btxtech.webglemulator;
 
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.scenariongui.InstanceStringGenerator;
+import com.btxtech.shared.primitives.Ray3d;
+import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.units.ItemService;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.shared.primitives.Ray3d;
-import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
@@ -24,6 +25,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -65,6 +68,8 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private ItemService itemService;
     @Inject
+    private TerrainScrollHandler terrainScrollHandler;
+    @Inject
     private ShadowUiService shadowUiService;
     @Inject
     private WebGlEmulatorShadowController shadowController;
@@ -81,7 +86,6 @@ public class WebGlEmulatorController implements Initializable {
                 canvas.setWidth(width.doubleValue());
                 projectionTransformation.setAspectRatio(webGlEmulator.getAspectRatio());
                 aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
-                webGlEmulator.drawArrays();
             }
         });
         centerPanel.heightProperty().addListener(new ChangeListener<Number>() {
@@ -90,10 +94,15 @@ public class WebGlEmulatorController implements Initializable {
                 canvas.setHeight(height.doubleValue());
                 projectionTransformation.setAspectRatio(webGlEmulator.getAspectRatio());
                 aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
-                webGlEmulator.drawArrays();
             }
         });
-
+        canvas.setFocusTraversable(true);
+        canvas.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                canvas.requestFocus();
+            }
+        });
         ////////
 //        camera.setTranslateX(970);
 //        camera.setTranslateY(-80);
@@ -108,7 +117,6 @@ public class WebGlEmulatorController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
                 projectionTransformation.setFovY(Math.toRadians(fovSlider.getValue()));
-                webGlEmulator.drawArrays();
                 System.out.println("Camera direction: " + camera.getDirection());
             }
         });
@@ -117,7 +125,6 @@ public class WebGlEmulatorController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
                 camera.setRotateX(Math.toRadians(cameraXRotationSlider.getValue()));
-                webGlEmulator.drawArrays();
                 System.out.println("X rot: " + cameraXRotationSlider.getValue());
                 System.out.println("Z rot: " + cameraZRotationSlider.getValue());
                 System.out.println("Camera direction: " + camera.getDirection());
@@ -130,7 +137,6 @@ public class WebGlEmulatorController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
                 camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
-                webGlEmulator.drawArrays();
                 System.out.println("X rot: " + cameraXRotationSlider.getValue());
                 System.out.println("Z rot: " + cameraZRotationSlider.getValue());
                 System.out.println("Camera direction: " + camera.getDirection());
@@ -151,7 +157,6 @@ public class WebGlEmulatorController implements Initializable {
                 System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
                 System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
                 shadowUiService.calculateViewField();
-                webGlEmulatorShadow.drawArrays();
             }
         });
         shadowZRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getRotateZ()));
@@ -163,7 +168,6 @@ public class WebGlEmulatorController implements Initializable {
                 System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
                 System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
                 shadowUiService.calculateViewField();
-                webGlEmulatorShadow.drawArrays();
             }
         });
 
@@ -183,7 +187,6 @@ public class WebGlEmulatorController implements Initializable {
             camera.setTranslateY(camera.getTranslateY() - deltaTerrain.getY());
             xTranslationField.setText(Double.toString(camera.getTranslateX()));
             yTranslationField.setText(Double.toString(camera.getTranslateY()));
-            webGlEmulator.drawArrays();
         }
         lastCanvasPosition = canvasPosition;
     }
@@ -231,12 +234,10 @@ public class WebGlEmulatorController implements Initializable {
 
     public void xTranslationFieldChanged() {
         camera.setTranslateX(Double.parseDouble(xTranslationField.getText()));
-        webGlEmulator.drawArrays();
     }
 
     public void yTranslationFieldChanged() {
         camera.setTranslateY(Double.parseDouble(yTranslationField.getText()));
-        webGlEmulator.drawArrays();
     }
 
     public void zTranslationFieldChanged() {
@@ -246,17 +247,14 @@ public class WebGlEmulatorController implements Initializable {
 
     public void onTickButtonClicked() {
         itemService.tick();
-        webGlEmulator.drawArrays();
     }
 
     public void onRestartButtonClicked() {
         itemService.setupItems();
-        webGlEmulator.drawArrays();
     }
 
     public void onShadowButtonClicked(ActionEvent actionEvent) {
         if (shadowController.getCanvas() != null) {
-            webGlEmulatorShadow.drawArrays();
             return;
         }
         try {
@@ -280,14 +278,13 @@ public class WebGlEmulatorController implements Initializable {
             });
             stage.show();
             webGlEmulatorShadow.setCanvas(shadowController.getCanvas());
-            webGlEmulatorShadow.drawArrays();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void onSceneButtonClicked() {
-        if(sceneController.getCanvas() != null) {
+        if (sceneController.getCanvas() != null) {
             sceneController.update();
             return;
         }
@@ -322,5 +319,39 @@ public class WebGlEmulatorController implements Initializable {
             e.printStackTrace();
         }
 
+    }
+
+    public void onKeyPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.LEFT) {
+            terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.LEFT, null);
+        }
+        if (event.getCode() == KeyCode.RIGHT) {
+            terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.RIGHT, null);
+        }
+        if (event.getCode() == KeyCode.UP) {
+            terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.TOP);
+        }
+        if (event.getCode() == KeyCode.DOWN) {
+            terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.BOTTOM);
+        }
+    }
+
+    public void onKeyReleased(KeyEvent event) {
+        if (event.getCode() == KeyCode.LEFT) {
+            terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.STOP, null);
+        }
+        if (event.getCode() == KeyCode.RIGHT) {
+            terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.STOP, null);
+        }
+        if (event.getCode() == KeyCode.UP) {
+            terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.STOP);
+        }
+        if (event.getCode() == KeyCode.DOWN) {
+            terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.STOP);
+        }
+    }
+
+    public void onMouseMoved(MouseEvent event) {
+        terrainScrollHandler.handleMouseMoveScroll((int)event.getX(), (int)event.getY(), (int)canvas.getWidth(), (int)canvas.getHeight());
     }
 }

@@ -1,11 +1,5 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.ShadowUiService;
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.uiservice.terrain.slope.Mesh;
-import com.btxtech.uiservice.units.ItemService;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.ItemType;
@@ -15,12 +9,19 @@ import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.shared.primitives.Vertex4;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.slope.Mesh;
+import com.btxtech.uiservice.units.ItemService;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Beat
@@ -37,6 +41,7 @@ import java.util.List;
  */
 @Singleton
 public class RazarionEmulator {
+    private static final long RENDER_DELAY = 500;
     @Inject
     private WebGlEmulator webGlEmulator;
     @Inject
@@ -51,6 +56,7 @@ public class RazarionEmulator {
     private ItemService itemService;
     @Inject
     private ShadowUiService shadowUiService;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private VertexShader terrainShader = new VertexShader() {
         @Override
         public Vertex4 process(Vertex vertex) {
@@ -92,7 +98,27 @@ public class RazarionEmulator {
             }
         }, CollectionUtils.verticesToDoubles(itemService.getItemTypeVertexContainer(itemTypeId).getVertices()), Color.BLACK);
 
-        webGlEmulator.drawArrays();
+        start();
+    }
+
+    private void start() {
+        scheduler.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // long time = System.currentTimeMillis();
+                            webGlEmulator.drawArrays();
+                            // System.out.println("Time for render: " + (System.currentTimeMillis() - time));
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }, RENDER_DELAY, RENDER_DELAY, TimeUnit.MILLISECONDS);
     }
 
     private List<Double> setupNormDoubles(List<Vertex> vertices, List<Vertex> norms) {

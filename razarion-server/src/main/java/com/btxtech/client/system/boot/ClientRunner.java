@@ -28,8 +28,6 @@ public class ClientRunner {
     private boolean failed;
     private Logger logger = Logger.getLogger(ClientRunner.class.getName());
     private String startUuid;
-    private boolean guiErraiReady;
-    private boolean afterInitErrai;
     @Inject
     private Instance<AbstractStartupTask> taskInstance;
 
@@ -45,21 +43,7 @@ public class ClientRunner {
         listeners.clear();
     }
 
-    public void afterInitErrai(StartupSeq startupSeq) {
-        afterInitErrai = true;
-        if (guiErraiReady) {
-            start(startupSeq);
-        }
-    }
-
-    public void guiErrayReady(StartupSeq startupSeq) {
-        guiErraiReady = true;
-        if (afterInitErrai) {
-            start(startupSeq);
-        }
-    }
-
-    private void start(StartupSeq startupSeq) {
+    public void start(StartupSeq startupSeq) {
         startUuid = MathHelper.generateUuid();
         failed = false;
         for (StartupProgressListener listener : listeners) {

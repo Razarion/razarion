@@ -1,7 +1,6 @@
 package com.btxtech.client;
 
 import com.btxtech.client.system.boot.ClientRunner;
-import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.client.system.boot.StartupProgressListener;
 import com.btxtech.client.system.boot.StartupSeq;
 import com.btxtech.client.system.boot.StartupTaskEnum;
@@ -9,12 +8,11 @@ import com.btxtech.client.system.boot.StartupTaskInfo;
 import com.btxtech.client.system.boot.task.AbstractStartupTask;
 import com.btxtech.shared.RestUrl;
 import com.google.gwt.core.client.GWT;
-import com.google.inject.Inject;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,12 +22,9 @@ import java.util.logging.Logger;
  */
 @EntryPoint
 public class Webgl {
+    private Logger logger = Logger.getLogger(Webgl.class.getName());
     @Inject
     private ClientRunner clientRunner;
-    @Inject
-    private KeyboardEventHandler keyboardEventHandler;
-    // @Inject
-    private Logger logger = Logger.getLogger(Webgl.class.getName());
 
     public Webgl() {
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
@@ -48,11 +43,6 @@ public class Webgl {
 
     @PostConstruct
     public void init() {
-        keyboardEventHandler.init();
-    }
-
-    @AfterInitialization
-    public void afterInitialization() {
         clientRunner.addStartupProgressListener(new StartupProgressListener() {
             @Override
             public void onStart(StartupSeq startupSeq) {
@@ -84,7 +74,5 @@ public class Webgl {
                 logger.severe("onStartupFailed: " + taskInfo + " totalTime:" + totalTime);
             }
         });
-        clientRunner.afterInitErrai(GameStartupSeq.COLD_SIMULATED);
     }
-
 }

@@ -25,7 +25,7 @@ public class FxCdiGui {
     private RazarionEmulator razarionEmulator;
 
     public void start(final Stage stage) throws Exception {
-        stage.setFullScreen(true);
+        // stage.setFullScreen(true);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulator.fxml"));
         loader.setControllerFactory(new Callback<Class<?>, Object>() {
             @Override
@@ -36,12 +36,14 @@ public class FxCdiGui {
         Parent root = (Parent) loader.load();
         stage.setTitle("WebGL FX Emulator");
         stage.setScene(new Scene(root));
-        stage.setX(-1288);
-        stage.setY(168);
+        stage.setX(-1279);
+        stage.setY(182);
+        stage.setWidth(1277);
+        stage.setHeight(1016);
         stage.show();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
-                System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY());
+                System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY() + " " + stage.getWidth() + ":" + stage.getHeight());
             }
         });
         razarionEmulator.process();

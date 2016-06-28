@@ -55,6 +55,12 @@ public class Camera {
         fireChanged();
     }
 
+    public void setTranslateDeltaXY(int deltaX, int deltaY) {
+        translateX += deltaX;
+        translateY += deltaY;
+        fireChanged();
+    }
+
     public double getTranslateZ() {
         return translateZ;
     }

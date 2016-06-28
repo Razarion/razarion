@@ -1,15 +1,17 @@
 package com.btxtech.client.renderer;
 
-import com.btxtech.client.ViewFieldMover;
+import com.btxtech.client.MouseEventHandler;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
 import elemental.client.Browser;
+import elemental.dom.Element;
 import elemental.html.WebGLRenderingContext;
 
 import javax.inject.Inject;
@@ -30,8 +32,6 @@ public class GameCanvas {
     @Inject
     private RenderService renderService;
     @Inject
-    private ViewFieldMover viewFieldMover;
-    @Inject
     private ProjectionTransformation projectionTransformation;
     private int width;
     private int height;
@@ -46,12 +46,11 @@ public class GameCanvas {
     }
 
     public void init() {
-        if(canvas == null) {
+        if (canvas == null) {
             throw new IllegalStateException("Canvas not set");
         }
         initCanvas();
         resizeCanvas();
-        viewFieldMover.activate(canvas);
 
         Window.addResizeHandler(new ResizeHandler() {
             @Override
@@ -115,5 +114,13 @@ public class GameCanvas {
 
     public int getHeight() {
         return height;
+    }
+
+    public Element getCanvasElement() {
+        return GwtUtils.castElementToElement(canvas.getElement());
+    }
+
+    public Canvas getCanvas() {
+        return canvas;
     }
 }

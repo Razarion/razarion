@@ -31,25 +31,15 @@ public class WebGlEmulatorShadowController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
                 canvas.setWidth(width.doubleValue());
-                webGlEmulatorShadow.drawArrays();
             }
         });
         mainPanel.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
                 canvas.setHeight(height.doubleValue());
-                webGlEmulatorShadow.drawArrays();
             }
         });
     }
-
-    public void onCameraMovedEvent(@Observes CameraMovedEvent cameraMovedEvent) {
-        if (canvas == null) {
-            return;
-        }
-        webGlEmulatorShadow.drawArrays();
-    }
-
 
     public Canvas getCanvas() {
         return canvas;
