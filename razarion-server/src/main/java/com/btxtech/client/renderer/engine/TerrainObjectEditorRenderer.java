@@ -72,7 +72,7 @@ public class TerrainObjectEditorRenderer extends AbstractRenderer {
         uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
         uniformMatrix4fv(U_MODEL_MATRIX, modelPosition);
 
-        uniform1i("uCursorType", cursoType);
+        uniform1i(U_CURSOR_TYPE, cursoType);
 
         vertices.activate();
 

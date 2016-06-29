@@ -27,4 +27,8 @@ public class ScenarioRenderer extends Abstract2dRenderer {
 
         postRender();
     }
+
+    public Scenario getScenario() {
+        return scenario;
+    }
 }

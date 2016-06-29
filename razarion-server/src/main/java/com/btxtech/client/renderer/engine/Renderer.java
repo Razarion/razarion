@@ -22,6 +22,8 @@ public interface Renderer {
     String U_LIGHT_AMBIENT = "uLightAmbient";
     String U_LIGHT_SPECULAR_INTENSITY = "uLightSpecularIntensity";
     String U_LIGHT_SPECULAR_HARDNESS = "uLightSpecularHardness";
+    // Unifrom Editor
+    String U_CURSOR_TYPE = "uCursorType";
 
     void setId(int id);
 

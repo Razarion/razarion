@@ -1,6 +1,5 @@
 package com.btxtech.server.terrain;
 
-import com.btxtech.system.ExceptionHandler;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.rest.ImageLibraryEntity;
 import com.btxtech.server.terrain.object.TerrainObjectEntity;
@@ -18,6 +17,7 @@ import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.system.ExceptionHandler;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
 
@@ -166,10 +166,14 @@ public class TerrainEditorServiceImpl implements TerrainEditorService {
                 } else {
                     terrainSlopePositionEntity = new TerrainSlopePositionEntity();
                 }
-                SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) terrainSlopePosition.getSlopeId());
-                terrainSlopePositionEntity.setSlopeConfigEntity(slopeConfigEntity);
-                terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon());
-                entityManager.merge(terrainSlopePositionEntity);
+                if (terrainSlopePosition.getPolygon() != null) {
+                    SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) terrainSlopePosition.getSlopeId());
+                    terrainSlopePositionEntity.setSlopeConfigEntity(slopeConfigEntity);
+                    terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon());
+                    entityManager.merge(terrainSlopePositionEntity);
+                } else {
+                    entityManager.remove(terrainSlopePositionEntity);
+                }
             }
         } catch (Throwable e) {
             exceptionHandler.handleException(e);

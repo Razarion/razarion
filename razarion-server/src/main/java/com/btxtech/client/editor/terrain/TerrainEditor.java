@@ -1,17 +1,21 @@
 package com.btxtech.client.editor.terrain;
 
+import com.btxtech.client.TerrainKeyDownEvent;
+import com.btxtech.client.TerrainKeyUpEvent;
 import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.uiservice.terrain.TerrainSurface;
+import elemental.events.KeyboardEvent;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -34,14 +38,17 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainEditor {
+    public enum CursorType {
+        CREATE,
+        MODIFY,
+        REMOVE_MODE,
+        REMOVE
+    }
+
     private static final int NO_SELECTION = -1;
     private Logger logger = Logger.getLogger(TerrainEditor.class.getName());
     @Inject
-    private Event<TerrainEditorCursorPositionEvent> terrainEditorCursorPositionEvent;
-    @Inject
     private Event<TerrainEditorCursorShapeEvent> terrainEditorCursorShapeEvent;
-    @Inject
-    private Event<TerrainEditorSlopeSelectedEvent> terrainEditorSlopeSelectedEvent;
     @Inject
     private Event<TerrainEditorSlopeModifiedEvent> terrainEditorSlopeModifiedEvent;
     @Inject
@@ -56,7 +63,11 @@ public class TerrainEditor {
     private int cursorCorners = 20;
     private int selectedSlopeId = NO_SELECTION;
     private ObjectNameId slope4New;
+    private CursorType cursorType = CursorType.CREATE;
     private Map<Integer, ModifiedTerrainSlopePosition> modifiedTerrainSlopePositions = new HashMap<>();
+    private boolean deletePressed;
+    private Matrix4 cursorModelMatrix = Matrix4.createIdentity();
+    ;
 
     public TerrainEditor() {
         cursor = setupCursor();
@@ -67,19 +78,31 @@ public class TerrainEditor {
             Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
             Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(ray3d);
             // Cursor
-            terrainEditorCursorPositionEvent.fire(new TerrainEditorCursorPositionEvent(terrainPosition));
+            cursorModelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
+
             // Handle inside polygon
             int selectedSlopeId = NO_SELECTION;
             Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().getPosition());
             for (Map.Entry<Integer, ModifiedTerrainSlopePosition> entry : modifiedTerrainSlopePositions.entrySet()) {
-                if (entry.getValue().getPolygon2I().adjoins(movedCursor)) {
+                Polygon2I polygon = entry.getValue().getPolygon2I();
+                if (polygon != null && polygon.adjoins(movedCursor)) {
                     selectedSlopeId = entry.getKey();
                     break;
                 }
             }
-            if (selectedSlopeId != this.selectedSlopeId) {
-                this.selectedSlopeId = selectedSlopeId;
-                terrainEditorSlopeSelectedEvent.fire(new TerrainEditorSlopeSelectedEvent(selectedSlopeId));
+            this.selectedSlopeId = selectedSlopeId;
+            if (selectedSlopeId != NO_SELECTION) {
+                if (deletePressed) {
+                    cursorType = CursorType.REMOVE;
+                } else {
+                    cursorType = CursorType.MODIFY;
+                }
+            } else {
+                if (deletePressed) {
+                    cursorType = CursorType.REMOVE_MODE;
+                } else {
+                    cursorType = CursorType.CREATE;
+                }
             }
         }
     }
@@ -89,18 +112,48 @@ public class TerrainEditor {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
             Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(ray3d);
             Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().getPosition());
-            if(hasSelection()) {
+            if (hasSelection()) {
                 ModifiedTerrainSlopePosition slopePosition = modifiedTerrainSlopePositions.get(selectedSlopeId);
-                Polygon2I newPolygon = slopePosition.combine(movedCursor);
-                terrainEditorSlopeModifiedEvent.fire(new TerrainEditorSlopeModifiedEvent(selectedSlopeId, newPolygon));
-                if(terrainMouseDownEvent.isCtrlDown()) {
-                    logger.severe("Polygon: " + newPolygon.testString());
+                if (deletePressed) {
+                    Polygon2I newPolygon = slopePosition.remove(movedCursor);
+                    if (newPolygon != null) {
+                        terrainEditorSlopeModifiedEvent.fire(new TerrainEditorSlopeModifiedEvent(selectedSlopeId, newPolygon));
+                    } else {
+                        renderService.removeTerrainEditorRenderer(selectedSlopeId);
+                    }
+                } else {
+                    Polygon2I newPolygon = slopePosition.combine(movedCursor);
+                    terrainEditorSlopeModifiedEvent.fire(new TerrainEditorSlopeModifiedEvent(selectedSlopeId, newPolygon));
                 }
             } else {
-                ModifiedTerrainSlopePosition terrainSlopePosition = new ModifiedTerrainSlopePosition(slope4New.getId(), movedCursor);
-                int id = modifiedTerrainSlopePositions.size();
-                modifiedTerrainSlopePositions.put(id, terrainSlopePosition);
-                renderService.createTerrainEditorRenderer(id);
+                if (!deletePressed) {
+                    ModifiedTerrainSlopePosition slopePosition = new ModifiedTerrainSlopePosition(slope4New.getId(), movedCursor);
+                    int id = modifiedTerrainSlopePositions.size();
+                    modifiedTerrainSlopePositions.put(id, slopePosition);
+                    renderService.createTerrainEditorRenderer(id);
+                }
+            }
+        }
+    }
+
+    public void onTerrainKeyDown(@Observes TerrainKeyDownEvent terrainKeyDownEvent) {
+        if (terrainKeyDownEvent.getKeyboardEvent().getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+            deletePressed = true;
+            if (selectedSlopeId != NO_SELECTION) {
+                cursorType = CursorType.REMOVE;
+            } else {
+                cursorType = CursorType.REMOVE_MODE;
+            }
+        }
+    }
+
+    public void onTerrainKeyUp(@Observes TerrainKeyUpEvent terrainKeyUpEvent) {
+        if (terrainKeyUpEvent.getKeyboardEvent().getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+            deletePressed = false;
+            if (selectedSlopeId != NO_SELECTION) {
+                cursorType = CursorType.MODIFY;
+            } else {
+                cursorType = CursorType.CREATE;
             }
         }
     }
@@ -128,7 +181,13 @@ public class TerrainEditor {
     }
 
     public Collection<Integer> getSlopePolygonIds() {
-        return modifiedTerrainSlopePositions.keySet();
+        Collection<Integer> ids = new ArrayList<>();
+        for (Map.Entry<Integer, ModifiedTerrainSlopePosition> entry : modifiedTerrainSlopePositions.entrySet()) {
+            if (entry.getValue().getPolygon2I() != null) {
+                ids.add(entry.getKey());
+            }
+        }
+        return ids;
     }
 
     public Polygon2I getSlopePolygon(int id) {
@@ -178,7 +237,10 @@ public class TerrainEditor {
     public void updateTerrainSurface() {
         Collection<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         for (Map.Entry<Integer, ModifiedTerrainSlopePosition> entry : modifiedTerrainSlopePositions.entrySet()) {
-            terrainSlopePositions.add(entry.getValue().rendererTerrainSlopePosition(entry.getKey()));
+            ModifiedTerrainSlopePosition modifiedTerrainSlopePosition = entry.getValue();
+            if (modifiedTerrainSlopePosition.getPolygon2I() != null) {
+                terrainSlopePositions.add(modifiedTerrainSlopePosition.createRendererTerrainSlopePosition(entry.getKey()));
+            }
         }
         terrainSurface.setTerrainSlopePositions(terrainSlopePositions);
     }
@@ -186,7 +248,9 @@ public class TerrainEditor {
     public void save() {
         Collection<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         for (ModifiedTerrainSlopePosition modifiedTerrainSlopePosition : modifiedTerrainSlopePositions.values()) {
-            terrainSlopePositions.add(modifiedTerrainSlopePosition.serverTerrainSlopePosition());
+            if (modifiedTerrainSlopePosition.isValidForServer()) {
+                terrainSlopePositions.add(modifiedTerrainSlopePosition.createServerTerrainSlopePosition());
+            }
         }
 
         terrainEditorService.call(new RemoteCallback<Void>() {
@@ -205,5 +269,17 @@ public class TerrainEditor {
 
     public void setSlope4New(ObjectNameId slope4New) {
         this.slope4New = slope4New;
+    }
+
+    public Matrix4 getCursorModelMatrix() {
+        return cursorModelMatrix;
+    }
+
+    public int getSelectedSlopeId() {
+        return selectedSlopeId;
+    }
+
+    public CursorType getCursorType() {
+        return cursorType;
     }
 }

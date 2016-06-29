@@ -1,6 +1,7 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.game.jsre.client.common.Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,9 @@ public abstract class Scenario {
 
     static {
         register("Terrain", new TerrainScenario());
-        // register("Animation", new AnimationScenario());
+        register("Draw Polygon", new DrawPolygonScenario());
+        register("JUnit Test", new JUnitTestScenario());
+        register("Polygon Test", new TestPolygonScenario());
     }
 
 
@@ -46,4 +49,21 @@ public abstract class Scenario {
     }
 
     abstract public void render(ExtendedGraphicsContext extendedGraphicsContext);
+
+    public boolean onMouseDown(Index position) {
+        return false;
+    }
+
+    public boolean onMouseMove(Index position) {
+        return false;
+    }
+
+    public void onGenerate() {
+        System.out.println("---- onGenerate() not overridden ---");
+    }
+
+    public void onCmd1() {
+        System.out.println("---- onCmd1() not overridden ---");
+    }
+
 }

@@ -71,6 +71,11 @@ public class CollectionUtils {
         return new ArrayList<T>(collection).get(index);
     }
 
+    public static <T> T getLast(Collection<T> collection) {
+        List<T> list = new ArrayList<T>(collection);
+        return list.get(list.size() - 1);
+    }
+
     public static boolean hasNullElements(Collection collection) {
         for (Object o : collection) {
             if (o == null) {

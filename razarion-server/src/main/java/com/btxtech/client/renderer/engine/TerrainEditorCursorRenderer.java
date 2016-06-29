@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
-import com.btxtech.client.editor.terrain.TerrainEditorCursorPositionEvent;
 import com.btxtech.client.editor.terrain.TerrainEditorCursorShapeEvent;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -35,7 +34,6 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
     @Inject
     private TerrainEditor terrainEditor;
     private VertexShaderAttribute vertices;
-    private Matrix4 modelMatrix = Matrix4.createIdentity();
 
     @PostConstruct
     public void init() {
@@ -65,11 +63,6 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
         setElementCount(triangleFan.size());
     }
 
-    public void onTerrainEditorCursorPositionEvent(@Observes TerrainEditorCursorPositionEvent terrainEditorCursorPositionEvent) {
-        Vertex terrainPosition = terrainEditorCursorPositionEvent.getPosition();
-        modelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
-    }
-
     public void onTerrainEditorCursorShapeEvent(@Observes TerrainEditorCursorShapeEvent terrainEditorCursorShapeEvent) {
         fillBuffer(terrainEditorCursorShapeEvent.getCursor());
     }
@@ -82,9 +75,11 @@ public class TerrainEditorCursorRenderer extends AbstractRenderer {
 
         uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
-        uniformMatrix4fv(U_MODEL_MATRIX, modelMatrix);
+        uniformMatrix4fv(U_MODEL_MATRIX, terrainEditor.getCursorModelMatrix());
 
         vertices.activate();
+
+        uniform1i(U_CURSOR_TYPE, terrainEditor.getCursorType().ordinal());
 
         // Draw
         drawArrays(WebGLRenderingContext.TRIANGLE_FAN);

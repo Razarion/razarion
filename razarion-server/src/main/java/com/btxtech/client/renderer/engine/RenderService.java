@@ -123,6 +123,16 @@ public class RenderService {
         terrainEditorRenderer.fillBuffers();
     }
 
+
+    public void removeTerrainEditorRenderer(int id) {
+        for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
+            if(terrainEditorRenderer.getId() == id) {
+                terrainEditorRenderers.remove(terrainEditorRenderer);
+                return;
+            }
+        }
+    }
+
     private RenderSwitch createAndAddRenderSwitch(Class<? extends Renderer> normalRendererClass, Class<? extends Renderer> depthBufferRendererClass, Class<? extends Renderer> wireRendererClass, int id) {
         Renderer normalRenderer = null;
         if (normalRendererClass != null) {

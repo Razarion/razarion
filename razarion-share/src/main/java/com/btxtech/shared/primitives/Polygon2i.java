@@ -1,7 +1,7 @@
 package com.btxtech.shared.primitives;
 
-import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Line2I;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.common.utils.PairHolder;
@@ -60,10 +60,10 @@ public class Polygon2I {
     }
 
     public Polygon2I combine(Polygon2I other) {
-        System.out.println("@Test");
-        System.out.println("public void combine() {");
-        System.out.println(" Polygon2I poly1 = " + testString() + ";");
-        System.out.println(" Polygon2I poly2 = " + other.testString() + ";");
+//        System.out.println("@Test");
+//        System.out.println("public void combine() {");
+//        System.out.println(" Polygon2I poly1 = " + testString() + ";");
+//        System.out.println(" Polygon2I poly2 = " + other.testString() + ";");
 
         List<Integer> thisInsideOthers = other.getInsideCorners(this);
         List<Integer> othersInsideThis = getInsideCorners(other);
@@ -79,9 +79,9 @@ public class Polygon2I {
             combined = other.combineIfThisMoreCovered(othersInsideThis, this, thisInsideOthers);
         }
 
-        System.out.println(" Polygon2I polyResult = poly1.combine(poly2);");
-        System.out.println(" Assert.assertEquals(" + new Polygon2I(combined).testString() + ", polyResult);");
-        System.out.println("}");
+//        System.out.println(" Polygon2I polyResult = poly1.combine(poly2);");
+//        System.out.println(" Assert.assertEquals(" + new Polygon2I(combined).testString() + ", polyResult);");
+//        System.out.println("}");
         return new Polygon2I(combined);
     }
 
@@ -94,11 +94,9 @@ public class Polygon2I {
         int thisBegin = thisBeginEnd.getO1();
         int thisEnd = thisBeginEnd.getO2();
 
-        System.out.println("thisBegin: " + thisBegin);
-        System.out.println("thisEnd: " + thisEnd);
         // Other begin - end
-        int otherBegin = -1;
-        int otherEnd = -1;
+        int otherBegin;
+        int otherEnd;
         if (othersInsideThis.isEmpty()) {
             PairHolder<Integer> crossIndices = other.getCrossingIndices(getCorner(thisEnd), getCorner(thisEnd + 1));
             otherBegin = crossIndices.getO2();
@@ -111,8 +109,6 @@ public class Polygon2I {
         if (thisBegin < 0 || thisEnd < 0) {
             throw new IllegalArgumentException("begin or end not found");
         }
-        System.out.println("otherBegin: " + otherBegin);
-        System.out.println("otherEnd: " + otherEnd);
         // Combine
         // Add valid this corners
         for (int i = thisBegin; i < thisValidCorners + thisBegin; i++) {
@@ -139,6 +135,121 @@ public class Polygon2I {
         }
         combined.add(cross);
         return combined;
+    }
+
+    /**
+     * Subtracts given polygon from this. Sort of stamp out.
+     *
+     * @param other polygon
+     * @return null if this polygon is completely removed. (Other swallows it)
+     * @throws IllegalArgumentException if the polygon do not overlap
+     */
+    public Polygon2I remove(Polygon2I other) {
+        List<Integer> thisInsideOthers = other.getInsideCorners(this);
+        int thisValidCorners = size() - thisInsideOthers.size();
+        List<Integer> othersInsideThis = getInsideCorners(other);
+
+        if (thisInsideOthers.size() == size()) {
+            return null;
+        } else if (thisInsideOthers.isEmpty()) {
+            if (othersInsideThis.isEmpty()) {
+                throw new IllegalArgumentException("Polygons do not overlap");
+            } else if (othersInsideThis.size() == other.size()) {
+                System.out.println("Other polygon completely inside");
+                throw new IllegalArgumentException("Other polygon completely inside. Making wholes not allowed");
+            }
+        }
+
+        List<Index> remaining = new ArrayList<>();
+        if (thisInsideOthers.isEmpty()) {
+            PairHolder<Integer> otherBeginEnd = other.getBeginEnd(othersInsideThis);
+            int otherBegin = otherBeginEnd.getO1();
+            int otherEnd = otherBeginEnd.getO2();
+
+            // This begin - end
+            PairHolder<Integer> crossIndices = getCrossingIndices(other.getCorner(otherEnd), other.getCorner(otherEnd + 1));
+            int thisBegin = crossIndices.getO2();
+            int thisEnd = crossIndices.getO1();
+
+            // Combine
+            // Add valid this corners
+            for (int i = thisBegin; i < thisValidCorners + thisBegin; i++) {
+                remaining.add(getCorner(i));
+            }
+
+            // Add cross 1
+            Line2I thisLine = new Line2I(getCorner(thisBegin), getCorner(thisEnd));
+            Line2I otherBeginLine = new Line2I(other.getCorner(otherBegin - 1), other.getCorner(otherBegin));
+            Index cross = thisLine.getCrossPoint(otherBeginLine);
+            if (cross == null) {
+                throw new IllegalArgumentException("cross == null");
+            }
+            remaining.add(cross);
+
+            // Add stamp out other corners
+            for (int i = 1; i < othersInsideThis.size() + 1; i++) {
+                remaining.add(other.getCorner(otherBegin - i));
+            }
+
+
+            // Add cross 2
+            Line2I otherEndLine = new Line2I(other.getCorner(otherEnd), other.getCorner(otherEnd + 1));
+            cross = thisLine.getCrossPoint(otherEndLine);
+            if (cross == null) {
+                throw new IllegalArgumentException("cross == null");
+            }
+            remaining.add(cross);
+        } else {
+            PairHolder<Integer> thisBeginEnd = getBeginEnd(thisInsideOthers);
+            int thisBegin = thisBeginEnd.getO1();
+            int thisEnd = thisBeginEnd.getO2();
+
+            // Other begin - end
+            int otherBegin;
+            int otherEnd;
+            if (othersInsideThis.isEmpty()) {
+                PairHolder<Integer> crossIndices = other.getCrossingIndices(getCorner(thisEnd), getCorner(thisEnd + 1));
+                otherBegin = crossIndices.getO2();
+                otherEnd = crossIndices.getO1();
+            } else {
+                PairHolder<Integer> otherBeginEnd = other.getBeginEnd(othersInsideThis);
+                otherBegin = otherBeginEnd.getO1();
+                otherEnd = otherBeginEnd.getO2();
+            }
+            if (thisBegin < 0 || thisEnd < 0) {
+                throw new IllegalArgumentException("begin or end not found");
+            }
+
+            // Combine
+            // Add valid this corners
+            for (int i = thisBegin; i < thisValidCorners + thisBegin; i++) {
+                remaining.add(getCorner(i));
+            }
+
+            // Add cross 1
+            Line2I thisLineEnd = new Line2I(getCorner(thisEnd), getCorner(thisEnd + 1));
+            Line2I otherBeginLine = new Line2I(other.getCorner(otherBegin - 1), other.getCorner(otherBegin));
+            Index cross = thisLineEnd.getCrossPoint(otherBeginLine);
+            if (cross == null) {
+                throw new IllegalArgumentException("cross == null");
+            }
+            remaining.add(cross);
+
+            // Add stamp out other corners
+            for (int i = 1; i < othersInsideThis.size() + 1; i++) {
+                remaining.add(other.getCorner(otherBegin - i));
+            }
+
+            // Add cross 2
+            Line2I thisLineBegin = new Line2I(getCorner(thisBegin - 1), getCorner(thisBegin));
+            Line2I otherBeginEnd = new Line2I(other.getCorner(otherEnd + 1), other.getCorner(otherEnd));
+            cross = thisLineBegin.getCrossPoint(otherBeginEnd);
+            if (cross == null) {
+                throw new IllegalArgumentException("cross == null");
+            }
+            remaining.add(cross);
+        }
+        return new Polygon2I(remaining);
     }
 
 //    System.out.println("@Test");

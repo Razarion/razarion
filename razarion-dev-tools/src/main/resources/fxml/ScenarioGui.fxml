@@ -19,17 +19,20 @@
                 <Slider fx:id="zoomSlider" majorTickUnit="5.0" max="10.0" min="-10.0" minorTickCount="1" prefHeight="14.0" prefWidth="79.0" showTickLabels="true" showTickMarks="true" />
                 <Button mnemonicParsing="false" onAction="#onZoomResetButon" text="1:1" />
             <TextField fx:id="scaleField" editable="false" prefWidth="50.0" />
-                <Separator orientation="VERTICAL" />
                 <TextField fx:id="mouseLabel" prefWidth="70.0" />
             <Separator orientation="VERTICAL" />
             <ComboBox fx:id="scenarioBox" onAction="#scenarioBoxChanged" prefWidth="150.0" />
+            <Separator orientation="VERTICAL" />
+            <Button mnemonicParsing="false" onAction="#onGenerateButtonPressed" text="Generate" />
+                <Separator orientation="VERTICAL" />
+            <Button mnemonicParsing="false" onAction="#onCmd1ButtonPressed" text="CMD 1" />
             </items>
         </ToolBar>
     </top>
     <center>
         <AnchorPane fx:id="anchorPanel" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Canvas fx:id="canvas" height="200.0" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMouseReleased="#onMouseReleased" onScroll="#onScroll" width="200.0" />
+            <Canvas fx:id="canvas" height="200.0" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onScroll="#onScroll" width="200.0" />
          </children></AnchorPane>
     </center>
 </BorderPane>

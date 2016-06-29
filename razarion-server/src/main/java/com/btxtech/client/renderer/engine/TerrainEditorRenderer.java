@@ -2,13 +2,12 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.editor.terrain.TerrainEditorSlopeModifiedEvent;
-import com.btxtech.client.editor.terrain.TerrainEditorSlopeSelectedEvent;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +30,6 @@ public class TerrainEditorRenderer extends AbstractRenderer {
     @Inject
     private TerrainEditor terrainEditor;
     private VertexShaderAttribute vertices;
-    private boolean selected;
 
     @PostConstruct
     public void init() {
@@ -58,10 +56,6 @@ public class TerrainEditorRenderer extends AbstractRenderer {
         setElementCount(corners.size());
     }
 
-    public void onTerrainEditorSlopeSelectedEvent(@Observes TerrainEditorSlopeSelectedEvent terrainEditorSlopeSelectedEvent) {
-        selected = getId() == terrainEditorSlopeSelectedEvent.getSlopeId();
-    }
-
     public void onTerrainEditorSlopeModifiedEvent(@Observes TerrainEditorSlopeModifiedEvent terrainEditorSlopeModifiedEvent) {
         if (getId() == terrainEditorSlopeModifiedEvent.getSlopeId()) {
             fillBuffers(terrainEditorSlopeModifiedEvent.getSlope());
@@ -77,11 +71,10 @@ public class TerrainEditorRenderer extends AbstractRenderer {
         uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
 
-        uniform1b("uSelected", selected);
+        uniform1b("uSelected", getId() == terrainEditor.getSelectedSlopeId());
 
         vertices.activate();
 
-        // Draw
         drawArrays(WebGLRenderingContext.LINE_LOOP);
     }
 }

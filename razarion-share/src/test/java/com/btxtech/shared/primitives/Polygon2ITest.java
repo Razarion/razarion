@@ -92,4 +92,37 @@ public class Polygon2ITest {
 //        // Assert.assertEquals( new Polygon2I(Arrays.asList(new Index(1021, 1040), new Index(996, 1084), new Index(946, 1084), new Index(1000, 1077), new Index(1000, 1120), new Index(580, 500), new Index(1000, 500), new Index(1000, 1004))), polyResult);
 //    }
 
+    @Test
+    public void removeCompletelyInside() {
+        Polygon2I outer = new Polygon2I(Arrays.asList(new Index(-9, 171), new Index(107, 155), new Index(166, 116), new Index(168, 17), new Index(165, -74), new Index(113, -141), new Index(3, -146), new Index(-103, -140), new Index(-172, -75), new Index(-176, 28), new Index(-147, 131)));
+        Polygon2I inner = new Polygon2I(Arrays.asList(new Index(-25, 75), new Index(19, 71), new Index(70, 27), new Index(76, -43), new Index(13, -70), new Index(-47, -59), new Index(-80, 49)));
+        Assert.assertNull(inner.remove(outer));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void removeOtherCompletelyInside() {
+        Polygon2I outer = new Polygon2I(Arrays.asList(new Index(-9, 171), new Index(107, 155), new Index(166, 116), new Index(168, 17), new Index(165, -74), new Index(113, -141), new Index(3, -146), new Index(-103, -140), new Index(-172, -75), new Index(-176, 28), new Index(-147, 131)));
+        Polygon2I inner = new Polygon2I(Arrays.asList(new Index(-25, 75), new Index(19, 71), new Index(70, 27), new Index(76, -43), new Index(13, -70), new Index(-47, -59), new Index(-80, 49)));
+        outer.remove(inner);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void removeDoNotOverlap() {
+        Polygon2I polygon1 = new Polygon2I(Arrays.asList(new Index(20, 80), new Index(-67, 80), new Index(-80, -7), new Index(-69, -69), new Index(31, -83), new Index(53, 37)));
+        Polygon2I polygon2 = new Polygon2I(Arrays.asList(new Index(275, 74), new Index(181, 66), new Index(139, -60), new Index(282, -94), new Index(332, -5)));
+        polygon1.remove(polygon2);
+    }
+
+    @Test
+    public void removeThisNoCorner() {
+        Polygon2I polygon1 = new Polygon2I(Arrays.asList(new Index(-79, 7), new Index(-25, -74), new Index(50, -72), new Index(82, -42), new Index(46, 83), new Index(-73, 83)));
+        Polygon2I polygon2 = new Polygon2I(Arrays.asList(new Index(116, 127), new Index(31, 40), new Index(103, -11), new Index(202, -14), new Index(231, 53), new Index(200, 129)));
+
+        Polygon2I expected = new Polygon2I(Arrays.asList(new Index(46, 83), new Index(-73, 83), new Index(-79, 7), new Index(-25, -74), new Index(50, -72), new Index(82, -42), new Index(65, 16), new Index(31, 40), new Index(52, 62)));
+        Assert.assertEquals(expected, polygon1.remove(polygon2));
+
+        expected = new Polygon2I(Arrays.asList(new Index(103, -11), new Index(202, -14), new Index(231, 53), new Index(200, 129), new Index(116, 127), new Index(52, 62), new Index(65, 16)));
+
+        Assert.assertEquals(expected, polygon2.remove(polygon1));
+    }
 }
