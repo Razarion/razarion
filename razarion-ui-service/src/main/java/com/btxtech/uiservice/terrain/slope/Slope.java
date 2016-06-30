@@ -1,9 +1,7 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.uiservice.ImageDescriptor;
-import com.btxtech.uiservice.terrain.ground.GroundMesh;
-import com.btxtech.uiservice.terrain.ground.GroundSlopeConnector;
 import com.btxtech.game.jsre.client.common.CollectionUtils;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Line2I;
 import com.btxtech.game.jsre.common.MathHelper;
@@ -11,6 +9,10 @@ import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.uiservice.terrain.ground.GroundMesh;
+import com.btxtech.uiservice.terrain.ground.GroundSlopeConnector;
+import com.btxtech.uiservice.terrain.ground.InterpolatedVertexData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -274,12 +276,17 @@ public class Slope {
     private void fillObstacle(List<Vertex> polygon, Collection<Obstacle> obstacles) {
         Index last = polygon.get(0).toXY().getPositionRound();
         for (int i = 0; i < polygon.size(); i++) {
-            Index next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY().getPositionRound();;
-            if(last.equals(next)) {
+            Index next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY().getPositionRound();
+            ;
+            if (last.equals(next)) {
                 continue;
             }
             obstacles.add(new Obstacle(new Line2I(last, next)));
             last = next;
         }
+    }
+
+    public InterpolatedVertexData getInterpolatedVertexData(DecimalPosition absoluteXY) {
+        return null;
     }
 }

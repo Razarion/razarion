@@ -1,10 +1,5 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.uiservice.ImageDescriptor;
-import com.btxtech.uiservice.terrain.ground.GroundMesh;
-import com.btxtech.uiservice.terrain.ground.GroundModeler;
-import com.btxtech.uiservice.terrain.slope.Slope;
-import com.btxtech.uiservice.terrain.slope.SlopeWater;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.dto.GroundSkeleton;
@@ -13,6 +8,12 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.primitives.Ray3d;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.uiservice.terrain.ground.GroundMesh;
+import com.btxtech.uiservice.terrain.ground.GroundModeler;
+import com.btxtech.uiservice.terrain.ground.InterpolatedVertexData;
+import com.btxtech.uiservice.terrain.slope.Slope;
+import com.btxtech.uiservice.terrain.slope.SlopeWater;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -210,6 +211,29 @@ public class TerrainSurface {
     }
 
     public double getInterpolatedHeight(DecimalPosition absoluteXY) {
+        InterpolatedVertexData interpolatedVertexData = groundMesh.getInterpolatedVertexData(absoluteXY);
+        if (interpolatedVertexData != null) {
+            // TODO here
+        }
+
         return groundMesh.getInterpolatedHeight(absoluteXY);
     }
+
+    public InterpolatedVertexData getInterpolatedVertexData(DecimalPosition absoluteXY) {
+        // TODO here
+        InterpolatedVertexData interpolatedVertexData = groundMesh.getInterpolatedVertexData(absoluteXY);
+        if (interpolatedVertexData != null) {
+            return interpolatedVertexData;
+        }
+
+        for (Slope slope : slopeMap.values()) {
+            interpolatedVertexData = slope.getInterpolatedVertexData(absoluteXY);
+            if(interpolatedVertexData != null) {
+                return interpolatedVertexData;
+            }
+        }
+
+        throw new IllegalArgumentException("No InterpolatedVertexData at: " + absoluteXY);
+    }
+
 }

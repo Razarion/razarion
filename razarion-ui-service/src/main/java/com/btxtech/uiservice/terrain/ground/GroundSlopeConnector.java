@@ -1,12 +1,12 @@
 package com.btxtech.uiservice.terrain.ground;
 
-import com.btxtech.uiservice.terrain.slope.Slope;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.client.common.Line;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.uiservice.terrain.slope.Slope;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +79,8 @@ public class GroundSlopeConnector {
         outerGroundEdges = setupGroundEdgeList(bottomIndices, groundMesh);
         outerSlopeEdges = setupSlopeEdgeList(slope.getOuterLineMeshIndex(), groundMeshOriginal, outerGroundEdges.get(0));
 
-        triangulation(outerConnectionVertexList, outerGroundEdges, outerSlopeEdges, true);
+        GroundSlopeConnectorTriangulator triangulator = new GroundSlopeConnectorTriangulator(outerConnectionVertexList, outerGroundEdges, outerSlopeEdges, true);
+        triangulator.triangulation();
     }
 
     private List<VertexDataObject> setupGroundEdgeList(List<Index> indices, GroundMesh groundMesh) {
@@ -87,13 +88,13 @@ public class GroundSlopeConnector {
         Index start = indices.get(0);
         boolean failed = false;
         while (!groundMesh.contains(start)) {
-            if(start.getX() < 0) {
+            if (start.getX() < 0) {
                 failed = true;
                 break;
             }
             start = start.sub(1, 0);
         }
-        if(failed) {
+        if (failed) {
             start = indices.get(0);
             while (!groundMesh.contains(start)) {
                 start = start.add(1, 0);
@@ -164,55 +165,6 @@ public class GroundSlopeConnector {
         return correctedSlopeLine;
     }
 
-    private void triangulation(VertexList vertexList, List<VertexDataObject> groundLine, List<VertexDataObject> slopeLine, boolean isSlopeInner) {
-        int innerIndex = 0;
-        int outerIndex = 0;
-
-        Polygon2D innerPolygon = new Polygon2D(Vertex.toXY(isSlopeInner ? slopeLine : groundLine));
-
-        groundLine.add(groundLine.get(0));
-        slopeLine.add(slopeLine.get(0));
-
-        while (outerIndex + 1 < groundLine.size() || innerIndex + 1 < slopeLine.size()) {
-            VertexDataObject groundVertex = groundLine.get(outerIndex);
-            VertexDataObject slopeVertex = slopeLine.get(innerIndex);
-
-            double distanceOuter = Double.MAX_VALUE;
-            if (outerIndex + 1 < groundLine.size()) {
-                distanceOuter = groundLine.get(outerIndex + 1).distance(slopeVertex);
-            }
-
-            double distanceInner = Double.MAX_VALUE;
-            if (innerIndex + 1 < slopeLine.size()) {
-                distanceInner = slopeLine.get(innerIndex + 1).distance(groundVertex);
-            }
-
-            if (distanceOuter < distanceInner) {
-                if (innerPolygon.isLineCrossing2(new Line(groundLine.get(outerIndex + 1).toXY(), slopeVertex.toXY()))) {
-                    addOuterTriangle(vertexList, groundVertex, slopeLine.get(innerIndex + 1), slopeVertex);
-                    innerIndex++;
-                } else {
-                    addOuterTriangle(vertexList, groundVertex, groundLine.get(outerIndex + 1), slopeVertex);
-                    outerIndex++;
-                }
-            } else {
-                if (innerPolygon.isLineCrossing2(new Line(groundVertex.toXY(), slopeLine.get(innerIndex + 1).toXY()))) {
-                    addOuterTriangle(vertexList, groundVertex, groundLine.get(outerIndex + 1), slopeVertex);
-                    outerIndex++;
-                } else {
-                    addOuterTriangle(vertexList, groundVertex, slopeLine.get(innerIndex + 1), slopeVertex);
-                    innerIndex++;
-                }
-            }
-        }
-    }
-
-    private void addOuterTriangle(VertexList vertexList, VertexDataObject vertexA, VertexDataObject vertexB, VertexDataObject vertexC) {
-        vertexList.add(vertexA, vertexA.getNorm(), vertexA.getTangent(), vertexA.getSplatting(),
-                vertexB, vertexB.getNorm(), vertexB.getTangent(), vertexB.getSplatting(),
-                vertexC, vertexC.getNorm(), vertexC.getTangent(), vertexC.getSplatting());
-    }
-
     private List<Index> getConnectedEdges(Index start, GroundMesh groundMesh) {
         List<Index> connectingEdges = new ArrayList<>();
         // North
@@ -260,7 +212,8 @@ public class GroundSlopeConnector {
         innerGroundEdges = setupGroundEdgeList(topIndices, topMesh);
         innerSlopeEdges = setupSlopeEdgeList(slope.getInnerLineMeshIndex(), groundMeshOriginal, innerGroundEdges.get(0));
 
-        triangulation(innerConnectionVertexList, innerGroundEdges, innerSlopeEdges, false);
+        GroundSlopeConnectorTriangulator triangulator = new GroundSlopeConnectorTriangulator(innerConnectionVertexList, innerGroundEdges, innerSlopeEdges, false);
+        triangulator.triangulation();
     }
 
 
