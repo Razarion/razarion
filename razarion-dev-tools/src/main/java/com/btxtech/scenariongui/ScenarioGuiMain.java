@@ -28,7 +28,7 @@ import javafx.stage.WindowEvent;
  * Created by Beat
  * 24.01.2016.
  */
-public class ScenarioGui extends Application {
+public class ScenarioGuiMain extends Application {
     private static final int CANVAS_WIDTH = 5000;
     private static final int CANVAS_HEIGHT = 5000;
     private static final int WIDTH = 1200;
@@ -38,16 +38,17 @@ public class ScenarioGui extends Application {
 
 
     public void start(final Stage stage) throws Exception {
-        stage.setFullScreen(true);
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/ScenarioGui.fxml"));
         stage.setTitle("Scenario Gui");
         stage.setScene(new Scene(root));
-        stage.setX(-1288);
-        stage.setY(168);
+        stage.setX(-1279);
+        stage.setY(182);
+        stage.setWidth(1277);
+        stage.setHeight(1016);
         stage.show();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
-                System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY());
+                System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY() + " " + stage.getWidth() + ":" + stage.getHeight());
             }
         });
     }

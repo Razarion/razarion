@@ -1,7 +1,5 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.uiservice.terrain.ground.GroundMesh;
-import com.btxtech.uiservice.terrain.ground.InterpolatedVertexData;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.game.jsre.common.MathHelper;
 import com.btxtech.shared.Shape;
@@ -11,6 +9,8 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.uiservice.terrain.ground.GroundMesh;
+import com.btxtech.uiservice.terrain.ground.InterpolatedVertexData;
 
 import java.util.List;
 
@@ -54,19 +54,35 @@ public class SlopeModeler {
     public static void generateMesh(Mesh mesh, SlopeSkeleton slopeSkeleton, List<AbstractBorder> borders, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMesh) {
         int templateSegment = 0;
         int meshColumn = 0;
+
+        Index lastInnerBorder = null;
+        Vertex lastInnerVertex = null;
         for (AbstractBorder border : borders) {
             for (VerticalSegment verticalSegment : border.getVerticalSegments()) {
                 Matrix4 transformationMatrix = verticalSegment.getTransformation();
                 for (int row = 0; row < slopeSkeleton.getRows(); row++) {
+                    Vertex preCalculatedVertex = null;
+                    if (row + 1 == slopeSkeleton.getRows()) {
+                        // Fix for imprecision of inner border
+                        if (lastInnerBorder != null && lastInnerBorder.equals(verticalSegment.getInner())) {
+                            preCalculatedVertex = lastInnerVertex;
+                        }
+                    }
                     SlopeNode slopeNode = slopeSkeleton.getSlopeNodes()[templateSegment][row];
                     Vertex transformedPoint = transformationMatrix.multiply(slopeNode.getPosition(), 1.0);
                     InterpolatedVertexData interpolatedVertexData = groundMesh.getInterpolatedVertexData(transformedPoint.toXY());
                     if (interpolatedVertexData != null) {
-                        mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(slopeNode), (float)interpolatedVertexData.getSplatting());
-                        if (row == 0) {
-                            outerLineMeshIndex.add(new Index(meshColumn, row));
-                        } else if (row + 1 == slopeSkeleton.getRows()) {
-                            innerLineMeshIndex.add(new Index(meshColumn, row));
+                        if (preCalculatedVertex == null) {
+                            mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(slopeNode), (float) interpolatedVertexData.getSplatting());
+                            if (row == 0) {
+                                outerLineMeshIndex.add(new Index(meshColumn, row));
+                            } else if (row + 1 == slopeSkeleton.getRows()) {
+                                innerLineMeshIndex.add(new Index(meshColumn, row));
+                                lastInnerBorder = verticalSegment.getInner();
+                                lastInnerVertex = transformedPoint;
+                            }
+                        } else {
+                            mesh.addVertex(meshColumn, row, preCalculatedVertex, setupSlopeFactor(slopeNode), (float)interpolatedVertexData.getSplatting());
                         }
                     }
                 }
