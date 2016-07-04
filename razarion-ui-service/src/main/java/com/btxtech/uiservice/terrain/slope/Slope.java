@@ -10,9 +10,9 @@ import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.primitives.Polygon2D;
 import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
 import com.btxtech.uiservice.terrain.ground.GroundMesh;
 import com.btxtech.uiservice.terrain.ground.GroundSlopeConnector;
-import com.btxtech.uiservice.terrain.ground.InterpolatedVertexData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -277,7 +277,6 @@ public class Slope {
         Index last = polygon.get(0).toXY().getPositionRound();
         for (int i = 0; i < polygon.size(); i++) {
             Index next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY().getPositionRound();
-            ;
             if (last.equals(next)) {
                 continue;
             }
@@ -286,7 +285,11 @@ public class Slope {
         }
     }
 
-    public InterpolatedVertexData getInterpolatedVertexData(DecimalPosition absoluteXY) {
-        return null;
+    public InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY) {
+        InterpolatedTerrainTriangle interpolatedTerrainTriangle = groundPlateauConnector.getInterpolatedVertexData(absoluteXY);
+        if(interpolatedTerrainTriangle != null ) {
+            return interpolatedTerrainTriangle;
+        }
+        return mesh.getInterpolatedVertexData(absoluteXY);
     }
 }

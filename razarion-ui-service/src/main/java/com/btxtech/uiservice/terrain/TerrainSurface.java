@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.SlopeSkeleton;
@@ -11,7 +12,6 @@ import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.terrain.ground.GroundMesh;
 import com.btxtech.uiservice.terrain.ground.GroundModeler;
-import com.btxtech.uiservice.terrain.ground.InterpolatedVertexData;
 import com.btxtech.uiservice.terrain.slope.Slope;
 import com.btxtech.uiservice.terrain.slope.SlopeWater;
 
@@ -147,7 +147,7 @@ public class TerrainSurface {
 
     public Vertex calculatePositionGroundMesh(Ray3d worldPickRay) {
         DecimalPosition zeroLevel = calculatePositionOnZeroLevel(worldPickRay).toXY();
-        double height = groundMesh.getInterpolatedHeight(zeroLevel);
+        double height = getInterpolatedTerrainTriangle(zeroLevel).getHeight();
         return new Vertex(zeroLevel, height);
     }
 
@@ -206,34 +206,20 @@ public class TerrainSurface {
         return obstacles;
     }
 
-    public Vertex getInterpolatedNorm(DecimalPosition absoluteXY) {
-        return groundMesh.getInterpolatedNorm(absoluteXY);
-    }
-
-    public double getInterpolatedHeight(DecimalPosition absoluteXY) {
-        InterpolatedVertexData interpolatedVertexData = groundMesh.getInterpolatedVertexData(absoluteXY);
-        if (interpolatedVertexData != null) {
-            // TODO here
-        }
-
-        return groundMesh.getInterpolatedHeight(absoluteXY);
-    }
-
-    public InterpolatedVertexData getInterpolatedVertexData(DecimalPosition absoluteXY) {
-        // TODO here
-        InterpolatedVertexData interpolatedVertexData = groundMesh.getInterpolatedVertexData(absoluteXY);
-        if (interpolatedVertexData != null) {
-            return interpolatedVertexData;
+    public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {
+        InterpolatedTerrainTriangle interpolatedTerrainTriangle = groundMesh.getInterpolatedTerrainTriangle(absoluteXY);
+        if (interpolatedTerrainTriangle != null) {
+            return interpolatedTerrainTriangle;
         }
 
         for (Slope slope : slopeMap.values()) {
-            interpolatedVertexData = slope.getInterpolatedVertexData(absoluteXY);
-            if(interpolatedVertexData != null) {
-                return interpolatedVertexData;
+            interpolatedTerrainTriangle = slope.getInterpolatedVertexData(absoluteXY);
+            if (interpolatedTerrainTriangle != null) {
+                return interpolatedTerrainTriangle;
             }
         }
 
-        throw new IllegalArgumentException("No InterpolatedVertexData at: " + absoluteXY);
+        throw new IllegalArgumentException("No InterpolatedTerrainTriangle at: " + absoluteXY);
     }
 
 }

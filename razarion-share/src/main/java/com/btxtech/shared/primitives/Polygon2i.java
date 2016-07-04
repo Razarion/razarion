@@ -155,7 +155,6 @@ public class Polygon2I {
             if (othersInsideThis.isEmpty()) {
                 throw new IllegalArgumentException("Polygons do not overlap");
             } else if (othersInsideThis.size() == other.size()) {
-                System.out.println("Other polygon completely inside");
                 throw new IllegalArgumentException("Other polygon completely inside. Making wholes not allowed");
             }
         }

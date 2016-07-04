@@ -9,8 +9,8 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
 import com.btxtech.uiservice.terrain.ground.GroundMesh;
-import com.btxtech.uiservice.terrain.ground.InterpolatedVertexData;
 
 import java.util.List;
 
@@ -70,10 +70,10 @@ public class SlopeModeler {
                     }
                     SlopeNode slopeNode = slopeSkeleton.getSlopeNodes()[templateSegment][row];
                     Vertex transformedPoint = transformationMatrix.multiply(slopeNode.getPosition(), 1.0);
-                    InterpolatedVertexData interpolatedVertexData = groundMesh.getInterpolatedVertexData(transformedPoint.toXY());
-                    if (interpolatedVertexData != null) {
+                    InterpolatedTerrainTriangle terrainTriangle = groundMesh.getInterpolatedTerrainTriangle(transformedPoint.toXY());
+                    if (terrainTriangle != null) {
                         if (preCalculatedVertex == null) {
-                            mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(slopeNode), (float) interpolatedVertexData.getSplatting());
+                            mesh.addVertex(meshColumn, row, transformedPoint, setupSlopeFactor(slopeNode), (float) terrainTriangle.getSplatting());
                             if (row == 0) {
                                 outerLineMeshIndex.add(new Index(meshColumn, row));
                             } else if (row + 1 == slopeSkeleton.getRows()) {
@@ -82,7 +82,7 @@ public class SlopeModeler {
                                 lastInnerVertex = transformedPoint;
                             }
                         } else {
-                            mesh.addVertex(meshColumn, row, preCalculatedVertex, setupSlopeFactor(slopeNode), (float)interpolatedVertexData.getSplatting());
+                            mesh.addVertex(meshColumn, row, preCalculatedVertex, setupSlopeFactor(slopeNode), (float)terrainTriangle.getSplatting());
                         }
                     }
                 }

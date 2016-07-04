@@ -17,6 +17,7 @@ public class GroundSlopeConnectorTriangulator {
     private final VertexList vertexList;
     private final List<VertexDataObject> groundLine;
     private final List<VertexDataObject> slopeLine;
+    private boolean isSlopeInner;
     private final Polygon2D innerPolygon;
     private final Polygon2D outerPolygon;
     private int innerIndex;
@@ -26,8 +27,9 @@ public class GroundSlopeConnectorTriangulator {
         this.vertexList = vertexList;
         this.groundLine = groundLine;
         this.slopeLine = slopeLine;
-        innerPolygon = new Polygon2D(Vertex.toXY(isSlopeInner ? slopeLine : groundLine));
-        outerPolygon = new Polygon2D(Vertex.toXY(isSlopeInner ? groundLine : slopeLine));
+        this.isSlopeInner = isSlopeInner;
+        innerPolygon = new Polygon2D(Vertex.toXY(slopeLine));
+        outerPolygon = new Polygon2D(Vertex.toXY(groundLine));
     }
 
     public void triangulation() {
@@ -55,11 +57,11 @@ public class GroundSlopeConnectorTriangulator {
                         // TODO here
                         outerIndex++;
                     } else {
-                        addOuterTriangle(groundVertex, slopeLine.get(innerIndex + 1), slopeVertex);
+                        addTriangle(groundVertex, slopeLine.get(innerIndex + 1), slopeVertex);
                         innerIndex++;
                     }
                 } else {
-                    addOuterTriangle(groundVertex, groundLine.get(outerIndex + 1), slopeVertex);
+                    addTriangle(groundVertex, groundLine.get(outerIndex + 1), slopeVertex);
                     outerIndex++;
                 }
             } else {
@@ -69,11 +71,11 @@ public class GroundSlopeConnectorTriangulator {
                         innerIndex++;
                         // TODO here
                     } else {
-                        addOuterTriangle(groundVertex, groundLine.get(outerIndex + 1), slopeVertex);
+                        addTriangle(groundVertex, groundLine.get(outerIndex + 1), slopeVertex);
                         outerIndex++;
                     }
                 } else {
-                    addOuterTriangle(groundVertex, slopeLine.get(innerIndex + 1), slopeVertex);
+                    addTriangle(groundVertex, slopeLine.get(innerIndex + 1), slopeVertex);
                     innerIndex++;
                 }
             }
@@ -86,9 +88,22 @@ public class GroundSlopeConnectorTriangulator {
         return innerPolygon.isLineCrossing(line) || outerPolygon.isLineCrossing(line);
     }
 
-    private void addOuterTriangle(VertexDataObject vertexA, VertexDataObject vertexB, VertexDataObject vertexC) {
-        vertexList.add(vertexA, vertexA.getNorm(), vertexA.getTangent(), vertexA.getSplatting(),
-                vertexB, vertexB.getNorm(), vertexB.getTangent(), vertexB.getSplatting(),
+    private void addTriangle(VertexDataObject vertexA, VertexDataObject vertexB, VertexDataObject vertexC) {
+        VertexDataObject vertexACorrected;
+        VertexDataObject vertexBCorrected;
+        if (isSlopeInner) {
+            vertexACorrected = vertexA;
+            vertexBCorrected = vertexB;
+        } else {
+            vertexACorrected = vertexB;
+            vertexBCorrected = vertexA;
+        }
+        double zA = vertexACorrected.cross(vertexBCorrected, vertexC).getZ();
+        double zB = vertexBCorrected.cross(vertexC, vertexACorrected).getZ();
+        double zC = vertexC.cross(vertexACorrected, vertexBCorrected).getZ();
+
+        vertexList.add(vertexACorrected, vertexACorrected.getNorm(), vertexACorrected.getTangent(), vertexACorrected.getSplatting(),
+                vertexBCorrected, vertexBCorrected.getNorm(), vertexBCorrected.getTangent(), vertexBCorrected.getSplatting(),
                 vertexC, vertexC.getNorm(), vertexC.getTangent(), vertexC.getSplatting());
     }
 

@@ -6,6 +6,7 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
  * Created by Beat
  * 26.06.2016.
  */
+@Deprecated
 public class InterpolatedVertexData {
     private final VertexData vertexDataBL;
     private final VertexData vertexDataBR;

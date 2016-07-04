@@ -70,8 +70,9 @@ public class ScenarioGuiController implements Initializable {
 
 
     public void onMouseDragged(Event event) {
-        scenarioRenderer.shifting(event);
-        scenarioRenderer.render();
+        if (scenarioRenderer.shifting(event)) {
+            scenarioRenderer.render();
+        }
     }
 
     public void onMouseReleased(Event event) {

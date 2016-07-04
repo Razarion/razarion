@@ -1,9 +1,9 @@
 package com.btxtech.uiservice.terrain.ground;
 
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.client.common.Line;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Polygon2D;
+import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
 import com.btxtech.shared.primitives.Polygon2I;
 import com.btxtech.shared.primitives.Vertex;
 import com.btxtech.uiservice.terrain.slope.Slope;
@@ -45,6 +45,7 @@ public class GroundSlopeConnector {
         if (hasTop) {
             innerConnectionVertexList = new VertexList();
             topMesh = new GroundMesh();
+            topMesh.setEdgeLength(groundMesh.getEdgeLength());
             topIndices = new ArrayList<>();
         }
         bottomIndices = new ArrayList<>();
@@ -141,7 +142,7 @@ public class GroundSlopeConnector {
             slopeLine.add(new VertexDataObject(vertex,
                     slope.getMesh().getNormSave(index),
                     slope.getMesh().getTangentSave(index),
-                    groundMesh.getInterpolatedVertexData(vertex.toXY()).getSplatting()));
+                    groundMesh.getInterpolatedTerrainTriangle(vertex.toXY()).getSplatting()));
         }
 
         // Find nearest point and fix list
@@ -213,6 +214,7 @@ public class GroundSlopeConnector {
         innerSlopeEdges = setupSlopeEdgeList(slope.getInnerLineMeshIndex(), groundMeshOriginal, innerGroundEdges.get(0));
 
         GroundSlopeConnectorTriangulator triangulator = new GroundSlopeConnectorTriangulator(innerConnectionVertexList, innerGroundEdges, innerSlopeEdges, false);
+
         triangulator.triangulation();
     }
 
@@ -270,5 +272,24 @@ public class GroundSlopeConnector {
 
     public VertexList getOuterConnectionVertexList() {
         return outerConnectionVertexList;
+    }
+
+    public InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY) {
+        if (topMesh != null) {
+            InterpolatedTerrainTriangle terrainTriangle = topMesh.getInterpolatedTerrainTriangle(absoluteXY);
+            if (terrainTriangle != null) {
+                return terrainTriangle;
+            }
+            terrainTriangle = innerConnectionVertexList.getInterpolatedTerrainTriangle(absoluteXY);
+            if (terrainTriangle != null) {
+                return terrainTriangle;
+            }
+        }
+        InterpolatedTerrainTriangle terrainTriangle = outerConnectionVertexList.getInterpolatedTerrainTriangle(absoluteXY);
+        if (terrainTriangle != null) {
+            return terrainTriangle;
+        }
+
+        return null;
     }
 }

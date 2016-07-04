@@ -2,6 +2,8 @@ package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.GameMock;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.terrain.slope.Slope;
 import javafx.scene.paint.Color;
@@ -11,14 +13,15 @@ import javafx.scene.paint.Color;
  * 19.03.2016.
  */
 public class TerrainScenario extends Scenario {
+    private TerrainSurface terrainSurface;
+
     @Override
     public void render(ExtendedGraphicsContext context) {
-        TerrainSurface terrainSurface = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
+        terrainSurface = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
         context.strokeVertexList(terrainSurface.getGroundVertexList().getVertices(), 0.1, Color.BLUE);
 
         for (Integer slopeId : terrainSurface.getSlopeIds()) {
             Slope slope = terrainSurface.getSlope(slopeId);
-
 
 
             // context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
@@ -37,7 +40,11 @@ public class TerrainScenario extends Scenario {
 
 
         }
+    }
 
-
+    @Override
+    public boolean onMouseDown(Index position) {
+        terrainSurface.getInterpolatedTerrainTriangle(new DecimalPosition(position));
+        return false;
     }
 }

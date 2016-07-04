@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Triangle2D", new Triangle2DScenario());
         register("Terrain", new TerrainScenario());
         register("Draw Polygon", new DrawPolygonScenario());
         register("JUnit Test", new JUnitTestScenario());

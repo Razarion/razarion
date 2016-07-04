@@ -4,6 +4,8 @@ import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
+import com.btxtech.shared.primitives.TerrainTriangleCorner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +23,10 @@ public class GroundMesh {
 
     public interface VertexVisitor {
         void onVisit(Index index, Vertex vertex);
+    }
+
+    public void setEdgeLength(int edgeLength) {
+        this.edgeLength = edgeLength;
     }
 
     public void reset(int edgeLength, int xCount, int yCount, double z) {
@@ -131,6 +137,10 @@ public class GroundMesh {
         });
     }
 
+    public int getEdgeLength() {
+        return edgeLength;
+    }
+
     public int getX() {
         return maxX + 1;
     }
@@ -182,125 +192,42 @@ public class GroundMesh {
         return grid.containsKey(index);
     }
 
-
-    /**
-     * Bilinear interpolation of index
-     * <p/>
-     * Only works if the grid is Unit Square
-     * https://en.wikipedia.org/wiki/Bilinear_interpolation
-     *
-     * @param absoluteXY input
-     * @return InterpolatedVertexData
-     */
-    public InterpolatedVertexData getInterpolatedVertexData(DecimalPosition absoluteXY) {
+    public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {
         if (edgeLength == 0) {
             throw new IllegalStateException("edgeLength == 0");
         }
         double x = (absoluteXY.getX() / (double) edgeLength);
         double y = (absoluteXY.getY() / (double) edgeLength);
 
-        if(x < 0 || y < 0) {
+        if (x < 0 || y < 0) {
             return null;
         }
-        Index bottomLeftIndex = new Index((int)x, (int)y);
+        Index bottomLeftIndex = new Index((int) x, (int) y);
 
         VertexData vertexDataBL = getVertexData(bottomLeftIndex);
         VertexData vertexDataBR = getVertexData(bottomLeftIndex.add(1, 0));
         VertexData vertexDataTR = getVertexData(bottomLeftIndex.add(1, 1));
         VertexData vertexDataTL = getVertexData(bottomLeftIndex.add(0, 1));
-
-        if(vertexDataBL == null || vertexDataBR == null || vertexDataTR == null || vertexDataTL == null) {
+        if (vertexDataBL == null || vertexDataBR == null || vertexDataTR == null || vertexDataTL == null) {
             return null;
         }
-        DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
-        DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
-        DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
 
-        return new InterpolatedVertexData(vertexDataBL, vertexDataBR, vertexDataTR, vertexDataTL, normalizedInterpolated);
-    }
+        InterpolatedTerrainTriangle interpolatedTerrainTriangle = new InterpolatedTerrainTriangle();
+        if (vertexDataBL.getVertex().toXY().getDistance(absoluteXY) < vertexDataTR.getVertex().toXY().getDistance(absoluteXY)) {
+            // Lower triangle. Triangle 1
+            interpolatedTerrainTriangle.setCornerA(new TerrainTriangleCorner(vertexDataBL.getVertex(), vertexDataBL.getNorm(), vertexDataBL.getTangent(), vertexDataBL.getSplatting()));
+            interpolatedTerrainTriangle.setCornerB(new TerrainTriangleCorner(vertexDataBR.getVertex(), vertexDataBR.getNorm(), vertexDataBR.getTangent(), vertexDataBR.getSplatting()));
+            interpolatedTerrainTriangle.setCornerC(new TerrainTriangleCorner(vertexDataTL.getVertex(), vertexDataTL.getNorm(), vertexDataTL.getTangent(), vertexDataTL.getSplatting()));
+        } else {
+            // Upper triangle. Triangle 2
+            interpolatedTerrainTriangle.setCornerA(new TerrainTriangleCorner(vertexDataBR.getVertex(), vertexDataBR.getNorm(), vertexDataBR.getTangent(), vertexDataBR.getSplatting()));
+            interpolatedTerrainTriangle.setCornerB(new TerrainTriangleCorner(vertexDataTR.getVertex(), vertexDataTR.getNorm(), vertexDataTR.getTangent(), vertexDataTR.getSplatting()));
+            interpolatedTerrainTriangle.setCornerC(new TerrainTriangleCorner(vertexDataTL.getVertex(), vertexDataTL.getNorm(), vertexDataTL.getTangent(), vertexDataTL.getSplatting()));
+        }
 
-    /**
-     * Bilinear interpolation of norm
-     * <p/>
-     * Only works if the grid is Unit Square
-     * https://en.wikipedia.org/wiki/Bilinear_interpolation
-     *
-     * @param absoluteXY input
-     * @return interpolated Norm
-     */
-    public Vertex getInterpolatedNorm(DecimalPosition absoluteXY) {
-        Index bottomLeftIndex = absoluteToIndex(absoluteXY);
-        VertexData vertexDataBL = getVertexDataSafe(bottomLeftIndex);
-        VertexData vertexDataBR = getVertexDataSafe(bottomLeftIndex.add(1, 0));
-        VertexData vertexDataTR = getVertexDataSafe(bottomLeftIndex.add(1, 1));
-        VertexData vertexDataTL = getVertexDataSafe(bottomLeftIndex.add(0, 1));
+        interpolatedTerrainTriangle.setupInterpolation(absoluteXY);
 
-        DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
-        DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
-        DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
-
-        Vertex normBL = vertexDataBL.getNorm().multiply((1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY()));
-        Vertex normBR = vertexDataBR.getNorm().multiply(normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY()));
-        Vertex normTR = vertexDataTR.getNorm().multiply(normalizedInterpolated.getX() * normalizedInterpolated.getY());
-        Vertex normTL = vertexDataTL.getNorm().multiply((1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY());
-
-        return normBL.add(normBR).add(normTR).add(normTL);
-    }
-
-    /**
-     * Bilinear interpolation of tangent
-     * <p/>
-     * Only works if the grid is Unit Square
-     * https://en.wikipedia.org/wiki/Bilinear_interpolation
-     *
-     * @param absoluteXY input
-     * @return interpolated tangent
-     */
-    public Vertex getInterpolatedTangent(DecimalPosition absoluteXY) {
-        Index bottomLeftIndex = absoluteToIndex(absoluteXY);
-        VertexData vertexDataBL = getVertexDataSafe(bottomLeftIndex);
-        VertexData vertexDataBR = getVertexDataSafe(bottomLeftIndex.add(1, 0));
-        VertexData vertexDataTR = getVertexDataSafe(bottomLeftIndex.add(1, 1));
-        VertexData vertexDataTL = getVertexDataSafe(bottomLeftIndex.add(0, 1));
-
-        DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
-        DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
-        DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
-
-        Vertex tangentBL = vertexDataBL.getTangent().multiply((1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY()));
-        Vertex tangentBR = vertexDataBR.getTangent().multiply(normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY()));
-        Vertex tangentTR = vertexDataTR.getTangent().multiply(normalizedInterpolated.getX() * normalizedInterpolated.getY());
-        Vertex tangentTL = vertexDataTL.getTangent().multiply((1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY());
-
-        return tangentBL.add(tangentBR).add(tangentTR).add(tangentTL);
-    }
-
-    /**
-     * Bilinear interpolation of height
-     * <p/>
-     * Only works if the grid is Unit Square
-     * https://en.wikipedia.org/wiki/Bilinear_interpolation
-     *
-     * @param absoluteXY input
-     * @return interpolated height
-     */
-    public double getInterpolatedHeight(DecimalPosition absoluteXY) {
-        Index bottomLeftIndex = absoluteToIndex(absoluteXY);
-        VertexData vertexDataBL = getVertexDataSafe(bottomLeftIndex);
-        VertexData vertexDataBR = getVertexDataSafe(bottomLeftIndex.add(1, 0));
-        VertexData vertexDataTR = getVertexDataSafe(bottomLeftIndex.add(1, 1));
-        VertexData vertexDataTL = getVertexDataSafe(bottomLeftIndex.add(0, 1));
-
-        DecimalPosition relativePosition = absoluteXY.sub(vertexDataBL.getVertex().toXY());
-        DecimalPosition relativeTR = vertexDataTR.getVertex().toXY().sub(vertexDataBL.getVertex().toXY());
-        DecimalPosition normalizedInterpolated = relativePosition.divide(relativeTR);
-
-        double heightBL = vertexDataBL.getVertex().getZ() * (1.0 - normalizedInterpolated.getX()) * (1.0 - normalizedInterpolated.getY());
-        double heightBR = vertexDataBR.getVertex().getZ() * normalizedInterpolated.getX() * (1.0 - normalizedInterpolated.getY());
-        double heightTR = vertexDataTR.getVertex().getZ() * normalizedInterpolated.getX() * normalizedInterpolated.getY();
-        double heightTL = vertexDataTL.getVertex().getZ() * (1.0 - normalizedInterpolated.getX()) * normalizedInterpolated.getY();
-
-        return heightBL + heightBR + heightTR + heightTL;
+        return interpolatedTerrainTriangle;
     }
 
     private Index absoluteToIndex(DecimalPosition absoluteXY) {

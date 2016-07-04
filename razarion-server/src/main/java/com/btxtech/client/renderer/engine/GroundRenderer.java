@@ -62,7 +62,7 @@ public class GroundRenderer extends AbstractRenderer {
         vertices.fillBuffer(vertexList.getVertices());
         normals.fillBuffer(vertexList.getNormVertices());
         tangents.fillBuffer(vertexList.getTangentVertices());
-        splattings.fillDoubleBuffer(vertexList.getEdges());
+        splattings.fillDoubleBuffer(vertexList.getSplattings());
 
         setElementCount(vertexList.getVerticesCount());
     }

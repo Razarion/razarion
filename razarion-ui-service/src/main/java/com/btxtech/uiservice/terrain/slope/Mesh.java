@@ -1,8 +1,12 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.uiservice.terrain.ground.GroundMesh;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.primitives.TerrainTriangleCorner;
+import com.btxtech.shared.primitives.Triangle2d;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
+import com.btxtech.uiservice.terrain.ground.GroundMesh;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,8 +52,9 @@ public class Mesh {
                 if (y == 0 || y == yCount - 1) {
                     // y == 0: Outer
                     // y == yCount - 1: Inner
-                    nodes[x][y].setNorm(groundMesh.getInterpolatedNorm(center.toXY()));
-                    nodes[x][y].setTangent(groundMesh.getInterpolatedTangent(center.toXY()));
+                    InterpolatedTerrainTriangle interpolatedTerrainTriangle = groundMesh.getInterpolatedTerrainTriangle(center.toXY());
+                    nodes[x][y].setNorm(interpolatedTerrainTriangle.getNorm());
+                    nodes[x][y].setTangent(interpolatedTerrainTriangle.getTangent());
                 } else {
                     Vertex top = getVertexSave(x, y + 1);
                     Vertex right = getVertexSave(x + 1, y);
@@ -63,14 +68,14 @@ public class Mesh {
                     Vertex norm = sum(norms);
                     double normMagnitude = norm.magnitude();
                     if (normMagnitude == 0.0) {
-                       // throw new IllegalArgumentException("Norm magnitude is zero " + x + ":" + y + " center: " + center);
+                        // throw new IllegalArgumentException("Norm magnitude is zero " + x + ":" + y + " center: " + center);
                     }
                     nodes[x][y].setNorm(norm.divide(normMagnitude));
 
                     Vertex tangent = setupTangent(center, left, right);
                     double tangentMagnitude = tangent.magnitude();
                     if (tangentMagnitude == 0.0) {
-                      //  throw new IllegalArgumentException("Tangent magnitude is zero " + x + ":" + y + " center: " + center);
+                        //  throw new IllegalArgumentException("Tangent magnitude is zero " + x + ":" + y + " center: " + center);
                     }
                     nodes[x][y].setTangent(tangent.divide(tangentMagnitude));
                 }
@@ -252,5 +257,20 @@ public class Mesh {
             }
         }
         return nearestMeshEntry;
+    }
+
+    public InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY) {
+        for (int i = 0; i < vertices.size(); i += 3) {
+            Triangle2d triangle2d = new Triangle2d(vertices.get(i).toXY(), vertices.get(i + 1).toXY(), vertices.get(i + 2).toXY());
+            if (triangle2d.isInside(absoluteXY)) {
+                InterpolatedTerrainTriangle interpolatedTerrainTriangle = new InterpolatedTerrainTriangle();
+                interpolatedTerrainTriangle.setCornerA(new TerrainTriangleCorner(vertices.get(i), norms.get(i), tangents.get(i), splatting.get(i)));
+                interpolatedTerrainTriangle.setCornerB(new TerrainTriangleCorner(vertices.get(i + 1), norms.get(i + 1), tangents.get(i + 1), splatting.get(i + 1)));
+                interpolatedTerrainTriangle.setCornerC(new TerrainTriangleCorner(vertices.get(i + 2), norms.get(i + 2), tangents.get(i + 2), splatting.get(i + 2)));
+                interpolatedTerrainTriangle.setupInterpolation(absoluteXY);
+                return interpolatedTerrainTriangle;
+            }
+        }
+        return null;
     }
 }

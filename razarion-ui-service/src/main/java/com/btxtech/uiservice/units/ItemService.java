@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.units;
 
 import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.game.jsre.common.MathHelper;
@@ -72,12 +73,11 @@ public class ItemService {
         unitIdModelMatrices.clear();
         Collection<ModelMatrices> itemMatrices = new ArrayList<>();
         for (Unit unit : pathing.getUnits()) {
-            Vertex norm = terrainSurface.getInterpolatedNorm(unit.getPosition());
+            InterpolatedTerrainTriangle interpolatedTerrainTriangle = terrainSurface.getInterpolatedTerrainTriangle(unit.getPosition());
             Vertex direction = new Vertex(DecimalPosition.createVector(unit.getAngle(), 1.0), 0);
-            double yRotation = direction.unsignedAngle(norm) - MathHelper.QUARTER_RADIANT;
+            double yRotation = direction.unsignedAngle(interpolatedTerrainTriangle.getNorm()) - MathHelper.QUARTER_RADIANT;
             Matrix4 rotation = Matrix4.createZRotation(unit.getAngle()).multiply(Matrix4.createYRotation(-yRotation));
-            double height = terrainSurface.getInterpolatedHeight(unit.getPosition());
-            Matrix4 translation = Matrix4.createTranslation(unit.getPosition().getX(), unit.getPosition().getY(), height).multiply(rotation);
+            Matrix4 translation = Matrix4.createTranslation(unit.getPosition().getX(), unit.getPosition().getY(), interpolatedTerrainTriangle.getHeight()).multiply(rotation);
             itemMatrices.add(new ModelMatrices(translation, rotation));
         }
         unitIdModelMatrices.put(1, itemMatrices);

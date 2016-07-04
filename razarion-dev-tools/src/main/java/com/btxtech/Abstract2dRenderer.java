@@ -30,15 +30,21 @@ public class Abstract2dRenderer {
         return decimalPosition.add(-canvas.getWidth() / 2.0, -canvas.getHeight() / 2.0).divide(scale, -scale).sub(shift);
     }
 
-    public void shifting(Event event) {
+    public boolean shifting(Event event) {
         MouseEvent mouseEvent = (MouseEvent) event;
         DecimalPosition decimalPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
         DecimalPosition position = decimalPosition.add(-canvas.getWidth() / 2.0, -canvas.getHeight() / 2.0).divide(scale, -scale);
 
+        boolean isShifted = false;
         if (lastShiftPosition != null) {
-            shift = shift.add(position.sub(lastShiftPosition));
+            DecimalPosition delta = position.sub(lastShiftPosition);
+            if (!delta.equalsDeltaZero()) {
+                shift = shift.add(delta);
+                isShifted = true;
+            }
         }
         lastShiftPosition = position;
+        return isShifted;
     }
 
     public void stopShift() {

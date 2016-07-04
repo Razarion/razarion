@@ -71,7 +71,7 @@ public class TerrainObjectService {
                     modelMatrices = new ArrayList<>();
                     objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
                 }
-                int z = (int) terrainSurface.getInterpolatedHeight(new DecimalPosition(terrainObjectPosition.getPosition()));
+                int z = (int) terrainSurface.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.getPosition())).getHeight();
                 modelMatrices.add(new ModelMatrices(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale(), z), terrainObjectPosition.createRotationModelMatrix()));
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);

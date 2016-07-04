@@ -1,9 +1,14 @@
 package com.btxtech.shared;
 
 // import com.btxtech.client.ImageDescriptor;
+
+import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
 import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.primitives.TerrainTriangleCorner;
 import com.btxtech.shared.primitives.TextureCoordinate;
 import com.btxtech.shared.primitives.Triangle;
+import com.btxtech.shared.primitives.Triangle2d;
 import com.btxtech.shared.primitives.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -23,7 +28,7 @@ public class VertexList {
     private List<Vertex> tangentVertices = new ArrayList<>();
     private List<Vertex> barycentric = new ArrayList<>();
     private List<TextureCoordinate> textureCoordinates = new ArrayList<>();
-    private List<Double> edges = new ArrayList<>();
+    private List<Double> splattings = new ArrayList<>();
     // private static final Logger LOGGER = Logger.getLogger(VertexList.class.getName());
 
     /**
@@ -46,19 +51,7 @@ public class VertexList {
         triangle.appendTangentVertexTo(tangentVertices);
         triangle.appendBarycentricTo(barycentric);
         triangle.appendTextureCoordinateTo(textureCoordinates);
-        triangle.appendEdgesTo(edges);
-    }
-
-    public void add(Vertex vertexA, Vertex normA, Vertex vertexB, Vertex normB, Vertex vertexC, Vertex normC) {
-        vertices.add(vertexA);
-        vertices.add(vertexB);
-        vertices.add(vertexC);
-        normVertices.add(normA);
-        normVertices.add(normB);
-        normVertices.add(normC);
-        barycentric.add(new Vertex(1, 0, 0));
-        barycentric.add(new Vertex(0, 1, 0));
-        barycentric.add(new Vertex(0, 0, 1));
+        triangle.appendEdgesTo(splattings);
     }
 
     public void add(Vertex vertexA, Vertex normA, Vertex tangentA, double splattingA,
@@ -76,9 +69,9 @@ public class VertexList {
         barycentric.add(new Vertex(1, 0, 0));
         barycentric.add(new Vertex(0, 1, 0));
         barycentric.add(new Vertex(0, 0, 1));
-        edges.add(splattingA);
-        edges.add(splattingB);
-        edges.add(splattingC);
+        splattings.add(splattingA);
+        splattings.add(splattingB);
+        splattings.add(splattingC);
     }
 
     public void add(Vertex vertexA, Vertex normA, TextureCoordinate textureA, Vertex vertexB, Vertex normB, TextureCoordinate textureB, Vertex vertexC, Vertex normC, TextureCoordinate textureC) {
@@ -100,7 +93,7 @@ public class VertexList {
         vertices.add(vertex);
         normVertices.add(norm);
         tangentVertices.add(tangent);
-        edges.add(edge);
+        splattings.add(edge);
         this.barycentric.add(barycentric);
     }
 
@@ -173,7 +166,7 @@ public class VertexList {
         tangentVertices.addAll(vertexList.tangentVertices);
         barycentric.addAll(vertexList.barycentric);
         textureCoordinates.addAll(vertexList.textureCoordinates);
-        edges.addAll(vertexList.edges);
+        splattings.addAll(vertexList.splattings);
     }
 
     public void append(Matrix4 transformationMatrix, VertexList vertexList) {
@@ -210,10 +203,10 @@ public class VertexList {
             textureCoordinates.add(vertexList.textureCoordinates.get(index + 1));
             textureCoordinates.add(vertexList.textureCoordinates.get(index + 2));
         }
-        if (!vertexList.edges.isEmpty()) {
-            edges.add(vertexList.edges.get(index));
-            edges.add(vertexList.edges.get(index + 1));
-            edges.add(vertexList.edges.get(index + 2));
+        if (!vertexList.splattings.isEmpty()) {
+            splattings.add(vertexList.splattings.get(index));
+            splattings.add(vertexList.splattings.get(index + 1));
+            splattings.add(vertexList.splattings.get(index + 2));
         }
     }
 
@@ -237,8 +230,23 @@ public class VertexList {
         return textureCoordinates;
     }
 
-    public List<Double> getEdges() {
-        return edges;
+    public List<Double> getSplattings() {
+        return splattings;
+    }
+
+    public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {
+        for (int i = 0; i < vertices.size(); i += 3) {
+            Triangle2d triangle2d = new Triangle2d(vertices.get(i).toXY(), vertices.get(i + 1).toXY(), vertices.get(i + 2).toXY());
+            if (triangle2d.isInside(absoluteXY)) {
+                InterpolatedTerrainTriangle interpolatedTerrainTriangle = new InterpolatedTerrainTriangle();
+                interpolatedTerrainTriangle.setCornerA(new TerrainTriangleCorner(vertices.get(i), normVertices.get(i), tangentVertices.get(i), splattings.get(i)));
+                interpolatedTerrainTriangle.setCornerB(new TerrainTriangleCorner(vertices.get(i + 1), normVertices.get(i + 1), tangentVertices.get(i + 1), splattings.get(i + 1)));
+                interpolatedTerrainTriangle.setCornerC(new TerrainTriangleCorner(vertices.get(i + 2), normVertices.get(i + 2), tangentVertices.get(i + 2), splattings.get(i + 2)));
+                interpolatedTerrainTriangle.setupInterpolation(absoluteXY);
+                return interpolatedTerrainTriangle;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -249,7 +257,7 @@ public class VertexList {
                 ", normVertices=" + normVertices +
                 ", barycentric=" + barycentric +
                 ", textureCoordinates=" + textureCoordinates +
-                ", edges=" + edges +
+                ", splattings=" + splattings +
                 '}';
     }
 }
