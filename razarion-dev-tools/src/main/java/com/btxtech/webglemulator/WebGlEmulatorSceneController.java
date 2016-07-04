@@ -58,6 +58,9 @@ public class WebGlEmulatorSceneController implements Initializable {
     }
 
     public void update() {
+        if (canvas == null) {
+            return;
+        }
         System.out.println("zNear: " + projectionTransformation.calculateZNear());
         System.out.println("zFar: " + projectionTransformation.calculateZFar());
 
@@ -87,14 +90,14 @@ public class WebGlEmulatorSceneController implements Initializable {
             if (!cameraView.hasNullPosition()) {
                 egc.strokeCurveDecimalPosition(cameraView.toList(), 10, Color.BLACK, false);
             }
-            ViewField cameraView1 = projectionTransformation.calculateViewField(100);
-            if (!cameraView1.hasNullPosition()) {
-                egc.strokeCurveDecimalPosition(cameraView1.toList(), 10, Color.RED, false);
-            }
-            ViewField cameraView2 = projectionTransformation.calculateViewField(-100);
-            if (!cameraView2.hasNullPosition()) {
-                egc.strokeCurveDecimalPosition(cameraView2.toList(), 10, Color.BLUE, false);
-            }
+//            ViewField cameraView1 = projectionTransformation.calculateViewField(100);
+//            if (!cameraView1.hasNullPosition()) {
+//                egc.strokeCurveDecimalPosition(cameraView1.toList(), 10, Color.RED, false);
+//            }
+//            ViewField cameraView2 = projectionTransformation.calculateViewField(-100);
+//            if (!cameraView2.hasNullPosition()) {
+//                egc.strokeCurveDecimalPosition(cameraView2.toList(), 10, Color.BLUE, false);
+//            }
 
             // Shadow view field
             ViewField shadowSourceView = shadowUiService.calculateViewField();

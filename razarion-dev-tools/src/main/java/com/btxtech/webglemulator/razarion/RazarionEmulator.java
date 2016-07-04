@@ -15,6 +15,7 @@ import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.terrain.slope.Mesh;
 import com.btxtech.uiservice.units.ItemService;
+import com.btxtech.webglemulator.WebGlEmulatorSceneController;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Singleton
 public class RazarionEmulator {
-    private static final long RENDER_DELAY = 500;
+    private static final long RENDER_DELAY = 800;
     @Inject
     private WebGlEmulator webGlEmulator;
     @Inject
@@ -54,6 +55,8 @@ public class RazarionEmulator {
     private TerrainSurface terrainSurface;
     @Inject
     private ItemService itemService;
+    @Inject
+    private WebGlEmulatorSceneController sceneController;
     @Inject
     private ShadowUiService shadowUiService;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -109,9 +112,11 @@ public class RazarionEmulator {
                     @Override
                     public void run() {
                         try {
-                            // long time = System.currentTimeMillis();
+                             long time = System.currentTimeMillis();
+                            webGlEmulatorShadow.drawArrays();
                             webGlEmulator.drawArrays();
-                            // System.out.println("Time for render: " + (System.currentTimeMillis() - time));
+                            sceneController.update();
+                             System.out.println("Time for render: " + (System.currentTimeMillis() - time));
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();
                         }

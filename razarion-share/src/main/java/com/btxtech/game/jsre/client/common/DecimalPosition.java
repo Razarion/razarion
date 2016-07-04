@@ -463,6 +463,32 @@ public class DecimalPosition implements Serializable {
         return acceptedPoints;
     }
 
+    public static DecimalPosition getSmallestAabb(DecimalPosition... decimalPositions) {
+        if (decimalPositions.length == 0) {
+            throw new IllegalArgumentException();
+        }
+        double x = Double.MAX_VALUE;
+        double y = Double.MAX_VALUE;
+        for (DecimalPosition decimalPosition : decimalPositions) {
+            x = Math.min(decimalPosition.getX(), x);
+            y = Math.min(decimalPosition.getX(), y);
+        }
+        return new DecimalPosition(x, y);
+    }
+
+    public static DecimalPosition getBiggestAabb(DecimalPosition... decimalPositions) {
+        if (decimalPositions.length == 0) {
+            throw new IllegalArgumentException();
+        }
+        double x = Double.MIN_VALUE;
+        double y = Double.MIN_VALUE;
+        for (DecimalPosition decimalPosition : decimalPositions) {
+            x = Math.max(decimalPosition.getX(), x);
+            y = Math.max(decimalPosition.getX(), y);
+        }
+        return new DecimalPosition(x, y);
+    }
+
     public boolean equalsDeltaZero() {
         return MathHelper.compareWithPrecision(x, 0) && MathHelper.compareWithPrecision(y, 0);
     }
@@ -502,7 +528,6 @@ public class DecimalPosition implements Serializable {
     }
 
     /**
-     *
      * Use InstanceStringGenerator
      */
     @Deprecated

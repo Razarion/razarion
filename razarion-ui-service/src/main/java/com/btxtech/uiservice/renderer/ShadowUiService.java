@@ -1,14 +1,14 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.game.jsre.client.common.DecimalPosition;
 import com.btxtech.shared.primitives.Matrix4;
 import com.btxtech.shared.primitives.Plane3d;
 import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -17,7 +17,8 @@ import java.util.logging.Logger;
 @Singleton
 @Bindable
 public class ShadowUiService {
-    private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
+    // private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
+    private static final double Z_NEAR = 1;
     private static final Matrix4 TEXTURE_COORDINATE_TRANSFORMATION = new Matrix4(new double[][]{
             {0.5, 0.0, 0.0, 0.5},
             {0.0, 0.5, 0.0, 0.5},
@@ -62,12 +63,30 @@ public class ShadowUiService {
     // ------------------------------------------------------------------------------------------------------------
 
     /**
-     * Return the point on the surface pointing to the sun
+     * Return the light direction
      *
      * @return direction normalized
      */
     public Vertex getLightDirection() {
         return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(0, 0, -1), 1.0);
+    }
+
+    /**
+     * Return X axis of the light pane
+     *
+     * @return direction normalized
+     */
+    public Vertex getPlaneXAxis() {
+        return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(1, 0, 0), 1.0);
+    }
+
+    /**
+     * Return Y axis of the light pane
+     *
+     * @return direction normalized
+     */
+    public Vertex getPlaneYAxis() {
+        return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(0, 1, 0), 1.0);
     }
 
 
@@ -110,15 +129,27 @@ public class ShadowUiService {
         Vertex topRightVertex = plane.project(viewField.getTopRightVertex());
         Vertex topLeftVertex = plane.project(viewField.getTopLeftVertex());
 
-        double right = bottomLeftVertex.distance(bottomRightVertex) / 2.0;
-        double top = bottomLeftVertex.distance(topLeftVertex) / 2.0;
+        // Origin
+        double distance = bottomLeftVertex.distance(topRightVertex);
+        Vertex lightPosition = bottomLeftVertex.add(topRightVertex.sub(bottomLeftVertex).normalize(distance / 2.0));
+        double m = -lightPosition.getZ() / lightNorm.getZ();
+        Vertex lightPositionZeroGround = lightPosition.add(lightNorm.multiply(m));
+        plane.setOptionalOrigin(lightPositionZeroGround, getPlaneXAxis(), getPlaneYAxis());
+
+        DecimalPosition bottomLeftPlane = plane.getPlaneCoordinates(bottomLeftVertex);
+        DecimalPosition bottomRightPlane = plane.getPlaneCoordinates(bottomRightVertex);
+        DecimalPosition topRightPlane = plane.getPlaneCoordinates(topRightVertex);
+        DecimalPosition topLeftPlane = plane.getPlaneCoordinates(topLeftVertex);
+        DecimalPosition biggest = DecimalPosition.getBiggestAabb(bottomLeftPlane, bottomRightPlane, topRightPlane, topLeftPlane);
+        DecimalPosition smallest = DecimalPosition.getSmallestAabb(bottomLeftPlane, bottomRightPlane, topRightPlane, topLeftPlane);
+        DecimalPosition delta = biggest.sub(smallest);
 
         double zFar = getDistance(bottomLeftVertex, lightNorm, 0);
         zFar = getDistance(bottomRightVertex, lightNorm, zFar);
         zFar = getDistance(topRightVertex, lightNorm, zFar);
         zFar = getDistance(topLeftVertex, lightNorm, zFar);
 
-        return makeBalancedOrthographicFrustum(right, top, 10, zFar);
+        return makeBalancedOrthographicFrustum(delta.getX() / 2.0, delta.getY() / 2.0, Z_NEAR, Z_NEAR + zFar);
     }
 
     private Plane3d calculatePlane(ViewField viewField, Vertex lightNorm) {
@@ -126,14 +157,14 @@ public class ShadowUiService {
         Vertex negLightNorm = lightNorm.multiply(m);
 
         Vertex pointOnPlane;
-        if(lightNorm.getX() >= 0) {
-            if(lightNorm.getY() > 0) {
+        if (lightNorm.getX() >= 0) {
+            if (lightNorm.getY() > 0) {
                 pointOnPlane = viewField.getBottomLeftVertex().add(negLightNorm);
             } else {
                 pointOnPlane = viewField.getTopLeftVertex().add(negLightNorm);
             }
         } else {
-            if(lightNorm.getY() > 0) {
+            if (lightNorm.getY() > 0) {
                 pointOnPlane = viewField.getBottomRightVertex().add(negLightNorm);
             } else {
                 pointOnPlane = viewField.getTopRightVertex().add(negLightNorm);
@@ -172,7 +203,7 @@ public class ShadowUiService {
     /**
      * http://www.songho.ca/opengl/gl_projectionmatrix.html
      */
-    public static Matrix4 makeBalancedOrthographicFrustum(double right, double top, double zNear, double zFar) {
+    private Matrix4 makeBalancedOrthographicFrustum(double right, double top, double zNear, double zFar) {
         double a = -2.0 / (zFar - zNear);
         double b = -(zFar + zNear) / (zFar - zNear);
 

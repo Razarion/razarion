@@ -253,7 +253,7 @@ public class WebGlEmulatorController implements Initializable {
         itemService.setupItems();
     }
 
-    public void onShadowButtonClicked(ActionEvent actionEvent) {
+    public void onShadowButtonClicked() {
         if (shadowController.getCanvas() != null) {
             return;
         }
@@ -352,6 +352,6 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onMouseMoved(MouseEvent event) {
-        terrainScrollHandler.handleMouseMoveScroll((int)event.getX(), (int)event.getY(), (int)canvas.getWidth(), (int)canvas.getHeight());
+        // terrainScrollHandler.handleMouseMoveScroll((int)event.getX(), (int)event.getY(), (int)canvas.getWidth(), (int)canvas.getHeight());
     }
 }
