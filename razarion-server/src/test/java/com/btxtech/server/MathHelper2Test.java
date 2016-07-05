@@ -1,6 +1,6 @@
 package com.btxtech.server;
 
-import com.btxtech.shared.MathHelper2;
+import com.btxtech.shared.utils.MathHelper2;
 import org.junit.Assert;
 import org.junit.Test;
 

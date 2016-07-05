@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.system.ExceptionHandler;
-import com.btxtech.system.SimpleExecutorService;
-import com.btxtech.system.SimpleScheduledFuture;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.renderer.Camera;
 
 import javax.annotation.PostConstruct;

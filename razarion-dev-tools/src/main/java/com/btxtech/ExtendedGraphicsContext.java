@@ -1,10 +1,10 @@
 package com.btxtech;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.gameengine.pathing.Unit;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;

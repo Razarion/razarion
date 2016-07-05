@@ -1,8 +1,8 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.game.jsre.client.common.CollectionUtils;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import javafx.scene.paint.Color;
 

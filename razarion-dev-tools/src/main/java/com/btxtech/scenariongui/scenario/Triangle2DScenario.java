@@ -1,10 +1,10 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.primitives.Triangle2d;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Triangle2d;
+import com.btxtech.shared.datatypes.Vertex;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;

@@ -1,11 +1,11 @@
 package com.btxtech.uiservice.terrain.ground;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
-import com.btxtech.shared.primitives.TerrainTriangleCorner;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 
 import java.util.HashMap;
 import java.util.Map;

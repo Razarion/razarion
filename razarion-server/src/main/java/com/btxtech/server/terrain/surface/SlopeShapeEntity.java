@@ -1,6 +1,6 @@
 package com.btxtech.server.terrain.surface;
 
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeShape;
 
 import javax.persistence.Embedded;

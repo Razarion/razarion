@@ -3,9 +3,9 @@ package com.btxtech.client.renderer;
 import com.btxtech.TestHelper;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.TextureCoordinate;
-import com.btxtech.shared.primitives.Triangle;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.TextureCoordinate;
+import com.btxtech.shared.datatypes.Triangle;
+import com.btxtech.shared.datatypes.Vertex;
 import org.junit.Test;
 
 /**

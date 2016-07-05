@@ -2,10 +2,10 @@ package com.btxtech.client;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.shared.primitives.Ray3d;
-import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.system.ExceptionHandler;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Ray3d;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;

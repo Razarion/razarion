@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.utils;
 
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.dto.FractalFieldConfig;
 
 /**

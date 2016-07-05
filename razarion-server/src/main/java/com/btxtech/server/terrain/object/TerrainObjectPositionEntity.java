@@ -1,7 +1,6 @@
 package com.btxtech.server.terrain.object;
 
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Index;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;

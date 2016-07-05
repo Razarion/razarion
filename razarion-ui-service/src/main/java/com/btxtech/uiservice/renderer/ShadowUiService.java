@@ -1,9 +1,9 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Plane3d;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Plane3d;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import org.jboss.errai.databinding.client.api.Bindable;
 

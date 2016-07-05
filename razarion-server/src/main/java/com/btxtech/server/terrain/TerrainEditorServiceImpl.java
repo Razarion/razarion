@@ -17,7 +17,7 @@ import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.system.ExceptionHandler;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
 

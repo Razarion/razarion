@@ -1,7 +1,7 @@
 package com.btxtech.client.dialog.content.fractal;
 
 import com.btxtech.shared.dto.FractalFieldConfig;
-import com.btxtech.shared.MathHelper2;
+import com.btxtech.shared.utils.MathHelper2;
 import com.google.gwt.dom.client.Element;
 import elemental.html.CanvasElement;
 import elemental.html.CanvasRenderingContext2D;

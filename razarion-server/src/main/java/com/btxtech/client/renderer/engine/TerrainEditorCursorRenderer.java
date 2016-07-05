@@ -6,10 +6,9 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Polygon2I;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Polygon2I;
+import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

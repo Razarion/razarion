@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator.webgl;
 
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 
 import javax.inject.Singleton;
 

@@ -1,7 +1,7 @@
 package com.btxtech.server.terrain;
 
 import com.btxtech.shared.dto.LightConfig;
-import com.btxtech.shared.primitives.Color;
+import com.btxtech.shared.datatypes.Color;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;

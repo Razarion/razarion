@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlProgram;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import java.util.ArrayList;

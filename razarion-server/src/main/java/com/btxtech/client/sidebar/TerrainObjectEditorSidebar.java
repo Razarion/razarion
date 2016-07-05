@@ -1,7 +1,7 @@
 package com.btxtech.client.sidebar;
 
 import com.btxtech.client.editor.object.TerrainObjectEditor;
-import com.btxtech.game.jsre.client.common.CollectionUtils;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ChangeEvent;

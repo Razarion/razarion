@@ -4,10 +4,10 @@ import com.btxtech.client.editor.object.TerrainObjectEditorSelectedEvent;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

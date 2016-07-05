@@ -1,7 +1,7 @@
 package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.client.sidebar.LeftSideBarContent;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.ObjectNameId;

@@ -1,8 +1,6 @@
 package com.btxtech.client.editor.terrain;
 
-import com.btxtech.shared.primitives.Polygon2D;
-import com.btxtech.shared.primitives.Polygon2I;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Polygon2I;
 
 /**
  * Created by Beat

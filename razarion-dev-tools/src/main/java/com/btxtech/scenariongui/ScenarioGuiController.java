@@ -1,6 +1,6 @@
 package com.btxtech.scenariongui;
 
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.scenariongui.scenario.Scenario;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

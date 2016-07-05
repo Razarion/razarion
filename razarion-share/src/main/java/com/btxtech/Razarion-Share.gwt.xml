@@ -5,7 +5,6 @@
 <module rename-to="razarionShared">
     <source path="shared" />
     <source path="game" />
-    <source path="system" />
 
     <inherits name="org.jboss.errai.enterprise.All" />
     <!--<inherits name="org.jboss.errai.ui.Cordova" />-->

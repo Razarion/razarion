@@ -1,6 +1,6 @@
 package com.btxtech.server.itemtype;
 
-import com.btxtech.system.ExceptionHandler;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.shared.ItemTypeService;
 import com.btxtech.shared.dto.ItemType;

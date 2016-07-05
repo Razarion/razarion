@@ -1,7 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.system.ExceptionHandler;
-import com.btxtech.system.SimpleScheduledFuture;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.inject.Inject;
 import java.util.concurrent.ScheduledExecutorService;

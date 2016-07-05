@@ -1,8 +1,8 @@
 package com.btxtech.shared;
 
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.List;
 

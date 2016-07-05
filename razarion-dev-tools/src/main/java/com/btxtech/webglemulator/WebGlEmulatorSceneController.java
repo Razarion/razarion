@@ -7,7 +7,7 @@ import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;

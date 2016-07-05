@@ -1,10 +1,10 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.uiservice.ImageDescriptor;
-import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.dto.LightConfig;
-import com.btxtech.shared.primitives.Color;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;

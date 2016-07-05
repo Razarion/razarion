@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 
 import java.util.ArrayList;
 import java.util.List;

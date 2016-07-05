@@ -7,7 +7,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
-import com.btxtech.shared.primitives.Color;
+import com.btxtech.shared.datatypes.Color;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

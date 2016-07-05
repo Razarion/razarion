@@ -1,11 +1,11 @@
 package com.btxtech;
 
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Color;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.TextureCoordinate;
-import com.btxtech.shared.primitives.Triangle;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.TextureCoordinate;
+import com.btxtech.shared.datatypes.Triangle;
+import com.btxtech.shared.datatypes.Vertex;
 import org.junit.Assert;
 
 import java.io.FileOutputStream;

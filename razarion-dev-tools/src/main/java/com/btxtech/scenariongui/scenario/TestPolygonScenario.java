@@ -1,8 +1,8 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.primitives.Polygon2I;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Polygon2I;
 import javafx.scene.paint.Color;
 
 import java.util.Arrays;

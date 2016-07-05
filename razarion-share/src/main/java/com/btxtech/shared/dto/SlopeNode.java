@@ -1,6 +1,6 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**

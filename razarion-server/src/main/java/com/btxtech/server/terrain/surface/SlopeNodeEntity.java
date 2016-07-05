@@ -1,7 +1,7 @@
 package com.btxtech.server.terrain.surface;
 
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;

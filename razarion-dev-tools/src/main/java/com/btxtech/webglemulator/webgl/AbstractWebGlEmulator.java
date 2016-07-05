@@ -1,8 +1,8 @@
 package com.btxtech.webglemulator.webgl;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.shared.primitives.Vertex4;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.Vertex4;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;

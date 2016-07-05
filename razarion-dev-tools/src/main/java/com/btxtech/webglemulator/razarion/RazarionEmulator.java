@@ -1,14 +1,14 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.game.jsre.client.common.CollectionUtils;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.shared.primitives.Vertex4;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;

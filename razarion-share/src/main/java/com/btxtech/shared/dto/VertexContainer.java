@@ -1,8 +1,8 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.primitives.Color;
-import com.btxtech.shared.primitives.TextureCoordinate;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.TextureCoordinate;
+import com.btxtech.shared.datatypes.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.ArrayList;

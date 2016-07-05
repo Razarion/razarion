@@ -2,10 +2,10 @@ package com.btxtech.uiservice.terrain.slope;
 
 import com.btxtech.uiservice.terrain.ground.GroundMesh;
 import com.btxtech.uiservice.terrain.Water;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeSkeleton;
-import com.btxtech.shared.primitives.Triangulator;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Triangulator;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.List;
 

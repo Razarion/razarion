@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.terrain.ground;
 
 
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 

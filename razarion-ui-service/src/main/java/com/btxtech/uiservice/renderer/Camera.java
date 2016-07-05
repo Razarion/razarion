@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Ray3d;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Ray3d;
+import com.btxtech.shared.datatypes.Vertex;
 import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.annotation.PostConstruct;

@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.common.GeometricUtil;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.utils.GeometricUtil;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.Arrays;
 import java.util.List;

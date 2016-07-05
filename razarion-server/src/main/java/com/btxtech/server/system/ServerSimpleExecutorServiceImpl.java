@@ -1,7 +1,7 @@
 package com.btxtech.server.system;
 
-import com.btxtech.system.SimpleExecutorService;
-import com.btxtech.system.SimpleScheduledFuture;
+import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.inject.Singleton;
 

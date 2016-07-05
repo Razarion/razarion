@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.datatypes.DecimalPosition;
 
 /**
  * Created by Beat

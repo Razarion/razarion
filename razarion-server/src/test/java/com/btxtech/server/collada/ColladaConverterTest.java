@@ -1,14 +1,14 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.TestHelper;
-import com.btxtech.game.jsre.client.common.CollectionUtils;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.server.itemtype.ItemTypeEntity;
 import com.btxtech.server.rest.ImageLibraryEntity;
 import com.btxtech.server.terrain.object.TerrainObjectEntity;
 import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;
-import com.btxtech.shared.primitives.Color;
+import com.btxtech.shared.datatypes.Color;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;

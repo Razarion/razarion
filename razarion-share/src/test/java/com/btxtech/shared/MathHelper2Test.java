@@ -1,5 +1,6 @@
 package com.btxtech.shared;
 
+import com.btxtech.shared.utils.MathHelper2;
 import org.junit.Assert;
 import org.junit.Test;
 

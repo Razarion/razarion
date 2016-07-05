@@ -1,12 +1,5 @@
 package com.btxtech.client.renderer.model;
 
-import com.btxtech.TestHelper;
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.primitives.Triangle;
-import com.btxtech.shared.primitives.Vertex;
-import org.junit.Assert;
-import org.junit.Test;
-
 /**
  * Created by Beat
  * 01.11.2015.

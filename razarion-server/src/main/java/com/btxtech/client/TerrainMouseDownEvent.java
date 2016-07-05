@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.shared.primitives.Ray3d;
+import com.btxtech.shared.datatypes.Ray3d;
 import elemental.events.MouseEvent;
 
 /**

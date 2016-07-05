@@ -1,9 +1,9 @@
 package com.btxtech.uiservice.terrain.ground;
 
-import com.btxtech.game.jsre.client.common.Line;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Polygon2D;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.List;
 import java.util.logging.Logger;

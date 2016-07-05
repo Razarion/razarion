@@ -1,15 +1,15 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.Shape;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeleton;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.uiservice.terrain.ground.GroundMesh;
 
 import java.util.List;

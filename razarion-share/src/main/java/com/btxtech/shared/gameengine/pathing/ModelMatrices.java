@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.pathing;
 
-import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.datatypes.Matrix4;
 
 /**
  * Created by Beat

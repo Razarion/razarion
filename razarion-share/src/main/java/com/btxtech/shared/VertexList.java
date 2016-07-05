@@ -2,14 +2,14 @@ package com.btxtech.shared;
 
 // import com.btxtech.client.ImageDescriptor;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.TerrainTriangleCorner;
-import com.btxtech.shared.primitives.TextureCoordinate;
-import com.btxtech.shared.primitives.Triangle;
-import com.btxtech.shared.primitives.Triangle2d;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.TerrainTriangleCorner;
+import com.btxtech.shared.datatypes.TextureCoordinate;
+import com.btxtech.shared.datatypes.Triangle;
+import com.btxtech.shared.datatypes.Triangle2d;
+import com.btxtech.shared.datatypes.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.ArrayList;

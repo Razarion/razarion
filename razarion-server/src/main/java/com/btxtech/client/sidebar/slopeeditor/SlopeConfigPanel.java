@@ -7,7 +7,7 @@ import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.terrain.slope.SlopeModeler;
 import com.btxtech.client.widgets.LightWidget;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.google.gwt.dom.client.Element;

@@ -1,6 +1,6 @@
 package com.btxtech.client.math3d;
 
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 import org.junit.Assert;
 import org.junit.Test;
 

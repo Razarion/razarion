@@ -1,6 +1,6 @@
 package com.btxtech;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;

@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 
 /**
  * Created by Beat

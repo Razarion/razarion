@@ -1,12 +1,12 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.uiservice.ColladaUiService;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.gameengine.pathing.ModelMatrices;
-import com.btxtech.system.ExceptionHandler;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

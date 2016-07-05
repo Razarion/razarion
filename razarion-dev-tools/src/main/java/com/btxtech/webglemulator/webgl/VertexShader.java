@@ -1,7 +1,7 @@
 package com.btxtech.webglemulator.webgl;
 
-import com.btxtech.shared.primitives.Vertex;
-import com.btxtech.shared.primitives.Vertex4;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.Vertex4;
 
 /**
  * Created by Beat

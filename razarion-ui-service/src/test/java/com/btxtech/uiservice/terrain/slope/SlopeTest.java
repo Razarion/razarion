@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.terrain.slope;
 
 import com.btxtech.TestHelper;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 import org.junit.Test;
 
 import java.util.List;

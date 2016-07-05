@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.terrain.slope;
 
 
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.utils.MathHelper;
 
 /**
  * Created by Beat

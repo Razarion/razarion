@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 
 import javax.inject.Inject;
 import java.util.List;

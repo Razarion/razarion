@@ -1,6 +1,6 @@
 package com.btxtech.client.sidebar.slopeeditor;
 
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import elemental.events.MouseEvent;
 
 /**

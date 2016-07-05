@@ -6,7 +6,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.terrain.slope.Mesh;
 import com.btxtech.uiservice.terrain.slope.Slope;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

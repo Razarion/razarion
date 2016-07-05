@@ -1,9 +1,9 @@
 package com.btxtech.webglemulator;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.scenariongui.InstanceStringGenerator;
-import com.btxtech.shared.primitives.Ray3d;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Ray3d;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
@@ -15,7 +15,6 @@ import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;

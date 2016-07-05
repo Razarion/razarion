@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.system.ExceptionHandler;
+import com.btxtech.shared.system.ExceptionHandler;
 
 /**
  * Created by Beat

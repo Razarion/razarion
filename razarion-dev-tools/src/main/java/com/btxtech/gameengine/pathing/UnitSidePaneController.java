@@ -1,6 +1,6 @@
 package com.btxtech.gameengine.pathing;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.pathing.DebugHelper;
 import com.btxtech.shared.gameengine.pathing.Unit;
 import javafx.event.ActionEvent;

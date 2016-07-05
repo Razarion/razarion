@@ -1,10 +1,10 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.shared.dto.VertexContainer;
-import com.btxtech.shared.primitives.Color;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.TextureCoordinate;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.TextureCoordinate;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.ArrayList;
 import java.util.Collection;

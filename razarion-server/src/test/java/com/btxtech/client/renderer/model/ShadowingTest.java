@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.model;
 
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import org.junit.Ignore;
 

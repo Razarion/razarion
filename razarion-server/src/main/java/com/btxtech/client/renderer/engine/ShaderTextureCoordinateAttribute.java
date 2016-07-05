@@ -1,8 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlProgram;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.shared.primitives.TextureCoordinate;
+import com.btxtech.shared.datatypes.TextureCoordinate;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
 

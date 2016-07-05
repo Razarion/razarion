@@ -1,8 +1,7 @@
 package com.btxtech.scenariongui;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.scenariongui.scenario.TerrainScenario;
+import com.btxtech.shared.datatypes.Index;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

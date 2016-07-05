@@ -1,7 +1,7 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Matrix4;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**

@@ -1,11 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlProgram;
-import com.btxtech.shared.primitives.Vertex;
 import elemental.html.WebGLRenderingContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Beat

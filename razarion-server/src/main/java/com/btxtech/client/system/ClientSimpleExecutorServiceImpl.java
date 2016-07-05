@@ -1,7 +1,7 @@
 package com.btxtech.client.system;
 
-import com.btxtech.system.SimpleExecutorService;
-import com.btxtech.system.SimpleScheduledFuture;
+import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;

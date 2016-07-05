@@ -7,8 +7,8 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.terrain.slope.Mesh;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

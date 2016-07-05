@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.object;
 
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Vertex;
 
 /**
  * Created by Beat

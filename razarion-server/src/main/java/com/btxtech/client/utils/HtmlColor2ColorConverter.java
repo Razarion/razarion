@@ -1,6 +1,6 @@
 package com.btxtech.client.utils;
 
-import com.btxtech.shared.primitives.Color;
+import com.btxtech.shared.datatypes.Color;
 import org.jboss.errai.databinding.client.api.Converter;
 
 /**

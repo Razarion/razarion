@@ -5,7 +5,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.datatypes.Matrix4;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

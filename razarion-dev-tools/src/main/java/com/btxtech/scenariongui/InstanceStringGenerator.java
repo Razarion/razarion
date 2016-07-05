@@ -1,11 +1,11 @@
 package com.btxtech.scenariongui;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.client.common.Line2I;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.TextureCoordinate;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Line2I;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.TextureCoordinate;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.Iterator;
 import java.util.List;

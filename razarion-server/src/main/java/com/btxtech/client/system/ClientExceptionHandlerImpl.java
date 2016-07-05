@@ -1,6 +1,6 @@
 package com.btxtech.client.system;
 
-import com.btxtech.system.ExceptionHandler;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Singleton;
 import java.util.logging.Level;

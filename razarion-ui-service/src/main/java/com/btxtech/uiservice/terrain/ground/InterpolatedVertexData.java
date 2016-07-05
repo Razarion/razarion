@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.terrain.ground;
 
-import com.btxtech.game.jsre.client.common.DecimalPosition;
+import com.btxtech.shared.datatypes.DecimalPosition;
 
 /**
  * Created by Beat

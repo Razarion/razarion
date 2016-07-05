@@ -4,7 +4,7 @@ import com.btxtech.TestHelper;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.shared.primitives.Matrix4;
+import com.btxtech.shared.datatypes.Matrix4;
 import org.junit.Assert;
 import org.junit.Test;
 

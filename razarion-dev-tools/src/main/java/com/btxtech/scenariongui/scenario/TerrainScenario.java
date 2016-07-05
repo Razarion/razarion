@@ -2,8 +2,8 @@ package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.GameMock;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.terrain.slope.Slope;
 import javafx.scene.paint.Color;

@@ -1,10 +1,8 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.game.jsre.common.MathHelper;
-import com.btxtech.shared.MathHelper2;
+import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.shared.utils.MathHelper2;
 import org.jboss.errai.databinding.client.api.Bindable;
-
-import java.util.logging.Logger;
 
 /**
  * Created by Beat

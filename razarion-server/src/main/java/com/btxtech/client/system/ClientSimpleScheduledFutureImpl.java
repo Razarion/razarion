@@ -1,7 +1,7 @@
 package com.btxtech.client.system;
 
-import com.btxtech.system.ExceptionHandler;
-import com.btxtech.system.SimpleScheduledFuture;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.google.gwt.user.client.Timer;
 
 import javax.enterprise.context.Dependent;

@@ -1,16 +1,16 @@
 package com.btxtech.uiservice.terrain.slope;
 
-import com.btxtech.game.jsre.client.common.CollectionUtils;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.client.common.Line2I;
-import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Line2I;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.gameengine.pathing.Obstacle;
-import com.btxtech.shared.primitives.Polygon2D;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.ImageDescriptor;
-import com.btxtech.shared.primitives.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.uiservice.terrain.ground.GroundMesh;
 import com.btxtech.uiservice.terrain.ground.GroundSlopeConnector;
 

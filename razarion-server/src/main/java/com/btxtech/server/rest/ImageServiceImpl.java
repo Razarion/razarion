@@ -1,7 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.DataUrlDecoder;
-import com.btxtech.system.ExceptionHandler;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.ImageService;
 import com.btxtech.shared.dto.ImageGalleryItem;
 

@@ -1,8 +1,8 @@
 package com.btxtech.client.renderer;
 
 import com.btxtech.shared.VertexList;
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.List;
 import java.util.SortedSet;

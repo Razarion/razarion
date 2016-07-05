@@ -2,9 +2,9 @@ package com.btxtech.gameengine.pathing;
 
 import com.btxtech.GameMock;
 import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.game.jsre.client.common.DecimalPosition;
-import com.btxtech.game.jsre.client.common.Index;
-import com.btxtech.game.jsre.client.common.Line2I;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Line2I;
 import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.gameengine.pathing.Pathing;
 

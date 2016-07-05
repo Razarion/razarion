@@ -1,7 +1,7 @@
 package com.btxtech.client.math3d;
 
-import com.btxtech.shared.primitives.Matrix4;
-import com.btxtech.shared.primitives.Matrix4Builder;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Matrix4Builder;
 import org.junit.Assert;
 import org.junit.Test;
 

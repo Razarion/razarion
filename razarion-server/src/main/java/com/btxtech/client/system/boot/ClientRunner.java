@@ -2,8 +2,8 @@ package com.btxtech.client.system.boot;
 
 import com.btxtech.client.system.boot.task.AbstractStartupTask;
 import com.btxtech.client.system.boot.task.DeferredStartup;
-import com.btxtech.game.jsre.client.GwtCommon;
-import com.btxtech.game.jsre.common.MathHelper;
+import com.btxtech.client.utils.GwtCommon;
+import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;

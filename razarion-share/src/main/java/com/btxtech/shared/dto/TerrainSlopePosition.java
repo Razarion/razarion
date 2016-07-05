@@ -1,6 +1,6 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.game.jsre.client.common.Index;
+import com.btxtech.shared.datatypes.Index;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.primitives.TextureCoordinate;
-import com.btxtech.shared.primitives.Vertex;
+import com.btxtech.shared.datatypes.TextureCoordinate;
+import com.btxtech.shared.datatypes.Vertex;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
