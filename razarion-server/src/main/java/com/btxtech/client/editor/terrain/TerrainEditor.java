@@ -53,6 +53,7 @@ public class TerrainEditor {
     private Event<TerrainEditorSlopeModifiedEvent> terrainEditorSlopeModifiedEvent;
     @Inject
     private TerrainSurface terrainSurface;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<TerrainEditorService> terrainEditorService;
     @Inject
@@ -67,7 +68,6 @@ public class TerrainEditor {
     private Map<Integer, ModifiedTerrainSlopePosition> modifiedTerrainSlopePositions = new HashMap<>();
     private boolean deletePressed;
     private Matrix4 cursorModelMatrix = Matrix4.createIdentity();
-    ;
 
     public TerrainEditor() {
         cursor = setupCursor();
