@@ -1,6 +1,8 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.DataUrlDecoder;
+import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity_;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.ImageService;
 import com.btxtech.shared.dto.ImageGalleryItem;

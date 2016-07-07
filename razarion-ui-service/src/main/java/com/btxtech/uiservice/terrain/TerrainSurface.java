@@ -71,7 +71,7 @@ public class TerrainSurface {
         }
     }
 
-    public void init() {
+    public void setup() {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
         setupGround(MESH_NODES, MESH_NODES);

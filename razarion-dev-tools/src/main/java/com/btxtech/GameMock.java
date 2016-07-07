@@ -15,7 +15,9 @@ import java.util.List;
  * Created by Beat
  * 18.05.2016.
  */
+@Deprecated
 public class GameMock {
+    @Deprecated
     public static TerrainSurface startTerrainSurface(String slopeFile, String beachFile, String groundFile, String terrainSlopePositionFile) {
         // Load terrain data
         Gson gson = new Gson();
@@ -30,7 +32,7 @@ public class GameMock {
             terrainSurface.setGroundSkeleton(groundSkeleton);
             terrainSurface.setAllSlopeSkeletons(Arrays.asList(slopeSkeletonSlope, slopeSkeletonBeach));
             terrainSurface.setTerrainSlopePositions(terrainSlopePositions);
-            terrainSurface.init();
+            terrainSurface.setup();
             return terrainSurface;
         } catch (Exception e) {
             e.printStackTrace();

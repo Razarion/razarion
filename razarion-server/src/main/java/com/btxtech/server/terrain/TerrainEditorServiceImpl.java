@@ -1,15 +1,15 @@
 package com.btxtech.server.terrain;
 
 import com.btxtech.server.collada.ColladaConverter;
-import com.btxtech.server.rest.ImageLibraryEntity;
-import com.btxtech.server.terrain.object.TerrainObjectEntity;
-import com.btxtech.server.terrain.object.TerrainObjectEntity_;
-import com.btxtech.server.terrain.object.TerrainObjectPositionEntity;
-import com.btxtech.server.terrain.object.TerrainObjectPositionEntity_;
-import com.btxtech.server.terrain.surface.GroundConfigEntity;
-import com.btxtech.server.terrain.surface.SlopeConfigEntity;
-import com.btxtech.server.terrain.surface.SlopeConfigEntity_;
-import com.btxtech.server.terrain.surface.TerrainSlopePositionEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.server.persistence.object.TerrainObjectEntity;
+import com.btxtech.server.persistence.object.TerrainObjectEntity_;
+import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
+import com.btxtech.server.persistence.object.TerrainObjectPositionEntity_;
+import com.btxtech.server.persistence.surface.GroundConfigEntity;
+import com.btxtech.server.persistence.surface.SlopeConfigEntity;
+import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
+import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.TerrainEditorService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;

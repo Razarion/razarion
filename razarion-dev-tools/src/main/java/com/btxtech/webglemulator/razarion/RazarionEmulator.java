@@ -1,17 +1,23 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.dto.GroundSkeleton;
-import com.btxtech.shared.dto.ItemType;
-import com.btxtech.shared.dto.SlopeSkeleton;
-import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.pathing.ModelMatrices;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.dto.CameraConfig;
+import com.btxtech.shared.dto.GroundSkeleton;
+import com.btxtech.shared.dto.ItemType;
+import com.btxtech.shared.dto.PlanetConfig;
+import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.pathing.ModelMatrices;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.storyboard.Storyboard;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.terrain.slope.Mesh;
 import com.btxtech.uiservice.units.ItemService;
@@ -59,6 +65,8 @@ public class RazarionEmulator {
     private WebGlEmulatorSceneController sceneController;
     @Inject
     private ShadowUiService shadowUiService;
+    @Inject
+    private Storyboard storyboard;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private VertexShader terrainShader = new VertexShader() {
         @Override
@@ -76,7 +84,8 @@ public class RazarionEmulator {
     };
 
     public void process() {
-        setupTerrain();
+        setupStoryboard();
+        storyboard.setup();
         setupItems();
         // Ground
         webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
@@ -112,11 +121,11 @@ public class RazarionEmulator {
                     @Override
                     public void run() {
                         try {
-                             long time = System.currentTimeMillis();
+                            long time = System.currentTimeMillis();
                             webGlEmulatorShadow.drawArrays();
                             webGlEmulator.drawArrays();
                             sceneController.update();
-                             System.out.println("Time for render: " + (System.currentTimeMillis() - time));
+                            System.out.println("Time for render: " + (System.currentTimeMillis() - time));
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();
                         }
@@ -124,6 +133,7 @@ public class RazarionEmulator {
                 });
             }
         }, RENDER_DELAY, RENDER_DELAY, TimeUnit.MILLISECONDS);
+        storyboard.start();
     }
 
     private List<Double> setupNormDoubles(List<Vertex> vertices, List<Vertex> norms) {
@@ -137,28 +147,44 @@ public class RazarionEmulator {
         return normDoubles;
     }
 
-    private void setupTerrain() {
+    private void setupStoryboard() {
         Gson gson = new Gson();
+        StoryboardConfig storyboardConfig = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/StoryboardConfig.json")), StoryboardConfig.class);
+        storyboard.init(storyboardConfig);
+    }
+
+    private StoryboardConfig setupStoryboardConfig() {
+        StoryboardConfig storyboardConfig = new StoryboardConfig();
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        SceneConfig sceneConfig = new SceneConfig();
+        CameraConfig cameraConfig = new CameraConfig();
+        cameraConfig.setCameraLocked(true);
+        cameraConfig.setSmooth(true);
+        cameraConfig.setFromPosition(new Index(2000, 2000));
+        cameraConfig.setToPosition(new Index(200, 200));
+        sceneConfig.setCameraConfig(cameraConfig);
+        sceneConfigs.add(sceneConfig);
+        storyboardConfig.setSceneConfigs(sceneConfigs);
+        PlanetConfig planetConfig = new PlanetConfig();
+        setupTerrain(planetConfig);
+        storyboardConfig.setPlanetConfig(planetConfig);
+        return storyboardConfig;
+    }
+
+    private void setupTerrain(PlanetConfig planetConfig) {
+        Gson gson = new Gson();
+        planetConfig.setGroundSkeleton(gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/GroundSkeleton.json")), GroundSkeleton.class));
         SlopeSkeleton slopeSkeletonBeach = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/SlopeSkeletonBeach.json")), SlopeSkeleton.class);
         SlopeSkeleton slopeSkeletonSlope = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/SlopeSkeletonSlope.json")), SlopeSkeleton.class);
-        GroundSkeleton groundSkeleton = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/GroundSkeleton.json")), GroundSkeleton.class);
+        planetConfig.setSlopeSkeletons(Arrays.asList(slopeSkeletonSlope, slopeSkeletonBeach));
         // List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/TerrainSlopePositions.json")), new TypeToken<List<TerrainSlopePosition>>() {
         // }.getType());
         List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/TerrainSlopePositions.json")), new TypeToken<List<TerrainSlopePosition>>() {
         }.getType());
-
-        // Setup terrain surface
-        try {
-            terrainSurface.setGroundSkeleton(groundSkeleton);
-            terrainSurface.setAllSlopeSkeletons(Arrays.asList(slopeSkeletonSlope, slopeSkeletonBeach));
-            terrainSurface.setTerrainSlopePositions(terrainSlopePositions);
-            terrainSurface.init();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
     }
 
+    @Deprecated
     private void setupItems() {
         Gson gson = new Gson();
         List<ItemType> itemTypes = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/ItemType.json")), new TypeToken<List<ItemType>>() {

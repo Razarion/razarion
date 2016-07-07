@@ -1,7 +1,7 @@
 package com.btxtech.server.collada;
 
 import com.btxtech.server.itemtype.ItemTypeEntity;
-import com.btxtech.server.terrain.object.TerrainObjectEntity;
+import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;

@@ -105,7 +105,7 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
         terrainEditor.updateTerrainSurface();
-        terrainSurface.init();
+        terrainSurface.setup();
         renderService.setupRenderers();
         renderService.fillBuffers();
     }

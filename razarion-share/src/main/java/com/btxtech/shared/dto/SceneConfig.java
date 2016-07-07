@@ -1,0 +1,29 @@
+package com.btxtech.shared.dto;
+
+import org.jboss.errai.common.client.api.annotations.Portable;
+
+/**
+ * Created by Beat
+ * 05.07.2016.
+ */
+@Portable
+public class SceneConfig {
+    private String introText;
+    private CameraConfig cameraConfig;
+
+    public String getIntroText() {
+        return introText;
+    }
+
+    public void setIntroText(String introText) {
+        this.introText = introText;
+    }
+
+    public CameraConfig getCameraConfig() {
+        return cameraConfig;
+    }
+
+    public void setCameraConfig(CameraConfig cameraConfig) {
+        this.cameraConfig = cameraConfig;
+    }
+}

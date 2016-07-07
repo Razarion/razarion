@@ -1,15 +1,14 @@
 package com.btxtech.client.system.boot.task;
 
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.shared.TerrainService;
-import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.StoryboardService;
+import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.uiservice.storyboard.Storyboard;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,20 +17,21 @@ import java.util.logging.Logger;
  * 07.02.2016.
  */
 @Dependent
-public class LoadSlopeSkeletonTask extends AbstractStartupTask {
+public class LoadStoryboardTask extends AbstractStartupTask {
     @Inject
-    private TerrainSurface terrainSurface;
+    private Storyboard storyboard;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<TerrainService> terrainServiceCaller;
-    private Logger logger = Logger.getLogger(LoadSlopeSkeletonTask.class.getName());
+    private Caller<StoryboardService> serviceCaller;
+    private Logger logger = Logger.getLogger(LoadStoryboardTask.class.getName());
 
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        terrainServiceCaller.call(new RemoteCallback<Collection<SlopeSkeleton>>() {
+        serviceCaller.call(new RemoteCallback<StoryboardConfig>() {
             @Override
-            public void callback(Collection<SlopeSkeleton> slopeSkeletons) {
-                terrainSurface.setAllSlopeSkeletons(slopeSkeletons);
+            public void callback(StoryboardConfig storyboardConfig) {
+                storyboard.init(storyboardConfig);
                 deferredStartup.finished();
             }
         }, new ErrorCallback<Object>() {
@@ -41,6 +41,6 @@ public class LoadSlopeSkeletonTask extends AbstractStartupTask {
                 deferredStartup.failed(throwable);
                 return false;
             }
-        }).loadSlopeSkeletons();
+        }).loadStoryboard();
     }
 }

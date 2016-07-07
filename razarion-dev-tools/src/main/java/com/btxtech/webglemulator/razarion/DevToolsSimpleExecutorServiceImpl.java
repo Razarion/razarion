@@ -21,11 +21,11 @@ public class DevToolsSimpleExecutorServiceImpl implements SimpleExecutorService 
 
     @Override
     public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable) {
-        if (start) {
-            throw new UnsupportedOperationException();
-        }
         DevToolsSimpleScheduledFutureImpl scheduledFuture = devToolsSimpleScheduledFutures.get();
         scheduledFuture.init(scheduler, delayMilliS, runnable);
+        if (start) {
+            scheduledFuture.start();
+        }
         return scheduledFuture;
     }
 }

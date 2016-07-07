@@ -1,4 +1,4 @@
-package com.btxtech.server.terrain.surface;
+package com.btxtech.server.persistence.surface;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -51,8 +51,8 @@ public class TerrainSlopePositionEntity {
         this.polygon.addAll(polygon);
     }
 
-    public TerrainSlopePosition generateTerrainSlopePosition() {
-        return new TerrainSlopePosition(id.intValue(), slopeConfigEntity.getId().intValue(), polygon);
+    public TerrainSlopePosition toTerrainSlopePosition() {
+        return new TerrainSlopePosition(id.intValue(), slopeConfigEntity.getId().intValue(), new ArrayList<>(polygon));
     }
 
     @Override

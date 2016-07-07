@@ -200,7 +200,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
         }
         SlopeModeler.sculpt(slopeConfig, fractalFieldConfig);
         terrainSurface.setSlopeSkeleton(slopeConfig.getSlopeSkeleton());
-        terrainSurface.init();
+        terrainSurface.setup();
         renderService.fillBuffers();
     }
 }

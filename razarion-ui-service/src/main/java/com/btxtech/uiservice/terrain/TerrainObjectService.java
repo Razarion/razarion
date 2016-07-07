@@ -37,6 +37,9 @@ public class TerrainObjectService {
 
     public void setTerrainObjects(Collection<TerrainObject> terrainObjects) {
         this.terrainObjects = new HashMap<>();
+        if(terrainObjects == null) {
+            return;
+        }
         for (TerrainObject terrainObject : terrainObjects) {
             this.terrainObjects.put(terrainObject.getId(), terrainObject);
         }
@@ -46,7 +49,7 @@ public class TerrainObjectService {
         this.terrainObjectPositions = terrainObjectPositions;
     }
 
-    public void init() {
+    public void setup() {
         setupModelMatrices(terrainObjectPositions);
         vertexContainers = new HashMap<>();
         vertexContainers2TerrainObject = new HashMap<>();
@@ -64,6 +67,9 @@ public class TerrainObjectService {
 
     public void setupModelMatrices(Collection<TerrainObjectPosition> terrainObjectPositions) {
         objectIdMatrices = new HashMap<>();
+        if(terrainObjectPositions == null) {
+            return;
+        }
         for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
             try {
                 Collection<ModelMatrices> modelMatrices = objectIdMatrices.get(terrainObjectPosition.getTerrainObjectId());
@@ -85,7 +91,7 @@ public class TerrainObjectService {
 
     public void overrideTerrainObject(TerrainObject terrainObject) {
         terrainObjects.put(terrainObject.getId(), terrainObject);
-        init();
+        setup();
     }
 
     public TerrainObject getTerrainObject(int id) {

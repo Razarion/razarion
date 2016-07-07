@@ -18,11 +18,11 @@ public class ClientSimpleExecutorServiceImpl implements SimpleExecutorService {
 
     @Override
     public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable) {
-        if (start) {
-            throw new UnsupportedOperationException();
-        }
         ClientSimpleScheduledFutureImpl clientSimpleScheduledFuture = instance.get();
         clientSimpleScheduledFuture.init(delayMilliS, runnable);
+        if (start) {
+            clientSimpleScheduledFuture.start();
+        }
         return clientSimpleScheduledFuture;
     }
 }

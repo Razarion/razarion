@@ -1,5 +1,7 @@
 package com.btxtech.uiservice.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -42,6 +44,7 @@ public class TerrainScrollHandler {
     private ScrollDirection scrollDirectionY = ScrollDirection.STOP;
     private boolean scrollDisabled;
     private SimpleScheduledFuture simpleScheduledFuture;
+    private SimpleScheduledFuture moveHandler;
 
     @PostConstruct
     public void init() {
@@ -56,12 +59,18 @@ public class TerrainScrollHandler {
     public void cleanup() {
         scrollDisabled = false;
         simpleScheduledFuture.cancel();
+        if (moveHandler != null) {
+            moveHandler.cancel();
+            moveHandler = null;
+        }
     }
 
-    public void setScrollDisabled(boolean scrollDisabled) {
+    private void setScrollDisabled(boolean scrollDisabled) {
         this.scrollDisabled = scrollDisabled;
         if (scrollDisabled) {
             simpleScheduledFuture.cancel();
+        } else {
+            simpleScheduledFuture.start();
         }
     }
 
@@ -162,6 +171,49 @@ public class TerrainScrollHandler {
 
         camera.setTranslateDeltaXY(scrollX, scrollY);
     }
+
+    public void executeCameraConfig(final CameraConfig cameraConfig, final Runnable onPositionReached) {
+        if (cameraConfig.isSmooth()) {
+            setScrollDisabled(true);
+            if (cameraConfig.getFromPosition() != null) {
+                camera.setTranslateX(cameraConfig.getFromPosition().getX());
+                camera.setTranslateY(cameraConfig.getFromPosition().getY());
+            }
+            if (cameraConfig.getToPosition() != null) {
+                if (moveHandler != null) {
+                    moveHandler.cancel();
+                    moveHandler = null;
+                }
+                moveHandler = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, true, new Runnable() {
+                    @Override
+                    public void run() {
+                        DecimalPosition cameraPosition = new DecimalPosition(camera.getTranslateX(), camera.getTranslateY());
+                        if (cameraPosition.getDistance(cameraConfig.getToPosition()) < SCROLL_AUTO_DISTANCE) {
+                            camera.setTranslateX(cameraConfig.getToPosition().getX());
+                            camera.setTranslateY(cameraConfig.getToPosition().getY());
+                            if (onPositionReached != null) {
+                                setScrollDisabled(cameraConfig.isCameraLocked());
+                                moveHandler.cancel();
+                                moveHandler = null;
+                                onPositionReached.run();
+                            }
+                        } else {
+                            DecimalPosition newCameraPosition = cameraPosition.getPointWithDistance(SCROLL_AUTO_DISTANCE, cameraConfig.getToPosition(), false);
+                            camera.setTranslateX(newCameraPosition.getX());
+                            camera.setTranslateY(newCameraPosition.getY());
+                        }
+                    }
+                });
+            }
+        } else {
+            setScrollDisabled(cameraConfig.isCameraLocked());
+            if (cameraConfig.getToPosition() != null) {
+                camera.setTranslateX(cameraConfig.getToPosition().getX());
+                camera.setTranslateY(cameraConfig.getToPosition().getY());
+            }
+        }
+    }
+
 
 //    public static Index calculateSafeDelta(int deltaX, int deltaY, TerrainSettings terrainSettings, Rectangle viewRect) {
 //        if (terrainSettings == null) {

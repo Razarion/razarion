@@ -1,4 +1,4 @@
-package com.btxtech.server.terrain;
+package com.btxtech.server.persistence;
 
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.datatypes.Color;

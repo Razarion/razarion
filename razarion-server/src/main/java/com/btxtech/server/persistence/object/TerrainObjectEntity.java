@@ -1,6 +1,6 @@
-package com.btxtech.server.terrain.object;
+package com.btxtech.server.persistence.object;
 
-import com.btxtech.server.rest.ImageLibraryEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;

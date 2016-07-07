@@ -1,6 +1,7 @@
-package com.btxtech.server.terrain.object;
+package com.btxtech.server.persistence.object;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -65,6 +66,16 @@ public class TerrainObjectPositionEntity {
         this.zRotation = zRotation;
     }
 
+    public TerrainObjectPosition toTerrainObjectPositio() {
+        TerrainObjectPosition objectPosition = new TerrainObjectPosition();
+        objectPosition.setId(id.intValue());
+        objectPosition.setTerrainObjectId(terrainObjectEntity.getId().intValue());
+        objectPosition.setScale(scale);
+        objectPosition.setZRotation(zRotation);
+        objectPosition.setPosition(position);
+        return objectPosition;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -82,5 +93,4 @@ public class TerrainObjectPositionEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

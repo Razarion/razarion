@@ -1,4 +1,4 @@
-package com.btxtech.server.rest;
+package com.btxtech.server.persistence;
 
 import com.btxtech.shared.dto.ImageGalleryItem;
 

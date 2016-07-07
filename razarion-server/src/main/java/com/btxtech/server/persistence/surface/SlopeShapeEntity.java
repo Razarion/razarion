@@ -1,4 +1,4 @@
-package com.btxtech.server.terrain.surface;
+package com.btxtech.server.persistence.surface;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeShape;

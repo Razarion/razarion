@@ -105,7 +105,7 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     private void sculptButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         terrainSurface.setGroundSkeleton(groundConfig.getGroundSkeleton());
-        terrainSurface.init();
+        terrainSurface.setup();
         renderService.fillBuffers();
     }
 

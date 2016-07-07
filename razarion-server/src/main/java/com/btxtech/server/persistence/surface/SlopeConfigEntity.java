@@ -1,6 +1,6 @@
-package com.btxtech.server.terrain.surface;
+package com.btxtech.server.persistence.surface;
 
-import com.btxtech.server.terrain.LightConfigEmbeddable;
+import com.btxtech.server.persistence.LightConfigEmbeddable;
 import com.btxtech.shared.Shape;
 import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
