@@ -150,6 +150,7 @@
                     <runTarget>webgl.html</runTarget>
                     <hostedWebapp>src/main/webapp</hostedWebapp>
                     <strict>true</strict>
+                    <inplace>true</inplace>
                     <!-- Only work with modified gwt-maven-plugin -->
                     <!-- mvn gwt:run-codeserver -->
                     <!-- Adds addition -src to the CodeServer -->

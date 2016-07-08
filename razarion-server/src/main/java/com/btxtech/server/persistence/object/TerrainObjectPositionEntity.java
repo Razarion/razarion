@@ -34,39 +34,7 @@ public class TerrainObjectPositionEntity {
         return id;
     }
 
-    public TerrainObjectEntity getTerrainObjectEntity() {
-        return terrainObjectEntity;
-    }
-
-    public void setTerrainObjectEntity(TerrainObjectEntity terrainObjectEntity) {
-        this.terrainObjectEntity = terrainObjectEntity;
-    }
-
-    public Index getPosition() {
-        return position;
-    }
-
-    public void setPosition(Index position) {
-        this.position = position;
-    }
-
-    public double getScale() {
-        return scale;
-    }
-
-    public void setScale(double scale) {
-        this.scale = scale;
-    }
-
-    public double getZRotation() {
-        return zRotation;
-    }
-
-    public void setZRotation(double zRotation) {
-        this.zRotation = zRotation;
-    }
-
-    public TerrainObjectPosition toTerrainObjectPositio() {
+    public TerrainObjectPosition toTerrainObjectPosition() {
         TerrainObjectPosition objectPosition = new TerrainObjectPosition();
         objectPosition.setId(id.intValue());
         objectPosition.setTerrainObjectId(terrainObjectEntity.getId().intValue());
@@ -74,6 +42,16 @@ public class TerrainObjectPositionEntity {
         objectPosition.setZRotation(zRotation);
         objectPosition.setPosition(position);
         return objectPosition;
+    }
+
+    public void fromTerrainObjectPosition(TerrainObjectPosition objectPosition, TerrainObjectEntity terrainObjectEntity) {
+        if (objectPosition.hasId()) {
+            id = (long) objectPosition.getId();
+        }
+        position = objectPosition.getPosition();
+        scale = objectPosition.getScale();
+        zRotation = objectPosition.getZRotation();
+        this.terrainObjectEntity = terrainObjectEntity;
     }
 
     @Override

@@ -6,14 +6,14 @@ import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
 import com.btxtech.client.TerrainMouseUpEvent;
 import com.btxtech.client.renderer.engine.RenderService;
-import com.btxtech.uiservice.terrain.TerrainObjectService;
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.shared.PlanetEditorService;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.terrain.TerrainObjectService;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 import elemental.events.KeyboardEvent;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +46,7 @@ public class TerrainObjectEditor {
     private Logger logger = Logger.getLogger(TerrainObjectEditor.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<TerrainEditorService> terrainEditorService;
+    private Caller<PlanetEditorService> planetEditorServiceCaller;
     @Inject
     private RenderService renderService;
     @Inject
@@ -57,7 +58,7 @@ public class TerrainObjectEditor {
     private ObjectNameId newObjectId;
     private double randomZRotation = 1.0;
     private double randomScale = 2.0;
-    private Collection<TerrainObjectPosition> terrainObjects;
+    private List<TerrainObjectPosition> terrainObjects;
     private boolean active;
     private TerrainObjectPosition selected;
     private boolean deletePressed;
@@ -217,7 +218,7 @@ public class TerrainObjectEditor {
 
 
     public void save() {
-        terrainEditorService.call(new RemoteCallback<Void>() {
+        planetEditorServiceCaller.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void ignore) {
             }

@@ -4,7 +4,7 @@ import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -39,7 +39,7 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     @Inject
     private TerrainEditor terrainEditor;
     @Inject
-    private Caller<TerrainEditorService> terrainEditorService;
+    private Caller<TerrainElementService> terrainEditorService;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject

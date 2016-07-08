@@ -40,13 +40,23 @@ public class PlanetEntity {
         }
         List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
         for (TerrainObjectPositionEntity terrainObjectPositionEntity : terrainObjectPositionEntities) {
-            terrainObjectPositions.add(terrainObjectPositionEntity.toTerrainObjectPositio());
+            terrainObjectPositions.add(terrainObjectPositionEntity.toTerrainObjectPosition());
         }
 
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setTerrainObjectPositions(terrainObjectPositions);
         return planetConfig;
+    }
+
+    public void setTerrainSlopePositionEntities(List<TerrainSlopePositionEntity> terrainSlopePositionEntities) {
+        this.terrainSlopePositionEntities.clear();
+        this.terrainSlopePositionEntities.addAll(terrainSlopePositionEntities);
+    }
+
+    public void setTerrainObjectPositionEntities(List<TerrainObjectPositionEntity> terrainObjectPositionEntities) {
+        this.terrainObjectPositionEntities.clear();
+        this.terrainObjectPositionEntities.addAll(terrainObjectPositionEntities);
     }
 
     @Override

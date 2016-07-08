@@ -37,8 +37,8 @@ public class Rectangle implements Serializable {
         if (start.getX() > end.getX() || start.getY() > end.getY()) {
             throw new IllegalArgumentException("Invalid rectangle start: " + start + " end: " + end);
         }
-        this.start = start.getCopy();
-        this.endExclusive = end.getCopy();
+        this.start = start.copy();
+        this.endExclusive = end.copy();
     }
 
     public Rectangle(int xStart, int yStart, int width, int height) {
@@ -47,16 +47,16 @@ public class Rectangle implements Serializable {
     }
 
     public void replace(Rectangle target) {
-        start = target.start.getCopy();
-        endExclusive = target.endExclusive.getCopy();
+        start = target.start.copy();
+        endExclusive = target.endExclusive.copy();
     }
 
     public Index getStart() {
-        return start.getCopy();
+        return start.copy();
     }
 
     public Index getEnd() {
-        return endExclusive.getCopy();
+        return endExclusive.copy();
     }
 
     /**
@@ -315,7 +315,7 @@ public class Rectangle implements Serializable {
         return Math.min(Math.min(Math.min(d1, d2), Math.min(d3, d4)), Math.min(d5, d6));
     }*/
     public Rectangle copy() {
-        return new Rectangle(start.getCopy(), endExclusive.getCopy());
+        return new Rectangle(start.copy(), endExclusive.copy());
     }
 
     public void growNorth(int size) {
@@ -436,7 +436,7 @@ public class Rectangle implements Serializable {
         int endYCorrection = getHeight() > 0 ? 1 : 0;
 
         if (point.getX() <= start.getX() && point.getY() <= start.getY()) {
-            return new DecimalPosition(start.getCopy());
+            return new DecimalPosition(start.copy());
         } else if (point.getX() >= endExclusive.getX() && point.getY() >= endExclusive.getY()) {
             return new DecimalPosition(endExclusive.sub(endXCorrection, endYCorrection));
         } else if (point.getX() <= start.getX() && point.getY() >= endExclusive.getY()) {
@@ -467,9 +467,9 @@ public class Rectangle implements Serializable {
      */
     public DecimalPosition getNearestPointInclusive(DecimalPosition point) {
         if (point.getX() <= start.getX() && point.getY() <= start.getY()) {
-            return new DecimalPosition(start.getCopy());
+            return new DecimalPosition(start.copy());
         } else if (point.getX() >= endExclusive.getX() && point.getY() >= endExclusive.getY()) {
-            return new DecimalPosition(endExclusive.getCopy());
+            return new DecimalPosition(endExclusive.copy());
         } else if (point.getX() <= start.getX() && point.getY() >= endExclusive.getY()) {
             return new DecimalPosition(start.getX(), endExclusive.getY());
         } else if (point.getX() >= endExclusive.getX() && point.getY() <= start.getY()) {

@@ -89,7 +89,7 @@ public class Index implements Serializable {
         return "x: " + x + " y: " + y;
     }
 
-    public Index getCopy() {
+    public Index copy() {
         return new Index(x, y);
     }
 
@@ -397,7 +397,7 @@ public class Index implements Serializable {
 
     public static Index saveCopy(Index index) {
         if (index != null) {
-            return index.getCopy();
+            return index.copy();
         } else {
             return null;
         }

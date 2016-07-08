@@ -7,7 +7,7 @@ import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;
@@ -60,7 +60,7 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
     private Logger logger = Logger.getLogger(ColladaEditorSidebar.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<TerrainEditorService> terrainEditorService;
+    private Caller<TerrainElementService> terrainEditorService;
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject

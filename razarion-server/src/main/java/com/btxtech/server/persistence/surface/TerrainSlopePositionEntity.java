@@ -34,21 +34,17 @@ public class TerrainSlopePositionEntity {
     @OrderColumn(name = "orderColumn")
     private List<Index> polygon;
 
-    public SlopeConfigEntity getSlopeConfigEntity() {
-        return slopeConfigEntity;
-    }
-
-    public void setSlopeConfigEntity(SlopeConfigEntity slopeConfigEntity) {
+    public void fromTerrainSlopePosition(TerrainSlopePosition terrainSlopePosition, SlopeConfigEntity slopeConfigEntity) {
+        if (terrainSlopePosition.hasId()) {
+            id = (long) terrainSlopePosition.getId();
+        }
         this.slopeConfigEntity = slopeConfigEntity;
-    }
-
-    public void setPolygon(List<Index> polygon) {
-        if(this.polygon != null) {
+        if (this.polygon != null) {
             this.polygon.clear();
         } else {
             this.polygon = new ArrayList<>();
         }
-        this.polygon.addAll(polygon);
+        this.polygon.addAll(terrainSlopePosition.getPolygon());
     }
 
     public TerrainSlopePosition toTerrainSlopePosition() {

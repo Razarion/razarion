@@ -12,6 +12,7 @@ razarion-server/target/
 razarion-server/src/main/webapp/WEB-INF/classes/
 razarion-server/src/main/webapp/razarionServer
 razarion-server/src/main/webapp/WEB-INF/lib
+razarion-server/src/main/webapp/WEB-INF/deploy/razarionServer
 razarion-server/src/main/gwt-unitCache
 razarion-share/razarion-share.iml
 razarion-share/target/

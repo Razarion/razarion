@@ -51,24 +51,6 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.version}</version>
-                <configuration>
-                    <logLevel>INFO</logLevel>
-                    <noServer>true</noServer>
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M</extraJvmArgs>
-                    <runTarget>webgl.html</runTarget>
-                    <hostedWebapp>src/main/webapp</hostedWebapp>
-                    <strict>true</strict>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <modules>
         <module>razarion-ui-service</module>
         <module>razarion-dev-tools</module>

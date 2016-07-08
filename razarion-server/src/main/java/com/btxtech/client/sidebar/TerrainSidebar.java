@@ -6,7 +6,7 @@ import com.btxtech.client.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.RenderService;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.client.widgets.LightWidget;
-import com.btxtech.shared.TerrainEditorService;
+import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -42,7 +42,7 @@ public class TerrainSidebar extends Composite implements LeftSideBarContent {
     @Inject
     private RenderService renderService;
     @Inject
-    private Caller<TerrainEditorService> terrainEditorService;
+    private Caller<TerrainElementService> terrainEditorService;
     @Inject
     @AutoBound
     private DataBinder<GroundConfig> groundConfigDataBinder;

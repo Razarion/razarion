@@ -1,10 +1,10 @@
 package com.btxtech.client.sidebar.slopeeditor;
 
 import com.btxtech.client.sidebar.LeftSideBarContent;
+import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.SlopeSkeleton;
 import com.google.gwt.dom.client.Style;
@@ -39,25 +39,32 @@ import java.util.logging.Logger;
 @Templated("SlopeConfigSidebar.html#slopeConfigSidebar")
 public class SlopeConfigSidebar extends Composite implements LeftSideBarContent {
     private Logger logger = Logger.getLogger(SlopeConfigSidebar.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<TerrainEditorService> terrainEditorService;
+    private Caller<TerrainElementService> terrainEditorService;
     @Inject
     private Instance<SlopeConfigPanel> plateauPanelInstance;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private SimplePanel content;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private ValueListBox<ObjectNameId> slopeSelection;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button newSlope;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button delete;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button save;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label loadingLabel;
@@ -181,7 +188,7 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
             content.setWidget(slopeConfigPanel);
             delete.getElement().getStyle().setDisplay(Style.Display.BLOCK);
             save.getElement().getStyle().setDisplay(Style.Display.BLOCK);
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "loadSlopeConfig failed: " + e.getMessage(), e);
         }
     }
@@ -193,6 +200,9 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
     }
 
     private SlopeConfig getSlopeConfig() {
+        if (content.getWidget() == null) {
+            return null;
+        }
         return ((SlopeConfigPanel) content.getWidget()).getSlopeConfig();
     }
 }

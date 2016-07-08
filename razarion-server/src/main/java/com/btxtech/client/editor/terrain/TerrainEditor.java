@@ -5,15 +5,15 @@ import com.btxtech.client.TerrainKeyUpEvent;
 import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
 import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.shared.PlanetEditorService;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.shared.TerrainEditorService;
-import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Polygon2I;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import elemental.events.KeyboardEvent;
 import org.jboss.errai.common.client.api.Caller;
@@ -55,7 +55,7 @@ public class TerrainEditor {
     private TerrainSurface terrainSurface;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<TerrainEditorService> terrainEditorService;
+    private Caller<PlanetEditorService> planetEditorServiceCaller;
     @Inject
     private RenderService renderService;
     private boolean active;
@@ -246,14 +246,14 @@ public class TerrainEditor {
     }
 
     public void save() {
-        Collection<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
+        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         for (ModifiedTerrainSlopePosition modifiedTerrainSlopePosition : modifiedTerrainSlopePositions.values()) {
             if (modifiedTerrainSlopePosition.isValidForServer()) {
                 terrainSlopePositions.add(modifiedTerrainSlopePosition.createServerTerrainSlopePosition());
             }
         }
 
-        terrainEditorService.call(new RemoteCallback<Void>() {
+        planetEditorServiceCaller.call(new RemoteCallback<Void>() {
             @Override
             public void callback(Void response) {
 
