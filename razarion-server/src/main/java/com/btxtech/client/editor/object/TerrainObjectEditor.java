@@ -142,7 +142,7 @@ public class TerrainObjectEditor {
 
 
     public void onTerrainKeyDown(@Observes TerrainKeyDownEvent terrainKeyDownEvent) {
-        if (terrainKeyDownEvent.getKeyboardEvent().getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+        if (terrainKeyDownEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
             deletePressed = true;
             if (selected != null) {
                 deleteSelected();

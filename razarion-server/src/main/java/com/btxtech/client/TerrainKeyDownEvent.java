@@ -13,6 +13,10 @@ public class TerrainKeyDownEvent {
         this.keyboardEvent = keyboardEvent;
     }
 
+    public int getKeyCode() {
+        return keyboardEvent.getKeyCode();
+    }
+
     public KeyboardEvent getKeyboardEvent() {
         return keyboardEvent;
     }

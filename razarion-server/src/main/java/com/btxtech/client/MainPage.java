@@ -1,8 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.client.menu.Menu;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.sidebar.LeftSideBar;
 import com.btxtech.client.system.boot.ClientRunner;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.google.gwt.canvas.client.Canvas;
@@ -31,18 +29,10 @@ public class MainPage extends Composite {
     private KeyboardEventHandler keyboardEventHandler;
     @Inject
     private MouseEventHandler mouseEventHandler;
-    @Inject
-    private LeftSideBar leftSideBar;
     @DataField
     private Canvas canvas = Canvas.createIfSupported();
     @Inject
     private GameCanvas gameCanvas;
-    @Inject
-    @DataField
-    private Menu menu;
-    @Inject
-    @DataField
-    private SideBarPanel sideBarPanel;
 
     @PostConstruct
     public void init() {
@@ -51,7 +41,6 @@ public class MainPage extends Composite {
                 throw new IllegalStateException("Canvas is not supported");
             }
             gameCanvas.setCanvas(canvas);
-            leftSideBar.setSideBarPanel(sideBarPanel);
             keyboardEventHandler.init();
             mouseEventHandler.init();
             clientRunner.start(GameStartupSeq.COLD_SIMULATED);
