@@ -2,6 +2,7 @@ package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
@@ -18,12 +19,16 @@ import java.util.logging.Logger;
 @Dependent
 public class Scene {
     private Logger logger = Logger.getLogger(Scene.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private StoryCover storyCover;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private Storyboard storyboard;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private QuestVisualizer questVisualizer;
     private SceneConfig sceneConfig;
     private Collection<SceneCompletionHandler> completionHandlers = new ArrayList<>();
 
@@ -35,6 +40,7 @@ public class Scene {
         if (sceneConfig.getIntroText() != null) {
             storyCover.show(sceneConfig.getIntroText());
         }
+        questVisualizer.showSideBar(sceneConfig.isShowQuestSideBar());
         setupCameraConfig(sceneConfig.getCameraConfig());
     }
 

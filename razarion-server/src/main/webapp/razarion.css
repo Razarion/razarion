@@ -1,0 +1,141 @@
+/** -------------------------- COMMON -------------------------- */
+*{
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+button {
+    background-color: #7e999d;
+    border-radius: 2px;
+    border: 1px solid #637c80;
+    color: white;
+    padding: 1px 3px;
+    /* box-shadow: 0 8px 16px 0 rgba(0, 0, 255, 0.2), 0 6px 20px 0 rgba(0, 0, 155, 0.2); */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 80%;
+    cursor: pointer;
+}
+
+button:hover {
+    border: 1px solid #52b2ff;
+    color: white;
+}
+
+/** -------------------------- COMMON ENDS -------------------------- */
+
+/** -------------------------- COCKPIT -------------------------- */
+.quest-sidebar {
+    color: #FFF;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 400px;
+    display: table;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 9px solid transparent;
+    border-image-source: url('images/Border.png');
+    border-image-slice: 9;
+    border-image-repeat: repeat;
+}
+
+.quest-sidebar-container {
+    display: table-row;
+}
+
+.quest-sidebar-title {
+    display: table-cell;
+    font-weight:bold;
+    width: 100%;
+    height: 2em;
+    color: #3289bd;
+}
+
+.quest-sidebar-center {
+    display: table-cell;
+    font-size: 80%;
+    width: 100%;
+    color: #d8d0d0;
+}
+
+.quest-sidebar-footer {
+    display: table-cell;
+    width: 100%;
+    height: 20px;
+}
+
+/** -------------------------- COCKPIT ENDS -------------------------- */
+
+/** -------------------------- EDITOR -------------------------- */
+
+/** --- Image gallery ---*/
+.gallery-parent {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 200px;
+}
+
+.gallery-child {
+    width: 100px;
+    height: 100px;
+    float: left;
+    margin: 3px;
+}
+
+/** --- Image gallery ENDS ---*/
+
+/** --- Image gallery item ---*/
+.gallery-item-table-selected {
+    border-style: dashed;
+}
+
+.gallery-item-table-not-selected {
+    border-style: solid;
+}
+
+.gallery-item-table-changed {
+    border-color: red;
+}
+
+.gallery-item-table-not-changed {
+    border-color: black;
+}
+
+.gallery-item-table {
+    border-width: 1px;
+    border-spacing: 0;
+    overflow: hidden;
+    background-color: #d6d6d6;
+    border-collapse: collapse;
+    font-size: 75%;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif, serif;
+}
+
+.gallery-item-table td:nth-child(2) {
+    text-align: right;
+}
+
+.minButton {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    margin: 1px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 80%;
+    width: 48px;
+}
+
+.gallery-item-image {
+    width: 100px;
+    height: 100px;
+    background: url('images/TransparentBg.png');
+}
+
+/** --- Image gallery widget ENDS ---*/
+
+/** -------------------------- EDITOR ENDS-------------------------- */
+

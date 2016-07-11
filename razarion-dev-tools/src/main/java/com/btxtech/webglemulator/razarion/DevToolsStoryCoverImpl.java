@@ -6,14 +6,14 @@ import com.btxtech.uiservice.cockpit.StoryCover;
  * Created by Beat
  * 06.07.2016.
  */
-public class DevToolsDisplayService implements StoryCover {
+public class DevToolsStoryCoverImpl implements StoryCover {
     @Override
     public void show(String html) {
-        System.out.println("******** DevToolsDisplayService show: " + html);
+        System.out.println("******** DevToolsStoryCoverImpl show: " + html);
     }
 
     @Override
     public void hide() {
-        System.out.println("******** DevToolsDisplayService hide");
+        System.out.println("******** DevToolsStoryCoverImpl hide");
     }
 }

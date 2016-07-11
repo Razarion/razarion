@@ -1,4 +1,4 @@
-package com.btxtech.server.system;
+package com.btxtech.server.dummy;
 
 import com.btxtech.uiservice.cockpit.StoryCover;
 
@@ -10,7 +10,7 @@ import com.btxtech.uiservice.cockpit.StoryCover;
  * Remove as soon as the client party is cleanly separated from the server
  */
 @Deprecated
-public class ServerDummyStoryCover implements StoryCover {
+public class ServerStoryCoverImpl implements StoryCover {
     @Override
     public void show(String html) {
 

@@ -8,4 +8,5 @@ public class ZIndexConstants {
     public static final int WEBGL_CANVAS = 1;
     public static final int STORY_COVER = WEBGL_CANVAS + 1;
     public static final int EDITOR_SIDE_BAR = STORY_COVER + 1;
+    public static final int QUEST_SIDE_BAR = EDITOR_SIDE_BAR + 1;
 }

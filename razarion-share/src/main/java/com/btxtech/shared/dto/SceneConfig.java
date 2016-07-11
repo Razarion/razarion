@@ -9,6 +9,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class SceneConfig {
     private String introText;
+    private boolean showQuestSideBar;
     private CameraConfig cameraConfig;
 
     public String getIntroText() {
@@ -25,5 +26,13 @@ public class SceneConfig {
 
     public void setCameraConfig(CameraConfig cameraConfig) {
         this.cameraConfig = cameraConfig;
+    }
+
+    public boolean isShowQuestSideBar() {
+        return showQuestSideBar;
+    }
+
+    public void setShowQuestSideBar(boolean showQuestSideBar) {
+        this.showQuestSideBar = showQuestSideBar;
     }
 }
