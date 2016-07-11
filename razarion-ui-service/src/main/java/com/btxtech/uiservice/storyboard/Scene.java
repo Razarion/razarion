@@ -2,7 +2,7 @@ package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.uiservice.DisplayService;
+import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.Dependent;
@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class Scene {
     private Logger logger = Logger.getLogger(Scene.class.getName());
     @Inject
-    private DisplayService displayService;
+    private StoryCover storyCover;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
@@ -32,7 +32,9 @@ public class Scene {
     }
 
     public void run() {
-        displayService.setIntroText(sceneConfig.getIntroText());
+        if (sceneConfig.getIntroText() != null) {
+            storyCover.show(sceneConfig.getIntroText());
+        }
         setupCameraConfig(sceneConfig.getCameraConfig());
     }
 
@@ -64,6 +66,13 @@ public class Scene {
         }
         if (completionHandlers.isEmpty()) {
             storyboard.onSceneCompleted();
+        }
+    }
+
+
+    public void cleanup() {
+        if (sceneConfig.getIntroText() != null) {
+            storyCover.hide();
         }
     }
 }

@@ -19,6 +19,7 @@ public class Storyboard {
     private Instance<Scene> sceneInstance;
     private StoryboardConfig storyboardConfig;
     private int nextSceneNumber;
+    private Scene currentScene;
 
     public void init(StoryboardConfig storyboardConfig) {
         this.storyboardConfig = storyboardConfig;
@@ -35,7 +36,10 @@ public class Storyboard {
     }
 
     private void runScene() {
-        Scene currentScene = sceneInstance.get();
+        if(currentScene != null) {
+            currentScene.cleanup();
+        }
+        currentScene = sceneInstance.get();
         currentScene.init(storyboardConfig.getSceneConfigs().get(nextSceneNumber));
         currentScene.run();
     }
@@ -44,6 +48,11 @@ public class Storyboard {
         if (nextSceneNumber + 1 < storyboardConfig.getSceneConfigs().size()) {
             nextSceneNumber++;
             runScene();
+        } else {
+            if(currentScene != null) {
+                currentScene.cleanup();
+                currentScene = null;
+            }
         }
     }
 }

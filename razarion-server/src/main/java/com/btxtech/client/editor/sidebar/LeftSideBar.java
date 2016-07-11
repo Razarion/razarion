@@ -25,7 +25,6 @@ public class LeftSideBar {
         } else {
             sideBarPanel.getContent().onClose();
         }
-        // sideBarPanel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         sideBarPanel.setContent(leftSideBarContent);
     }
 

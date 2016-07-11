@@ -1,6 +1,6 @@
 package com.btxtech.server.system;
 
-import com.btxtech.uiservice.DisplayService;
+import com.btxtech.uiservice.cockpit.StoryCover;
 
 /**
  * Created by Beat
@@ -10,9 +10,14 @@ import com.btxtech.uiservice.DisplayService;
  * Remove as soon as the client party is cleanly separated from the server
  */
 @Deprecated
-public class ServerDummyDisplayService implements DisplayService {
+public class ServerDummyStoryCover implements StoryCover {
     @Override
-    public void setIntroText(String introText) {
+    public void show(String html) {
+
+    }
+
+    @Override
+    public void hide() {
 
     }
 }

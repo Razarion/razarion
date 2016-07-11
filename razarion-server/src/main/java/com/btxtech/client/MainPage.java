@@ -3,6 +3,7 @@ package com.btxtech.client;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.ClientRunner;
 import com.btxtech.client.system.boot.GameStartupSeq;
+import com.btxtech.uiservice.ZIndexConstants;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
@@ -40,6 +41,7 @@ public class MainPage extends Composite {
             if (canvas == null) {
                 throw new IllegalStateException("Canvas is not supported");
             }
+            canvas.getElement().getStyle().setZIndex(ZIndexConstants.WEBGL_CANVAS);
             gameCanvas.setCanvas(canvas);
             keyboardEventHandler.init();
             mouseEventHandler.init();

@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.sidebar;
 
+import com.btxtech.uiservice.ZIndexConstants;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -8,6 +9,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 /**
@@ -24,6 +26,11 @@ public class SideBarPanel extends Composite {
     @Inject
     @DataField
     private Button closeButton;
+
+    @PostConstruct
+    public void init() {
+        getElement().getStyle().setZIndex(ZIndexConstants.EDITOR_SIDE_BAR);
+    }
 
     public void setContent(LeftSideBarContent leftSideBarContent) {
         content.setWidget(leftSideBarContent);
