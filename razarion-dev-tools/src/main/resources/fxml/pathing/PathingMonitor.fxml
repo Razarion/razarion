@@ -14,11 +14,11 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.gameengine.pathing.PathingMonitorController">
     <center>
-        <FlowPane fx:id="centerPanel" columnHalignment="CENTER" BorderPane.alignment="CENTER">
-            <children>
-                <Canvas fx:id="canvas" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMove" onMouseReleased="#onMouseReleased" onMousePressed="#onMousePressed" BorderPane.alignment="CENTER" />
-            </children>
-        </FlowPane>
+            <AnchorPane fx:id="anchorPanel" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                <children>
+                    <Canvas fx:id="canvas" height="200.0" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMove" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onScroll="#onScroll" width="200.0" />
+                </children>
+            </AnchorPane>
     </center>
    <top>
       <VBox BorderPane.alignment="CENTER">
@@ -49,8 +49,9 @@
                           </children>
                       </HBox>
                   <TextField fx:id="mouseField" alignment="TOP_RIGHT" editable="false" prefColumnCount="8" />
-                  <Button mnemonicParsing="false" onAction="#onZoomIn" text="Z+" />
-                  <Button mnemonicParsing="false" onAction="#onZoomOut" text="Z-" />
+                      <Slider fx:id="zoomSlider" majorTickUnit="10.0" max="30.0" min="-10.0" minorTickCount="1" prefHeight="14.0" prefWidth="79.0" showTickLabels="true" showTickMarks="true" />
+                      <Button mnemonicParsing="false" onAction="#onZoomResetButton" text="1:1" />
+                      <TextField fx:id="scaleField" editable="false" prefWidth="50.0" />
                   </items>
               </ToolBar>
          </children>

@@ -58,7 +58,7 @@ public class ScenarioGuiController implements Initializable {
         scenarioBox.setValue(Scenario.getScenarios().get(0));
     }
 
-    public void onZoomResetButon() {
+    public void onZoomResetButton() {
         setZoom(1);
     }
 
@@ -92,7 +92,6 @@ public class ScenarioGuiController implements Initializable {
             scenarioRenderer.render();
         }
     }
-
 
     public void onMousePressed(Event event) {
         Index position = scenarioRenderer.convertMouseToModel(event).getPosition();

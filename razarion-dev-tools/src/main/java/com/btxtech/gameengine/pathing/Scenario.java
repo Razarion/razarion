@@ -1,16 +1,20 @@
 package com.btxtech.gameengine.pathing;
 
 import com.btxtech.GameMock;
-import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line2I;
 import com.btxtech.shared.gameengine.pathing.Obstacle;
 import com.btxtech.shared.gameengine.pathing.Pathing;
+import com.btxtech.uiservice.terrain.TerrainSurface;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Scenario {
@@ -18,7 +22,8 @@ public class Scenario {
     private AtomicInteger idGenerator = new AtomicInteger(1);
     private List<Runnable> scenes = new ArrayList<>();
     public int number;
-    private BackgroundWorker backgroundWorker;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture backgroundWorker;
 
     public Scenario() {
         setup();
@@ -26,7 +31,7 @@ public class Scenario {
 
     public Pathing init(int number) {
         if (backgroundWorker != null) {
-            backgroundWorker.stop();
+            backgroundWorker.cancel(true);
             backgroundWorker = null;
         }
         pathing = new Pathing();
@@ -38,9 +43,6 @@ public class Scenario {
         // Clean up afterwards
         Pathing tmpPathing = pathing;
         pathing = null;
-        if (backgroundWorker != null) {
-            backgroundWorker.start();
-        }
         return tmpPathing;
     }
 
@@ -121,14 +123,20 @@ public class Scenario {
         });
         // 3
         scenes.add(new Runnable() {
+
             @Override
             public void run() {
-                backgroundWorker = new BackgroundWorker(pathing, new Runnable() {
+                backgroundWorker = scheduler.scheduleAtFixedRate(new Runnable() {
+                    Pathing workerPathing = pathing;
                     @Override
                     public void run() {
-                        backgroundWorker.getPathing().createUnit(idGenerator.getAndIncrement(), true, 10, new DecimalPosition(-200, 0), new DecimalPosition(200, 0), null);
+                        try {
+                            workerPathing.createUnit(idGenerator.getAndIncrement(), true, 10, new DecimalPosition(-200, 0), new DecimalPosition(200, 0), null);
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                        }
                     }
-                }, 1000);
+                }, 1000, 1000, TimeUnit.MILLISECONDS);
             }
         });
         // 4
@@ -472,7 +480,6 @@ public class Scenario {
                     pathing.addObstacle(obstacle);
                 }
                 // Units
-                DecimalPosition destination = null;
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
                         createAndUnit(true, 10, new DecimalPosition(20 * x, 20 * y).add(200, 200), new DecimalPosition(2700, 1700));

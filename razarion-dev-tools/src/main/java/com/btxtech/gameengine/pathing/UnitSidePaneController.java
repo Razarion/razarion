@@ -3,7 +3,6 @@ package com.btxtech.gameengine.pathing;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.pathing.DebugHelper;
 import com.btxtech.shared.gameengine.pathing.Unit;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
@@ -32,7 +31,7 @@ public class UnitSidePaneController {
 
     private String vectorAsString(DecimalPosition vector) {
         if (vector != null) {
-            return String.format(String.format("%.2f:%.2f", vector.getX(), vector.getY()));
+            return String.format("%.2f:%.2f", vector.getX(), vector.getY());
         } else {
             return "-:-";
         }
@@ -43,15 +42,15 @@ public class UnitSidePaneController {
         hideButton.disableProperty().setValue(false);
     }
 
-    public void onHideButton(ActionEvent actionEvent) {
+    public void onHideButton() {
         deselectListener.run();
     }
 
-    public void onDebugAll(ActionEvent actionEvent) {
+    public void onDebugAll() {
         DebugHelper.setDebugAllFilter(unit.getId());
     }
 
-    public void onDebugSelective(ActionEvent actionEvent) {
+    public void onDebugSelective() {
         DebugHelper.setDebugSelectiveFilter(unit.getId());
     }
 }

@@ -17,7 +17,7 @@
         <ToolBar prefWidth="600.0" BorderPane.alignment="CENTER">
             <items>
                 <Slider fx:id="zoomSlider" majorTickUnit="10.0" max="30.0" min="-10.0" minorTickCount="1" prefHeight="14.0" prefWidth="79.0" showTickLabels="true" showTickMarks="true" />
-                <Button mnemonicParsing="false" onAction="#onZoomResetButon" text="1:1" />
+                <Button mnemonicParsing="false" onAction="#onZoomResetButton" text="1:1" />
             <TextField fx:id="scaleField" editable="false" prefWidth="50.0" />
                 <TextField fx:id="mouseLabel" prefWidth="70.0" />
             <Separator orientation="VERTICAL" />

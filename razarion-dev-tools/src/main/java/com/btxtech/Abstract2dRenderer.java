@@ -110,7 +110,6 @@ public class Abstract2dRenderer {
         } else {
             scale = 1.0;
         }
-        System.out.println("zoom: " + zoom + " scale: " + scale);
     }
 
     public double getScale() {

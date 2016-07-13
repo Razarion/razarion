@@ -8,12 +8,14 @@ import com.btxtech.shared.gameengine.pathing.Unit;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 
@@ -35,9 +37,11 @@ public class PathingMonitorController implements Initializable {
     public Canvas canvas;
     public TextField stepField;
     public TextField scenarioField;
-    public FlowPane centerPanel;
     public TextField mouseField;
     public Pane leftSidePanel;
+    public Slider zoomSlider;
+    public TextField scaleField;
+    public AnchorPane anchorPanel;
     private Pathing pathing;
     private int delay = Pathing.MILLI_S;
     private JavaFxGameRenderer renderer;
@@ -50,31 +54,42 @@ public class PathingMonitorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        scenario = new Scenario();
-        pathing = scenario.init(34);
-        scenarioField.setText(Integer.toString(scenario.getNumber()));
-        renderer = new JavaFxGameRenderer(canvas, 1.0);
-        renderer.render(pathing);
-        onRun(null);
+        zoomSlider.valueProperty().addListener(new ChangeListener<Number>() {
 
-        // Only called if gets bigger
-        centerPanel.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+                setZoom(zoomSlider.getValue());
+            }
+        });
+
+
+        // TODO Only called if gets bigger
+        anchorPanel.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
                 canvas.setWidth(width.doubleValue());
             }
         });
 
-        // Only called if gets bigger
-        centerPanel.heightProperty().addListener(new ChangeListener<Number>() {
+        // TODO Only called if gets bigger
+        anchorPanel.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
                 canvas.setHeight(height.doubleValue());
             }
         });
+
+
+        scenario = new Scenario();
+        pathing = scenario.init(34);
+        scenarioField.setText(Integer.toString(scenario.getNumber()));
+        renderer = new JavaFxGameRenderer(canvas, 1.0);
+        renderer.render(pathing);
+
+        onRun();
     }
 
-    public void onRun(ActionEvent actionEvent) {
+    public void onRun() {
         if (scheduleAtFixedRate != null) {
             return;
         }
@@ -91,25 +106,25 @@ public class PathingMonitorController implements Initializable {
         }, delay, delay, TimeUnit.MILLISECONDS);
     }
 
-    public void onTurbo(ActionEvent actionEvent) {
+    public void onTurbo() {
         if (delay < Pathing.MILLI_S) {
             delay = Pathing.MILLI_S;
         } else {
             delay = 1;
         }
-        onHold(actionEvent);
-        onRun(actionEvent);
+        onHold();
+        onRun();
     }
 
-    public void onHold(ActionEvent actionEvent) {
+    public void onHold() {
         if (scheduleAtFixedRate != null) {
             scheduleAtFixedRate.cancel(true);
             scheduleAtFixedRate = null;
         }
     }
 
-    public void onStep(ActionEvent actionEvent) {
-        onHold(actionEvent);
+    public void onStep() {
+        onHold();
         scheduledThreadPool.schedule(new Runnable() {
             @Override
             public void run() {
@@ -122,8 +137,8 @@ public class PathingMonitorController implements Initializable {
         }, 0, TimeUnit.MILLISECONDS);
     }
 
-    public void onStepBackward(ActionEvent actionEvent) {
-        onHold(actionEvent);
+    public void onStepBackward() {
+        onHold();
         if (backups.isEmpty()) {
             return;
         }
@@ -132,28 +147,28 @@ public class PathingMonitorController implements Initializable {
         stepField.setText(Long.toString(pathing.getTickCount()));
     }
 
-    public void onNextScenario(ActionEvent actionEvent) {
-        dispose(actionEvent);
+    public void onNextScenario() {
+        dispose();
         pathing = scenario.initNext();
         scenarioField.setText(Integer.toString(scenario.getNumber()));
         backups.clear();
-        onRun(actionEvent);
+        onRun();
     }
 
-    public void onRestartScenario(ActionEvent actionEvent) {
-        dispose(actionEvent);
+    public void onRestartScenario() {
+        dispose();
         pathing = scenario.initCurrent();
         scenarioField.setText(Integer.toString(scenario.getNumber()));
         backups.clear();
-        onRun(actionEvent);
+        onRun();
     }
 
-    public void onPrevScenario(ActionEvent actionEvent) {
-        dispose(actionEvent);
+    public void onPrevScenario() {
+        dispose();
         pathing = scenario.initPrevious();
         scenarioField.setText(Integer.toString(scenario.getNumber()));
         backups.clear();
-        onRun(actionEvent);
+        onRun();
     }
 
     public void onMouseMove(Event event) {
@@ -185,7 +200,7 @@ public class PathingMonitorController implements Initializable {
         }
     }
 
-    public void onCreateTestCase(ActionEvent actionEvent) {
+    public void onCreateTestCase() {
         System.out.println("    @Test");
         System.out.println("    public void testCase() throws Exception {");
         System.out.println("        Pathing pathing = new Pathing();");
@@ -204,14 +219,22 @@ public class PathingMonitorController implements Initializable {
         System.out.println("    }");
     }
 
-    public void onZoomIn(ActionEvent actionEvent) {
-        // TODO renderer.zoomIn();
+    public void onScroll(ScrollEvent scrollEvent) {
+        if (scrollEvent.getDeltaY() > 0) {
+            zoomSlider.setValue(zoomSlider.getValue() + 1);
+        } else {
+            zoomSlider.setValue(zoomSlider.getValue() - 1);
+        }
+    }
+
+    private void setZoom(double zoom) {
+        renderer.setZoom(zoom);
+        scaleField.setText(String.format("%.2f", renderer.getScale()));
         renderer.render(pathing);
     }
 
-    public void onZoomOut(ActionEvent actionEvent) {
-        // TODO  renderer.zoomOut();
-        renderer.render(pathing);
+    public void onZoomResetButton() {
+        setZoom(1);
     }
 
     private void tick() {
@@ -230,8 +253,8 @@ public class PathingMonitorController implements Initializable {
         });
     }
 
-    private void dispose(ActionEvent actionEvent) {
-        onHold(actionEvent);
+    private void dispose() {
+        onHold();
         pathing.stop();
         renderer.render(pathing);
     }
@@ -249,11 +272,11 @@ public class PathingMonitorController implements Initializable {
         renderer.render(pathing);
     }
 
-    public void onMouseReleased(Event event) {
+    public void onMouseReleased() {
         renderer.stopShift();
     }
 
-    public void onMousePressed(Event event) {
+    public void onMousePressed() {
         if (hoverUnitSidePaneController != null) {
             selected = true;
             hoverUnitSidePaneController.setSelected(new Runnable() {
