@@ -62,8 +62,6 @@ public class PathingMonitorController implements Initializable {
             }
         });
 
-
-        // TODO Only called if gets bigger
         anchorPanel.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
@@ -71,7 +69,6 @@ public class PathingMonitorController implements Initializable {
             }
         });
 
-        // TODO Only called if gets bigger
         anchorPanel.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
