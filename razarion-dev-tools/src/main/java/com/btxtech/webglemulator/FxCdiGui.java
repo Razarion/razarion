@@ -46,7 +46,7 @@ public class FxCdiGui {
                 System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY() + " " + stage.getWidth() + ":" + stage.getHeight());
             }
         });
-        razarionEmulator.process();
+        razarionEmulator.run();
     }
 
 }

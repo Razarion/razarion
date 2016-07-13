@@ -40,7 +40,7 @@ public abstract class AbstractRenderer implements Renderer {
     @Inject
     private ShadowUiService shadowUiService;
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     private ImageUiService imageUiService;
     private int id;

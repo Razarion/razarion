@@ -18,11 +18,13 @@ public class DevToolsSimpleScheduledFutureImpl implements SimpleScheduledFuture,
     private ScheduledFuture scheduledFuture;
     private ScheduledExecutorService scheduler;
     private long delayMilliS;
+    private boolean repeating;
     private Runnable runnable;
 
-    public void init(ScheduledExecutorService scheduler, long delayMilliS, Runnable runnable) {
+    public void init(ScheduledExecutorService scheduler, long delayMilliS, boolean repeating, Runnable runnable) {
         this.scheduler = scheduler;
         this.delayMilliS = delayMilliS;
+        this.repeating = repeating;
         this.runnable = runnable;
     }
 
@@ -31,7 +33,11 @@ public class DevToolsSimpleScheduledFutureImpl implements SimpleScheduledFuture,
         if (scheduledFuture != null) {
             return;
         }
-        scheduledFuture = scheduler.scheduleAtFixedRate(this, delayMilliS, delayMilliS, TimeUnit.MILLISECONDS);
+        if (repeating) {
+            scheduledFuture = scheduler.scheduleAtFixedRate(this, delayMilliS, delayMilliS, TimeUnit.MILLISECONDS);
+        } else {
+            scheduledFuture = scheduler.schedule(this, delayMilliS, TimeUnit.MILLISECONDS);
+        }
     }
 
     @Override
@@ -46,6 +52,9 @@ public class DevToolsSimpleScheduledFutureImpl implements SimpleScheduledFuture,
     @Override
     public void run() {
         try {
+            if (!repeating) {
+                scheduledFuture = null;
+            }
             runnable.run();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

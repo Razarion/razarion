@@ -3,7 +3,7 @@ package com.btxtech.client.editor.sidebar.slopeeditor;
 import com.btxtech.client.editor.dialog.ApplyListener;
 import com.btxtech.client.editor.dialog.ModalDialogManager;
 import com.btxtech.client.editor.dialog.content.fractal.FractalDialog;
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.uiservice.terrain.slope.SlopeModeler;
 import com.btxtech.client.editor.widgets.LightWidget;
@@ -38,7 +38,7 @@ import javax.inject.Inject;
 public class SlopeConfigPanel extends Composite implements SelectedCornerListener {
     // private Logger logger = Logger.getLogger(SlopeConfigPanel.class.getName());
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject

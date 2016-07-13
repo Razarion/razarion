@@ -1,7 +1,6 @@
 package com.btxtech.client.renderer;
 
-import com.btxtech.client.MouseEventHandler;
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -30,7 +29,7 @@ public class GameCanvas {
     // @Inject does not work
     private Logger logger = Logger.getLogger(GameCanvas.class.getName());
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     private int width;
@@ -92,7 +91,7 @@ public class GameCanvas {
                 try {
                     if (lastTimestamp != 0) {
                         WebGlUtil.checkLastWebGlError("clear", ctx3d);
-                        renderService.draw();
+                        renderService.render();
                     }
                     lastTimestamp = timestamp;
                 } catch (Throwable t) {

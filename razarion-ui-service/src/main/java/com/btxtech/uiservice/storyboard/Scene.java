@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.utils.CompletionListener;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -25,7 +26,9 @@ public class Scene {
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
-    private Storyboard storyboard;
+    private StoryboardService storyboardService;
+    @Inject
+    private AnimationService animationService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private QuestVisualizer questVisualizer;
@@ -40,6 +43,9 @@ public class Scene {
         if (sceneConfig.getIntroText() != null) {
             storyCover.show(sceneConfig.getIntroText());
         }
+        if(sceneConfig.getAnimatedMeshConfig() != null) {
+            animationService.runAnimation(sceneConfig.getAnimatedMeshConfig(), registerSceneCompletionListener());
+        }
         questVisualizer.showSideBar(sceneConfig.isShowQuestSideBar());
         setupCameraConfig(sceneConfig.getCameraConfig());
     }
@@ -49,14 +55,14 @@ public class Scene {
             return;
         }
 
-        SceneCompletionHandler completionHandler = null;
+        CompletionListener completionListener = null;
         if (cameraConfig.isSmooth() && cameraConfig.getToPosition() != null) {
-            completionHandler = registerSceneCompletionHandler();
+            completionListener = registerSceneCompletionListener();
         }
-        terrainScrollHandler.executeCameraConfig(cameraConfig, completionHandler);
+        terrainScrollHandler.executeCameraConfig(cameraConfig, completionListener);
     }
 
-    private SceneCompletionHandler registerSceneCompletionHandler() {
+    private CompletionListener registerSceneCompletionListener() {
         SceneCompletionHandler completionHandler = new SceneCompletionHandler(this);
         completionHandlers.add(completionHandler);
         return completionHandler;
@@ -71,7 +77,7 @@ public class Scene {
             logger.severe("SceneCompletionHandler not removed");
         }
         if (completionHandlers.isEmpty()) {
-            storyboard.onSceneCompleted();
+            storyboardService.onSceneCompleted();
         }
     }
 

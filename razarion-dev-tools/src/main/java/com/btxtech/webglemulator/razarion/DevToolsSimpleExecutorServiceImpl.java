@@ -20,9 +20,17 @@ public class DevToolsSimpleExecutorServiceImpl implements SimpleExecutorService 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     @Override
+    public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable) {
+        DevToolsSimpleScheduledFutureImpl scheduledFuture = devToolsSimpleScheduledFutures.get();
+        scheduledFuture.init(scheduler, delayMilliS, false, runnable);
+        scheduledFuture.start();
+        return scheduledFuture;
+    }
+
+    @Override
     public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable) {
         DevToolsSimpleScheduledFutureImpl scheduledFuture = devToolsSimpleScheduledFutures.get();
-        scheduledFuture.init(scheduler, delayMilliS, runnable);
+        scheduledFuture.init(scheduler, delayMilliS, true, runnable);
         if (start) {
             scheduledFuture.start();
         }

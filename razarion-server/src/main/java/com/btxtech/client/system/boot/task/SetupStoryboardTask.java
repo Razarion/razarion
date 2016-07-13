@@ -1,8 +1,6 @@
 package com.btxtech.client.system.boot.task;
 
-import com.btxtech.uiservice.storyboard.Storyboard;
-import com.btxtech.uiservice.terrain.TerrainObjectService;
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.storyboard.StoryboardService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -14,10 +12,10 @@ import javax.inject.Inject;
 @Dependent
 public class SetupStoryboardTask extends AbstractStartupTask {
     @Inject
-    private Storyboard storyboard;
+    private StoryboardService storyboardService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        storyboard.setup();
+        storyboardService.setup();
     }
 }

@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.collada.ColladaException;
+import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.server.persistence.StoryboardPersistenceService;
 import com.btxtech.server.persistence.TerrainElementPersistenceService;
 import com.btxtech.server.system.DebugHelper;

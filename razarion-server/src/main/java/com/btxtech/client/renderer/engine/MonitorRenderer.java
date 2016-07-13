@@ -32,7 +32,7 @@ public class MonitorRenderer extends AbstractRenderer {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
 
     @PostConstruct
     public void init() {

@@ -1,9 +1,10 @@
 package com.btxtech.server.itemtype;
 
-import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.server.collada.ColladaConverter;
+import com.btxtech.servercommon.collada.ColladaConverter;
+import com.btxtech.servercommon.collada.ColladaConverterInput;
 import com.btxtech.shared.ItemTypeService;
 import com.btxtech.shared.dto.ItemType;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
 
@@ -42,9 +43,11 @@ public class ItemTypeServiceImpl implements ItemTypeService {
             List<ItemTypeEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
 
             Collection<ItemType> itemTypes = new ArrayList<>();
-            Gson  gson = new Gson();
+            Gson gson = new Gson();
             for (ItemTypeEntity itemTypeEntity : itemTypeEntities) {
-                itemTypes.add(ColladaConverter.convertToItemType(itemTypeEntity));
+                ColladaConverterInput input = new ColladaConverterInput();
+                input.setColladaString(itemTypeEntity.getColladaString()).setId(itemTypeEntity.getId().intValue());
+                itemTypes.add(ColladaConverter.convertToItemType(input));
             }
             System.out.println("loadSItemTypes --------------------------------------------------------");
             String json = gson.toJson(itemTypes);

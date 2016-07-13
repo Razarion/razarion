@@ -14,6 +14,8 @@ razarion-server/src/main/webapp/razarionServer
 razarion-server/src/main/webapp/WEB-INF/lib
 razarion-server/src/main/webapp/WEB-INF/deploy/razarionServer
 razarion-server/src/main/gwt-unitCache
+razarion-server-common/target/
+razarion-server-common/razarion-server-common.iml
 razarion-share/razarion-share.iml
 razarion-share/target/
 razarion-test/razarion-test.iml

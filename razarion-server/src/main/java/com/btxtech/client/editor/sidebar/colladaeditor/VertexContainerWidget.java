@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.sidebar.colladaeditor;
 
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.editor.widgets.ImageItemWidget;
 import com.btxtech.shared.dto.VertexContainer;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,7 +19,7 @@ import javax.inject.Inject;
 public class VertexContainerWidget extends Composite implements HasModel<VertexContainer>, ImageItemWidget.ImageItemWidgetListener {
     // private Logger logger = Logger.getLogger(VertexContainerWidget.class.getName());
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     @DataField
     private ImageItemWidget imageItemWidget;

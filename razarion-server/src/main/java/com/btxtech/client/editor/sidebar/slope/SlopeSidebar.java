@@ -4,7 +4,7 @@ import com.btxtech.client.editor.dialog.ApplyListener;
 import com.btxtech.client.editor.dialog.ModalDialogManager;
 import com.btxtech.client.editor.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.shared.TerrainElementService;
@@ -41,7 +41,7 @@ public class SlopeSidebar extends Composite implements LeftSideBarContent {
     @Inject
     private ModalDialogManager modalDialogManager;
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     private Caller<TerrainElementService> terrainEditorService;
     @Inject

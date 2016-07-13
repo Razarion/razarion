@@ -2,7 +2,7 @@ package com.btxtech.client.editor.sidebar.terraineditor;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.terrain.TerrainEditor;
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.uiservice.terrain.TerrainSurface;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.TerrainElementService;
@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 public class TerrainEditorSidebar extends Composite implements LeftSideBarContent {
     private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     private TerrainEditor terrainEditor;
     @Inject

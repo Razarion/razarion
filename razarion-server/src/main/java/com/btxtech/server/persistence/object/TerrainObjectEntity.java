@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.object;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.servercommon.collada.ColladaConverterTextureMapper;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "TERRAIN_OBJECT")
-public class TerrainObjectEntity {
+public class TerrainObjectEntity implements ColladaConverterTextureMapper {
     @Id
     @GeneratedValue
     private Long id;
@@ -46,6 +47,7 @@ public class TerrainObjectEntity {
         this.colladaString = colladaString;
     }
 
+    @Override
     public Integer getTextureId(String materialIdString) {
         ImageLibraryEntity imageLibraryEntity = textures.get(materialIdString);
         if (imageLibraryEntity != null) {

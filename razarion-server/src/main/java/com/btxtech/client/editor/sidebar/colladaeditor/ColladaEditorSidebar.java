@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.sidebar.colladaeditor;
 
 import com.btxtech.uiservice.ColladaUiService;
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.client.utils.DisplayUtils;
@@ -64,7 +64,7 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     private ColladaUiService colladaUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")

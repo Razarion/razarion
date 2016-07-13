@@ -4,7 +4,7 @@ import com.btxtech.client.TerrainKeyDownEvent;
 import com.btxtech.client.TerrainKeyUpEvent;
 import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.PlanetEditorService;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
@@ -57,7 +57,7 @@ public class TerrainEditor {
     @Inject
     private Caller<PlanetEditorService> planetEditorServiceCaller;
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     private boolean active;
     private Polygon2I cursor;
     private int cursorRadius = 200;

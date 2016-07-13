@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.menu;
 
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -18,7 +18,7 @@ import javax.inject.Inject;
 @Templated("DebugMenu.html#menu-debug")
 public class DebugMenu extends Composite {
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     @DataField
     private CheckBox showMonitor;

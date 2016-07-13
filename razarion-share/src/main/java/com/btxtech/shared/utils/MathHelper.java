@@ -222,11 +222,14 @@ public class MathHelper {
         return Math.max(min, Math.min(max, value));
     }
 
+    public static double clamp01(double value) {
+        return clamp(value, 0.0, 1.0);
+    }
 
     public static double clamp(double value, double edgeMin, double edgeMax, double returnMin, double returnMax) {
-        if(value < edgeMin) {
+        if (value < edgeMin) {
             return returnMin;
-        } else if(value > edgeMax) {
+        } else if (value > edgeMax) {
             return returnMax;
         } else {
             return value;
@@ -235,7 +238,8 @@ public class MathHelper {
 
     public static double smoothstep(double edge0, double edge1, double value) {
         double t = clamp((value - edge0) / (edge1 - edge0), 0.0, 1.0);
-        return t * t * (3.0 - 2.0 * t);    }
+        return t * t * (3.0 - 2.0 * t);
+    }
 
 
 }

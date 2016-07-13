@@ -5,7 +5,7 @@ import com.btxtech.client.TerrainKeyUpEvent;
 import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
 import com.btxtech.client.TerrainMouseUpEvent;
-import com.btxtech.client.renderer.engine.RenderService;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.PlanetEditorService;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
@@ -48,7 +48,7 @@ public class TerrainObjectEditor {
     @Inject
     private Caller<PlanetEditorService> planetEditorServiceCaller;
     @Inject
-    private RenderService renderService;
+    private ClientRenderServiceImpl renderService;
     @Inject
     private TerrainSurface terrainSurface;
     @Inject

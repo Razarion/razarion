@@ -17,10 +17,12 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private ExceptionHandler exceptionHandler;
     private Timer timer;
     private long milliSDelay;
+    private boolean repeating;
     private Runnable runnable;
 
-    public void init(long milliSDelay, Runnable runnable) {
+    public void init(long milliSDelay, boolean repeating, Runnable runnable) {
         this.milliSDelay = milliSDelay;
+        this.repeating = repeating;
         this.runnable = runnable;
     }
 
@@ -42,12 +44,19 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
             @Override
             public void run() {
                 try {
+                    if (!repeating) {
+                        timer = null;
+                    }
                     runnable.run();
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
                 }
             }
         };
-        timer.scheduleRepeating((int) milliSDelay);
+        if (repeating) {
+            timer.scheduleRepeating((int) milliSDelay);
+        } else {
+            timer.schedule((int) milliSDelay);
+        }
     }
 }

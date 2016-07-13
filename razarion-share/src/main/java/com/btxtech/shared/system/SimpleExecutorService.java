@@ -5,5 +5,7 @@ package com.btxtech.shared.system;
  * 27.06.2016.
  */
 public interface SimpleExecutorService {
+    SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable);
+
     SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable);
 }

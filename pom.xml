@@ -54,6 +54,7 @@
     <modules>
         <module>razarion-ui-service</module>
         <module>razarion-dev-tools</module>
+        <module>razarion-server-common</module>
         <module>razarion-server</module>
         <module>razarion-share</module>
         <module>razarion-test</module>

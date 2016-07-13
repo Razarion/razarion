@@ -2,9 +2,8 @@ package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.editor.object.TerrainObjectEditor;
 import com.btxtech.client.editor.terrain.TerrainEditor;
-import com.btxtech.shared.StoryboardService;
 import com.btxtech.shared.dto.StoryboardConfig;
-import com.btxtech.uiservice.storyboard.Storyboard;
+import com.btxtech.uiservice.storyboard.StoryboardService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -21,14 +20,14 @@ import java.util.logging.Logger;
 @Dependent
 public class LoadStoryboardTask extends AbstractStartupTask {
     @Inject
-    private Storyboard storyboard;
+    private StoryboardService storyboardService;
     @Inject
     private TerrainObjectEditor terrainObjectEditor;
     @Inject
     private TerrainEditor terrainEditor;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<StoryboardService> serviceCaller;
+    private Caller<com.btxtech.shared.StoryboardService> serviceCaller;
     private Logger logger = Logger.getLogger(LoadStoryboardTask.class.getName());
 
     @Override
@@ -37,7 +36,7 @@ public class LoadStoryboardTask extends AbstractStartupTask {
         serviceCaller.call(new RemoteCallback<StoryboardConfig>() {
             @Override
             public void callback(StoryboardConfig storyboardConfig) {
-                storyboard.init(storyboardConfig);
+                storyboardService.init(storyboardConfig);
                 terrainObjectEditor.setTerrainObjects(storyboardConfig.getPlanetConfig().getTerrainObjectPositions());
                 terrainEditor.setTerrainSlopePositions(storyboardConfig.getPlanetConfig().getTerrainSlopePositions());
                 deferredStartup.finished();

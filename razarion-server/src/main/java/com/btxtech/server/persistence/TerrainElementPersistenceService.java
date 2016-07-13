@@ -1,12 +1,13 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.collada.ColladaConverter;
-import com.btxtech.server.collada.ColladaException;
 import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity_;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
+import com.btxtech.servercommon.collada.ColladaConverter;
+import com.btxtech.servercommon.collada.ColladaConverterInput;
+import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeleton;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -149,7 +150,9 @@ public class TerrainElementPersistenceService {
 
         List<TerrainObject> terrainObjects = new ArrayList<>();
         for (TerrainObjectEntity terrainObjectEntity : terrainObjectEntities) {
-            terrainObjects.add(ColladaConverter.convertToTerrainObject(terrainObjectEntity));
+            ColladaConverterInput input = new ColladaConverterInput();
+            input.setColladaString(terrainObjectEntity.getColladaString()).setId(terrainObjectEntity.getId().intValue()).setTextureMapper(terrainObjectEntity);;
+            terrainObjects.add(ColladaConverter.convertToTerrainObject(input));
         }
         return terrainObjects;
     }
@@ -171,7 +174,9 @@ public class TerrainElementPersistenceService {
     @Transactional
     public TerrainObject colladaConvert(int terrainObjectId, String colladaString) throws ParserConfigurationException, ColladaException, SAXException, IOException {
         TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectId);
-        return ColladaConverter.convertToTerrainObject(terrainObjectEntity, colladaString);
+        ColladaConverterInput input = new ColladaConverterInput();
+        input.setColladaString(colladaString).setId(terrainObjectEntity.getId().intValue()).setTextureMapper(terrainObjectEntity);
+        return ColladaConverter.convertToTerrainObject(input);
     }
 
 }

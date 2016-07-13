@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.collada.ColladaException;
+import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.server.persistence.TerrainElementPersistenceService;
 import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.GroundConfig;

@@ -6,6 +6,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.utils.CompletionListener;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -172,7 +173,7 @@ public class TerrainScrollHandler {
         camera.setTranslateDeltaXY(scrollX, scrollY);
     }
 
-    public void executeCameraConfig(final CameraConfig cameraConfig, final Runnable onPositionReached) {
+    public void executeCameraConfig(final CameraConfig cameraConfig, final CompletionListener completionListener) {
         if (cameraConfig.isSmooth()) {
             setScrollDisabled(true);
             if (cameraConfig.getFromPosition() != null) {
@@ -191,11 +192,11 @@ public class TerrainScrollHandler {
                         if (cameraPosition.getDistance(cameraConfig.getToPosition()) < SCROLL_AUTO_DISTANCE) {
                             camera.setTranslateX(cameraConfig.getToPosition().getX());
                             camera.setTranslateY(cameraConfig.getToPosition().getY());
-                            if (onPositionReached != null) {
+                            if (completionListener != null) {
                                 setScrollDisabled(cameraConfig.isCameraLocked());
                                 moveHandler.cancel();
                                 moveHandler = null;
-                                onPositionReached.run();
+                                completionListener.onCompleted();
                             }
                         } else {
                             DecimalPosition newCameraPosition = cameraPosition.getPointWithDistance(SCROLL_AUTO_DISTANCE, cameraConfig.getToPosition(), false);

@@ -1,42 +1,27 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.servercommon.collada.ColladaConverter;
+import com.btxtech.servercommon.collada.ColladaConverterInput;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.Vertex4;
-import com.btxtech.shared.dto.CameraConfig;
-import com.btxtech.shared.dto.GroundSkeleton;
+import com.btxtech.shared.dto.AnimatedMeshConfig;
 import com.btxtech.shared.dto.ItemType;
-import com.btxtech.shared.dto.PlanetConfig;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.shared.dto.SlopeSkeleton;
 import com.btxtech.shared.dto.StoryboardConfig;
-import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.pathing.ModelMatrices;
+import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.ShadowUiService;
-import com.btxtech.uiservice.storyboard.Storyboard;
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.uiservice.terrain.slope.Mesh;
+import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.units.ItemService;
 import com.btxtech.webglemulator.WebGlEmulatorSceneController;
-import com.btxtech.webglemulator.webgl.RenderMode;
-import com.btxtech.webglemulator.webgl.VertexShader;
-import com.btxtech.webglemulator.webgl.WebGlEmulator;
-import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
-import javafx.scene.paint.Color;
+import org.apache.commons.io.IOUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,65 +35,21 @@ import java.util.concurrent.TimeUnit;
 public class RazarionEmulator {
     private static final long RENDER_DELAY = 800;
     @Inject
-    private WebGlEmulator webGlEmulator;
-    @Inject
-    private WebGlEmulatorShadow webGlEmulatorShadow;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
-    private Camera camera;
-    @Inject
-    private TerrainSurface terrainSurface;
-    @Inject
     private ItemService itemService;
     @Inject
     private WebGlEmulatorSceneController sceneController;
     @Inject
-    private ShadowUiService shadowUiService;
+    private StoryboardService storyboardService;
     @Inject
-    private Storyboard storyboard;
+    private DevToolsRenderServiceImpl renderService;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private VertexShader terrainShader = new VertexShader() {
-        @Override
-        public Vertex4 process(Vertex vertex) {
-            Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix());
-            return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
-        }
-    };
-    private VertexShader terrainShaderShadow = new VertexShader() {
-        @Override
-        public Vertex4 process(Vertex vertex) {
-            Matrix4 matrix4 = shadowUiService.createDepthProjectionTransformation().multiply(shadowUiService.createDepthViewTransformation());
-            return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
-        }
-    };
 
-    public void process() {
+    public void run() {
         setupStoryboard();
-        storyboard.setup();
+        storyboardService.setup();
         setupItems();
-        // Ground
-        webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
-        webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainSurface.getGroundVertexList().getVertices(), terrainSurface.getGroundVertexList().getNormVertices()), Color.BROWN);
-        webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, terrainSurface.getGroundVertexList().createPositionDoubles(), Color.BLUE);
-        // Slopes
-        for (Integer slopeId : terrainSurface.getSlopeIds()) {
-            Mesh mesh = terrainSurface.getSlope(slopeId).getMesh();
-            webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
-            webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(mesh.getVertices(), mesh.getNorms()), Color.GREEN);
-            webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
-        }
-        // Items
-        final Integer itemTypeId = 1;
-        webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, new VertexShader() {
-            @Override
-            public Vertex4 process(Vertex vertex) {
-                Collection<ModelMatrices> modelMatrices = itemService.getModelMatrices(itemTypeId);
-                ModelMatrices model = CollectionUtils.getFirst(modelMatrices);
-                Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix().multiply(model.getModel()));
-                return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
-            }
-        }, CollectionUtils.verticesToDoubles(itemService.getItemTypeVertexContainer(itemTypeId).getVertices()), Color.BLACK);
+
+        renderService.setupRenderers();
 
         start();
     }
@@ -121,11 +62,10 @@ public class RazarionEmulator {
                     @Override
                     public void run() {
                         try {
-                            long time = System.currentTimeMillis();
-                            webGlEmulatorShadow.drawArrays();
-                            webGlEmulator.drawArrays();
+                            // long time = System.currentTimeMillis();
+                            renderService.render();
                             sceneController.update();
-                            System.out.println("Time for render: " + (System.currentTimeMillis() - time));
+                            // System.out.println("Time for render: " + (System.currentTimeMillis() - time));
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();
                         }
@@ -133,55 +73,49 @@ public class RazarionEmulator {
                 });
             }
         }, RENDER_DELAY, RENDER_DELAY, TimeUnit.MILLISECONDS);
-        storyboard.start();
-    }
-
-    private List<Double> setupNormDoubles(List<Vertex> vertices, List<Vertex> norms) {
-        List<Double> normDoubles = new ArrayList<>();
-        for (int i = 0; i < vertices.size(); i++) {
-            Vertex vertex = vertices.get(i);
-            Vertex norm = norms.get(i);
-            vertex.appendTo(normDoubles);
-            vertex.add(norm.multiply(10)).appendTo(normDoubles);
-        }
-        return normDoubles;
+        storyboardService.start();
     }
 
     private void setupStoryboard() {
         Gson gson = new Gson();
         StoryboardConfig storyboardConfig = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/StoryboardConfig.json")), StoryboardConfig.class);
-        storyboard.init(storyboardConfig);
+        storyboardConfig.setSceneConfigs(setSceneConfig(storyboardConfig.getSceneConfigs()));
+        storyboardService.init(storyboardConfig);
     }
 
-    private StoryboardConfig setupStoryboardConfig() {
-        StoryboardConfig storyboardConfig = new StoryboardConfig();
+    private List<SceneConfig> setSceneConfig(List<SceneConfig> originalSceneConfig) {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        SceneConfig sceneConfig = new SceneConfig();
-        CameraConfig cameraConfig = new CameraConfig();
-        cameraConfig.setCameraLocked(true);
-        cameraConfig.setSmooth(true);
-        cameraConfig.setFromPosition(new Index(2000, 2000));
-        cameraConfig.setToPosition(new Index(200, 200));
-        sceneConfig.setCameraConfig(cameraConfig);
-        sceneConfigs.add(sceneConfig);
-        storyboardConfig.setSceneConfigs(sceneConfigs);
-        PlanetConfig planetConfig = new PlanetConfig();
-        setupTerrain(planetConfig);
-        storyboardConfig.setPlanetConfig(planetConfig);
-        return storyboardConfig;
+        sceneConfigs.add(setupAnimationSceneConfig());
+        // sceneConfigs.addAll(originalSceneConfig);
+        return sceneConfigs;
     }
 
-    private void setupTerrain(PlanetConfig planetConfig) {
-        Gson gson = new Gson();
-        planetConfig.setGroundSkeleton(gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/GroundSkeleton.json")), GroundSkeleton.class));
-        SlopeSkeleton slopeSkeletonBeach = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/SlopeSkeletonBeach.json")), SlopeSkeleton.class);
-        SlopeSkeleton slopeSkeletonSlope = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/SlopeSkeletonSlope.json")), SlopeSkeleton.class);
-        planetConfig.setSlopeSkeletons(Arrays.asList(slopeSkeletonSlope, slopeSkeletonBeach));
-        // List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/TerrainSlopePositions.json")), new TypeToken<List<TerrainSlopePosition>>() {
-        // }.getType());
-        List<TerrainSlopePosition> terrainSlopePositions = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/TerrainSlopePositions.json")), new TypeToken<List<TerrainSlopePosition>>() {
-        }.getType());
-        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
+    private SceneConfig setupAnimationSceneConfig() {
+        SceneConfig sceneConfig = new SceneConfig();
+//        CameraConfig cameraConfig = new CameraConfig();
+//        cameraConfig.setCameraLocked(true);
+//        cameraConfig.setSmooth(true);
+//        cameraConfig.setFromPosition(new Index(2000, 2000));
+//        cameraConfig.setToPosition(new Index(200, 200));
+//        sceneConfig.setCameraConfig(cameraConfig);
+
+        sceneConfig.setIntroText("Kenny wird dich dabei unterstützen");
+        AnimatedMeshConfig animatedMeshConfig = new AnimatedMeshConfig();
+        try {
+            ColladaConverterInput input = new ColladaConverterInput();
+            input.setColladaString(IOUtils.toString(new FileInputStream("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae"))).setId(1).setTextureMapper(new DummyColladaConverterTextureMapper());
+            TerrainObject terrainObject = ColladaConverter.convertToTerrainObject(input);
+            animatedMeshConfig.setVertexContainer(CollectionUtils.getFirst(terrainObject.getVertexContainers()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        animatedMeshConfig.setPosition(new Vertex(1000, 1000, 10));
+        animatedMeshConfig.setDuration(10000);
+        animatedMeshConfig.setScaleFrom(1);
+        animatedMeshConfig.setScaleTo(10);
+        sceneConfig.setAnimatedMeshConfig(animatedMeshConfig);
+
+        return sceneConfig;
     }
 
     @Deprecated
