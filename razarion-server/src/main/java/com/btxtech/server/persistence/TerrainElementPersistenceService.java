@@ -9,10 +9,10 @@ import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.servercommon.collada.ColladaConverterInput;
 import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.GroundSkeleton;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.SlopeConfig;
-import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObject;
 import org.xml.sax.SAXException;
 
@@ -40,7 +40,7 @@ public class TerrainElementPersistenceService {
     private EntityManager entityManager;
 
     @Transactional
-    public GroundSkeleton loadGroundSkeleton() {
+    public GroundSkeletonConfig loadGroundSkeleton() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<GroundConfigEntity> userQuery = criteriaBuilder.createQuery(GroundConfigEntity.class);
@@ -91,19 +91,19 @@ public class TerrainElementPersistenceService {
     }
 
     @Transactional
-    public List<SlopeSkeleton> loadSlopeSkeletons() {
+    public List<SlopeSkeletonConfig> loadSlopeSkeletons() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<SlopeConfigEntity> userQuery = criteriaBuilder.createQuery(SlopeConfigEntity.class);
         Root<SlopeConfigEntity> root = userQuery.from(SlopeConfigEntity.class);
         CriteriaQuery<SlopeConfigEntity> userSelect = userQuery.select(root);
         Collection<SlopeConfigEntity> slopeConfigEntities = entityManager.createQuery(userSelect).getResultList();
 
-        List<SlopeSkeleton> slopeSkeletons = new ArrayList<>();
+        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         for (SlopeConfigEntity slopeConfigEntity : slopeConfigEntities) {
-            slopeSkeletons.add(slopeConfigEntity.toSlopeSkeleton());
+            slopeSkeletonConfigs.add(slopeConfigEntity.toSlopeSkeleton());
         }
 
-        return slopeSkeletons;
+        return slopeSkeletonConfigs;
     }
 
     @Transactional

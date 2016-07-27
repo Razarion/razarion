@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.sidebar.slopeeditor;
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.dto.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeShape;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;

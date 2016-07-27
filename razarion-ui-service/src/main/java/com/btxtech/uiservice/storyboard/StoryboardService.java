@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.storyboard;
 
-import com.btxtech.uiservice.Planet;
+import com.btxtech.shared.gameengine.GameEngine;
 import com.btxtech.shared.dto.StoryboardConfig;
 
 import javax.enterprise.inject.Instance;
@@ -14,7 +14,7 @@ import javax.inject.Singleton;
 @Singleton
 public class StoryboardService {
     @Inject
-    private Planet planet;
+    private GameEngine gameEngine;
     @Inject
     private Instance<Scene> sceneInstance;
     private StoryboardConfig storyboardConfig;
@@ -23,14 +23,11 @@ public class StoryboardService {
 
     public void init(StoryboardConfig storyboardConfig) {
         this.storyboardConfig = storyboardConfig;
-        planet.init(storyboardConfig.getPlanetConfig());
-    }
-
-    public void setup() {
-        planet.setup();
+        gameEngine.initialise(storyboardConfig.getGameEngineConfig());
     }
 
     public void start() {
+        gameEngine.start();
         nextSceneNumber = 0;
         runScene();
     }

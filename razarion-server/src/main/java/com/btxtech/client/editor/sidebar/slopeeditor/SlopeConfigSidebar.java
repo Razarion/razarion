@@ -4,9 +4,9 @@ import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.SlopeSkeleton;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -109,9 +109,9 @@ public class SlopeConfigSidebar extends Composite implements LeftSideBarContent 
     @EventHandler("newSlope")
     private void newSlopeButtonClick(ClickEvent event) {
         SlopeConfig slopeConfig = new SlopeConfig();
-        slopeConfig.setSlopeSkeleton(new SlopeSkeleton());
-        slopeConfig.getSlopeSkeleton().setSegments(1);
-        slopeConfig.getSlopeSkeleton().setVerticalSpace(30);
+        slopeConfig.setSlopeSkeletonConfig(new SlopeSkeletonConfig());
+        slopeConfig.getSlopeSkeletonConfig().setSegments(1);
+        slopeConfig.getSlopeSkeletonConfig().setVerticalSpace(30);
         List<SlopeShape> slopeShapes = new ArrayList<>();
         slopeShapes.add(new SlopeShape(new Index(0, 0), 0));
         slopeShapes.add(new SlopeShape(new Index(20, 20), 0));

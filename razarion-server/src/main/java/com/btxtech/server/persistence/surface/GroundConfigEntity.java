@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.LightConfigEmbeddable;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.GroundSkeleton;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -55,7 +55,7 @@ public class GroundConfigEntity {
 
     public GroundConfig toGroundConfig() {
         GroundConfig groundConfig = new GroundConfig();
-        groundConfig.setGroundSkeleton(generateGroundSkeleton());
+        groundConfig.setGroundSkeletonConfig(generateGroundSkeleton());
         groundConfig.setHeightFractalRoughness(heightFractalRoughness);
         groundConfig.setHeightFractalMin(heightFractalMin);
         groundConfig.setHeightFractalMax(heightFractalMax);
@@ -70,20 +70,20 @@ public class GroundConfigEntity {
     }
 
     public void fromGroundConfig(GroundConfig groundConfig) {
-        topBmDepth = groundConfig.getGroundSkeleton().getTopBmDepth();
-        bottomBmDepth = groundConfig.getGroundSkeleton().getBottomBmDepth();
-        lightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeleton().getLightConfig());
+        topBmDepth = groundConfig.getGroundSkeletonConfig().getTopBmDepth();
+        bottomBmDepth = groundConfig.getGroundSkeletonConfig().getBottomBmDepth();
+        lightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeletonConfig().getLightConfig());
         splattingFractalMin = groundConfig.getSplattingFractalMin();
         splattingFractalMax = groundConfig.getSplattingFractalMax();
         splattingFractalClampMin = groundConfig.getSplattingFractalClampMin();
         splattingFractalClampMax = groundConfig.getSplattingFractalClampMax();
         splattingFractalRoughness = groundConfig.getSplattingFractalRoughness();
-        splattingXCount = groundConfig.getGroundSkeleton().getSplattingXCount();
-        splattingYCount = groundConfig.getGroundSkeleton().getSplattingYCount();
+        splattingXCount = groundConfig.getGroundSkeletonConfig().getSplattingXCount();
+        splattingYCount = groundConfig.getGroundSkeletonConfig().getSplattingYCount();
         splattings.clear();
         for (int x = 0; x < splattingXCount; x++) {
             for (int y = 0; y < splattingYCount; y++) {
-                splattings.add(new GroundSplattingEntity(x, y, groundConfig.getGroundSkeleton().getSplattings()[x][y]));
+                splattings.add(new GroundSplattingEntity(x, y, groundConfig.getGroundSkeletonConfig().getSplattings()[x][y]));
             }
         }
         heightFractalMin= groundConfig.getHeightFractalMin();
@@ -91,37 +91,37 @@ public class GroundConfigEntity {
         heightFractalClampMin= groundConfig.getHeightFractalClampMin();
         heightFractalClampMax= groundConfig.getHeightFractalClampMax();
         heightFractalRoughness = groundConfig.getHeightFractalRoughness();
-        heightXCount = groundConfig.getGroundSkeleton().getHeightXCount();
-        heightYCount = groundConfig.getGroundSkeleton().getHeightYCount();
+        heightXCount = groundConfig.getGroundSkeletonConfig().getHeightXCount();
+        heightYCount = groundConfig.getGroundSkeletonConfig().getHeightYCount();
         heights.clear();
         for (int x = 0; x < heightXCount; x++) {
             for (int y = 0; y < heightYCount; y++) {
-                heights.add(new GroundHeightEntity(x, y, groundConfig.getGroundSkeleton().getHeights()[x][y]));
+                heights.add(new GroundHeightEntity(x, y, groundConfig.getGroundSkeletonConfig().getHeights()[x][y]));
             }
         }
     }
 
-    public GroundSkeleton generateGroundSkeleton() {
-        GroundSkeleton groundSkeleton = new GroundSkeleton();
-        groundSkeleton.setId(id.intValue());
-        groundSkeleton.setTopBmDepth(topBmDepth);
-        groundSkeleton.setBottomBmDepth(bottomBmDepth);
-        groundSkeleton.setLightConfig(lightConfigEmbeddable.toLightConfig());
-        groundSkeleton.setSplattingXCount(splattingXCount);
-        groundSkeleton.setSplattingYCount(splattingYCount);
+    public GroundSkeletonConfig generateGroundSkeleton() {
+        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
+        groundSkeletonConfig.setId(id.intValue());
+        groundSkeletonConfig.setTopBmDepth(topBmDepth);
+        groundSkeletonConfig.setBottomBmDepth(bottomBmDepth);
+        groundSkeletonConfig.setLightConfig(lightConfigEmbeddable.toLightConfig());
+        groundSkeletonConfig.setSplattingXCount(splattingXCount);
+        groundSkeletonConfig.setSplattingYCount(splattingYCount);
         double[][] splattingNodes = new double[splattingXCount][splattingYCount];
         for (GroundSplattingEntity groundSplattingEntity : splattings) {
             splattingNodes[groundSplattingEntity.getXIndex()][groundSplattingEntity.getYIndex()] = groundSplattingEntity.getSplatting();
         }
-        groundSkeleton.setSplattings(splattingNodes);
-        groundSkeleton.setHeightXCount(heightXCount);
-        groundSkeleton.setHeightYCount(heightYCount);
+        groundSkeletonConfig.setSplattings(splattingNodes);
+        groundSkeletonConfig.setHeightXCount(heightXCount);
+        groundSkeletonConfig.setHeightYCount(heightYCount);
         double[][] heightNodes = new double[heightXCount][heightYCount];
         for (GroundHeightEntity groundHeightEntity : heights) {
             heightNodes[groundHeightEntity.getXIndex()][groundHeightEntity.getYIndex()] = groundHeightEntity.getHeight();
         }
-        groundSkeleton.setHeights(heightNodes);
-        return groundSkeleton;
+        groundSkeletonConfig.setHeights(heightNodes);
+        return groundSkeletonConfig;
     }
 
     @Override

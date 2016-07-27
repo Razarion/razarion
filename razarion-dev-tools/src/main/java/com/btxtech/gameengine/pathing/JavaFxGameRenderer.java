@@ -2,9 +2,9 @@ package com.btxtech.gameengine.pathing;
 
 import com.btxtech.Abstract2dRenderer;
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.gameengine.pathing.Obstacle;
-import com.btxtech.shared.gameengine.pathing.Pathing;
-import com.btxtech.shared.gameengine.pathing.Unit;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.pathing.Unit;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 
@@ -22,14 +22,14 @@ public class JavaFxGameRenderer extends Abstract2dRenderer {
         super(canvas, scale);
     }
 
-    public void render(Pathing pathing) {
+    public void render(PathingService pathingService) {
         preRender();
 
         ExtendedGraphicsContext extendedGraphicsContext = createExtendedGraphicsContext();
-        for (Unit unit : pathing.getUnits()) {
+        for (Unit unit : pathingService.getUnits()) {
             extendedGraphicsContext.drawUnit(unit, UNIT_COLOR_MOVING, UNIT_COLOR_STANDING, UNIT_DIRECTION_COLOR);
         }
-        for (Obstacle obstacle : pathing.getObstacles()) {
+        for (Obstacle obstacle : pathingService.getObstacles()) {
             extendedGraphicsContext.drawObstacle(obstacle, OBSTACLE_COLOR);
         }
 

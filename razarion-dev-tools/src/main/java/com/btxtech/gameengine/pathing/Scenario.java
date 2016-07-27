@@ -4,9 +4,9 @@ import com.btxtech.GameMock;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line2I;
-import com.btxtech.shared.gameengine.pathing.Obstacle;
-import com.btxtech.shared.gameengine.pathing.Pathing;
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Scenario {
-    private Pathing pathing;
+    private PathingService pathingService;
     private AtomicInteger idGenerator = new AtomicInteger(1);
     private List<Runnable> scenes = new ArrayList<>();
     public int number;
@@ -29,24 +29,24 @@ public class Scenario {
         setup();
     }
 
-    public Pathing init(int number) {
+    public PathingService init(int number) {
         if (backgroundWorker != null) {
             backgroundWorker.cancel(true);
             backgroundWorker = null;
         }
-        pathing = new Pathing();
+        pathingService = new PathingService();
         idGenerator.set(1);
         Runnable runnable = scenes.get(number);
         runnable.run();
         this.number = number;
         System.out.println("Scenario: " + number);
         // Clean up afterwards
-        Pathing tmpPathing = pathing;
-        pathing = null;
-        return tmpPathing;
+        PathingService tmpPathingService = pathingService;
+        pathingService = null;
+        return tmpPathingService;
     }
 
-    public Pathing initNext() {
+    public PathingService initNext() {
         int nextNumber = ++number;
         if (nextNumber > scenes.size() - 1) {
             nextNumber = 0;
@@ -54,7 +54,7 @@ public class Scenario {
         return init(nextNumber);
     }
 
-    public Pathing initPrevious() {
+    public PathingService initPrevious() {
         int nextNumber = --number;
         if (nextNumber < 0) {
             nextNumber = scenes.size() - 1;
@@ -62,7 +62,7 @@ public class Scenario {
         return init(nextNumber);
     }
 
-    public Pathing initCurrent() {
+    public PathingService initCurrent() {
         return init(number);
     }
 
@@ -71,7 +71,7 @@ public class Scenario {
     }
 
     private void createAndUnit(boolean canMove, double radius, DecimalPosition position, DecimalPosition destination) {
-        pathing.createUnit(idGenerator.getAndIncrement(), canMove, radius, position, destination, null);
+        pathingService.createUnit(idGenerator.getAndIncrement(), canMove, radius, position, destination, null);
     }
 
     private void createAndRectangleObstacle(int x, int y, int width, int height) {
@@ -82,7 +82,7 @@ public class Scenario {
     }
 
     private void createAndObstacle(Line2I line) {
-        pathing.createObstacle(line);
+        pathingService.createObstacle(line);
     }
 
     private void setup() {
@@ -127,11 +127,11 @@ public class Scenario {
             @Override
             public void run() {
                 backgroundWorker = scheduler.scheduleAtFixedRate(new Runnable() {
-                    Pathing workerPathing = pathing;
+                    PathingService workerPathingService = pathingService;
                     @Override
                     public void run() {
                         try {
-                            workerPathing.createUnit(idGenerator.getAndIncrement(), true, 10, new DecimalPosition(-200, 0), new DecimalPosition(200, 0), null);
+                            workerPathingService.createUnit(idGenerator.getAndIncrement(), true, 10, new DecimalPosition(-200, 0), new DecimalPosition(200, 0), null);
                         } catch (Throwable t) {
                             t.printStackTrace();
                         }
@@ -474,10 +474,10 @@ public class Scenario {
             @Override
             public void run() {
                 // Terrain
-                TerrainSurface terrainSurface = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
-                Collection<Obstacle> obstacles = terrainSurface.getAllObstacles();
+                TerrainUiService terrainUiService = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
+                Collection<Obstacle> obstacles = terrainUiService.getAllObstacles();
                 for (Obstacle obstacle : obstacles) {
-                    pathing.addObstacle(obstacle);
+                    pathingService.addObstacle(obstacle);
                 }
                 // Units
                 for (int x = -2; x < 3; x++) {

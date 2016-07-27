@@ -1,5 +1,6 @@
 package com.btxtech.server.dummy;
 
+import com.btxtech.uiservice.renderer.CompositeRenderer;
 import com.btxtech.uiservice.renderer.RenderService;
 
 /**
@@ -7,9 +8,24 @@ import com.btxtech.uiservice.renderer.RenderService;
  * 13.07.2016.
  */
 @Deprecated
-public class ServerRenderServiceImpl implements RenderService {
+public class ServerRenderServiceImpl extends RenderService {
     @Override
-    public void setupRenderers() {
+    protected void prepareMainRendering() {
+
+    }
+
+    @Override
+    protected void prepareDepthBufferRendering() {
+
+    }
+
+    @Override
+    protected void initBaseItemTypeRenderer(CompositeRenderer compositeRenderer) {
+
+    }
+
+    @Override
+    protected void setupRenderers() {
 
     }
 
@@ -24,7 +40,7 @@ public class ServerRenderServiceImpl implements RenderService {
     }
 
     @Override
-    public void render() {
+    protected void initSpawnItemTypeRenderer(CompositeRenderer compositeRenderer) {
 
     }
 }

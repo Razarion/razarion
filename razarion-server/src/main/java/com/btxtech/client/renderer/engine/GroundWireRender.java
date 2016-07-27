@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.datatypes.Vertex;
 
 import javax.enterprise.context.Dependent;
@@ -12,17 +12,17 @@ import java.util.List;
  * 20.05.2015.
  */
 @Dependent
-public class GroundWireRender extends AbstractViewPerspectiveWireRenderer {
+public class GroundWireRender extends AbstractViewPerspectiveWireUnitRenderer {
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
 
     @Override
     protected List<Vertex> getVertexList() {
-        return terrainSurface.getGroundVertexList().getVertices();
+        return terrainUiService.getGroundVertexList().getVertices();
     }
 
     @Override
     protected List<Vertex> getBarycentricList() {
-        return terrainSurface.getGroundVertexList().getBarycentric();
+        return terrainUiService.getGroundVertexList().getBarycentric();
     }
 }

@@ -1,6 +1,5 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**

@@ -37,8 +37,8 @@ public class LoadStoryboardTask extends AbstractStartupTask {
             @Override
             public void callback(StoryboardConfig storyboardConfig) {
                 storyboardService.init(storyboardConfig);
-                terrainObjectEditor.setTerrainObjects(storyboardConfig.getPlanetConfig().getTerrainObjectPositions());
-                terrainEditor.setTerrainSlopePositions(storyboardConfig.getPlanetConfig().getTerrainSlopePositions());
+                // TODO terrainObjectEditor.setTerrainObjects(storyboardConfig.getPlanetConfig().getTerrainObjectPositions());
+                // TODO terrainEditor.setTerrainSlopePositions(storyboardConfig.getPlanetConfig().getTerrainSlopePositions());
                 deferredStartup.finished();
             }
         }, new ErrorCallback<Object>() {

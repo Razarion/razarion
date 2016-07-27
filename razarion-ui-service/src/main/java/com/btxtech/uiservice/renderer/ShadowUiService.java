@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Plane3d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.inject.Inject;
@@ -29,7 +29,7 @@ public class ShadowUiService {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     private double shadowAlpha = 0.2;
     private double rotateX = Math.toRadians(25);
     private double rotateZ = Math.toRadians(250);
@@ -153,7 +153,7 @@ public class ShadowUiService {
     }
 
     private Plane3d calculatePlane(ViewField viewField, Vertex lightNorm) {
-        double m = terrainSurface.getHighestPointInView() / lightNorm.getZ();
+        double m = terrainUiService.getHighestPointInView() / lightNorm.getZ();
         Vertex negLightNorm = lightNorm.multiply(m);
 
         Vertex pointOnPlane;
@@ -175,7 +175,7 @@ public class ShadowUiService {
     }
 
     private double getDistance(Vertex position, Vertex norm, double zFar) {
-        double t = (terrainSurface.getLowestPointInView() - position.getZ()) / norm.getZ();
+        double t = (terrainUiService.getLowestPointInView() - position.getZ()) / norm.getZ();
         Vertex worldPosition = position.add(norm.multiply(t));
         double distance = worldPosition.distance(position);
         return Math.max(distance, zFar);

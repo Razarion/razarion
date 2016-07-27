@@ -2,7 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
-import com.btxtech.shared.dto.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 

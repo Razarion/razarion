@@ -9,11 +9,15 @@ import java.util.List;
  * 24.05.2016.
  */
 public class WebGlProgramEmulator {
-    private final VertexShader vertexShader;
-    private final List<Double> doubles;
+    private VertexShader vertexShader;
+    private List<Double> doubles;
     private Paint paint;
     private RenderMode renderMode;
 
+    public WebGlProgramEmulator() {
+    }
+
+    @Deprecated
     public WebGlProgramEmulator(RenderMode renderMode, VertexShader vertexShader, List<Double> doubles, Paint paint) {
         this.renderMode = renderMode;
         if (doubles == null || doubles.isEmpty()) {
@@ -30,6 +34,27 @@ public class WebGlProgramEmulator {
         this.paint = paint;
     }
 
+
+    public WebGlProgramEmulator setVertexShader(VertexShader vertexShader) {
+        this.vertexShader = vertexShader;
+        return this;
+    }
+
+    public WebGlProgramEmulator setDoubles(List<Double> doubles) {
+        this.doubles = doubles;
+        return this;
+    }
+
+    public WebGlProgramEmulator setRenderMode(RenderMode renderMode) {
+        this.renderMode = renderMode;
+        return this;
+    }
+
+    public WebGlProgramEmulator setPaint(Paint paint) {
+        this.paint = paint;
+        return this;
+    }
+
     public int bufferSize() {
         return doubles.size();
     }
@@ -44,10 +69,6 @@ public class WebGlProgramEmulator {
 
     public Paint getPaint() {
         return paint;
-    }
-
-    public void setPaint(Paint paint) {
-        this.paint = paint;
     }
 
     public RenderMode getRenderMode() {

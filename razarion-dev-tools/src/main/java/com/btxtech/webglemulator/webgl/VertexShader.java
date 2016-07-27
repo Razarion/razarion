@@ -8,5 +8,5 @@ import com.btxtech.shared.datatypes.Vertex4;
  * 22.05.2016.
  */
 public interface VertexShader {
-    Vertex4 process(Vertex vertex);
+    Vertex4 runShader(Vertex vertex);
 }

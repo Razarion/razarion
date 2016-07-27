@@ -1,0 +1,133 @@
+package com.btxtech.shared.gameengine.planet.bot;
+
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.Region;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * User: beat
+ * Date: 14.06.12
+ * Time: 12:44
+ */
+@Dependent
+public class BotEnragementState {
+    public interface Listener {
+        void onEnrageNormal(String botName, BotEnragementStateConfig botEnragementStateConfig);
+
+        void onEnrageUp(String botName, BotEnragementStateConfig botEnragementStateConfig, PlayerBase actor);
+    }
+
+    @Inject
+    private Instance<BotItemContainer> containerInstance;
+    private List<BotEnragementStateConfig> botEnragementStateConfigs;
+    private BotEnragementStateConfig currentBotEnragementStateConfig;
+    private boolean isEnragementActive;
+    private BotItemContainer botItemContainer;
+    private Region realm;
+    private String botName;
+    private Map<PlayerBase, Integer> killsPerBase = new HashMap<>();
+    private Listener listener;
+
+    public void init(List<BotEnragementStateConfig> botEnragementStateConfigs, Region realm, String botName, Listener listener) {
+        this.botEnragementStateConfigs = botEnragementStateConfigs;
+        this.realm = realm;
+        this.botName = botName;
+        this.listener = listener;
+        if (botEnragementStateConfigs.isEmpty()) {
+            throw new IllegalArgumentException("Bot must have at least one enragement state configured: " + botName);
+        }
+        activateEnragementState(botEnragementStateConfigs.get(0), null);
+    }
+
+    public void work(PlayerBase base) {
+        botItemContainer.work(base);
+    }
+
+    public boolean isFulfilledUseInTestOnly() {
+        return botItemContainer.isFulfilledUseInTestOnly();
+    }
+
+    public void killAllItems(PlayerBase base) {
+        botItemContainer.killAllItems(base);
+    }
+
+    public Collection<BotSyncBaseItem> getAllIdleAttackers() {
+        return botItemContainer.getAllIdleAttackers();
+    }
+
+    public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+        botItemContainer.onSyncBaseItemCreated(syncBaseItem, createdBy);
+    }
+
+    private void activateEnragementState(BotEnragementStateConfig botEnragementStateConfig, PlayerBase base) {
+        if (base != null && currentBotEnragementStateConfig != null) {
+            botItemContainer.killAllItems(base);
+        }
+        currentBotEnragementStateConfig = botEnragementStateConfig;
+        botItemContainer = containerInstance.get();
+        botItemContainer.init(botEnragementStateConfig.getBotItems(), realm, botName);
+        killsPerBase.clear();
+        isEnragementActive = currentBotEnragementStateConfig.hasMaxKillsPerBase() && botEnragementStateConfigs.indexOf(currentBotEnragementStateConfig) + 1 < botEnragementStateConfigs.size();
+    }
+
+    public void handleIntruders(Collection<SyncBaseItem> allIntruders, PlayerBase botBase) {
+        if (allIntruders.isEmpty()) {
+            if (!currentBotEnragementStateConfig.equals(botEnragementStateConfigs.get(0))) {
+                BotEnragementStateConfig normalState = botEnragementStateConfigs.get(0);
+                activateEnragementState(normalState, botBase);
+                if (listener != null) {
+                    listener.onEnrageNormal(botName, normalState);
+                }
+            }
+        }
+        Set<PlayerBase> intruderBases = getAllBases(allIntruders);
+        for (Iterator<PlayerBase> iterator = killsPerBase.keySet().iterator(); iterator.hasNext(); ) {
+            PlayerBase oldIntruder = iterator.next();
+            if (!intruderBases.contains(oldIntruder)) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private Set<PlayerBase> getAllBases(Collection<SyncBaseItem> allIntruders) {
+        Set<PlayerBase> bases = new HashSet<>();
+        for (SyncBaseItem intruder : allIntruders) {
+            bases.add(intruder.getBase());
+        }
+        return bases;
+    }
+
+    public void onBotItemKilled(SyncBaseItem botBaseItem, PlayerBase actor) {
+        if (botItemContainer.itemBelongsToMy(botBaseItem)) {
+            if (isEnragementActive) {
+                Integer kills = killsPerBase.get(actor);
+                if (kills == null) {
+                    kills = 0;
+                }
+                kills = kills + 1;
+                killsPerBase.put(actor, kills);
+                if (kills >= currentBotEnragementStateConfig.getEnrageUpKills()) {
+                    BotEnragementStateConfig nextState = botEnragementStateConfigs.get(botEnragementStateConfigs.indexOf(currentBotEnragementStateConfig) + 1);
+                    activateEnragementState(nextState, botBaseItem.getBase());
+                    if (listener != null) {
+                        listener.onEnrageUp(botName, nextState, actor);
+                    }
+                }
+                // TODO remove the killed bot item from the botItemContainer here instead of iterating over and removing the death items
+                // TODO keep in mind: this method is only called if the actor is not null -> solve
+            }
+        }
+    }
+}

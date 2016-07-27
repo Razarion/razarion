@@ -3,7 +3,7 @@ package com.btxtech.client.editor.sidebar.terraineditor;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -42,7 +42,7 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     @Inject
     private Caller<TerrainElementService> terrainEditorService;
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
     @DataField
     private IntegerBox cursorRadius;
@@ -106,8 +106,8 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
         terrainEditor.updateTerrainSurface();
-        terrainSurface.setup();
-        renderService.setupRenderers();
+        // TODO terrainUiService.setup();
+        renderService.setup();
         renderService.fillBuffers();
     }
 

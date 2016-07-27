@@ -1,0 +1,259 @@
+package com.btxtech.shared.gameengine.planet;
+
+import com.btxtech.shared.gameengine.datatypes.PlanetMode;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
+import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
+import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
+import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.datatypes.syncobject.SyncTickItem;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
+/**
+ * Created by Beat
+ * 13.07.2016.
+ */
+@Singleton
+public class PlanetService implements Runnable {
+    public static final PlanetMode MODE = PlanetMode.MASTER;
+    public static final int TICK_TIME_MILLI_SECONDS = 100;
+    public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
+    private Logger logger = Logger.getLogger(PlanetService.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ExceptionHandler exceptionHandler;
+    @Inject
+    private Event<PlanetActivationEvent> activationEvent;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private PathingService pathingService;
+    @Inject
+    private BaseItemService baseItemService;
+    @Inject
+    private SpawnItemService spawnItemService;
+    @Inject
+    private ActivityService activityService;
+    // @Inject
+    // private CommandService commandService;
+    private final HashSet<SyncTickItem> activeItems = new HashSet<>();
+    private final ArrayList<SyncTickItem> tmpActiveItems = new ArrayList<>();
+    private final HashSet<SyncBaseItem> guardingItems = new HashSet<>();
+    private boolean pause;
+    private SimpleScheduledFuture scheduledFuture;
+
+    @PostConstruct
+    public void postConstruct() {
+        scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this);
+    }
+
+    public void initialise(PlanetConfig planetConfig) {
+        activationEvent.fire(new PlanetActivationEvent(planetConfig));
+        scheduledFuture.start();
+    }
+
+    public void start() {
+        scheduledFuture.start();
+    }
+
+    void stop() {
+        scheduledFuture.cancel();
+    }
+
+    @Override
+    public void run() {
+        if (pause) {
+            return;
+        }
+        try {
+            // TODO different sets for Active Items
+            // TODO Moving (also pushed away items, ev targed reached)
+            // TODO building, attacking,
+            pathingService.tick();
+            spawnItemService.tick();
+            //
+            //
+            synchronized (activeItems) {
+                synchronized (tmpActiveItems) {
+                    activeItems.addAll(tmpActiveItems);
+                    tmpActiveItems.clear();
+                }
+                Iterator<SyncTickItem> iterator = activeItems.iterator();
+                while (iterator.hasNext()) {
+                    SyncTickItem activeItem = iterator.next();
+                    if (!activeItem.isAlive()) {
+                        iterator.remove();
+                        continue;
+                    }
+                    try {
+                        if (!activeItem.tick()) {
+                            iterator.remove();
+                            try {
+                                activeItem.stop();
+                                addGuardingBaseItem(activeItem);
+                                activityService.onSyncItemDeactivated(activeItem);
+                            } catch (Throwable t) {
+                                exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
+                            }
+                        }
+                    } catch (BaseDoesNotExistException e) {
+                        activeItem.stop();
+                        iterator.remove();
+                    } catch (PositionTakenException e) {
+                        activeItem.stop();
+                        iterator.remove();
+                        activityService.onPositionTakenException(e);
+                    } catch (PathCanNotBeFoundException e) {
+                        activeItem.stop();
+                        iterator.remove();
+                        activityService.onPathCanNotBeFoundException(e);
+                    } catch (PlaceCanNotBeFoundException e) {
+                        activeItem.stop();
+                        iterator.remove();
+                        activityService.onPlaceCanNotBeFoundException(e);
+                    } catch (Throwable t) {
+                        activeItem.stop();
+                        iterator.remove();
+                        activityService.onThrowable(t);
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
+    }
+
+
+    public void addGuardingBaseItem(SyncTickItem syncTickItem) {
+        try {
+            if (MODE != PlanetMode.MASTER) {
+                return;
+            }
+
+            if (!(syncTickItem instanceof SyncBaseItem)) {
+                return;
+            }
+
+            SyncBaseItem syncBaseItem = (SyncBaseItem) syncTickItem;
+            if (!syncBaseItem.hasSyncWeapon() || !syncBaseItem.isAlive()) {
+                return;
+            }
+
+            if (!syncBaseItem.isReady()) {
+                return;
+            }
+
+            if (syncBaseItem.hasSyncConsumer() && !syncBaseItem.getSyncConsumer().isOperating()) {
+                return;
+            }
+
+            if (!syncBaseItem.getSyncItemArea().hasPosition()) {
+                return;
+            }
+
+            if (checkGuardingItemHasEnemiesInRange(syncBaseItem)) {
+                return;
+            }
+
+            synchronized (guardingItems) {
+                guardingItems.add(syncBaseItem);
+            }
+        } catch (Exception e) {
+            exceptionHandler.handleException("ActionService.addGuardingBaseItem() " + syncTickItem, e);
+        }
+    }
+
+    public void interactionGuardingItems(SyncBaseItem target) {
+        try {
+            if (MODE != PlanetMode.MASTER) {
+                return;
+            }
+            if (target.isContainedIn()) {
+                return;
+            }
+            if (!target.isAlive()) {
+                return;
+            }
+            // Prevent ConcurrentModificationException
+            List<SyncBaseItem> attackers = new ArrayList<SyncBaseItem>();
+            synchronized (guardingItems) {
+                for (SyncBaseItem attacker : guardingItems) {
+                    if (attacker == target) {
+                        continue;
+                    }
+                    if (!attacker.isAlive()) {
+                        continue;
+                    }
+                    if (attacker.isEnemy(target)
+                            && attacker.getSyncWeapon().isAttackAllowedWithoutMoving(target)
+                            && !attacker.getSyncWeapon().isItemTypeDisallowed(target)) {
+                        attackers.add(attacker);
+                    }
+                }
+            }
+            for (SyncBaseItem attacker : attackers) {
+                throw new UnsupportedOperationException();
+                // TODO commandService.defend(attacker, target);
+            }
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
+    }
+
+    public void removeGuardingBaseItem(SyncBaseItem syncItem) {
+        if (MODE != PlanetMode.MASTER) {
+            return;
+        }
+        if (!syncItem.hasSyncWeapon()) {
+            return;
+        }
+
+        synchronized (guardingItems) {
+            guardingItems.remove(syncItem);
+        }
+    }
+
+    private boolean checkGuardingItemHasEnemiesInRange(SyncBaseItem guardingItem) {
+        SyncBaseItem target = baseItemService.getFirstEnemyItemInRange(guardingItem);
+        if (target != null) {
+            throw new UnsupportedOperationException();
+            // TODO commandService.defend(guardingItem, target);
+            // TODO return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void syncItemActivated(SyncTickItem syncTickItem) {
+        addToQueue(syncTickItem);
+        addGuardingBaseItem(syncTickItem);
+    }
+
+    private void addToQueue(SyncTickItem syncTickItem) {
+        synchronized (tmpActiveItems) {
+            if (!activeItems.contains(syncTickItem) && !tmpActiveItems.contains(syncTickItem)) {
+                tmpActiveItems.add(syncTickItem);
+            }
+        }
+    }
+
+    public void finalizeCommand(SyncBaseItem syncItem) {
+        addToQueue(syncItem);
+        removeGuardingBaseItem(syncItem);
+    }
+}

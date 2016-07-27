@@ -84,4 +84,12 @@ public class CollectionUtils {
         }
         return false;
     }
+
+    public static <T> List<T> saveArrayListCopy(List<T> list) {
+        if (list != null) {
+            return new ArrayList<T>(list);
+        } else {
+            return null;
+        }
+    }
 }

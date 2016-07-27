@@ -6,7 +6,7 @@ import com.btxtech.uiservice.renderer.CameraMovedEvent;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,9 +16,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -26,12 +26,12 @@ import java.util.ResourceBundle;
  * Created by Beat
  * 31.05.2016.
  */
-@Singleton
+@ApplicationScoped
 public class WebGlEmulatorSceneController implements Initializable {
-    public Canvas canvas;
-    public AnchorPane mainPanel;
+    private Canvas canvas;
+    private AnchorPane mainPanel;
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
     private Camera camera;
     @Inject
@@ -118,10 +118,10 @@ public class WebGlEmulatorSceneController implements Initializable {
     }
 
     private void drawTerrain(ExtendedGraphicsContext egc) {
-        egc.strokeVertexList(terrainSurface.getGroundVertexList().getVertices(), 1, Color.BLUE);
+        egc.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 1, Color.BLUE);
 
-        for (int slopeId : terrainSurface.getSlopeIds()) {
-            egc.strokeVertexList(terrainSurface.getSlope(slopeId).getMesh().getVertices(), 1, Color.RED);
+        for (int slopeId : terrainUiService.getSlopeIds()) {
+            egc.strokeVertexList(terrainUiService.getSlope(slopeId).getMesh().getVertices(), 1, Color.RED);
         }
     }
 

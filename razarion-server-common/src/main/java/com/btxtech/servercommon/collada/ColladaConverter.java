@@ -1,10 +1,11 @@
 package com.btxtech.servercommon.collada;
 
-import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -60,7 +61,8 @@ public class ColladaConverter {
                 textureCoordinates.addAll(vertexContainer.getTextureCoordinates());
             }
         });
-        return new ItemType(input.getId(), new VertexContainer(null, null, vertices, norms, textureCoordinates, null, null, null, null));
+
+        return new BaseItemType().setVertexContainer(new VertexContainer().setVertices(vertices).setNorms(norms).setTextureCoordinates(textureCoordinates)).setId(input.getId());
     }
 
     private static Collada createCollada(String colladaString) throws ParserConfigurationException, SAXException, IOException {

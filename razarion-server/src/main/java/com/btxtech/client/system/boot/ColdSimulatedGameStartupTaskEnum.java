@@ -14,10 +14,7 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.client.system.boot.task.AbstractStartupTask;
-import com.btxtech.client.system.boot.task.LoadItemTypeTask;
 import com.btxtech.client.system.boot.task.LoadStoryboardTask;
-import com.btxtech.client.system.boot.task.SetupGameEngineTask;
-import com.btxtech.client.system.boot.task.SetupStoryboardTask;
 import com.btxtech.client.system.boot.task.StartStoryboard;
 
 /**
@@ -26,10 +23,7 @@ import com.btxtech.client.system.boot.task.StartStoryboard;
  * Time: 18:21:15
  */
 public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
-    LOAD_STORYBOARD(LoadStoryboardTask.class),
-    LOAD_ITEM_TYPE(LoadItemTypeTask.class), // TODO
-    SETUP_STORYBOARD(SetupStoryboardTask.class),
-    SETUP_GAME_ENGINE(SetupGameEngineTask.class),// TODO
+    LOAD_STORYBOARD(LoadStoryboardTask.class), // TODO
     START_STORYBOARD(StartStoryboard.class);
 
     private Class<? extends AbstractStartupTask> taskClass;

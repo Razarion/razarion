@@ -1,16 +1,13 @@
 package com.btxtech.webglemulator;
 
-import com.btxtech.uiservice.renderer.CameraMovedEvent;
-import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.AnchorPane;
 
-import javax.enterprise.event.Observes;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -18,12 +15,11 @@ import java.util.ResourceBundle;
  * Created by Beat
  * 31.05.2016.
  */
-@Singleton
+@ApplicationScoped
 public class WebGlEmulatorShadowController implements Initializable {
-    @Inject
-    private WebGlEmulatorShadow webGlEmulatorShadow;
-    public AnchorPane mainPanel;
-    public Canvas canvas;
+    private AnchorPane mainPanel;
+    private Canvas canvas;
+    private boolean active;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -39,9 +35,18 @@ public class WebGlEmulatorShadowController implements Initializable {
                 canvas.setHeight(height.doubleValue());
             }
         });
+        active = true;
     }
 
     public Canvas getCanvas() {
         return canvas;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

@@ -1,8 +1,8 @@
 package com.btxtech.shared;
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.SlopeShape;
 
 import java.util.List;
 

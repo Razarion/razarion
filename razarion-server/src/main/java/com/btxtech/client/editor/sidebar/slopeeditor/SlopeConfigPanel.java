@@ -4,12 +4,12 @@ import com.btxtech.client.editor.dialog.ApplyListener;
 import com.btxtech.client.editor.dialog.ModalDialogManager;
 import com.btxtech.client.editor.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.uiservice.terrain.slope.SlopeModeler;
+import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.FractalFieldConfig;
-import com.btxtech.shared.dto.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -40,7 +40,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
     private ModalDialogManager modalDialogManager;
     @Inject
@@ -107,7 +107,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
 
     public void init(SlopeConfig slopeConfig, Double zoom) {
         slopeConfigDataBinder.setModel(slopeConfig);
-        lightConfig.setModel(slopeConfig.getSlopeSkeleton().getLightConfig());
+        lightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getLightConfig());
         shapeEditor.init(svgElement, slopeConfig, this, zoom);
     }
 
@@ -188,7 +188,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @EventHandler("update")
     private void updateButtonClick(ClickEvent event) {
         SlopeConfig slopeConfig = getSlopeConfig();
-        terrainSurface.setSlopeSkeleton(slopeConfig.getSlopeSkeleton());
+        terrainUiService.setSlopeSkeleton(slopeConfig.getSlopeSkeletonConfig());
     }
 
     @EventHandler("sculpt")
@@ -199,8 +199,8 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
             fractalFieldConfig = slopeConfig.toFractalFiledConfig();
         }
         SlopeModeler.sculpt(slopeConfig, fractalFieldConfig);
-        terrainSurface.setSlopeSkeleton(slopeConfig.getSlopeSkeleton());
-        terrainSurface.setup();
+        terrainUiService.setSlopeSkeleton(slopeConfig.getSlopeSkeletonConfig());
+        // TODO terrainUiService.setup();
         renderService.fillBuffers();
     }
 }

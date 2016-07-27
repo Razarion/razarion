@@ -9,20 +9,19 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
-import javax.enterprise.inject.Instance;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Created by Beat
  * 19.09.2015.
  */
-@Singleton
+@ApplicationScoped
 public class FxCdiGui {
     @Inject
-    private Instance<Object> instance;
-    @Inject
     private RazarionEmulator razarionEmulator;
+    @Inject
+    private WebGlEmulatorController webGlEmulatorController;
 
     public void start(final Stage stage) throws Exception {
         // stage.setFullScreen(true);
@@ -30,16 +29,16 @@ public class FxCdiGui {
         loader.setControllerFactory(new Callback<Class<?>, Object>() {
             @Override
             public Object call(Class<?> param) {
-                return instance.select(param).get();
+                return webGlEmulatorController;
             }
         });
         Parent root = (Parent) loader.load();
         stage.setTitle("WebGL FX Emulator");
         stage.setScene(new Scene(root));
-        stage.setX(-1279);
-        stage.setY(182);
-        stage.setWidth(1277);
-        stage.setHeight(1016);
+        // stage.setX(-1279);
+        // stage.setY(182);
+        // stage.setWidth(1277);
+        // stage.setHeight(1016);
         stage.show();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {

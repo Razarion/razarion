@@ -47,7 +47,7 @@ public class StoryboardEntity {
 
     public StoryboardConfig toStoryboardConfig() {
         StoryboardConfig storyboardConfig = new StoryboardConfig();
-        storyboardConfig.setPlanetConfig(planetEntity.toPlanetConfig());
+        // TODO storyboardConfig.setPlanetConfig(planetEntity.toPlanetConfig());
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         for (SceneEntity scene : scenes) {
             sceneConfigs.add(scene.toSceneConfig());

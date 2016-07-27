@@ -5,7 +5,7 @@ import com.btxtech.server.persistence.TerrainElementPersistenceService;
 import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;

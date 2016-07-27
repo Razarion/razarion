@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexContainer;
-import com.btxtech.shared.gameengine.pathing.ModelMatrices;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -21,12 +21,13 @@ import java.util.Map;
  * 05.09.2015.
  */
 @Singleton
+@Deprecated // Is an UI service
 public class TerrainObjectService {
     // private Logger logger = Logger.getLogger(TerrainObjectService.class.getName());
     @Inject
     private ColladaUiService colladaUiService;
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
     private ExceptionHandler exceptionHandler;
     private Collection<TerrainObjectPosition> terrainObjectPositions;
@@ -77,7 +78,7 @@ public class TerrainObjectService {
                     modelMatrices = new ArrayList<>();
                     objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
                 }
-                int z = (int) terrainSurface.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.getPosition())).getHeight();
+                int z = (int) terrainUiService.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.getPosition())).getHeight();
                 modelMatrices.add(new ModelMatrices(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale(), z), terrainObjectPosition.createRotationModelMatrix()));
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);

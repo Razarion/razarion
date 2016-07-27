@@ -2,10 +2,10 @@ package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.LightConfigEmbeddable;
 import com.btxtech.shared.Shape;
-import com.btxtech.shared.dto.SlopeConfig;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.SlopeSkeleton;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -41,7 +41,7 @@ public class SlopeConfigEntity {
     private List<SlopeShapeEntity> shape;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SlopeSkeleton.Type type;
+    private SlopeSkeletonConfig.Type type;
     private double bumpMapDepth;
     private double fractalMin;
     private double fractalMax;
@@ -59,25 +59,25 @@ public class SlopeConfigEntity {
         return id;
     }
 
-    public SlopeSkeleton toSlopeSkeleton() {
-        SlopeSkeleton slopeSkeleton = new SlopeSkeleton();
-        slopeSkeleton.setId(id.intValue());
-        slopeSkeleton.setSegments(segments);
+    public SlopeSkeletonConfig toSlopeSkeleton() {
+        SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
+        slopeSkeletonConfig.setId(id.intValue());
+        slopeSkeletonConfig.setSegments(segments);
         Shape shape = new Shape(toSlopeShapes());
-        slopeSkeleton.setLightConfig(lightConfigEmbeddable.toLightConfig());
-        slopeSkeleton.setRows(shape.getVertexCount());
-        slopeSkeleton.setWidth((int) shape.getDistance());
-        slopeSkeleton.setHeight((int) shape.getZInner());
-        slopeSkeleton.setVerticalSpace(verticalSpace);
-        slopeSkeleton.setBumpMapDepth(bumpMapDepth);
-        slopeSkeleton.setType(type);
-        slopeSkeleton.setSlopeOriented(slopeOriented);
+        slopeSkeletonConfig.setLightConfig(lightConfigEmbeddable.toLightConfig());
+        slopeSkeletonConfig.setRows(shape.getVertexCount());
+        slopeSkeletonConfig.setWidth((int) shape.getDistance());
+        slopeSkeletonConfig.setHeight((int) shape.getZInner());
+        slopeSkeletonConfig.setVerticalSpace(verticalSpace);
+        slopeSkeletonConfig.setBumpMapDepth(bumpMapDepth);
+        slopeSkeletonConfig.setType(type);
+        slopeSkeletonConfig.setSlopeOriented(slopeOriented);
         SlopeNode[][] slopeNodes = new SlopeNode[segments][shape.getVertexCount()];
         for (SlopeNodeEntity slopeSkeletonEntry : slopeSkeletonEntries) {
             slopeNodes[slopeSkeletonEntry.getSegmentIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry.toSlopeNode();
         }
-        slopeSkeleton.setSlopeNodes(slopeNodes);
-        return slopeSkeleton;
+        slopeSkeletonConfig.setSlopeNodes(slopeNodes);
+        return slopeSkeletonConfig;
     }
 
     public SlopeConfig toSlopeConfig() {
@@ -89,7 +89,7 @@ public class SlopeConfigEntity {
         slopeConfig.setFractalClampMax(fractalClampMax);
         slopeConfig.setFractalRoughness(fractalRoughness);
         slopeConfig.setInternalName(internalName);
-        slopeConfig.setSlopeSkeleton(toSlopeSkeleton());
+        slopeConfig.setSlopeSkeletonConfig(toSlopeSkeleton());
         slopeConfig.setShape(toSlopeShapes());
         return slopeConfig;
     }
@@ -102,22 +102,22 @@ public class SlopeConfigEntity {
             shape.add(slopeShapeEntity);
         }
         internalName = slopeConfig.getInternalName();
-        lightConfigEmbeddable.fromLightConfig(slopeConfig.getSlopeSkeleton().getLightConfig());
+        lightConfigEmbeddable.fromLightConfig(slopeConfig.getSlopeSkeletonConfig().getLightConfig());
         fractalMin = slopeConfig.getFractalMin();
         fractalMax = slopeConfig.getFractalMax();
         fractalClampMin = slopeConfig.getFractalClampMin();
         fractalClampMax = slopeConfig.getFractalClampMax();
         fractalRoughness = slopeConfig.getFractalRoughness();
-        type = slopeConfig.getSlopeSkeleton().getType();
-        bumpMapDepth = slopeConfig.getSlopeSkeleton().getBumpMapDepth();
-        verticalSpace = slopeConfig.getSlopeSkeleton().getVerticalSpace();
-        slopeOriented = slopeConfig.getSlopeSkeleton().getSlopeOriented();
-        segments = slopeConfig.getSlopeSkeleton().getSegments();
+        type = slopeConfig.getSlopeSkeletonConfig().getType();
+        bumpMapDepth = slopeConfig.getSlopeSkeletonConfig().getBumpMapDepth();
+        verticalSpace = slopeConfig.getSlopeSkeletonConfig().getVerticalSpace();
+        slopeOriented = slopeConfig.getSlopeSkeletonConfig().getSlopeOriented();
+        segments = slopeConfig.getSlopeSkeletonConfig().getSegments();
         slopeSkeletonEntries.clear();
         for (int x = 0; x < segments; x++) {
             for (int y = 0; y < shape.size(); y++) {
                 SlopeNodeEntity slopeNodeEntity = new SlopeNodeEntity();
-                slopeNodeEntity.fromSlopeNode(x, y, slopeConfig.getSlopeSkeleton().getSlopeNodes()[x][y]);
+                slopeNodeEntity.fromSlopeNode(x, y, slopeConfig.getSlopeSkeletonConfig().getSlopeNodes()[x][y]);
                 slopeSkeletonEntries.add(slopeNodeEntity);
             }
         }

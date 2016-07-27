@@ -33,14 +33,14 @@ public class StoryboardServiceImpl implements StoryboardService {
     public StoryboardConfig loadStoryboard() {
         try {
             StoryboardConfig storyboardConfig = storyboardPersistenceService.load();
-            storyboardConfig.getPlanetConfig().setGroundSkeleton(terrainElementPersistenceService.loadGroundSkeleton());
-            storyboardConfig.getPlanetConfig().setSlopeSkeletons(terrainElementPersistenceService.loadSlopeSkeletons());
-            storyboardConfig.getPlanetConfig().setTerrainObjects(terrainElementPersistenceService.loadTerrainObjects());
+            // TODO storyboardConfig.getPlanetConfig().setGroundSkeletonConfig(terrainElementPersistenceService.loadGroundSkeleton());
+            // TODO storyboardConfig.getPlanetConfig().setSlopeSkeletonConfigs(terrainElementPersistenceService.loadSlopeSkeletons());
+            // TODO storyboardConfig.getPlanetConfig().setTerrainObjects(terrainElementPersistenceService.loadTerrainObjects());
             debugHelper.writeToJsonFile("StoryboardConfig.json", storyboardConfig);
             return storyboardConfig;
-        } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
-            exceptionHandler.handleException(e);
-            throw new RuntimeException(e);
+//  TODO      } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
+//  TODO          exceptionHandler.handleException(e);
+//  TODO          throw new RuntimeException(e);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

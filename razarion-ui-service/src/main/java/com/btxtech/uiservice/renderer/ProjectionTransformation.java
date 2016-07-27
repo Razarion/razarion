@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.datatypes.Matrix4;
@@ -26,7 +26,7 @@ public class ProjectionTransformation {
     @Inject
     private Camera camera;
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
 
     public ProjectionTransformation() {
         setFovY(Math.toRadians(45));
@@ -54,7 +54,7 @@ public class ProjectionTransformation {
 
     public double calculateZFar() {
         Vertex cameraPosition = camera.getPosition();
-        Vertex zFarPosition = calculateViewField(terrainSurface.getLowestPointInView()).calculateLongestLegZ(cameraPosition);
+        Vertex zFarPosition = calculateViewField(terrainUiService.getLowestPointInView()).calculateLongestLegZ(cameraPosition);
         if (zFarPosition == null) {
             return Z_FAR_FALLBACK;
         }
@@ -65,7 +65,7 @@ public class ProjectionTransformation {
 
     public double calculateZNear() {
         Vertex cameraPosition = camera.getPosition();
-        Vertex zNearPosition = calculateViewField(terrainSurface.getHighestPointInView()).calculateShortestLegZ(cameraPosition);
+        Vertex zNearPosition = calculateViewField(terrainUiService.getHighestPointInView()).calculateShortestLegZ(cameraPosition);
         if (zNearPosition == null) {
             return Z_NEAR_FALLBACK;
         }

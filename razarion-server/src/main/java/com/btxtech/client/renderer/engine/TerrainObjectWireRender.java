@@ -1,13 +1,13 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.client.renderer.webgl.WebGlException;
+import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
-import com.btxtech.shared.dto.VertexContainer;
-import com.btxtech.shared.gameengine.pathing.ModelMatrices;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  * 20.05.2015.
  */
 @Dependent
-public class TerrainObjectWireRender extends AbstractRenderer {
+public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     private Logger logger = Logger.getLogger(TerrainObjectWireRender.class.getName());
     @Inject
     private TerrainObjectService terrainObjectService;
@@ -70,7 +70,7 @@ public class TerrainObjectWireRender extends AbstractRenderer {
     }
 
     @Override
-    public void draw() {
+    protected void preModelDraw() {
         useProgram();
 
         uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
@@ -81,11 +81,11 @@ public class TerrainObjectWireRender extends AbstractRenderer {
         textureCoordinate.activate();
 
         webGLTexture.activate();
-
-        for (ModelMatrices modelMatrix : terrainObjectService.getModelMatrices(terrainObjectId)) {
-            uniformMatrix4fv(U_MODEL_MATRIX, modelMatrix.getModel());
-            drawArrays(WebGLRenderingContext.TRIANGLES);
-        }
     }
 
+    @Override
+    protected void modelDraw(ModelMatrices modelMatrices) {
+        uniformMatrix4fv(U_MODEL_MATRIX, modelMatrices.getModel());
+        drawArrays(WebGLRenderingContext.TRIANGLES);
+    }
 }

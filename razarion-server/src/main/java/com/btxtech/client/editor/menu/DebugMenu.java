@@ -52,7 +52,7 @@ public class DebugMenu extends Composite {
 
     @EventHandler("wireMode")
     public void wireModeChanged(ChangeEvent e) {
-        renderService.showWire(wireMode.getValue());
+        // TODO renderService.showWire(wireMode.getValue());
     }
 
     @EventHandler("showNorm")

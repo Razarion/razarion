@@ -1,22 +1,21 @@
 package com.btxtech.webglemulator;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.scenariongui.InstanceStringGenerator;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.uiservice.units.ItemService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
-import com.btxtech.webglemulator.webgl.WebGlEmulator;
-import com.btxtech.webglemulator.webgl.WebGlEmulatorShadow;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -33,6 +32,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,21 +41,30 @@ import java.util.ResourceBundle;
  * Created by Beat
  * 22.05.2016.
  */
+@Singleton
 public class WebGlEmulatorController implements Initializable {
-    public AnchorPane centerPanel;
-    public Slider fovSlider;
-    public Label aspectRatioLabel;
-    public TextField xTranslationField;
-    public TextField yTranslationField;
-    public TextField zTranslationField;
-    public Slider cameraZRotationSlider;
-    public Slider cameraXRotationSlider;
-    public Slider shadowXRotationSlider;
-    public Slider shadowZRotationSlider;
-    @Inject
-    private WebGlEmulator webGlEmulator;
-    @Inject
-    private WebGlEmulatorShadow webGlEmulatorShadow;
+    @FXML
+    private AnchorPane centerPanel;
+    @FXML
+    private Slider fovSlider;
+    @FXML
+    private Label aspectRatioLabel;
+    @FXML
+    private TextField xTranslationField;
+    @FXML
+    private TextField yTranslationField;
+    @FXML
+    private TextField zTranslationField;
+    @FXML
+    private Slider cameraZRotationSlider;
+    @FXML
+    private Slider cameraXRotationSlider;
+    @FXML
+    private Slider shadowXRotationSlider;
+    @FXML
+    private Slider shadowZRotationSlider;
+    @FXML
+    private Canvas canvas;
     @Inject
     private RazarionEmulator razarionEmulator;
     @Inject
@@ -63,9 +72,9 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private Camera camera;
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
-    private ItemService itemService;
+    private BaseItemUiService baseItemUiService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
@@ -74,7 +83,6 @@ public class WebGlEmulatorController implements Initializable {
     private WebGlEmulatorShadowController shadowController;
     @Inject
     private WebGlEmulatorSceneController sceneController;
-    public Canvas canvas;
     private DecimalPosition lastCanvasPosition;
 
     @Override
@@ -83,7 +91,7 @@ public class WebGlEmulatorController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
                 canvas.setWidth(width.doubleValue());
-                projectionTransformation.setAspectRatio(webGlEmulator.getAspectRatio());
+                projectionTransformation.setAspectRatio(getAspectRatio());
                 aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
             }
         });
@@ -91,7 +99,7 @@ public class WebGlEmulatorController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
                 canvas.setHeight(height.doubleValue());
-                projectionTransformation.setAspectRatio(webGlEmulator.getAspectRatio());
+                projectionTransformation.setAspectRatio(getAspectRatio());
                 aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
             }
         });
@@ -169,9 +177,6 @@ public class WebGlEmulatorController implements Initializable {
                 shadowUiService.calculateViewField();
             }
         });
-
-
-        webGlEmulator.setCanvas(canvas);
     }
 
     public void onMouseDragged(Event event) {
@@ -190,21 +195,34 @@ public class WebGlEmulatorController implements Initializable {
         lastCanvasPosition = canvasPosition;
     }
 
+
+    private DecimalPosition toClipCoordinates(DecimalPosition canvasPosition) {
+        double canvasWidth = canvas.getWidth();
+        double canvasHeight = canvas.getHeight();
+
+        double xScale = canvasWidth / 2.0;
+        double xOffset = canvasWidth / 2.0;
+        double yScale = -canvasHeight / 2.0;
+        double yOffset = canvasHeight / 2.0;
+
+        return new DecimalPosition((canvasPosition.getX() - xOffset) / xScale, (canvasPosition.getY() - yOffset) / yScale);
+    }
+
     public void onMousePressed(Event event) {
         MouseEvent mouseEvent = (MouseEvent) event;
         DecimalPosition canvasPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
-        DecimalPosition clipXY = webGlEmulator.toClipCoordinates(canvasPosition);
+        DecimalPosition clipXY = toClipCoordinates(canvasPosition);
         Ray3d pickRay = projectionTransformation.createPickRay(clipXY);
         Ray3d worldPickRay = camera.toWorld(pickRay);
-        Vertex groundMeshPosition = terrainSurface.calculatePositionGroundMesh(worldPickRay);
+        Vertex groundMeshPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
         System.out.println("Ground Mesh position: " + groundMeshPosition);
     }
 
     private Vertex getTerrainPosition(DecimalPosition canvasPosition) {
-        DecimalPosition clipXY = webGlEmulator.toClipCoordinates(canvasPosition);
+        DecimalPosition clipXY = toClipCoordinates(canvasPosition);
         Ray3d pickRay = projectionTransformation.createPickRay(clipXY);
         Ray3d worldPickRay = camera.toWorld(pickRay);
-        return terrainSurface.calculatePositionOnZeroLevel(worldPickRay);
+        return terrainUiService.calculatePositionOnZeroLevel(worldPickRay);
     }
 
     public void onMouseReleased() {
@@ -241,15 +259,14 @@ public class WebGlEmulatorController implements Initializable {
 
     public void zTranslationFieldChanged() {
         camera.setTranslateZ(Double.parseDouble(zTranslationField.getText()));
-        webGlEmulator.drawArrays();
     }
 
     public void onTickButtonClicked() {
-        itemService.tick();
+        // TODO temUiService.tick();
     }
 
     public void onRestartButtonClicked() {
-        itemService.setupItems();
+        // TODO baseItemUiService.setupItems();
     }
 
     public void onShadowButtonClicked() {
@@ -272,11 +289,10 @@ public class WebGlEmulatorController implements Initializable {
             stage.setY(168);
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 public void handle(WindowEvent we) {
-                    webGlEmulatorShadow.setCanvas(null);
+                    shadowController.setActive(false);
                 }
             });
             stage.show();
-            webGlEmulatorShadow.setCanvas(shadowController.getCanvas());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -353,4 +369,13 @@ public class WebGlEmulatorController implements Initializable {
     public void onMouseMoved(MouseEvent event) {
         // terrainScrollHandler.handleMouseMoveScroll((int)event.getX(), (int)event.getY(), (int)canvas.getWidth(), (int)canvas.getHeight());
     }
+
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
+    private double getAspectRatio() {
+        return canvas.getWidth() / canvas.getHeight();
+    }
+
 }

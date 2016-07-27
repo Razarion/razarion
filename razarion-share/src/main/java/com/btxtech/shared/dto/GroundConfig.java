@@ -10,7 +10,7 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Bindable
 @Portable
 public class GroundConfig {
-    private GroundSkeleton groundSkeleton;
+    private GroundSkeletonConfig groundSkeletonConfig;
     private double heightFractalRoughness;
     private double heightFractalMin;
     private double heightFractalMax;
@@ -22,12 +22,12 @@ public class GroundConfig {
     private double splattingFractalClampMin;
     private double splattingFractalClampMax;
 
-    public GroundSkeleton getGroundSkeleton() {
-        return groundSkeleton;
+    public GroundSkeletonConfig getGroundSkeletonConfig() {
+        return groundSkeletonConfig;
     }
 
-    public void setGroundSkeleton(GroundSkeleton groundSkeleton) {
-        this.groundSkeleton = groundSkeleton;
+    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
+        this.groundSkeletonConfig = groundSkeletonConfig;
     }
 
     public double getHeightFractalMin() {
@@ -116,10 +116,10 @@ public class GroundConfig {
         fractalFieldConfig.setFractalMax(splattingFractalMax);
         fractalFieldConfig.setClampMin(splattingFractalClampMin);
         fractalFieldConfig.setClampMax(splattingFractalClampMax);
-        fractalFieldConfig.setXCount(groundSkeleton.getSplattingXCount());
-        fractalFieldConfig.setYCount(groundSkeleton.getSplattingYCount());
+        fractalFieldConfig.setXCount(groundSkeletonConfig.getSplattingXCount());
+        fractalFieldConfig.setYCount(groundSkeletonConfig.getSplattingYCount());
         fractalFieldConfig.setFractalRoughness(splattingFractalRoughness);
-        fractalFieldConfig.setFractalField(groundSkeleton.getSplattings());
+        fractalFieldConfig.setFractalField(groundSkeletonConfig.getSplattings());
         return fractalFieldConfig;
     }
 
@@ -129,9 +129,9 @@ public class GroundConfig {
         splattingFractalClampMin = fractalFieldConfig.getClampMin();
         splattingFractalClampMax = fractalFieldConfig.getClampMax();
         splattingFractalRoughness = fractalFieldConfig.getFractalRoughness();
-        groundSkeleton.setSplattingXCount(fractalFieldConfig.getXCount());
-        groundSkeleton.setSplattingYCount(fractalFieldConfig.getYCount());
-        groundSkeleton.setSplattings(fractalFieldConfig.getClampedFractalField());
+        groundSkeletonConfig.setSplattingXCount(fractalFieldConfig.getXCount());
+        groundSkeletonConfig.setSplattingYCount(fractalFieldConfig.getYCount());
+        groundSkeletonConfig.setSplattings(fractalFieldConfig.getClampedFractalField());
     }
 
     public FractalFieldConfig toHeightFractalFiledConfig() {
@@ -140,10 +140,10 @@ public class GroundConfig {
         fractalFieldConfig.setFractalMax(heightFractalMax);
         fractalFieldConfig.setClampMin(heightFractalClampMin);
         fractalFieldConfig.setClampMax(heightFractalClampMax);
-        fractalFieldConfig.setXCount(groundSkeleton.getHeightXCount());
-        fractalFieldConfig.setYCount(groundSkeleton.getHeightYCount());
+        fractalFieldConfig.setXCount(groundSkeletonConfig.getHeightXCount());
+        fractalFieldConfig.setYCount(groundSkeletonConfig.getHeightYCount());
         fractalFieldConfig.setFractalRoughness(heightFractalRoughness);
-        fractalFieldConfig.setFractalField(groundSkeleton.getHeights());
+        fractalFieldConfig.setFractalField(groundSkeletonConfig.getHeights());
         return fractalFieldConfig;
     }
 
@@ -153,8 +153,8 @@ public class GroundConfig {
         heightFractalClampMin = fractalFieldConfig.getClampMin();
         heightFractalClampMax = fractalFieldConfig.getClampMax();
         heightFractalRoughness = fractalFieldConfig.getFractalRoughness();
-        groundSkeleton.setHeightXCount(fractalFieldConfig.getXCount());
-        groundSkeleton.setHeightYCount(fractalFieldConfig.getYCount());
-        groundSkeleton.setHeights(fractalFieldConfig.getClampedFractalField());
+        groundSkeletonConfig.setHeightXCount(fractalFieldConfig.getXCount());
+        groundSkeletonConfig.setHeightYCount(fractalFieldConfig.getYCount());
+        groundSkeletonConfig.setHeights(fractalFieldConfig.getClampedFractalField());
     }
 }

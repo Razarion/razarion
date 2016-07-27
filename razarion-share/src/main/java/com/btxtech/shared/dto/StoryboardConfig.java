@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
@@ -11,21 +12,23 @@ import java.util.List;
 @Portable
 public class StoryboardConfig {
     private List<SceneConfig> sceneConfigs;
-    private PlanetConfig planetConfig;
+    private GameEngineConfig gameEngineConfig;
 
     public List<SceneConfig> getSceneConfigs() {
         return sceneConfigs;
     }
 
-    public void setSceneConfigs(List<SceneConfig> sceneConfigs) {
+    public StoryboardConfig setSceneConfigs(List<SceneConfig> sceneConfigs) {
         this.sceneConfigs = sceneConfigs;
+        return this;
     }
 
-    public PlanetConfig getPlanetConfig() {
-        return planetConfig;
+    public GameEngineConfig getGameEngineConfig() {
+        return gameEngineConfig;
     }
 
-    public void setPlanetConfig(PlanetConfig planetConfig) {
-        this.planetConfig = planetConfig;
+    public StoryboardConfig setGameEngineConfig(GameEngineConfig gameEngineConfig) {
+        this.gameEngineConfig = gameEngineConfig;
+        return this;
     }
 }

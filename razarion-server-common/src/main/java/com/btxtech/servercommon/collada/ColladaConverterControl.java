@@ -44,7 +44,7 @@ public abstract class ColladaConverterControl {
             specular = effect.getTechnique().getSpecular();
             emission = effect.getTechnique().getEmission();
         }
-        onNewVertexContainer(new VertexContainer(materialId, materialName, vertices, norms, textureCoordinates, ambient, diffuse, specular, emission));
+        onNewVertexContainer(new VertexContainer().setMaterialId(materialId).setMaterialName(materialName).setVertices(vertices).setNorms(norms).setTextureCoordinates(textureCoordinates).setAmbient(ambient).setDiffuse(diffuse).setSpecular(specular).setEmission(emission));
     }
 
     public void addTriangle(Collection<Matrix4> matrices, Vertex vertexA, Vertex normA, TextureCoordinate textureCoordinateA, Vertex vertexB, Vertex normB, TextureCoordinate textureCoordinateB, Vertex vertexC, Vertex normC, TextureCoordinate textureCoordinateC) {

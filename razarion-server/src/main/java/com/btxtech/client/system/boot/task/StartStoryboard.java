@@ -1,6 +1,5 @@
 package com.btxtech.client.system.boot.task;
 
-import com.btxtech.client.ItemServiceRunner;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.uiservice.storyboard.StoryboardService;
@@ -19,17 +18,13 @@ public class StartStoryboard extends AbstractStartupTask {
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
-    private ItemServiceRunner itemServiceRunner;
-    @Inject
     private StoryboardService storyboardService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
         storyboardService.start();
-        itemServiceRunner.start();
         gameCanvas.init();
-        renderService.setupRenderers();
-        renderService.fillBuffers();
+        renderService.setup();
         gameCanvas.startRenderLoop();
     }
 }

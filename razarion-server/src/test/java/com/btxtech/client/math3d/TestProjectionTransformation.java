@@ -3,7 +3,7 @@ package com.btxtech.client.math3d;
 import com.btxtech.TestHelper;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.datatypes.Matrix4;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,10 +18,10 @@ public class TestProjectionTransformation {
     public void gameCamera() throws Exception {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
-        TerrainSurface terrainSurface = new TerrainSurface();
-        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
-        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
-        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TerrainUiService terrainUiService = new TerrainUiService();
+        TestHelper.setPrivateField(terrainUiService, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainUiService, "lowestPointInView", -9);
+        TestHelper.setPrivateField(projectionTransformation, "terrainUiService", terrainUiService);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
         camera.setTranslateX(1104.0);
@@ -40,10 +40,10 @@ public class TestProjectionTransformation {
     public void gameCameraTopView() throws Exception {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
-        TerrainSurface terrainSurface = new TerrainSurface();
-        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
-        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
-        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TerrainUiService terrainUiService = new TerrainUiService();
+        TestHelper.setPrivateField(terrainUiService, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainUiService, "lowestPointInView", -9);
+        TestHelper.setPrivateField(projectionTransformation, "terrainUiService", terrainUiService);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
         camera.setTranslateX(1200);
@@ -62,10 +62,10 @@ public class TestProjectionTransformation {
     public void shallowCamera() throws Exception {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
-        TerrainSurface terrainSurface = new TerrainSurface();
-        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
-        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
-        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TerrainUiService terrainUiService = new TerrainUiService();
+        TestHelper.setPrivateField(terrainUiService, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainUiService, "lowestPointInView", -9);
+        TestHelper.setPrivateField(projectionTransformation, "terrainUiService", terrainUiService);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
         camera.setTranslateX(1104.0);
@@ -84,10 +84,10 @@ public class TestProjectionTransformation {
     public void cameraInTheSky() throws Exception {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
-        TerrainSurface terrainSurface = new TerrainSurface();
-        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
-        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
-        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TerrainUiService terrainUiService = new TerrainUiService();
+        TestHelper.setPrivateField(terrainUiService, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainUiService, "lowestPointInView", -9);
+        TestHelper.setPrivateField(projectionTransformation, "terrainUiService", terrainUiService);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
         camera.setTranslateX(1104.0);
@@ -106,10 +106,10 @@ public class TestProjectionTransformation {
     public void cameraExtremelyClose() throws Exception {
         Camera camera = new Camera();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();
-        TerrainSurface terrainSurface = new TerrainSurface();
-        TestHelper.setPrivateField(terrainSurface, "highestPointInView", 101);
-        TestHelper.setPrivateField(terrainSurface, "lowestPointInView", -9);
-        TestHelper.setPrivateField(projectionTransformation, "terrainSurface", terrainSurface);
+        TerrainUiService terrainUiService = new TerrainUiService();
+        TestHelper.setPrivateField(terrainUiService, "highestPointInView", 101);
+        TestHelper.setPrivateField(terrainUiService, "lowestPointInView", -9);
+        TestHelper.setPrivateField(projectionTransformation, "terrainUiService", terrainUiService);
         TestHelper.setPrivateField(projectionTransformation, "camera", camera);
 
         camera.setTranslateX(1027);

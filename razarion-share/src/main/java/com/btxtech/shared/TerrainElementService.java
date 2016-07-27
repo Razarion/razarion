@@ -2,8 +2,8 @@ package com.btxtech.shared;
 
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;

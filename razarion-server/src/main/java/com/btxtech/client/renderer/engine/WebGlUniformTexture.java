@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
@@ -12,21 +11,21 @@ import elemental.html.WebGLUniformLocation;
  */
 public class WebGlUniformTexture {
     private WebGLRenderingContext ctx3d;
-    private AbstractRenderer abstractRenderer;
+    private AbstractWebGlUnitRenderer abstractWebGlUnitRenderer;
     private WebGLTexture webGLTexture;
     private String samplerUniformName;
     private TextureIdHandler.WebGlTextureId webGlTextureId;
 
-    public WebGlUniformTexture(WebGLRenderingContext ctx3d, AbstractRenderer abstractRenderer, WebGLTexture webGLTexture, String samplerUniformName, TextureIdHandler.WebGlTextureId webGlTextureId) {
+    public WebGlUniformTexture(WebGLRenderingContext ctx3d, AbstractWebGlUnitRenderer abstractWebGlUnitRenderer, WebGLTexture webGLTexture, String samplerUniformName, TextureIdHandler.WebGlTextureId webGlTextureId) {
         this.ctx3d = ctx3d;
-        this.abstractRenderer = abstractRenderer;
+        this.abstractWebGlUnitRenderer = abstractWebGlUnitRenderer;
         this.webGLTexture = webGLTexture;
         this.samplerUniformName = samplerUniformName;
         this.webGlTextureId = webGlTextureId;
     }
 
     public void activate() {
-        WebGLUniformLocation tUniform = abstractRenderer.getUniformLocation(samplerUniformName);
+        WebGLUniformLocation tUniform = abstractWebGlUnitRenderer.getUniformLocation(samplerUniformName);
         ctx3d.uniform1i(tUniform, webGlTextureId.getUniformValue());
         WebGlUtil.checkLastWebGlError("uniform1i", ctx3d);
         ctx3d.activeTexture(webGlTextureId.getWebGlTextureId());

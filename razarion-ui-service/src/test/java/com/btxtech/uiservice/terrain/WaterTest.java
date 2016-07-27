@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.terrain;
 
+import com.btxtech.shared.gameengine.planet.terrain.Water;
 import org.junit.Test;
 
 import java.util.Arrays;

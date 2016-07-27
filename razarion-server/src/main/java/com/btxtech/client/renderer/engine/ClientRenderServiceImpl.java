@@ -2,12 +2,13 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.client.renderer.webgl.WebGlException;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.CompositeRenderer;
 import com.btxtech.uiservice.renderer.RenderService;
+import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.uiservice.units.ItemService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
@@ -26,30 +27,28 @@ import java.util.logging.Logger;
  * 20.05.2015.
  */
 @Singleton
-public class ClientRenderServiceImpl implements RenderService {
+public class ClientRenderServiceImpl extends RenderService {
     public static final int DEPTH_BUFFER_SIZE = 1024;
     public static final int RENDER_FRAME_COUNT = 1;
     public static final int RENDER_FRAME_COUNT_MILLIS = RENDER_FRAME_COUNT * 1000;
     private Logger logger = Logger.getLogger(ClientRenderServiceImpl.class.getName());
     @Inject
-    private Instance<Renderer> renderInstance;
+    private Instance<AbstractRenderUnit> renderInstance;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
     private Camera camera;
     @Inject
-    private ItemService itemService;
-    @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject
     private TerrainEditor terrainEditor;
-    private List<RenderSwitch> renderQueue;
-    private Collection<RenderSwitch> terrainObjectRenders;
-    private Collection<TerrainEditorRenderer> terrainEditorRenderers;
-    private TerrainEditorCursorRenderer terrainEditorCursorRenderer;
-    private TerrainObjectEditorRenderer terrainObjectEditorRenderer;
+    private List<CompositeRenderer> renderQueue;
+    private Collection<CompositeRenderer> terrainObjectRenders;
+    private Collection<TerrainEditorUnitRenderer> terrainEditorRenderers;
+    private TerrainEditorCursorUnitRenderer terrainEditorCursorRenderer;
+    private TerrainObjectEditorUnitRenderer terrainObjectEditorRenderer;
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
@@ -59,42 +58,49 @@ public class ClientRenderServiceImpl implements RenderService {
     private boolean showDeep = false;
     private boolean showSlopeEditor = false;
     private boolean showObjectEditor = false;
-    private RenderSwitch monitor;
-    private RenderSwitch terrainNorm;
-    private Collection<RenderSwitch> unitNorms;
-    private Collection<RenderSwitch> terrainObjectNorms;
+    private CompositeRenderer monitor;
+    private CompositeRenderer terrainNorm;
+    private Collection<CompositeRenderer> terrainObjectNorms;
     private int framesCount = 0;
     private long lastTime = 0;
 
     @Override
-    public void setupRenderers() {
+    protected void setupRenderers() {
         initFrameBuffer();
         renderQueue = new ArrayList<>();
-        unitNorms = new ArrayList<>();
         terrainObjectNorms = new ArrayList<>();
         terrainObjectRenders = new ArrayList<>();
-        createAndAddRenderSwitch(GroundRenderer.class, GroundDepthBufferRenderer.class, GroundWireRender.class, 0);
-        for (int id : terrainSurface.getSlopeIds()) {
-            createAndAddRenderSwitch(SlopeRenderer.class, SlopeDepthBufferRenderer.class, SlopeWireRenderer.class, id);
+        createAndAddRenderSwitch(GroundUnitRenderer.class, GroundDepthBufferUnitRenderer.class, GroundWireRender.class, 0);
+        for (int id : terrainUiService.getSlopeIds()) {
+            createAndAddRenderSwitch(SlopeUnitRenderer.class, SlopeDepthBufferUnitRenderer.class, SlopeWireUnitRenderer.class, id);
         }
         terrainEditorRenderers = new ArrayList<>();
         for (int id : terrainEditor.getSlopePolygonIds()) {
-            TerrainEditorRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorRenderer.class).get();
-            terrainEditorRenderer.setId(id);
+            TerrainEditorUnitRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorUnitRenderer.class).get();
+            // TODO terrainEditorRenderer.setId(id);
             terrainEditorRenderers.add(terrainEditorRenderer);
         }
         setupTerrainObjectRenderer();
-        for (int id : itemService.getItemTypeIds()) {
-            createAndAddRenderSwitch(UnitRenderer.class, UnitDepthBufferRenderer.class, UnitWireRenderer.class, id);
-            unitNorms.add(createAndAddRenderSwitch(UnitNormRenderer.class, null, UnitNormRenderer.class, id));
-        }
-        createAndAddRenderSwitch(WaterRenderer.class, null, WaterWireRenderer.class, 0);
-        monitor = createAndAddRenderSwitch(MonitorRenderer.class, null, null, 0);
-        terrainNorm = createAndAddRenderSwitch(TerrainNormRenderer.class, null, TerrainNormRenderer.class, 0);
-        terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorRenderer.class).get();
+        createAndAddRenderSwitch(WaterUnitRenderer.class, null, WaterWireUnitRenderer.class, 0);
+        monitor = createAndAddRenderSwitch(MonitorUnitRenderer.class, null, null, 0);
+        terrainNorm = createAndAddRenderSwitch(GroundNormUnitRenderer.class, null, GroundNormUnitRenderer.class, 0);
+        terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorUnitRenderer.class).get();
         terrainEditorCursorRenderer.fillBuffers();
-        terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorRenderer.class).get();
+        terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorUnitRenderer.class).get();
         terrainObjectEditorRenderer.fillBuffers();
+    }
+
+    @Override
+    protected void initBaseItemTypeRenderer(CompositeRenderer compositeRenderer) {
+        compositeRenderer.setRenderUnit(renderInstance.select(ItemUnitRenderer.class).get());
+        compositeRenderer.setDepthBufferRenderUnit(renderInstance.select(ItemDepthBufferUnitRenderer.class).get());
+        compositeRenderer.setWireRenderUnit(renderInstance.select(ItemWireUnitRenderer.class).get());
+        compositeRenderer.setNormRenderUnit(renderInstance.select(ItemNormUnitRenderer.class).get());
+    }
+
+    @Override
+    protected void initSpawnItemTypeRenderer(CompositeRenderer compositeRenderer) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -117,101 +123,113 @@ public class ClientRenderServiceImpl implements RenderService {
             terrainObjectNorms.clear();
         }
         for (int id : terrainObjectService.getVertexContainerIds()) {
-            terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectRenderer.class, TerrainObjectDepthBufferRenderer.class, TerrainObjectWireRender.class, id));
-            terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormRenderer.class, null, TerrainObjectNormRenderer.class, id));
+            terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectUnitRenderer.class, TerrainObjectDepthBufferUnitRenderer.class, TerrainObjectWireRender.class, id));
+            terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormUnitRenderer.class, null, TerrainObjectNormUnitRenderer.class, id));
         }
-        for (RenderSwitch terrainObjectRender : terrainObjectRenders) {
+        for (CompositeRenderer terrainObjectRender : terrainObjectRenders) {
             terrainObjectRender.fillBuffers();
         }
-        for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
+        for (TerrainEditorUnitRenderer terrainEditorRenderer : terrainEditorRenderers) {
             terrainEditorRenderer.fillBuffers();
         }
     }
 
     public void createTerrainEditorRenderer(int id) {
-        TerrainEditorRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorRenderer.class).get();
-        terrainEditorRenderer.setId(id);
+        TerrainEditorUnitRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorUnitRenderer.class).get();
+        // TODO terrainEditorRenderer.setId(id);
         terrainEditorRenderers.add(terrainEditorRenderer);
         terrainEditorRenderer.fillBuffers();
     }
 
 
     public void removeTerrainEditorRenderer(int id) {
-        for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
-            if(terrainEditorRenderer.getId() == id) {
-                terrainEditorRenderers.remove(terrainEditorRenderer);
-                return;
-            }
-        }
+        // TODO
+//        for (TerrainEditorUnitRenderer terrainEditorRenderer : terrainEditorRenderers) {
+//            if (terrainEditorRenderer.getId() == id) {
+//                terrainEditorRenderers.remove(terrainEditorRenderer);
+//                return;
+//            }
+//        }
     }
 
-    private RenderSwitch createAndAddRenderSwitch(Class<? extends Renderer> normalRendererClass, Class<? extends Renderer> depthBufferRendererClass, Class<? extends Renderer> wireRendererClass, int id) {
-        Renderer normalRenderer = null;
+    private CompositeRenderer createAndAddRenderSwitch(Class<? extends AbstractRenderUnit> normalRendererClass, Class<? extends AbstractRenderUnit> depthBufferRendererClass, Class<? extends AbstractRenderUnit> wireRendererClass, int id) {
+        AbstractRenderUnit normalRenderUnit = null;
         if (normalRendererClass != null) {
-            normalRenderer = renderInstance.select(normalRendererClass).get();
-            normalRenderer.setId(id);
-            normalRenderer.setupImages();
+            normalRenderUnit = renderInstance.select(normalRendererClass).get();
+            // TODO normalRenderUnit.setId(id);
+            normalRenderUnit.setupImages();
         }
-        Renderer depthBufferRenderer = null;
+        AbstractRenderUnit depthBufferRenderUnit = null;
         if (depthBufferRendererClass != null) {
-            depthBufferRenderer = renderInstance.select(depthBufferRendererClass).get();
-            depthBufferRenderer.setId(id);
-            depthBufferRenderer.setupImages();
+            depthBufferRenderUnit = renderInstance.select(depthBufferRendererClass).get();
+            // TODO depthBufferRenderUnit.setId(id);
+            depthBufferRenderUnit.setupImages();
         }
-        Renderer wireRenderer = null;
+        AbstractRenderUnit wireRenderUnit = null;
         if (wireRendererClass != null) {
-            wireRenderer = renderInstance.select(wireRendererClass).get();
-            wireRenderer.setId(id);
-            wireRenderer.setupImages();
+            wireRenderUnit = renderInstance.select(wireRendererClass).get();
+            // TODO wireRenderUnit.setId(id);
+            wireRenderUnit.setupImages();
         }
-        RenderSwitch renderSwitch = new RenderSwitch(normalRenderer, depthBufferRenderer, wireRenderer, wire);
-        renderQueue.add(renderSwitch);
-        return renderSwitch;
+        CompositeRenderer compositeRenderer = new CompositeRenderer(normalRenderUnit, depthBufferRenderUnit, wireRenderUnit, wire);
+        renderQueue.add(compositeRenderer);
+        return compositeRenderer;
     }
 
     @Override
-    public void render() {
+    protected void prepareDepthBufferRendering() {
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, shadowFrameBuffer);
         gameCanvas.getCtx3d().viewport(0, 0, DEPTH_BUFFER_SIZE, DEPTH_BUFFER_SIZE);
         gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
-        for (RenderSwitch renderSwitch : renderQueue) {
-            try {
-                renderSwitch.drawDepthBuffer();
-            } catch (Throwable t) {
-                logger.log(Level.SEVERE, "drawDepthBuffer failed", t);
-            }
-        }
+    }
+
+    @Override
+    protected void prepareMainRendering() {
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
         gameCanvas.getCtx3d().viewport(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
-        for (RenderSwitch renderSwitch : renderQueue) {
-            if (!showMonitor && renderSwitch == monitor) {
-                continue;
-            }
-            if (!showNorm && (renderSwitch == terrainNorm || unitNorms.contains(renderSwitch) || terrainObjectNorms.contains(renderSwitch))) {
-                continue;
-            }
-            try {
-                renderSwitch.draw();
-            } catch (Throwable t) {
-                logger.log(Level.SEVERE, "draw failed", t);
-            }
-        }
+    }
+
+    @Override
+    protected void doRender() {
+//        for (CompositeRenderer compositeRenderer : renderQueue) {
+//            try {
+//                compositeRenderer.drawDepthBuffer();
+//            } catch (Throwable t) {
+//                logger.log(Level.SEVERE, "drawDepthBuffer failed", t);
+//            }
+//        }
+//        for (CompositeRenderer compositeRenderer : renderQueue) {
+//            if (!showMonitor && compositeRenderer == monitor) {
+//                continue;
+//            }
+//            if (!showNorm && (compositeRenderer == terrainNorm || unitNorms.contains(compositeRenderer) || terrainObjectNorms.contains(compositeRenderer))) {
+//                continue;
+//            }
+//            try {
+//                compositeRenderer.draw();
+//            } catch (Throwable t) {
+//                logger.log(Level.SEVERE, "draw failed", t);
+//            }
+//        }
+
+        // ------------------------------------------------------------------------------------
+        // TODO handle the editor stuff
 
         // Dirty way to render wire over image (see changed files in GIT).
         gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
         gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         gameCanvas.getCtx3d().depthMask(false);
-        for (RenderSwitch renderSwitch : renderQueue) {
-            if (!showMonitor && renderSwitch == monitor) {
+        for (CompositeRenderer compositeRenderer : renderQueue) {
+            if (!showMonitor && compositeRenderer == monitor) {
                 continue;
             }
-            if (!showNorm && (renderSwitch == terrainNorm || unitNorms.contains(renderSwitch) || terrainObjectNorms.contains(renderSwitch))) {
+            if (!showNorm && (compositeRenderer == terrainNorm || terrainObjectNorms.contains(compositeRenderer))) {
                 continue;
             }
             try {
-                renderSwitch.drawWire();
+                compositeRenderer.drawWire();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "draw failed", t);
             }
@@ -223,7 +241,7 @@ public class ClientRenderServiceImpl implements RenderService {
         // Dirty way to render terrain editor
         if (showSlopeEditor) {
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
-            for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
+            for (TerrainEditorUnitRenderer terrainEditorRenderer : terrainEditorRenderers) {
                 if (terrainEditorRenderer.hasElements()) {
                     terrainEditorRenderer.draw();
                 }
@@ -246,36 +264,6 @@ public class ClientRenderServiceImpl implements RenderService {
             // logger.severe("Frames per seonds: " + (double) framesCount / (double) RENDER_FRAME_COUNT);
             framesCount = 0;
             lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
-        }
-    }
-
-    public void fillBuffers() {
-        for (RenderSwitch renderSwitch : renderQueue) {
-            try {
-                renderSwitch.fillBuffers();
-            } catch (Throwable t) {
-                logger.log(Level.SEVERE, "fillBuffers failed", t);
-            }
-        }
-        if (terrainEditorRenderers != null) {
-            for (TerrainEditorRenderer terrainEditorRenderer : terrainEditorRenderers) {
-                try {
-                    terrainEditorRenderer.fillBuffers();
-                } catch (Throwable t) {
-                    logger.log(Level.SEVERE, "fillBuffers failed", t);
-                }
-            }
-        }
-    }
-
-    public void showWire(boolean wire) {
-        this.wire = wire;
-        for (RenderSwitch renderSwitch : renderQueue) {
-            try {
-                renderSwitch.doSwitch(wire);
-            } catch (Throwable t) {
-                logger.log(Level.SEVERE, "showWire failed", t);
-            }
         }
     }
 

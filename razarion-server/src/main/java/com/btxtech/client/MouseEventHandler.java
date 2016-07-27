@@ -9,7 +9,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.events.EventListener;
 import elemental.events.MouseEvent;
 import elemental.events.WheelEvent;
@@ -34,7 +34,7 @@ public class MouseEventHandler {
     @Inject
     private Camera camera;
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
@@ -85,7 +85,7 @@ public class MouseEventHandler {
                             webglPosition = webglPosition.sub(1, 1);
                             Ray3d pickRay = projectionTransformation.createPickRay(webglPosition);
                             Ray3d worldPickRay = camera.toWorld(pickRay);
-                            Vertex terrainPosition = terrainSurface.calculatePositionOnZeroLevel(worldPickRay);
+                            Vertex terrainPosition = terrainUiService.calculatePositionOnZeroLevel(worldPickRay);
                             logger.severe("Terrain Position: " + terrainPosition);
                         }
                         if (mouseEvent.isAltKey()) {

@@ -1,0 +1,178 @@
+package com.btxtech.shared.gameengine.planet;
+
+import com.btxtech.shared.gameengine.BotSyncBaseItemCreatedEvent;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
+import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
+import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
+import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
+import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
+import com.btxtech.shared.gameengine.datatypes.syncobject.SyncResourceItem;
+import com.btxtech.shared.gameengine.datatypes.syncobject.SyncSpawnItem;
+
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.logging.Logger;
+
+/**
+ * Created by Beat
+ * 25.07.2016.
+ */
+@Singleton
+public class ActivityService {
+    private Logger logger = Logger.getLogger(ActivityService.class.getName());
+    @Inject
+    private Event<BotSyncBaseItemCreatedEvent> botSyncBaseItemCreatedEvent;
+
+    public void onInsufficientFundsException(InsufficientFundsException e) {
+        // TODO connectionService.sendSyncInfo(syncItem);
+        // TODO baseService.sendAccountBaseUpdate(syncItem);
+        e.printStackTrace();
+    }
+
+    public void onPathCanNotBeFoundException(PathCanNotBeFoundException e) {
+        // TODO connectionService.sendSyncInfo(syncItem);
+        e.printStackTrace();
+    }
+
+    public void onItemDoesNotExistException(ItemDoesNotExistException e) {
+        // TODO connectionService.sendSyncInfo(syncItem);
+        e.printStackTrace();
+    }
+
+    public void onPositionTakenException(PositionTakenException e) {
+        e.printStackTrace();
+    }
+
+    public void onPlaceCanNotBeFoundException(PlaceCanNotBeFoundException e) {
+        e.printStackTrace();
+    }
+
+    public void onThrowable(Throwable t) {
+        // TODO connectionService.sendSyncInfo(syncItem);
+        t.printStackTrace();
+    }
+
+    public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
+        // TODO connectionService.sendSyncInfo(syncItem);
+        System.out.println("ActivityService.onCommandSent() " + syncItem + " " + baseCommand);
+    }
+
+    public void onInvalidPath(BaseCommand baseCommand) {
+        logger.severe("Path is invalid: " + ((PathToDestinationCommand) baseCommand).getPathToDestination());
+        // TODO  connectionService.sendSyncInfo(syncItem);
+    }
+
+    public void onSyncItemDeactivated(SyncItem activeItem) {
+        System.out.println("ActivityService.onSyncItemDeactivated(): " + activeItem);
+
+
+//  TODO      connectionService.sendSyncInfo(activeItem);
+
+//   TODO     if (syncBaseItem.hasSyncHarvester()) {
+//   TODO         activityService.sendAccountBaseUpdate((SyncBaseItem) activeItem);
+//   TODO     }
+//   TODO     if (syncBaseItem.isMoneyEarningOrConsuming()) {
+//   TODO         activityService.sendAccountBaseUpdate((SyncBaseItem) activeItem);
+//    TODO    }
+
+    }
+
+    public void onNewPathRecalculation(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onNewPathRecalculation(): " + syncBaseItem);
+    }
+
+    public void onBaseCreated(PlayerBase playerBase) {
+        // TODO sendBaseChangedPacket(BaseChangedPacket.Type.CREATED, base.getSimpleBase());
+        System.out.println("ActivityService.onBaseCreated(): " + playerBase);
+    }
+
+    public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+        // TODO planetService.syncItemActivated(syncBaseItem);
+        // TODO historyService.addItemCreatedEntry(syncBaseItem);
+        // TODO planetService.addGuardingBaseItem(syncBaseItem);
+        // TODO planetService.interactionGuardingItems(syncBaseItem);
+        // TODO connectionService.sendSyncInfo(syncBaseItem);
+
+        System.out.println("ActivityService.onSyncBaseItemCreated(): " + syncBaseItem);
+        if (syncBaseItem.getBase().getCharacter().isBot()) {
+            botSyncBaseItemCreatedEvent.fire(new BotSyncBaseItemCreatedEvent(syncBaseItem, createdBy));
+        }
+    }
+
+    public void onSyncBaseItemCreatedBy(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onSyncBaseItemCreatedBy(): " + createdBy + " " + syncBaseItem);
+    }
+
+    public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
+        System.out.println("ActivityService.onSynBuilderStopped(): " + syncBaseItem + " " + currentBuildup);
+    }
+
+    public void onSyncItemUnloaded(SyncBaseItem syncItem) {
+        System.out.println("ActivityService.onSyncItemUnloaded(): " + syncItem);
+        // TODO connectionService.sendSyncInfo(syncItem);
+
+    }
+
+    public void onSyncItemLoaded(SyncBaseItem syncBaseItem, SyncBaseItem loadedSyncBaseItem) {
+        System.out.println("ActivityService.onSyncItemLoaded(): " + syncBaseItem + " " + loadedSyncBaseItem);
+        // TODO connectionService.sendSyncInfo(syncItem);
+    }
+
+    public void onSyncBuilderProgress(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onSyncBuilderProgress(): " + syncBaseItem);
+    }
+
+    public void onSyncBuilderStopped(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onSyncBuilderStopped(): " + syncBaseItem);
+    }
+
+    public void onHealthDecreased(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onHealthDecreased(): " + syncBaseItem);
+    }
+
+    public void onHealthIncreased(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onHealthIncreased(): " + syncBaseItem);
+    }
+
+    public void onBuildup(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onBuildup(): " + syncBaseItem);
+    }
+
+    public void onAttacked(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.syncBaseItem(): " + syncBaseItem);
+    }
+
+    public void onSyncFactoryProgress(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onSyncFactoryProgress(): " + syncBaseItem);
+    }
+
+    public void onSyncFactoryStopped(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onSyncFactoryStopped(): " + syncBaseItem);
+    }
+
+    public void onResourceAmountChanged(SyncResourceItem syncResourceItem) {
+        System.out.println("ActivityService.onResourceAmountChanged(): " + syncResourceItem);
+    }
+
+    public void onProjectileFired(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onProjectileFired(): " + syncBaseItem);
+    }
+
+    public void onProjectileDetonation(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onProjectileDetonation(): " + syncBaseItem);
+    }
+
+    public void onSpawnSyncItem(SyncSpawnItem syncSpawnItem) {
+        System.out.println("ActivityService.onSpawnSyncItem(): " + syncSpawnItem);
+    }
+
+    public void onSpawnSyncItemFinished(SyncSpawnItem syncSpawnItem) {
+        System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncSpawnItem);
+    }
+}

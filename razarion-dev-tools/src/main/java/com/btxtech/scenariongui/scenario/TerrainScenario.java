@@ -4,8 +4,8 @@ import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.GameMock;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.uiservice.terrain.slope.Slope;
+import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import javafx.scene.paint.Color;
 
 /**
@@ -13,15 +13,15 @@ import javafx.scene.paint.Color;
  * 19.03.2016.
  */
 public class TerrainScenario extends Scenario {
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-        terrainSurface = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
-        context.strokeVertexList(terrainSurface.getGroundVertexList().getVertices(), 0.1, Color.BLUE);
+        terrainUiService = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
+        context.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 0.1, Color.BLUE);
 
-        for (Integer slopeId : terrainSurface.getSlopeIds()) {
-            Slope slope = terrainSurface.getSlope(slopeId);
+        for (Integer slopeId : terrainUiService.getSlopeIds()) {
+            Slope slope = terrainUiService.getSlope(slopeId);
 
 
             // context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
@@ -44,7 +44,7 @@ public class TerrainScenario extends Scenario {
 
     @Override
     public boolean onMouseDown(Index position) {
-        terrainSurface.getInterpolatedTerrainTriangle(new DecimalPosition(position));
+        terrainUiService.getInterpolatedTerrainTriangle(new DecimalPosition(position));
         return false;
     }
 }

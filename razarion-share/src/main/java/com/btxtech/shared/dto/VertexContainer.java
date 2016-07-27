@@ -25,22 +25,49 @@ public class VertexContainer {
     private Color emission;
     private Integer textureId;
 
-    /**
-     * Used by errai
-     */
-    public VertexContainer() {
+    public VertexContainer setMaterialId(String materialId) {
+        this.materialId = materialId;
+        return this;
     }
 
-    public VertexContainer(String materialId, String materialName, List<Vertex> vertices, List<Vertex> norms, List<TextureCoordinate> textureCoordinates, Color ambient, Color diffuse, Color specular, Color emission) {
-        this.materialId = materialId;
+    public VertexContainer setMaterialName(String materialName) {
         this.materialName = materialName;
+        return this;
+    }
+
+    public VertexContainer setVertices(List<Vertex> vertices) {
         this.vertices = vertices;
+        return this;
+    }
+
+    public VertexContainer setNorms(List<Vertex> norms) {
         this.norms = norms;
+        return this;
+    }
+
+    public VertexContainer setTextureCoordinates(List<TextureCoordinate> textureCoordinates) {
         this.textureCoordinates = textureCoordinates;
+        return this;
+    }
+
+    public VertexContainer setAmbient(Color ambient) {
         this.ambient = ambient;
+        return this;
+    }
+
+    public VertexContainer setDiffuse(Color diffuse) {
         this.diffuse = diffuse;
+        return this;
+    }
+
+    public VertexContainer setSpecular(Color specular) {
         this.specular = specular;
+        return this;
+    }
+
+    public VertexContainer setEmission(Color emission) {
         this.emission = emission;
+        return this;
     }
 
     public List<Vertex> getVertices() {

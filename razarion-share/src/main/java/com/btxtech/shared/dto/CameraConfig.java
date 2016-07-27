@@ -18,31 +18,35 @@ public class CameraConfig {
         return fromPosition;
     }
 
-    public void setFromPosition(Index fromPosition) {
+    public CameraConfig setFromPosition(Index fromPosition) {
         this.fromPosition = fromPosition;
+        return this;
     }
 
     public Index getToPosition() {
         return toPosition;
     }
 
-    public void setToPosition(Index toPosition) {
+    public CameraConfig setToPosition(Index toPosition) {
         this.toPosition = toPosition;
+        return this;
     }
 
     public boolean isSmooth() {
         return smooth;
     }
 
-    public void setSmooth(boolean smooth) {
+    public CameraConfig setSmooth(boolean smooth) {
         this.smooth = smooth;
+        return this;
     }
 
     public boolean isCameraLocked() {
         return cameraLocked;
     }
 
-    public void setCameraLocked(boolean cameraLocked) {
+    public CameraConfig setCameraLocked(boolean cameraLocked) {
         this.cameraLocked = cameraLocked;
+        return this;
     }
 }

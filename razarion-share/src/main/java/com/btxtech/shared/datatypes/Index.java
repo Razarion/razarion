@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -153,16 +154,16 @@ public class Index implements Serializable {
         }
         if (normalized.x > 0 && normalized.y > 0) {
             // Quadrant 1
-            return Math.atan((double)normalized.y / (double)normalized.x);
+            return Math.atan((double) normalized.y / (double) normalized.x);
         } else if (normalized.x < 0 && normalized.y > 0) {
             // Quadrant 2
-            return MathHelper.QUARTER_RADIANT + Math.atan((double)-normalized.x / (double)normalized.y);
+            return MathHelper.QUARTER_RADIANT + Math.atan((double) -normalized.x / (double) normalized.y);
         } else if (normalized.x < 0 && normalized.y < 0) {
             // Quadrant 3
-            return MathHelper.HALF_RADIANT + Math.atan((double)-normalized.y / (double)-normalized.x);
+            return MathHelper.HALF_RADIANT + Math.atan((double) -normalized.y / (double) -normalized.x);
         } else {
             // Quadrant 4
-            return MathHelper.THREE_QUARTER_RADIANT + Math.atan((double)normalized.x / (double)-normalized.y);
+            return MathHelper.THREE_QUARTER_RADIANT + Math.atan((double) normalized.x / (double) -normalized.y);
         }
     }
 
@@ -438,6 +439,25 @@ public class Index implements Serializable {
 
     public static Index createVector(double angle, int radius) {
         return ZERO.getPointFromAngleRound(angle, radius);
+    }
+
+    public static String toString(List<Index> pathToDestination) {
+        StringBuilder builder = new StringBuilder();
+        if (pathToDestination != null) {
+            builder.append("{");
+            Iterator<Index> iterator = pathToDestination.iterator();
+            while (iterator.hasNext()) {
+                Index index = iterator.next();
+                builder.append(index.toString());
+                if (iterator.hasNext()) {
+                    builder.append(", ");
+                }
+            }
+            builder.append("}");
+        } else {
+            builder.append("{-}");
+        }
+        return builder.toString();
     }
 
 }

@@ -1,6 +1,5 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -9,6 +8,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * 12.07.2016.
  */
 @Portable
+@Deprecated
 public class AnimatedMeshConfig {
     private VertexContainer vertexContainer;
     private Vertex position;

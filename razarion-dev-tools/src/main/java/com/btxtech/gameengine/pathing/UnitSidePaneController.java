@@ -1,8 +1,8 @@
 package com.btxtech.gameengine.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.pathing.DebugHelper;
-import com.btxtech.shared.gameengine.pathing.Unit;
+import com.btxtech.shared.gameengine.planet.pathing.DebugHelper;
+import com.btxtech.shared.gameengine.planet.pathing.Unit;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 

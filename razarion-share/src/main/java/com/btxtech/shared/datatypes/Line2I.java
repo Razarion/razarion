@@ -35,7 +35,7 @@ public class Line2I implements Serializable {
         }
         this.point1 = point1;
         this.point2 = point2;
-        m = (double)(this.point2.getY() - this.point1.getY()) / (double)(this.point2.getX() - this.point1.getX());
+        m = (double) (this.point2.getY() - this.point1.getY()) / (double) (this.point2.getX() - this.point1.getX());
 //        if (Math.abs(m) > MIN_M_INFINITE) {
 //            m = Double.POSITIVE_INFINITY;
 //            c = Double.NEGATIVE_INFINITY;
@@ -170,10 +170,10 @@ public class Line2I implements Serializable {
 
     public Index getCrossPoint(Line2I other) {
         DecimalPosition cross = getCrossInfinite(other);
-        if(cross == null) {
+        if (cross == null) {
             return null;
         }
-        if(isPointInLineInclusive(cross) && other.isPointInLineInclusive(cross)) {
+        if (isPointInLineInclusive(cross) && other.isPointInLineInclusive(cross)) {
             return cross.getPositionRound();
         } else {
             return null;

@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.menu;
 
-import com.btxtech.uiservice.terrain.TerrainSurface;
-import com.btxtech.uiservice.terrain.Water;
+import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.Composite;
@@ -20,7 +20,7 @@ import javax.inject.Inject;
 @Templated("WaterMenu.html#menu-water")
 public class WaterMenu extends Composite {
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
     @DataField
     private LightWidget lightWidget;
@@ -39,7 +39,7 @@ public class WaterMenu extends Composite {
 
     @PostConstruct
     public void init() {
-        Water water = terrainSurface.getWater();
+        Water water = terrainUiService.getWater();
         transparency.setValue(water.getWaterTransparency());
         bumpMap.setValue(water.getWaterBumpMapDepth());
         level.setValue(water.getLevel());
@@ -49,21 +49,21 @@ public class WaterMenu extends Composite {
 
     @EventHandler("transparency")
     public void transparencyChanged(ChangeEvent e) {
-        terrainSurface.getWater().setWaterTransparency(transparency.getValue());
+        terrainUiService.getWater().setWaterTransparency(transparency.getValue());
     }
 
     @EventHandler("bumpMap")
     public void bumpMapChanged(ChangeEvent e) {
-        terrainSurface.getWater().setWaterBumpMapDepth(bumpMap.getValue());
+        terrainUiService.getWater().setWaterBumpMapDepth(bumpMap.getValue());
     }
 
     @EventHandler("level")
     public void levelChanged(ChangeEvent e) {
-        terrainSurface.getWater().setLevel(level.getValue());
+        terrainUiService.getWater().setLevel(level.getValue());
     }
 
     @EventHandler("ground")
     public void groundChanged(ChangeEvent e) {
-        terrainSurface.getWater().setGround(ground.getValue());
+        terrainUiService.getWater().setGround(ground.getValue());
     }
 }

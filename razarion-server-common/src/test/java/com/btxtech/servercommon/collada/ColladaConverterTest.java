@@ -1,8 +1,8 @@
 package com.btxtech.servercommon.collada;
 
 import com.btxtech.TestHelper;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.dto.ItemType;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.VertexContainer;
 import com.btxtech.shared.datatypes.Color;

@@ -5,7 +5,7 @@ import com.btxtech.client.editor.dialog.ModalDialogManager;
 import com.btxtech.client.editor.dialog.content.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.uiservice.terrain.TerrainSurface;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.FractalFieldConfig;
@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 public class SlopeSidebar extends Composite implements LeftSideBarContent {
     private Logger logger = Logger.getLogger(SlopeSidebar.class.getName());
     @Inject
-    private TerrainSurface terrainSurface;
+    private TerrainUiService terrainUiService;
     @Inject
     private ModalDialogManager modalDialogManager;
     @Inject
@@ -80,7 +80,7 @@ public class SlopeSidebar extends Composite implements LeftSideBarContent {
             @Override
             public void callback(GroundConfig groundConfig) {
                 groundConfigDataBinder.setModel(groundConfig);
-                lightConfig.setModel(groundConfig.getGroundSkeleton().getLightConfig());
+                lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
             }
         }, new ErrorCallback<Object>() {
             @Override
@@ -99,14 +99,14 @@ public class SlopeSidebar extends Composite implements LeftSideBarContent {
     @EventHandler("updateButton")
     private void updateButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        terrainSurface.setGroundSkeleton(groundConfig.getGroundSkeleton());
+        // TODO terrainUiService.setGroundSkeleton(groundConfig.getGroundSkeletonConfig());
     }
 
     @EventHandler("sculptButton")
     private void sculptButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        terrainSurface.setGroundSkeleton(groundConfig.getGroundSkeleton());
-        terrainSurface.setup();
+        // TODO terrainUiService.setGroundSkeleton(groundConfig.getGroundSkeletonConfig());
+        // TODO terrainUiService.setup();
         renderService.fillBuffers();
     }
 
@@ -116,7 +116,7 @@ public class SlopeSidebar extends Composite implements LeftSideBarContent {
             @Override
             public void callback(GroundConfig groundConfig) {
                 groundConfigDataBinder.setModel(groundConfig);
-                lightConfig.setModel(groundConfig.getGroundSkeleton().getLightConfig());
+                lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
             }
         }, new ErrorCallback<Object>() {
             @Override

@@ -2,6 +2,7 @@ package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
@@ -32,6 +33,8 @@ public class Scene {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private QuestVisualizer questVisualizer;
+    @Inject
+    private BotService botService;
     private SceneConfig sceneConfig;
     private Collection<SceneCompletionHandler> completionHandlers = new ArrayList<>();
 
@@ -45,6 +48,9 @@ public class Scene {
         }
         if(sceneConfig.getAnimatedMeshConfig() != null) {
             animationService.runAnimation(sceneConfig.getAnimatedMeshConfig(), registerSceneCompletionListener());
+        }
+        if(sceneConfig.getBotConfigs() != null) {
+            botService.startBots(sceneConfig.getBotConfigs());
         }
         questVisualizer.showSideBar(sceneConfig.isShowQuestSideBar());
         setupCameraConfig(sceneConfig.getCameraConfig());

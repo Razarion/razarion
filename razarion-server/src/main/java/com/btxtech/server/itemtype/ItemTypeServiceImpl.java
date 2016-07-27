@@ -2,8 +2,7 @@ package com.btxtech.server.itemtype;
 
 import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.servercommon.collada.ColladaConverterInput;
-import com.btxtech.shared.ItemTypeService;
-import com.btxtech.shared.dto.ItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.google.gson.Gson;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -24,15 +23,13 @@ import java.util.List;
  * Created by Beat
  * 15.08.2015.
  */
-@Service
-@ApplicationScoped
-public class ItemTypeServiceImpl implements ItemTypeService {
+@Deprecated // Should be a rest service
+public class ItemTypeServiceImpl {
     @Inject
     private ExceptionHandler exceptionHandler;
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
     @Transactional
     public Collection<ItemType> loadItemTypes() {
         try {

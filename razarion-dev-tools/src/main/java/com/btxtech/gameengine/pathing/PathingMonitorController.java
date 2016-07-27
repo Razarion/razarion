@@ -2,9 +2,9 @@ package com.btxtech.gameengine.pathing;
 
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.pathing.Obstacle;
-import com.btxtech.shared.gameengine.pathing.Pathing;
-import com.btxtech.shared.gameengine.pathing.Unit;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.pathing.Unit;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -42,8 +42,8 @@ public class PathingMonitorController implements Initializable {
     public Slider zoomSlider;
     public TextField scaleField;
     public AnchorPane anchorPanel;
-    private Pathing pathing;
-    private int delay = Pathing.MILLI_S;
+    private PathingService pathingService;
+    private int delay = PathingService.MILLI_S;
     private JavaFxGameRenderer renderer;
     private Scenario scenario;
     private ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
@@ -78,10 +78,10 @@ public class PathingMonitorController implements Initializable {
 
 
         scenario = new Scenario();
-        pathing = scenario.init(34);
+        pathingService = scenario.init(34);
         scenarioField.setText(Integer.toString(scenario.getNumber()));
         renderer = new JavaFxGameRenderer(canvas, 1.0);
-        renderer.render(pathing);
+        renderer.render(pathingService);
 
         onRun();
     }
@@ -104,8 +104,8 @@ public class PathingMonitorController implements Initializable {
     }
 
     public void onTurbo() {
-        if (delay < Pathing.MILLI_S) {
-            delay = Pathing.MILLI_S;
+        if (delay < PathingService.MILLI_S) {
+            delay = PathingService.MILLI_S;
         } else {
             delay = 1;
         }
@@ -139,14 +139,14 @@ public class PathingMonitorController implements Initializable {
         if (backups.isEmpty()) {
             return;
         }
-        pathing.restore(backups.remove(backups.size() - 1), pathing.getTickCount() - 1);
-        renderer.render(pathing);
-        stepField.setText(Long.toString(pathing.getTickCount()));
+        pathingService.restore(backups.remove(backups.size() - 1), pathingService.getTickCount() - 1);
+        renderer.render(pathingService);
+        stepField.setText(Long.toString(pathingService.getTickCount()));
     }
 
     public void onNextScenario() {
         dispose();
-        pathing = scenario.initNext();
+        pathingService = scenario.initNext();
         scenarioField.setText(Integer.toString(scenario.getNumber()));
         backups.clear();
         onRun();
@@ -154,7 +154,7 @@ public class PathingMonitorController implements Initializable {
 
     public void onRestartScenario() {
         dispose();
-        pathing = scenario.initCurrent();
+        pathingService = scenario.initCurrent();
         scenarioField.setText(Integer.toString(scenario.getNumber()));
         backups.clear();
         onRun();
@@ -162,7 +162,7 @@ public class PathingMonitorController implements Initializable {
 
     public void onPrevScenario() {
         dispose();
-        pathing = scenario.initPrevious();
+        pathingService = scenario.initPrevious();
         scenarioField.setText(Integer.toString(scenario.getNumber()));
         backups.clear();
         onRun();
@@ -174,7 +174,7 @@ public class PathingMonitorController implements Initializable {
         mouseField.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
         // Show left side menu
         if (!selected) {
-            Unit unit = pathing.getUnit(position);
+            Unit unit = pathingService.getUnit(position);
             if (unit != null) {
                 if (hoverUnitSidePaneController == null || !hoverUnitSidePaneController.isSame(unit)) {
                     try {
@@ -200,17 +200,17 @@ public class PathingMonitorController implements Initializable {
     public void onCreateTestCase() {
         System.out.println("    @Test");
         System.out.println("    public void testCase() throws Exception {");
-        System.out.println("        Pathing pathing = new Pathing();");
-        for (Unit unit : pathing.getUnits()) {
+        System.out.println("        PathingService pathingService = new PathingService();");
+        for (Unit unit : pathingService.getUnits()) {
             String unitParams = unit.getId() + ", " + unit.isCanMove() + ", " + unit.getRadius() + ", "
                     + InstanceStringGenerator.generate(unit.getPosition()) + ", " + InstanceStringGenerator.generate(unit.getVelocity()) + ", "
                     + InstanceStringGenerator.generate(unit.getDestination()) + ", " + InstanceStringGenerator.generate(unit.getDestination());
-            System.out.println("        pathing.createUnit(" + unitParams + ");");
+            System.out.println("        pathingService.createUnit(" + unitParams + ");");
         }
-        for (Obstacle obstacle : pathing.getObstacles()) {
-            System.out.println("        pathing.createObstacle(" + InstanceStringGenerator.generate(obstacle.getLine()) + ");");
+        for (Obstacle obstacle : pathingService.getObstacles()) {
+            System.out.println("        pathingService.createObstacle(" + InstanceStringGenerator.generate(obstacle.getLine()) + ");");
         }
-        System.out.println("        pathing.tick(Pathing.FACTOR);");
+        System.out.println("        pathingService.tick(PathingService.FACTOR);");
 
 
         System.out.println("    }");
@@ -227,7 +227,7 @@ public class PathingMonitorController implements Initializable {
     private void setZoom(double zoom) {
         renderer.setZoom(zoom);
         scaleField.setText(String.format("%.2f", renderer.getScale()));
-        renderer.render(pathing);
+        renderer.render(pathingService);
     }
 
     public void onZoomResetButton() {
@@ -236,13 +236,13 @@ public class PathingMonitorController implements Initializable {
 
     private void tick() {
         backup();
-        pathing.tick(Pathing.FACTOR);
+        pathingService.tick();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 try {
-                    renderer.render(pathing);
-                    stepField.setText(Long.toString(pathing.getTickCount()));
+                    renderer.render(pathingService);
+                    stepField.setText(Long.toString(pathingService.getTickCount()));
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -252,21 +252,21 @@ public class PathingMonitorController implements Initializable {
 
     private void dispose() {
         onHold();
-        pathing.stop();
-        renderer.render(pathing);
+        pathingService.stop();
+        renderer.render(pathingService);
     }
 
     private void backup() {
         List<Unit> backupEntry = new ArrayList<>();
         backups.add(backupEntry);
-        for (Unit unit : pathing.getUnits()) {
+        for (Unit unit : pathingService.getUnits()) {
             backupEntry.add(unit.getCopy());
         }
     }
 
     public void onMouseDragged(Event event) {
         renderer.shifting(event);
-        renderer.render(pathing);
+        renderer.render(pathingService);
     }
 
     public void onMouseReleased() {

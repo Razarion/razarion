@@ -31,8 +31,10 @@ public class TerrainScrollHandler {
     private static final int SCROLL_TIMER_DELAY = 40;
     private static final int SCROLL_AUTO_DISTANCE = 60;
     // private Logger logger = Logger.getLogger(TerrainScrollHandler.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject
@@ -170,6 +172,7 @@ public class TerrainScrollHandler {
             scrollY = -SCROLL_AUTO_DISTANCE;
         }
 
+        // TODO check if camera is in valid playground filed. Also check in CollisionService.correctPosition()
         camera.setTranslateDeltaXY(scrollX, scrollY);
     }
 
