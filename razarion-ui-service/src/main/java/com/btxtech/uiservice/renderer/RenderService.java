@@ -1,10 +1,12 @@
 package com.btxtech.uiservice.renderer;
 
+import com.btxtech.shared.gameengine.datatypes.itemtype.SpawnItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.SpawnItemUiService;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,33 +27,46 @@ public abstract class RenderService {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private Instance<Object> instance;
     private List<CompositeRenderer> renderQueue = new ArrayList<>();
+    private List<Shape3DRenderer> shape3DRenderers = new ArrayList<>();
 
     public void setup() {
         serviceInitEvent.fire(new RenderServiceInitEvent());
-
         renderQueue.clear();
-        // Base Item type renderer
-        for (int id : baseItemUiService.getBaseItemTypeIds()) {
-            CompositeRenderer compositeRenderer = new CompositeRenderer();
-            compositeRenderer.setId(id);
-            compositeRenderer.setModelMatricesProvider(baseItemUiService);
-            initBaseItemTypeRenderer(compositeRenderer);
-            renderQueue.add(compositeRenderer);
-        }
+
+//     TODO   renderQueue.clear();
+//        // Base Item type renderer
+//        for (int id : baseItemUiService.getBaseItemTypeIds()) {
+//            CompositeRenderer compositeRenderer = new CompositeRenderer();
+//            compositeRenderer.setId(id);
+//            compositeRenderer.setModelMatricesProvider(baseItemUiService);
+//            initBaseItemTypeRenderer(compositeRenderer);
+//            renderQueue.add(compositeRenderer);
+//        }
         // Spawn item type renderer
-        for (int id : spawnItemUiService.getSpawnItemTypeIds()) {
-            CompositeRenderer compositeRenderer = new CompositeRenderer();
-            compositeRenderer.setId(id);
-            compositeRenderer.setModelMatricesProvider(spawnItemUiService);
-            initSpawnItemTypeRenderer(compositeRenderer);
-            renderQueue.add(compositeRenderer);
+        shape3DRenderers.clear();
+        for (SpawnItemType spawnItemType : spawnItemUiService.getSpawnItemType()) {
+            SpanItemTypeShape3DRenderer spanItemTypeShape3DRenderer = (SpanItemTypeShape3DRenderer) instance.select(SpanItemTypeShape3DRenderer.class).get();
+            spanItemTypeShape3DRenderer.init(spawnItemType);
+            addShape3DRenderer(spanItemTypeShape3DRenderer);
+//            CompositeRenderer compositeRenderer = new CompositeRenderer();
+//            compositeRenderer.setId(id);
+//            compositeRenderer.setModelMatricesProvider(spawnItemUiService);
+//            initSpawnItemTypeRenderer(compositeRenderer);
+//            renderQueue.add(compositeRenderer);
         }
 
 
         setupRenderers();
 
         fillBuffers();
+    }
+
+    private void addShape3DRenderer(SpanItemTypeShape3DRenderer itemTypeShape3DRenderer) {
+        shape3DRenderers.add(itemTypeShape3DRenderer);
+        itemTypeShape3DRenderer.fillRenderQueue(renderQueue);
     }
 
     public void render() {
@@ -81,10 +96,6 @@ public abstract class RenderService {
     protected abstract void prepareMainRendering();
 
     protected abstract void prepareDepthBufferRendering();
-
-    protected abstract void initBaseItemTypeRenderer(CompositeRenderer compositeRenderer);
-
-    protected abstract void initSpawnItemTypeRenderer(CompositeRenderer compositeRenderer);
 
     @Deprecated
     protected abstract void setupRenderers();

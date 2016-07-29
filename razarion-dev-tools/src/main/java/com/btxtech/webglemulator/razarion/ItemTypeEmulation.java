@@ -1,14 +1,19 @@
 package com.btxtech.webglemulator.razarion;
 
+import com.btxtech.servercommon.collada.ColladaConverter;
+import com.btxtech.servercommon.collada.ColladaConverterInput;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.MovableType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpawnItemType;
+import org.apache.commons.io.IOUtils;
 
 import javax.inject.Singleton;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,10 +44,24 @@ public class ItemTypeEmulation {
     }
 
     public SpawnItemType createSpawnItemType() {
-        SpawnItemType spawnItemType = new SpawnItemType().setDuration(3);
-        spawnItemType.setName("Spawn Base Item Type").setId(Id.SPAWN_BASE_ITEM_TYPE.ordinal());
-        spawnItemType.setVertexContainer(new VertexContainer().setVertices(Arrays.asList(new Vertex(0, 0, 0), new Vertex(40, 0, 0), new Vertex(40, 40, 0))));
-        return spawnItemType;
+        try {
+            SpawnItemType spawnItemType = new SpawnItemType().setDuration(3);
+            spawnItemType.setName("Spawn Base Item Type").setId(Id.SPAWN_BASE_ITEM_TYPE.ordinal());
+            spawnItemType.setShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae"));
+            return spawnItemType;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private Shape3D loadAndConvertShape3d(String fileName) {
+        try {
+            String colladaString = IOUtils.toString(new FileInputStream(fileName));
+            return ColladaConverter.convertShape3D(colladaString, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -14,7 +14,8 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -39,7 +40,9 @@ public abstract class ItemType {
     private Integer buildupSound;
     private Integer commandSound;
     private Integer explosionClipId;
+    @Deprecated
     private VertexContainer vertexContainer;
+    private Shape3D shape3D;
 
     public int getId() {
         return id;
@@ -149,12 +152,23 @@ public abstract class ItemType {
         return this;
     }
 
+    @Deprecated
     public VertexContainer getVertexContainer() {
         return vertexContainer;
     }
 
+    @Deprecated
     public ItemType setVertexContainer(VertexContainer vertexContainer) {
         this.vertexContainer = vertexContainer;
+        return this;
+    }
+
+    public Shape3D getShape3D() {
+        return shape3D;
+    }
+
+    public ItemType setShape3D(Shape3D shape3D) {
+        this.shape3D = shape3D;
         return this;
     }
 

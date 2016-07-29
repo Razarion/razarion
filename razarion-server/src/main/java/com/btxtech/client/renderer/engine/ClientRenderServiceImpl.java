@@ -90,18 +90,14 @@ public class ClientRenderServiceImpl extends RenderService {
         terrainObjectEditorRenderer.fillBuffers();
     }
 
-    @Override
-    protected void initBaseItemTypeRenderer(CompositeRenderer compositeRenderer) {
-        compositeRenderer.setRenderUnit(renderInstance.select(ItemUnitRenderer.class).get());
-        compositeRenderer.setDepthBufferRenderUnit(renderInstance.select(ItemDepthBufferUnitRenderer.class).get());
-        compositeRenderer.setWireRenderUnit(renderInstance.select(ItemWireUnitRenderer.class).get());
-        compositeRenderer.setNormRenderUnit(renderInstance.select(ItemNormUnitRenderer.class).get());
-    }
-
-    @Override
-    protected void initSpawnItemTypeRenderer(CompositeRenderer compositeRenderer) {
-        throw new UnsupportedOperationException();
-    }
+    // TODO
+//    @Override
+//    protected void initBaseItemTypeRenderer(CompositeRenderer compositeRenderer) {
+//        compositeRenderer.setRenderUnit(renderInstance.select(ItemUnitRenderer.class).get());
+//        compositeRenderer.setDepthBufferRenderUnit(renderInstance.select(ItemDepthBufferUnitRenderer.class).get());
+//        compositeRenderer.setWireRenderUnit(renderInstance.select(ItemWireUnitRenderer.class).get());
+//        compositeRenderer.setNormRenderUnit(renderInstance.select(ItemNormUnitRenderer.class).get());
+//    }
 
     @Override
     public void enrollAnimation(int animatedMeshId) {

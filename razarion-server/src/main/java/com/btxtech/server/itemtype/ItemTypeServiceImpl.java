@@ -42,9 +42,12 @@ public class ItemTypeServiceImpl {
             Collection<ItemType> itemTypes = new ArrayList<>();
             Gson gson = new Gson();
             for (ItemTypeEntity itemTypeEntity : itemTypeEntities) {
-                ColladaConverterInput input = new ColladaConverterInput();
-                input.setColladaString(itemTypeEntity.getColladaString()).setId(itemTypeEntity.getId().intValue());
-                itemTypes.add(ColladaConverter.convertToItemType(input));
+//   TODO             ColladaConverter.convertShape3D(itemTypeEntity.getColladaString(), null);
+//   TODO
+//  TODO
+//  TODO              ColladaConverterInput input = new ColladaConverterInput();
+//  TODO              input.setColladaString(itemTypeEntity.getColladaString()).setId(itemTypeEntity.getId().intValue());
+//  TODO              itemTypes.add(ColladaConverter.convertToItemType(input));
             }
             System.out.println("loadSItemTypes --------------------------------------------------------");
             String json = gson.toJson(itemTypes);

@@ -12,8 +12,6 @@ import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.WebGlEmulatorController;
 import com.btxtech.webglemulator.WebGlEmulatorShadowController;
-import com.btxtech.webglemulator.razarion.renderer.DevToolsBaseItemUnitRenderer;
-import com.btxtech.webglemulator.razarion.renderer.DevToolsSpawnItemUnitRenderer;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
 
@@ -92,20 +90,6 @@ public class DevToolsRenderServiceImpl extends RenderService {
 //            webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(mesh.getVertices(), mesh.getNorms()), Color.GREEN);
 //            webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
 //        }
-    }
-
-    @Override
-    protected void initBaseItemTypeRenderer(final CompositeRenderer compositeRenderer) {
-        DevToolsBaseItemUnitRenderer devToolsBaseItemUnitRenderer = instance.select(DevToolsBaseItemUnitRenderer.class).get();
-        compositeRenderer.setRenderUnit(devToolsBaseItemUnitRenderer);
-        compositeRenderer.setDepthBufferRenderUnit(devToolsBaseItemUnitRenderer);
-    }
-
-    @Override
-    protected void initSpawnItemTypeRenderer(CompositeRenderer compositeRenderer) {
-        DevToolsSpawnItemUnitRenderer devToolsSpawnItemUnitRenderer = instance.select(DevToolsSpawnItemUnitRenderer.class).get();
-        compositeRenderer.setRenderUnit(devToolsSpawnItemUnitRenderer);
-        compositeRenderer.setDepthBufferRenderUnit(devToolsSpawnItemUnitRenderer);
     }
 
     @Override

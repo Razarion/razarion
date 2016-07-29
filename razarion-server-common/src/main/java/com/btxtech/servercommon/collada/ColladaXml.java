@@ -5,6 +5,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,7 +13,6 @@ import java.util.List;
  * 14.08.2015.
  */
 public class ColladaXml {
-
     public static final String ELEMENT_COLLADA = "COLLADA";
     public static final String ELEMENT_ASSET = "asset";
     public static final String ELEMENT_CREATED = "created";
@@ -20,10 +20,11 @@ public class ColladaXml {
     public static final String ELEMENT_SCENE = "scene";
     public static final String ELEMENT_INSTANCE_VISUAL_SCENE = "instance_visual_scene";
     public static final String ELEMENT_LIBRARY_VISUAL_SCENES = "library_visual_scenes";
-    public static final String ELEMENT_VISUAL_SCENE = "visual_scene";
     public static final String ELEMENT_LIBRARY_GEOMETRIES = "library_geometries";
     public static final String ELEMENT_LIBRARY_MATERIALS = "library_materials";
     public static final String ELEMENT_LIBRARY_EFFECTS = "library_effects";
+    public static final String ELEMENT_LIBRARY_ANIMATIONS = "library_animations";
+    public static final String ELEMENT_VISUAL_SCENE = "visual_scene";
     public static final String ELEMENT_INSTANCE_GEOMETRIES = "instance_geometry";
     public static final String ELEMENT_GEOMETRY = "geometry";
     public static final String ELEMENT_MATERIAL = "material";
@@ -31,6 +32,7 @@ public class ColladaXml {
     public static final String ELEMENT_MESH = "mesh";
     public static final String ELEMENT_SOURCE = "source";
     public static final String ELEMENT_FLOAT_ARRAY = "float_array";
+    public static final String ELEMENT_NAME_ARRAY = "Name_array";
     public static final String ELEMENT_TECHNIQUE_COMMON = "technique_common";
     public static final String ELEMENT_TECHNIQUE_ACCESSOR = "accessor";
     public static final String ELEMENT_PARAM = "param";
@@ -49,10 +51,14 @@ public class ColladaXml {
     public static final String ELEMENT_DIFFUSE = "diffuse";
     public static final String ELEMENT_SPECULAR = "specular";
     public static final String ELEMENT_EMISSION = "emission";
-    public static final String ELEMENT_COLOR = "color";
+    public static final String ELEMENT_ANIMATION = "animation";
     public static final String ELEMENT_INSTANCE_EFFECT = "instance_effect";
     public static final String ELEMENT_BIND_MATERIAL = "bind_material";
     public static final String ELEMENT_INSTANCE_MATERIAL = "instance_material";
+    public static final String ELEMENT_COLOR = "color";
+    public static final String ELEMENT_SAMPLE = "sampler";
+    public static final String ELEMENT_CHANNEL = "channel";
+
     public static final String ATTRIBUTE_VERSION = "version";
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
@@ -70,12 +76,26 @@ public class ColladaXml {
     public static final String SEMANTIC_VERTEX = "VERTEX";
     public static final String SEMANTIC_NORMAL = "NORMAL";
     public static final String SEMANTIC_TEXCOORD = "TEXCOORD";
+    public static final String SEMANTIC_INPUT = "INPUT";
+    public static final String SEMANTIC_OUTPUT = "OUTPUT";
+    public static final String SEMANTIC_INTERPOLATION = "INTERPOLATION";
+
 
     private static final String DELIMITER = " ";
 
     protected Node getSingleTopLevelNode(Document doc, String elementName) {
+        Node node = getSingleTopLevelNodeOptional(doc, elementName);
+        if (node == null) {
+            throw new ColladaRuntimeException("Exactly one " + elementName + " in collada file expected. Found: 0");
+        }
+        return node;
+    }
+
+    protected Node getSingleTopLevelNodeOptional(Document doc, String elementName) {
         NodeList geometryLibraryNodeList = doc.getElementsByTagName(elementName);
-        if (geometryLibraryNodeList.getLength() != 1) {
+        if (geometryLibraryNodeList.getLength() == 0) {
+            return null;
+        } else if (geometryLibraryNodeList.getLength() != 1) {
             throw new ColladaRuntimeException("Exactly one " + elementName + " in collada file expected. Found: " + geometryLibraryNodeList.getLength());
         }
         return geometryLibraryNodeList.item(0);
@@ -105,7 +125,7 @@ public class ColladaXml {
         return childNodes;
     }
 
-    protected Node getChild(Node node, String elementName) {
+    protected Node getChildOrNull(Node node, String elementName) {
         NodeList nodeList = node.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node child = nodeList.item(i);
@@ -113,7 +133,16 @@ public class ColladaXml {
                 return child;
             }
         }
-        throw new ColladaRuntimeException("No child '" + elementName + "' found in: " + node);
+        return null;
+    }
+
+    protected Node getChild(Node node, String elementName) {
+        Node child = getChildOrNull(node, elementName);
+        if (child != null) {
+            return child;
+        } else {
+            throw new ColladaRuntimeException("No child '" + elementName + "' found in: " + node);
+        }
     }
 
     protected Node getChainedChild(Node node, String... elementNames) {
@@ -141,6 +170,14 @@ public class ColladaXml {
             return null;
         }
     }
+
+    protected List<String> getElementAsStringList(Node node) {
+        if (node.getFirstChild() == null) {
+            System.out.println("xxx");
+        }
+        return Arrays.asList(node.getFirstChild().getNodeValue().split(" "));
+    }
+
 
     protected List<Double> getElementAsDoubleList(Node node) {
         if (node.getFirstChild() == null) {

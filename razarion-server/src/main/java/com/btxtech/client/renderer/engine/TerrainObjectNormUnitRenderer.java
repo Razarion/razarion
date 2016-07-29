@@ -4,7 +4,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;

@@ -6,9 +6,11 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -107,6 +109,18 @@ public class TestHelper {
             ois.close();
             return array;
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String resource2Text(String location, Class clazz) {
+        InputStream inputStream = clazz.getResourceAsStream(location);
+        if (inputStream == null) {
+            throw new IllegalArgumentException("Location can not be found: " + location);
+        }
+        try {
+            return IOUtils.toString(inputStream);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -2,7 +2,7 @@ package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.dto.AnimatedMeshConfig;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.utils.CompletionListener;

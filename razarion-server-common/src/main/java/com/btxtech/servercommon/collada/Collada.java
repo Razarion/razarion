@@ -1,9 +1,14 @@
 package com.btxtech.servercommon.collada;
 
+import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +23,7 @@ public class Collada extends ColladaXml {
     private Map<String, Effect> effects = new HashMap<>();
     private Map<String, Material> materials = new HashMap<>();
     private Map<String, VisualScene> visualScenes = new HashMap<>();
+    private Collection<Animation> animations = new ArrayList<>();
     private Scene scene;
 
     public Collada(Document doc) {
@@ -28,23 +34,33 @@ public class Collada extends ColladaXml {
             throw new ColladaRuntimeException("Unknown Collada version: " + version);
         }
 
+        readAsset(doc);
         readVisualScenes(doc);
         readGeometries(doc);
         readMaterials(doc);
         readEffects(doc);
+        readAnimations(doc);
         scene = new Scene(getChild(collada, ELEMENT_SCENE));
-        readAsset(doc);
         LOGGER.finest("scene: " + scene);
     }
 
-    public void convert(ColladaConverterControl colladaConverterControl) {
+    public Shape3D convert() {
         LOGGER.finest("convert");
         VisualScene visualScene = visualScenes.get(scene.getVisualSceneUrl());
         if (visualScene == null) {
             throw new ColladaRuntimeException("No visual scene found for url: " + scene.getVisualSceneUrl());
         }
 
-        visualScene.convert(geometries, materials, effects, colladaConverterControl);
+        Shape3D shape3D = visualScene.convert(geometries, materials, effects);
+        List<ModelMatrixAnimation> modelMatrixAnimations = new ArrayList<>();
+
+        for (Animation animation : animations) {
+            modelMatrixAnimations.add(animation.convert(shape3D));
+        }
+        if (!modelMatrixAnimations.isEmpty()) {
+            shape3D.setModelMatrixAnimations(modelMatrixAnimations);
+        }
+        return shape3D;
     }
 
     private void readAsset(Document doc) {
@@ -99,6 +115,20 @@ public class Collada extends ColladaXml {
             VisualScene visualScene = new VisualScene(node);
             LOGGER.finest("-:" + visualScene);
             visualScenes.put(visualScene.getId(), visualScene);
+        }
+    }
+
+    private void readAnimations(Document doc) {
+        LOGGER.finest("readAnimations");
+        Node libraryAnimations = getSingleTopLevelNodeOptional(doc, ELEMENT_LIBRARY_ANIMATIONS);
+        if (libraryAnimations == null) {
+            return;
+        }
+
+        for (Node node : getChildren(libraryAnimations, ELEMENT_ANIMATION)) {
+            Animation animation = new Animation(node);
+            LOGGER.finest("-:" + animation);
+            animations.add(animation);
         }
     }
 }

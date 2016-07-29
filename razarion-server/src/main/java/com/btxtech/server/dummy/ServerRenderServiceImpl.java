@@ -20,11 +20,6 @@ public class ServerRenderServiceImpl extends RenderService {
     }
 
     @Override
-    protected void initBaseItemTypeRenderer(CompositeRenderer compositeRenderer) {
-
-    }
-
-    @Override
     protected void setupRenderers() {
 
     }
@@ -36,11 +31,6 @@ public class ServerRenderServiceImpl extends RenderService {
 
     @Override
     public void disenrollAnimation(int animatedMeshId) {
-
-    }
-
-    @Override
-    protected void initSpawnItemTypeRenderer(CompositeRenderer compositeRenderer) {
 
     }
 }

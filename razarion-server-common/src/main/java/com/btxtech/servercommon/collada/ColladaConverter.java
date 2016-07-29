@@ -1,9 +1,12 @@
 package com.btxtech.servercommon.collada;
 
-import com.btxtech.shared.dto.TerrainObject;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.Element3D;
+import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import org.w3c.dom.Document;
@@ -27,42 +30,22 @@ import java.util.logging.Logger;
 public class ColladaConverter {
     private static Logger LOGGER = Logger.getLogger(ColladaConverter.class.getName());
 
-    public static TerrainObject convertToTerrainObject(final ColladaConverterInput input) throws ParserConfigurationException, SAXException, ColladaException, IOException {
-        Collada collada = createCollada(input.getColladaString());
-
-        final Collection<VertexContainer> vertexContainers = new ArrayList<>();
-
-        collada.convert(new ColladaConverterControl() {
-            @Override
-            protected void onNewVertexContainer(VertexContainer vertexContainer) {
-                vertexContainer.setTextureId(input.getTextureId(vertexContainer.getMaterialId()));
-                vertexContainers.add(vertexContainer);
+    public static Shape3D convertShape3D(String colladaText, ColladaConverterTextureMapper colladaConverterTextureMapper) throws IOException, SAXException, ParserConfigurationException {
+        Shape3D shape3D = createCollada(colladaText).convert();
+        if(colladaConverterTextureMapper != null) {
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                if(element3D.getVertexContainers() == null) {
+                    continue;
+                }
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    String materialId = vertexContainer.getMaterialId();
+                    if(materialId != null) {
+                        vertexContainer.setTextureId(colladaConverterTextureMapper.getTextureId(materialId));
+                    }
+                }
             }
-        });
-
-        TerrainObject terrainObject = new TerrainObject();
-        terrainObject.setId(input.getId());
-        terrainObject.setVertexContainers(vertexContainers);
-        return terrainObject;
-    }
-
-    public static ItemType convertToItemType(ColladaConverterInput input) throws ParserConfigurationException, SAXException, ColladaException, IOException {
-        Collada collada = createCollada(input.getColladaString());
-
-        final List<Vertex> vertices = new ArrayList<>();
-        final List<Vertex> norms = new ArrayList<>();
-        final List<TextureCoordinate> textureCoordinates = new ArrayList<>();
-
-        collada.convert(new ColladaConverterControl() {
-            @Override
-            protected void onNewVertexContainer(VertexContainer vertexContainer) {
-                vertices.addAll(vertexContainer.getVertices());
-                norms.addAll(vertexContainer.getNorms());
-                textureCoordinates.addAll(vertexContainer.getTextureCoordinates());
-            }
-        });
-
-        return new BaseItemType().setVertexContainer(new VertexContainer().setVertices(vertices).setNorms(norms).setTextureCoordinates(textureCoordinates)).setId(input.getId());
+        }
+        return shape3D;
     }
 
     private static Collada createCollada(String colladaString) throws ParserConfigurationException, SAXException, IOException {

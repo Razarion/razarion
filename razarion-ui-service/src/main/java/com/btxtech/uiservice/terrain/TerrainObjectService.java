@@ -4,7 +4,7 @@ import com.btxtech.uiservice.ColladaUiService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.system.ExceptionHandler;
 

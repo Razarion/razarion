@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.sidebar.colladaeditor;
 
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import org.jboss.errai.ui.client.widget.ListWidget;
 
 /**

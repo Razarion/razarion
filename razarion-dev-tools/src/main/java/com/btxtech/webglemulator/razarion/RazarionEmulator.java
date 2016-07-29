@@ -1,31 +1,23 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.servercommon.collada.ColladaConverter;
-import com.btxtech.servercommon.collada.ColladaConverterInput;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.AnimatedMeshConfig;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
-import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.PlaceConfig;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.webglemulator.WebGlEmulatorSceneController;
 import com.google.gson.Gson;
 import javafx.application.Platform;
-import org.apache.commons.io.IOUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,24 +114,25 @@ public class RazarionEmulator {
 //        cameraConfig.setFromPosition(new Index(2000, 2000));
 //        cameraConfig.setToPosition(new Index(200, 200));
 //        sceneConfig.setCameraConfig(cameraConfig);
-
-        sceneConfig.setIntroText("Kenny wird dich dabei unterstützen");
-        AnimatedMeshConfig animatedMeshConfig = new AnimatedMeshConfig();
-        try {
-            ColladaConverterInput input = new ColladaConverterInput();
-            input.setColladaString(IOUtils.toString(new FileInputStream("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae"))).setId(1).setTextureMapper(new DevToolColladaConverterTextureMapper());
-            TerrainObject terrainObject = ColladaConverter.convertToTerrainObject(input);
-            animatedMeshConfig.setVertexContainer(CollectionUtils.getFirst(terrainObject.getVertexContainers()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        animatedMeshConfig.setPosition(new Vertex(1000, 1000, 10));
-        animatedMeshConfig.setDuration(10000);
-        animatedMeshConfig.setScaleFrom(1);
-        animatedMeshConfig.setScaleTo(10);
-        sceneConfig.setAnimatedMeshConfig(animatedMeshConfig);
-
-        return sceneConfig;
+//
+//        sceneConfig.setIntroText("Kenny wird dich dabei unterstützen");
+//        AnimatedMeshConfig animatedMeshConfig = new AnimatedMeshConfig();
+//        try {
+//            ColladaConverterInput input = new ColladaConverterInput();
+//            input.setColladaString(IOUtils.toString(new FileInputStream("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae"))).setId(1).setTextureMapper(new DevToolColladaConverterTextureMapper());
+//            TerrainObject terrainObject = ColladaConverter.convertToTerrainObject(input);
+//            animatedMeshConfig.setVertexContainer(CollectionUtils.getFirst(terrainObject.getVertexContainers()));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        animatedMeshConfig.setPosition(new Vertex(1000, 1000, 10));
+//        animatedMeshConfig.setDuration(10000);
+//        animatedMeshConfig.setScaleFrom(1);
+//        animatedMeshConfig.setScaleTo(10);
+//        sceneConfig.setAnimatedMeshConfig(animatedMeshConfig);
+//
+//        return sceneConfig;
+        return null;
     }
 
     private SceneConfig setupAnimationSceneConfig() {

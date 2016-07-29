@@ -13,7 +13,7 @@ public class CompositeRenderer {
     private AbstractRenderUnit depthBufferRenderUnit;
     private AbstractRenderUnit wireRenderUnit;
     private AbstractRenderUnit normRenderUnit;
-    private ModelMatricesProvider modelMatricesProvider;
+    @Deprecated
     private int id;
 
     public CompositeRenderer() {
@@ -46,10 +46,7 @@ public class CompositeRenderer {
         normRenderUnit.setCompositeRenderer(this);
     }
 
-    public void setModelMatricesProvider(ModelMatricesProvider modelMatricesProvider) {
-        this.modelMatricesProvider = modelMatricesProvider;
-    }
-
+    @Deprecated
     public void setId(int id) {
         this.id = id;
     }
@@ -68,21 +65,8 @@ public class CompositeRenderer {
         draw(depthBufferRenderUnit);
     }
 
-    private void draw(AbstractRenderUnit renderUnit) {
-        if (modelMatricesProvider == null) {
-            renderUnit.draw();
-        } else {
-            Collection<ModelMatrices> modelMatrices = modelMatricesProvider.provideModelMatrices(id);
-            if (modelMatrices == null || modelMatrices.isEmpty()) {
-                return;
-            }
-
-            renderUnit.preModelDraw();
-
-            for (ModelMatrices modelMatrix : modelMatrices) {
-                renderUnit.modelDraw(modelMatrix);
-            }
-        }
+    protected void draw(AbstractRenderUnit renderUnit) {
+        renderUnit.draw();
     }
 
     public void drawWire() {
@@ -106,6 +90,7 @@ public class CompositeRenderer {
         }
     }
 
+    @Deprecated
     public int getId() {
         return id;
     }

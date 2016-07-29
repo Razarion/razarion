@@ -13,12 +13,24 @@ import java.util.List;
 public class Source extends NameIdColladaXml {
     private TechniqueCommon techniqueCommon;
     private FloatArray floatArray;
+    private NameArray nameArray;
 
     public Source(Node node) {
         super(node);
 
         techniqueCommon = new TechniqueCommon(getChild(node, ELEMENT_TECHNIQUE_COMMON));
-        floatArray = new FloatArray(getChild(node, ELEMENT_FLOAT_ARRAY));
+        Node floatArrayChild = getChildOrNull(node, ELEMENT_FLOAT_ARRAY);
+        if(floatArrayChild != null) {
+            floatArray = new FloatArray(floatArrayChild);
+        } else {
+            Node nameArrayChild = getChildOrNull(node, ELEMENT_NAME_ARRAY);
+            if(nameArrayChild != null) {
+                nameArray = new NameArray(nameArrayChild);
+            }
+        }
+        if((floatArray == null) == (nameArray == null)) {
+            throw new IllegalStateException();
+        }
     }
 
 
@@ -30,11 +42,24 @@ public class Source extends NameIdColladaXml {
         return techniqueCommon.getAccessor().convertToTextureCoordinate(floatArray.getFloatArray(), floatArray.getCount());
     }
 
+    public TechniqueCommon getTechniqueCommon() {
+        return techniqueCommon;
+    }
+
+    public FloatArray getFloatArray() {
+        return floatArray;
+    }
+
+    public NameArray getNameArray() {
+        return nameArray;
+    }
+
     @Override
     public String toString() {
         return "Source{" +
                 "techniqueCommon=" + techniqueCommon +
-                "floatArray=" + floatArray +
+                ", floatArray=" + floatArray +
+                ", nameArray=" + nameArray +
                 "} " + super.toString();
     }
 }

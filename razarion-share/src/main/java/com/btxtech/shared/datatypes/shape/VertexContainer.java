@@ -1,4 +1,4 @@
-package com.btxtech.shared.dto;
+package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.TextureCoordinate;

@@ -73,6 +73,14 @@ public class Accessor extends ColladaXml {
         return vetextureCoordinatestices;
     }
 
+    public List<Param> getParams() {
+        return params;
+    }
+
+    public int getStride() {
+        return stride;
+    }
+
     @Override
     public String toString() {
         return "Accessor{" +

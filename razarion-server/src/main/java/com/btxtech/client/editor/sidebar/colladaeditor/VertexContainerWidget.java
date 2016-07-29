@@ -2,7 +2,7 @@ package com.btxtech.client.editor.sidebar.colladaeditor;
 
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.editor.widgets.ImageItemWidget;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.ui.client.widget.HasModel;

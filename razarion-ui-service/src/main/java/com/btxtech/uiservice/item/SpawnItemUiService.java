@@ -1,9 +1,8 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpawnItemType;
 import com.btxtech.shared.gameengine.datatypes.syncobject.SyncSpawnItem;
 import com.btxtech.shared.gameengine.planet.SpawnItemService;
@@ -24,7 +23,7 @@ import java.util.Map;
  * 26.07.2016.
  */
 @Singleton
-public class SpawnItemUiService implements ModelMatricesProvider {
+public class SpawnItemUiService {
     @Inject
     private SpawnItemService spawnItemService;
     @Inject
@@ -53,13 +52,12 @@ public class SpawnItemUiService implements ModelMatricesProvider {
         }
     }
 
-    public Collection<Integer> getSpawnItemTypeIds() {
-        return vertexContainers.keySet();
+    public Collection<SpawnItemType> getSpawnItemType() {
+        return itemTypeService.getItemTypes(SpawnItemType.class);
     }
 
-    @Override
-    public Collection<ModelMatrices> provideModelMatrices(int spawnItemTypeId) {
-        return spawnItemTypeIdModelMatrices.get(spawnItemTypeId);
+    public Collection<ModelMatrices> provideModelMatrices(SpawnItemType spawnItemType) {
+        return spawnItemTypeIdModelMatrices.get(spawnItemType.getId());
     }
 
     public VertexContainer getSpawnItemTypeVertexContainer(int id) {

@@ -10,7 +10,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObject;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.Vertex;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;

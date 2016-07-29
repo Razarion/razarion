@@ -152,7 +152,7 @@ public class TerrainElementPersistenceService {
         for (TerrainObjectEntity terrainObjectEntity : terrainObjectEntities) {
             ColladaConverterInput input = new ColladaConverterInput();
             input.setColladaString(terrainObjectEntity.getColladaString()).setId(terrainObjectEntity.getId().intValue()).setTextureMapper(terrainObjectEntity);;
-            terrainObjects.add(ColladaConverter.convertToTerrainObject(input));
+            // TODO terrainObjects.add(ColladaConverter.convertToTerrainObject(input));
         }
         return terrainObjects;
     }
@@ -173,10 +173,11 @@ public class TerrainElementPersistenceService {
 
     @Transactional
     public TerrainObject colladaConvert(int terrainObjectId, String colladaString) throws ParserConfigurationException, ColladaException, SAXException, IOException {
-        TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectId);
-        ColladaConverterInput input = new ColladaConverterInput();
-        input.setColladaString(colladaString).setId(terrainObjectEntity.getId().intValue()).setTextureMapper(terrainObjectEntity);
-        return ColladaConverter.convertToTerrainObject(input);
+//     TODO   TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectId);
+//   TODO     ColladaConverterInput input = new ColladaConverterInput();
+//    TODO    input.setColladaString(colladaString).setId(terrainObjectEntity.getId().intValue()).setTextureMapper(terrainObjectEntity);
+//   TODO     return ColladaConverter.convertToTerrainObject(input);
+        throw new UnsupportedOperationException();
     }
 
 }

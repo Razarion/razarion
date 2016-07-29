@@ -35,10 +35,10 @@ public class FxCdiGui {
         Parent root = (Parent) loader.load();
         stage.setTitle("WebGL FX Emulator");
         stage.setScene(new Scene(root));
-        // stage.setX(-1279);
-        // stage.setY(182);
-        // stage.setWidth(1277);
-        // stage.setHeight(1016);
+        stage.setX(-1279);
+        stage.setY(182);
+        stage.setWidth(1277);
+        stage.setHeight(1016);
         stage.show();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {

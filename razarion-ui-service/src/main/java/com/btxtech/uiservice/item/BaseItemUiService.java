@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.dto.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;

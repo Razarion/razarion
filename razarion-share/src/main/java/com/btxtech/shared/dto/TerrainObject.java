@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Collection;
