@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.syncobject;
 
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -94,6 +95,10 @@ public abstract class SyncItem {
 
     public SyncItemPosition getSyncItemPosition() {
         return syncItemPosition;
+    }
+
+    public ModelMatrices createModelMatrices() {
+        return syncItemPosition.createModelMatrices(this);
     }
 
     @Override

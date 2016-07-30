@@ -92,4 +92,26 @@ public class CollectionUtils {
             return null;
         }
     }
+
+    public static double getMax(Collection<Double> values) {
+        if (values == null || values.isEmpty()) {
+            throw new IllegalArgumentException("values not allowed to be null or empty");
+        }
+        double last = Double.MIN_VALUE;
+        for (Double value : values) {
+            last = Math.max(last, value);
+        }
+        return last;
+    }
+
+    public static double getMin(Collection<Double> values) {
+        if (values == null || values.isEmpty()) {
+            throw new IllegalArgumentException("values not allowed to be null or empty");
+        }
+        double last = Double.MAX_VALUE;
+        for (Double value : values) {
+            last = Math.min(last, value);
+        }
+        return last;
+    }
 }

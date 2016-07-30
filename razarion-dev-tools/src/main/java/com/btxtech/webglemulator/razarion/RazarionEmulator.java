@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  */
 @ApplicationScoped
 public class RazarionEmulator {
-    private static final long RENDER_DELAY = 800;
+    private static final long RENDER_DELAY = 100;
     @Inject
     private WebGlEmulatorSceneController sceneController;
     @Inject
@@ -42,6 +42,7 @@ public class RazarionEmulator {
     @Inject
     private ItemTypeEmulation itemTypeEmulation;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private boolean showRenderTime;
 
     public void run() {
         setupStoryboard();
@@ -49,6 +50,14 @@ public class RazarionEmulator {
         renderService.setup();
 
         start();
+    }
+
+    public boolean isShowRenderTime() {
+        return showRenderTime;
+    }
+
+    public void setShowRenderTime(boolean showRenderTime) {
+        this.showRenderTime = showRenderTime;
     }
 
     private void start() {
@@ -59,10 +68,12 @@ public class RazarionEmulator {
                     @Override
                     public void run() {
                         try {
-                            // long time = System.currentTimeMillis();
+                            long time = System.currentTimeMillis();
                             renderService.render();
                             sceneController.update();
-                            // System.out.println("Time for render: " + (System.currentTimeMillis() - time));
+                            if (showRenderTime) {
+                                System.out.println("Time for render: " + (System.currentTimeMillis() - time));
+                            }
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();
                         }

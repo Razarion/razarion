@@ -14,6 +14,7 @@ public abstract class VertexContainerCompositeRenderer extends CompositeRenderer
     private Element3DRenderer element3DRenderer;
 
     protected abstract Collection<ModelMatrices> provideModelMatrices();
+
     protected abstract void initRenderUnits();
 
     public void init(VertexContainer vertexContainer, Element3DRenderer element3DRenderer) {
@@ -39,6 +40,7 @@ public abstract class VertexContainerCompositeRenderer extends CompositeRenderer
         renderUnit.preModelDraw();
 
         for (ModelMatrices modelMatrix : modelMatrices) {
+            modelMatrix = element3DRenderer.mixAnimation(modelMatrix);
             renderUnit.modelDraw(modelMatrix);
         }
     }

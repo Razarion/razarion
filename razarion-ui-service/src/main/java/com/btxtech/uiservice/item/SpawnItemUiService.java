@@ -6,7 +6,6 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpawnItemType;
 import com.btxtech.shared.gameengine.datatypes.syncobject.SyncSpawnItem;
 import com.btxtech.shared.gameengine.planet.SpawnItemService;
-import com.btxtech.uiservice.renderer.ModelMatricesProvider;
 import com.btxtech.uiservice.renderer.PreRenderEvent;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
@@ -48,7 +47,7 @@ public class SpawnItemUiService {
                 itemTypeMatrices = new ArrayList<>();
                 spawnItemTypeIdModelMatrices.put(syncSpawnItem.getItemType().getId(), itemTypeMatrices);
             }
-            itemTypeMatrices.add(syncSpawnItem.getSyncItemPosition().createModelMatrices());
+            itemTypeMatrices.add(syncSpawnItem.createModelMatrices());
         }
     }
 

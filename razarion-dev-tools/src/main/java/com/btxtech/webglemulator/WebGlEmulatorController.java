@@ -13,6 +13,7 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -65,6 +67,8 @@ public class WebGlEmulatorController implements Initializable {
     private Slider shadowZRotationSlider;
     @FXML
     private Canvas canvas;
+    @FXML
+    private CheckBox showRenderTimeCheckBox;
     @Inject
     private RazarionEmulator razarionEmulator;
     @Inject
@@ -177,6 +181,7 @@ public class WebGlEmulatorController implements Initializable {
                 shadowUiService.calculateViewField();
             }
         });
+        showRenderTimeCheckBox.setSelected(razarionEmulator.isShowRenderTime());
     }
 
     public void onMouseDragged(Event event) {
@@ -378,4 +383,7 @@ public class WebGlEmulatorController implements Initializable {
         return canvas.getWidth() / canvas.getHeight();
     }
 
+    public void onShowRenderTimeCheckBox(ActionEvent actionEvent) {
+        razarionEmulator.setShowRenderTime(showRenderTimeCheckBox.isSelected());
+    }
 }

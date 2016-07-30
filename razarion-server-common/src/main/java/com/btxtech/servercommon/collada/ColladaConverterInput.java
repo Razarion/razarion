@@ -8,7 +8,7 @@ package com.btxtech.servercommon.collada;
 public class ColladaConverterInput {
     private String colladaString;
     private int id;
-    private ColladaConverterTextureMapper textureMapper;
+    private ColladaConverterMapper textureMapper;
 
     public ColladaConverterInput setColladaString(String colladaString) {
         this.colladaString = colladaString;
@@ -20,7 +20,7 @@ public class ColladaConverterInput {
         return this;
     }
 
-    public ColladaConverterInput setTextureMapper(ColladaConverterTextureMapper textureMapper) {
+    public ColladaConverterInput setTextureMapper(ColladaConverterMapper textureMapper) {
         this.textureMapper = textureMapper;
         return this;
     }

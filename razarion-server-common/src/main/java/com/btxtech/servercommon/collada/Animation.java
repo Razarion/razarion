@@ -47,6 +47,7 @@ public class Animation extends NameIdColladaXml {
         verifySource(interpolation, "INTERPOLATION", "name", count, "LINEAR");
 
         ModelMatrixAnimation modelMatrixAnimation = new ModelMatrixAnimation();
+        modelMatrixAnimation.setId(getId());
         modelMatrixAnimation.setElement3D(Shape3DUtils.getElement3D(channel.getTargetId(), shape3D));
         modelMatrixAnimation.setModification(ModelMatrixAnimation.Modification.valueOf(channel.getModification().toUpperCase()));
         modelMatrixAnimation.setAxis(ModelMatrixAnimation.Axis.valueOf(channel.getAxis().toUpperCase()));

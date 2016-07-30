@@ -79,7 +79,7 @@ public class TerrainObjectService {
                     objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
                 }
                 int z = (int) terrainUiService.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.getPosition())).getHeight();
-                modelMatrices.add(new ModelMatrices(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale(), z), terrainObjectPosition.createRotationModelMatrix()));
+                modelMatrices.add(new ModelMatrices().setModel(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale(), z)).setNorm(terrainObjectPosition.createRotationModelMatrix()));
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }

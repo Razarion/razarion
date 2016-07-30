@@ -1,7 +1,7 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.shared.utils.MathHelper2;
+import com.btxtech.shared.utils.InterpolationUtils;
 import org.jboss.errai.databinding.client.api.Bindable;
 
 /**
@@ -91,8 +91,8 @@ public class FractalFieldConfig {
 
     public void clamp() {
         if (this.clampMax < 1.0 || this.clampMin > 0.0) {
-            double minEdge = MathHelper2.mix(fractalMin, fractalMax, clampMin);
-            double maxEdge = MathHelper2.mix(fractalMin, fractalMax, clampMax);
+            double minEdge = InterpolationUtils.mix(fractalMin, fractalMax, clampMin);
+            double maxEdge = InterpolationUtils.mix(fractalMin, fractalMax, clampMax);
             clampedFractalField = new double[xCount][yCount];
             for (int x = 0; x < xCount; x++) {
                 for (int y = 0; y < yCount; y++) {

@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.dialog.content.fractal;
 
 import com.btxtech.shared.dto.FractalFieldConfig;
-import com.btxtech.shared.utils.MathHelper2;
+import com.btxtech.shared.utils.InterpolationUtils;
 import com.google.gwt.dom.client.Element;
 import elemental.html.CanvasElement;
 import elemental.html.CanvasRenderingContext2D;
@@ -36,7 +36,7 @@ public class FractalDisplay {
         for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
             for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
                 double f = fractalFieldConfig.getClampedFractalField()[x][y];
-                int c = (int) MathHelper2.interpolate(0, 255, fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax(), f);
+                int c = (int) InterpolationUtils.interpolate(0, 255, fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax(), f);
                 if (c < 0 || c > 255) {
                     throw new IllegalArgumentException("f=" + f + " c=" + c);
                 }

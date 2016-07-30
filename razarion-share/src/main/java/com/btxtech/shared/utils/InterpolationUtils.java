@@ -7,7 +7,7 @@ import java.util.List;
  * Created by Beat
  * 29.11.2015.
  */
-public class MathHelper2 {
+public class InterpolationUtils {
 
     /**
      * Interpolate a value according to a list
@@ -41,28 +41,6 @@ public class MathHelper2 {
             return references.get(references.size() - 1);
         }
         return references.get(x);
-    }
-
-    public static double getMax(Collection<Double> values) {
-        if (values == null || values.isEmpty()) {
-            throw new IllegalArgumentException("values not allowed to be null or empty");
-        }
-        double last = Double.MIN_VALUE;
-        for (Double value : values) {
-            last = Math.max(last, value);
-        }
-        return last;
-    }
-
-    public static double getMin(Collection<Double> values) {
-        if (values == null || values.isEmpty()) {
-            throw new IllegalArgumentException("values not allowed to be null or empty");
-        }
-        double last = Double.MAX_VALUE;
-        for (Double value : values) {
-            last = Math.min(last, value);
-        }
-        return last;
     }
 
     public static double mix(double value1, double value2, double mix) {

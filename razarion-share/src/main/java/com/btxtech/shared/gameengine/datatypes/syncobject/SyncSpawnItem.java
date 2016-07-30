@@ -31,6 +31,10 @@ public class SyncSpawnItem extends SyncItem {
         return progress >= 1.0;
     }
 
+    public double getProgress() {
+        return progress;
+    }
+
     public ItemType getToBeCreated() {
         return toBeCreated;
     }

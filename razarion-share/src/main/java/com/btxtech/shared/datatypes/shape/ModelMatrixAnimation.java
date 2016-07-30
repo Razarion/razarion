@@ -1,5 +1,7 @@
 package com.btxtech.shared.datatypes.shape;
 
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
+
 import java.util.List;
 
 /**
@@ -15,10 +17,21 @@ public class ModelMatrixAnimation {
         X, Y, Z
     }
 
+    private String id;
     private Element3D element3D;
     private Modification modification;
     private Axis axis;
     private List<TimeValueSample> timeValueSamples;
+    private ItemState itemState;
+
+    public String getId() {
+        return id;
+    }
+
+    public ModelMatrixAnimation setId(String id) {
+        this.id = id;
+        return this;
+    }
 
     public Element3D getElement3D() {
         return element3D;
@@ -56,6 +69,15 @@ public class ModelMatrixAnimation {
         return this;
     }
 
+    public ItemState getItemState() {
+        return itemState;
+    }
+
+    public ModelMatrixAnimation setItemState(ItemState itemState) {
+        this.itemState = itemState;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "ModelMatrixAnimation{" +
@@ -63,6 +85,7 @@ public class ModelMatrixAnimation {
                 ", axis=" + axis +
                 ", timeValueSamples=" + timeValueSamples +
                 ", element3D=" + element3D +
+                ", itemState=" + itemState +
                 '}';
     }
 }

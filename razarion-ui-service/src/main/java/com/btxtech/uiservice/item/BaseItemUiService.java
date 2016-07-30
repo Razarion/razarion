@@ -58,7 +58,7 @@ public class BaseItemUiService implements ModelMatricesProvider {
                 baseItemTypeMatrices = new ArrayList<>();
                 baseItemIdModelMatrices.put(syncBaseItem.getItemType().getId(), baseItemTypeMatrices);
             }
-            baseItemTypeMatrices.add(syncBaseItem.getSyncItemPosition().createModelMatrices());
+            baseItemTypeMatrices.add(syncBaseItem.createModelMatrices());
         }
 //            InterpolatedTerrainTriangle interpolatedTerrainTriangle = terrainUiService.getInterpolatedTerrainTriangle(unit.getPosition());
 //            Vertex direction = new Vertex(DecimalPosition.createVector(unit.getAngle(), 1.0), 0);

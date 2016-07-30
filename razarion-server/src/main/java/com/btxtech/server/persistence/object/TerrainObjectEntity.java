@@ -1,7 +1,8 @@
 package com.btxtech.server.persistence.object;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.servercommon.collada.ColladaConverterTextureMapper;
+import com.btxtech.servercommon.collada.ColladaConverterMapper;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -19,7 +20,7 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "TERRAIN_OBJECT")
-public class TerrainObjectEntity implements ColladaConverterTextureMapper {
+public class TerrainObjectEntity implements ColladaConverterMapper {
     @Id
     @GeneratedValue
     private Long id;
@@ -55,6 +56,11 @@ public class TerrainObjectEntity implements ColladaConverterTextureMapper {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public ItemState getItemState(String animationId) {
+        return null;
     }
 
     public void setTextures(Map<String, ImageLibraryEntity> textures) {

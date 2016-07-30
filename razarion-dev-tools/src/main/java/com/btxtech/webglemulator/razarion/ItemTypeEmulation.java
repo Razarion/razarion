@@ -2,11 +2,13 @@ package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.servercommon.collada.ColladaConverterInput;
+import com.btxtech.servercommon.collada.ColladaConverterMapper;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.MovableType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpawnItemType;
@@ -16,7 +18,9 @@ import javax.inject.Singleton;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -45,22 +49,42 @@ public class ItemTypeEmulation {
 
     public SpawnItemType createSpawnItemType() {
         try {
-            SpawnItemType spawnItemType = new SpawnItemType().setDuration(3);
+            SpawnItemType spawnItemType = new SpawnItemType().setDuration(10);
             spawnItemType.setName("Spawn Base Item Type").setId(Id.SPAWN_BASE_ITEM_TYPE.ordinal());
-            spawnItemType.setShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae"));
+            ColladaMapper mapper = new ColladaMapper();
+            mapper.putAnimation("Sphere_scale_X", ItemState.BEAM_UP).putAnimation("Sphere_scale_Y", ItemState.BEAM_UP).putAnimation("Sphere_scale_Z", ItemState.BEAM_UP);
+            spawnItemType.setShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae", mapper));
             return spawnItemType;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
-    private Shape3D loadAndConvertShape3d(String fileName) {
+    private Shape3D loadAndConvertShape3d(String fileName, ColladaConverterMapper colladaConverterMapper) {
         try {
             String colladaString = IOUtils.toString(new FileInputStream(fileName));
-            return ColladaConverter.convertShape3D(colladaString, null);
+            return ColladaConverter.convertShape3D(colladaString, colladaConverterMapper);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private class ColladaMapper implements ColladaConverterMapper {
+        private Map<String, ItemState> animations = new HashMap<>();
+
+        public ColladaMapper putAnimation(String animationId, ItemState itemState) {
+            animations.put(animationId, itemState);
+            return this;
+        }
+
+        @Override
+        public Integer getTextureId(String materialId) {
+            return -1;
+        }
+
+        @Override
+        public ItemState getItemState(String animationId) {
+            return animations.get(animationId);
         }
     }
 

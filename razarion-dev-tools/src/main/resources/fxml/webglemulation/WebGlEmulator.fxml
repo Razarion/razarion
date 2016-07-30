@@ -35,6 +35,7 @@
             <Button mnemonicParsing="false" onAction="#onRestartButtonClicked" text="Restart" />
             <Button mnemonicParsing="false" onAction="#onShadowButtonClicked" text="Shadow" />
             <Button mnemonicParsing="false" onAction="#onSceneButtonClicked" text="Scene" />
+            <CheckBox fx:id="showRenderTimeCheckBox" mnemonicParsing="false" onAction="#onShowRenderTimeCheckBox" text="Display Render Time" />
             </items>
         </ToolBar>
     </top>

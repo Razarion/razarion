@@ -22,12 +22,12 @@ public class SyncItemPosition {
         this.radius = radius;
     }
 
-    public ModelMatrices createModelMatrices() {
+    public ModelMatrices createModelMatrices(SyncItem syncItem) {
         Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
         double yRotation = direction.unsignedAngle(norm) - MathHelper.QUARTER_RADIANT;
         Matrix4 rotation = Matrix4.createZRotation(angle).multiply(Matrix4.createYRotation(-yRotation));
-        Matrix4 translation = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ()).multiply(rotation);
-        return new ModelMatrices(translation, rotation);
+        Matrix4 translationRotation = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ()).multiply(rotation);
+        return new ModelMatrices().setSyncItem(syncItem).setModel(translationRotation).setNorm(rotation);
     }
 
     public Vertex getPosition() {

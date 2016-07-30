@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.TimeValueSample;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.Shape3DUtils;
 import org.junit.Assert;
@@ -65,7 +66,7 @@ public class ColladaConverterTest {
     public void testTerrainObject1() throws Exception {
         Map<String, Integer> textures = new HashMap<>();
         textures.put("Material-material", 99);
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestTextureMapper(textures));
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null));
 
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
@@ -91,7 +92,7 @@ public class ColladaConverterTest {
         Map<String, Integer> textures = new HashMap<>();
         textures.put("Material-material", 101);
         textures.put("Material_002-material", 201);
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestTextureMapper(textures));
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, null));
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(2, shape3D.getElement3Ds().size());
 
@@ -134,7 +135,11 @@ public class ColladaConverterTest {
 
     @Test
     public void testAnimation() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), null);
+        Map<String, ItemState> itemStates = new HashMap<>();
+        itemStates.put("Cube_scale_X", ItemState.BEAM_UP);
+        itemStates.put("Cube_scale_Y", ItemState.BUILDING);
+
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, itemStates));
         Assert.assertEquals(3, shape3D.getModelMatrixAnimations().size());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
 
@@ -144,18 +149,21 @@ public class ColladaConverterTest {
         Assert.assertEquals(ModelMatrixAnimation.Axis.X, modelMatrixAnimation.getAxis());
         Assert.assertEquals(ModelMatrixAnimation.Modification.SCALE, modelMatrixAnimation.getModification());
         Assert.assertTrue(element3D == modelMatrixAnimation.getElement3D());
+        Assert.assertEquals(ItemState.BEAM_UP, modelMatrixAnimation.getItemState());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 10), createTvs(8333, 20));
 
         modelMatrixAnimation = getModelMatrixAnimation4Axis(ModelMatrixAnimation.Axis.Y, shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.Y, modelMatrixAnimation.getAxis());
         Assert.assertEquals(ModelMatrixAnimation.Modification.SCALE, modelMatrixAnimation.getModification());
         Assert.assertTrue(element3D == modelMatrixAnimation.getElement3D());
+        Assert.assertEquals(ItemState.BUILDING, modelMatrixAnimation.getItemState());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 10), createTvs(8333, 30));
 
         modelMatrixAnimation = getModelMatrixAnimation4Axis(ModelMatrixAnimation.Axis.Z, shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.Z, modelMatrixAnimation.getAxis());
         Assert.assertEquals(ModelMatrixAnimation.Modification.SCALE, modelMatrixAnimation.getModification());
         Assert.assertTrue(element3D == modelMatrixAnimation.getElement3D());
+        Assert.assertNull(modelMatrixAnimation.getItemState());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 20), createTvs(8333, 10));
     }
 
@@ -173,16 +181,31 @@ public class ColladaConverterTest {
         return new TimeValueSample().setTimeStamp(timeStamp).setValue(value);
     }
 
-    private class TestTextureMapper implements ColladaConverterTextureMapper {
+    private class TestMapper implements ColladaConverterMapper {
         private Map<String, Integer> textures;
+        private Map<String, ItemState> itemStates;
 
-        public TestTextureMapper(Map<String, Integer> textures) {
+        public TestMapper(Map<String, Integer> textures, Map<String, ItemState> itemStates) {
             this.textures = textures;
+            this.itemStates = itemStates;
         }
 
         @Override
         public Integer getTextureId(String materialId) {
-            return textures.get(materialId);
+            if (textures != null) {
+                return textures.get(materialId);
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public ItemState getItemState(String animationId) {
+            if (itemStates != null) {
+                return itemStates.get(animationId);
+            } else {
+                return null;
+            }
         }
     }
 

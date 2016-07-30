@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.syncobject;
 
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
