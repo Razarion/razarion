@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class ModelMatrixAnimation {
     public enum Modification {
+        LOCATION,
         SCALE;
     }
 
@@ -81,7 +82,8 @@ public class ModelMatrixAnimation {
     @Override
     public String toString() {
         return "ModelMatrixAnimation{" +
-                "modification=" + modification +
+                "id=" + id +
+                ", modification=" + modification +
                 ", axis=" + axis +
                 ", timeValueSamples=" + timeValueSamples +
                 ", element3D=" + element3D +

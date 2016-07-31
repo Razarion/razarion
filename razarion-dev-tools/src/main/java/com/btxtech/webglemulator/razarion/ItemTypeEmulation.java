@@ -53,6 +53,7 @@ public class ItemTypeEmulation {
             spawnItemType.setName("Spawn Base Item Type").setId(Id.SPAWN_BASE_ITEM_TYPE.ordinal());
             ColladaMapper mapper = new ColladaMapper();
             mapper.putAnimation("Sphere_scale_X", ItemState.BEAM_UP).putAnimation("Sphere_scale_Y", ItemState.BEAM_UP).putAnimation("Sphere_scale_Z", ItemState.BEAM_UP);
+            mapper.putAnimation("Plane_location_X", ItemState.BEAM_UP).putAnimation("Plane_location_Y", ItemState.BEAM_UP).putAnimation("Plane_location_Z", ItemState.BEAM_UP);
             spawnItemType.setShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae", mapper));
             return spawnItemType;
         } catch (Exception e) {

@@ -16,6 +16,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Beat
@@ -100,6 +101,20 @@ public class TestHelper {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void writeArrayToConsole(double[] array) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{");
+        for (int i = 0; i < array.length; i++) {
+            double d = array[i];
+            builder.append(String.format(Locale.US, "%.2f", d));
+            if (array.length > i + 1) {
+                builder.append(", ");
+            }
+        }
+        builder.append("}");
+        System.out.println(builder);
     }
 
     public static double[] readArrayFromFile(InputStream inputStream) {

@@ -114,4 +114,13 @@ public class CollectionUtils {
         }
         return last;
     }
+
+    public static double sum(Collection<Double> doubles) {
+        double sum = 0;
+        for (double number : doubles) {
+            sum += number;
+        }
+        return sum;
+    }
+
 }

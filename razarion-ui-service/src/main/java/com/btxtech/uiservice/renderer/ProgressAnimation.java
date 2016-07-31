@@ -37,7 +37,7 @@ public class ProgressAnimation {
     public ModelMatrices mix(ModelMatrices modelMatrix) {
         double progress = ((SyncSpawnItem) modelMatrix.getSyncItem()).getProgress();
         double value = calculateValue(progress);
-        Matrix4 scaleMatrix = setupScaleMatrix(value);
+        Matrix4 scaleMatrix = setupMatrix(value);
         return modelMatrix.multiply(scaleMatrix, null);
     }
 
@@ -50,6 +50,30 @@ public class ProgressAnimation {
             }
         }
         throw new IllegalStateException();
+    }
+
+    private Matrix4 setupMatrix(double value) {
+        switch (modelMatrixAnimation.getModification()) {
+            case LOCATION:
+                return setupLocationMatrix(value);
+            case SCALE:
+                return setupScaleMatrix(value);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private Matrix4 setupLocationMatrix(double translation) {
+        switch (modelMatrixAnimation.getAxis()) {
+            case X:
+                return Matrix4.createTranslation(translation, 1, 1);
+            case Y:
+                return Matrix4.createTranslation(1, translation, 1);
+            case Z:
+                return Matrix4.createTranslation(1, 1, translation);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     private Matrix4 setupScaleMatrix(double scale) {

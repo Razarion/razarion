@@ -24,6 +24,82 @@ import java.util.Map;
 public class ColladaConverterTest {
 
     @Test
+    public void testSimplePlane1() throws Exception {
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestSimplePlane01.dae", getClass()), null);
+        Assert.assertNull(shape3D.getModelMatrixAnimations());
+        Assert.assertEquals(1, shape3D.getElement3Ds().size());
+        Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
+        Assert.assertEquals(1, planeElement.getVertexContainers().size());
+        VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
+        Assert.assertArrayEquals(new double[]{1.00, -1.00, 0.00, 1.00, 1.00, 0.00, -1.00, 1.00, 0.00, -1.00, -1.00, 0.00, 1.00, -1.00, 0.00, -1.00, 1.00, 0.00}, TestHelper.vertices2DoubleArray(vertexContainer.getVertices()), 0.01);
+        Assert.assertArrayEquals(new double[]{0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00}, TestHelper.vertices2DoubleArray(vertexContainer.getNorms()), 0.01);
+    }
+
+    @Test
+    public void testPlaneTranslation() throws Exception {
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneTranslation.dae", getClass()), null);
+        Assert.assertNull(shape3D.getModelMatrixAnimations());
+        Assert.assertEquals(1, shape3D.getElement3Ds().size());
+        Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
+        Assert.assertEquals(1, planeElement.getVertexContainers().size());
+        VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
+        Assert.assertArrayEquals(new double[]{1.00, -1.00, 1.00, 1.00, 1.00, 1.00, -1.00, 1.00, 1.00, -1.00, -1.00, 1.00, 1.00, -1.00, 1.00, -1.00, 1.00, 1.00}, TestHelper.vertices2DoubleArray(vertexContainer.getVertices()), 0.01);
+        Assert.assertArrayEquals(new double[]{0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00}, TestHelper.vertices2DoubleArray(vertexContainer.getNorms()), 0.01);
+    }
+
+    @Test
+    public void testPlaneRotate() throws Exception {
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneRotate.dae", getClass()), null);
+        Assert.assertNull(shape3D.getModelMatrixAnimations());
+        Assert.assertEquals(1, shape3D.getElement3Ds().size());
+        Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
+        Assert.assertEquals(1, planeElement.getVertexContainers().size());
+        VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
+        Assert.assertArrayEquals(new double[]{0.71, -1.00, -0.71, 0.71, 1.00, -0.71, -0.71, 1.00, 0.71, -0.71, -1.00, 0.71, 0.71, -1.00, -0.71, -0.71, 1.00, 0.71}, TestHelper.vertices2DoubleArray(vertexContainer.getVertices()), 0.01);
+        Assert.assertArrayEquals(new double[]{0.71, 0.00, 0.71, 0.71, 0.00, 0.71, 0.71, 0.00, 0.71, 0.71, 0.00, 0.71, 0.71, 0.00, 0.71, 0.71, 0.00, 0.71}, TestHelper.vertices2DoubleArray(vertexContainer.getNorms()), 0.01);
+    }
+
+    @Test
+    public void testPlaneScale() throws Exception {
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneScale.dae", getClass()), null);
+        Assert.assertNull(shape3D.getModelMatrixAnimations());
+        Assert.assertEquals(1, shape3D.getElement3Ds().size());
+        Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
+        Assert.assertEquals(1, planeElement.getVertexContainers().size());
+        VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
+        TestHelper.writeArrayToConsole(TestHelper.vertices2DoubleArray(vertexContainer.getVertices()));
+        Assert.assertArrayEquals(new double[]{2.00, -0.50, 0.00, 2.00, 0.50, 0.00, -2.00, 0.50, 0.00, -2.00, -0.50, 0.00, 2.00, -0.50, 0.00, -2.00, 0.50, 0.00}, TestHelper.vertices2DoubleArray(vertexContainer.getVertices()), 0.01);
+        Assert.assertArrayEquals(new double[]{0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00}, TestHelper.vertices2DoubleArray(vertexContainer.getNorms()), 0.01);
+    }
+
+    @Test
+    public void testPlaneTranslRotScale() throws Exception {
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneTranslRotScale.dae", getClass()), null);
+        Assert.assertNull(shape3D.getModelMatrixAnimations());
+        Assert.assertEquals(1, shape3D.getElement3Ds().size());
+        Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
+        Assert.assertEquals(1, planeElement.getVertexContainers().size());
+        VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
+        TestHelper.writeArrayToConsole(TestHelper.vertices2DoubleArray(vertexContainer.getNorms()));
+        Assert.assertArrayEquals(new double[]{-2.00, -4.00, 3.00, -2.00, -4.00, 13.00, -4.00, -4.00, 13.00, -4.00, -4.00, 3.00, -2.00, -4.00, 3.00, -4.00, -4.00, 13.00}, TestHelper.vertices2DoubleArray(vertexContainer.getVertices()), 0.01);
+        Assert.assertArrayEquals(new double[]{0.00, -1.00, -0.00, 0.00, -1.00, -0.00, 0.00, -1.00, -0.00, 0.00, -1.00, -0.00, 0.00, -1.00, -0.00, 0.00, -1.00, -0.00}, TestHelper.vertices2DoubleArray(vertexContainer.getNorms()), 0.01);
+    }
+
+    @Test
+    public void testPlaneTranslRotScaleAnimation() throws Exception {
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneTranslRotScaleAnimation.dae", getClass()), null);
+        Assert.assertEquals(3, shape3D.getModelMatrixAnimations().size());
+        Assert.assertEquals(1, shape3D.getElement3Ds().size());
+        Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
+        Assert.assertEquals(1, planeElement.getVertexContainers().size());
+        VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
+        TestHelper.writeArrayToConsole(TestHelper.vertices2DoubleArray(vertexContainer.getNorms()));
+        Assert.assertArrayEquals(new double[]{1.00, -0.00, 0.00, 1.00, 0.00, 20.00, -1.00, 0.00, 20.00, -1.00, -0.00, 0.00, 1.00, -0.00, 0.00, -1.00, 0.00, 20.00}, TestHelper.vertices2DoubleArray(vertexContainer.getVertices()), 0.01);
+        Assert.assertArrayEquals(new double[]{0.00, -1.00, -0.00, 0.00, -1.00, -0.00, 0.00, -1.00, -0.00, 0.00, -1.00, -0.00, 0.00, -1.00, -0.00, 0.00, -1.00, -0.00}, TestHelper.vertices2DoubleArray(vertexContainer.getNorms()), 0.01);
+    }
+
+
+    @Test
     public void testReadItemType1() throws Exception {
         Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestItemType1.dae", getClass()), null);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
@@ -136,35 +212,60 @@ public class ColladaConverterTest {
     @Test
     public void testAnimation() throws Exception {
         Map<String, ItemState> itemStates = new HashMap<>();
-        itemStates.put("Cube_scale_X", ItemState.BEAM_UP);
-        itemStates.put("Cube_scale_Y", ItemState.BUILDING);
+        itemStates.put("CubeId_scale_X", ItemState.BEAM_UP);
+        itemStates.put("CubeId_scale_Y", ItemState.BUILDING);
+        itemStates.put("PlaneId_location_Y", ItemState.BEAM_UP);
+        itemStates.put("PlaneId_location_Z", ItemState.BUILDING);
 
         Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, itemStates));
-        Assert.assertEquals(3, shape3D.getModelMatrixAnimations().size());
-        Assert.assertEquals(1, shape3D.getElement3Ds().size());
+        Assert.assertEquals(6, shape3D.getModelMatrixAnimations().size());
+        Assert.assertEquals(2, shape3D.getElement3Ds().size());
 
-        Element3D element3D = CollectionUtils.getFirst(shape3D.getElement3Ds());
+        Element3D cube = Shape3DUtils.getElement3D("CubeId", shape3D);
 
-        ModelMatrixAnimation modelMatrixAnimation = getModelMatrixAnimation4Axis(ModelMatrixAnimation.Axis.X, shape3D);
+        ModelMatrixAnimation modelMatrixAnimation = getModelMatrixAnimation4Axis("CubeId_scale_X", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.X, modelMatrixAnimation.getAxis());
         Assert.assertEquals(ModelMatrixAnimation.Modification.SCALE, modelMatrixAnimation.getModification());
-        Assert.assertTrue(element3D == modelMatrixAnimation.getElement3D());
+        Assert.assertTrue(cube == modelMatrixAnimation.getElement3D());
         Assert.assertEquals(ItemState.BEAM_UP, modelMatrixAnimation.getItemState());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 10), createTvs(8333, 20));
 
-        modelMatrixAnimation = getModelMatrixAnimation4Axis(ModelMatrixAnimation.Axis.Y, shape3D);
+        modelMatrixAnimation = getModelMatrixAnimation4Axis("CubeId_scale_Y", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.Y, modelMatrixAnimation.getAxis());
         Assert.assertEquals(ModelMatrixAnimation.Modification.SCALE, modelMatrixAnimation.getModification());
-        Assert.assertTrue(element3D == modelMatrixAnimation.getElement3D());
+        Assert.assertTrue(cube == modelMatrixAnimation.getElement3D());
         Assert.assertEquals(ItemState.BUILDING, modelMatrixAnimation.getItemState());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 10), createTvs(8333, 30));
 
-        modelMatrixAnimation = getModelMatrixAnimation4Axis(ModelMatrixAnimation.Axis.Z, shape3D);
+        modelMatrixAnimation = getModelMatrixAnimation4Axis("CubeId_scale_Z", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.Z, modelMatrixAnimation.getAxis());
         Assert.assertEquals(ModelMatrixAnimation.Modification.SCALE, modelMatrixAnimation.getModification());
-        Assert.assertTrue(element3D == modelMatrixAnimation.getElement3D());
+        Assert.assertTrue(cube == modelMatrixAnimation.getElement3D());
         Assert.assertNull(modelMatrixAnimation.getItemState());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 20), createTvs(8333, 10));
+
+        Element3D plane = Shape3DUtils.getElement3D("PlaneId", shape3D);
+
+        modelMatrixAnimation = getModelMatrixAnimation4Axis("PlaneId_location_X", shape3D);
+        Assert.assertEquals(ModelMatrixAnimation.Axis.X, modelMatrixAnimation.getAxis());
+        Assert.assertEquals(ModelMatrixAnimation.Modification.LOCATION, modelMatrixAnimation.getModification());
+        Assert.assertTrue(plane == modelMatrixAnimation.getElement3D());
+        Assert.assertNull(modelMatrixAnimation.getItemState());
+        assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 0), createTvs(4166, 0));
+
+        modelMatrixAnimation = getModelMatrixAnimation4Axis("PlaneId_location_Y", shape3D);
+        Assert.assertEquals(ModelMatrixAnimation.Axis.Y, modelMatrixAnimation.getAxis());
+        Assert.assertEquals(ModelMatrixAnimation.Modification.LOCATION, modelMatrixAnimation.getModification());
+        Assert.assertTrue(plane == modelMatrixAnimation.getElement3D());
+        Assert.assertEquals(ItemState.BEAM_UP, modelMatrixAnimation.getItemState());
+        assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 5), createTvs(4166, 15));
+
+        modelMatrixAnimation = getModelMatrixAnimation4Axis("PlaneId_location_Z", shape3D);
+        Assert.assertEquals(ModelMatrixAnimation.Axis.Z, modelMatrixAnimation.getAxis());
+        Assert.assertEquals(ModelMatrixAnimation.Modification.LOCATION, modelMatrixAnimation.getModification());
+        Assert.assertTrue(plane == modelMatrixAnimation.getElement3D());
+        Assert.assertEquals(ItemState.BUILDING, modelMatrixAnimation.getItemState());
+        assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 10), createTvs(4166, -50));
     }
 
     private void assertTimeValueSample(ModelMatrixAnimation modelMatrixAnimation, TimeValueSample... expectedTimeValueSamples) {
@@ -209,12 +310,12 @@ public class ColladaConverterTest {
         }
     }
 
-    private ModelMatrixAnimation getModelMatrixAnimation4Axis(ModelMatrixAnimation.Axis axis, Shape3D shape3D) {
+    private ModelMatrixAnimation getModelMatrixAnimation4Axis(String animationId, Shape3D shape3D) {
         for (ModelMatrixAnimation modelMatrixAnimation : shape3D.getModelMatrixAnimations()) {
-            if (modelMatrixAnimation.getAxis() == axis) {
+            if (modelMatrixAnimation.getId().equals(animationId)) {
                 return modelMatrixAnimation;
             }
         }
-        throw new IllegalArgumentException("No ModelMatrixAnimation for axis: " + axis);
+        throw new IllegalArgumentException("No ModelMatrixAnimation for id: " + animationId);
     }
 }

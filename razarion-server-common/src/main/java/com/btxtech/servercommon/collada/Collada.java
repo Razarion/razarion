@@ -87,7 +87,10 @@ public class Collada extends ColladaXml {
 
     private void readMaterials(Document doc) {
         LOGGER.finest("readMaterials");
-        Node libraryMaterials = getSingleTopLevelNode(doc, ELEMENT_LIBRARY_MATERIALS);
+        Node libraryMaterials = getSingleTopLevelNodeOptional(doc, ELEMENT_LIBRARY_MATERIALS);
+        if (libraryMaterials == null) {
+            return;
+        }
 
         for (Node node : getChildren(libraryMaterials, ELEMENT_MATERIAL)) {
             Material material = new Material(node);
@@ -98,7 +101,10 @@ public class Collada extends ColladaXml {
 
     private void readEffects(Document doc) {
         LOGGER.finest("readEffects");
-        Node libraryEffects = getSingleTopLevelNode(doc, ELEMENT_LIBRARY_EFFECTS);
+        Node libraryEffects = getSingleTopLevelNodeOptional(doc, ELEMENT_LIBRARY_EFFECTS);
+        if (libraryEffects == null) {
+            return;
+        }
 
         for (Node node : getChildren(libraryEffects, ELEMENT_EFFECT)) {
             Effect effect = new Effect(node);

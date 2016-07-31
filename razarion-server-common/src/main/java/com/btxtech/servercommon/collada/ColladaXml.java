@@ -43,6 +43,11 @@ public class ColladaXml {
     public static final String ELEMENT_NODE = "node";
     public static final String ELEMENT_P = "p";
     public static final String ELEMENT_MATRIX = "matrix";
+    public static final String ELEMENT_ROTATE = "rotate";
+    public static final String ELEMENT_SCALE = "scale";
+    public static final String ELEMENT_TRANSLATE= "translate";
+    public static final String ELEMENT_LOOKAT = "lookat";
+    public static final String ELEMENT_SKEW = "skew";
     public static final String ELEMENT_PROFILE_ = "profile_";
     public static final String ELEMENT_TECHNIQUE = "technique";
     public static final String ELEMENT_LAMBERT = "lambert";
@@ -72,6 +77,7 @@ public class ColladaXml {
     public static final String ATTRIBUTE_OFFSET = "offset";
     public static final String ATTRIBUTE_URL = "url";
     public static final String ATTRIBUTE_TARGET = "target";
+
     public static final String SEMANTIC_POSITION = "POSITION";
     public static final String SEMANTIC_VERTEX = "VERTEX";
     public static final String SEMANTIC_NORMAL = "NORMAL";

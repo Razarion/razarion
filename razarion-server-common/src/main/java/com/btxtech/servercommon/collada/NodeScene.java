@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,14 +18,35 @@ import java.util.logging.Logger;
  */
 public class NodeScene extends NameIdColladaXml {
     private static Logger LOGGER = Logger.getLogger(NodeScene.class.getName());
-    private Collection<Matrix4> matrices;
+    private List<Matrix4> matrices;
     private Collection<InstanceGeometry> instanceGeometries;
 
     public NodeScene(Node node) {
         super(node);
         matrices = new ArrayList<>();
-        for (Node matrixNode : getChildren(node, ELEMENT_MATRIX)) {
-            matrices.add(new Matrix(matrixNode).getMatrix4());
+        NodeList nodeList = node.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node child = nodeList.item(i);
+            switch (child.getNodeName().toLowerCase()) {
+                case ELEMENT_MATRIX:
+                    matrices.add(new Matrix(child).getMatrix4());
+                    break;
+                case ELEMENT_ROTATE:
+                    matrices.add(new Rotate(child).getMatrix4());
+                    break;
+                case ELEMENT_SCALE:
+                    matrices.add(new Scale(child).getMatrix4());
+                    break;
+                case ELEMENT_TRANSLATE:
+                    matrices.add(new Translate(child).getMatrix4());
+                    break;
+                case ELEMENT_LOOKAT:
+                    System.out.println("Transformation not supported: " + ELEMENT_LOOKAT);
+                    break;
+                case ELEMENT_SKEW:
+                    System.out.println("Transformation not supported: " + ELEMENT_SKEW);
+                    break;
+            }
         }
         instanceGeometries = new ArrayList<>();
         for (Node instanceGeometryNode : getChildren(node, ELEMENT_INSTANCE_GEOMETRIES)) {
