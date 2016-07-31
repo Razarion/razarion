@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.datatypes.syncobject;
 
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -29,7 +28,6 @@ import com.btxtech.shared.gameengine.datatypes.command.MoneyCollectCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
-import com.btxtech.shared.gameengine.datatypes.command.UpgradeCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -81,9 +79,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private SyncSpecial syncSpecial;
     private SyncItemContainer syncItemContainer;
     private SyncHouse syncHouse;
-    private double upgradeProgress;
-    private boolean isUpgrading;
-    private BaseItemType upgradingItemType;
     private Integer containedIn;
     private boolean isMoneyEarningOrConsuming = false;
     private PlayerBase killedBy;
@@ -191,12 +186,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     @Override
     public void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
         checkBase(syncItemInfo.getBase());
-        isUpgrading = syncItemInfo.isUpgrading();
-        if (isUpgrading) {
-            upgradingItemType = itemTypeService.getBaseItemType(getBaseItemType().getUpgradeable());
-        } else {
-            upgradingItemType = null;
-        }
         if (getItemType().getId() != syncItemInfo.getItemTypeId()) {
             setItemType(itemTypeService.getItemType(syncItemInfo.getItemTypeId()));
             // TODO fireItemChanged(SyncItemListener.Change.ITEM_TYPE_CHANGED, null);
@@ -204,7 +193,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
         health = syncItemInfo.getHealth();
         setBuildup(syncItemInfo.getBuildup());
-        upgradeProgress = syncItemInfo.getUpgradeProgress();
         containedIn = syncItemInfo.getContainedIn();
         killedBy = syncItemInfo.getKilledBy();
 
@@ -245,8 +233,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         syncItemInfo.setBase(base);
         syncItemInfo.setHealth(health);
         syncItemInfo.setBuildup(buildup);
-        syncItemInfo.setUpgrading(isUpgrading);
-        syncItemInfo.setUpgradeProgress(upgradeProgress);
         syncItemInfo.setContainedIn(containedIn);
         syncItemInfo.setKilledBy(killedBy);
 
@@ -283,7 +269,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public boolean isIdle() {
         return isReady()
-                && !isUpgrading()
                 && !(syncMovable != null && syncMovable.isActive())
                 && !(syncWeapon != null && syncWeapon.isActive())
                 && !(syncFactory != null && syncFactory.isActive())
@@ -376,17 +361,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
         if (baseCommand instanceof FactoryCommand) {
             getSyncFactory().executeCommand((FactoryCommand) baseCommand);
-            return;
-        }
-
-        if (baseCommand instanceof UpgradeCommand) {
-            if (getBaseItemType().getUpgradeable() == null) {
-                throw new IllegalArgumentException(this + " can not be upgraded");
-            }
-            BaseItemType tmpUpgradingItemType = itemTypeService.getBaseItemType(getBaseItemType().getUpgradeable());
-            baseService.withdrawalMoney(tmpUpgradingItemType.getPrice(), getBase());
-            isUpgrading = true;
-            upgradingItemType = tmpUpgradingItemType;
             return;
         }
 
@@ -598,22 +572,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return health;
     }
 
-    public double getUpgradeProgress() {
-        return upgradeProgress;
-    }
-
-    public void setUpgradeProgress(double upgradeProgress) {
-        this.upgradeProgress = upgradeProgress;
-    }
-
-    public boolean isUpgrading() {
-        return isUpgrading;
-    }
-
-    public void setUpgrading(boolean upgrading) {
-        isUpgrading = upgrading;
-    }
-
     public void setContained(int itemContainer) {
         this.containedIn = itemContainer;
         getSyncItemArea().setPosition(null);
@@ -630,25 +588,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public boolean isContainedIn() {
         return containedIn != null;
-    }
-
-    public boolean isUpgradeable() {
-        return upgradingItemType != null;
-    }
-
-    public int getFullUpgradeProgress() {
-        if (upgradingItemType == null) {
-            throw new IllegalStateException(this + " can not be upgraded");
-        }
-        return upgradingItemType.getHealth();
-    }
-
-    public BaseItemType getUpgradingItemType() {
-        return upgradingItemType;
-    }
-
-    public void setUpgradingItemType(BaseItemType upgradingItemType) {
-        this.upgradingItemType = upgradingItemType;
     }
 
     public PlayerBase getKilledBy() {

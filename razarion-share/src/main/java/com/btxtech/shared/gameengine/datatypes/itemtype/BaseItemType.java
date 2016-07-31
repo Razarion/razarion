@@ -35,8 +35,6 @@ public class BaseItemType extends ItemType {
     private SpecialType specialType;
     private ItemContainerType itemContainerType;
     private HouseType houseType;
-    private Integer upgradeable;
-    private int upgradeProgress;
     private double dropBoxPossibility;
     private int boxPickupRange;
     private Integer unlockCrystals;
@@ -174,24 +172,6 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setHouseType(HouseType houseType) {
         this.houseType = houseType;
-        return this;
-    }
-
-    public Integer getUpgradeable() {
-        return upgradeable;
-    }
-
-    public BaseItemType setUpgradeable(Integer upgradeable) {
-        this.upgradeable = upgradeable;
-        return this;
-    }
-
-    public double getUpgradeProgress() {
-        return upgradeProgress;
-    }
-
-    public BaseItemType setUpgradeProgress(int upgradeProgress) {
-        this.upgradeProgress = upgradeProgress;
         return this;
     }
 

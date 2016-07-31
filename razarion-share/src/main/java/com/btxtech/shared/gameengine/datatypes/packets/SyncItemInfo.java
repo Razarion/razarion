@@ -47,8 +47,6 @@ public class SyncItemInfo extends Packet {
     private Boolean followTarget;
     private Boolean operationState;
     private double reloadProgress;
-    private Boolean isUpgrading;
-    private Double upgradeProgress;
     private Vertex rallyPoint;
     private List<Integer> containedItems;
     private Integer targetContainer;
@@ -211,22 +209,6 @@ public class SyncItemInfo extends Packet {
 
     public void setReloadProgress(double reloadProgress) {
         this.reloadProgress = reloadProgress;
-    }
-
-    public Boolean isUpgrading() {
-        return isUpgrading;
-    }
-
-    public void setUpgrading(Boolean upgrading) {
-        isUpgrading = upgrading;
-    }
-
-    public Double getUpgradeProgress() {
-        return upgradeProgress;
-    }
-
-    public void setUpgradeProgress(Double upgradeProgress) {
-        this.upgradeProgress = upgradeProgress;
     }
 
     public Vertex getRallyPoint() {
