@@ -23,14 +23,4 @@ public class ServerRenderServiceImpl extends RenderService {
     protected void setupRenderers() {
 
     }
-
-    @Override
-    public void enrollAnimation(int animatedMeshId) {
-
-    }
-
-    @Override
-    public void disenrollAnimation(int animatedMeshId) {
-
-    }
 }

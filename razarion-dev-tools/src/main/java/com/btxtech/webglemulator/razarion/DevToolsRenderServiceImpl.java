@@ -92,16 +92,6 @@ public class DevToolsRenderServiceImpl extends RenderService {
 //        }
     }
 
-    @Override
-    public void enrollAnimation(int animatedMeshId) {
-        System.out.println("enrollAnimation: " + animatedMeshId);
-    }
-
-    @Override
-    public void disenrollAnimation(int animatedMeshId) {
-        System.out.println("disenrollAnimation: " + animatedMeshId);
-    }
-
     private List<Double> setupNormDoubles(List<Vertex> vertices, List<Vertex> norms) {
         List<Double> normDoubles = new ArrayList<>();
         for (int i = 0; i < vertices.size(); i++) {

@@ -83,8 +83,4 @@ public abstract class RenderService {
     protected void doRender() {
 
     }
-
-    public abstract void enrollAnimation(int animatedMeshId);
-
-    public abstract void disenrollAnimation(int animatedMeshId);
 }

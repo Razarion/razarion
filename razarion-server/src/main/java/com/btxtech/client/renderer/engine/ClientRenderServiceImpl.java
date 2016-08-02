@@ -99,16 +99,6 @@ public class ClientRenderServiceImpl extends RenderService {
 //        compositeRenderer.setNormRenderUnit(renderInstance.select(ItemNormUnitRenderer.class).get());
 //    }
 
-    @Override
-    public void enrollAnimation(int animatedMeshId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void disenrollAnimation(int animatedMeshId) {
-        throw new UnsupportedOperationException();
-    }
-
     public void setupTerrainObjectRenderer() {
         if (terrainObjectRenders != null) {
             renderQueue.removeAll(terrainObjectRenders);
