@@ -40,8 +40,6 @@ public abstract class ItemType {
     private Integer buildupSound;
     private Integer commandSound;
     private Integer explosionClipId;
-    @Deprecated
-    private VertexContainer vertexContainer;
     private Shape3D shape3D;
 
     public int getId() {
@@ -149,17 +147,6 @@ public abstract class ItemType {
 
     public ItemType setExplosionClipId(Integer explosionClipId) {
         this.explosionClipId = explosionClipId;
-        return this;
-    }
-
-    @Deprecated
-    public VertexContainer getVertexContainer() {
-        return vertexContainer;
-    }
-
-    @Deprecated
-    public ItemType setVertexContainer(VertexContainer vertexContainer) {
-        this.vertexContainer = vertexContainer;
         return this;
     }
 

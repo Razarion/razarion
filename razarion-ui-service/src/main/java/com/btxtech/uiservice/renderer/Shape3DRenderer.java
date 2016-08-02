@@ -25,7 +25,7 @@ public abstract class Shape3DRenderer {
     public void fillRenderQueue(List<CompositeRenderer> renderQueue) {
         for (Element3D element3D : shape3D.getElement3Ds()) {
             Element3DRenderer element3DRenderer = createElement3DRenderer(element3D);
-            element3DRenderer.init(element3D, this, getAnimations(element3D));
+            element3DRenderer.init(element3D, getAnimations(element3D));
             element3DRenderer.fillRenderQueue(renderQueue);
         }
     }

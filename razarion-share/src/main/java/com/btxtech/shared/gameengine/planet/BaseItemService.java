@@ -197,6 +197,20 @@ public class BaseItemService {
         return total;
     }
 
+    public Collection<SyncBaseItem> getAliveSyncBaseItems() {
+        Collection<SyncBaseItem> total = new ArrayList<>();
+        synchronized (baseItems) {
+            for (Collection<SyncBaseItem> syncBaseItems : baseItems.values()) {
+                for (SyncBaseItem syncBaseItem : syncBaseItems) {
+                    if (syncBaseItem.getItemLifecycle() == ItemLifecycle.ALIVE) {
+                        total.addAll(syncBaseItems);
+                    }
+                }
+            }
+        }
+        return total;
+    }
+
     // --------------------------------------------------------------------------
 
     public SyncItem getItem(int id) throws ItemDoesNotExistException {

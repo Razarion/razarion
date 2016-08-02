@@ -2,9 +2,7 @@ package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.servercommon.collada.ColladaConverterMapper;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
@@ -15,7 +13,6 @@ import org.apache.commons.io.IOUtils;
 import javax.inject.Singleton;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +35,11 @@ public class ItemTypeEmulation {
 
     public BaseItemType createSimpleMovable() {
         BaseItemType builder = (BaseItemType) new BaseItemType().setName("Builder Emulation").setId(Id.SIMPLE_MOVABLE.ordinal()).setTerrainType(TerrainType.LAND);
-        builder.setVertexContainer(new VertexContainer().setVertices(Arrays.asList(new Vertex(0, 0, 0), new Vertex(20, 0, 0), new Vertex(20, 20, 0))));
+        builder.setShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ItemType1.dae", null));
         ColladaMapper mapper = new ColladaMapper();
         mapper.putAnimation("Sphere_scale_X", ItemState.BEAM_UP).putAnimation("Sphere_scale_Y", ItemState.BEAM_UP).putAnimation("Sphere_scale_Z", ItemState.BEAM_UP);
         mapper.putAnimation("Plane_location_X", ItemState.BEAM_UP).putAnimation("Plane_location_Y", ItemState.BEAM_UP).putAnimation("Plane_location_Z", ItemState.BEAM_UP);
-        builder.setSpawnShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae", mapper)).setSpawnDurationMillis(10000);
+        builder.setSpawnShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae", mapper)).setSpawnDurationMillis(3000);
         return builder.setMovableType(new MovableType().setSpeed(10)).setHealth(100).setRadius(50);
     }
 

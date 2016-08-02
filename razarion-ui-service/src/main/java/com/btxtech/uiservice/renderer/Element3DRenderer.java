@@ -15,24 +15,18 @@ import java.util.List;
  */
 public abstract class Element3DRenderer {
     private Element3D element3D;
-    private Shape3DRenderer shape3DRenderer;
     private Collection<ProgressAnimation> progressAnimations;
 
     protected abstract VertexContainerCompositeRenderer createVertexContainerRenderer();
 
-    public void init(Element3D element3D, Shape3DRenderer shape3DRenderer, Collection<ModelMatrixAnimation> modelMatrixAnimations) {
+    public void init(Element3D element3D, Collection<ModelMatrixAnimation> modelMatrixAnimations) {
         this.element3D = element3D;
-        this.shape3DRenderer = shape3DRenderer;
         if (modelMatrixAnimations != null) {
             progressAnimations = new ArrayList<>();
             for (ModelMatrixAnimation modelMatrixAnimation : modelMatrixAnimations) {
                 progressAnimations.add(new ProgressAnimation(modelMatrixAnimation));
             }
         }
-    }
-
-    public Shape3DRenderer getShape3DRenderer() {
-        return shape3DRenderer;
     }
 
     public void fillRenderQueue(List<CompositeRenderer> renderQueue) {

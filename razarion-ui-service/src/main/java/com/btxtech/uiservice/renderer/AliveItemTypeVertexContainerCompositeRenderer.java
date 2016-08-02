@@ -11,7 +11,7 @@ import java.util.Collection;
  * Created by Beat
  * 29.07.2016.
  */
-public class SpawnItemTypeVertexContainerCompositeRenderer extends VertexContainerCompositeRenderer {
+public class AliveItemTypeVertexContainerCompositeRenderer extends VertexContainerCompositeRenderer {
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -26,6 +26,6 @@ public class SpawnItemTypeVertexContainerCompositeRenderer extends VertexContain
 
     @Override
     protected Collection<ModelMatrices> provideModelMatrices() {
-        return baseItemUiService.provideSpawnModelMatrices();
+        return baseItemUiService.provideAliveModelMatrices();
     }
 }

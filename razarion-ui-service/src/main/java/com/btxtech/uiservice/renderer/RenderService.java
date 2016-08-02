@@ -33,26 +33,17 @@ public abstract class RenderService {
         serviceInitEvent.fire(new RenderServiceInitEvent());
         renderQueue.clear();
 
-//     TODO   renderQueue.clear();
-//        // Base Item type renderer
-//        for (int id : baseItemUiService.getBaseItemTypeIds()) {
-//            CompositeRenderer compositeRenderer = new CompositeRenderer();
-//            compositeRenderer.setId(id);
-//            compositeRenderer.setModelMatricesProvider(baseItemUiService);
-//            initBaseItemTypeRenderer(compositeRenderer);
-//            renderQueue.add(compositeRenderer);
-//        }
-        // Spawn item type renderer
+        // Base item type renderer
         shape3DRenderers.clear();
         for (BaseItemType baseItemType : baseItemUiService.getBaseItemTypes()) {
+            // Spawn
             SpawnItemTypeShape3DRenderer spawnItemTypeShape3DRenderer = instance.select(SpawnItemTypeShape3DRenderer.class).get();
             spawnItemTypeShape3DRenderer.init(baseItemType);
             addShape3DRenderer(spawnItemTypeShape3DRenderer);
-//            CompositeRenderer compositeRenderer = new CompositeRenderer();
-//            compositeRenderer.setId(id);
-//            compositeRenderer.setModelMatricesProvider(spawnItemUiService);
-//            initSpawnItemTypeRenderer(compositeRenderer);
-//            renderQueue.add(compositeRenderer);
+            // Alive
+            AliveItemTypeShape3DRenderer aliveItemTypeShape3DRenderer = instance.select(AliveItemTypeShape3DRenderer.class).get();
+            aliveItemTypeShape3DRenderer.init(baseItemType);
+            addShape3DRenderer(aliveItemTypeShape3DRenderer);
         }
 
 
@@ -61,9 +52,9 @@ public abstract class RenderService {
         fillBuffers();
     }
 
-    private void addShape3DRenderer(SpawnItemTypeShape3DRenderer itemTypeShape3DRenderer) {
-        shape3DRenderers.add(itemTypeShape3DRenderer);
-        itemTypeShape3DRenderer.fillRenderQueue(renderQueue);
+    private void addShape3DRenderer(Shape3DRenderer shape3DRenderer) {
+        shape3DRenderers.add(shape3DRenderer);
+        shape3DRenderer.fillRenderQueue(renderQueue);
     }
 
     public void render() {

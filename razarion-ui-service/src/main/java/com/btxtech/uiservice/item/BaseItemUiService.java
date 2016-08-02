@@ -37,42 +37,11 @@ public class BaseItemUiService {
     private ImageDescriptor imageDescriptor = ImageDescriptor.UNIT_TEXTURE_O1;
     private double specularIntensity = 0.1;
     private double specularHardness = 10;
-    private Map<Integer, VertexContainer> vertexContainers;
-    private Map<Integer, Collection<ModelMatrices>> baseItemIdModelMatrices;
 
-    public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
-        // Setup render data
-        vertexContainers = new HashMap<>();
-        for (ItemType itemType : itemTypeService.getItemTypes(BaseItemType.class)) {
-            vertexContainers.put(itemType.getId(), itemType.getVertexContainer());
-        }
-    }
-
-    public void onPreRenderEvent(@Observes PreRenderEvent preRenderEvent) {
-        // Setup model matrices
-        baseItemIdModelMatrices = new HashMap<>();
-        for (SyncBaseItem syncBaseItem : baseItemService.getSyncBaseItems()) {
-            Collection<ModelMatrices> baseItemTypeMatrices = baseItemIdModelMatrices.get(syncBaseItem.getItemType().getId());
-            if (baseItemTypeMatrices == null) {
-                baseItemTypeMatrices = new ArrayList<>();
-                baseItemIdModelMatrices.put(syncBaseItem.getItemType().getId(), baseItemTypeMatrices);
-            }
-            baseItemTypeMatrices.add(syncBaseItem.createModelMatrices());
-        }
-//            InterpolatedTerrainTriangle interpolatedTerrainTriangle = terrainUiService.getInterpolatedTerrainTriangle(unit.getPosition());
-//            Vertex direction = new Vertex(DecimalPosition.createVector(unit.getAngle(), 1.0), 0);
-//            double yRotation = direction.unsignedAngle(interpolatedTerrainTriangle.getNorm()) - MathHelper.QUARTER_RADIANT;
-//            Matrix4 rotation = Matrix4.createZRotation(unit.getAngle()).multiply(Matrix4.createYRotation(-yRotation));
-//            Matrix4 translation = Matrix4.createTranslation(unit.getPosition().getX(), unit.getPosition().getY(), interpolatedTerrainTriangle.getHeight()).multiply(rotation);
-//            itemMatrices.add(new ModelMatrices(translation, rotation));
-    }
-
-    public Collection<Integer> getBaseItemTypeIds() {
-        return vertexContainers.keySet();
-    }
-
+    @Deprecated
     public VertexContainer getItemTypeVertexContainer(int id) {
-        return vertexContainers.get(id);
+        throw new UnsupportedOperationException();
+        // return vertexContainers.get(id);
     }
 
     public ImageDescriptor getImageDescriptor() {
@@ -103,6 +72,14 @@ public class BaseItemUiService {
     public Collection<ModelMatrices> provideSpawnModelMatrices() {
         Collection<ModelMatrices> modelMatrices = new ArrayList<>();
         for (SyncBaseItem syncBaseItem : baseItemService.getBeamingSyncBaseItems()) {
+            modelMatrices.add(syncBaseItem.createModelMatrices());
+        }
+        return modelMatrices;
+    }
+
+    public Collection<ModelMatrices> provideAliveModelMatrices() {
+        Collection<ModelMatrices> modelMatrices = new ArrayList<>();
+        for (SyncBaseItem syncBaseItem : baseItemService.getAliveSyncBaseItems()) {
             modelMatrices.add(syncBaseItem.createModelMatrices());
         }
         return modelMatrices;
