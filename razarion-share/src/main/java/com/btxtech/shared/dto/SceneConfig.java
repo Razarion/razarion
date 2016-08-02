@@ -14,7 +14,6 @@ public class SceneConfig {
     private String introText;
     private boolean showQuestSideBar;
     private CameraConfig cameraConfig;
-    private AnimatedMeshConfig animatedMeshConfig;
     private List<BotConfig> botConfigs;
 
     public String getIntroText() {
@@ -41,15 +40,6 @@ public class SceneConfig {
 
     public SceneConfig setShowQuestSideBar(boolean showQuestSideBar) {
         this.showQuestSideBar = showQuestSideBar;
-        return this;
-    }
-
-    public AnimatedMeshConfig getAnimatedMeshConfig() {
-        return animatedMeshConfig;
-    }
-
-    public SceneConfig setAnimatedMeshConfig(AnimatedMeshConfig animatedMeshConfig) {
-        this.animatedMeshConfig = animatedMeshConfig;
         return this;
     }
 

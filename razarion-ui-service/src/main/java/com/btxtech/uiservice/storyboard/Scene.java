@@ -28,8 +28,6 @@ public class Scene {
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private StoryboardService storyboardService;
-    @Inject
-    private AnimationService animationService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private QuestVisualizer questVisualizer;
@@ -45,9 +43,6 @@ public class Scene {
     public void run() {
         if (sceneConfig.getIntroText() != null) {
             storyCover.show(sceneConfig.getIntroText());
-        }
-        if(sceneConfig.getAnimatedMeshConfig() != null) {
-            animationService.runAnimation(sceneConfig.getAnimatedMeshConfig(), registerSceneCompletionListener());
         }
         if(sceneConfig.getBotConfigs() != null) {
             botService.startBots(sceneConfig.getBotConfigs());
