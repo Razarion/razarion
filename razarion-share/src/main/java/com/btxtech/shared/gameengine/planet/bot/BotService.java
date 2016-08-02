@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.BotSyncBaseItemCreatedEvent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;

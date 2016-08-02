@@ -1,9 +1,8 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.gameengine.datatypes.itemtype.SpawnItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.item.SpawnItemUiService;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -18,8 +17,6 @@ import java.util.List;
 public abstract class RenderService {
     @Inject
     private BaseItemUiService baseItemUiService;
-    @Inject
-    private SpawnItemUiService spawnItemUiService;
     @Inject
     private Event<RenderServiceInitEvent> serviceInitEvent;
     @Inject
@@ -47,10 +44,10 @@ public abstract class RenderService {
 //        }
         // Spawn item type renderer
         shape3DRenderers.clear();
-        for (SpawnItemType spawnItemType : spawnItemUiService.getSpawnItemType()) {
-            SpanItemTypeShape3DRenderer spanItemTypeShape3DRenderer = (SpanItemTypeShape3DRenderer) instance.select(SpanItemTypeShape3DRenderer.class).get();
-            spanItemTypeShape3DRenderer.init(spawnItemType);
-            addShape3DRenderer(spanItemTypeShape3DRenderer);
+        for (BaseItemType baseItemType : baseItemUiService.getBaseItemTypes()) {
+            SpawnItemTypeShape3DRenderer spawnItemTypeShape3DRenderer = instance.select(SpawnItemTypeShape3DRenderer.class).get();
+            spawnItemTypeShape3DRenderer.init(baseItemType);
+            addShape3DRenderer(spawnItemTypeShape3DRenderer);
 //            CompositeRenderer compositeRenderer = new CompositeRenderer();
 //            compositeRenderer.setId(id);
 //            compositeRenderer.setModelMatricesProvider(spawnItemUiService);
@@ -64,7 +61,7 @@ public abstract class RenderService {
         fillBuffers();
     }
 
-    private void addShape3DRenderer(SpanItemTypeShape3DRenderer itemTypeShape3DRenderer) {
+    private void addShape3DRenderer(SpawnItemTypeShape3DRenderer itemTypeShape3DRenderer) {
         shape3DRenderers.add(itemTypeShape3DRenderer);
         itemTypeShape3DRenderer.fillRenderQueue(renderQueue);
     }

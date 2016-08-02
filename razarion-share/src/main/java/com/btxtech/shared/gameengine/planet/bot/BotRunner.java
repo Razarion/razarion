@@ -16,7 +16,7 @@ package com.btxtech.shared.gameengine.planet.bot;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;

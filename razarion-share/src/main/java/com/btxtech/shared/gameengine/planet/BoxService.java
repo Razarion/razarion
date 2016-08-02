@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBoxItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 
 import javax.inject.Singleton;
 

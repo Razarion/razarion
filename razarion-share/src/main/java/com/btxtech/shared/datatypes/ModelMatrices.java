@@ -1,6 +1,6 @@
 package com.btxtech.shared.datatypes;
 
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 /**
  * Created by Beat
@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
 public class ModelMatrices {
     private Matrix4 model;
     private Matrix4 norm;
-    private SyncItem syncItem;
+    private SyncBaseItem syncBaseItem;
 
     public ModelMatrices setModel(Matrix4 model) {
         this.model = model;
@@ -21,8 +21,8 @@ public class ModelMatrices {
         return this;
     }
 
-    public ModelMatrices setSyncItem(SyncItem syncItem) {
-        this.syncItem = syncItem;
+    public ModelMatrices setSyncBaseItem(SyncBaseItem syncBaseItem) {
+        this.syncBaseItem = syncBaseItem;
         return this;
     }
 
@@ -34,13 +34,13 @@ public class ModelMatrices {
         return norm;
     }
 
-    public SyncItem getSyncItem() {
-        return syncItem;
+    public SyncBaseItem getSyncBaseItem() {
+        return syncBaseItem;
     }
 
     public ModelMatrices multiply(Matrix4 model, Matrix4 norm) {
         ModelMatrices modelMatrices = new ModelMatrices();
-        modelMatrices.setSyncItem(syncItem);
+        modelMatrices.setSyncBaseItem(syncBaseItem);
         if (model != null) {
             modelMatrices.setModel(this.model.multiply(model));
         } else {

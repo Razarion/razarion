@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncConsumer;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncGenerator;
+import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
+import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
 
 /**
  * Created by Beat

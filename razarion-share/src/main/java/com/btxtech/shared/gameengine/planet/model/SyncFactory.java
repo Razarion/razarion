@@ -11,9 +11,8 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.datatypes.syncobject;
+package com.btxtech.shared.gameengine.planet.model;
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.UnlockService;
@@ -100,7 +99,7 @@ public class SyncFactory extends SyncBaseAbility {
                 if (!baseService.isItemLimit4ItemAddingAllowed(toBeBuiltType, getSyncBaseItem().getBase())) {
                     return true;
                 }
-                final SyncBaseItem item = (SyncBaseItem) baseItemService.createSyncBaseItem(toBeBuiltType, rallyPoint, getSyncBaseItem().getBase(), getSyncBaseItem()); //TODO
+                final SyncBaseItem item = (SyncBaseItem) baseItemService.createSyncBaseItem4Factory(toBeBuiltType, rallyPoint, getSyncBaseItem().getBase(), getSyncBaseItem()); //TODO
                 item.setBuildup(buildup);
                 stop();
                 if (item.hasSyncMovable() && item.getSyncMovable().onFinished(new SyncMovable.OverlappingHandler() {

@@ -11,10 +11,9 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.datatypes.syncobject;
+package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.UnlockService;
@@ -114,7 +113,7 @@ public class SyncBuilder extends SyncBaseAbility {
             }
             baseItemService.checkBuildingsInRect(toBeBuiltType, toBeBuildPosition);
             try {
-                currentBuildup = (SyncBaseItem) baseItemService.createSyncBaseItem(toBeBuiltType, toBeBuildPosition, getSyncBaseItem().getBase(), getSyncBaseItem());
+                currentBuildup = (SyncBaseItem) baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, getSyncBaseItem().getBase(), getSyncBaseItem());
                 activityService.onSyncBaseItemCreatedBy(getSyncBaseItem(), currentBuildup);
             } catch (ItemLimitExceededException e) {
                 stop();

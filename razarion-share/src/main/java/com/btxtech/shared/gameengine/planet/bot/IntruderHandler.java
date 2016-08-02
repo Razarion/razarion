@@ -15,7 +15,7 @@ package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
 

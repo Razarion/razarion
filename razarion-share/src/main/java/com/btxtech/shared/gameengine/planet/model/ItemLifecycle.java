@@ -1,0 +1,24 @@
+package com.btxtech.shared.gameengine.planet.model;
+
+/**
+ * Created by Beat
+ * 01.08.2016.
+ */
+public enum ItemLifecycle {
+    SPAWN,
+    ALIVE,
+    DEAD;
+
+    public ItemLifecycle getNext() {
+        switch (this) {
+            case SPAWN:
+                return ALIVE;
+            case ALIVE:
+                return DEAD;
+            case DEAD:
+                return null;
+            default:
+                throw new IllegalStateException("Unknown: " + this);
+        }
+    }
+}

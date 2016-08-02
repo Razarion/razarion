@@ -11,7 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.datatypes.syncobject;
+package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;

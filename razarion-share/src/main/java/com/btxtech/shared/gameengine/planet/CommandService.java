@@ -12,9 +12,9 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBoxItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;

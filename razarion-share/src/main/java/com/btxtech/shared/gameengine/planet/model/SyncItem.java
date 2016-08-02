@@ -11,12 +11,10 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.datatypes.syncobject;
+package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
@@ -24,7 +22,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
@@ -98,7 +95,7 @@ public abstract class SyncItem {
     }
 
     public ModelMatrices createModelMatrices() {
-        return syncItemPosition.createModelMatrices(this);
+        return syncItemPosition.createModelMatrices((SyncBaseItem) this);
     }
 
     @Override

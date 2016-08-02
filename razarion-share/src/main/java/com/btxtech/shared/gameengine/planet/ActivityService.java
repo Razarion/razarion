@@ -9,10 +9,9 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncResourceItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncSpawnItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -28,6 +27,8 @@ public class ActivityService {
     private Logger logger = Logger.getLogger(ActivityService.class.getName());
     @Inject
     private Event<BotSyncBaseItemCreatedEvent> botSyncBaseItemCreatedEvent;
+    @Inject
+    private PlanetService planetService;
 
     public void onInsufficientFundsException(InsufficientFundsException e) {
         // TODO connectionService.sendSyncInfo(syncItem);
@@ -168,11 +169,12 @@ public class ActivityService {
         System.out.println("ActivityService.onProjectileDetonation(): " + syncBaseItem);
     }
 
-    public void onSpawnSyncItem(SyncSpawnItem syncSpawnItem) {
-        System.out.println("ActivityService.onSpawnSyncItem(): " + syncSpawnItem);
+    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onSpawnSyncItem(): " + syncBaseItem);
+        planetService.syncItemActivated(syncBaseItem);
     }
 
-    public void onSpawnSyncItemFinished(SyncSpawnItem syncSpawnItem) {
-        System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncSpawnItem);
+    public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncBaseItem);
     }
 }

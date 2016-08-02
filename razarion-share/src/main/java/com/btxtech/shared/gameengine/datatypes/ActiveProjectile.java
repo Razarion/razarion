@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.datatypes;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 
 /**

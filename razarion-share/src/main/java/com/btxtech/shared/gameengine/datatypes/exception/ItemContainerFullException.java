@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.exception;
 
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItemContainer;
+import com.btxtech.shared.gameengine.planet.model.SyncItemContainer;
 
 /**
  * User: beat

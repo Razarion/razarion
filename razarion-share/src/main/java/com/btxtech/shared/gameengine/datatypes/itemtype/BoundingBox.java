@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItemArea;
+import com.btxtech.shared.gameengine.planet.model.SyncItemArea;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.io.Serializable;

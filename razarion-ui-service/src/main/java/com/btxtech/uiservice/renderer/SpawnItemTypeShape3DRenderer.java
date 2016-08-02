@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
-import com.btxtech.shared.gameengine.datatypes.itemtype.SpawnItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -12,18 +12,12 @@ import javax.inject.Inject;
  * 29.07.2016.
  */
 @Dependent
-public class SpanItemTypeShape3DRenderer extends Shape3DRenderer {
+public class SpawnItemTypeShape3DRenderer extends Shape3DRenderer {
     @Inject
     private Instance<SpawnItemTypeElement3DRenderer> instance;
-    private SpawnItemType spawnItemType;
 
-    public void init(SpawnItemType spawnItemType) {
-        this.spawnItemType = spawnItemType;
-        init(spawnItemType.getShape3D());
-    }
-
-    public SpawnItemType getSpawnItemType() {
-        return spawnItemType;
+    public void init(BaseItemType spawnItemType) {
+        init(spawnItemType.getSpawnShape3D());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine;
 
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 /**
  * Created by Beat

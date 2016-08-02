@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.datatypes;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
 import java.io.Serializable;
 import java.util.Collection;

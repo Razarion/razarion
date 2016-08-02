@@ -2,8 +2,8 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
 import java.io.Serializable;
 import java.util.Collection;

@@ -5,8 +5,8 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;

@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import com.btxtech.shared.datatypes.shape.Shape3D;
+
 /**
  * User: beat
  * Date: 04.12.2009
@@ -38,7 +40,8 @@ public class BaseItemType extends ItemType {
     private double dropBoxPossibility;
     private int boxPickupRange;
     private Integer unlockCrystals;
-    private SpawnItemType spawnItemType;
+    private int spawnDurationMillis;
+    private Shape3D spawnShape3D;
 
     public double getRadius() {
         return radius;
@@ -215,12 +218,21 @@ public class BaseItemType extends ItemType {
         return this;
     }
 
-    public SpawnItemType getSpawnItemType() {
-        return spawnItemType;
+    public int getSpawnDurationMillis() {
+        return spawnDurationMillis;
     }
 
-    public BaseItemType setSpawnItemType(SpawnItemType spawnItemType) {
-        this.spawnItemType = spawnItemType;
+    public BaseItemType setSpawnDurationMillis(int spawnDurationMillis) {
+        this.spawnDurationMillis = spawnDurationMillis;
+        return this;
+    }
+
+    public Shape3D getSpawnShape3D() {
+        return spawnShape3D;
+    }
+
+    public BaseItemType setSpawnShape3D(Shape3D spawnShape3D) {
+        this.spawnShape3D = spawnShape3D;
         return this;
     }
 }

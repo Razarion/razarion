@@ -24,9 +24,8 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededExcept
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.SpawnItemService;
 import com.btxtech.shared.gameengine.planet.CollisionService;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -54,8 +53,6 @@ public class BotItemContainer {
     private BaseItemService baseItemService;
     @Inject
     private CollisionService collisionService;
-    @Inject
-    private SpawnItemService beamService;
     @Inject
     private Instance<BotSyncBaseItem> baseItemInstance;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -188,7 +185,7 @@ public class BotItemContainer {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(botItemConfig.getBaseItemTypeId());
         if (botItemConfig.isCreateDirectly()) {
             Index position = getPosition(botItemConfig.getPlace(), toBeBuilt);
-            beamService.spawnSyncItem(toBeBuilt, position, playerBase);
+            baseItemService.createSyncBaseItem4Beam(toBeBuilt, position, playerBase);
             currentItemCreation.startSpawning(botItemConfig);
         } else {
             BotSyncBaseItem botSyncBuilder = getFirstIdleBuilder(toBeBuilt);

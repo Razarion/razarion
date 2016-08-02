@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -5,10 +5,9 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.ImageDescriptor;
-import com.btxtech.uiservice.renderer.ModelMatricesProvider;
 import com.btxtech.uiservice.renderer.PreRenderEvent;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -27,7 +26,7 @@ import java.util.Map;
  * *
  */
 @Singleton
-public class BaseItemUiService implements ModelMatricesProvider {
+public class BaseItemUiService {
     // private Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
@@ -76,11 +75,6 @@ public class BaseItemUiService implements ModelMatricesProvider {
         return vertexContainers.get(id);
     }
 
-    @Override
-    public Collection<ModelMatrices> provideModelMatrices(int id) {
-        return baseItemIdModelMatrices.get(id);
-    }
-
     public ImageDescriptor getImageDescriptor() {
         return imageDescriptor;
     }
@@ -99,5 +93,18 @@ public class BaseItemUiService implements ModelMatricesProvider {
 
     public void setSpecularHardness(double specularHardness) {
         this.specularHardness = specularHardness;
+    }
+
+
+    public Collection<BaseItemType> getBaseItemTypes() {
+        return itemTypeService.getItemTypes(BaseItemType.class);
+    }
+
+    public Collection<ModelMatrices> provideSpawnModelMatrices() {
+        Collection<ModelMatrices> modelMatrices = new ArrayList<>();
+        for (SyncBaseItem syncBaseItem : baseItemService.getBeamingSyncBaseItems()) {
+            modelMatrices.add(syncBaseItem.createModelMatrices());
+        }
+        return modelMatrices;
     }
 }

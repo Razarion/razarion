@@ -6,8 +6,8 @@ import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncTickItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncTickItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -15,6 +15,7 @@ import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -46,9 +47,7 @@ public class PlanetService implements Runnable {
     @Inject
     private BaseItemService baseItemService;
     @Inject
-    private SpawnItemService spawnItemService;
-    @Inject
-    private ActivityService activityService;
+    private Instance<ActivityService> activityServiceInstance;
     // @Inject
     // private CommandService commandService;
     private final HashSet<SyncTickItem> activeItems = new HashSet<>();
@@ -85,7 +84,6 @@ public class PlanetService implements Runnable {
             // TODO Moving (also pushed away items, ev targed reached)
             // TODO building, attacking,
             pathingService.tick();
-            spawnItemService.tick();
             //
             //
             synchronized (activeItems) {
@@ -106,7 +104,7 @@ public class PlanetService implements Runnable {
                             try {
                                 activeItem.stop();
                                 addGuardingBaseItem(activeItem);
-                                activityService.onSyncItemDeactivated(activeItem);
+                                activityServiceInstance.get().onSyncItemDeactivated(activeItem);
                             } catch (Throwable t) {
                                 exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
                             }
@@ -117,19 +115,19 @@ public class PlanetService implements Runnable {
                     } catch (PositionTakenException e) {
                         activeItem.stop();
                         iterator.remove();
-                        activityService.onPositionTakenException(e);
+                        activityServiceInstance.get().onPositionTakenException(e);
                     } catch (PathCanNotBeFoundException e) {
                         activeItem.stop();
                         iterator.remove();
-                        activityService.onPathCanNotBeFoundException(e);
+                        activityServiceInstance.get().onPathCanNotBeFoundException(e);
                     } catch (PlaceCanNotBeFoundException e) {
                         activeItem.stop();
                         iterator.remove();
-                        activityService.onPlaceCanNotBeFoundException(e);
+                        activityServiceInstance.get().onPlaceCanNotBeFoundException(e);
                     } catch (Throwable t) {
                         activeItem.stop();
                         iterator.remove();
-                        activityService.onThrowable(t);
+                        activityServiceInstance.get().onThrowable(t);
                     }
                 }
             }

@@ -11,13 +11,11 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.datatypes.syncobject;
+package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
 /**
  * User: beat

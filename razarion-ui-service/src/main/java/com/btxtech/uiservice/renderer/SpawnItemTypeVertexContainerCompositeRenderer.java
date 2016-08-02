@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.uiservice.item.SpawnItemUiService;
+import com.btxtech.uiservice.item.BaseItemUiService;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -13,7 +13,7 @@ import java.util.Collection;
  */
 public class SpawnItemTypeVertexContainerCompositeRenderer extends VertexContainerCompositeRenderer {
     @Inject
-    private SpawnItemUiService spawnItemUiService;
+    private BaseItemUiService baseItemUiService;
     @Inject
     private Instance<AbstractVertexContainerRenderUnit> instance;
 
@@ -29,7 +29,6 @@ public class SpawnItemTypeVertexContainerCompositeRenderer extends VertexContain
 
     @Override
     protected Collection<ModelMatrices> provideModelMatrices() {
-        SpanItemTypeShape3DRenderer spanItemTypeShape3DRenderer = (SpanItemTypeShape3DRenderer) getElement3DRenderer().getShape3DRenderer();
-        return spawnItemUiService.provideModelMatrices(spanItemTypeShape3DRenderer.getSpawnItemType());
+        return baseItemUiService.provideSpawnModelMatrices();
     }
 }

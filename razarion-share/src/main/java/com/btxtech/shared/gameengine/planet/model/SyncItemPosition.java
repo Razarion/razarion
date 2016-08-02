@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.datatypes.syncobject;
+package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
@@ -22,12 +22,12 @@ public class SyncItemPosition {
         this.radius = radius;
     }
 
-    public ModelMatrices createModelMatrices(SyncItem syncItem) {
+    public ModelMatrices createModelMatrices(SyncBaseItem syncBaseItem) {
         Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
         double yRotation = direction.unsignedAngle(norm) - MathHelper.QUARTER_RADIANT;
         Matrix4 rotation = Matrix4.createZRotation(angle).multiply(Matrix4.createYRotation(-yRotation));
         Matrix4 translationRotation = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ()).multiply(rotation);
-        return new ModelMatrices().setSyncItem(syncItem).setModel(translationRotation).setNorm(rotation);
+        return new ModelMatrices().setSyncBaseItem(syncBaseItem).setModel(translationRotation).setNorm(rotation);
     }
 
     public Vertex getPosition() {

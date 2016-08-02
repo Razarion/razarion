@@ -11,9 +11,11 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItemPosition;
+import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItemPosition;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -35,6 +37,8 @@ public class BaseItemService {
     private CollisionService collisionService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private TerrainService terrainService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private final Map<PlayerBase, Collection<SyncBaseItem>> baseItems = new HashMap<>();
     private int lastBaseItId;
@@ -52,7 +56,17 @@ public class BaseItemService {
         }
     }
 
-    public SyncItem createSyncBaseItem(BaseItemType toBeBuilt, Vertex position, PlayerBase base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, Vertex position, PlayerBase base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
+
+    public SyncItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, Vertex position, PlayerBase base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
+
+    public SyncItem createSyncBaseItem4Beam(BaseItemType toBeBuilt, Index position, PlayerBase base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         if (!isAlive(base)) {
             throw new BaseDoesNotExistException(base);
         }
@@ -65,10 +79,12 @@ public class BaseItemService {
             checkItemLimit4ItemAdding(toBeBuilt, base);
         }
 
-        position = collisionService.correctPosition(position, toBeBuilt);
+        Vertex vertexPosition = terrainService.getVertexAt(position);
+        vertexPosition = collisionService.correctPosition(vertexPosition, toBeBuilt);
 
-        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncItem(SyncBaseItem.class, toBeBuilt, new SyncItemPosition(position, toBeBuilt.getRadius()));
-        syncBaseItem.setup(base);
+        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncItem(SyncBaseItem.class, toBeBuilt, new SyncItemPosition(vertexPosition, toBeBuilt.getRadius()));
+        syncBaseItem.setup(base, ItemLifecycle.SPAWN);
+        syncBaseItem.setSpawnProgress(0);
 
         synchronized (baseItems) {
             Collection<SyncBaseItem> itemsInBase = baseItems.get(base);
@@ -79,7 +95,7 @@ public class BaseItemService {
             itemsInBase.add(syncBaseItem);
         }
 
-        activityService.onSyncBaseItemCreated(syncBaseItem, createdBy);
+        activityService.onSpawnSyncItem(syncBaseItem);
 
         return syncBaseItem;
     }
@@ -162,6 +178,20 @@ public class BaseItemService {
         synchronized (baseItems) {
             for (Collection<SyncBaseItem> syncBaseItems : baseItems.values()) {
                 total.addAll(syncBaseItems);
+            }
+        }
+        return total;
+    }
+
+    public Collection<SyncBaseItem> getBeamingSyncBaseItems() {
+        Collection<SyncBaseItem> total = new ArrayList<>();
+        synchronized (baseItems) {
+            for (Collection<SyncBaseItem> syncBaseItems : baseItems.values()) {
+                for (SyncBaseItem syncBaseItem : syncBaseItems) {
+                    if (syncBaseItem.getItemLifecycle() == ItemLifecycle.SPAWN) {
+                        total.addAll(syncBaseItems);
+                    }
+                }
             }
         }
         return total;

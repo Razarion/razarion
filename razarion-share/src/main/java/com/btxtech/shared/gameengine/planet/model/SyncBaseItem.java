@@ -11,7 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.datatypes.syncobject;
+package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.datatypes.Index;
@@ -82,9 +82,12 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private Integer containedIn;
     private boolean isMoneyEarningOrConsuming = false;
     private PlayerBase killedBy;
+    private ItemLifecycle itemLifecycle;
+    private double spawnProgress;
 
-    public void setup(PlayerBase base) throws NoSuchItemTypeException {
+    public void setup(PlayerBase base, ItemLifecycle itemLifecycle) throws NoSuchItemTypeException {
         this.base = base;
+        this.itemLifecycle = itemLifecycle;
 
         BaseItemType baseItemType = getBaseItemType();
         health = baseItemType.getHealth();
@@ -164,6 +167,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         } else {
             syncHouse = null;
         }
+    }
+
+    public ItemLifecycle getItemLifecycle() {
+        return itemLifecycle;
     }
 
     private void checkBase(PlayerBase syncBase) {
@@ -278,6 +285,17 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     @Override
     public boolean tick() throws ItemDoesNotExistException, NoSuchItemTypeException {
+        if (itemLifecycle == ItemLifecycle.SPAWN) {
+            spawnProgress += PlanetService.TICK_FACTOR / (getBaseItemType().getSpawnDurationMillis() / 1000.0);
+            if (spawnProgress >= 1.0) {
+                spawnProgress = 1.0;
+                itemLifecycle = ItemLifecycle.ALIVE;
+                activityService.onSpawnSyncItemFinished(this);
+            } else {
+                return true;
+            }
+        }
+
         if (hasSyncConsumer() && !getSyncConsumer().isOperating()) {
             return false;
         }
@@ -645,5 +663,13 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (syncWeapon.isInRange(syncBaseItem)) {
             commandService.defend(this, syncBaseItem);
         }
+    }
+
+    public double getSpawnProgress() {
+        return spawnProgress;
+    }
+
+    public void setSpawnProgress(double spawnProgress) {
+        this.spawnProgress = spawnProgress;
     }
 }

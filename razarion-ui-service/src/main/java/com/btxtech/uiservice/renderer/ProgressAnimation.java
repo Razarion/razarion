@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.TimeValueSample;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncSpawnItem;
 import com.btxtech.shared.utils.InterpolationUtils;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class ProgressAnimation {
     }
 
     public ModelMatrices mix(ModelMatrices modelMatrix) {
-        double progress = ((SyncSpawnItem) modelMatrix.getSyncItem()).getProgress();
+        double progress = modelMatrix.getSyncBaseItem().getSpawnProgress();
         double value = calculateValue(progress);
         Matrix4 scaleMatrix = setupMatrix(value);
         return modelMatrix.multiply(scaleMatrix, null);

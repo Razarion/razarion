@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.ActiveProjectileGroup;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

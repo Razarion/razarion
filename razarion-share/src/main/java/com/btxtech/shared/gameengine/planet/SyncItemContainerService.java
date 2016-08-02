@@ -1,8 +1,8 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItem;
-import com.btxtech.shared.gameengine.datatypes.syncobject.SyncItemPosition;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItemPosition;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
