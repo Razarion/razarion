@@ -57,11 +57,11 @@ public class SlopeSidebar extends Composite implements LeftSideBarContent {
     @DataField
     private Button fractalHeight;
     @Inject
-    @Bound(property = "groundSkeleton.topBmDepth")
+    @Bound(property = "groundSkeletonConfig.topBmDepth")
     @DataField
     private DoubleBox topBmDepth;
     @Inject
-    @Bound(property = "groundSkeleton.bottomBmDepth")
+    @Bound(property = "groundSkeletonConfig.bottomBmDepth")
     @DataField
     private DoubleBox bottomBmDepth;
     @Inject

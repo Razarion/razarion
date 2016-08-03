@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -13,15 +14,16 @@ import java.util.Set;
  * Date: 11.09.12
  * Time: 14:36
  */
+@Portable
 public class Region implements Serializable {
     private int id;
     private Collection<Rectangle> rectangles;
     private transient Set<Index> tiles;
 
     /**
-     * Used by GWT
+     * Used by Errai
      */
-    Region() {
+    public Region() {
     }
 
     public Region(int id, Collection<Rectangle> rectangles) {

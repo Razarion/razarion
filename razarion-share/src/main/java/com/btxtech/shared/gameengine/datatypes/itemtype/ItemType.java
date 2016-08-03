@@ -15,17 +15,14 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 22:50:01
  */
-@Portable
 public abstract class ItemType {
     private int id;
     private String name;

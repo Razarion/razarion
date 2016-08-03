@@ -58,18 +58,18 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @DataField
     private LightWidget lightConfig;
     @Inject
-    @Bound(property = "slopeSkeleton.bumpMapDepth")
+    @Bound(property = "slopeSkeletonConfig.bumpMapDepth")
     @DataField
     private DoubleBox bumpMapDepth;
     @Inject
-    @Bound(property = "slopeSkeleton.verticalSpace")
+    @Bound(property = "slopeSkeletonConfig.verticalSpace")
     @DataField
     private IntegerBox verticalSpace;
     @Inject
     @DataField
     private Button fractalFieldButton;
     @Inject
-    @Bound(property = "slopeSkeleton.slopeOriented")
+    @Bound(property = "slopeSkeletonConfig.slopeOriented")
     @DataField
     private CheckBox slopeOriented;
     @DataField
