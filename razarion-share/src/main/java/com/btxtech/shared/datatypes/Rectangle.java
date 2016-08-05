@@ -15,7 +15,6 @@ package com.btxtech.shared.datatypes;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,7 +25,7 @@ import java.util.List;
  * Time: 11:38:26 AM
  */
 @Portable
-public class Rectangle implements Serializable {
+public class Rectangle {
     private Index start;
     private Index endExclusive;
 

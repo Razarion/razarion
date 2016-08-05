@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
@@ -15,7 +14,7 @@ import java.util.Set;
  * Time: 14:36
  */
 @Portable
-public class Region implements Serializable {
+public class Region {
     private int id;
     private Collection<Rectangle> rectangles;
     private transient Set<Index> tiles;

@@ -18,9 +18,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.btxtech</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>razarion-ui-service</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -29,9 +29,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.btxtech</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>razarion-share</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -40,9 +40,14 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.btxtech</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>razarion-server-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-server-emulation</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
@@ -70,7 +75,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.6.2</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

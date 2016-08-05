@@ -1,26 +1,24 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.servercommon.collada.ColladaException;
-import com.btxtech.server.persistence.StoryboardPersistenceService;
+import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.server.persistence.TerrainElementPersistenceService;
 import com.btxtech.server.system.DebugHelper;
-import com.btxtech.shared.StoryboardService;
+import com.btxtech.servercommon.collada.Emulation;
+import com.btxtech.shared.StoryboardProvider;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.system.ExceptionHandler;
-import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 
 /**
  * Created by Beat
  * 06.07.2016.
  */
-public class StoryboardServiceImpl implements StoryboardService {
+public class StoryboardProviderImpl implements StoryboardProvider {
     @Inject
-    private StoryboardPersistenceService storyboardPersistenceService;
+    @Emulation
+    private StoryboardPersistence storyboardPersistence;
     @Inject
     private TerrainElementPersistenceService terrainElementPersistenceService;
     @Inject
@@ -32,7 +30,7 @@ public class StoryboardServiceImpl implements StoryboardService {
     @Transactional
     public StoryboardConfig loadStoryboard() {
         try {
-            StoryboardConfig storyboardConfig = storyboardPersistenceService.load();
+            StoryboardConfig storyboardConfig = storyboardPersistence.load();
             // TODO storyboardConfig.getPlanetConfig().setGroundSkeletonConfig(terrainElementPersistenceService.loadGroundSkeleton());
             // TODO storyboardConfig.getPlanetConfig().setSlopeSkeletonConfigs(terrainElementPersistenceService.loadSlopeSkeletons());
             // TODO storyboardConfig.getPlanetConfig().setTerrainObjects(terrainElementPersistenceService.loadTerrainObjects());

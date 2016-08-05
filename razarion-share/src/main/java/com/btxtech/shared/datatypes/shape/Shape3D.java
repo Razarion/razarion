@@ -10,8 +10,18 @@ import java.util.List;
  */
 @Portable
 public class Shape3D {
+    private String tag;
     private List<Element3D> element3Ds;
     private List<ModelMatrixAnimation> modelMatrixAnimations;
+
+    public String getTag() {
+        return tag;
+    }
+
+    public Shape3D setTag(String tag) {
+        this.tag = tag;
+        return this;
+    }
 
     public List<Element3D> getElement3Ds() {
         return element3Ds;
@@ -19,6 +29,9 @@ public class Shape3D {
 
     public Shape3D setElement3Ds(List<Element3D> element3Ds) {
         this.element3Ds = element3Ds;
+        for (Element3D element3D : element3Ds) {
+            element3D.setShape3DTag(tag);
+        }
         return this;
     }
 

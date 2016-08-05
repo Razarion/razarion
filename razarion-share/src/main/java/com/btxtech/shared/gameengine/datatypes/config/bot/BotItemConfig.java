@@ -16,7 +16,7 @@ public class BotItemConfig {
     private boolean moveRealmIfIdle;
     private Integer idleTtl;
     private boolean noRebuild;
-    private Long rePopTime;
+    private Integer rePopTime;
 
     public BotItemConfig setBaseItemTypeId(int baseItemTypeId) {
         this.baseItemTypeId = baseItemTypeId;
@@ -53,7 +53,7 @@ public class BotItemConfig {
         return this;
     }
 
-    public BotItemConfig setRePopTime(Long rePopTime) {
+    public BotItemConfig setRePopTime(Integer rePopTime) {
         this.rePopTime = rePopTime;
         return this;
     }
@@ -86,11 +86,7 @@ public class BotItemConfig {
         return noRebuild;
     }
 
-    public boolean hasRePopTime() {
-        return rePopTime != null;
-    }
-
-    public long getRePopTime() {
+    public Integer getRePopTime() {
         return rePopTime;
     }
 }

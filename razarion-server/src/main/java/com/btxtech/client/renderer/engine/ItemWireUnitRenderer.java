@@ -25,7 +25,7 @@ public class ItemWireUnitRenderer extends AbstractWebGlUnitRenderer {
     private VertexShaderAttribute positions;
     private VertexShaderAttribute barycentrics;
     private ShaderTextureCoordinateAttribute textureCoordinate;
-    private WebGlUniformTexture webGLTexture;
+    private WebGlUniformTexture_OLD webGLTexture;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject

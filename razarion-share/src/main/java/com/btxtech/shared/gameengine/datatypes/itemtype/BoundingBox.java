@@ -4,15 +4,15 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.model.SyncItemArea;
 import com.btxtech.shared.utils.MathHelper;
-
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 17.08.2011
  * Time: 13:00:05
  */
-public class BoundingBox implements Serializable {
+@Portable
+public class BoundingBox {
     private int radius;
     private int diameter;
     private double[] angels;
@@ -22,7 +22,7 @@ public class BoundingBox implements Serializable {
     /**
      * Used by GWT
      */
-    protected BoundingBox() {
+    public BoundingBox() {
     }
 
     public BoundingBox(int radius, double[] angels) {

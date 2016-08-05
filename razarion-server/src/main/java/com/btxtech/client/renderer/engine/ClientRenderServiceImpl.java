@@ -3,16 +3,18 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.webgl.WebGlException;
+import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.CompositeRenderer;
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.AbstractRenderUnit;
+import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
 
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,7 +46,9 @@ public class ClientRenderServiceImpl extends RenderService {
     private TerrainObjectService terrainObjectService;
     @Inject
     private TerrainEditor terrainEditor;
+    @Deprecated
     private List<CompositeRenderer> renderQueue;
+    @Deprecated
     private Collection<CompositeRenderer> terrainObjectRenders;
     private Collection<TerrainEditorUnitRenderer> terrainEditorRenderers;
     private TerrainEditorCursorUnitRenderer terrainEditorCursorRenderer;
@@ -60,13 +64,17 @@ public class ClientRenderServiceImpl extends RenderService {
     private boolean showObjectEditor = false;
     private CompositeRenderer monitor;
     private CompositeRenderer terrainNorm;
+    @Deprecated
     private Collection<CompositeRenderer> terrainObjectNorms;
     private int framesCount = 0;
     private long lastTime = 0;
 
+    public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
+        initFrameBuffer();
+    }
+
     @Override
     protected void setupRenderers() {
-        initFrameBuffer();
         renderQueue = new ArrayList<>();
         terrainObjectNorms = new ArrayList<>();
         terrainObjectRenders = new ArrayList<>();

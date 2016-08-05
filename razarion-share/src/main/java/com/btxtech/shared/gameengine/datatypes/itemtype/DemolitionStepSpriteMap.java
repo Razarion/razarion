@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.Collection;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Collection;
  * Date: 06.11.12
  * Time: 18:02
  */
-public class DemolitionStepSpriteMap implements Serializable {
+@Portable
+public class DemolitionStepSpriteMap {
     private int animationFrames;
     private int animationDuration;
     private Collection<ItemClipPosition> itemClipPositions;

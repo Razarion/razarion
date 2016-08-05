@@ -3,15 +3,15 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 01.11.12
  * Time: 14:04
  */
-public class ItemClipPosition implements Serializable {
+@Portable
+public class ItemClipPosition {
     private int clipId;
     private Index[] positions;
 

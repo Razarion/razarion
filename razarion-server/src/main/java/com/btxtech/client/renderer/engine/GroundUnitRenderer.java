@@ -23,11 +23,11 @@ public class GroundUnitRenderer extends AbstractWebGlUnitRenderer {
     private VertexShaderAttribute normals;
     private VertexShaderAttribute tangents;
     private FloatShaderAttribute splattings;
-    private WebGlUniformTexture topTexture;
-    private WebGlUniformTexture topBm;
-    private WebGlUniformTexture splattingTexture;
-    private WebGlUniformTexture bottomTexture;
-    private WebGlUniformTexture bottomBm;
+    private WebGlUniformTexture_OLD topTexture;
+    private WebGlUniformTexture_OLD topBm;
+    private WebGlUniformTexture_OLD splattingTexture;
+    private WebGlUniformTexture_OLD bottomTexture;
+    private WebGlUniformTexture_OLD bottomBm;
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject

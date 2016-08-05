@@ -58,8 +58,6 @@ public abstract class RenderService {
         for (CompositeRenderer compositeRenderer : renderQueue) {
             compositeRenderer.draw();
         }
-        // Do old stuff render
-        doRender();
     }
 
     public void fillBuffers() {

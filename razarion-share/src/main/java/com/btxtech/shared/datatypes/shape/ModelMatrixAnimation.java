@@ -1,6 +1,7 @@
 package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
 
@@ -8,6 +9,7 @@ import java.util.List;
  * Created by Beat
  * 28.07.2016.
  */
+@Portable
 public class ModelMatrixAnimation {
     public enum Modification {
         LOCATION,

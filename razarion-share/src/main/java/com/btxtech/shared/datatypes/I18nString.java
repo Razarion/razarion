@@ -1,6 +1,7 @@
 package com.btxtech.shared.datatypes;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.Map;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Map;
  * Date: 13.01.13
  * Time: 13:14
  */
-public class I18nString implements Serializable {
+@Portable
+public class I18nString {
     public enum Language {
         DEFAULT,
         DE
@@ -29,7 +31,7 @@ public class I18nString implements Serializable {
     /**
      * Used by GWT
      */
-    I18nString() {
+    public I18nString() {
     }
 
     public I18nString(Map<Language, String> localizedStrings) {

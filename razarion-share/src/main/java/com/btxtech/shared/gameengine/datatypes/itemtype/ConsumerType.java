@@ -13,20 +13,21 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 23.12.2009
  * Time: 12:54:48
  */
-public class ConsumerType implements Serializable {
+@Portable
+public class ConsumerType {
     private int wattage;
 
     /**
      * Used by GWT
      */
-    ConsumerType() {
+    public ConsumerType() {
     }
 
     public ConsumerType(int wattage) {

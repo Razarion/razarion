@@ -13,6 +13,7 @@ public abstract class AbstractRenderUnit {
     private CompositeRenderer compositeRenderer;
     private int elementCount;
 
+    @Deprecated
     public abstract void setupImages();
 
     public abstract void fillBuffers();
@@ -49,7 +50,7 @@ public abstract class AbstractRenderUnit {
         elementCount = mesh.size();
     }
 
-    protected int getElementCount() {
+    public int getElementCount() {
         return elementCount;
     }
 
@@ -59,5 +60,9 @@ public abstract class AbstractRenderUnit {
 
     protected int getId() {
         return compositeRenderer.getId();
+    }
+
+    public String helperString() {
+        return "???";
     }
 }

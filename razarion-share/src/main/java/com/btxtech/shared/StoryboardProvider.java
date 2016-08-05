@@ -11,9 +11,8 @@ import javax.ws.rs.core.MediaType;
  * Created by Beat
  * 06.07.2016.
  */
-@Deprecated // Better name. StoryboardService already used
 @Path(RestUrl.STORYBOARD_SERVICE_PATH)
-public interface StoryboardService {
+public interface StoryboardProvider {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

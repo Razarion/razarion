@@ -13,7 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.Collection;
 
 /**
@@ -21,14 +22,15 @@ import java.util.Collection;
  * Date: 17.11.2009
  * Time: 23:18:42
  */
-public class FactoryType implements Serializable {
+@Portable
+public class FactoryType {
     private double progress;
     private Collection<Integer> ableToBuild;
 
     /**
      * Used by GWT
      */
-    FactoryType() {
+    public FactoryType() {
     }
 
     public FactoryType(double progress, Collection<Integer> ableToBuild) {

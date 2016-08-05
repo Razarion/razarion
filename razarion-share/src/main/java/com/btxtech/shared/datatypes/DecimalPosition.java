@@ -14,8 +14,8 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -26,7 +26,8 @@ import java.util.List;
  * Date: 03.10.2010
  * Time: 13:01:16
  */
-public class DecimalPosition implements Serializable {
+@Portable
+public class DecimalPosition {
     public static final DecimalPosition NULL = new DecimalPosition(0, 0);
     private double x;
     private double y;
@@ -34,7 +35,7 @@ public class DecimalPosition implements Serializable {
     /**
      * Used by GWT
      */
-    DecimalPosition() {
+    public DecimalPosition() {
     }
 
     public DecimalPosition(double x, double y) {

@@ -18,6 +18,7 @@ import javax.inject.Inject;
  * 28.12.2015.
  */
 @Dependent
+@Deprecated
 public class ItemUnitRenderer extends AbstractWebGlUnitRenderer {
     // private Logger logger = Logger.getLogger(ItemUnitRenderer.class.getName());
     @Inject
@@ -31,7 +32,7 @@ public class ItemUnitRenderer extends AbstractWebGlUnitRenderer {
     private VertexShaderAttribute positions;
     private VertexShaderAttribute norms;
     private ShaderTextureCoordinateAttribute textureCoordinateAttribute;
-    private WebGlUniformTexture texture;
+    private WebGlUniformTexture_OLD texture;
 
     @PostConstruct
     public void init() {

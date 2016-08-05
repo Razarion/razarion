@@ -22,7 +22,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 26.07.2016.
  */
-public class DevToolsAbstractItemUnitRenderer extends VertexContainerRenderUnit implements VertexShader {
+public class DevToolsItemUnitRenderer extends VertexContainerRenderUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

@@ -13,20 +13,21 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 23.12.2009
  * Time: 12:44:52
  */
-public class GeneratorType implements Serializable {
+@Portable
+public class GeneratorType {
     private int wattage;
 
     /**
      * Used by GWT
      */
-    GeneratorType() {
+    public GeneratorType() {
     }
 
     public GeneratorType(int wattage) {

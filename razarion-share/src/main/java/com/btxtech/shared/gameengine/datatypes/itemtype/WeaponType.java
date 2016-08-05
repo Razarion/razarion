@@ -15,8 +15,8 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import com.btxtech.shared.datatypes.Index;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -25,7 +25,8 @@ import java.util.Map;
  * Date: 17.11.2009
  * Time: 23:13:22
  */
-public class WeaponType implements Serializable {
+@Portable
+public class WeaponType {
     private int range;
     private int damage;
     private Integer detonationRadius;
@@ -43,7 +44,7 @@ public class WeaponType implements Serializable {
     /**
      * Used by GWT
      */
-    WeaponType() {
+    public WeaponType() {
     }
 
     public WeaponType(int range, Integer projectileSpeed, int damage, Integer detonationRadius, double reloadTime, Integer muzzleFlashClipId, Integer projectileClipId, Integer projectileDetonationClipId, Collection<Integer> disallowedItemTypes, Map<Integer, Double> itemTypeFactors, Index[][] muzzleFlashPositions) {

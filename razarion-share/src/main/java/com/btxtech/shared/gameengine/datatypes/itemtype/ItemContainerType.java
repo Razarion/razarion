@@ -15,8 +15,8 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -24,7 +24,8 @@ import java.util.Collection;
  * Date: 01.05.2010
  * Time: 10:54:25
  */
-public class ItemContainerType implements Serializable {
+@Portable
+public class ItemContainerType {
     private Collection<Integer> ableToContain;
     private SurfaceType operationSurfaceType;
     private int maxCount;

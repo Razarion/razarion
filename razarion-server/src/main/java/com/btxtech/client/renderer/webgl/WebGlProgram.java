@@ -13,7 +13,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 11.04.2015.
  */
-@Dependent // Why is dependent needed???
+@Dependent
 public class WebGlProgram {
     private WebGLProgram program;
     private WebGLShader vs;

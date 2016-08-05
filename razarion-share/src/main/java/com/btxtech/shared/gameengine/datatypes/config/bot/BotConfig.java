@@ -2,8 +2,8 @@ package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 
 import com.btxtech.shared.gameengine.datatypes.Region;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,7 +11,8 @@ import java.util.List;
  * Date: 10.10.2011
  * Time: 13:36:14
  */
-public class BotConfig implements Serializable {
+@Portable
+public class BotConfig {
     private int id;
     private boolean npc;
     private int actionDelay;

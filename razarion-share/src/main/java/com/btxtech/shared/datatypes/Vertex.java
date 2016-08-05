@@ -29,18 +29,33 @@ public class Vertex {
     }
 
     public Vertex(double x, double y, double z) {
+        if(Double.isNaN(x) || Double.isInfinite(x)) {
+            throw new IllegalArgumentException("x is invalid: " + x);
+        }
+        if(Double.isNaN(y) || Double.isInfinite(y)) {
+            throw new IllegalArgumentException("y is invalid: " + y);
+        }
+        if(Double.isNaN(z) || Double.isInfinite(z)) {
+            throw new IllegalArgumentException("z is invalid: " + z);
+        }
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
     public Vertex(DecimalPosition xy, double z) {
+        if(Double.isNaN(z) || Double.isInfinite(z)) {
+            throw new IllegalArgumentException("z is invalid: " + z);
+        }
         this.x = xy.getX();
         this.y = xy.getY();
         this.z = z;
     }
 
     public Vertex(Index xy, double z) {
+        if(Double.isNaN(z) || Double.isInfinite(z)) {
+            throw new IllegalArgumentException("z is invalid: " + z);
+        }
         this.x = xy.getX();
         this.y = xy.getY();
         this.z = z;

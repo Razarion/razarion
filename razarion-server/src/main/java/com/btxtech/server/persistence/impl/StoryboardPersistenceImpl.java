@@ -1,5 +1,7 @@
-package com.btxtech.server.persistence;
+package com.btxtech.server.persistence.impl;
 
+import com.btxtech.server.persistence.StoryboardEntity;
+import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.shared.dto.StoryboardConfig;
 
 import javax.inject.Singleton;
@@ -12,13 +14,14 @@ import javax.transaction.Transactional;
 
 /**
  * Created by Beat
- * 06.07.2016.
+ * 03.08.2016.
  */
 @Singleton
-public class StoryboardPersistenceService {
+public class StoryboardPersistenceImpl implements StoryboardPersistence {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Override
     @Transactional
     public StoryboardConfig load() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -28,5 +31,4 @@ public class StoryboardPersistenceService {
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         return entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig();
     }
-
 }

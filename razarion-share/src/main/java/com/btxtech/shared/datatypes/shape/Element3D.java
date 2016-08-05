@@ -1,13 +1,17 @@
 package com.btxtech.shared.datatypes.shape;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.List;
 
 /**
  * Created by Beat
  * 28.07.2016.
  */
+@Portable
 public class Element3D {
     private String id;
+    private String shape3DTag;
     private List<VertexContainer> vertexContainers;
 
     public String getId() {
@@ -19,12 +23,19 @@ public class Element3D {
         return this;
     }
 
+    public void setShape3DTag(String shape3DTag) {
+        this.shape3DTag = shape3DTag;
+    }
+
     public List<VertexContainer> getVertexContainers() {
         return vertexContainers;
     }
 
     public Element3D setVertexContainers(List<VertexContainer> vertexContainers) {
         this.vertexContainers = vertexContainers;
+        for (VertexContainer vertexContainer : vertexContainers) {
+            vertexContainer.setShapeElementTag(shape3DTag + "|" + id);
+        }
         return this;
     }
 

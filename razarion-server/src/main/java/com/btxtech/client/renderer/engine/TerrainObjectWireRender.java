@@ -32,7 +32,7 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     private VertexShaderAttribute positions;
     private VertexShaderAttribute barycentric;
     private ShaderTextureCoordinateAttribute textureCoordinate;
-    private WebGlUniformTexture webGLTexture;
+    private WebGlUniformTexture_OLD webGLTexture;
     private int terrainObjectId;
 
     @PostConstruct

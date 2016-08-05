@@ -17,4 +17,8 @@ public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUn
         return vertexContainer;
     }
 
+    @Override
+    public String helperString() {
+        return vertexContainer.getShapeElementVertexContainerTag();
+    }
 }

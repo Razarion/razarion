@@ -2,6 +2,7 @@ package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.editor.object.TerrainObjectEditor;
 import com.btxtech.client.editor.terrain.TerrainEditor;
+import com.btxtech.shared.StoryboardProvider;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import org.jboss.errai.common.client.api.Caller;
@@ -27,7 +28,7 @@ public class LoadStoryboardTask extends AbstractStartupTask {
     private TerrainEditor terrainEditor;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<com.btxtech.shared.StoryboardService> serviceCaller;
+    private Caller<StoryboardProvider> serviceCaller;
     private Logger logger = Logger.getLogger(LoadStoryboardTask.class.getName());
 
     @Override

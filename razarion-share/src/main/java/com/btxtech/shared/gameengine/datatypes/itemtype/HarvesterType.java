@@ -13,14 +13,15 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 23:23:38
  */
-public class HarvesterType implements Serializable {
+@Portable
+public class HarvesterType {
     private int range;
     private double progress;
     private ItemClipPosition harvesterClip;
@@ -28,7 +29,7 @@ public class HarvesterType implements Serializable {
     /**
      * Used by GWT
      */
-    HarvesterType() {
+    public HarvesterType() {
     }
 
     public HarvesterType(int range, double progress, ItemClipPosition harvesterClip) {

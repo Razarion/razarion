@@ -3,9 +3,9 @@ package com.btxtech.server.rest;
 import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity_;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.ImageService;
 import com.btxtech.shared.dto.ImageGalleryItem;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -28,6 +28,7 @@ import java.util.Map;
 public class ImageServiceImpl implements ImageService {
     @PersistenceContext
     private EntityManager entityManager;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
 
@@ -43,7 +44,7 @@ public class ImageServiceImpl implements ImageService {
             Tuple tupleResult = entityManager.createQuery(cq).getSingleResult();
             return Response.ok(tupleResult.get(0)).lastModified(new Date()).build();
         } catch (Throwable e) {
-            exceptionHandler.handleException(e);
+            exceptionHandler.handleException("Can not load image for id: " + id, e);
             throw e;
         }
     }

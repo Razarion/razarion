@@ -1,20 +1,21 @@
 package com.btxtech.shared.gameengine.datatypes.info;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 31.05.13
  * Time: 13:44
  */
-public class SimpleGuild implements Serializable {
+@Portable
+public class SimpleGuild {
     private int id;
     private String name;
 
     /**
      * Used by GWT
      */
-    protected SimpleGuild() {
+    public SimpleGuild() {
     }
 
     public SimpleGuild(int id, String name) {

@@ -33,7 +33,7 @@ public class TerrainObjectUnitRenderer extends AbstractWebGlUnitRenderer {
     private VertexShaderAttribute positions;
     private VertexShaderAttribute normals;
     private ShaderTextureCoordinateAttribute textureCoordinate;
-    private WebGlUniformTexture webGLTexture;
+    private WebGlUniformTexture_OLD webGLTexture;
     private Color ambient;
     private Color diffuse;
     private int terrainObjectId;

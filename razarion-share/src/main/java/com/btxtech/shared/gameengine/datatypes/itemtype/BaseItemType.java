@@ -14,12 +14,14 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 04.12.2009
  * Time: 20:12:06
  */
+@Portable
 public class BaseItemType extends ItemType {
     private double radius;
     private int health;

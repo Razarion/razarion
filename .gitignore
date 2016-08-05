@@ -20,4 +20,7 @@ razarion-share/razarion-share.iml
 razarion-share/target/
 razarion-test/razarion-test.iml
 razarion-test/target/
+razarion-server-emulation/razarion-server-emulation.iml
+razarion-server-emulation/target/
+
 

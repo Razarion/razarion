@@ -56,6 +56,7 @@
         <module>razarion-dev-tools</module>
         <module>razarion-server-common</module>
         <module>razarion-server</module>
+        <module>razarion-server-emulation</module>
         <module>razarion-share</module>
         <module>razarion-test</module>
     </modules>

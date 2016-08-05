@@ -13,14 +13,12 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
-import java.io.Serializable;
-
 /**
  * User: beat
  * Date: Aug 1, 2009
  * Time: 12:56:55 PM
  */
-public class BaseCommand implements Serializable {
+public class BaseCommand {
     private int id;
     private long timeStamp;
 

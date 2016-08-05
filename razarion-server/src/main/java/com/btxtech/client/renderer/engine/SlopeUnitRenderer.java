@@ -32,13 +32,13 @@ public class SlopeUnitRenderer extends AbstractWebGlUnitRenderer {
     private VertexShaderAttribute tangents;
     private FloatShaderAttribute slopeFactors;
     private FloatShaderAttribute groundSplatting;
-    private WebGlUniformTexture slopeTexture;
-    private WebGlUniformTexture uSlopeBm;
-    private WebGlUniformTexture groundSplattingTexture;
-    private WebGlUniformTexture groundTopTexture;
-    private WebGlUniformTexture groundTopBm;
-    private WebGlUniformTexture groundBottomTexture;
-    private WebGlUniformTexture groundBottomBm;
+    private WebGlUniformTexture_OLD slopeTexture;
+    private WebGlUniformTexture_OLD uSlopeBm;
+    private WebGlUniformTexture_OLD groundSplattingTexture;
+    private WebGlUniformTexture_OLD groundTopTexture;
+    private WebGlUniformTexture_OLD groundTopBm;
+    private WebGlUniformTexture_OLD groundBottomTexture;
+    private WebGlUniformTexture_OLD groundBottomBm;
 
     @PostConstruct
     public void init() {

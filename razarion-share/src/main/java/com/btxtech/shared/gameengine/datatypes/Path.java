@@ -15,8 +15,8 @@ package com.btxtech.shared.gameengine.datatypes;
 
 
 import com.btxtech.shared.datatypes.Index;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +26,8 @@ import java.util.List;
  * Date: May 27, 2009
  * Time: 6:29:22 PM
  */
-public class Path implements Serializable {
+@Portable
+public class Path {
     private Index start;
     private Index destination;
     private Index alternativeDestination;
@@ -37,7 +38,7 @@ public class Path implements Serializable {
     /**
      * Used by GWT
      */
-    protected Path() {
+    public Path() {
     }
 
     public Path(Index start, Index destination, boolean destinationReachable) {

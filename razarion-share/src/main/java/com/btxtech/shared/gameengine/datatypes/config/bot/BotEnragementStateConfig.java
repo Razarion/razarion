@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.Collection;
 
 /**
@@ -8,7 +9,8 @@ import java.util.Collection;
  * Date: 14.06.12
  * Time: 12:41
  */
-public class BotEnragementStateConfig implements Serializable {
+@Portable
+public class BotEnragementStateConfig {
     private String name;
     private Collection<BotItemConfig> botItems;
     private Integer enrageUpKills;

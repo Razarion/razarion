@@ -4,8 +4,8 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -13,7 +13,8 @@ import java.util.Collection;
  * Date: 01.08.12
  * Time: 13:43
  */
-public class ItemTypeSpriteMap implements Serializable {
+@Portable
+public class ItemTypeSpriteMap {
     public static enum SyncObjectState {
         BUILD_UP,
         RUN_TIME,
@@ -39,7 +40,7 @@ public class ItemTypeSpriteMap implements Serializable {
     /**
      * Used by GWT
      */
-    ItemTypeSpriteMap() {
+    public ItemTypeSpriteMap() {
     }
 
     public ItemTypeSpriteMap(BoundingBox boundingBox,

@@ -70,7 +70,7 @@ public class Need {
         }
 
         public void calculateRePopTime() {
-            if (botItemConfig.hasRePopTime()) {
+            if (botItemConfig.getRePopTime() != null) {
                 rePopTime = System.currentTimeMillis() + botItemConfig.getRePopTime();
             }
         }

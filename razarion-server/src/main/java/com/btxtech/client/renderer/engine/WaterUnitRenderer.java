@@ -29,7 +29,7 @@ public class WaterUnitRenderer extends AbstractWebGlUnitRenderer {
     private VertexShaderAttribute positions;
     private VertexShaderAttribute norms;
     private VertexShaderAttribute tangents;
-    private WebGlUniformTexture bumpMap;
+    private WebGlUniformTexture_OLD bumpMap;
 
     @PostConstruct
     public void init() {

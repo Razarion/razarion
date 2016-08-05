@@ -13,7 +13,8 @@
 
 package com.btxtech.shared.datatypes;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -22,7 +23,8 @@ import java.util.Collection;
  * Date: May 22, 2009
  * Time: 11:56:58 AM
  */
-public class Vec2dInt implements Serializable {
+@Portable
+public class Vec2dInt {
     public enum Direction {
         N,
         NE,
@@ -40,7 +42,7 @@ public class Vec2dInt implements Serializable {
     /**
      * Used by GWT
      */
-    Vec2dInt() {
+    public Vec2dInt() {
     }
 
     public Vec2dInt(int x, int y) {

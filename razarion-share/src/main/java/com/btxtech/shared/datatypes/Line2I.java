@@ -1,15 +1,15 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
-
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 08.05.2011
  * Time: 16:24:24
  */
-public class Line2I implements Serializable {
+@Portable
+public class Line2I {
     private static final double MIN_M_INFINITE = Math.tan(MathHelper.gradToRad(89.99999999));
     private static final double MIN_M_ZERO = Math.tan(MathHelper.gradToRad(0.000000001));
     private Index point1;
@@ -21,7 +21,7 @@ public class Line2I implements Serializable {
     /**
      * Used by GWT
      */
-    Line2I() {
+    public Line2I() {
 
     }
 

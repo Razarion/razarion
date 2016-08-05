@@ -39,7 +39,7 @@ abstract public class AbstractShaderAttribute {
         WebGlUtil.checkLastWebGlError("bufferData", ctx3d);
     }
 
-    protected void activate() {
+    public void activate() {
         ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, webGlBuffer);
         WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);
         ctx3d.vertexAttribPointer(attributeLocation, size, WebGLRenderingContext.FLOAT, false, 0, 0);

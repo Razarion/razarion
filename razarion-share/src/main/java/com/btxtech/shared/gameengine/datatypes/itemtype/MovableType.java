@@ -13,14 +13,15 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 23:12:43
  */
-public class MovableType implements Serializable {
+@Portable
+public class MovableType {
     private int speed;
 
     public int getSpeed() {

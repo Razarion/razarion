@@ -1,8 +1,8 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -10,7 +10,8 @@ import java.util.Collection;
  * Date: 08.05.2011
  * Time: 16:24:24
  */
-public class Line implements Serializable {
+@Portable
+public class Line {
     private static final double MIN_M_INFINITE = Math.tan(MathHelper.gradToRad(89.99999999));
     private static final double MIN_M_ZERO = Math.tan(MathHelper.gradToRad(0.000000001));
     private DecimalPosition point1;
@@ -22,7 +23,7 @@ public class Line implements Serializable {
     /**
      * Used by GWT
      */
-    Line() {
+    public Line() {
 
     }
 

@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.uiservice.item.BaseItemUiService;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Collection;
@@ -11,6 +12,7 @@ import java.util.Collection;
  * Created by Beat
  * 29.07.2016.
  */
+@Dependent
 public class SpawnItemTypeVertexContainerCompositeRenderer extends VertexContainerCompositeRenderer {
     @Inject
     private BaseItemUiService baseItemUiService;

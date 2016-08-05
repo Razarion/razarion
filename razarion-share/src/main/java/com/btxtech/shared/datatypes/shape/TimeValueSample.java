@@ -1,9 +1,12 @@
 package com.btxtech.shared.datatypes.shape;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 /**
  * Created by Beat
  * 28.07.2016.
  */
+@Portable
 public class TimeValueSample {
     private long timeStamp;
     private double value;

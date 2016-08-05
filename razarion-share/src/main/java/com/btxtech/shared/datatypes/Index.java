@@ -17,7 +17,6 @@ import com.btxtech.shared.utils.MathHelper;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import javax.persistence.Embeddable;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -31,7 +30,7 @@ import java.util.List;
  */
 @Portable
 @Embeddable
-public class Index implements Serializable {
+public class Index {
     public static final Index ZERO = new Index(0, 0);
 
     public enum Direction {

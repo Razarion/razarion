@@ -13,7 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.io.Serializable;
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.Collection;
 
 /**
@@ -21,7 +22,8 @@ import java.util.Collection;
  * Date: 21.11.2009
  * Time: 23:53:27
  */
-public class BuilderType implements Serializable {
+@Portable
+public class BuilderType {
     private int range;
     private double progress;
     private Collection<Integer> ableToBuild;
@@ -30,7 +32,7 @@ public class BuilderType implements Serializable {
     /**
      * Used by GWT
      */
-    BuilderType() {
+    public BuilderType() {
     }
 
     public BuilderType(int range, double progress, Collection<Integer> ableToBuild, ItemClipPosition buildupClip) {

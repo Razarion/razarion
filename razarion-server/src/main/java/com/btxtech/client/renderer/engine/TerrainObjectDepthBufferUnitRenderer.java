@@ -25,7 +25,7 @@ public class TerrainObjectDepthBufferUnitRenderer extends AbstractWebGlUnitRende
     private ShadowUiService shadowUiService;
     private VertexShaderAttribute positions;
     private ShaderTextureCoordinateAttribute textureCoordinate;
-    private WebGlUniformTexture webGLTexture;
+    private WebGlUniformTexture_OLD webGLTexture;
     private int terrainObjectId;
 
     @PostConstruct
