@@ -33,9 +33,8 @@ public class DevToolsItemUnitRenderer extends VertexContainerRenderUnit implemen
     private ModelMatrices modelMatrices;
 
     @Override
-    public void fillBuffers() {
+    public void fillBuffers(VertexContainer vertexContainer) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
-        VertexContainer vertexContainer = getVertexContainer();
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.getVertices()));
         setElementCount(vertexContainer);
     }

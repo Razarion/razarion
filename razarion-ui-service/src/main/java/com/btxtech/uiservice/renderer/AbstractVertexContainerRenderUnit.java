@@ -9,12 +9,15 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUnit {
     private VertexContainer vertexContainer;
 
+    protected abstract void fillBuffers(VertexContainer vertexContainer);
+
     public void init(VertexContainer vertexContainer) {
         this.vertexContainer = vertexContainer;
     }
 
-    protected VertexContainer getVertexContainer() {
-        return vertexContainer;
+    @Override
+    public void fillBuffers() {
+        fillBuffers(vertexContainer);
     }
 
     @Override

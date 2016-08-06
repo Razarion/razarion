@@ -60,8 +60,7 @@ public class ClientItemUnitRenderer extends VertexContainerRenderUnit {
     }
 
     @Override
-    public void fillBuffers() {
-        VertexContainer vertexContainer = getVertexContainer();
+    public void fillBuffers(VertexContainer vertexContainer) {
         if (vertexContainer == null || vertexContainer.isEmpty()) {
             logger.warning("No vertices to render: ");
             return;
