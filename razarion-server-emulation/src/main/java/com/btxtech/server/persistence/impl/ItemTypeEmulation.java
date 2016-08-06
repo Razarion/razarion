@@ -42,13 +42,19 @@ public class ItemTypeEmulation {
 
     public BaseItemType createSimpleMovable() {
         BaseItemType builder = (BaseItemType) new BaseItemType().setName("Builder Emulation").setId(Id.SIMPLE_MOVABLE.ordinal()).setTerrainType(TerrainType.LAND);
-        builder.setShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ItemType1.dae", null));
         ColladaMapper mapper = new ColladaMapper();
+        mapper.putTexture("Chassis_Material-material", 174014);
+        mapper.putTexture("Wheel1Material-material", 174014);
+        mapper.putTexture("Wheel2Material-material", 174014);
+        mapper.putTexture("Wheel3Material-material", 174014);
+        mapper.putTexture("Wheel4Material-material", 174014);
+        builder.setShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ItemType1Mirror.dae", mapper));
+        mapper = new ColladaMapper();
         mapper.putTexture("Beam_Material-material", 174014);
         mapper.putTexture("SphereMaterial-material", 174014);
         mapper.putAnimation("Sphere_scale_X", ItemState.BEAM_UP).putAnimation("Sphere_scale_Y", ItemState.BEAM_UP).putAnimation("Sphere_scale_Z", ItemState.BEAM_UP);
         mapper.putAnimation("Plane_location_X", ItemState.BEAM_UP).putAnimation("Plane_location_Y", ItemState.BEAM_UP).putAnimation("Plane_location_Z", ItemState.BEAM_UP);
-        builder.setSpawnShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae", mapper)).setSpawnDurationMillis(30000);
+        builder.setSpawnShape3D(loadAndConvertShape3d("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae", mapper)).setSpawnDurationMillis(5000);
         return builder.setMovableType(new MovableType().setSpeed(10)).setHealth(100).setRadius(50);
     }
 

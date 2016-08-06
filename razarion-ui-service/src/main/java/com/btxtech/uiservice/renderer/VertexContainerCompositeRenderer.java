@@ -23,10 +23,6 @@ public abstract class VertexContainerCompositeRenderer extends CompositeRenderer
         initRenderUnits();
     }
 
-    public Element3DRenderer getElement3DRenderer() {
-        return element3DRenderer;
-    }
-
     public VertexContainer getVertexContainer() {
         return vertexContainer;
     }
@@ -40,7 +36,7 @@ public abstract class VertexContainerCompositeRenderer extends CompositeRenderer
         renderUnit.preModelDraw();
 
         for (ModelMatrices modelMatrix : modelMatrices) {
-            modelMatrix = element3DRenderer.mixAnimation(modelMatrix);
+            modelMatrix = element3DRenderer.mixTransformation(modelMatrix, vertexContainer.getShapeTransform());
             renderUnit.modelDraw(modelMatrix);
         }
     }

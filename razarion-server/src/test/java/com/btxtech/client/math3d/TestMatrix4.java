@@ -628,7 +628,7 @@ public class TestMatrix4 {
         TestVertex.assertVertex(0, -1, 0, Matrix4.createXRotation(Math.toRadians(90)).normTransformation().multiply(vector1, 0));
         // Translation
         TestVertex.assertVertex(0, 0, 1, Matrix4.createTranslation(-1, 4, 16).normTransformation().multiply(vector1, 0));
-        // Scale negative scale doe not work
+        // Scale negative scale does not work
         TestVertex.assertVertex(vector1, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector1, 0).normalize(1.0));
         TestVertex.assertVertex(vector2, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector2, 0).normalize(1.0));
         TestVertex.assertVertex(vector3, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector3, 0).normalize(1.0));

@@ -1,14 +1,11 @@
 package com.btxtech.servercommon.collada;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +48,7 @@ public class Polylist extends ColladaXml {
         primitiveIndices = getElementAsIntegerList(getChild(node, ELEMENT_P));
     }
 
-    public VertexContainer createVertexContainer(Map<String, Source> sources, Vertices positionVertex, List<Matrix4> matrices) {
+    public VertexContainer createVertexContainer(Map<String, Source> sources, Vertices positionVertex) {
         for (Integer polygonPrimitiveCount : polygonPrimitiveCounts) {
             if (polygonPrimitiveCount != 3) {
                 throw new ColladaRuntimeException("Only polygon with 3 vertices supported (triangle). Given vertices: " + polygonPrimitiveCount);
@@ -76,18 +73,10 @@ public class Polylist extends ColladaXml {
         List<Vertex> verticesDest = new ArrayList<>();
         List<Vertex> normsDest = new ArrayList<>();
         List<TextureCoordinate> textureCoordinatesDest = new ArrayList<>();
-        List<Matrix4> postmultiplied = new ArrayList<>(matrices);
-        Collections.reverse(postmultiplied); // postmultiplied post-multiplied
         for (int i = 0; i < primitiveIndices.size() / step; i++) {
             int baseIndex = i * step;
-            Vertex vertex = vertices.get(primitiveIndices.get(baseIndex + vertexOffset));
-            Vertex norm =norms.get(primitiveIndices.get(baseIndex + normOffset));
-            for (Matrix4 matrix : postmultiplied) {
-                vertex =  matrix.multiply(vertex, 1.0);
-                norm = matrix.normTransformation().multiply(norm, 0.0).normalize(1.0);
-            }
-            verticesDest.add(vertex);
-            normsDest.add(norm);
+            verticesDest.add(vertices.get(primitiveIndices.get(baseIndex + vertexOffset)));
+            normsDest.add(norms.get(primitiveIndices.get(baseIndex + normOffset)));
             if (textureCoordinates != null) {
                 textureCoordinatesDest.add(textureCoordinates.get(primitiveIndices.get(baseIndex + textureOffset)));
             }
@@ -95,7 +84,7 @@ public class Polylist extends ColladaXml {
         }
         VertexContainer vertexContainer = new VertexContainer();
         vertexContainer.setVertices(verticesDest).setNorms(normsDest);
-        if(!textureCoordinatesDest.isEmpty()) {
+        if (!textureCoordinatesDest.isEmpty()) {
             vertexContainer.setTextureCoordinates(textureCoordinatesDest);
         }
         return vertexContainer;

@@ -3,6 +3,7 @@ package com.btxtech.servercommon.collada;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.TimeValueSample;
+import com.btxtech.shared.datatypes.shape.TransformationModification;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.shared.utils.TimeDateUtil;
 import org.w3c.dom.Node;
@@ -49,7 +50,7 @@ public class Animation extends NameIdColladaXml {
         ModelMatrixAnimation modelMatrixAnimation = new ModelMatrixAnimation();
         modelMatrixAnimation.setId(getId());
         modelMatrixAnimation.setElement3D(Shape3DUtils.getElement3D(channel.getTargetId(), shape3D));
-        modelMatrixAnimation.setModification(ModelMatrixAnimation.Modification.valueOf(channel.getModification().toUpperCase()));
+        modelMatrixAnimation.setModification(TransformationModification.valueOf(channel.getModification().toUpperCase()));
         modelMatrixAnimation.setAxis(ModelMatrixAnimation.Axis.valueOf(channel.getAxis().toUpperCase()));
 
         List<Double> floatArray = input.getFloatArray().getFloatArray();

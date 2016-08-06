@@ -3,6 +3,8 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
+import com.btxtech.shared.datatypes.shape.ShapeTransformTRS;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 
 import java.util.ArrayList;
@@ -37,18 +39,19 @@ public abstract class Element3DRenderer {
         }
     }
 
-    public ModelMatrices mixAnimation(ModelMatrices modelMatrix) {
+    public ModelMatrices mixTransformation(ModelMatrices modelMatrix, ShapeTransform shapeTransform) {
         if (progressAnimations == null) {
-            return modelMatrix;
-        }
-        ModelMatrices resultingMatrix = modelMatrix;
-        for (ProgressAnimation progressAnimation : progressAnimations) {
-            if (progressAnimation.isItemTriggered()) {
-                resultingMatrix = progressAnimation.mix(resultingMatrix);
-            } else {
-                throw new UnsupportedOperationException();
+            return modelMatrix.multiply(shapeTransform.setupMatrix(), shapeTransform.setupNormMatrix());
+        } else {
+            ShapeTransformTRS shapeTransformTRS = ((ShapeTransformTRS) shapeTransform).copy();
+            for (ProgressAnimation progressAnimation : progressAnimations) {
+                if (progressAnimation.isItemTriggered()) {
+                    progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getSyncBaseItem().getSpawnProgress());
+                } else {
+                    throw new UnsupportedOperationException();
+                }
             }
+            return modelMatrix.multiply(shapeTransformTRS.setupMatrix(), shapeTransformTRS.setupNormMatrix());
         }
-        return resultingMatrix;
     }
 }

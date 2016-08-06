@@ -1,6 +1,11 @@
 package com.btxtech.shared.utils;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -41,5 +46,21 @@ public class GeometricUtil {
             }
         }
         return new DecimalPosition(maxX, maxY);
+    }
+
+    public static List<Vertex> transform(List<Vertex> input, Matrix4 transformation) {
+        List<Vertex> output = new ArrayList<>();
+        for (Vertex vertex : input) {
+            output.add(transformation.multiply(vertex, 1.0));
+        }
+        return output;
+    }
+
+    public static List<Vertex> transformNorm(List<Vertex> input, Matrix4 transformation) {
+        List<Vertex> output = new ArrayList<>();
+        for (Vertex vertex : input) {
+            output.add(transformation.multiply(vertex, 0.0).normalize(1.0));
+        }
+        return output;
     }
 }

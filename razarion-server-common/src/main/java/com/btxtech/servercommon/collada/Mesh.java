@@ -32,8 +32,8 @@ public class Mesh extends ColladaXml {
         polylist = new Polylist(getChild(node, ELEMENT_POLYLIST));
     }
 
-    public VertexContainer createVertexContainer(List<Matrix4> matrices) {
-        return polylist.createVertexContainer(sources, vertices, matrices);
+    public VertexContainer createVertexContainer() {
+        return polylist.createVertexContainer(sources, vertices);
     }
 
     @Override

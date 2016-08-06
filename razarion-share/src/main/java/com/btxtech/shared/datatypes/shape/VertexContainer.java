@@ -19,6 +19,7 @@ public class VertexContainer {
     private List<Vertex> vertices;
     private List<Vertex> norms;
     private List<TextureCoordinate> textureCoordinates;
+    private ShapeTransform shapeTransform;
     private Color ambient;
     private Color diffuse;
     private Color specular;
@@ -48,6 +49,15 @@ public class VertexContainer {
 
     public VertexContainer setTextureCoordinates(List<TextureCoordinate> textureCoordinates) {
         this.textureCoordinates = textureCoordinates;
+        return this;
+    }
+
+    public ShapeTransform getShapeTransform() {
+        return shapeTransform;
+    }
+
+    public VertexContainer setShapeTransform(ShapeTransform shapeTransform) {
+        this.shapeTransform = shapeTransform;
         return this;
     }
 

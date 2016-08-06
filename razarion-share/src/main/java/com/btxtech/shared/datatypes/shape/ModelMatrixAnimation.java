@@ -11,18 +11,12 @@ import java.util.List;
  */
 @Portable
 public class ModelMatrixAnimation {
-    public enum Modification {
-        LOCATION,
-        SCALE;
-    }
-
     public enum Axis {
         X, Y, Z
     }
-
     private String id;
     private Element3D element3D;
-    private Modification modification;
+    private TransformationModification modification;
     private Axis axis;
     private List<TimeValueSample> timeValueSamples;
     private ItemState itemState;
@@ -45,11 +39,11 @@ public class ModelMatrixAnimation {
         return this;
     }
 
-    public Modification getModification() {
+    public TransformationModification getModification() {
         return modification;
     }
 
-    public ModelMatrixAnimation setModification(Modification modification) {
+    public ModelMatrixAnimation setModification(TransformationModification modification) {
         this.modification = modification;
         return this;
     }

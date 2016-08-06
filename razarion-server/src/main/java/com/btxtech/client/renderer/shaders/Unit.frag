@@ -23,7 +23,7 @@ void main(void) {
     vec4 texColor = texture2D(uSampler, vTextureCoord);
 
     vec3 ambient = uAmbientColor * texColor.rgb;
-    vec3 diffuse = max(dot(normalize(vVertexNormal), normalize(correctedLigtDirection)), 0.0) /* * shadowFactor */* uLightingColor * texColor.rgb;
+    vec3 diffuse = max(dot(vVertexNormal, normalize(correctedLigtDirection)), 0.0) /* * shadowFactor */* uLightingColor * texColor.rgb;
     float specularIntensity = setupSpecularLight(correctedLigtDirection) /* * shadowFactor */;
     vec3 specular = vec3(specularIntensity, specularIntensity, specularIntensity);
     gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
