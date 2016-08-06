@@ -58,6 +58,7 @@ public abstract class AbstractRenderUnit {
         this.compositeRenderer = compositeRenderer;
     }
 
+    @Deprecated
     protected int getId() {
         return compositeRenderer.getId();
     }

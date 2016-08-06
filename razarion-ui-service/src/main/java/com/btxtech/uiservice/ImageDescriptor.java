@@ -4,6 +4,7 @@ package com.btxtech.uiservice;
  * Created by Beat
  * 29.06.2015.
  */
+@Deprecated
 public class ImageDescriptor {
     public static final ImageDescriptor ROCK_IMAGE = new ImageDescriptor("rock.jpg", 512, 512);
     public static final ImageDescriptor ROCK_1_IMAGE = new ImageDescriptor("Rock1.png", 128, 128);

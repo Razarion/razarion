@@ -34,8 +34,10 @@ public class WebGlFacade {
     // Attributes
     public static final String A_VERTEX_POSITION = "aVertexPosition";
     public static final String A_VERTEX_NORMAL = "aVertexNormal";
+    public static final String A_VERTEX_TANGENT = "aVertexTangent";
     public static final String A_TEXTURE_COORDINATE = "aTextureCoord";
     public static final String A_BARYCENTRIC = "aBarycentric";
+    public static final String A_GROUND_SPLATTING = "aGroundSplatting";
     // Uniform model matrix
     public static final String U_PERSPECTIVE_MATRIX = "uPMatrix";
     public static final String U_VIEW_MATRIX = "uVMatrix";
@@ -80,7 +82,7 @@ public class WebGlFacade {
         return new VertexShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
     }
 
-    protected FloatShaderAttribute createFloatShaderAttribute(String attributeName) {
+    public FloatShaderAttribute createFloatShaderAttribute(String attributeName) {
         return new FloatShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
     }
 
@@ -131,7 +133,7 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniform1f", gameCanvas.getCtx3d());
     }
 
-    protected void uniform1i(String uniformName, int value) {
+    public void uniform1i(String uniformName, int value) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
         gameCanvas.getCtx3d().uniform1i(uniformLocation, value);
         WebGlUtil.checkLastWebGlError("uniform1i", gameCanvas.getCtx3d());
@@ -143,7 +145,8 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniform1b", gameCanvas.getCtx3d());
     }
 
-    protected WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
+    @Deprecated
+    public WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
         return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureIdHandler.create());
     }
 
@@ -151,7 +154,8 @@ public class WebGlFacade {
         return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageId), samplerUniformName, textureIdHandler.create());
     }
 
-    protected WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
+    @Deprecated
+    public WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
         return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureIdHandler.create());
     }
 

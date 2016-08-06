@@ -33,8 +33,10 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
     // Attributes
     String A_VERTEX_POSITION = "aVertexPosition";
     String A_VERTEX_NORMAL = "aVertexNormal";
+    String A_VERTEX_TANGENT = "aVertexTangent";
     String A_TEXTURE_COORDINATE = "aTextureCoord";
     String A_BARYCENTRIC = "aBarycentric";
+    String A_GROUND_SPLATTING = "aGroundSplatting";
     // Uniform model matrix
     String U_PERSPECTIVE_MATRIX = "uPMatrix";
     String U_VIEW_MATRIX = "uVMatrix";

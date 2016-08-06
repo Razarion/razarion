@@ -6,6 +6,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,20 @@ public abstract class RenderService {
         serviceInitEvent.fire(new RenderServiceInitEvent());
         renderQueue.clear();
 
-        // Base item type renderer
+        setupGround();
+        setupBaseItemType();
+
+
+        fillBuffers();
+    }
+
+    private void setupGround() {
+        CompositeRenderer compositeRenderer = new CompositeRenderer();
+        compositeRenderer.setRenderUnit(instance.select(AbstractGroundUnitRenderer.class).get());
+        renderQueue.add(compositeRenderer);
+    }
+
+    private void setupBaseItemType() {
         for (BaseItemType baseItemType : baseItemUiService.getBaseItemTypes()) {
             // Spawn
             SpawnItemTypeShape3DRenderer spawnItemTypeShape3DRenderer = instance.select(SpawnItemTypeShape3DRenderer.class).get();
@@ -43,9 +57,6 @@ public abstract class RenderService {
             aliveItemTypeShape3DRenderer.init(baseItemType);
             aliveItemTypeShape3DRenderer.fillRenderQueue(renderQueue);
         }
-
-
-        fillBuffers();
     }
 
     public void render() {

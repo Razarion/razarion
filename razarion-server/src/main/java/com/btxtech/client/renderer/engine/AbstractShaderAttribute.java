@@ -25,7 +25,7 @@ abstract public class AbstractShaderAttribute {
         WebGlUtil.checkLastWebGlError("createBuffer", ctx3d);
     }
 
-    protected void fillDoubleBuffer(List<Double> doubleList) {
+    public void fillDoubleBuffer(List<Double> doubleList) {
         ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, webGlBuffer);
         WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);
         ctx3d.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32Doubles(doubleList), WebGLRenderingContext.STATIC_DRAW);

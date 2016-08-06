@@ -1,0 +1,24 @@
+package com.btxtech.uiservice.renderer;
+
+import com.btxtech.shared.VertexList;
+import com.btxtech.uiservice.terrain.TerrainUiService;
+
+import javax.inject.Inject;
+
+/**
+ * Created by Beat
+ * 07.08.2016.
+ */
+public abstract class AbstractGroundUnitRenderer extends AbstractRenderUnit {
+    @Inject
+    private TerrainUiService terrainUiService;
+
+    protected abstract void fillBuffers(VertexList vertexList);
+
+    @Override
+    public void fillBuffers() {
+        VertexList vertexList = terrainUiService.getGroundVertexList();
+        fillBuffers(vertexList);
+        setElementCount(vertexList);
+    }
+}
