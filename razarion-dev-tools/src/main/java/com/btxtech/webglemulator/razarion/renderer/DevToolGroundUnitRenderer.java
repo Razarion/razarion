@@ -38,7 +38,7 @@ public class DevToolGroundUnitRenderer extends AbstractGroundUnitRenderer implem
 
     @Override
     protected void fillBuffers(VertexList vertexList) {
-        webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
+        webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.GREEN).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexList.getVertices()));
     }
 

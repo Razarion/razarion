@@ -61,14 +61,8 @@ public class TerrainService {
         Slope slope;
         if (slopeSkeletonConfig.getType() == SlopeSkeletonConfig.Type.WATER) {
             slope = new SlopeWater(water, slopeSkeletonConfig, terrainSlopePosition.getPolygon());
-//            slope.setSlopeImageDescriptor(ImageDescriptor.BEACH_01);
-//            slope.setSlopeBumpImageDescriptor(ImageDescriptor.BUMP_MAP_05);
-//            slope.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
         } else if (slopeSkeletonConfig.getType() == SlopeSkeletonConfig.Type.LAND) {
             slope = new Slope(slopeSkeletonConfig, terrainSlopePosition.getPolygon());
-//            slope.setSlopeImageDescriptor(ImageDescriptor.ROCK_TEXTURE_1);
-//            slope.setSlopeBumpImageDescriptor(ImageDescriptor.ROCK_BM_1);
-//            slope.setSlopeGroundSplattingImageDescriptor(ImageDescriptor.BLEND_4);
             slope.wrap(groundMesh);
         } else {
             throw new IllegalStateException("Unknown enum type: " + slopeSkeletonConfig.getType());

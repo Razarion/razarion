@@ -40,6 +40,7 @@ public abstract class RenderService {
         setupGround();
         setupSlopes();
         setupBaseItemTypes();
+        setupWater();
 
         fillBuffers();
     }
@@ -71,6 +72,12 @@ public abstract class RenderService {
             aliveItemTypeShape3DRenderer.init(baseItemType);
             aliveItemTypeShape3DRenderer.fillRenderQueue(renderQueue);
         }
+    }
+
+    private void setupWater() {
+        CompositeRenderer compositeRenderer = new CompositeRenderer();
+        compositeRenderer.setRenderUnit(instance.select(AbstractWaterUnitRenderer.class).get());
+        renderQueue.add(compositeRenderer);
     }
 
     public void render() {
