@@ -70,7 +70,7 @@ public class ClientGroundUnitRenderer extends AbstractGroundUnitRenderer {
         splattingTexture = webGlFacade.createWebGLTexture(terrainUiService.getSplatting(), "uSplatting");
         bottomTexture = webGlFacade.createWebGLTexture(terrainUiService.getGroundTexture(), "uBottomTexture");
         bottomBm = webGlFacade.createWebGLBumpMapTexture(terrainUiService.getGroundBm(), "uBottomBm");
-        // webGlFacade.enableReceiveShadow();
+        webGlFacade.enableReceiveShadow();
 
         vertices.fillBuffer(vertexList.getVertices());
         normals.fillBuffer(vertexList.getNormVertices());
@@ -81,7 +81,6 @@ public class ClientGroundUnitRenderer extends AbstractGroundUnitRenderer {
     @Override
     public void draw() {
         webGlFacade.useProgram();
-
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.createNormMatrix());
@@ -95,7 +94,7 @@ public class ClientGroundUnitRenderer extends AbstractGroundUnitRenderer {
         webGlFacade.uniform1i("uBottomBmSize", terrainUiService.getGroundBm().getQuadraticEdge());
         webGlFacade.uniform1i("uSplattingSize", terrainUiService.getSplatting().getQuadraticEdge());
 
-        // webGlFacade.activateReceiveShadow();
+        webGlFacade.activateReceiveShadow();
 
         vertices.activate();
         normals.activate();

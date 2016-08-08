@@ -106,7 +106,7 @@ public class WebGlFacade {
     }
 
     protected int getAndEnableAttributeLocation(String attributeName) {
-        return webGlProgram.getAndEnableAttributeLocation(attributeName);
+        return webGlProgram.getAttributeLocation(attributeName);
     }
 
     public WebGLUniformLocation getUniformLocation(String uniformName) {

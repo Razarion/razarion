@@ -89,7 +89,7 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
     }
 
     protected int getAndEnableAttributeLocation(String attributeName) {
-        return webGlProgram.getAndEnableAttributeLocation(attributeName);
+        return webGlProgram.getAttributeLocation(attributeName);
     }
 
     protected WebGLUniformLocation getUniformLocation(String uniformName) {

@@ -17,6 +17,7 @@ import java.util.List;
  * 12.07.2016.
  */
 public abstract class RenderService {
+    // private Logger logger = Logger.getLogger(RenderService.class.getName());
     @Inject
     private TerrainService terrainService;
     @Inject
@@ -36,15 +37,9 @@ public abstract class RenderService {
         serviceInitEvent.fire(new RenderServiceInitEvent());
         renderQueue.clear();
 
-        // TODO this order is working
+        setupGround();
         setupSlopes();
         setupBaseItemTypes();
-        setupGround();
-
-        // TODO this order is failing
-//        setupGround();
-//        setupSlopes();
-//        setupBaseItemTypes();
 
         fillBuffers();
     }

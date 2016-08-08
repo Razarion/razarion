@@ -15,6 +15,7 @@ import javax.inject.Inject;
  */
 @Dependent
 public class WebGlProgram {
+    // private Logger logger = Logger.getLogger(WebGlProgram.class.getName());
     private WebGLProgram program;
     private WebGLShader vs;
     private WebGLShader fs;
@@ -27,13 +28,11 @@ public class WebGlProgram {
         program = createAndUseProgram(vs, fs);
     }
 
-    public int getAndEnableAttributeLocation(String attributeName) {
+    public int getAttributeLocation(String attributeName) {
         int attributeLocation = gameCanvas.getCtx3d().getAttribLocation(program, attributeName);
         if (attributeLocation == -1) {
             throw new IllegalArgumentException("No attribute location for '" + attributeName + "' in OpenGl program.");
         }
-        gameCanvas.getCtx3d().enableVertexAttribArray(attributeLocation);
-        WebGlUtil.checkLastWebGlError("enableVertexAttribArray",gameCanvas.getCtx3d());
         return attributeLocation;
     }
 
@@ -55,9 +54,9 @@ public class WebGlProgram {
         gameCanvas.getCtx3d().compileShader(shader);
         if (!Boolean.valueOf(gameCanvas.getCtx3d().getShaderParameter(shader, WebGLRenderingContext.COMPILE_STATUS).toString())) {
             String shaderType;
-            if(type == WebGLRenderingContext.VERTEX_SHADER) {
+            if (type == WebGLRenderingContext.VERTEX_SHADER) {
                 shaderType = "Vertex shader";
-            } else if(type == WebGLRenderingContext.FRAGMENT_SHADER) {
+            } else if (type == WebGLRenderingContext.FRAGMENT_SHADER) {
                 shaderType = "Fragment shader";
             } else {
                 shaderType = "Unknown shader";

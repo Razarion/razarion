@@ -12,6 +12,7 @@ import java.util.List;
  * 19.12.2015.
  */
 abstract public class AbstractShaderAttribute {
+    // private Logger logger = Logger.getLogger(AbstractShaderAttribute.class.getName());
     private WebGLRenderingContext ctx3d;
     private final int size;
     private int attributeLocation;
@@ -20,7 +21,7 @@ abstract public class AbstractShaderAttribute {
     protected AbstractShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName, int size) {
         this.ctx3d = ctx3d;
         this.size = size;
-        attributeLocation = webGlProgram.getAndEnableAttributeLocation(attributeName);
+        attributeLocation = webGlProgram.getAttributeLocation(attributeName);
         webGlBuffer = ctx3d.createBuffer();
         WebGlUtil.checkLastWebGlError("createBuffer", ctx3d);
     }

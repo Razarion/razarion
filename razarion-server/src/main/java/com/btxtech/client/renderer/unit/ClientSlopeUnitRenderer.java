@@ -66,7 +66,7 @@ public class ClientSlopeUnitRenderer extends AbstractSlopeUnitRenderer {
         groundBottomTexture = webGlFacade.createWebGLTexture(terrainUiService.getGroundTexture(), WebGlFacade.U_GROUND_BOTTOM_TEXTURE);
         groundBottomBm = webGlFacade.createWebGLTexture(terrainUiService.getGroundBm(), WebGlFacade.U_GROUND_BOTTOM_BM);
 
-        // webGlFacade.enableReceiveShadow();
+        webGlFacade.enableReceiveShadow();
 
         Mesh mesh = slope.getMesh();
         vertices.fillBuffer(mesh.getVertices());
@@ -121,7 +121,7 @@ public class ClientSlopeUnitRenderer extends AbstractSlopeUnitRenderer {
         groundBottomBm.activate();
         groundTopBm.activate();
 
-        // webGlFacade.activateReceiveShadow();
+        webGlFacade.activateReceiveShadow();
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
