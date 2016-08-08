@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.surface;
 
+import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.LightConfigEmbeddable;
 import com.btxtech.shared.Shape;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -13,9 +14,11 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
@@ -54,6 +57,14 @@ public class SlopeConfigEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<SlopeNodeEntity> slopeSkeletonEntries;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn
+    private ImageLibraryEntity image;
+    private double imageScale;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn
+    private ImageLibraryEntity imageBm;
+    private double imageBmScale;
 
     public Long getId() {
         return id;
@@ -72,6 +83,10 @@ public class SlopeConfigEntity {
         slopeSkeletonConfig.setBumpMapDepth(bumpMapDepth);
         slopeSkeletonConfig.setType(type);
         slopeSkeletonConfig.setSlopeOriented(slopeOriented);
+        slopeSkeletonConfig.setImageId(image.getId().intValue());
+        slopeSkeletonConfig.setImageScale(imageScale);
+        slopeSkeletonConfig.setBumpImageId(imageBm.getId().intValue());
+        slopeSkeletonConfig.setBumpImageScale(imageBmScale);
         SlopeNode[][] slopeNodes = new SlopeNode[segments][shape.getVertexCount()];
         for (SlopeNodeEntity slopeSkeletonEntry : slopeSkeletonEntries) {
             slopeNodes[slopeSkeletonEntry.getSegmentIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry.toSlopeNode();

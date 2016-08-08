@@ -1,7 +1,12 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -45,9 +50,10 @@ public class StoryboardEntity {
         return id != null && id.equals(that.id);
     }
 
-    public StoryboardConfig toStoryboardConfig() {
+    public StoryboardConfig toStoryboardConfig(GameEngineConfig gameEngineConfig) {
         StoryboardConfig storyboardConfig = new StoryboardConfig();
-        // TODO storyboardConfig.setPlanetConfig(planetEntity.toPlanetConfig());
+        storyboardConfig.setGameEngineConfig(gameEngineConfig);
+        gameEngineConfig.setPlanetConfig(planetEntity.toPlanetConfig());
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         for (SceneEntity scene : scenes) {
             sceneConfigs.add(scene.toSceneConfig());

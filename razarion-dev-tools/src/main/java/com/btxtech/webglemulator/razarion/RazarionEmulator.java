@@ -32,11 +32,13 @@ public class RazarionEmulator {
     private boolean showRenderTime;
 
     public void run() {
-        storyboardService.init(storyboardPersistence.load());
-
-        renderService.setup();
-
-        start();
+        try {
+            storyboardService.init(storyboardPersistence.load());
+            renderService.setup();
+            start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isShowRenderTime() {

@@ -54,6 +54,9 @@ public class ImageUiService {
     private Collection<ChangeListener> changeListeners = new ArrayList<>();
 
     public void requestImage(final int id, ImageListener listener) {
+        if(id == 0) {
+            throw new IllegalArgumentException("id 0 is not a valid image");
+        }
         addListener(imageElementListeners, id, listener);
         ImageElement ImageElement = imageElementLibrary.get(id);
         if (ImageElement != null) {

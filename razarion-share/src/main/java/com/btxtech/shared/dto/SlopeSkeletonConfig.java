@@ -27,8 +27,9 @@ public class SlopeSkeletonConfig {
     private LightConfig lightConfig;
     private boolean slopeOriented;
     private int imageId;
+    private double imageScale;
     private int bumpImageId;
-    private int groundSplattingImageId;
+    private double bumpImageScale;
 
     public int getId() {
         return id;
@@ -127,6 +128,14 @@ public class SlopeSkeletonConfig {
         this.imageId = imageId;
     }
 
+    public double getImageScale() {
+        return imageScale;
+    }
+
+    public void setImageScale(double imageScale) {
+        this.imageScale = imageScale;
+    }
+
     public int getBumpImageId() {
         return bumpImageId;
     }
@@ -135,12 +144,12 @@ public class SlopeSkeletonConfig {
         this.bumpImageId = bumpImageId;
     }
 
-    public int getGroundSplattingImageId() {
-        return groundSplattingImageId;
+    public double getBumpImageScale() {
+        return bumpImageScale;
     }
 
-    public void setGroundSplattingImageId(int groundSplattingImageId) {
-        this.groundSplattingImageId = groundSplattingImageId;
+    public void setBumpImageScale(double bumpImageScale) {
+        this.bumpImageScale = bumpImageScale;
     }
 
     @Override

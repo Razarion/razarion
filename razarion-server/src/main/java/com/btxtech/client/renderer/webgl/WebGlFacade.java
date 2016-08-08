@@ -1,10 +1,15 @@
-package com.btxtech.client.renderer.engine;
+package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.imageservice.ImageLoader;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.webgl.WebGlProgram;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
+import com.btxtech.client.renderer.engine.FloatShaderAttribute;
+import com.btxtech.client.renderer.engine.IntegerShaderAttribute;
+import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
+import com.btxtech.client.renderer.engine.TextureIdHandler;
+import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
@@ -37,6 +42,7 @@ public class WebGlFacade {
     public static final String A_VERTEX_TANGENT = "aVertexTangent";
     public static final String A_TEXTURE_COORDINATE = "aTextureCoord";
     public static final String A_BARYCENTRIC = "aBarycentric";
+    // Attributes Terrain
     public static final String A_GROUND_SPLATTING = "aGroundSplatting";
     // Uniform model matrix
     public static final String U_PERSPECTIVE_MATRIX = "uPMatrix";
@@ -50,6 +56,11 @@ public class WebGlFacade {
     public static final String U_LIGHT_AMBIENT = "uLightAmbient";
     public static final String U_LIGHT_SPECULAR_INTENSITY = "uLightSpecularIntensity";
     public static final String U_LIGHT_SPECULAR_HARDNESS = "uLightSpecularHardness";
+    // Uniform Terrain
+    public static final String U_GROUND_TOP_TEXTURE = "uGroundTopTexture";
+    public static final String U_GROUND_TOP_BM = "uGroundTopBm";
+    public static final String U_GROUND_BOTTOM_TEXTURE = "uGroundBottomTexture";
+    public static final String U_GROUND_BOTTOM_BM = "uGroundBottomBm";
     // Unifrom Editor
     public static final String U_CURSOR_TYPE = "uCursorType";
 
@@ -98,7 +109,7 @@ public class WebGlFacade {
         return webGlProgram.getAndEnableAttributeLocation(attributeName);
     }
 
-    protected WebGLUniformLocation getUniformLocation(String uniformName) {
+    public WebGLUniformLocation getUniformLocation(String uniformName) {
         return webGlProgram.getUniformLocation(uniformName);
     }
 
@@ -139,7 +150,7 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniform1i", gameCanvas.getCtx3d());
     }
 
-    protected void uniform1b(String uniformName, boolean value) {
+    public void uniform1b(String uniformName, boolean value) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
         gameCanvas.getCtx3d().uniform1i(uniformLocation, value ? 1 : 0);
         WebGlUtil.checkLastWebGlError("uniform1b", gameCanvas.getCtx3d());
@@ -147,20 +158,28 @@ public class WebGlFacade {
 
     @Deprecated
     public WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureIdHandler.create());
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureIdHandler.create(), null, null);
     }
 
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageId), samplerUniformName, textureIdHandler.create());
+        return createWebGLTexture(imageId, samplerUniformName, null, null);
+    }
+
+    public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageId), samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale);
     }
 
     @Deprecated
     public WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureIdHandler.create());
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureIdHandler.create(), null, null);
     }
 
-    protected WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageId), samplerUniformName, textureIdHandler.create());
+    public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageId), samplerUniformName, textureIdHandler.create(), null, null);
+    }
+
+    public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageId), samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale);
     }
 
     protected TextureIdHandler.WebGlTextureId createWebGlTextureId() {
@@ -267,7 +286,7 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
     }
 
-    protected WebGLRenderingContext getCtx3d() {
+    public WebGLRenderingContext getCtx3d() {
         return gameCanvas.getCtx3d();
     }
 

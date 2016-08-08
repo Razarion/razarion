@@ -21,4 +21,9 @@ public abstract class AbstractGroundUnitRenderer extends AbstractRenderUnit {
         fillBuffers(vertexList);
         setElementCount(vertexList);
     }
+
+    @Override
+    public String helperString() {
+        return "Ground";
+    }
 }

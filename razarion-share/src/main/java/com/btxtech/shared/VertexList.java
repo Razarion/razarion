@@ -27,6 +27,7 @@ public class VertexList {
     private List<Vertex> normVertices = new ArrayList<>();
     private List<Vertex> tangentVertices = new ArrayList<>();
     private List<Vertex> barycentric = new ArrayList<>();
+    @Deprecated
     private List<TextureCoordinate> textureCoordinates = new ArrayList<>();
     private List<Double> splattings = new ArrayList<>();
     // private static final Logger LOGGER = Logger.getLogger(VertexList.class.getName());
@@ -232,6 +233,19 @@ public class VertexList {
 
     public List<Double> getSplattings() {
         return splattings;
+    }
+
+    public void verify() {
+        int count = getVerticesCount();
+        if (count != normVertices.size()) {
+            throw new IllegalArgumentException("Norm count is wrong. Expected: " + count + " actual: " + normVertices.size());
+        }
+        if (count != tangentVertices.size()) {
+            throw new IllegalArgumentException("Tangent count is wrong. Expected: " + count + " actual: " + tangentVertices.size());
+        }
+        if (count != splattings.size()) {
+            throw new IllegalArgumentException("Splattings count is wrong. Expected: " + count + " actual: " + splattings.size());
+        }
     }
 
     public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {

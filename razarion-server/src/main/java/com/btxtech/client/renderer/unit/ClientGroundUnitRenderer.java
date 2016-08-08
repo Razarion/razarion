@@ -3,13 +3,12 @@ package com.btxtech.client.renderer.unit;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
-import com.btxtech.client.renderer.engine.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.renderer.AbstractGroundUnitRenderer;
-import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -25,15 +24,7 @@ import javax.inject.Inject;
  */
 @Dependent
 public class ClientGroundUnitRenderer extends AbstractGroundUnitRenderer {
-    private VertexShaderAttribute vertices;
-    private VertexShaderAttribute normals;
-    private VertexShaderAttribute tangents;
-    private FloatShaderAttribute splattings;
-    private WebGlUniformTexture topTexture;
-    private WebGlUniformTexture topBm;
-    private WebGlUniformTexture splattingTexture;
-    private WebGlUniformTexture bottomTexture;
-    private WebGlUniformTexture bottomBm;
+    // private Logger logger = Logger.getLogger(ClientGroundUnitRenderer.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
@@ -46,6 +37,15 @@ public class ClientGroundUnitRenderer extends AbstractGroundUnitRenderer {
     private WebGlFacade webGlFacade;
     @Inject
     private Camera camera;
+    private VertexShaderAttribute vertices;
+    private VertexShaderAttribute normals;
+    private VertexShaderAttribute tangents;
+    private FloatShaderAttribute splattings;
+    private WebGlUniformTexture topTexture;
+    private WebGlUniformTexture topBm;
+    private WebGlUniformTexture splattingTexture;
+    private WebGlUniformTexture bottomTexture;
+    private WebGlUniformTexture bottomBm;
 
     @PostConstruct
     public void init() {
@@ -63,12 +63,14 @@ public class ClientGroundUnitRenderer extends AbstractGroundUnitRenderer {
 
     @Override
     protected void fillBuffers(VertexList vertexList) {
+        vertexList.verify();
+
         topTexture = webGlFacade.createWebGLTexture(terrainUiService.getTopTexture(), "uTopTexture");
         topBm = webGlFacade.createWebGLBumpMapTexture(terrainUiService.getTopBm(), "uTopBm");
         splattingTexture = webGlFacade.createWebGLTexture(terrainUiService.getSplatting(), "uSplatting");
         bottomTexture = webGlFacade.createWebGLTexture(terrainUiService.getGroundTexture(), "uBottomTexture");
         bottomBm = webGlFacade.createWebGLBumpMapTexture(terrainUiService.getGroundBm(), "uBottomBm");
-        webGlFacade.enableReceiveShadow();
+        // webGlFacade.enableReceiveShadow();
 
         vertices.fillBuffer(vertexList.getVertices());
         normals.fillBuffer(vertexList.getNormVertices());
@@ -93,7 +95,7 @@ public class ClientGroundUnitRenderer extends AbstractGroundUnitRenderer {
         webGlFacade.uniform1i("uBottomBmSize", terrainUiService.getGroundBm().getQuadraticEdge());
         webGlFacade.uniform1i("uSplattingSize", terrainUiService.getSplatting().getQuadraticEdge());
 
-        webGlFacade.activateReceiveShadow();
+        // webGlFacade.activateReceiveShadow();
 
         vertices.activate();
         normals.activate();

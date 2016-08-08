@@ -34,15 +34,20 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
 
     @Override
     public StoryboardConfig load() {
-        // Gson gson = new Gson();
-        // StoryboardConfig storyboardConfig = gson.fromJson(new InputStreamReader(RazarionEmulator.class.getResourceAsStream("/StoryboardConfig.json")), StoryboardConfig.class);
+        Gson gson = new Gson();
+        StoryboardConfig loadedStoryBoard = gson.fromJson(new InputStreamReader(getClass().getResourceAsStream("/StoryboardConfig.json")), StoryboardConfig.class);
         // storyboardConfig.setSceneConfigs(setSceneConfig(storyboardConfig.getSceneConfigs()));
+
         StoryboardConfig storyboardConfig = new StoryboardConfig();
         // Setup game engine
-        Gson gson = new Gson();
+        // Gson gson = new Gson();
         GameEngineConfig gameEngineConfig = new GameEngineConfig().setItemTypes(itemTypeEmulation.createItemTypes());
-        gameEngineConfig.setGroundSkeletonConfig(gson.fromJson(new InputStreamReader(getClass().getResourceAsStream("/GroundSkeleton.json")), GroundSkeletonConfig.class));
-        gameEngineConfig.setPlanetConfig(new PlanetConfig());
+        // gameEngineConfig.setGroundSkeletonConfig(gson.fromJson(new InputStreamReader(getClass().getResourceAsStream("/GroundSkeleton.json")), GroundSkeletonConfig.class));
+        gameEngineConfig.setGroundSkeletonConfig(loadedStoryBoard.getGameEngineConfig().getGroundSkeletonConfig());
+        gameEngineConfig.setSlopeSkeletonConfigs(loadedStoryBoard.getGameEngineConfig().getSlopeSkeletonConfigs());
+        PlanetConfig planetConfig = new PlanetConfig();
+        planetConfig.setTerrainSlopePositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions());
+        gameEngineConfig.setPlanetConfig(planetConfig);
         storyboardConfig.setGameEngineConfig(gameEngineConfig);
         // Setup scenes
         List<SceneConfig> sceneConfigs = new ArrayList<>();

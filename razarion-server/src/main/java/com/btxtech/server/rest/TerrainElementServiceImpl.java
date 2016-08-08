@@ -1,7 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.servercommon.collada.ColladaException;
-import com.btxtech.server.persistence.TerrainElementPersistenceService;
+import com.btxtech.server.persistence.TerrainElementPersistence;
 import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -24,7 +24,7 @@ public class TerrainElementServiceImpl implements TerrainElementService {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private TerrainElementPersistenceService persistenceService;
+    private TerrainElementPersistence persistenceService;
 
     @Override
     public List<ObjectNameId> getSlopeNameIds() {

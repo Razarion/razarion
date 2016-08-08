@@ -150,6 +150,7 @@ public class TerrainUiService {
         return ImageDescriptor.BUMP_MAP_01;
     }
 
+    @Deprecated
     public Collection<Integer> getSlopeIds() {
         return terrainService.getSlopeIds();
     }

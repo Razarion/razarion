@@ -35,7 +35,7 @@ import java.util.Map;
  * Created by Beat
  * 06.07.2016.
  */
-public class TerrainElementPersistenceService {
+public class TerrainElementPersistence {
     @PersistenceContext
     private EntityManager entityManager;
 

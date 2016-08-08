@@ -2,14 +2,13 @@ package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
-import com.btxtech.client.renderer.engine.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;

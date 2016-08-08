@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class IntegerShaderAttribute extends AbstractShaderAttribute {
 
-    protected IntegerShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName) {
+    public IntegerShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName) {
         super(ctx3d, webGlProgram, attributeName, 1);
     }
 

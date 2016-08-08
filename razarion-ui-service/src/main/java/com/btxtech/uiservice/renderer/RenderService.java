@@ -1,12 +1,13 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.item.BaseItemUiService;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.List;
  * 12.07.2016.
  */
 public abstract class RenderService {
+    @Inject
+    private TerrainService terrainService;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -33,9 +36,15 @@ public abstract class RenderService {
         serviceInitEvent.fire(new RenderServiceInitEvent());
         renderQueue.clear();
 
+        // TODO this order is working
+        setupSlopes();
+        setupBaseItemTypes();
         setupGround();
-        setupBaseItemType();
 
+        // TODO this order is failing
+//        setupGround();
+//        setupSlopes();
+//        setupBaseItemTypes();
 
         fillBuffers();
     }
@@ -46,7 +55,17 @@ public abstract class RenderService {
         renderQueue.add(compositeRenderer);
     }
 
-    private void setupBaseItemType() {
+    private void setupSlopes() {
+        for (Slope slope : terrainService.getSlopes()) {
+            CompositeRenderer compositeRenderer = new CompositeRenderer();
+            AbstractSlopeUnitRenderer slopeUnitRenderer = instance.select(AbstractSlopeUnitRenderer.class).get();
+            slopeUnitRenderer.setSlope(slope);
+            compositeRenderer.setRenderUnit(slopeUnitRenderer);
+            renderQueue.add(compositeRenderer);
+        }
+    }
+
+    private void setupBaseItemTypes() {
         for (BaseItemType baseItemType : baseItemUiService.getBaseItemTypes()) {
             // Spawn
             SpawnItemTypeShape3DRenderer spawnItemTypeShape3DRenderer = instance.select(SpawnItemTypeShape3DRenderer.class).get();

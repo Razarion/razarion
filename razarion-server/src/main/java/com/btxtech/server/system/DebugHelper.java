@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class DebugHelper {
-    private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-dev-tools\\src\\main\\resources";
+    private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server-emulation\\src\\main\\resources";
     @Inject
     private Logger logger;
     @Inject

@@ -4,21 +4,15 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.ImageDescriptor;
-import com.btxtech.uiservice.renderer.PreRenderEvent;
-import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Beat

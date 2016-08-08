@@ -32,7 +32,7 @@ abstract public class AbstractShaderAttribute {
         WebGlUtil.checkLastWebGlError("bufferData", ctx3d);
     }
 
-    protected void fillFloatBuffer(List<Float> floatList) {
+    public void fillFloatBuffer(List<Float> floatList) {
         ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, webGlBuffer);
         WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);
         ctx3d.bufferData(WebGLRenderingContext.ARRAY_BUFFER, WebGlUtil.createArrayBufferOfFloat32(floatList), WebGLRenderingContext.STATIC_DRAW);
@@ -44,6 +44,8 @@ abstract public class AbstractShaderAttribute {
         WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);
         ctx3d.vertexAttribPointer(attributeLocation, size, WebGLRenderingContext.FLOAT, false, 0, 0);
         WebGlUtil.checkLastWebGlError("vertexAttribPointer", ctx3d);
+        ctx3d.enableVertexAttribArray(attributeLocation);
+        WebGlUtil.checkLastWebGlError("enableVertexAttribArray", ctx3d);
     }
 
     @Override
