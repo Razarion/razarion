@@ -33,7 +33,7 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
 
     @Override
     public StoryboardConfig load() {
-        StoryboardConfig loadedStoryBoard = jsonPersistence.readJson("StoryboardConfig3.json", StoryboardConfig.class);
+        StoryboardConfig loadedStoryBoard = jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
 
         StoryboardConfig storyboardConfig = new StoryboardConfig();
         // Setup game engine

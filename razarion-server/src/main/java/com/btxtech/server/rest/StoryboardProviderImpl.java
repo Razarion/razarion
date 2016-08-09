@@ -22,6 +22,7 @@ public class StoryboardProviderImpl implements StoryboardProvider {
     @Inject
     @Emulation
     private StoryboardPersistence storyboardPersistence;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -32,7 +33,7 @@ public class StoryboardProviderImpl implements StoryboardProvider {
     public StoryboardConfig loadStoryboard() {
         try {
             StoryboardConfig storyboardConfig = storyboardPersistence.load();
-            jsonPersistence.writeJson("StoryboardConfig3.json", storyboardConfig);
+            jsonPersistence.writeJson("StoryboardConfig.json", storyboardConfig);
             return storyboardConfig;
         } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
