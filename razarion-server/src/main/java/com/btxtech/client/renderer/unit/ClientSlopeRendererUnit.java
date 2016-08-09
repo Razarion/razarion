@@ -22,8 +22,8 @@ import javax.inject.Inject;
  * 24.01.2016.
  */
 @Dependent
-public class ClientSlopeUnitRenderer extends AbstractSlopeUnitRenderer {
-    // private static Logger logger = Logger.getLogger(ClientSlopeUnitRenderer.class.getName());
+public class ClientSlopeRendererUnit extends AbstractSlopeUnitRenderer {
+    // private static Logger logger = Logger.getLogger(ClientSlopeRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
     @Inject

@@ -79,7 +79,7 @@ public class BotEnragementState {
         botItemContainer = containerInstance.get();
         botItemContainer.init(botEnragementStateConfig.getBotItems(), realm, botName);
         killsPerBase.clear();
-        isEnragementActive = currentBotEnragementStateConfig.hasMaxKillsPerBase() && botEnragementStateConfigs.indexOf(currentBotEnragementStateConfig) + 1 < botEnragementStateConfigs.size();
+        isEnragementActive = currentBotEnragementStateConfig.getEnrageUpKills() != null && botEnragementStateConfigs.indexOf(currentBotEnragementStateConfig) + 1 < botEnragementStateConfigs.size();
     }
 
     public void handleIntruders(Collection<SyncBaseItem> allIntruders, PlayerBase botBase) {

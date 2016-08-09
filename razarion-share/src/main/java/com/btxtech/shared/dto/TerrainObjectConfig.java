@@ -1,33 +1,33 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import org.jboss.errai.common.client.api.annotations.Portable;
-
-import java.util.Collection;
 
 /**
  * Created by Beat
  * 10.05.2016.
  */
 @Portable
-public class TerrainObject {
+public class TerrainObjectConfig {
     private int id;
-    private Collection<VertexContainer> vertexContainers;
+    private Shape3D shape3D;
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public TerrainObjectConfig setId(int id) {
         this.id = id;
+        return this;
     }
 
-    public Collection<VertexContainer> getVertexContainers() {
-        return vertexContainers;
+    public Shape3D getShape3D() {
+        return shape3D;
     }
 
-    public void setVertexContainers(Collection<VertexContainer> vertexContainers) {
-        this.vertexContainers = vertexContainers;
+    public TerrainObjectConfig setShape3D(Shape3D shape3D) {
+        this.shape3D = shape3D;
+        return this;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TerrainObject {
             return false;
         }
 
-        TerrainObject that = (TerrainObject) o;
+        TerrainObjectConfig that = (TerrainObjectConfig) o;
         return id == that.id;
     }
 

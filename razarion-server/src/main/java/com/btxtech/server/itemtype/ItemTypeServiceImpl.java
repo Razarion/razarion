@@ -1,13 +1,8 @@
 package com.btxtech.server.itemtype;
 
-import com.btxtech.servercommon.collada.ColladaConverter;
-import com.btxtech.servercommon.collada.ColladaConverterInput;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.google.gson.Gson;
-import org.jboss.errai.bus.server.annotations.Service;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,7 +35,7 @@ public class ItemTypeServiceImpl {
             List<ItemTypeEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
 
             Collection<ItemType> itemTypes = new ArrayList<>();
-            Gson gson = new Gson();
+     //       Gson gson = new Gson();
             for (ItemTypeEntity itemTypeEntity : itemTypeEntities) {
 //   TODO             ColladaConverter.convertShape3D(itemTypeEntity.getColladaString(), null);
 //   TODO
@@ -50,8 +45,8 @@ public class ItemTypeServiceImpl {
 //  TODO              itemTypes.add(ColladaConverter.convertToItemType(input));
             }
             System.out.println("loadSItemTypes --------------------------------------------------------");
-            String json = gson.toJson(itemTypes);
-            System.out.println(json);
+  //          String json = gson.toJson(itemTypes);
+  //          System.out.println(json);
             System.out.println("--------------------------------------------------------");
             return itemTypes;
 

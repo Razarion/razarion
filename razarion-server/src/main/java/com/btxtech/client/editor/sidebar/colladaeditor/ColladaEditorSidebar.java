@@ -9,7 +9,7 @@ import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.Vertex;
 import com.google.gwt.dom.client.Element;
@@ -140,8 +140,8 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
                     ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
                     terrainObjectSelection.setAcceptableValues(objectNameIds);
                     terrainObjectSelection.setValue(objectNameId);
-                    TerrainObject terrainObject = terrainObjectService.getTerrainObject(objectNameId.getId());
-                    vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers()));
+                    TerrainObjectConfig terrainObjectConfig = terrainObjectService.getTerrainObject(objectNameId.getId());
+                    // TODO vertexContainerListWidget.setItems(new ArrayList<>(terrainObjectConfig.getVertexContainers()));
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
@@ -156,8 +156,8 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
         terrainObjectSelection.addValueChangeHandler(new ValueChangeHandler<ObjectNameId>() {
             @Override
             public void onValueChange(ValueChangeEvent<ObjectNameId> event) {
-                TerrainObject terrainObject = terrainObjectService.getTerrainObject(terrainObjectSelection.getValue().getId());
-                vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers()));
+                TerrainObjectConfig terrainObjectConfig = terrainObjectService.getTerrainObject(terrainObjectSelection.getValue().getId());
+                // TODO vertexContainerListWidget.setItems(new ArrayList<>(terrainObjectConfig.getVertexContainers()));
                 loaded.setText("");
                 lastModified.setText("");
                 lastLoadedColladaString = null;
@@ -217,15 +217,15 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
             @Override
             public void handleEvent(Event evt) {
                 lastLoadedColladaString = (String) fileReader.getResult();
-                terrainEditorService.call(new RemoteCallback<TerrainObject>() {
+                terrainEditorService.call(new RemoteCallback<TerrainObjectConfig>() {
                     @Override
-                    public void callback(TerrainObject terrainObject) {
+                    public void callback(TerrainObjectConfig terrainObjectConfig) {
                         try {
-                            terrainObjectService.overrideTerrainObject(terrainObject);
+                            terrainObjectService.overrideTerrainObject(terrainObjectConfig);
                             renderService.setupTerrainObjectRenderer();
                             loaded.setText(DisplayUtils.formatDate(new Date()));
                             lastModified.setText(DisplayUtils.formatDate(getLastModifiedDate(file)));
-                            vertexContainerListWidget.setItems(new ArrayList<>(terrainObject.getVertexContainers()));
+                            // TODO vertexContainerListWidget.setItems(new ArrayList<>(terrainObjectConfig.getVertexContainers()));
                         } catch (Exception e) {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
@@ -244,12 +244,13 @@ public class ColladaEditorSidebar extends Composite implements LeftSideBarConten
 
     private Map<String, Integer> extractTextureIds(int terrainObjectId) {
         Map<String, Integer> textures = new HashMap<>();
-        TerrainObject terrainObject = terrainObjectService.getTerrainObject(terrainObjectId);
-        for (VertexContainer vertexContainer : terrainObject.getVertexContainers()) {
-            if (vertexContainer.hasTextureId()) {
-                textures.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId());
-            }
-        }
+        TerrainObjectConfig terrainObjectConfig = terrainObjectService.getTerrainObject(terrainObjectId);
+        // TODO
+//        for (VertexContainer vertexContainer : terrainObjectConfig.getVertexContainers()) {
+//            if (vertexContainer.hasTextureId()) {
+//                textures.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId());
+//            }
+//        }
         return textures;
     }
 

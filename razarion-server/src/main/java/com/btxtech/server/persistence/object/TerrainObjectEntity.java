@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.object;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.servercommon.collada.ColladaConverterMapper;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 
 import javax.persistence.Basic;
@@ -66,6 +67,12 @@ public class TerrainObjectEntity implements ColladaConverterMapper {
     public void setTextures(Map<String, ImageLibraryEntity> textures) {
         this.textures.clear();
         this.textures.putAll(textures);
+    }
+
+    public TerrainObjectConfig terrainObjectConfig() {
+        TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig();
+        terrainObjectConfig.setId(id.intValue());
+        return terrainObjectConfig;
     }
 
     @Override

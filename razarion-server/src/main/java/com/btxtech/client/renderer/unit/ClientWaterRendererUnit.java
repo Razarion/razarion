@@ -21,7 +21,7 @@ import javax.inject.Inject;
  * 04.09.2015.
  */
 @Dependent
-public class ClientWaterUnitRenderer extends AbstractWaterUnitRenderer {
+public class ClientWaterRendererUnit extends AbstractWaterUnitRenderer {
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
     @Inject
     private GameCanvas gameCanvas;

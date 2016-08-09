@@ -1,12 +1,8 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
-import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

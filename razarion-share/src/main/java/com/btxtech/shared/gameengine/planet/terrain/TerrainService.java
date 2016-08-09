@@ -1,9 +1,12 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
@@ -38,6 +41,7 @@ public class TerrainService {
     private GroundMesh groundMesh;
     private Map<Integer, Slope> slopeMap = new HashMap<>();
     private Collection<TerrainSlopePosition> terrainSlopePositions;
+    private MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         logger.severe("Start setup surface");
@@ -53,7 +57,19 @@ public class TerrainService {
             }
         }
 
+        terrainObjectConfigPositions = new MapCollection<>();
+        if (planetActivationEvent.getPlanetConfig().getTerrainObjectPositions() != null) {
+            for (TerrainObjectPosition objectPosition : planetActivationEvent.getPlanetConfig().getTerrainObjectPositions()) {
+                TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
+                terrainObjectConfigPositions.put(terrainObjectConfig, objectPosition);
+            }
+        }
+
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
+    }
+
+    public Collection<TerrainObjectPosition> getTerrainObjectPositions(TerrainObjectConfig terrainObjectConfig) {
+        return terrainObjectConfigPositions.get(terrainObjectConfig);
     }
 
     private void setupPlateau(TerrainSlopePosition terrainSlopePosition) {
@@ -77,6 +93,7 @@ public class TerrainService {
         groundMesh.setupNorms();
     }
 
+    @Deprecated
     public Slope getSlope(int id) {
         return slopeMap.get(id);
     }

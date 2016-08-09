@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -16,7 +16,7 @@ import java.util.List;
 public class GameEngineConfig {
     private GroundSkeletonConfig groundSkeletonConfig;
     private List<SlopeSkeletonConfig> slopeSkeletonConfigs;
-    private List<TerrainObject> terrainObjects;
+    private List<TerrainObjectConfig> terrainObjectConfigs;
     private List<ItemType> itemTypes;
     private PlanetConfig planetConfig;
 
@@ -38,12 +38,12 @@ public class GameEngineConfig {
         return this;
     }
 
-    public List<TerrainObject> getTerrainObjects() {
-        return terrainObjects;
+    public List<TerrainObjectConfig> getTerrainObjectConfigs() {
+        return terrainObjectConfigs;
     }
 
-    public GameEngineConfig setTerrainObjects(List<TerrainObject> terrainObjects) {
-        this.terrainObjects = terrainObjects;
+    public GameEngineConfig setTerrainObjectConfigs(List<TerrainObjectConfig> terrainObjectConfigs) {
+        this.terrainObjectConfigs = terrainObjectConfigs;
         return this;
     }
 

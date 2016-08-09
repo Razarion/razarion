@@ -6,10 +6,9 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.AbstractRenderUnit;
+import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.VertexContainerRenderUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -22,7 +21,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 26.07.2016.
  */
-public class DevToolsItemUnitRenderer extends VertexContainerRenderUnit implements VertexShader {
+public class DevToolsItemUnitRenderer extends AbstractVertexContainerRenderUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

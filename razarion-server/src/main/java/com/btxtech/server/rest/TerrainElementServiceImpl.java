@@ -6,7 +6,7 @@ import com.btxtech.shared.TerrainElementService;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;
 
@@ -107,7 +107,7 @@ public class TerrainElementServiceImpl implements TerrainElementService {
     }
 
     @Override
-    public TerrainObject colladaConvert(int terrainObjectId, String colladaString) {
+    public TerrainObjectConfig colladaConvert(int terrainObjectId, String colladaString) {
         try {
             return persistenceService.colladaConvert(terrainObjectId, colladaString);
         } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {

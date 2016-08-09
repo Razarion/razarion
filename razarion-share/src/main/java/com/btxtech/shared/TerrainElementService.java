@@ -2,7 +2,7 @@ package com.btxtech.shared;
 
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.TerrainObject;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
 import javax.ws.rs.Consumes;
@@ -70,6 +70,6 @@ public interface TerrainElementService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("colladaConvert")
-    TerrainObject colladaConvert(@QueryParam("terrainObjectId") int terrainObjectId, @QueryParam("colladaString") String colladaString);
+    TerrainObjectConfig colladaConvert(@QueryParam("terrainObjectId") int terrainObjectId, @QueryParam("colladaString") String colladaString);
 
 }

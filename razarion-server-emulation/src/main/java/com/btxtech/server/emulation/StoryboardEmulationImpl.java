@@ -1,10 +1,9 @@
-package com.btxtech.server.persistence.impl;
+package com.btxtech.server.emulation;
 
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.Emulation;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.CameraConfig;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
@@ -13,11 +12,9 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.PlaceConfig;
-import com.google.gson.Gson;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,22 +28,22 @@ import java.util.List;
 public class StoryboardEmulationImpl implements StoryboardPersistence {
     @Inject
     private ItemTypeEmulation itemTypeEmulation;
+    @Inject
+    private JsonPersistence jsonPersistence;
 
     @Override
     public StoryboardConfig load() {
-        Gson gson = new Gson();
-        StoryboardConfig loadedStoryBoard = gson.fromJson(new InputStreamReader(getClass().getResourceAsStream("/StoryboardConfig.json")), StoryboardConfig.class);
-        // storyboardConfig.setSceneConfigs(setSceneConfig(storyboardConfig.getSceneConfigs()));
+        StoryboardConfig loadedStoryBoard = jsonPersistence.readJson("StoryboardConfig3.json", StoryboardConfig.class);
 
         StoryboardConfig storyboardConfig = new StoryboardConfig();
         // Setup game engine
-        // Gson gson = new Gson();
         GameEngineConfig gameEngineConfig = new GameEngineConfig().setItemTypes(itemTypeEmulation.createItemTypes());
-        // gameEngineConfig.setGroundSkeletonConfig(gson.fromJson(new InputStreamReader(getClass().getResourceAsStream("/GroundSkeleton.json")), GroundSkeletonConfig.class));
         gameEngineConfig.setGroundSkeletonConfig(loadedStoryBoard.getGameEngineConfig().getGroundSkeletonConfig());
         gameEngineConfig.setSlopeSkeletonConfigs(loadedStoryBoard.getGameEngineConfig().getSlopeSkeletonConfigs());
+        gameEngineConfig.setTerrainObjectConfigs(loadedStoryBoard.getGameEngineConfig().getTerrainObjectConfigs());
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions());
+        planetConfig.setTerrainObjectPositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions());
         gameEngineConfig.setPlanetConfig(planetConfig);
         storyboardConfig.setGameEngineConfig(gameEngineConfig);
         // Setup scenes
@@ -85,7 +82,7 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
 //        try {
 //            ColladaConverterInput input = new ColladaConverterInput();
 //            input.setColladaString(IOUtils.toString(new FileInputStream("C:\\dev\\projects\\razarion\\code\\tmp\\ArrivelBall01.dae"))).setId(1).setTextureMapper(new DevToolColladaConverterTextureMapper());
-//            TerrainObject terrainObject = ColladaConverter.convertToTerrainObject(input);
+//            TerrainObjectConfig terrainObject = ColladaConverter.convertToTerrainObject(input);
 //            animatedMeshConfig.setVertexContainer(CollectionUtils.getFirst(terrainObject.getVertexContainers()));
 //        } catch (Exception e) {
 //            e.printStackTrace();

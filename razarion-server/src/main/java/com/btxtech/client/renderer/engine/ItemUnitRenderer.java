@@ -36,7 +36,7 @@ public class ItemUnitRenderer extends AbstractWebGlUnitRenderer {
 
     @PostConstruct
     public void init() {
-        createProgram(Shaders.INSTANCE.unitVertexShader(), Shaders.INSTANCE.unitFragmentShader());
+        createProgram(Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader());
         positions = createVertexShaderAttribute(A_VERTEX_POSITION);
         norms = createVertexShaderAttribute("aVertexNormal");
         textureCoordinateAttribute = createShaderTextureCoordinateAttributee(A_TEXTURE_COORDINATE);

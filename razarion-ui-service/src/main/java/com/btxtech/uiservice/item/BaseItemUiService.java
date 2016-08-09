@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.uiservice.ColladaUiService;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -28,6 +29,8 @@ public class BaseItemUiService {
     private BaseItemService baseItemService;
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private ColladaUiService colladaUiService;
     private ImageDescriptor imageDescriptor = ImageDescriptor.UNIT_TEXTURE_O1;
     private double specularIntensity = 0.1;
     private double specularHardness = 10;
@@ -66,7 +69,7 @@ public class BaseItemUiService {
     public Collection<ModelMatrices> provideSpawnModelMatrices() {
         Collection<ModelMatrices> modelMatrices = new ArrayList<>();
         for (SyncBaseItem syncBaseItem : baseItemService.getBeamingSyncBaseItems()) {
-            modelMatrices.add(syncBaseItem.createModelMatrices());
+            modelMatrices.add(syncBaseItem.createModelMatrices(colladaUiService.getGeneralScale()));
         }
         return modelMatrices;
     }
@@ -74,7 +77,7 @@ public class BaseItemUiService {
     public Collection<ModelMatrices> provideAliveModelMatrices() {
         Collection<ModelMatrices> modelMatrices = new ArrayList<>();
         for (SyncBaseItem syncBaseItem : baseItemService.getAliveSyncBaseItems()) {
-            modelMatrices.add(syncBaseItem.createModelMatrices());
+            modelMatrices.add(syncBaseItem.createModelMatrices(colladaUiService.getGeneralScale()));
         }
         return modelMatrices;
     }

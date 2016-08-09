@@ -94,8 +94,8 @@ public abstract class SyncItem {
         return syncItemPosition;
     }
 
-    public ModelMatrices createModelMatrices() {
-        return syncItemPosition.createModelMatrices((SyncBaseItem) this);
+    public ModelMatrices createModelMatrices(double scale) {
+        return syncItemPosition.createModelMatrices((SyncBaseItem) this, scale);
     }
 
     @Override

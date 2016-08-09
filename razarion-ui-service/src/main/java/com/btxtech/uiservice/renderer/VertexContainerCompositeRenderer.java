@@ -2,25 +2,32 @@ package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.uiservice.ModelMatricesProvider;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import java.util.Collection;
 
 /**
  * Created by Beat
  * 29.07.2016.
  */
-public abstract class VertexContainerCompositeRenderer extends CompositeRenderer {
+@Dependent
+public class VertexContainerCompositeRenderer extends CompositeRenderer {
+    @Inject
+    private Instance<AbstractVertexContainerRenderUnit> instance;
     private VertexContainer vertexContainer;
     private Element3DRenderer element3DRenderer;
+    private ModelMatricesProvider modelMatricesProvider;
 
-    protected abstract Collection<ModelMatrices> provideModelMatrices();
-
-    protected abstract void initRenderUnits();
-
-    public void init(VertexContainer vertexContainer, Element3DRenderer element3DRenderer) {
+    public void init(VertexContainer vertexContainer, Element3DRenderer element3DRenderer, ModelMatricesProvider modelMatricesProvider) {
         this.vertexContainer = vertexContainer;
         this.element3DRenderer = element3DRenderer;
-        initRenderUnits();
+        this.modelMatricesProvider = modelMatricesProvider;
+        AbstractVertexContainerRenderUnit renderer = instance.get();
+        renderer.init(getVertexContainer());
+        setRenderUnit(renderer);
     }
 
     public VertexContainer getVertexContainer() {
@@ -28,7 +35,7 @@ public abstract class VertexContainerCompositeRenderer extends CompositeRenderer
     }
 
     protected void draw(AbstractRenderUnit renderUnit) {
-        Collection<ModelMatrices> modelMatrices = provideModelMatrices();
+        Collection<ModelMatrices> modelMatrices = modelMatricesProvider.provideModelMatrices();
         if (modelMatrices == null || modelMatrices.isEmpty()) {
             return;
         }

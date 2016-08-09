@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
@@ -60,13 +61,9 @@ public class TerrainObjectPosition {
         this.zRotation = zRotation;
     }
 
-    public Matrix4 createRotationModelMatrix() {
-        return Matrix4.createZRotation(zRotation);
-    }
-
-    public Matrix4 createModelMatrix(double generalScale, int z) {
+    public Matrix4 createModelMatrix(int z) {
         Matrix4 matrix4 = Matrix4.createTranslation(position.getX(), position.getY(), z);
-        matrix4 = matrix4.multiply(Matrix4.createScale(scale * generalScale, scale * generalScale, scale * generalScale));
-        return matrix4.multiply(createRotationModelMatrix());
+        matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
+        return matrix4.multiply(Matrix4.createZRotation(zRotation));
     }
 }

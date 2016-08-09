@@ -38,11 +38,7 @@ public class BotEnragementStateConfig {
         return botItems;
     }
 
-    public boolean hasMaxKillsPerBase() {
-        return enrageUpKills != null;
-    }
-
-    public int getEnrageUpKills() {
+    public Integer getEnrageUpKills() {
         return enrageUpKills;
     }
 }

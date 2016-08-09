@@ -6,14 +6,13 @@ import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
 import com.btxtech.servercommon.collada.ColladaConverter;
-import com.btxtech.servercommon.collada.ColladaConverterInput;
 import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.dto.TerrainObject;
 import org.xml.sax.SAXException;
 
 import javax.persistence.EntityManager;
@@ -140,7 +139,7 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public List<TerrainObject> loadTerrainObjects() throws ParserConfigurationException, ColladaException, SAXException, IOException {
+    public List<TerrainObjectConfig> loadTerrainObjects() throws ParserConfigurationException, ColladaException, SAXException, IOException {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<TerrainObjectEntity> userQuery = criteriaBuilder.createQuery(TerrainObjectEntity.class);
@@ -148,13 +147,13 @@ public class TerrainElementPersistence {
         CriteriaQuery<TerrainObjectEntity> userSelect = userQuery.select(from);
         List<TerrainObjectEntity> terrainObjectEntities = entityManager.createQuery(userSelect).getResultList();
 
-        List<TerrainObject> terrainObjects = new ArrayList<>();
+        List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
         for (TerrainObjectEntity terrainObjectEntity : terrainObjectEntities) {
-            ColladaConverterInput input = new ColladaConverterInput();
-            input.setColladaString(terrainObjectEntity.getColladaString()).setId(terrainObjectEntity.getId().intValue()).setTextureMapper(terrainObjectEntity);;
-            // TODO terrainObjects.add(ColladaConverter.convertToTerrainObject(input));
+            TerrainObjectConfig terrainObjectConfig = terrainObjectEntity.terrainObjectConfig();
+            terrainObjectConfig.setShape3D(ColladaConverter.convertShape3D(terrainObjectEntity.getColladaString(), terrainObjectEntity));
+            terrainObjectConfigs.add(terrainObjectConfig);
         }
-        return terrainObjects;
+        return terrainObjectConfigs;
     }
 
     @Transactional
@@ -172,7 +171,7 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public TerrainObject colladaConvert(int terrainObjectId, String colladaString) throws ParserConfigurationException, ColladaException, SAXException, IOException {
+    public TerrainObjectConfig colladaConvert(int terrainObjectId, String colladaString) throws ParserConfigurationException, ColladaException, SAXException, IOException {
 //     TODO   TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectId);
 //   TODO     ColladaConverterInput input = new ColladaConverterInput();
 //    TODO    input.setColladaString(colladaString).setId(terrainObjectEntity.getId().intValue()).setTextureMapper(terrainObjectEntity);

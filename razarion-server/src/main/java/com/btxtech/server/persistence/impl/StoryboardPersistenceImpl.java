@@ -36,7 +36,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         GameEngineConfig gameEngineConfig = new GameEngineConfig();
         gameEngineConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
         gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
-        gameEngineConfig.setTerrainObjects(terrainElementPersistence.loadTerrainObjects());
+        gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.loadTerrainObjects());
         // TODO gameEngineConfig.setItemTypes();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations

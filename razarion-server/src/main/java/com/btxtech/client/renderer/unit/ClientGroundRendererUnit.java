@@ -23,8 +23,8 @@ import javax.inject.Inject;
  * 01.05.2015.
  */
 @Dependent
-public class ClientGroundUnitRenderer extends AbstractGroundUnitRenderer {
-    // private Logger logger = Logger.getLogger(ClientGroundUnitRenderer.class.getName());
+public class ClientGroundRendererUnit extends AbstractGroundUnitRenderer {
+    // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject

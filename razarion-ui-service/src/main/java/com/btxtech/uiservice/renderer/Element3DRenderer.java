@@ -6,7 +6,11 @@ import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.ShapeTransformTRS;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.uiservice.ModelMatricesProvider;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,14 +19,17 @@ import java.util.List;
  * Created by Beat
  * 29.07.2016.
  */
-public abstract class Element3DRenderer {
+@Dependent
+public class Element3DRenderer {
+    @Inject
+    private Instance<VertexContainerCompositeRenderer> instance;
     private Element3D element3D;
     private Collection<ProgressAnimation> progressAnimations;
+    private ModelMatricesProvider modelMatricesProvider;
 
-    protected abstract VertexContainerCompositeRenderer createVertexContainerRenderer();
-
-    public void init(Element3D element3D, Collection<ModelMatrixAnimation> modelMatrixAnimations) {
+    public void init(Element3D element3D, Collection<ModelMatrixAnimation> modelMatrixAnimations, ModelMatricesProvider modelMatricesProvider) {
         this.element3D = element3D;
+        this.modelMatricesProvider = modelMatricesProvider;
         if (modelMatrixAnimations != null) {
             progressAnimations = new ArrayList<>();
             for (ModelMatrixAnimation modelMatrixAnimation : modelMatrixAnimations) {
@@ -33,8 +40,8 @@ public abstract class Element3DRenderer {
 
     public void fillRenderQueue(List<CompositeRenderer> renderQueue) {
         for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-            VertexContainerCompositeRenderer vertexContainerCompositeRenderer = createVertexContainerRenderer();
-            vertexContainerCompositeRenderer.init(vertexContainer, this);
+            VertexContainerCompositeRenderer vertexContainerCompositeRenderer = instance.get();
+            vertexContainerCompositeRenderer.init(vertexContainer, this, modelMatricesProvider);
             renderQueue.add(vertexContainerCompositeRenderer);
         }
     }
@@ -54,4 +61,5 @@ public abstract class Element3DRenderer {
             return modelMatrix.multiply(shapeTransformTRS.setupMatrix(), shapeTransformTRS.setupNormMatrix());
         }
     }
+
 }

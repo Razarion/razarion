@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.system.DebugHelper;
+import com.btxtech.server.emulation.JsonPersistence;
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.servercommon.collada.Emulation;
@@ -25,14 +25,14 @@ public class StoryboardProviderImpl implements StoryboardProvider {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private DebugHelper debugHelper;
+    private JsonPersistence jsonPersistence;
 
     @Override
     @Transactional
     public StoryboardConfig loadStoryboard() {
         try {
             StoryboardConfig storyboardConfig = storyboardPersistence.load();
-            debugHelper.writeToJsonFile("StoryboardConfig3.json", storyboardConfig);
+            jsonPersistence.writeJson("StoryboardConfig3.json", storyboardConfig);
             return storyboardConfig;
         } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
             exceptionHandler.handleException(e);

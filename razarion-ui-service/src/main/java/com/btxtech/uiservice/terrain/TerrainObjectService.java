@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.terrain;
 
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.uiservice.ColladaUiService;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.TerrainObject;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.ModelMatrices;
@@ -31,18 +31,18 @@ public class TerrainObjectService {
     @Inject
     private ExceptionHandler exceptionHandler;
     private Collection<TerrainObjectPosition> terrainObjectPositions;
-    private Map<Integer, TerrainObject> terrainObjects;
+    private Map<Integer, TerrainObjectConfig> terrainObjects;
     private Map<Integer, Collection<ModelMatrices>> objectIdMatrices;
     private Map<Integer, VertexContainer> vertexContainers;
     private Map<Integer, Integer> vertexContainers2TerrainObject;
 
-    public void setTerrainObjects(Collection<TerrainObject> terrainObjects) {
+    public void setTerrainObjects(Collection<TerrainObjectConfig> terrainObjectConfigs) {
         this.terrainObjects = new HashMap<>();
-        if(terrainObjects == null) {
+        if(terrainObjectConfigs == null) {
             return;
         }
-        for (TerrainObject terrainObject : terrainObjects) {
-            this.terrainObjects.put(terrainObject.getId(), terrainObject);
+        for (TerrainObjectConfig terrainObjectConfig : terrainObjectConfigs) {
+            this.terrainObjects.put(terrainObjectConfig.getId(), terrainObjectConfig);
         }
     }
 
@@ -54,18 +54,19 @@ public class TerrainObjectService {
         setupModelMatrices(terrainObjectPositions);
         vertexContainers = new HashMap<>();
         vertexContainers2TerrainObject = new HashMap<>();
-        for (TerrainObject terrainObject : terrainObjects.values()) {
-            if (!objectIdMatrices.containsKey(terrainObject.getId())) {
+        for (TerrainObjectConfig terrainObjectConfig : terrainObjects.values()) {
+            if (!objectIdMatrices.containsKey(terrainObjectConfig.getId())) {
                 continue;
             }
-            for (VertexContainer vertexContainer : terrainObject.getVertexContainers()) {
-                int artificialVertexContainerId = vertexContainers.size() + 1;
-                vertexContainers.put(artificialVertexContainerId, vertexContainer);
-                vertexContainers2TerrainObject.put(artificialVertexContainerId, terrainObject.getId());
-            }
+//            for (VertexContainer vertexContainer : terrainObjectConfig.getVertexContainers()) {
+//                int artificialVertexContainerId = vertexContainers.size() + 1;
+//                vertexContainers.put(artificialVertexContainerId, vertexContainer);
+//                vertexContainers2TerrainObject.put(artificialVertexContainerId, terrainObjectConfig.getId());
+//            }
         }
     }
 
+    @Deprecated
     public void setupModelMatrices(Collection<TerrainObjectPosition> terrainObjectPositions) {
         objectIdMatrices = new HashMap<>();
         if(terrainObjectPositions == null) {
@@ -79,7 +80,7 @@ public class TerrainObjectService {
                     objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
                 }
                 int z = (int) terrainUiService.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.getPosition())).getHeight();
-                modelMatrices.add(new ModelMatrices().setModel(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale(), z)).setNorm(terrainObjectPosition.createRotationModelMatrix()));
+                // TODO modelMatrices.add(new ModelMatrices().setModel(terrainObjectPosition.createModelMatrix(colladaUiService.getGeneralScale(), z)).setNorm(terrainObjectPosition.createRotationModelMatrix()));
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }
@@ -90,12 +91,12 @@ public class TerrainObjectService {
         setupModelMatrices(terrainObjectPositions);
     }
 
-    public void overrideTerrainObject(TerrainObject terrainObject) {
-        terrainObjects.put(terrainObject.getId(), terrainObject);
+    public void overrideTerrainObject(TerrainObjectConfig terrainObjectConfig) {
+        terrainObjects.put(terrainObjectConfig.getId(), terrainObjectConfig);
         setup();
     }
 
-    public TerrainObject getTerrainObject(int id) {
+    public TerrainObjectConfig getTerrainObject(int id) {
         return terrainObjects.get(id);
     }
 

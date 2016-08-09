@@ -1,4 +1,4 @@
-package com.btxtech.server.persistence.impl;
+package com.btxtech.server.emulation;
 
 import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.servercommon.collada.ColladaConverterMapper;

@@ -53,11 +53,11 @@ public interface Shaders extends ClientBundle {
     @Source("Water.frag")
     TextResource waterFragmentShader();
 
-    @Source("Unit.vert")
-    TextResource unitVertexShader();
+    @Source("VertexContainer.vert")
+    TextResource vertexContainerVertexShader();
 
-    @Source("Unit.frag")
-    TextResource unitFragmentShader();
+    @Source("VertexContainer.frag")
+    TextResource vertexContainerFragmentShader();
 
     @Source("Slope.vert")
     TextResource slopeVertexShader();

@@ -3,16 +3,21 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
+import com.btxtech.uiservice.ColladaUiService;
 import com.btxtech.uiservice.ImageDescriptor;
 
 import javax.inject.Inject;
@@ -27,9 +32,11 @@ import java.util.Collection;
 @Singleton
 public class TerrainUiService {
     @Inject
+    private TerrainTypeService terrainTypeService;
+    @Inject
     private TerrainService terrainService;
     @Inject
-    private TerrainTypeService terrainTypeService;
+    private ColladaUiService colladaUiService;
     private static final double HIGHEST_POINT_IN_VIEW = 200;
     private static final double LOWEST_POINT_IN_VIEW = -20;
     private double highestPointInView; // Should be calculated
@@ -118,6 +125,7 @@ public class TerrainUiService {
         return vertexList;
     }
 
+    @Deprecated
     public Collection<Obstacle> getAllObstacles() {
         Collection<Obstacle> obstacles = new ArrayList<>();
         for (Slope slope : terrainService.getSlopes()) {
@@ -161,5 +169,15 @@ public class TerrainUiService {
 
     public GroundSkeletonConfig getGroundSkeleton() {
         return terrainTypeService.getGroundSkeletonConfig();
+    }
+
+    public Collection<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {
+        Collection<ModelMatrices> modelMatrices = new ArrayList<>();
+        for (TerrainObjectPosition objectPosition : terrainService.getTerrainObjectPositions(terrainObjectConfig)) {
+            int z = (int) getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
+            Matrix4 model = objectPosition.createModelMatrix(z).multiply(Matrix4.createScale(colladaUiService.getGeneralScale(), colladaUiService.getGeneralScale(), colladaUiService.getGeneralScale()));
+            modelMatrices.add(new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
+        }
+        return modelMatrices;
     }
 }
