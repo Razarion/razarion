@@ -9,7 +9,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 07.08.2016.
  */
-public abstract class AbstractGroundUnitRenderer extends AbstractRenderUnit {
+public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit {
     @Inject
     private TerrainUiService terrainUiService;
 

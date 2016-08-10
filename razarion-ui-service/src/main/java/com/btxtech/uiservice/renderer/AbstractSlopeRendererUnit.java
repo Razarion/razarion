@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
  * Created by Beat
  * 07.08.2016.
  */
-public abstract class AbstractSlopeUnitRenderer extends AbstractRenderUnit {
+public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit {
     private Slope slope;
 
     protected abstract void fillBuffers(Slope slope);

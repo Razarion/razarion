@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.AbstractGroundUnitRenderer;
+import com.btxtech.uiservice.renderer.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
@@ -16,7 +16,6 @@ import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import com.btxtech.webglemulator.webgl.WebGlProgramEmulator;
 import javafx.scene.paint.Color;
 
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 /**
@@ -25,7 +24,7 @@ import javax.inject.Inject;
  */
 @ColorBufferRenderer
 @DepthBufferRenderer
-public class DevToolGroundRendererUnit extends AbstractGroundUnitRenderer implements VertexShader {
+public class DevToolGroundRendererUnit extends AbstractGroundRendererUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

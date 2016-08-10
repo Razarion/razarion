@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.AbstractWaterUnitRenderer;
+import com.btxtech.uiservice.renderer.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -22,7 +22,7 @@ import javax.inject.Inject;
  * 07.08.2016.
  */
 @ColorBufferRenderer
-public class DevToolWaterRendererUnit extends AbstractWaterUnitRenderer implements VertexShader {
+public class DevToolWaterRendererUnit extends AbstractWaterRendererUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

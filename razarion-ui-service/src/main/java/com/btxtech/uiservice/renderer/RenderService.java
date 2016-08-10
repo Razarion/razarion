@@ -41,10 +41,16 @@ public abstract class RenderService {
     private ExceptionHandler exceptionHandler;
     @Inject
     @ColorBufferRenderer
-    private Instance<AbstractGroundUnitRenderer> groundRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    private Instance<AbstractGroundRendererUnit> groundRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
     @Inject
     @DepthBufferRenderer
-    private Instance<AbstractGroundUnitRenderer> groundDepthBufferRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    private Instance<AbstractGroundRendererUnit> groundDepthBufferRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    @Inject
+    @ColorBufferRenderer
+    private Instance<AbstractSlopeRendererUnit> slopeRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    @Inject
+    @DepthBufferRenderer
+    private Instance<AbstractSlopeRendererUnit> slopeDepthBufferRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
     @Inject
     @ColorBufferRenderer
     private Instance<AbstractRenderUnit> rendererUnitInstance;
@@ -78,9 +84,12 @@ public abstract class RenderService {
     private void setupSlopes() {
         for (Slope slope : terrainService.getSlopes()) {
             CompositeRenderer compositeRenderer = new CompositeRenderer();
-            AbstractSlopeUnitRenderer slopeUnitRenderer = rendererUnitInstance.select(AbstractSlopeUnitRenderer.class).get();
+            AbstractSlopeRendererUnit slopeUnitRenderer = slopeRendererUnitInstance.get();
             slopeUnitRenderer.setSlope(slope);
             compositeRenderer.setRenderUnit(slopeUnitRenderer);
+            AbstractSlopeRendererUnit slopeDepthBufferUnitRenderer = slopeDepthBufferRendererUnitInstance.get();
+            slopeDepthBufferUnitRenderer.setSlope(slope);
+            compositeRenderer.setDepthBufferRenderUnit(slopeDepthBufferUnitRenderer);
             renderQueue.add(compositeRenderer);
         }
     }
@@ -123,7 +132,7 @@ public abstract class RenderService {
 
     private void setupWater() {
         CompositeRenderer compositeRenderer = new CompositeRenderer();
-        compositeRenderer.setRenderUnit(rendererUnitInstance.select(AbstractWaterUnitRenderer.class).get());
+        compositeRenderer.setRenderUnit(rendererUnitInstance.select(AbstractWaterRendererUnit.class).get());
         renderQueue.add(compositeRenderer);
     }
 

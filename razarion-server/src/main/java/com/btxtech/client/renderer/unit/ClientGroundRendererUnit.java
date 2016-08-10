@@ -8,7 +8,7 @@ import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.uiservice.renderer.AbstractGroundUnitRenderer;
+import com.btxtech.uiservice.renderer.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -25,7 +25,7 @@ import javax.inject.Inject;
  */
 @ColorBufferRenderer
 @Dependent
-public class ClientGroundRendererUnit extends AbstractGroundUnitRenderer {
+public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;

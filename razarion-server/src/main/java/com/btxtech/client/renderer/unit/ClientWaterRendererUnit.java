@@ -6,7 +6,7 @@ import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
-import com.btxtech.uiservice.renderer.AbstractWaterUnitRenderer;
+import com.btxtech.uiservice.renderer.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -21,7 +21,7 @@ import javax.inject.Inject;
  * 04.09.2015.
  */
 @Dependent
-public class ClientWaterRendererUnit extends AbstractWaterUnitRenderer {
+public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
     @Inject
     private GameCanvas gameCanvas;

@@ -5,9 +5,10 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.AbstractSlopeUnitRenderer;
+import com.btxtech.uiservice.renderer.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
+import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
@@ -22,7 +23,8 @@ import javax.inject.Inject;
  * 07.08.2016.
  */
 @ColorBufferRenderer
-public class DevToolSlopeRendererUnit extends AbstractSlopeUnitRenderer implements VertexShader {
+@DepthBufferRenderer
+public class DevToolSlopeRendererUnit extends AbstractSlopeRendererUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

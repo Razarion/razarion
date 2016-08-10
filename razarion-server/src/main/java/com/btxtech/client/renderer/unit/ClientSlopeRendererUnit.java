@@ -7,8 +7,9 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
-import com.btxtech.uiservice.renderer.AbstractSlopeUnitRenderer;
+import com.btxtech.uiservice.renderer.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
@@ -21,8 +22,9 @@ import javax.inject.Inject;
  * Created by Beat
  * 24.01.2016.
  */
+@ColorBufferRenderer
 @Dependent
-public class ClientSlopeRendererUnit extends AbstractSlopeUnitRenderer {
+public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     // private static Logger logger = Logger.getLogger(ClientSlopeRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
