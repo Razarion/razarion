@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.unit.ClientGroundDepthBufferRendererUnit;
 import com.btxtech.client.renderer.unit.ClientGroundRendererUnit;
 import com.btxtech.client.renderer.unit.ClientSlopeRendererUnit;
 import com.btxtech.client.renderer.unit.ClientSlopeDepthBufferRendererUnit;
+import com.btxtech.client.renderer.unit.ClientVertexContainerDepthBufferRendererUnit;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
@@ -121,7 +122,7 @@ public class ClientRenderServiceImpl extends RenderService {
             terrainObjectNorms.clear();
         }
         for (int id : terrainObjectService.getVertexContainerIds()) {
-            terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectUnitRenderer.class, TerrainObjectDepthBufferUnitRenderer.class, TerrainObjectWireRender.class, id));
+            terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectUnitRenderer.class, ClientVertexContainerDepthBufferRendererUnit.class, TerrainObjectWireRender.class, id));
             terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormUnitRenderer.class, null, TerrainObjectNormUnitRenderer.class, id));
         }
         for (CompositeRenderer terrainObjectRender : terrainObjectRenders) {

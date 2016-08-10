@@ -59,6 +59,12 @@ public interface Shaders extends ClientBundle {
     @Source("VertexContainer.frag")
     TextResource vertexContainerFragmentShader();
 
+    @Source("VertexContainerDeptBuffer.vert")
+    TextResource vertexContainerDeptBufferVertexShader();
+
+    @Source("VertexContainerDeptBuffer.frag")
+    TextResource vertexContainerDeptBufferFragmentShader();
+
     @Source("Slope.vert")
     TextResource slopeVertexShader();
 
@@ -88,10 +94,4 @@ public interface Shaders extends ClientBundle {
 
     @Source("TextureTerrainObject.frag")
     TextResource textureTerrainObjectFragmentShader();
-
-    @Source("TextureTerrainObjectDepth.vert")
-    TextResource textureTerrainObjectDepthVertexShader();
-
-    @Source("TextureTerrainObjectDepth.frag")
-    TextResource textureTerrainObjectDepthFragmentShader();
 }

@@ -9,6 +9,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
+import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
@@ -22,7 +23,8 @@ import javax.inject.Inject;
  * Created by Beat
  * 26.07.2016.
  */
-// @ColorBufferRenderer
+@ColorBufferRenderer
+@DepthBufferRenderer
 public class DevToolsVertexContainerRenderUnit extends AbstractVertexContainerRenderUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
@@ -37,7 +39,6 @@ public class DevToolsVertexContainerRenderUnit extends AbstractVertexContainerRe
     public void fillBuffers(VertexContainer vertexContainer) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.getVertices()));
-        setElementCount(vertexContainer);
     }
 
     @Override

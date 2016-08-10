@@ -57,6 +57,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         normals = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         tangents = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         splattings = webGlFacade.createFloatShaderAttribute(WebGlFacade.A_GROUND_SPLATTING);
+        webGlFacade.enableReceiveShadow();
     }
 
     @Override
@@ -72,7 +73,6 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         splattingTexture = webGlFacade.createWebGLTexture(terrainUiService.getSplatting(), "uSplatting");
         bottomTexture = webGlFacade.createWebGLTexture(terrainUiService.getGroundTexture(), "uBottomTexture");
         bottomBm = webGlFacade.createWebGLBumpMapTexture(terrainUiService.getGroundBm(), "uBottomBm");
-        webGlFacade.enableReceiveShadow();
 
         vertices.fillBuffer(vertexList.getVertices());
         normals.fillBuffer(vertexList.getNormVertices());

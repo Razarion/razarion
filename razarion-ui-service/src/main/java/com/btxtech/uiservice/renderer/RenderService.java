@@ -52,11 +52,7 @@ public abstract class RenderService {
     @DepthBufferRenderer
     private Instance<AbstractSlopeRendererUnit> slopeDepthBufferRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
     @Inject
-    @ColorBufferRenderer
-    private Instance<AbstractRenderUnit> rendererUnitInstance;
-    @Inject
-    @DepthBufferRenderer
-    private Instance<AbstractRenderUnit> depthBufferRendererUnitInstance;
+    private Instance<AbstractWaterRendererUnit> waterRendererUnitInstance;
     @Inject
     private Instance<Shape3DRenderer> shape3DRendererInstance;
     private List<CompositeRenderer> renderQueue = new ArrayList<>();
@@ -132,7 +128,7 @@ public abstract class RenderService {
 
     private void setupWater() {
         CompositeRenderer compositeRenderer = new CompositeRenderer();
-        compositeRenderer.setRenderUnit(rendererUnitInstance.select(AbstractWaterRendererUnit.class).get());
+        compositeRenderer.setRenderUnit(waterRendererUnitInstance.get());
         renderQueue.add(compositeRenderer);
     }
 

@@ -21,7 +21,6 @@ import javax.inject.Inject;
  * Created by Beat
  * 07.08.2016.
  */
-@ColorBufferRenderer
 public class DevToolWaterRendererUnit extends AbstractWaterRendererUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;

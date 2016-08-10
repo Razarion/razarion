@@ -2,15 +2,16 @@ package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
-import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import elemental.html.WebGLRenderingContext;
@@ -18,15 +19,15 @@ import elemental.html.WebGLRenderingContext;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 03.08.2016.
  */
+@ColorBufferRenderer
 @Dependent
 public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRenderUnit {
-    private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
+    // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
@@ -51,7 +52,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         norms = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         textureCoordinateAttribute = webGlFacade.createShaderTextureCoordinateAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
-        // TODO webGlFacade.enableReceiveShadow();
+        webGlFacade.enableReceiveShadow();
     }
 
     @Override
@@ -60,33 +61,13 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     public void fillBuffers(VertexContainer vertexContainer) {
-        if (vertexContainer == null || vertexContainer.isEmpty()) {
-            logger.warning("No vertices to render: ");
-            return;
-        }
-        if (vertexContainer.checkWrongTextureSize()) {
-            logger.warning("TextureCoordinate has not same size as vertices: " + vertexContainer.getShapeElementVertexContainerTag());
-            return;
-        }
-        if (vertexContainer.checkWrongNormSize()) {
-            logger.warning("Normal has not same size as vertices: "+ vertexContainer.getShapeElementVertexContainerTag());
-            return;
-        }
-        if (!vertexContainer.hasTextureId()) {
-            logger.warning("No texture id: "+ vertexContainer.getShapeElementVertexContainerTag());
-            return;
-        }
-
         texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
         positions.fillBuffer(vertexContainer.getVertices());
         norms.fillBuffer(vertexContainer.getNorms());
         textureCoordinateAttribute.fillBuffer(vertexContainer.getTextureCoordinates());
-        setElementCount(vertexContainer);
 
         ambient = vertexContainer.getAmbient();
         diffuse = vertexContainer.getDiffuse();
-
-        webGlFacade.enableReceiveShadow();
     }
 
     @Override
@@ -103,7 +84,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
 
-        // TODO webGlFacade.activateReceiveShadow();
+        webGlFacade.activateReceiveShadow();
 
         texture.activate();
         positions.activate();

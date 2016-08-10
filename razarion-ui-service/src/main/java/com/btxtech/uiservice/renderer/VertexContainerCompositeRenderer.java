@@ -16,7 +16,11 @@ import java.util.Collection;
 @Dependent
 public class VertexContainerCompositeRenderer extends CompositeRenderer {
     @Inject
-    private Instance<AbstractVertexContainerRenderUnit> instance;
+    @ColorBufferRenderer
+    private Instance<AbstractVertexContainerRenderUnit> instance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    @Inject
+    @DepthBufferRenderer
+    private Instance<AbstractVertexContainerRenderUnit> depthBufferInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
     private VertexContainer vertexContainer;
     private Element3DRenderer element3DRenderer;
     private ModelMatricesProvider modelMatricesProvider;
@@ -28,6 +32,9 @@ public class VertexContainerCompositeRenderer extends CompositeRenderer {
         AbstractVertexContainerRenderUnit renderer = instance.get();
         renderer.init(getVertexContainer());
         setRenderUnit(renderer);
+        AbstractVertexContainerRenderUnit depthBufferRenderer = depthBufferInstance.get();
+        depthBufferRenderer.init(getVertexContainer());
+        setDepthBufferRenderUnit(depthBufferRenderer);
     }
 
     public VertexContainer getVertexContainer() {

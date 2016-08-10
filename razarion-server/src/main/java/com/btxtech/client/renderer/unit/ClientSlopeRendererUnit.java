@@ -56,6 +56,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         tangents = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         slopeFactors = webGlFacade.createFloatShaderAttribute("aSlopeFactor");
         groundSplatting = webGlFacade.createFloatShaderAttribute("aGroundSplatting");
+        webGlFacade.enableReceiveShadow();
     }
 
     @Override
@@ -67,8 +68,6 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         groundTopBm = webGlFacade.createWebGLTexture(terrainUiService.getTopBm(), WebGlFacade.U_GROUND_TOP_BM);
         groundBottomTexture = webGlFacade.createWebGLTexture(terrainUiService.getGroundTexture(), WebGlFacade.U_GROUND_BOTTOM_TEXTURE);
         groundBottomBm = webGlFacade.createWebGLTexture(terrainUiService.getGroundBm(), WebGlFacade.U_GROUND_BOTTOM_BM);
-
-        webGlFacade.enableReceiveShadow();
 
         Mesh mesh = slope.getMesh();
         vertices.fillBuffer(mesh.getVertices());
