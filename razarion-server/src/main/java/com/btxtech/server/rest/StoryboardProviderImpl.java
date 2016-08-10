@@ -33,7 +33,7 @@ public class StoryboardProviderImpl implements StoryboardProvider {
     public StoryboardConfig loadStoryboard() {
         try {
             StoryboardConfig storyboardConfig = storyboardPersistence.load();
-            jsonPersistence.writeJson("StoryboardConfig.json", storyboardConfig);
+            // jsonPersistence.writeJson("StoryboardConfig.json", storyboardConfig);
             return storyboardConfig;
         } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
             exceptionHandler.handleException(e);

@@ -38,7 +38,7 @@ public class ItemDepthBufferUnitRenderer extends AbstractWebGlUnitRenderer {
         if (extension == null) {
             throw new WebGlException("OES_standard_derivatives is no supported");
         }
-        createProgram(Shaders.INSTANCE.depthBufferVertexShader(), Shaders.INSTANCE.depthBufferFragmentShader());
+        createProgram(Shaders.INSTANCE.depthBufferVPVertexShader(), Shaders.INSTANCE.depthBufferVPFragmentShader());
         positions = createVertexShaderAttribute(A_VERTEX_POSITION);
         barycentric = createVertexShaderAttribute(A_BARYCENTRIC);
     }

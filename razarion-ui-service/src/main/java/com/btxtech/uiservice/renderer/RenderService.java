@@ -40,7 +40,19 @@ public abstract class RenderService {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private Instance<Object> instance;
+    @ColorBufferRenderer
+    private Instance<AbstractGroundUnitRenderer> groundRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    @Inject
+    @DepthBufferRenderer
+    private Instance<AbstractGroundUnitRenderer> groundDepthBufferRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    @Inject
+    @ColorBufferRenderer
+    private Instance<AbstractRenderUnit> rendererUnitInstance;
+    @Inject
+    @DepthBufferRenderer
+    private Instance<AbstractRenderUnit> depthBufferRendererUnitInstance;
+    @Inject
+    private Instance<Shape3DRenderer> shape3DRendererInstance;
     private List<CompositeRenderer> renderQueue = new ArrayList<>();
 
     public void setup() {
@@ -58,14 +70,15 @@ public abstract class RenderService {
 
     private void setupGround() {
         CompositeRenderer compositeRenderer = new CompositeRenderer();
-        compositeRenderer.setRenderUnit(instance.select(AbstractGroundUnitRenderer.class).get());
+        compositeRenderer.setRenderUnit(groundRendererUnitInstance.get());
+        compositeRenderer.setDepthBufferRenderUnit(groundDepthBufferRendererUnitInstance.get());
         renderQueue.add(compositeRenderer);
     }
 
     private void setupSlopes() {
         for (Slope slope : terrainService.getSlopes()) {
             CompositeRenderer compositeRenderer = new CompositeRenderer();
-            AbstractSlopeUnitRenderer slopeUnitRenderer = instance.select(AbstractSlopeUnitRenderer.class).get();
+            AbstractSlopeUnitRenderer slopeUnitRenderer = rendererUnitInstance.select(AbstractSlopeUnitRenderer.class).get();
             slopeUnitRenderer.setSlope(slope);
             compositeRenderer.setRenderUnit(slopeUnitRenderer);
             renderQueue.add(compositeRenderer);
@@ -74,7 +87,7 @@ public abstract class RenderService {
 
     private void setupTerrainObjects() {
         for (final TerrainObjectConfig terrainObjectConfig : terrainTypeService.getTerrainObjectConfigs()) {
-            Shape3DRenderer shape3DRenderer = instance.select(Shape3DRenderer.class).get();
+            Shape3DRenderer shape3DRenderer = shape3DRendererInstance.get();
             shape3DRenderer.init(terrainObjectConfig.getShape3D(), new ModelMatricesProvider() {
                 @Override
                 public Collection<ModelMatrices> provideModelMatrices() {
@@ -88,7 +101,7 @@ public abstract class RenderService {
     private void setupBaseItemTypes() {
         for (BaseItemType baseItemType : baseItemUiService.getBaseItemTypes()) {
             // Spawn
-            Shape3DRenderer spawnShape3DRenderer = instance.select(Shape3DRenderer.class).get();
+            Shape3DRenderer spawnShape3DRenderer = shape3DRendererInstance.get();
             spawnShape3DRenderer.init(baseItemType.getSpawnShape3D(), new ModelMatricesProvider() {
                 @Override
                 public Collection<ModelMatrices> provideModelMatrices() {
@@ -97,7 +110,7 @@ public abstract class RenderService {
             });
             spawnShape3DRenderer.fillRenderQueue(renderQueue);
             // Alive
-            Shape3DRenderer aliveShape3DRenderer = instance.select(Shape3DRenderer.class).get();
+            Shape3DRenderer aliveShape3DRenderer = shape3DRendererInstance.get();
             aliveShape3DRenderer.init(baseItemType.getShape3D(), new ModelMatricesProvider() {
                 @Override
                 public Collection<ModelMatrices> provideModelMatrices() {
@@ -110,7 +123,7 @@ public abstract class RenderService {
 
     private void setupWater() {
         CompositeRenderer compositeRenderer = new CompositeRenderer();
-        compositeRenderer.setRenderUnit(instance.select(AbstractWaterUnitRenderer.class).get());
+        compositeRenderer.setRenderUnit(rendererUnitInstance.select(AbstractWaterUnitRenderer.class).get());
         renderQueue.add(compositeRenderer);
     }
 

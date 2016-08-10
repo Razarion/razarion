@@ -10,6 +10,7 @@ import com.btxtech.shared.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.renderer.AbstractGroundUnitRenderer;
 import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
@@ -22,6 +23,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 01.05.2015.
  */
+@ColorBufferRenderer
 @Dependent
 public class ClientGroundRendererUnit extends AbstractGroundUnitRenderer {
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());

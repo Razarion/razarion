@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.renderer.unit.ClientGroundDepthBufferRendererUnit;
 import com.btxtech.client.renderer.unit.ClientGroundRendererUnit;
 import com.btxtech.client.renderer.unit.ClientSlopeRendererUnit;
 import com.btxtech.client.renderer.webgl.WebGlException;
@@ -80,7 +81,7 @@ public class ClientRenderServiceImpl extends RenderService {
         renderQueue = new ArrayList<>();
         terrainObjectNorms = new ArrayList<>();
         terrainObjectRenders = new ArrayList<>();
-        createAndAddRenderSwitch(ClientGroundRendererUnit.class, GroundDepthBufferUnitRenderer.class, GroundWireRender.class, 0);
+        createAndAddRenderSwitch(ClientGroundRendererUnit.class, ClientGroundDepthBufferRendererUnit.class, GroundWireRender.class, 0);
         for (int id : terrainUiService.getSlopeIds()) {
             createAndAddRenderSwitch(ClientSlopeRendererUnit.class, SlopeDepthBufferUnitRenderer.class, SlopeWireUnitRenderer.class, id);
         }

@@ -309,4 +309,11 @@ public class WebGlFacade {
         getCtx3d().drawArrays(mode, 0, abstractRenderUnit.getElementCount());
         WebGlUtil.checkLastWebGlError("drawArrays for " + abstractRenderUnit.helperString(), getCtx3d());
     }
+
+    public void enableOESStandartDerivatives() {
+        Object extension = getCtx3d().getExtension("OES_standard_derivatives");
+        if (extension == null) {
+            throw new WebGlException("OES_standard_derivatives is no supported");
+        }
+    }
 }
