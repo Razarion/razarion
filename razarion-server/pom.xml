@@ -165,7 +165,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.version}</version>
+                <version>${gwt.pulgin.version}</version>
                 <configuration>
                     <logLevel>INFO</logLevel>
                     <noServer>true</noServer>
