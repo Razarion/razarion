@@ -9,6 +9,16 @@ import org.jboss.errai.databinding.client.api.Converter;
  */
 public class HtmlColor2ColorConverter implements Converter<Color, String> {
     @Override
+    public Class<Color> getModelType() {
+        return Color.class;
+    }
+
+    @Override
+    public Class<String> getComponentType() {
+        return String.class;
+    }
+
+    @Override
     public Color toModelValue(String widgetValue) {
         return Color.fromHtmlColor(widgetValue);
     }

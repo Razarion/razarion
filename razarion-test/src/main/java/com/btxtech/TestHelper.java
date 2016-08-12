@@ -6,17 +6,18 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
-import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -134,8 +135,10 @@ public class TestHelper {
             throw new IllegalArgumentException("Location can not be found: " + location);
         }
         try {
-            return IOUtils.toString(inputStream);
-        } catch (IOException e) {
+            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream))) {
+                return buffer.lines().collect(Collectors.joining());
+            }
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

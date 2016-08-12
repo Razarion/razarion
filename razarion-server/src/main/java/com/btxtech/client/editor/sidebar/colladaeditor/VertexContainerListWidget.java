@@ -9,7 +9,7 @@ import org.jboss.errai.ui.client.widget.ListWidget;
  */
 public class VertexContainerListWidget extends ListWidget<VertexContainer, VertexContainerWidget> {
     @Override
-    protected Class<VertexContainerWidget> getItemWidgetType() {
+    protected Class<VertexContainerWidget> getItemComponentType() {
         return VertexContainerWidget.class;
     }
 }

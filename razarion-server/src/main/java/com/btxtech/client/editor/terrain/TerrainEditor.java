@@ -20,10 +20,10 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 05.05.2016.
  */
-@Singleton
+@ApplicationScoped
 public class TerrainEditor {
     public enum CursorType {
         CREATE,

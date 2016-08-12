@@ -20,18 +20,18 @@ public class ImageGalleryItemListWidget extends ListWidget<ImageGalleryItem, Ima
     private ImageGalleryDialog imageGalleryDialog;
 
     @Override
-    protected Class<ImageGalleryItemWidget> getItemWidgetType() {
+    protected Class<ImageGalleryItemWidget> getItemComponentType() {
         return ImageGalleryItemWidget.class;
     }
 
     public void setSelectedImage(ImageGalleryItem selectedImage) {
-        getWidget(selectedImage).setSelected(true);
+        getComponent(selectedImage).setSelected(true);
     }
 
     @Override
     protected void onItemsRendered(List<ImageGalleryItem> items) {
         for (final ImageGalleryItem item : items) {
-            GwtUtils.castElementToElement(getWidget(item).getElement()).addEventListener(Event.CLICK, new EventListener() {
+            GwtUtils.castElementToElement(getComponent(item).getElement()).addEventListener(Event.CLICK, new EventListener() {
                 @Override
                 public void handleEvent(Event evt) {
                     Element e = ((JavaScriptObject) evt.getTarget()).cast();
@@ -50,7 +50,7 @@ public class ImageGalleryItemListWidget extends ListWidget<ImageGalleryItem, Ima
 
     public void setChanged(Collection<ImageGalleryItem> changed) {
         for (ImageGalleryItem imageGalleryItem : getValue()) {
-            getWidget(imageGalleryItem).setChanged(changed.contains(imageGalleryItem));
+            getComponent(imageGalleryItem).setChanged(changed.contains(imageGalleryItem));
         }
     }
 }

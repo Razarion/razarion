@@ -12,10 +12,10 @@
     <name>Razarion Parent</name>
 
     <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <errai.version>3.2.1.Final</errai.version>
-        <gwt.version>2.7.0</gwt.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <errai.version>4.0.0.Beta2</errai.version>
+        <gwt.version>2.8.0-rc1</gwt.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -28,6 +28,27 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- TODO WHY????-->
+            <dependency>
+                <groupId>dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>1.6.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- TODO remove if all moved to GWT version-->
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-dev</artifactId>
+                <version>${gwt.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-user</artifactId>
+                <version>${gwt.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- TODO remove ENDS if all moved to GWT version-->
         </dependencies>
     </dependencyManagement>
 

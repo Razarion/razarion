@@ -8,6 +8,16 @@ import org.jboss.errai.databinding.client.api.Converter;
  */
 public class GradToRadConverter implements Converter<Double, Double> {
     @Override
+    public Class<Double> getModelType() {
+        return Double.class;
+    }
+
+    @Override
+    public Class<Double> getComponentType() {
+        return Double.class;
+    }
+
+    @Override
     public Double toModelValue(Double widgetValue) {
         return Math.toRadians(widgetValue);
     }

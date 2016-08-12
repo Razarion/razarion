@@ -9,16 +9,18 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.MovableType;
 import com.btxtech.shared.system.ExceptionHandler;
-import org.apache.commons.io.IOUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -59,21 +61,13 @@ public class ItemTypeEmulation {
     }
 
     private Shape3D loadAndConvertShape3d(String fileName, ColladaConverterMapper colladaConverterMapper) {
-        FileInputStream fileInputStream = null;
         try {
-            fileInputStream = new FileInputStream(fileName);
-            String colladaString = IOUtils.toString(fileInputStream);
-            return ColladaConverter.convertShape3D(colladaString, colladaConverterMapper);
+            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
+                String colladaString = buffer.lines().collect(Collectors.joining());
+                return ColladaConverter.convertShape3D(colladaString, colladaConverterMapper);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            if(fileInputStream != null) {
-                try {
-                    fileInputStream.close();
-                } catch (IOException e) {
-                    exceptionHandler.handleException(e);
-                }
-            }
         }
     }
 

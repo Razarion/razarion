@@ -19,7 +19,27 @@
         <javaee.version>1.0.2.Final</javaee.version>
     </properties>
 
+    <dependencyManagement>
+        <!-- TODO remove if all moved to GWT version-->
+        <dependencies>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.6.2</version>
+            </dependency>
+        </dependencies>
+        <!-- TODO remove ENDS if all moved to GWT version-->
+    </dependencyManagement>
+
+
     <dependencies>
+        <!-- TODO remove if all moved to GWT version-->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.6.2</version>
+            </dependency>
+        <!-- TODO remove ENDS if all moved to GWT version-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-server-common</artifactId>
@@ -149,7 +169,8 @@
                 <configuration>
                     <logLevel>INFO</logLevel>
                     <noServer>true</noServer>
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M</extraJvmArgs>
+                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M </extraJvmArgs>
+                    <!--<extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</extraJvmArgs>-->
                     <runTarget>webgl.html</runTarget>
                     <hostedWebapp>src/main/webapp</hostedWebapp>
                     <strict>true</strict>

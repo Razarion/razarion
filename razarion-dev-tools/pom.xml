@@ -12,9 +12,29 @@
     <name>Razarion Development Tools</name>
 
     <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+
+    <dependencyManagement>
+        <!-- TODO remove if all moved to GWT version-->
+        <dependencies>
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-dev</artifactId>
+                <version>2.8.0-rc1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-user</artifactId>
+                <version>2.8.0-rc1</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+        <!-- TODO remove ENDS if all moved to GWT version-->
+    </dependencyManagement>
+
 
     <dependencies>
         <dependency>
@@ -63,13 +83,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.12</version>
-        </dependency>
-        <dependency>
-            <groupId>javafx</groupId>
-            <artifactId>jfxrt</artifactId>
-            <version>${java.version}</version>
-            <scope>system</scope>
-            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

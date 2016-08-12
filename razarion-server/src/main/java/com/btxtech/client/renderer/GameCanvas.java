@@ -13,8 +13,8 @@ import elemental.client.Browser;
 import elemental.dom.Element;
 import elemental.html.WebGLRenderingContext;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 12.07.2015.
  */
-@Singleton
+@ApplicationScoped
 public class GameCanvas {
     private WebGLRenderingContext ctx3d;
     private double lastTimestamp = 0;

@@ -94,12 +94,12 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
     public void selectionChanged(ImageGalleryItem newSelection) {
         for (ImageGalleryItem imageGalleryItem : imageGalleryItemListWidget.getValue()) {
             if (imageGalleryItem.getId() == selectedImageId) {
-                imageGalleryItemListWidget.getWidget(imageGalleryItem).setSelected(false);
+                imageGalleryItemListWidget.getComponent(imageGalleryItem).setSelected(false);
                 break;
             }
         }
         selectedImageId = newSelection.getId();
-        imageGalleryItemListWidget.getWidget(newSelection).setSelected(true);
+        imageGalleryItemListWidget.getComponent(newSelection).setSelected(true);
         modalDialogManager.setApplyValue(selectedImageId);
     }
 

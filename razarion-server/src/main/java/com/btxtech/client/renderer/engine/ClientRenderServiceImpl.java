@@ -19,10 +19,10 @@ import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 20.05.2015.
  */
-@Singleton
+@ApplicationScoped
 public class ClientRenderServiceImpl extends RenderService {
     public static final int DEPTH_BUFFER_SIZE = 1024;
     public static final int RENDER_FRAME_COUNT = 1;
