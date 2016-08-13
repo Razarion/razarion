@@ -1,5 +1,5 @@
 /** -------------------------- COMMON -------------------------- */
-*{
+* {
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
@@ -22,9 +22,32 @@ button:hover {
     color: white;
 }
 
+.top-right-x-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+}
+
 /** -------------------------- COMMON ENDS -------------------------- */
 
 /** -------------------------- COCKPIT -------------------------- */
+/** ----- Main ----- */
+.main-cockpit {
+    color: #FFF;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 9px solid transparent;
+    border-image-source: url('images/Border.png');
+    border-image-slice: 9;
+    border-image-repeat: repeat;
+}
+
+/** ----- Quest ----- */
 .quest-sidebar {
     color: #FFF;
     position: absolute;
@@ -33,7 +56,7 @@ button:hover {
     width: 200px;
     height: 400px;
     display: table;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.5);
     border: 9px solid transparent;
     border-image-source: url('images/Border.png');
     border-image-slice: 9;
@@ -46,7 +69,7 @@ button:hover {
 
 .quest-sidebar-title {
     display: table-cell;
-    font-weight:bold;
+    font-weight: bold;
     width: 100%;
     height: 2em;
     color: #3289bd;
@@ -65,10 +88,45 @@ button:hover {
     height: 20px;
 }
 
+.modal-dialog-header {
+    padding: 0 0 1em 0;
+}
+
 /** -------------------------- COCKPIT ENDS -------------------------- */
 
-/** -------------------------- EDITOR -------------------------- */
+/** -------------------------- DIALOG -------------------------- */
+.modal-dialog {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 200px;
+    height: 300px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 9px solid transparent;
+    border-image-source: url('images/Border.png');
+    border-image-slice: 9;
+    border-image-repeat: repeat;
+}
 
+.modal-dialog-header {
+}
+
+.modal-dialog-footer {
+    position: absolute;
+    bottom: 0;
+    text-align: right;
+}
+
+.modal-dialog-header-title {
+    color: #faff31;
+}
+
+/** -------------------------- DIALOG ENDS -------------------------- */
+
+/** -------------------------- EDITOR -------------------------- */
 /** --- Image gallery ---*/
 .gallery-parent {
     overflow-x: hidden;
@@ -83,9 +141,6 @@ button:hover {
     margin: 3px;
 }
 
-/** --- Image gallery ENDS ---*/
-
-/** --- Image gallery item ---*/
 .gallery-item-table-selected {
     border-style: dashed;
 }
@@ -110,7 +165,6 @@ button:hover {
     border-collapse: collapse;
     font-size: 75%;
     font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif, serif;
 }
 
 .gallery-item-table td:nth-child(2) {
@@ -135,7 +189,27 @@ button:hover {
     background: url('images/TransparentBg.png');
 }
 
-/** --- Image gallery widget ENDS ---*/
+/** --- Left side bar ---*/
+.left-side-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: table;
+    height: 100%;
+    overflow: scroll;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 9px solid transparent;
+    border-image-source: url('images/Border.png');
+    border-image-slice: 9;
+    border-image-repeat: repeat;
+    color: #d8d0d0;
+}
+
+.left-side-bar-content {
+    height: 100%;
+    font-size: 80%;
+}
 
 /** -------------------------- EDITOR ENDS-------------------------- */
 

@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.sidebar;
 
-import com.btxtech.uiservice.ZIndexConstants;
+import com.btxtech.client.cockpit.ZIndexConstants;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,10 +19,12 @@ import javax.inject.Inject;
 @Templated("SideBarPanel.html#sideBarPanel")
 public class SideBarPanel extends Composite {
     @Inject
-    private LeftSideBar leftSideBar;
+    private LeftSideBarManager leftSideBarManager;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private SimplePanel content;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button closeButton;
@@ -42,7 +44,7 @@ public class SideBarPanel extends Composite {
 
     @EventHandler("closeButton")
     private void closeButtonButtonClick(ClickEvent event) {
-        leftSideBar.onClose((LeftSideBarContent) content.getWidget());
+        leftSideBarManager.onClose((LeftSideBarContent) content.getWidget());
     }
 
 }

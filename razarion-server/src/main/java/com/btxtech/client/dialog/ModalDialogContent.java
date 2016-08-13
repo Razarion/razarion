@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.dialog;
+package com.btxtech.client.dialog;
 
 import com.google.gwt.user.client.ui.IsWidget;
 

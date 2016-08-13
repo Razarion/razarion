@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.widgets;
 
-import com.btxtech.client.editor.dialog.ApplyListener;
-import com.btxtech.client.editor.dialog.ModalDialogManager;
+import com.btxtech.client.dialog.ApplyListener;
+import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.editor.dialog.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.ControlUtils;

@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.dialog;
+package com.btxtech.client.dialog;
 
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -15,8 +15,8 @@ public class ModalDialogManager {
     @Inject
     private Instance<ModalDialogContent> contentInstance;
     @Inject
-    private Instance<BootstrapModalDialog> containerInstance;
-    private BootstrapModalDialog container;
+    private Instance<ModalDialogPanel> containerInstance;
+    private ModalDialogPanel container;
     private ModalDialogContent content;
     private ApplyListener applyListener;
     private Object applyValue;
@@ -62,7 +62,7 @@ public class ModalDialogManager {
         hide();
     }
 
-    public BootstrapModalDialog getContainer() {
+    public ModalDialogPanel getContainer() {
         return container;
     }
 }

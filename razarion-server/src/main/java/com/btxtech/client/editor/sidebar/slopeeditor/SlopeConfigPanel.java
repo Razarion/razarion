@@ -1,8 +1,8 @@
 package com.btxtech.client.editor.sidebar.slopeeditor;
 
-import com.btxtech.client.editor.dialog.ApplyListener;
-import com.btxtech.client.editor.dialog.ModalDialogManager;
-import com.btxtech.client.editor.dialog.content.fractal.FractalDialog;
+import com.btxtech.client.dialog.ApplyListener;
+import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.editor.dialog.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;

@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.dialog.imagegallery;
 
-import com.btxtech.client.editor.dialog.ModalDialogContent;
-import com.btxtech.client.editor.dialog.ModalDialogManager;
+import com.btxtech.client.dialog.ModalDialogContent;
+import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;

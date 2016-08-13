@@ -1,6 +1,5 @@
 package com.btxtech.client.cockpit;
 
-import com.btxtech.uiservice.ZIndexConstants;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import elemental.client.Browser;
 import elemental.css.CSSStyleDeclaration;

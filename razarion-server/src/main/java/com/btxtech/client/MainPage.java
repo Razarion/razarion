@@ -1,9 +1,10 @@
 package com.btxtech.client;
 
+import com.btxtech.client.cockpit.MainCockpit;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.ClientRunner;
 import com.btxtech.client.system.boot.GameStartupSeq;
-import com.btxtech.uiservice.ZIndexConstants;
+import com.btxtech.client.cockpit.ZIndexConstants;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
@@ -34,6 +35,9 @@ public class MainPage extends Composite {
     private Canvas canvas = Canvas.createIfSupported();
     @Inject
     private GameCanvas gameCanvas;
+    @Inject
+    @DataField
+    private MainCockpit mainCockpit;
 
     @PostConstruct
     public void init() {

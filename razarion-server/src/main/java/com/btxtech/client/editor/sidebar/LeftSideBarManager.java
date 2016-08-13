@@ -12,26 +12,28 @@ import java.util.logging.Logger;
  * 03.05.2016.
  */
 @Singleton
-public class LeftSideBar {
-    private Logger logger = Logger.getLogger(LeftSideBar.class.getName());
+public class LeftSideBarManager {
+    private Logger logger = Logger.getLogger(LeftSideBarManager.class.getName());
     @Inject
     private Instance<SideBarPanel> sideBarPanelInstance;
+    @Inject
+    private Instance<LeftSideBarContent> leftSideBarContentInstance;
     private SideBarPanel sideBarPanel;
 
-    public void show(LeftSideBarContent leftSideBarContent) {
+    public void show(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
         if (sideBarPanel == null) {
             sideBarPanel = sideBarPanelInstance.get();
             RootPanel.get().add(sideBarPanel);
         } else {
             sideBarPanel.getContent().onClose();
         }
-        sideBarPanel.setContent(leftSideBarContent);
+        sideBarPanel.setContent(leftSideBarContentInstance.select(leftSideBarContentClass).get());
     }
 
     public void onClose(LeftSideBarContent leftSideBarContent) {
         leftSideBarContent.onClose();
         if (sideBarPanel == null) {
-            logger.severe("LeftSideBar already null");
+            logger.severe("LeftSideBarManager already null");
         } else {
             RootPanel.get().remove(sideBarPanel);
             sideBarPanel = null;

@@ -1,6 +1,6 @@
 package com.btxtech.client.cockpit.quest;
 
-import com.btxtech.uiservice.ZIndexConstants;
+import com.btxtech.client.cockpit.ZIndexConstants;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 

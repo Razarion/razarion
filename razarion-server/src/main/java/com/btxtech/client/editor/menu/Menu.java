@@ -1,12 +1,11 @@
 package com.btxtech.client.editor.menu;
 
-import com.btxtech.client.editor.sidebar.LeftSideBar;
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.LeftSideBarManager;
+import com.btxtech.client.editor.sidebar.colladaeditor.ColladaEditorSidebar;
 import com.btxtech.client.editor.sidebar.slope.SlopeSidebar;
+import com.btxtech.client.editor.sidebar.slopeeditor.SlopeConfigSidebar;
 import com.btxtech.client.editor.sidebar.terraineditor.TerrainEditorSidebar;
 import com.btxtech.client.editor.sidebar.terrainobjecteditor.TerrainObjectEditorSidebar;
-import com.btxtech.client.editor.sidebar.colladaeditor.ColladaEditorSidebar;
-import com.btxtech.client.editor.sidebar.slopeeditor.SlopeConfigSidebar;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineHyperlink;
@@ -14,7 +13,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
@@ -22,6 +20,7 @@ import javax.inject.Inject;
  * 06.11.2015.
  */
 @Templated("Menu.html#menu-template")
+@Deprecated
 public class Menu extends Composite {
     // private Logger logger = Logger.getLogger(Menu.class.getName());
     @Inject
@@ -56,33 +55,31 @@ public class Menu extends Composite {
     private InlineHyperlink colladaMenu;
 
     @Inject
-    private LeftSideBar leftSideBar;
-    @Inject
-    private Instance<LeftSideBarContent> leftSideBarContentInstance;
+    private LeftSideBarManager leftSideBarManager;
 
     @EventHandler("menu-terrain")
     private void terrainMenuClick(ClickEvent event) {
-        leftSideBar.show(leftSideBarContentInstance.select(SlopeSidebar.class).get());
+        leftSideBarManager.show(SlopeSidebar.class);
     }
 
     @EventHandler("menu-slope")
     private void slopeMenuClick(ClickEvent event) {
-        leftSideBar.show(leftSideBarContentInstance.select(SlopeConfigSidebar.class).get());
+        leftSideBarManager.show(SlopeConfigSidebar.class);
     }
 
     @EventHandler("menu-editor")
     private void editorMenuClick(ClickEvent event) {
-        leftSideBar.show(leftSideBarContentInstance.select(TerrainEditorSidebar.class).get());
+        leftSideBarManager.show(TerrainEditorSidebar.class);
     }
 
     @EventHandler("menu-object-editor")
     private void objectEditorMenuClick(ClickEvent event) {
-        leftSideBar.show(leftSideBarContentInstance.select(TerrainObjectEditorSidebar.class).get());
+        leftSideBarManager.show(TerrainObjectEditorSidebar.class);
     }
 
     @EventHandler("menu-collada")
     private void colladaMenuClick(ClickEvent event) {
-        leftSideBar.show(leftSideBarContentInstance.select(ColladaEditorSidebar.class).get());
+        leftSideBarManager.show(ColladaEditorSidebar.class);
     }
 
 }
