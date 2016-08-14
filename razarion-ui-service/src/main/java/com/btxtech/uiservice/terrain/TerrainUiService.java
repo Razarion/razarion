@@ -3,6 +3,7 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.VertexList;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Ray3d;
@@ -19,11 +20,14 @@ import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.ColladaUiService;
 import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -46,10 +50,22 @@ public class TerrainUiService {
     private ImageDescriptor splatting = ImageDescriptor.BLEND_3;
     private ImageDescriptor groundTexture = ImageDescriptor.GROUND_6_TEXTURE_2;
     private ImageDescriptor groundBm = ImageDescriptor.GROUND_6_BM_2;
+    private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
 
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
         lowestPointInView = LOWEST_POINT_IN_VIEW;
+    }
+
+    public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
+        terrainObjectConfigModelMatrices = new MapCollection<>();
+        for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainService.getTerrainObjectPositions().getMap().entrySet()) {
+            for (TerrainObjectPosition objectPosition : entry.getValue()) {
+                int z = (int) getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
+                Matrix4 model = objectPosition.createModelMatrix(z).multiply(Matrix4.createScale(colladaUiService.getGeneralScale(), colladaUiService.getGeneralScale(), colladaUiService.getGeneralScale()));
+                terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
+            }
+        }
     }
 
     public void setTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions) {
@@ -172,12 +188,6 @@ public class TerrainUiService {
     }
 
     public Collection<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {
-        Collection<ModelMatrices> modelMatrices = new ArrayList<>();
-        for (TerrainObjectPosition objectPosition : terrainService.getTerrainObjectPositions(terrainObjectConfig)) {
-            int z = (int) getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
-            Matrix4 model = objectPosition.createModelMatrix(z).multiply(Matrix4.createScale(colladaUiService.getGeneralScale(), colladaUiService.getGeneralScale(), colladaUiService.getGeneralScale()));
-            modelMatrices.add(new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
-        }
-        return modelMatrices;
+        return terrainObjectConfigModelMatrices.get(terrainObjectConfig);
     }
 }

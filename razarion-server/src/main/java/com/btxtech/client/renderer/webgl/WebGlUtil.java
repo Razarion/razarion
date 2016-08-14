@@ -15,19 +15,20 @@ import java.util.List;
 public class WebGlUtil {
 
     public static void checkLastWebGlError(String operation, WebGLRenderingContext ctx3d) {
-        int lastError = ctx3d.getError();
-        if (lastError != WebGLRenderingContext.NO_ERROR) {
-            switch (lastError) {
-                case WebGLRenderingContext.INVALID_OPERATION: {
-                    throw new WebGlException(operation, "INVALID_OPERATION", lastError);
-                }
-                case WebGLRenderingContext.INVALID_VALUE: {
-                    throw new WebGlException(operation, "INVALID_VALUE", lastError);
-                }
-                default:
-                    throw new WebGlException(operation, lastError);
-            }
-        }
+        // TODO find faster solution here
+//        int lastError = ctx3d.getError();
+//        if (lastError != WebGLRenderingContext.NO_ERROR) {
+//            switch (lastError) {
+//                case WebGLRenderingContext.INVALID_OPERATION: {
+//                    throw new WebGlException(operation, "INVALID_OPERATION", lastError);
+//                }
+//                case WebGLRenderingContext.INVALID_VALUE: {
+//                    throw new WebGlException(operation, "INVALID_VALUE", lastError);
+//                }
+//                default:
+//                    throw new WebGlException(operation, lastError);
+//            }
+//        }
     }
 
     public static Float32Array createArrayBufferOfFloat32Doubles(List<Double> doubleList) {

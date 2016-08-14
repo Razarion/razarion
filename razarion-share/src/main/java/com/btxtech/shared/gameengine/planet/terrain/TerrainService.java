@@ -68,8 +68,8 @@ public class TerrainService {
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
     }
 
-    public Collection<TerrainObjectPosition> getTerrainObjectPositions(TerrainObjectConfig terrainObjectConfig) {
-        return terrainObjectConfigPositions.get(terrainObjectConfig);
+    public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {
+        return terrainObjectConfigPositions;
     }
 
     private void setupPlateau(TerrainSlopePosition terrainSlopePosition) {

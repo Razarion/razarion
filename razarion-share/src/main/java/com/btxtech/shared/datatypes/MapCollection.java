@@ -24,4 +24,8 @@ public class MapCollection<T, U> {
     public Collection<U> get(T key) {
         return map.get(key);
     }
+
+    public Map<T, Collection<U>> getMap() {
+        return map;
+    }
 }
