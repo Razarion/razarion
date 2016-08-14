@@ -197,13 +197,17 @@ button:hover {
     bottom: 0;
     display: table;
     height: 100%;
-    overflow: scroll;
     background-color: rgba(0, 0, 0, 0.5);
     border: 9px solid transparent;
     border-image-source: url('images/Border.png');
     border-image-slice: 9;
     border-image-repeat: repeat;
     color: #d8d0d0;
+}
+
+.left-side-bar-scroll {
+    overflow: scroll;
+    height: 100%;
 }
 
 .left-side-bar-content {

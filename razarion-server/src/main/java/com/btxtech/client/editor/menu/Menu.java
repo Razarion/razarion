@@ -27,17 +27,11 @@ public class Menu extends Composite {
     @DataField("menu-terrain")
     private InlineHyperlink terrainMenu;
     @Inject
-    @DataField("menu-slope")
-    private InlineHyperlink slopeMenu;
-    @Inject
     @DataField("menu-item")
     private ItemMenu itemMenu;
     @Inject
     @DataField("menu-editor")
     private InlineHyperlink editorMenu;
-    @Inject
-    @DataField("menu-object-editor")
-    private InlineHyperlink objectEditorMenu;
     @Inject
     @DataField("menu-collada")
     private InlineHyperlink colladaMenu;
@@ -50,19 +44,9 @@ public class Menu extends Composite {
         leftSideBarManager.show(SlopeSidebar.class);
     }
 
-    @EventHandler("menu-slope")
-    private void slopeMenuClick(ClickEvent event) {
-        leftSideBarManager.show(SlopeConfigSidebar.class);
-    }
-
     @EventHandler("menu-editor")
     private void editorMenuClick(ClickEvent event) {
         leftSideBarManager.show(TerrainEditorSidebar.class);
-    }
-
-    @EventHandler("menu-object-editor")
-    private void objectEditorMenuClick(ClickEvent event) {
-        leftSideBarManager.show(TerrainObjectEditorSidebar.class);
     }
 
     @EventHandler("menu-collada")
