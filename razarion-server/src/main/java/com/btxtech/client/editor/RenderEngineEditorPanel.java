@@ -1,13 +1,17 @@
-package com.btxtech.client.editor.menu;
+package com.btxtech.client.editor;
 
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.RenderService;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
@@ -25,17 +29,31 @@ import javax.inject.Inject;
 
 /**
  * Created by Beat
- * 07.11.2015.
+ * 13.08.2016.
  */
-@Templated("CameraMenu.html#menu-camera")
-public class CameraMenu extends Composite {
+@Templated("RenderEngineEditorPanel.html#render-engine-editor-panel")
+public class RenderEngineEditorPanel extends Composite implements LeftSideBarContent {
+    @Inject
+    private RenderService renderService;
     @Inject
     private Camera camera;
+    @Inject
+    private ProjectionTransformation normalProjectionTransformation;
     @Inject
     @AutoBound
     private DataBinder<Camera> cameraDataBinder;
     @Inject
-    private ProjectionTransformation normalProjectionTransformation;
+    @DataField
+    private CheckBox showMonitor;
+    @Inject
+    @DataField
+    private CheckBox showDeepMap;
+    @Inject
+    @DataField
+    private CheckBox wireMode;
+    @Inject
+    @DataField
+    private CheckBox showNorm;
     @Inject
     @DataField("topButton")
     private Button topButton;
@@ -88,18 +106,37 @@ public class CameraMenu extends Composite {
 
     @PostConstruct
     public void init() {
+        // TODO showMonitor.setValue(renderService.isShowMonitor());
+        // TODO showDeepMap.setValue(renderService.isShowDeep());
+        // TODO wireMode.setValue(renderService.isWire());
+        // TODO showNorm.setValue(renderService.isShowNorm());
         cameraDataBinder.setModel(camera);
-        cameraDataBinder.addPropertyChangeHandler(new PropertyChangeHandler<Object>() {
-            @Override
-            public void onPropertyChange(PropertyChangeEvent<Object> event) {
-                displayLightDirectionLabel();
-            }
-        });
+        cameraDataBinder.addPropertyChangeHandler(event -> displayLightDirectionLabel());
         displayLightDirectionLabel();
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
         openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
     }
 
+
+    @EventHandler("showMonitor")
+    public void showMonitorChanged(ChangeEvent e) {
+        // TODO renderService.setShowMonitor(showMonitor.getValue());
+    }
+
+    @EventHandler("showDeepMap")
+    public void showDeepMapChanged(ChangeEvent e) {
+        // TODO renderService.setShowDeep(showDeepMap.getValue());
+    }
+
+    @EventHandler("wireMode")
+    public void wireModeChanged(ChangeEvent e) {
+        // TODO renderService.showWire(wireMode.getValue());
+    }
+
+    @EventHandler("showNorm")
+    public void showNormChanged(ChangeEvent e) {
+        // TODO renderService.setShowNorm(showNorm.getValue());
+    }
     private void displayLightDirectionLabel() {
         Vertex direction = camera.getDirection();
         directionLabel.setText("Light Direction (" + DisplayUtils.formatVertex(direction) + ")");
@@ -137,4 +174,8 @@ public class CameraMenu extends Composite {
         camera.testPrint();
     }
 
+    @Override
+    public void onClose() {
+
+    }
 }

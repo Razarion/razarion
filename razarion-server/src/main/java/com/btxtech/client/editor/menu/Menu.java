@@ -24,14 +24,8 @@ import javax.inject.Inject;
 public class Menu extends Composite {
     // private Logger logger = Logger.getLogger(Menu.class.getName());
     @Inject
-    @DataField("menu-debug")
-    private DebugMenu debugMenu;
-    @Inject
     @DataField("menu-shadow")
     private ShadowMenu shadowMenu;
-    @Inject
-    @DataField("menu-camera")
-    private CameraMenu cameraMenu;
     @Inject
     @DataField("menu-terrain")
     private InlineHyperlink terrainMenu;

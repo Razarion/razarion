@@ -25,6 +25,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
+    private Button renderEngineButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
     private Button planetButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -47,10 +51,14 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @DataField
     private Button terrainObjectButton;
 
+    @EventHandler("renderEngineButton")
+    private void onRenderEngineButtonClicked(ClickEvent event) {
+        modalDialogManager.hide();
+        leftSideBarManager.show(RenderEngineEditorPanel.class);
+    }
+
     @EventHandler("planetButton")
     private void onPlanetButtonClicked(ClickEvent event) {
-        modalDialogManager.hide();
-        leftSideBarManager.show(PlanetEditorPanel.class);
     }
 
     @EventHandler("terrainButton")

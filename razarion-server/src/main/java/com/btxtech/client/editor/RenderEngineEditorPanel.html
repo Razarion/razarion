@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="render-engine-editor-panel">
+    <table>
+        <tr>
+            <td colspan="2">Render Engine</td>
+        </tr>
+        <tr>
+            <td>Show Monitor</td>
+            <td><input type="checkbox" value="showMonitor" id="showMonitor"></td>
+        </tr>
+        <tr>
+            <td>Show Deep Map</td>
+            <td><input type="checkbox" value="Deepmap" id="showDeepMap"></td>
+        </tr>
+        <tr>
+            <td>Wire Mode</td>
+            <td><input type="checkbox" value="wireMode" id="wireMode"></td>
+        </tr>
+        <tr>
+            <td>Show Norm</td>
+            <td><input type="checkbox" value="showNorm" id="showNorm"></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">Camera</td>
+        </tr>
+        <tr>
+            <td colspan="2"><button id="topButton">Top</button></td>
+        </tr>
+        <tr>
+            <td colspan="2"><button id="frontButton">Front</button></td>
+        </tr>
+        <tr>
+            <td colspan="2"><button id="gameButton">Game</button></td>
+        </tr>
+        <tr>
+            <td colspan="2"><button id="dumpPositionButton">Dump position</button></td>
+        </tr>
+        <tr>
+            <td>X Translate</td>
+            <td><input id="translateX" type="number" step="10" style="width:5em;"></td>
+        </tr>
+        <tr>
+            <td>Y Translate</td>
+            <td><input id="translateY" type="number" step="10" style="width:5em;"></td>
+        </tr>
+        <tr>
+            <td>Z Translate</td>
+            <td><input id="translateZ" type="number" step="10" style="width:5em;"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><div id="directionLabel"></div></td>
+        </tr>
+        <tr>
+            <td>X Rotate</td>
+            <td><input id="rotateXBox" type="number" max="90" min="0" step="1" style="width: 4em"><input id="rotateXSlider" type="range" max="90" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td>Z Rotate</td>
+            <td><input id="rotateZBox" type="number" max="360" min="0" step="1" style="width: 4em"><input id="rotateZSlider" type="range" max="360" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td>Y Opening Angle</td>
+            <td><input id="openingAngleYBox" type="number" max="180" min="0" step="1" style="width:5em;"><input id="openingAngleYSlider" type="range" max="180" min="0" step="1"></td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
