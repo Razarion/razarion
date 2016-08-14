@@ -24,17 +24,11 @@ import javax.inject.Inject;
 public class Menu extends Composite {
     // private Logger logger = Logger.getLogger(Menu.class.getName());
     @Inject
-    @DataField("menu-shadow")
-    private ShadowMenu shadowMenu;
-    @Inject
     @DataField("menu-terrain")
     private InlineHyperlink terrainMenu;
     @Inject
     @DataField("menu-slope")
     private InlineHyperlink slopeMenu;
-    @Inject
-    @DataField("menu-water")
-    private WaterMenu waterMenu;
     @Inject
     @DataField("menu-item")
     private ItemMenu itemMenu;

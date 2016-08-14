@@ -139,7 +139,7 @@ public class RenderEngineEditorPanel extends Composite implements LeftSideBarCon
     }
     private void displayLightDirectionLabel() {
         Vertex direction = camera.getDirection();
-        directionLabel.setText("Light Direction (" + DisplayUtils.formatVertex(direction) + ")");
+        directionLabel.setText(DisplayUtils.formatVertex(direction));
     }
 
     @EventHandler("openingAngleYSlider")

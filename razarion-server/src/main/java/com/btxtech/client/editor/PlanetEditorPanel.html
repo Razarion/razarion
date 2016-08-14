@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="planet-editor-panel">
+    <table>
+        <tr>
+            <td colspan="2">Shadow</td>
+        </tr>
+        <tr>
+            <td>Light Direction</td>
+            <td><div id="directionLabel"></div></td>
+        </tr>
+        <tr>
+            <td>X Rotation</td>
+            <td><input id="rotateXBox" type="number" max="90" min="0" step="1" style="width: 4em"><input id="rotateXSlider" type="range" max="90" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td>Z Rotation</td>
+            <td><input id="rotateZBox" type="number" max="360" min="0" step="1" style="width: 4em"><input id="rotateZSlider" type="range" max="360" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td>Shadow Alpha</td>
+            <td><input id="shadowAlpha" type="range" max="1.0" min="0.0" step="0.01"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><hr></td>
+        </tr>
+        <tr>
+            <td colspan="2">Water</td>
+        </tr>
+        <tr>
+            <td colspan="2"><div id="lightWidget"></div></td>
+        </tr>
+        <tr>
+            <td>Transparency</td>
+            <td><input id="transparency" type="range" min="0" max="1" step="0.01"></td>
+        </tr>
+        <tr>
+            <td>Bump Map</td>
+            <td><input id="bumpMap" type="range" min="0" max="20" step="0.01"></td>
+        </tr>
+        <tr>
+            <td>Level</td>
+            <td><input id="level" type="number" step="1"></td>
+        </tr>
+        <tr>
+            <td>Ground</td>
+            <td><input id="ground" type="number" step="1"></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

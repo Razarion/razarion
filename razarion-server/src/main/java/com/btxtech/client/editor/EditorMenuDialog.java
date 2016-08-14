@@ -2,6 +2,7 @@ package com.btxtech.client.editor;
 
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -53,12 +54,12 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("renderEngineButton")
     private void onRenderEngineButtonClicked(ClickEvent event) {
-        modalDialogManager.hide();
-        leftSideBarManager.show(RenderEngineEditorPanel.class);
+        openEditor(RenderEngineEditorPanel.class);
     }
 
     @EventHandler("planetButton")
     private void onPlanetButtonClicked(ClickEvent event) {
+        openEditor(PlanetEditorPanel.class);
     }
 
     @EventHandler("terrainButton")
@@ -94,5 +95,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Override
     public void customize(ModalDialogManager modalDialogManager) {
 
+    }
+
+    private void openEditor(Class<? extends LeftSideBarContent> editorPanelClass) {
+        modalDialogManager.hide();
+        leftSideBarManager.show(editorPanelClass);
     }
 }
