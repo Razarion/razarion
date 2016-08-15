@@ -3,6 +3,7 @@ package com.btxtech.webglemulator.razarion;
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.Emulation;
 import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.webglemulator.WebGlEmulatorController;
 import com.btxtech.webglemulator.WebGlEmulatorSceneController;
 import javafx.application.Platform;
 
@@ -20,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 public class RazarionEmulator {
     private static final long RENDER_DELAY = 1000;
     @Inject
+    private WebGlEmulatorController controller;
+    @Inject
     private WebGlEmulatorSceneController sceneController;
     @Inject
     private StoryboardService storyboardService;
@@ -35,6 +38,7 @@ public class RazarionEmulator {
         try {
             storyboardService.init(storyboardPersistence.load());
             renderService.setup();
+            controller.onEngineInitialized();
             start();
         } catch (Exception e) {
             e.printStackTrace();

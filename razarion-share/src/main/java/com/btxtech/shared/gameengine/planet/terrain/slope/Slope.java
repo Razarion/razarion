@@ -208,10 +208,6 @@ public class Slope {
         return 0;
     }
 
-    public double getWaterGround() {
-        return 0;
-    }
-
     public SlopeSkeletonConfig getSlopeSkeletonConfig() {
         return slopeSkeletonConfig;
     }

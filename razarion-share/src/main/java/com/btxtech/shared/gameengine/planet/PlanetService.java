@@ -55,6 +55,7 @@ public class PlanetService implements Runnable {
     private final HashSet<SyncBaseItem> guardingItems = new HashSet<>();
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
+    private PlanetConfig planetConfig;
 
     @PostConstruct
     public void postConstruct() {
@@ -62,6 +63,7 @@ public class PlanetService implements Runnable {
     }
 
     public void initialise(PlanetConfig planetConfig) {
+        this.planetConfig = planetConfig;
         activationEvent.fire(new PlanetActivationEvent(planetConfig));
         scheduledFuture.start();
     }
@@ -253,5 +255,9 @@ public class PlanetService implements Runnable {
     public void finalizeCommand(SyncBaseItem syncItem) {
         addToQueue(syncItem);
         removeGuardingBaseItem(syncItem);
+    }
+
+    public PlanetConfig getPlanetConfig() {
+        return planetConfig;
     }
 }

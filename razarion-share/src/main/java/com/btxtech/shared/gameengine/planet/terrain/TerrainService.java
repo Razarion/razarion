@@ -37,24 +37,21 @@ public class TerrainService {
     private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
-    private Water water = new Water(-7, -20); // Init here due to the editor
+    private Water water;
     private GroundMesh groundMesh;
     private Map<Integer, Slope> slopeMap = new HashMap<>();
-    private Collection<TerrainSlopePosition> terrainSlopePositions;
     private MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
         setupGround(MESH_NODES, MESH_NODES);
-        water.clearAllTriangles();
-        slopeMap.clear();
 
-        terrainSlopePositions = planetActivationEvent.getPlanetConfig().getTerrainSlopePositions();
-        if (terrainSlopePositions != null) {
-            for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-                setupPlateau(terrainSlopePosition);
-            }
+        water = new Water(planetActivationEvent.getPlanetConfig().getWaterLevel());
+
+        slopeMap.clear();
+        if (planetActivationEvent.getPlanetConfig().getTerrainSlopePositions() != null) {
+            planetActivationEvent.getPlanetConfig().getTerrainSlopePositions().forEach(this::setupPlateau);
         }
 
         terrainObjectConfigPositions = new MapCollection<>();

@@ -83,10 +83,6 @@ public class ClientRenderServiceImpl extends RenderService {
         renderQueue = new ArrayList<>();
         terrainObjectNorms = new ArrayList<>();
         terrainObjectRenders = new ArrayList<>();
-        createAndAddRenderSwitch(ClientGroundRendererUnit.class, ClientGroundDepthBufferRendererUnit.class, GroundWireRender.class, 0);
-        for (int id : terrainUiService.getSlopeIds()) {
-            createAndAddRenderSwitch(ClientSlopeRendererUnit.class, ClientSlopeDepthBufferRendererUnit.class, SlopeWireUnitRenderer.class, id);
-        }
         terrainEditorRenderers = new ArrayList<>();
         for (int id : terrainEditor.getSlopePolygonIds()) {
             TerrainEditorUnitRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorUnitRenderer.class).get();
@@ -94,7 +90,6 @@ public class ClientRenderServiceImpl extends RenderService {
             terrainEditorRenderers.add(terrainEditorRenderer);
         }
         setupTerrainObjectRenderer();
-        createAndAddRenderSwitch(WaterUnitRenderer.class, null, WaterWireUnitRenderer.class, 0);
         monitor = createAndAddRenderSwitch(MonitorUnitRenderer.class, null, null, 0);
         terrainNorm = createAndAddRenderSwitch(GroundNormUnitRenderer.class, null, GroundNormUnitRenderer.class, 0);
         terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorUnitRenderer.class).get();
@@ -122,7 +117,7 @@ public class ClientRenderServiceImpl extends RenderService {
             terrainObjectNorms.clear();
         }
         for (int id : terrainObjectService.getVertexContainerIds()) {
-            terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectUnitRenderer.class, ClientVertexContainerDepthBufferRendererUnit.class, TerrainObjectWireRender.class, id));
+            // terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectUnitRenderer.class, ClientVertexContainerDepthBufferRendererUnit.class, TerrainObjectWireRender.class, id));
             terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormUnitRenderer.class, null, TerrainObjectNormUnitRenderer.class, id));
         }
         for (CompositeRenderer terrainObjectRender : terrainObjectRenders) {

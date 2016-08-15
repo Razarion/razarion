@@ -24,48 +24,54 @@ public class LightConfig {
         return xRotation;
     }
 
-    public void setXRotation(double xRotation) {
+    public LightConfig setXRotation(double xRotation) {
         this.xRotation = xRotation;
+        return this;
     }
 
     public double getYRotation() {
         return yRotation;
     }
 
-    public void setYRotation(double yRotation) {
+    public LightConfig setYRotation(double yRotation) {
         this.yRotation = yRotation;
+        return this;
     }
 
     public Color getDiffuse() {
         return diffuse;
     }
 
-    public void setDiffuse(Color diffuse) {
+    public LightConfig setDiffuse(Color diffuse) {
         this.diffuse = diffuse;
+        return this;
     }
 
     public Color getAmbient() {
         return ambient;
     }
 
-    public void setAmbient(Color ambient) {
+    public LightConfig setAmbient(Color ambient) {
         this.ambient = ambient;
+        return this;
     }
 
     public double getSpecularIntensity() {
         return specularIntensity;
     }
 
-    public void setSpecularIntensity(double specularIntensity) {
+    public LightConfig setSpecularIntensity(double specularIntensity) {
         this.specularIntensity = specularIntensity;
+        return this;
     }
 
     public double getSpecularHardness() {
         return specularHardness;
     }
 
-    public void setSpecularHardness(double specularHardness) {
+    public LightConfig setSpecularHardness(double specularHardness) {
         this.specularHardness = specularHardness;
+        return this;
     }
 
     public Vertex getDirection() {

@@ -2,10 +2,13 @@ package com.btxtech.server.emulation;
 
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.Emulation;
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.CameraConfig;
+import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -42,6 +45,7 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
         gameEngineConfig.setSlopeSkeletonConfigs(loadedStoryBoard.getGameEngineConfig().getSlopeSkeletonConfigs());
         gameEngineConfig.setTerrainObjectConfigs(loadedStoryBoard.getGameEngineConfig().getTerrainObjectConfigs());
         PlanetConfig planetConfig = new PlanetConfig();
+        planetConfig.setWaterLevel(-7).setShape3DGeneralScale(10);
         planetConfig.setTerrainSlopePositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions());
         planetConfig.setTerrainObjectPositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions());
         gameEngineConfig.setPlanetConfig(planetConfig);
@@ -57,7 +61,16 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
         botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs));
         storyboardConfig.setSceneConfigs(sceneConfigs);
-
+        // Setup VisualConfig
+        VisualConfig visualConfig = new VisualConfig();
+        visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(250));
+        visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(290));
+        visualConfig.setWaterGroundLevel(-20).setWaterBmDepth(10).setWaterTransparency(0.65);
+        LightConfig lightConfig = new LightConfig();
+        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setXRotation(Math.toRadians(-20));
+        lightConfig.setYRotation(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
+        visualConfig.setWaterLightConfig(lightConfig);
+        storyboardConfig.setVisualConfig(visualConfig);
         return storyboardConfig;
     }
 

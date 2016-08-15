@@ -1,8 +1,6 @@
 package com.btxtech.client.editor.menu;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
-import com.btxtech.client.editor.sidebar.colladaeditor.ColladaEditorSidebar;
-import com.btxtech.client.editor.GroundSidebar;
 import com.btxtech.client.editor.sidebar.terraineditor.TerrainEditorSidebar;
 import com.btxtech.client.editor.sidebar.terrainobjecteditor.TerrainObjectEditorSidebar;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -22,9 +20,6 @@ import javax.inject.Inject;
 @Deprecated
 public class Menu extends Composite {
     // private Logger logger = Logger.getLogger(Menu.class.getName());
-    @Inject
-    @DataField("menu-item")
-    private ItemMenu itemMenu;
     @Inject
     @DataField("menu-editor")
     private InlineHyperlink editorMenu;
@@ -50,7 +45,7 @@ public class Menu extends Composite {
 
     @EventHandler("menu-collada")
     private void colladaMenuClick(ClickEvent event) {
-        leftSideBarManager.show(ColladaEditorSidebar.class);
+      //   leftSideBarManager.show(ColladaEditorSidebar.class);
     }
 
 }

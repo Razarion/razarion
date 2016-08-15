@@ -107,7 +107,7 @@ public class Matrix4 {
         r[15] = m[0] * m[5] * m[10] - m[0] * m[9] * m[6] - m[1] * m[4] * m[10] + m[1] * m[8] * m[6] + m[2] * m[4] * m[9] - m[2] * m[8] * m[5];
 
         double det = m[0] * r[0] + m[1] * r[4] + m[2] * r[8] + m[3] * r[12];
-        if(det == 0.0) {
+        if (det == 0.0) {
             throw new IllegalArgumentException("det == 0.0 Unable to build inverse matrix");
         }
         for (int i = 0; i < 16; i++) {
@@ -200,6 +200,10 @@ public class Matrix4 {
                 {0, 0, 1, z},
                 {0, 0, 0, 1}};
         return new Matrix4(numbers);
+    }
+
+    public static Matrix4 createScale(double scale) {
+        return createScale(scale, scale, scale);
     }
 
     public static Matrix4 createScale(double x, double y, double z) {

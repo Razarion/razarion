@@ -24,12 +24,7 @@ public class SlopeWater extends Slope {
     public void wrap(GroundMesh groundMesh) {
         super.wrap(groundMesh);
 
-        Triangulator.calculate(getOuterLine(), new Triangulator.Listener<Vertex>() {
-            @Override
-            public void onTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3) {
-                water.addTriangle(vertex1, vertex2, vertex3);
-            }
-        });
+        Triangulator.calculate(getOuterLine(), water::addTriangle);
     }
 
     @Override
@@ -40,10 +35,5 @@ public class SlopeWater extends Slope {
     @Override
     public double getWaterLevel() {
         return water.getLevel();
-    }
-
-    @Override
-    public double getWaterGround() {
-        return water.getGround();
     }
 }

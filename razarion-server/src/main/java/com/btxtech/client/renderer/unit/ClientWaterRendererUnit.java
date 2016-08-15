@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -27,6 +28,8 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     private GameCanvas gameCanvas;
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private VisualUiService visualUiService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -67,16 +70,16 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
         webGlFacade.useProgram();
 
-        webGlFacade.setLightUniforms(null, terrainUiService.getWater().getLightConfig());
+        webGlFacade.setLightUniforms(null, visualUiService.getVisualConfig().getWaterLightConfig());
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.createNormMatrix());
         webGlFacade.uniform1i("uBumpMapSize", terrainUiService.getWaterBumpMap().getQuadraticEdge());
-        webGlFacade.uniform1f("uTransparency", terrainUiService.getWater().getWaterTransparency());
-        webGlFacade.uniform1f("uBumpMapDepth", terrainUiService.getWater().getWaterBumpMapDepth());
-        webGlFacade.uniform1f("animation", terrainUiService.getWater().getWaterAnimation());
-        webGlFacade.uniform1f("animation2", terrainUiService.getWater().getWaterAnimation2());
+        webGlFacade.uniform1f("uTransparency", visualUiService.getVisualConfig().getWaterTransparency());
+        webGlFacade.uniform1f("uBumpMapDepth", visualUiService.getVisualConfig().getWaterBmDepth());
+        webGlFacade.uniform1f("animation", terrainUiService.getWaterAnimation());
+        webGlFacade.uniform1f("animation2", terrainUiService.getWaterAnimation2());
 
         positions.activate();
         norms.activate();

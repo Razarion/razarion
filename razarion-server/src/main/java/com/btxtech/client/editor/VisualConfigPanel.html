@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="visual-panel">
+    <table>
+        <tr>
+            <td colspan="2">Shadow</td>
+        </tr>
+        <tr>
+            <td>Light Direction</td>
+            <td><div id="shadowDirectionLabel"></div></td>
+        </tr>
+        <tr>
+            <td>X Rotation</td>
+            <td><input id="shadowRotationXBox" type="number" max="90" min="0" step="1" style="width: 4em"><input id="shadowRotationXSlider" type="range" max="90" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td>Z Rotation</td>
+            <td><input id="shadowRotationZBox" type="number" max="360" min="0" step="1" style="width: 4em"><input id="shadowRotationZSlider" type="range" max="360" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td>Shadow Alpha</td>
+            <td><input id="shadowAlpha" type="range" max="1.0" min="0.0" step="0.01"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><hr></td>
+        </tr>
+        <tr>
+            <td colspan="2">Water</td>
+        </tr>
+        <tr>
+            <td colspan="2"><div id="waterLightConfig"></div></td>
+        </tr>
+        <tr>
+            <td>Transparency</td>
+            <td><input id="waterTransparency" type="range" min="0" max="1" step="0.01"></td>
+        </tr>
+        <tr>
+            <td>Bump Map Depth</td>
+            <td><input id="waterBmDepth" type="range" min="0" max="20" step="0.01"></td>
+        </tr>
+        <tr>
+            <td>Ground Level</td>
+            <td><input id="waterGroundLevel" type="number" step="1"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><hr></td>
+        </tr>
+        <tr>
+            <td colspan="2">Shape 3D</td>
+        </tr>
+        <tr>
+            <td>Light Direction</td>
+            <td><div id="shape3DDirectionLabel"></div></td>
+        </tr>
+        <tr>
+            <td>X Rotation</td>
+            <td><input id="shape3DLightRotationXBox" type="number" max="90" min="0" step="1" style="width: 4em"><input id="shape3DLightRotationXSlider" type="range" max="90" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td>Z Rotation</td>
+            <td><input id="shape3DLightRotationZBox" type="number" max="360" min="0" step="1" style="width: 4em"><input id="shape3DLightRotationZSlider" type="range" max="360" min="0" step="1"></td>
+        </tr>
+
+
+    </table>
+</div>
+
+</body>
+</html>

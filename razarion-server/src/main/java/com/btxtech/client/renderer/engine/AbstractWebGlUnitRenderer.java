@@ -192,11 +192,8 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
 
     protected WebGLTexture setupTexture(int imageId) {
         final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
-        imageUiService.requestImage(imageId, new ImageUiService.ImageListener() {
-            @Override
-            public void onLoaded(ImageElement imageElement) {
-                bindTexture(imageElement, webGLTexture);
-            }
+        imageUiService.requestImage(imageId, imageElement -> {
+            bindTexture(imageElement, webGLTexture);
         });
         return webGLTexture;
     }
@@ -235,11 +232,8 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
 
     protected WebGLTexture setupTextureForBumpMap(int imageId) {
         final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
-        imageUiService.requestImage(imageId, new ImageUiService.ImageListener() {
-            @Override
-            public void onLoaded(ImageElement imageElement) {
-                bindTextureForBumpMap(imageElement, webGLTexture);
-            }
+        imageUiService.requestImage(imageId, imageElement -> {
+            bindTextureForBumpMap(imageElement, webGLTexture);
         });
         return webGLTexture;
     }

@@ -8,6 +8,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
@@ -35,7 +36,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     @Inject
     private Camera camera;
     @Inject
-    private ShadowUiService shadowUiService;
+    private VisualUiService visualUiService;
     @Inject
     private BaseItemUiService baseItemUiService;
     private VertexShaderAttribute positions;
@@ -79,7 +80,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
 
         webGlFacade.uniform3fNoAlpha("uLightingAmbient", ambient);
-        webGlFacade.uniform3f("uLightingDirection", shadowUiService.getLightDirection());
+        webGlFacade.uniform3f("uLightingDirection", visualUiService.getShape3DLightDirection());
         webGlFacade.uniform3fNoAlpha("uLightingDiffuse", diffuse);
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());

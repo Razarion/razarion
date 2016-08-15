@@ -4,6 +4,7 @@ import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -11,11 +12,7 @@ import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -30,8 +27,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -72,6 +67,8 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private RazarionEmulator razarionEmulator;
     @Inject
+    private VisualUiService visualUiService;
+    @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
@@ -91,97 +88,68 @@ public class WebGlEmulatorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        centerPanel.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
-                canvas.setWidth(width.doubleValue());
-                projectionTransformation.setAspectRatio(getAspectRatio());
-                aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
-            }
+        centerPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> {
+            canvas.setWidth(width.doubleValue());
+            projectionTransformation.setAspectRatio(getAspectRatio());
+            aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
         });
-        centerPanel.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
-                canvas.setHeight(height.doubleValue());
-                projectionTransformation.setAspectRatio(getAspectRatio());
-                aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
-            }
+        centerPanel.heightProperty().addListener((observableValue, oldSceneWidth, height) -> {
+            canvas.setHeight(height.doubleValue());
+            projectionTransformation.setAspectRatio(getAspectRatio());
+            aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
         });
         canvas.setFocusTraversable(true);
-        canvas.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                canvas.requestFocus();
-            }
-        });
-        ////////
-//        camera.setTranslateX(970);
-//        camera.setTranslateY(-80);
-//        camera.setTranslateZ(0);
-//        camera.setRotateX(Math.toRadians(90));
-//        camera.setRotateZ(Math.toRadians(0));
-//        projectionTransformation.setFovY(Math.toRadians(110));
-        ////////
+        canvas.addEventFilter(MouseEvent.ANY, mouseEvent -> canvas.requestFocus());
 
+        fovSlider.valueProperty().addListener((observableValue, number, newValue) -> {
+            projectionTransformation.setFovY(Math.toRadians(fovSlider.getValue()));
+            System.out.println("Camera direction: " + camera.getDirection());
+        });
+        cameraXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
+            camera.setRotateX(Math.toRadians(cameraXRotationSlider.getValue()));
+            System.out.println("X rot: " + cameraXRotationSlider.getValue());
+            System.out.println("Z rot: " + cameraZRotationSlider.getValue());
+            System.out.println("Camera direction: " + camera.getDirection());
+            System.out.println("zNear: " + projectionTransformation.calculateZNear());
+            System.out.println("zFar: " + projectionTransformation.calculateZFar());
+        });
+        cameraZRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
+            camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
+            System.out.println("X rot: " + cameraXRotationSlider.getValue());
+            System.out.println("Z rot: " + cameraZRotationSlider.getValue());
+            System.out.println("Camera direction: " + camera.getDirection());
+            System.out.println("zNear: " + projectionTransformation.calculateZNear());
+            System.out.println("zFar: " + projectionTransformation.calculateZFar());
+        });
+        shadowXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
+            visualUiService.getVisualConfig().setShadowRotationX(Math.toRadians(shadowXRotationSlider.getValue()));
+            System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
+            System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
+            System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
+            shadowUiService.calculateViewField();
+        });
+        shadowZRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
+            visualUiService.getVisualConfig().setShadowRotationZ(Math.toRadians(shadowZRotationSlider.getValue()));
+            System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
+            System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
+            System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
+            shadowUiService.calculateViewField();
+        });
+
+        showRenderTimeCheckBox.setSelected(razarionEmulator.isShowRenderTime());
+    }
+
+
+    public void onEngineInitialized() {
         fovSlider.valueProperty().set(Math.toDegrees(projectionTransformation.getFovY()));
-        fovSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
-                projectionTransformation.setFovY(Math.toRadians(fovSlider.getValue()));
-                System.out.println("Camera direction: " + camera.getDirection());
-            }
-        });
         cameraXRotationSlider.valueProperty().set(Math.toDegrees(camera.getRotateX()));
-        cameraXRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
-                camera.setRotateX(Math.toRadians(cameraXRotationSlider.getValue()));
-                System.out.println("X rot: " + cameraXRotationSlider.getValue());
-                System.out.println("Z rot: " + cameraZRotationSlider.getValue());
-                System.out.println("Camera direction: " + camera.getDirection());
-                System.out.println("zNear: " + projectionTransformation.calculateZNear());
-                System.out.println("zFar: " + projectionTransformation.calculateZFar());
-            }
-        });
         cameraZRotationSlider.valueProperty().set(Math.toDegrees(camera.getRotateZ()));
-        cameraZRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
-                camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
-                System.out.println("X rot: " + cameraXRotationSlider.getValue());
-                System.out.println("Z rot: " + cameraZRotationSlider.getValue());
-                System.out.println("Camera direction: " + camera.getDirection());
-                System.out.println("zNear: " + projectionTransformation.calculateZNear());
-                System.out.println("zFar: " + projectionTransformation.calculateZFar());
-            }
-        });
         xTranslationField.setText(Double.toString(camera.getTranslateX()));
         yTranslationField.setText(Double.toString(camera.getTranslateY()));
         zTranslationField.setText(Double.toString(camera.getTranslateZ()));
 
-        shadowXRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getRotateX()));
-        shadowXRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
-                shadowUiService.setRotateX(Math.toRadians(shadowXRotationSlider.getValue()));
-                System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
-                System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
-                System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
-                shadowUiService.calculateViewField();
-            }
-        });
-        shadowZRotationSlider.valueProperty().set(Math.toDegrees(shadowUiService.getRotateZ()));
-        shadowZRotationSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number newValue) {
-                shadowUiService.setRotateZ(Math.toRadians(shadowZRotationSlider.getValue()));
-                System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
-                System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
-                System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
-                shadowUiService.calculateViewField();
-            }
-        });
-        showRenderTimeCheckBox.setSelected(razarionEmulator.isShowRenderTime());
+        shadowXRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationX()));
+        shadowZRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationZ()));
     }
 
     public void onMouseDragged(Event event) {
@@ -281,22 +249,13 @@ public class WebGlEmulatorController implements Initializable {
         try {
             final Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulatorShadow.fxml"));
-            loader.setControllerFactory(new Callback<Class<?>, Object>() {
-                @Override
-                public Object call(Class<?> param) {
-                    return shadowController;
-                }
-            });
-            AnchorPane root = (AnchorPane) loader.load();
+            loader.setControllerFactory(param -> shadowController);
+            AnchorPane root = loader.load();
             stage.setTitle("Shadow");
             stage.setScene(new Scene(root));
             stage.setX(-1288);
             stage.setY(168);
-            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                public void handle(WindowEvent we) {
-                    shadowController.setActive(false);
-                }
-            });
+            stage.setOnCloseRequest(we -> shadowController.setActive(false));
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -311,28 +270,15 @@ public class WebGlEmulatorController implements Initializable {
         try {
             final Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulatorScene.fxml"));
-            loader.setControllerFactory(new Callback<Class<?>, Object>() {
-                @Override
-                public Object call(Class<?> param) {
-                    return sceneController;
-                }
-            });
-            AnchorPane root = (AnchorPane) loader.load();
+            loader.setControllerFactory(param -> sceneController);
+            AnchorPane root = loader.load();
             stage.setTitle("Scene");
             stage.setScene(new Scene(root));
             stage.setX(-1288);
             stage.setY(168);
-            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                public void handle(WindowEvent we) {
-                    sceneController = null;
-                }
-            });
+            stage.setOnCloseRequest(we -> sceneController = null);
             stage.show();
-            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                public void handle(WindowEvent we) {
-                    sceneController.setCanvas(null);
-                }
-            });
+            stage.setOnCloseRequest(we -> sceneController.setCanvas(null));
 
             sceneController.update();
         } catch (IOException e) {
@@ -371,7 +317,7 @@ public class WebGlEmulatorController implements Initializable {
         }
     }
 
-    public void onMouseMoved(MouseEvent event) {
+    public void onMouseMoved(/*MouseEvent event*/) {
         // terrainScrollHandler.handleMouseMoveScroll((int)event.getX(), (int)event.getY(), (int)canvas.getWidth(), (int)canvas.getHeight());
     }
 
@@ -383,7 +329,7 @@ public class WebGlEmulatorController implements Initializable {
         return canvas.getWidth() / canvas.getHeight();
     }
 
-    public void onShowRenderTimeCheckBox(ActionEvent actionEvent) {
+    public void onShowRenderTimeCheckBox() {
         razarionEmulator.setShowRenderTime(showRenderTimeCheckBox.isSelected());
     }
 }

@@ -19,7 +19,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -27,7 +26,7 @@ import java.util.logging.Logger;
  */
 @Templated("ImageGalleryItemWidget.html#imageGalleryItemWidget")
 public class ImageGalleryItemWidget extends Composite implements ImageUiService.ImageGalleryListener, HasModel<ImageGalleryItem> {
-    private Logger logger = Logger.getLogger(ImageGalleryItemWidget.class.getName());
+    // private Logger logger = Logger.getLogger(ImageGalleryItemWidget.class.getName());
     @Inject
     private ImageUiService imageUiService;
     @Inject
@@ -105,7 +104,7 @@ public class ImageGalleryItemWidget extends Composite implements ImageUiService.
     }
 
     public void setChanged(boolean changed) {
-        if(changed) {
+        if (changed) {
             addStyleName("gallery-item-table-changed");
             removeStyleName("gallery-item-table-not-changed");
         } else {

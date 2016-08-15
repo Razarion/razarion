@@ -15,71 +15,19 @@ import java.util.logging.Logger;
  * 10.04.2016.
  */
 public class Water {
-    private Logger logger = Logger.getLogger(Water.class.getName());
+    // private Logger logger = Logger.getLogger(Water.class.getName());
     private double level;
-    private double ground;
-    // Water, should not be in here
-    private double waterTransparency = 0.65;
-    private double waterBumpMapDepth = 10;
     private List<Vertex> vertices = new ArrayList<>();
     private List<Vertex> norms = new ArrayList<>();
     private List<Vertex> tangents = new ArrayList<>();
     private List<Vertex> barycentric = new ArrayList<>();
-    private LightConfig lightConfig;
 
-    public Water(double level, double ground) {
+    public Water(double level) {
         this.level = level;
-        this.ground = ground;
-        try {
-            lightConfig = new LightConfig();
-            lightConfig.setDiffuse(new Color(1, 1, 1));
-            lightConfig.setAmbient(new Color(1, 1, 1));
-            lightConfig.setXRotation(Math.toRadians(-20));
-            lightConfig.setYRotation(Math.toRadians(-20));
-            lightConfig.setSpecularIntensity(1.0);
-            lightConfig.setSpecularHardness(0.5);
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, t.getMessage(), t);
-        }
     }
 
     public double getLevel() {
         return level;
-    }
-
-    public void setLevel(double level) {
-        this.level = level;
-    }
-
-    public double getGround() {
-        return ground;
-    }
-
-    public void setGround(double ground) {
-        this.ground = ground;
-    }
-
-    public double getWaterTransparency() {
-        return waterTransparency;
-    }
-
-    public void setWaterTransparency(double waterTransparency) {
-        this.waterTransparency = waterTransparency;
-    }
-
-    public double getWaterBumpMapDepth() {
-        return waterBumpMapDepth;
-    }
-
-    public void setWaterBumpMapDepth(double waterBumpMapDepth) {
-        this.waterBumpMapDepth = waterBumpMapDepth;
-    }
-
-    public void clearAllTriangles() {
-        vertices.clear();
-        norms.clear();
-        tangents.clear();
-        barycentric.clear();
     }
 
     public void addTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3) {
@@ -122,21 +70,5 @@ public class Water {
 
     public List<Vertex> getBarycentric() {
         return barycentric;
-    }
-
-    public double getWaterAnimation() {
-        return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
-    }
-
-    public double getWaterAnimation2() {
-        return getWaterAnimation(System.currentTimeMillis(), 2000, 500);
-    }
-
-    public double getWaterAnimation(long millis, int durationMs, int offsetMs) {
-        return Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT);
-    }
-
-    public LightConfig getLightConfig() {
-        return lightConfig;
     }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 public class StoryboardConfig {
     private List<SceneConfig> sceneConfigs;
     private GameEngineConfig gameEngineConfig;
+    private VisualConfig visualConfig;
 
     public List<SceneConfig> getSceneConfigs() {
         return sceneConfigs;
@@ -29,6 +30,15 @@ public class StoryboardConfig {
 
     public StoryboardConfig setGameEngineConfig(GameEngineConfig gameEngineConfig) {
         this.gameEngineConfig = gameEngineConfig;
+        return this;
+    }
+
+    public VisualConfig getVisualConfig() {
+        return visualConfig;
+    }
+
+    public StoryboardConfig setVisualConfig(VisualConfig visualConfig) {
+        this.visualConfig = visualConfig;
         return this;
     }
 }

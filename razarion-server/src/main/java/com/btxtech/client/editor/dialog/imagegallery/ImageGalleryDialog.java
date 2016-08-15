@@ -8,7 +8,6 @@ import com.btxtech.shared.dto.ImageGalleryItem;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import elemental.html.File;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -29,12 +28,15 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
     @Inject
     @DataField
     private ImageGalleryItemListWidget imageGalleryItemListWidget;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button reloadButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button saveButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button newButton;
@@ -64,11 +66,7 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
     @Override
     public void onLoaded(List<ImageGalleryItem> imageGalleryItems) {
         imageGalleryItemListWidget.setItems(imageGalleryItems);
-        for (ImageGalleryItem imageGalleryItem : imageGalleryItems) {
-            if (imageGalleryItem.getId() == selectedImageId) {
-                imageGalleryItemListWidget.setSelectedImage(imageGalleryItem);
-            }
-        }
+        imageGalleryItems.stream().filter(imageGalleryItem -> imageGalleryItem.getId() == selectedImageId).forEach(imageGalleryItem -> imageGalleryItemListWidget.setSelectedImage(imageGalleryItem));
     }
 
     @EventHandler("reloadButton")
@@ -83,12 +81,7 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
 
     @EventHandler("newButton")
     private void newButtonClicked(ClickEvent event) {
-        ControlUtils.openSingleFileDataUrlUpload(new ControlUtils.SingleFileDataUrlListener() {
-            @Override
-            public void onLoaded(String dataUrl, File file) {
-                imageUiService.create(dataUrl, ImageGalleryDialog.this);
-            }
-        });
+        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.create(dataUrl, ImageGalleryDialog.this));
     }
 
     public void selectionChanged(ImageGalleryItem newSelection) {

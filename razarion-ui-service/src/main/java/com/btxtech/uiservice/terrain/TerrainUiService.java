@@ -14,12 +14,14 @@ import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
-import com.btxtech.uiservice.ColladaUiService;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
 import javax.enterprise.event.Observes;
@@ -40,7 +42,7 @@ public class TerrainUiService {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private ColladaUiService colladaUiService;
+    private PlanetService planetService;
     private static final double HIGHEST_POINT_IN_VIEW = 200;
     private static final double LOWEST_POINT_IN_VIEW = -20;
     private double highestPointInView; // Should be calculated
@@ -62,7 +64,7 @@ public class TerrainUiService {
         for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainService.getTerrainObjectPositions().getMap().entrySet()) {
             for (TerrainObjectPosition objectPosition : entry.getValue()) {
                 int z = (int) getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
-                Matrix4 model = objectPosition.createModelMatrix(z).multiply(Matrix4.createScale(colladaUiService.getGeneralScale(), colladaUiService.getGeneralScale(), colladaUiService.getGeneralScale()));
+                Matrix4 model = objectPosition.createModelMatrix(z).multiply(Matrix4.createScale(planetService.getPlanetConfig().getShape3DGeneralScale()));
                 terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
             }
         }
@@ -170,8 +172,21 @@ public class TerrainUiService {
         return terrainService.getWater();
     }
 
+    @Deprecated
     public ImageDescriptor getWaterBumpMap() {
         return ImageDescriptor.BUMP_MAP_01;
+    }
+
+    public double getWaterAnimation() {
+        return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
+    }
+
+    public double getWaterAnimation2() {
+        return getWaterAnimation(System.currentTimeMillis(), 2000, 500);
+    }
+
+    public double getWaterAnimation(long millis, int durationMs, int offsetMs) {
+        return Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT);
     }
 
     @Deprecated

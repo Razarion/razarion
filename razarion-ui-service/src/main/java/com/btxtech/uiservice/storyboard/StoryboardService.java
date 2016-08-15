@@ -2,6 +2,7 @@ package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.gameengine.GameEngine;
 import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.uiservice.VisualUiService;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -16,6 +17,8 @@ public class StoryboardService {
     @Inject
     private GameEngine gameEngine;
     @Inject
+    private VisualUiService visualUiService;
+    @Inject
     private Instance<Scene> sceneInstance;
     private StoryboardConfig storyboardConfig;
     private int nextSceneNumber;
@@ -24,6 +27,7 @@ public class StoryboardService {
     public void init(StoryboardConfig storyboardConfig) {
         this.storyboardConfig = storyboardConfig;
         gameEngine.initialise(storyboardConfig.getGameEngineConfig());
+        visualUiService.initialise(storyboardConfig.getVisualConfig());
     }
 
     public void start() {

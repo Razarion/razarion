@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Plane3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.errai.databinding.client.api.Bindable;
 
@@ -25,42 +26,13 @@ public class ShadowUiService {
             {0.0, 0.0, 0.5, 0.5},
             {0.0, 0.0, 0.0, 1.0}});
     @Inject
+    private VisualUiService visualUiService;
+    @Inject
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
     private TerrainUiService terrainUiService;
-    private double shadowAlpha = 0.2;
-    private double rotateX = Math.toRadians(25);
-    private double rotateZ = Math.toRadians(250);
-    @Deprecated
-    private double ambientIntensity;
-    @Deprecated
-    private double diffuseIntensity;
-
-    // ------------------------------------------------------------------------------------------------------------
-
-    @Deprecated
-    public double getAmbientIntensity() {
-        return ambientIntensity;
-    }
-
-    @Deprecated
-    public void setAmbientIntensity(double ambientIntensity) {
-        this.ambientIntensity = ambientIntensity;
-    }
-
-    @Deprecated
-    public double getDiffuseIntensity() {
-        return diffuseIntensity;
-    }
-
-    @Deprecated
-    public void setDiffuseIntensity(double diffuseIntensity) {
-        this.diffuseIntensity = diffuseIntensity;
-    }
-
-    // ------------------------------------------------------------------------------------------------------------
 
     /**
      * Return the light direction
@@ -68,7 +40,7 @@ public class ShadowUiService {
      * @return direction normalized
      */
     public Vertex getLightDirection() {
-        return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(0, 0, -1), 1.0);
+        return Matrix4.createZRotation(visualUiService.getVisualConfig().getShadowRotationZ()).multiply(Matrix4.createXRotation(visualUiService.getVisualConfig().getShadowRotationX())).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
     /**
@@ -77,7 +49,7 @@ public class ShadowUiService {
      * @return direction normalized
      */
     public Vertex getPlaneXAxis() {
-        return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(1, 0, 0), 1.0);
+        return Matrix4.createZRotation(visualUiService.getVisualConfig().getShadowRotationZ()).multiply(Matrix4.createXRotation(visualUiService.getVisualConfig().getShadowRotationX())).multiply(new Vertex(1, 0, 0), 1.0);
     }
 
     /**
@@ -86,32 +58,12 @@ public class ShadowUiService {
      * @return direction normalized
      */
     public Vertex getPlaneYAxis() {
-        return Matrix4.createZRotation(rotateZ).multiply(Matrix4.createXRotation(rotateX)).multiply(new Vertex(0, 1, 0), 1.0);
+        return Matrix4.createZRotation(visualUiService.getVisualConfig().getShadowRotationZ()).multiply(Matrix4.createXRotation(visualUiService.getVisualConfig().getShadowRotationX())).multiply(new Vertex(0, 1, 0), 1.0);
     }
 
 
     public double getShadowAlpha() {
-        return shadowAlpha;
-    }
-
-    public void setShadowAlpha(double shadowAlpha) {
-        this.shadowAlpha = shadowAlpha;
-    }
-
-    public double getRotateX() {
-        return rotateX;
-    }
-
-    public void setRotateX(double rotateX) {
-        this.rotateX = rotateX;
-    }
-
-    public double getRotateZ() {
-        return rotateZ;
-    }
-
-    public void setRotateZ(double rotateZ) {
-        this.rotateZ = rotateZ;
+        return visualUiService.getVisualConfig().getShadowAlpha();
     }
 
     public Matrix4 createShadowLookupTransformation() {
@@ -193,7 +145,7 @@ public class ShadowUiService {
         double distance = bottomLeftVertex.distance(topRightVertex);
         Vertex lightPosition = bottomLeftVertex.add(topRightVertex.sub(bottomLeftVertex).normalize(distance / 2.0));
 
-        return Matrix4.createXRotation(-rotateX).multiply(Matrix4.createZRotation(-rotateZ)).multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
+        return Matrix4.createXRotation(-visualUiService.getVisualConfig().getShadowRotationX()).multiply(Matrix4.createZRotation(-visualUiService.getVisualConfig().getShadowRotationZ())).multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
     }
 
     public ViewField calculateViewField() {
