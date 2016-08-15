@@ -1,8 +1,8 @@
 package com.btxtech.client.editor.sidebar.colladaeditor;
 
-import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.editor.widgets.ImageItemWidget;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.uiservice.renderer.RenderService;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.ui.client.widget.HasModel;
@@ -18,8 +18,9 @@ import javax.inject.Inject;
 @Templated("VertexContainerWidget.html#vertexContainerWidget")
 public class VertexContainerWidget extends Composite implements HasModel<VertexContainer>, ImageItemWidget.ImageItemWidgetListener {
     // private Logger logger = Logger.getLogger(VertexContainerWidget.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private ClientRenderServiceImpl renderService;
+    private RenderService renderService;
     @Inject
     @DataField
     private ImageItemWidget imageItemWidget;

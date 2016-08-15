@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.sidebar.slopeeditor;
+package com.btxtech.client.editor.slopeeditor;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.TerrainElementService;

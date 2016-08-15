@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.sidebar.slopeeditor;
+package com.btxtech.client.editor.slopeeditor;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeShape;

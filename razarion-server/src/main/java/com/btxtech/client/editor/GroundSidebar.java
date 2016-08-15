@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.sidebar.slope;
+package com.btxtech.client.editor;
 
 import com.btxtech.client.dialog.ApplyListener;
 import com.btxtech.client.dialog.ModalDialogManager;
@@ -33,9 +33,9 @@ import java.util.logging.Logger;
  * Created by Beat
  * 06.11.2015.
  */
-@Templated("SlopeSidebar.html#terrain")
-public class SlopeSidebar extends Composite implements LeftSideBarContent {
-    private Logger logger = Logger.getLogger(SlopeSidebar.class.getName());
+@Templated("GroundSidebar.html#terrain")
+public class GroundSidebar extends Composite implements LeftSideBarContent {
+    private Logger logger = Logger.getLogger(GroundSidebar.class.getName());
     @Inject
     private TerrainUiService terrainUiService;
     @Inject

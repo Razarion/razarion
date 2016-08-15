@@ -15,6 +15,7 @@ import javax.inject.Singleton;
  * 09.07.2016.
  */
 @Singleton
+@Deprecated
 public class Editor {
     @Inject
     private Instance<Menu> menuInstance;

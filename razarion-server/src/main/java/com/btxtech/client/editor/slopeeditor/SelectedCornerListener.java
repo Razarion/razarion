@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.sidebar.slopeeditor;
+package com.btxtech.client.editor.slopeeditor;
 
 /**
  * Created by Beat
