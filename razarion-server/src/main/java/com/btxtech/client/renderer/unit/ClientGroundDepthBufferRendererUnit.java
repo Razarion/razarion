@@ -7,7 +7,7 @@ import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexList;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

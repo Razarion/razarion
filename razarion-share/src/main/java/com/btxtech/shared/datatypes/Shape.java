@@ -1,4 +1,4 @@
-package com.btxtech.shared;
+package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;

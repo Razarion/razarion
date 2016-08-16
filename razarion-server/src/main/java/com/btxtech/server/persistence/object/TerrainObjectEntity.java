@@ -1,19 +1,15 @@
 package com.btxtech.server.persistence.object;
 
-import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.servercommon.collada.ColladaConverterMapper;
+import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 
-import javax.persistence.Basic;
-import javax.persistence.CollectionTable;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -21,58 +17,31 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "TERRAIN_OBJECT")
-public class TerrainObjectEntity implements ColladaConverterMapper {
+public class TerrainObjectEntity {
     @Id
     @GeneratedValue
     private Long id;
     private String internalName;
-    @Lob
-    @Basic(optional = false)
-    private String colladaString;
-    @ManyToMany
-    @CollectionTable(name = "TERRAIN_OBJECT_TEXTURES")
-    private Map<String, ImageLibraryEntity> textures;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ColladaEntity colladaEntity;
 
     public Long getId() {
         return id;
     }
 
-    public String getInternalName() {
-        return internalName;
-    }
-
-    public String getColladaString() {
-        return colladaString;
-    }
-
-    public void setColladaString(String colladaString) {
-        this.colladaString = colladaString;
-    }
-
-    @Override
-    public Integer getTextureId(String materialIdString) {
-        ImageLibraryEntity imageLibraryEntity = textures.get(materialIdString);
-        if (imageLibraryEntity != null) {
-            return imageLibraryEntity.getId().intValue();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public ItemState getItemState(String animationId) {
-        return null;
-    }
-
-    public void setTextures(Map<String, ImageLibraryEntity> textures) {
-        this.textures.clear();
-        this.textures.putAll(textures);
-    }
-
-    public TerrainObjectConfig terrainObjectConfig() {
+    public TerrainObjectConfig toTerrainObjectConfig() {
         TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig();
-        terrainObjectConfig.setId(id.intValue());
+        terrainObjectConfig.setId(id.intValue()).setInternalName(internalName);
+        if (colladaEntity != null) {
+            terrainObjectConfig.setShape3DId(colladaEntity.getId().intValue());
+        }
         return terrainObjectConfig;
+    }
+
+    public void fromTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig, ColladaEntity colladaEntity) {
+        this.internalName = terrainObjectConfig.getInternalName();
+        this.colladaEntity = colladaEntity;
     }
 
     @Override
@@ -92,5 +61,4 @@ public class TerrainObjectEntity implements ColladaConverterMapper {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

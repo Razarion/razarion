@@ -1,11 +1,10 @@
-package com.btxtech.client.editor.sidebar.terraineditor;
+package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.TerrainElementService;
+import com.btxtech.shared.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -40,7 +39,7 @@ public class TerrainEditorSidebar extends Composite implements LeftSideBarConten
     @Inject
     private TerrainEditor terrainEditor;
     @Inject
-    private Caller<TerrainElementService> terrainEditorService;
+    private Caller<TerrainElementEditorProvider> terrainEditorService;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject

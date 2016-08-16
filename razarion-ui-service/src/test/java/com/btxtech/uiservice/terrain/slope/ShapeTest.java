@@ -2,7 +2,7 @@ package com.btxtech.uiservice.terrain.slope;
 
 import com.btxtech.TestHelper;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.Shape;
+import com.btxtech.shared.datatypes.Shape;
 import com.btxtech.shared.dto.SlopeShape;
 import org.junit.Assert;
 import org.junit.Test;

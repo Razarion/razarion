@@ -4,7 +4,10 @@ import com.btxtech.server.persistence.StoryboardEntity;
 import com.btxtech.server.persistence.TerrainElementPersistence;
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.ColladaException;
+import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import org.xml.sax.SAXException;
 
@@ -43,6 +46,21 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         CriteriaQuery<StoryboardEntity> userQuery = criteriaBuilder.createQuery(StoryboardEntity.class);
         Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
-        return entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
+        StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
+        storyboardConfig.setVisualConfig(defaultVisualConfig());
+        return storyboardConfig;
+    }
+
+    private VisualConfig defaultVisualConfig() {
+        VisualConfig visualConfig = new VisualConfig();
+        visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(250));
+        visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
+        visualConfig.setWaterGroundLevel(-20).setWaterBmDepth(10).setWaterTransparency(0.65);
+        LightConfig lightConfig = new LightConfig();
+        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setXRotation(Math.toRadians(-20));
+        lightConfig.setYRotation(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
+        visualConfig.setWaterLightConfig(lightConfig);
+        visualConfig.setShape3DGeneralScale(10);
+        return visualConfig;
     }
 }

@@ -6,7 +6,7 @@ import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;

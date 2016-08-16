@@ -30,7 +30,7 @@ public class VisualScene extends NameIdColladaXml {
 
     public Shape3D convert(Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
         Shape3D shape3D = new Shape3D();
-        shape3D.setTag(getId() + ":" + getName());
+        shape3D.setInternalName(getId() + ":" + getName());
         List<Element3D> element3Ds = new ArrayList<>();
         for (NodeScene nodeScene : nodeScenes.values()) {
             LOGGER.finest("-:convert node : " + nodeScene);

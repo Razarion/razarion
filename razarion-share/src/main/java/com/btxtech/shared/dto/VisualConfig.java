@@ -1,7 +1,10 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+
+import java.util.List;
 
 /**
  * Created by Beat
@@ -10,6 +13,7 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Portable
 @Bindable
 public class VisualConfig {
+    // Divide in 3 parts: shadow, water and Shape3D
     private double shadowRotationX;
     private double shadowRotationZ;
     private double shadowAlpha;
@@ -19,6 +23,8 @@ public class VisualConfig {
     private double waterTransparency;
     private double waterBmDepth;
     private double waterGroundLevel;
+    private List<Shape3D> shape3Ds;
+    private double shape3DGeneralScale;
 
     public double getShadowRotationX() {
         return shadowRotationX;
@@ -100,4 +106,24 @@ public class VisualConfig {
         this.waterGroundLevel = waterGroundLevel;
         return this;
     }
+
+    public List<Shape3D> getShape3Ds() {
+        return shape3Ds;
+    }
+
+    public VisualConfig setShape3Ds(List<Shape3D> shape3Ds) {
+        this.shape3Ds = shape3Ds;
+        return this;
+    }
+
+    public double getShape3DGeneralScale() {
+        return shape3DGeneralScale;
+    }
+
+    public VisualConfig setShape3DGeneralScale(double shape3DGeneralScale) {
+        this.shape3DGeneralScale = shape3DGeneralScale;
+        return this;
+    }
+
+
 }

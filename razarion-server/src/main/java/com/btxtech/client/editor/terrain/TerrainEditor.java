@@ -5,7 +5,7 @@ import com.btxtech.client.TerrainKeyUpEvent;
 import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.shared.PlanetEditorService;
+import com.btxtech.shared.PlanetEditorProvider;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Polygon2I;
@@ -55,7 +55,7 @@ public class TerrainEditor {
     private TerrainUiService terrainUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<PlanetEditorService> planetEditorServiceCaller;
+    private Caller<PlanetEditorProvider> planetEditorServiceCaller;
     @Inject
     private ClientRenderServiceImpl renderService;
     private boolean active;

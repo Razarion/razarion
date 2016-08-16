@@ -37,7 +37,7 @@ public abstract class ItemType {
     private Integer buildupSound;
     private Integer commandSound;
     private Integer explosionClipId;
-    private Shape3D shape3D;
+    private Integer shape3DId;
 
     public int getId() {
         return id;
@@ -147,12 +147,12 @@ public abstract class ItemType {
         return this;
     }
 
-    public Shape3D getShape3D() {
-        return shape3D;
+    public Integer getShape3DId() {
+        return shape3DId;
     }
 
-    public ItemType setShape3D(Shape3D shape3D) {
-        this.shape3D = shape3D;
+    public ItemType setShape3DId(Integer shape3DId) {
+        this.shape3DId = shape3DId;
         return this;
     }
 

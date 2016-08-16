@@ -43,7 +43,7 @@ public class BaseItemType extends ItemType {
     private int boxPickupRange;
     private Integer unlockCrystals;
     private int spawnDurationMillis;
-    private Shape3D spawnShape3D;
+    private Integer spawnShape3DId;
 
     public double getRadius() {
         return radius;
@@ -229,12 +229,12 @@ public class BaseItemType extends ItemType {
         return this;
     }
 
-    public Shape3D getSpawnShape3D() {
-        return spawnShape3D;
+    public Integer getSpawnShape3DId() {
+        return spawnShape3DId;
     }
 
-    public BaseItemType setSpawnShape3D(Shape3D spawnShape3D) {
-        this.spawnShape3D = spawnShape3D;
+    public BaseItemType setSpawnShape3DId(Integer spawnShape3DId) {
+        this.spawnShape3DId = spawnShape3DId;
         return this;
     }
 }

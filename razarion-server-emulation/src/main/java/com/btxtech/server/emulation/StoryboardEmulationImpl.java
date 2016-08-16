@@ -33,21 +33,23 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
     private ItemTypeEmulation itemTypeEmulation;
     @Inject
     private JsonPersistence jsonPersistence;
+    @Inject
+    private Shape3DEmulator shape3DEmulator;
 
     @Override
     public StoryboardConfig load() {
-        StoryboardConfig loadedStoryBoard = jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
+        // TODO StoryboardConfig loadedStoryBoard = jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
 
         StoryboardConfig storyboardConfig = new StoryboardConfig();
         // Setup game engine
         GameEngineConfig gameEngineConfig = new GameEngineConfig().setItemTypes(itemTypeEmulation.createItemTypes());
-        gameEngineConfig.setGroundSkeletonConfig(loadedStoryBoard.getGameEngineConfig().getGroundSkeletonConfig());
-        gameEngineConfig.setSlopeSkeletonConfigs(loadedStoryBoard.getGameEngineConfig().getSlopeSkeletonConfigs());
-        gameEngineConfig.setTerrainObjectConfigs(loadedStoryBoard.getGameEngineConfig().getTerrainObjectConfigs());
+        // TODO gameEngineConfig.setGroundSkeletonConfig(loadedStoryBoard.getGameEngineConfig().getGroundSkeletonConfig());
+        // TODO gameEngineConfig.setSlopeSkeletonConfigs(loadedStoryBoard.getGameEngineConfig().getSlopeSkeletonConfigs());
+        // TODO gameEngineConfig.setTerrainObjectConfigs(loadedStoryBoard.getGameEngineConfig().getTerrainObjectConfigs());
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setWaterLevel(-7).setShape3DGeneralScale(10);
-        planetConfig.setTerrainSlopePositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions());
-        planetConfig.setTerrainObjectPositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions());
+        planetConfig.setWaterLevel(-7);
+        // TODO planetConfig.setTerrainSlopePositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions());
+        // TODO planetConfig.setTerrainObjectPositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions());
         gameEngineConfig.setPlanetConfig(planetConfig);
         storyboardConfig.setGameEngineConfig(gameEngineConfig);
         // Setup scenes
@@ -70,6 +72,7 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
         lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setXRotation(Math.toRadians(-20));
         lightConfig.setYRotation(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
         visualConfig.setWaterLightConfig(lightConfig);
+        visualConfig.setShape3Ds(shape3DEmulator.getShape3Ds()).setShape3DGeneralScale(10);
         storyboardConfig.setVisualConfig(visualConfig);
         return storyboardConfig;
     }

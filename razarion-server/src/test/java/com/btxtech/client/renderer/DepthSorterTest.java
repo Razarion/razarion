@@ -2,7 +2,7 @@ package com.btxtech.client.renderer;
 
 import com.btxtech.TestHelper;
 import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;

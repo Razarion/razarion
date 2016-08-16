@@ -1,4 +1,4 @@
-package com.btxtech.shared;
+package com.btxtech.shared.dto;
 
 // import com.btxtech.client.ImageDescriptor;
 
@@ -32,9 +32,6 @@ public class VertexList {
     private List<Double> splattings = new ArrayList<>();
     // private static final Logger LOGGER = Logger.getLogger(VertexList.class.getName());
 
-    /**
-     * Used by Errai
-     */
     public VertexList() {
     }
 

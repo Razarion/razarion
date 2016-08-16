@@ -5,15 +5,12 @@ import com.btxtech.server.persistence.object.TerrainObjectEntity_;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
-import com.btxtech.servercommon.collada.ColladaConverter;
-import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import org.xml.sax.SAXException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,12 +20,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -77,11 +71,7 @@ public class TerrainElementPersistence {
         Root<SlopeConfigEntity> root = cq.from(SlopeConfigEntity.class);
         cq.multiselect(root.get(SlopeConfigEntity_.id), root.get(SlopeConfigEntity_.internalName));
         List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
-        List<ObjectNameId> objectNameIds = new ArrayList<>();
-        for (Tuple t : tupleResult) {
-            objectNameIds.add(new ObjectNameId(((Long) t.get(0)).intValue(), (String) t.get(1)));
-        }
-        return objectNameIds;
+        return tupleResult.stream().map(t -> new ObjectNameId(((Long) t.get(0)).intValue(), (String) t.get(1))).collect(Collectors.toList());
     }
 
     @Transactional
@@ -97,12 +87,7 @@ public class TerrainElementPersistence {
         CriteriaQuery<SlopeConfigEntity> userSelect = userQuery.select(root);
         Collection<SlopeConfigEntity> slopeConfigEntities = entityManager.createQuery(userSelect).getResultList();
 
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        for (SlopeConfigEntity slopeConfigEntity : slopeConfigEntities) {
-            slopeSkeletonConfigs.add(slopeConfigEntity.toSlopeSkeleton());
-        }
-
-        return slopeSkeletonConfigs;
+        return slopeConfigEntities.stream().map(SlopeConfigEntity::toSlopeSkeleton).collect(Collectors.toList());
     }
 
     @Transactional
@@ -131,15 +116,16 @@ public class TerrainElementPersistence {
         Root<TerrainObjectEntity> root = cq.from(TerrainObjectEntity.class);
         cq.multiselect(root.get(TerrainObjectEntity_.id), root.get(TerrainObjectEntity_.internalName));
         List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
-        List<ObjectNameId> objectNameIds = new ArrayList<>();
-        for (Tuple t : tupleResult) {
-            objectNameIds.add(new ObjectNameId(((Long) t.get(0)).intValue(), (String) t.get(1)));
-        }
-        return objectNameIds;
+        return tupleResult.stream().map(t -> new ObjectNameId(((Long) t.get(0)).intValue(), (String) t.get(1))).collect(Collectors.toList());
     }
 
     @Transactional
-    public List<TerrainObjectConfig> loadTerrainObjects() throws ParserConfigurationException, ColladaException, SAXException, IOException {
+    public TerrainObjectConfig loadTerrainObjectConfig(int id) {
+        return entityManager.find(TerrainObjectEntity.class, (long) id).toTerrainObjectConfig();
+    }
+
+    @Transactional
+    public List<TerrainObjectConfig> loadTerrainObjects() throws ParserConfigurationException {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<TerrainObjectEntity> userQuery = criteriaBuilder.createQuery(TerrainObjectEntity.class);
@@ -147,36 +133,29 @@ public class TerrainElementPersistence {
         CriteriaQuery<TerrainObjectEntity> userSelect = userQuery.select(from);
         List<TerrainObjectEntity> terrainObjectEntities = entityManager.createQuery(userSelect).getResultList();
 
-        List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-        for (TerrainObjectEntity terrainObjectEntity : terrainObjectEntities) {
-            TerrainObjectConfig terrainObjectConfig = terrainObjectEntity.terrainObjectConfig();
-            terrainObjectConfig.setShape3D(ColladaConverter.convertShape3D(terrainObjectEntity.getColladaString(), terrainObjectEntity));
-            terrainObjectConfigs.add(terrainObjectConfig);
-        }
-        return terrainObjectConfigs;
+        return terrainObjectEntities.stream().map(TerrainObjectEntity::toTerrainObjectConfig).collect(Collectors.toList());
     }
 
     @Transactional
-    public void saveTerrainObject(int id, String colladaString, Map<String, Integer> textures) {
-        TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) id);
-        if (colladaString != null) {
-            terrainObjectEntity.setColladaString(colladaString);
+    public TerrainObjectConfig saveTerrainObject(TerrainObjectConfig terrainObjectConfig) {
+        TerrainObjectEntity terrainObjectEntity;
+        if (terrainObjectConfig.hasId()) {
+            terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
+        } else {
+            terrainObjectEntity = new TerrainObjectEntity();
         }
-        Map<String, ImageLibraryEntity> textureEntities = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : textures.entrySet()) {
-            textureEntities.put(entry.getKey(), entityManager.find(ImageLibraryEntity.class, entry.getValue().longValue()));
+        ColladaEntity colladaEntity = null;
+        if (terrainObjectConfig.getShape3DId() != null) {
+            colladaEntity = entityManager.find(ColladaEntity.class, terrainObjectConfig.getShape3DId().longValue());
         }
-        terrainObjectEntity.setTextures(textureEntities);
-        entityManager.persist(terrainObjectEntity);
+        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, colladaEntity);
+
+        return entityManager.merge(terrainObjectEntity).toTerrainObjectConfig();
     }
 
     @Transactional
-    public TerrainObjectConfig colladaConvert(int terrainObjectId, String colladaString) throws ParserConfigurationException, ColladaException, SAXException, IOException {
-//     TODO   TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectId);
-//   TODO     ColladaConverterInput input = new ColladaConverterInput();
-//    TODO    input.setColladaString(colladaString).setId(terrainObjectEntity.getId().intValue()).setTextureMapper(terrainObjectEntity);
-//   TODO     return ColladaConverter.convertToTerrainObject(input);
-        throw new UnsupportedOperationException();
+    public void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
+        TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
+        entityManager.remove(terrainObjectEntity);
     }
-
 }

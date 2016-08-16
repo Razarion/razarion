@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.editor.object.TerrainObjectEditorSelectedEvent;
+import com.btxtech.client.editor.terrain.TerrainObjectEditorSelectedEvent;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;

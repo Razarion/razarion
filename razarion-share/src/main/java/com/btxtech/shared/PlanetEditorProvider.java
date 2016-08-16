@@ -14,7 +14,7 @@ import java.util.List;
  * 07.07.2016.
  */
 @Path(RestUrl.PLANET_EDITOR_SERVICE_PATH)
-public interface PlanetEditorService {
+public interface PlanetEditorProvider {
 
     @PUT
     @Path("saveTerrainSlopePositions")

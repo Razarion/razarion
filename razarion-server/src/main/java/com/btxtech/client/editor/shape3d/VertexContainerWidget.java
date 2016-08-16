@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.sidebar.colladaeditor;
+package com.btxtech.client.editor.shape3d;
 
 import com.btxtech.client.editor.widgets.ImageItemWidget;
 import com.btxtech.shared.datatypes.shape.VertexContainer;

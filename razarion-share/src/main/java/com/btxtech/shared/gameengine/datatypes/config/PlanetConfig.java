@@ -19,7 +19,6 @@ public class PlanetConfig {
     private List<TerrainObjectPosition> terrainObjectPositions;
     private Map<Integer, Integer> itemTypeLimitation;
     private double waterLevel;
-    private double shape3DGeneralScale;
 
     public List<TerrainSlopePosition> getTerrainSlopePositions() {
         return terrainSlopePositions;
@@ -61,14 +60,4 @@ public class PlanetConfig {
         this.waterLevel = waterLevel;
         return this;
     }
-
-    public double getShape3DGeneralScale() {
-        return shape3DGeneralScale;
-    }
-
-    public PlanetConfig setShape3DGeneralScale(double shape3DGeneralScale) {
-        this.shape3DGeneralScale = shape3DGeneralScale;
-        return this;
-    }
-
 }

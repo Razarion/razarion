@@ -2,12 +2,12 @@ package com.btxtech.client.editor;
 
 import com.btxtech.client.dialog.ApplyListener;
 import com.btxtech.client.dialog.ModalDialogManager;
-import com.btxtech.client.editor.dialog.fractal.FractalDialog;
+import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.client.editor.widgets.LightWidget;
-import com.btxtech.shared.TerrainElementService;
+import com.btxtech.shared.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -43,7 +43,7 @@ public class GroundSidebar extends Composite implements LeftSideBarContent {
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
-    private Caller<TerrainElementService> terrainEditorService;
+    private Caller<TerrainElementEditorProvider> terrainEditorService;
     @Inject
     @AutoBound
     private DataBinder<GroundConfig> groundConfigDataBinder;

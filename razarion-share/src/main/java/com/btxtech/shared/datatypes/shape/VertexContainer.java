@@ -25,7 +25,7 @@ public class VertexContainer {
     private Color specular;
     private Color emission;
     private Integer textureId;
-    private String shapeElementTag;
+    private String shapeElementInternalName;
 
     public VertexContainer setMaterialId(String materialId) {
         this.materialId = materialId;
@@ -81,8 +81,8 @@ public class VertexContainer {
         return this;
     }
 
-    public VertexContainer setShapeElementTag(String shapeElementTag) {
-        this.shapeElementTag = shapeElementTag;
+    public VertexContainer setShapeElementInternalName(String shapeElementInternalName) {
+        this.shapeElementInternalName = shapeElementInternalName;
         return this;
     }
 
@@ -161,7 +161,7 @@ public class VertexContainer {
     }
 
     public String getShapeElementVertexContainerTag() {
-        return shapeElementTag + "|" + materialId + ":" + materialName;
+        return shapeElementInternalName + "|" + materialId + ":" + materialName;
     }
 
     @Override

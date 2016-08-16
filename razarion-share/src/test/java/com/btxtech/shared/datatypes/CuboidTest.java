@@ -1,6 +1,6 @@
 package com.btxtech.shared.datatypes;
 
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexList;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -11,7 +11,7 @@ import java.util.List;
 @Portable
 public class Element3D {
     private String id;
-    private String shape3DTag;
+    private String shape3DInternalName;
     private List<VertexContainer> vertexContainers;
 
     public String getId() {
@@ -23,8 +23,8 @@ public class Element3D {
         return this;
     }
 
-    public void setShape3DTag(String shape3DTag) {
-        this.shape3DTag = shape3DTag;
+    public void setShape3DInternalName(String shape3DInternalName) {
+        this.shape3DInternalName = shape3DInternalName;
     }
 
     public List<VertexContainer> getVertexContainers() {
@@ -34,7 +34,7 @@ public class Element3D {
     public Element3D setVertexContainers(List<VertexContainer> vertexContainers) {
         this.vertexContainers = vertexContainers;
         for (VertexContainer vertexContainer : vertexContainers) {
-            vertexContainer.setShapeElementTag(shape3DTag + "|" + id);
+            vertexContainer.setShapeElementInternalName(shape3DInternalName + "|" + id);
         }
         return this;
     }

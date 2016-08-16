@@ -1,9 +1,8 @@
-package com.btxtech.client.editor.sidebar.terrainobjecteditor;
+package com.btxtech.client.editor.terrain;
 
-import com.btxtech.client.editor.object.TerrainObjectEditor;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.TerrainElementService;
+import com.btxtech.shared.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -34,7 +33,7 @@ import java.util.logging.Logger;
 public class TerrainObjectEditorSidebar extends Composite implements LeftSideBarContent {
     private Logger logger = Logger.getLogger(TerrainObjectEditorSidebar.class.getName());
     @Inject
-    private Caller<TerrainElementService> terrainEditorService;
+    private Caller<TerrainElementEditorProvider> terrainEditorService;
     @Inject
     private TerrainObjectEditor terrainObjectEditor;
     @Inject

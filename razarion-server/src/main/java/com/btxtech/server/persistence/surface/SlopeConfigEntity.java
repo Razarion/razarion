@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.LightConfigEmbeddable;
-import com.btxtech.shared.Shape;
+import com.btxtech.shared.datatypes.Shape;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;

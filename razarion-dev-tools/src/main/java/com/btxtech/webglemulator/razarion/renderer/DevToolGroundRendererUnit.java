@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator.razarion.renderer;
 
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;

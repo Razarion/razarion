@@ -6,7 +6,7 @@ import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.renderer.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;

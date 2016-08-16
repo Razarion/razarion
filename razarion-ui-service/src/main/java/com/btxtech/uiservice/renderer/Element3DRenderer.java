@@ -38,12 +38,14 @@ public class Element3DRenderer {
         }
     }
 
-    public void fillRenderQueue(List<CompositeRenderer> renderQueue) {
+    public List<CompositeRenderer> createCompositeRenderers() {
+        List<CompositeRenderer> compositeRenderers = new ArrayList<>();
         for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
             VertexContainerCompositeRenderer vertexContainerCompositeRenderer = instance.get();
             vertexContainerCompositeRenderer.init(vertexContainer, this, modelMatricesProvider);
-            renderQueue.add(vertexContainerCompositeRenderer);
+            compositeRenderers.add(vertexContainerCompositeRenderer);
         }
+        return compositeRenderers;
     }
 
     public ModelMatrices mixTransformation(ModelMatrices modelMatrix, ShapeTransform shapeTransform) {

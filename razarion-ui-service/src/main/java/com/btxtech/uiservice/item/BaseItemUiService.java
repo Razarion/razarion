@@ -8,6 +8,8 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.ImageDescriptor;
+import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.inject.Inject;
@@ -30,7 +32,7 @@ public class BaseItemUiService {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private PlanetService planetService;
+    private Shape3DUiService shape3DUiService;
     private ImageDescriptor imageDescriptor = ImageDescriptor.UNIT_TEXTURE_O1;
     @Deprecated
     private double specularIntensity = 0.1;
@@ -71,7 +73,7 @@ public class BaseItemUiService {
     public Collection<ModelMatrices> provideSpawnModelMatrices() {
         Collection<ModelMatrices> modelMatrices = new ArrayList<>();
         for (SyncBaseItem syncBaseItem : baseItemService.getBeamingSyncBaseItems()) {
-            modelMatrices.add(syncBaseItem.createModelMatrices(planetService.getPlanetConfig().getShape3DGeneralScale()));
+            modelMatrices.add(syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale()));
         }
         return modelMatrices;
     }
@@ -79,7 +81,7 @@ public class BaseItemUiService {
     public Collection<ModelMatrices> provideAliveModelMatrices() {
         Collection<ModelMatrices> modelMatrices = new ArrayList<>();
         for (SyncBaseItem syncBaseItem : baseItemService.getAliveSyncBaseItems()) {
-            modelMatrices.add(syncBaseItem.createModelMatrices(planetService.getPlanetConfig().getShape3DGeneralScale()));
+            modelMatrices.add(syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale()));
         }
         return modelMatrices;
     }

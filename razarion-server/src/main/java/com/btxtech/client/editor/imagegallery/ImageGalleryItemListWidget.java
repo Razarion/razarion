@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.dialog.imagegallery;
+package com.btxtech.client.editor.imagegallery;
 
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;

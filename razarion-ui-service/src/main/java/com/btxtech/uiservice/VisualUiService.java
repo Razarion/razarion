@@ -2,9 +2,11 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.VisualConfig;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 /**
  * Created by Beat
@@ -12,10 +14,13 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class VisualUiService {
+    @Inject
+    private Shape3DUiService shape3DUiService;
     private VisualConfig visualConfig;
 
     public void initialise(VisualConfig visualConfig) {
         this.visualConfig = visualConfig;
+        shape3DUiService.initialize(visualConfig.getShape3Ds(), visualConfig);
     }
 
     public VisualConfig getVisualConfig() {

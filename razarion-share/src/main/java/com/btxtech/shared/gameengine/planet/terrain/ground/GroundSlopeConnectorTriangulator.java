@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.ground;
 
-import com.btxtech.shared.VertexList;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;

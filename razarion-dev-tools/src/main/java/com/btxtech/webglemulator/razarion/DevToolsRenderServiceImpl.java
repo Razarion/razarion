@@ -76,18 +76,17 @@ public class DevToolsRenderServiceImpl extends RenderService {
         }
     }
 
-    @Override
     @Deprecated
     protected void setupRenderers() {
 //        // Ground
 //        webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, terrainUiService.getGroundVertexList().createPositionDoubles(), Color.BLUE);
-//        webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainUiService.getGroundVertexList().getVertices(), terrainUiService.getGroundVertexList().getNormVertices()), Color.BROWN);
+//       TODO  webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainUiService.getGroundVertexList().getVertices(), terrainUiService.getGroundVertexList().getNormVertices()), Color.BROWN);
 //        webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, terrainUiService.getGroundVertexList().createPositionDoubles(), Color.BLUE);
 //        // Slopes
 //        for (Integer slopeId : terrainUiService.getSlopeIds()) {
 //            Mesh mesh = terrainUiService.getSlope(slopeId).getMesh();
 //            webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
-//            webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(mesh.getVertices(), mesh.getNorms()), Color.GREEN);
+//   TODO         webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(mesh.getVertices(), mesh.getNorms()), Color.GREEN);
 //            webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
 //        }
     }

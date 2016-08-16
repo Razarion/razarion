@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
-import com.btxtech.shared.Shape;
+import com.btxtech.shared.datatypes.Shape;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.SlopeShape;

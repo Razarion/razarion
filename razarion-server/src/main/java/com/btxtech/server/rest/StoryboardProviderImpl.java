@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public class StoryboardProviderImpl implements StoryboardProvider {
     @Inject
-    @Emulation
+    // @Emulation
     private StoryboardPersistence storyboardPersistence;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject

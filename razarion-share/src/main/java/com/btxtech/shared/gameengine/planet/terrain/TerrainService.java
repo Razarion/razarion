@@ -86,8 +86,10 @@ public class TerrainService {
     }
 
     private void setupGround(int xCount, int yCount) {
-        groundMesh = GroundModeler.generateGroundMesh(terrainTypeService.getGroundSkeletonConfig(), xCount, yCount);
-        groundMesh.setupNorms();
+        if (terrainTypeService.getGroundSkeletonConfig() != null) {
+            groundMesh = GroundModeler.generateGroundMesh(terrainTypeService.getGroundSkeletonConfig(), xCount, yCount);
+            groundMesh.setupNorms();
+        }
     }
 
     @Deprecated

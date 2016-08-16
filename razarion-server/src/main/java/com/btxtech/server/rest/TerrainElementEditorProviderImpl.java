@@ -1,26 +1,22 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.server.persistence.TerrainElementPersistence;
-import com.btxtech.shared.TerrainElementService;
+import com.btxtech.shared.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.system.ExceptionHandler;
-import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Beat
  * 20.11.2015.
  */
-public class TerrainElementServiceImpl implements TerrainElementService {
+public class TerrainElementEditorProviderImpl implements TerrainElementEditorProvider {
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -97,9 +93,9 @@ public class TerrainElementServiceImpl implements TerrainElementService {
     }
 
     @Override
-    public void saveTerrainObject(int id, String colladaString, Map<String, Integer> textures) {
+    public TerrainObjectConfig loadTerrainObjectConfig(int id) {
         try {
-            persistenceService.saveTerrainObject(id, colladaString, textures);
+            return persistenceService.loadTerrainObjectConfig(id);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
@@ -107,12 +103,19 @@ public class TerrainElementServiceImpl implements TerrainElementService {
     }
 
     @Override
-    public TerrainObjectConfig colladaConvert(int terrainObjectId, String colladaString) {
+    public TerrainObjectConfig saveTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
         try {
-            return persistenceService.colladaConvert(terrainObjectId, colladaString);
-        } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
-            exceptionHandler.handleException(e);
-            throw new RuntimeException(e);
+            return persistenceService.saveTerrainObject(terrainObjectConfig);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
+        try {
+            persistenceService.deleteTerrainObjectConfig(terrainObjectConfig);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

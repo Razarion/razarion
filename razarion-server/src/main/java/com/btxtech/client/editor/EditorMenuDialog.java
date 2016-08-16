@@ -4,8 +4,8 @@ import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
-import com.btxtech.client.editor.slopeeditor.SlopeConfigSidebar;
-import com.btxtech.client.editor.sidebar.terrainobjecteditor.TerrainObjectEditorSidebar;
+import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
+import com.btxtech.client.editor.terrainobject.TerrainObjectConfigCrudSidebar;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -70,7 +70,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("slopeButton")
     private void onSlopeButtonClicked(ClickEvent event) {
-        openEditor(SlopeConfigSidebar.class);
+        openEditor(SlopeConfigCrudSidebar.class);
     }
 
     @EventHandler("groundButton")
@@ -84,7 +84,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("terrainObjectButton")
     private void onTerrainObjectButtonClicked(ClickEvent event) {
-        openEditor(TerrainObjectEditorSidebar.class); xxx
+        openEditor(TerrainObjectConfigCrudSidebar.class);
     }
 
     @Override

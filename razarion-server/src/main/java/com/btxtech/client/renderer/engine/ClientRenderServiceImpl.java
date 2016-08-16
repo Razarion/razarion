@@ -78,7 +78,6 @@ public class ClientRenderServiceImpl extends RenderService {
         initFrameBuffer();
     }
 
-    @Override
     protected void setupRenderers() {
         renderQueue = new ArrayList<>();
         terrainObjectNorms = new ArrayList<>();
@@ -184,7 +183,6 @@ public class ClientRenderServiceImpl extends RenderService {
         gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
     }
 
-    @Override
     protected void doRender() {
 //        for (CompositeRenderer compositeRenderer : renderQueue) {
 //            try {

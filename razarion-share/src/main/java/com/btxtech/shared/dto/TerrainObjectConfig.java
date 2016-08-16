@@ -2,18 +2,34 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 
 /**
  * Created by Beat
  * 10.05.2016.
  */
 @Portable
+@Bindable
 public class TerrainObjectConfig {
-    private int id;
-    private Shape3D shape3D;
+    private Integer id;
+    private String internalName;
+    private Integer shape3DId;
 
-    public int getId() {
+    public Integer getId() {
         return id;
+    }
+
+    public boolean hasId() {
+        return id != null;
+    }
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public TerrainObjectConfig setInternalName(String internalName) {
+        this.internalName = internalName;
+        return this;
     }
 
     public TerrainObjectConfig setId(int id) {
@@ -21,13 +37,17 @@ public class TerrainObjectConfig {
         return this;
     }
 
-    public Shape3D getShape3D() {
-        return shape3D;
+    public Integer getShape3DId() {
+        return shape3DId;
     }
 
-    public TerrainObjectConfig setShape3D(Shape3D shape3D) {
-        this.shape3D = shape3D;
+    public TerrainObjectConfig setShape3DId(Integer shape3DId) {
+        this.shape3DId = shape3DId;
         return this;
+    }
+
+    public ObjectNameId createSlopeNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     @Override

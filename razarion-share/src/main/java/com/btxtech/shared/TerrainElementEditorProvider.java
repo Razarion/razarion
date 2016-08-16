@@ -1,5 +1,6 @@
 package com.btxtech.shared;
 
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -23,7 +24,7 @@ import java.util.Map;
  * 15.08.2015.
  */
 @Path(RestUrl.TERRAIN_ELEMENT_SERVICE_PATH)
-public interface TerrainElementService {
+public interface TerrainElementEditorProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getSlopeNameIds")
@@ -61,15 +62,19 @@ public interface TerrainElementService {
     @Path("getTerrainObjectNameIds")
     List<ObjectNameId> getTerrainObjectNameIds();
 
-    @POST
-    @Path("saveTerrainObject")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void saveTerrainObject(@QueryParam("id") int id, @QueryParam("colladaString") String colladaString, Map<String, Integer> textures);
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("colladaConvert")
-    TerrainObjectConfig colladaConvert(@QueryParam("terrainObjectId") int terrainObjectId, @QueryParam("colladaString") String colladaString);
+    @Path("loadTerrainObjectConfig/{id}")
+    TerrainObjectConfig loadTerrainObjectConfig(@PathParam("id") int id);
 
+    @PUT
+    @Path("saveTerrainObjectConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    TerrainObjectConfig saveTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig);
+
+    @DELETE
+    @Path("deleteTerrainObjectConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig);
 }

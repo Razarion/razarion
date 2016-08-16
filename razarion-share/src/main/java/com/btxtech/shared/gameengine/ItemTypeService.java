@@ -20,8 +20,10 @@ public class ItemTypeService {
 
     public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
         itemTypes.clear();
-        for (ItemType itemType : engineInitEvent.getGameEngineConfig().getItemTypes()) {
-            itemTypes.put(itemType.getId(), itemType);
+        if (engineInitEvent.getGameEngineConfig().getItemTypes() != null) {
+            for (ItemType itemType : engineInitEvent.getGameEngineConfig().getItemTypes()) {
+                itemTypes.put(itemType.getId(), itemType);
+            }
         }
     }
 
@@ -40,8 +42,8 @@ public class ItemTypeService {
     public <T extends ItemType> Collection<T> getItemTypes(Class<T> filter) {
         Collection<T> result = new ArrayList<>();
         for (ItemType itemType : itemTypes.values()) {
-            if(filter == null || filter == itemType.getClass()) {
-                result.add((T)itemType);
+            if (filter == null || filter == itemType.getClass()) {
+                result.add((T) itemType);
             }
         }
         return result;

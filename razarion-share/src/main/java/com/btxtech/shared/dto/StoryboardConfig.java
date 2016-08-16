@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import org.jboss.errai.common.client.api.annotations.Portable;
 

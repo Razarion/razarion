@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.object;
+package com.btxtech.client.editor.terrain;
 
 import com.btxtech.shared.datatypes.Vertex;
 

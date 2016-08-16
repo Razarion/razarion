@@ -1,7 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.PlanetPersistenceService;
-import com.btxtech.shared.PlanetEditorService;
+import com.btxtech.shared.PlanetEditorProvider;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -16,7 +16,7 @@ import java.util.List;
  * Created by Beat
  * 08.07.2016.
  */
-public class PlanetEditorServiceImpl implements PlanetEditorService {
+public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     @PersistenceContext
     private EntityManager entityManager;
     @Inject

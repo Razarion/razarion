@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
-import com.btxtech.shared.Shape;
+import com.btxtech.shared.datatypes.Shape;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Matrix4;

@@ -10,16 +10,26 @@ import java.util.List;
  */
 @Portable
 public class Shape3D {
-    private String tag;
+    private int dbId;
+    private String internalName;
     private List<Element3D> element3Ds;
     private List<ModelMatrixAnimation> modelMatrixAnimations;
 
-    public String getTag() {
-        return tag;
+    public int getDbId() {
+        return dbId;
     }
 
-    public Shape3D setTag(String tag) {
-        this.tag = tag;
+    public Shape3D setDbId(int dbId) {
+        this.dbId = dbId;
+        return this;
+    }
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public Shape3D setInternalName(String internalName) {
+        this.internalName = internalName;
         return this;
     }
 
@@ -30,7 +40,7 @@ public class Shape3D {
     public Shape3D setElement3Ds(List<Element3D> element3Ds) {
         this.element3Ds = element3Ds;
         for (Element3D element3D : element3Ds) {
-            element3D.setShape3DTag(tag);
+            element3D.setShape3DInternalName(internalName);
         }
         return this;
     }

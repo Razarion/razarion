@@ -1,13 +1,11 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.ModelMatricesProvider;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -15,7 +13,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -93,13 +90,10 @@ public abstract class RenderService {
     private void setupTerrainObjects() {
         for (final TerrainObjectConfig terrainObjectConfig : terrainTypeService.getTerrainObjectConfigs()) {
             Shape3DRenderer shape3DRenderer = shape3DRendererInstance.get();
-            shape3DRenderer.init(terrainObjectConfig.getShape3D(), new ModelMatricesProvider() {
-                @Override
-                public Collection<ModelMatrices> provideModelMatrices() {
-                    return terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig);
-                }
-            });
-            shape3DRenderer.fillRenderQueue(renderQueue);
+            if (terrainObjectConfig.getShape3DId() != null) {
+                shape3DRenderer.init(terrainObjectConfig.getShape3DId(), () -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig));
+                shape3DRenderer.fillRenderQueue(renderQueue);
+            }
         }
     }
 
@@ -107,21 +101,11 @@ public abstract class RenderService {
         for (BaseItemType baseItemType : baseItemUiService.getBaseItemTypes()) {
             // Spawn
             Shape3DRenderer spawnShape3DRenderer = shape3DRendererInstance.get();
-            spawnShape3DRenderer.init(baseItemType.getSpawnShape3D(), new ModelMatricesProvider() {
-                @Override
-                public Collection<ModelMatrices> provideModelMatrices() {
-                    return baseItemUiService.provideSpawnModelMatrices();
-                }
-            });
+            spawnShape3DRenderer.init(baseItemType.getSpawnShape3DId(), () -> baseItemUiService.provideSpawnModelMatrices());
             spawnShape3DRenderer.fillRenderQueue(renderQueue);
             // Alive
             Shape3DRenderer aliveShape3DRenderer = shape3DRendererInstance.get();
-            aliveShape3DRenderer.init(baseItemType.getShape3D(), new ModelMatricesProvider() {
-                @Override
-                public Collection<ModelMatrices> provideModelMatrices() {
-                    return baseItemUiService.provideAliveModelMatrices();
-                }
-            });
+            aliveShape3DRenderer.init(baseItemType.getShape3DId(), () -> baseItemUiService.provideAliveModelMatrices());
             aliveShape3DRenderer.fillRenderQueue(renderQueue);
         }
     }
@@ -135,13 +119,9 @@ public abstract class RenderService {
     public void render() {
         preRenderEvent.fire(new PreRenderEvent());
         prepareDepthBufferRendering();
-        for (CompositeRenderer compositeRenderer : renderQueue) {
-            compositeRenderer.drawDepthBuffer();
-        }
+        renderQueue.forEach(CompositeRenderer::drawDepthBuffer);
         prepareMainRendering();
-        for (CompositeRenderer compositeRenderer : renderQueue) {
-            compositeRenderer.draw();
-        }
+        renderQueue.forEach(CompositeRenderer::draw);
     }
 
     public void fillBuffers() {
@@ -157,12 +137,4 @@ public abstract class RenderService {
     protected abstract void prepareMainRendering();
 
     protected abstract void prepareDepthBufferRendering();
-
-    @Deprecated
-    protected abstract void setupRenderers();
-
-    @Deprecated
-    protected void doRender() {
-
-    }
 }

@@ -2,7 +2,7 @@ package com.btxtech.client.editor.slopeeditor;
 
 import com.btxtech.client.dialog.ApplyListener;
 import com.btxtech.client.dialog.ModalDialogManager;
-import com.btxtech.client.editor.dialog.fractal.FractalDialog;
+import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
@@ -117,12 +117,9 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
         if (fractalFieldConfig == null) {
             fractalFieldConfig = slopeConfig.toFractalFiledConfig();
         }
-        modalDialogManager.show("Fractal Dialog", FractalDialog.class, fractalFieldConfig, new ApplyListener<FractalFieldConfig>() {
-            @Override
-            public void onApply(FractalFieldConfig fractalFieldConfig) {
-                SlopeConfig slopeConfig = slopeConfigDataBinder.getModel();
-                slopeConfig.fromFractalFiledConfig(fractalFieldConfig);
-            }
+        modalDialogManager.show("Fractal Dialog", FractalDialog.class, fractalFieldConfig, fractalFieldConfig1 -> {
+            SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
+            slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
         });
     }
 

@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.dialog.fractal;
+package com.btxtech.client.editor.fractal;
 
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.utils.InterpolationUtils;

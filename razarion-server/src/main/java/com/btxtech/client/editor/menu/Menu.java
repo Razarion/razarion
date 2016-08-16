@@ -1,8 +1,8 @@
 package com.btxtech.client.editor.menu;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
-import com.btxtech.client.editor.sidebar.terraineditor.TerrainEditorSidebar;
-import com.btxtech.client.editor.sidebar.terrainobjecteditor.TerrainObjectEditorSidebar;
+import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
+import com.btxtech.client.editor.terrain.TerrainObjectEditorSidebar;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineHyperlink;

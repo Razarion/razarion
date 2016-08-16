@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.object;
+package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.TerrainKeyDownEvent;
 import com.btxtech.client.TerrainKeyUpEvent;
@@ -6,7 +6,7 @@ import com.btxtech.client.TerrainMouseDownEvent;
 import com.btxtech.client.TerrainMouseMoveEvent;
 import com.btxtech.client.TerrainMouseUpEvent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.shared.PlanetEditorService;
+import com.btxtech.shared.PlanetEditorProvider;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -46,7 +46,7 @@ public class TerrainObjectEditor {
     private Logger logger = Logger.getLogger(TerrainObjectEditor.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<PlanetEditorService> planetEditorServiceCaller;
+    private Caller<PlanetEditorProvider> planetEditorServiceCaller;
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
