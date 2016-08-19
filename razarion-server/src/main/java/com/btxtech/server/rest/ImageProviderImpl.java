@@ -3,7 +3,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity_;
-import com.btxtech.shared.ImageService;
+import com.btxtech.shared.ImageProvider;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -25,7 +25,7 @@ import java.util.Map;
  * Created by Beat
  * 15.06.2016.
  */
-public class ImageServiceImpl implements ImageService {
+public class ImageProviderImpl implements ImageProvider {
     @PersistenceContext
     private EntityManager entityManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -50,7 +50,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<ImageGalleryItem> getImageGalleryItem() {
+    public List<ImageGalleryItem> getImageGalleryItems() {
         try {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<ImageLibraryEntity> userQuery = criteriaBuilder.createQuery(ImageLibraryEntity.class);
@@ -70,7 +70,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     @Transactional
-    public ImageGalleryItem getImageGalleryItem(int id) {
+    public ImageGalleryItem getImageGalleryItems(int id) {
         try {
             ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, (long) id);
             return imageLibraryEntity.toImageGalleryItem();

@@ -22,6 +22,11 @@ button:hover {
     color: white;
 }
 
+button:disabled {
+    background-color: #929696;
+    border: 1px solid #5f7779;
+}
+
 .top-right-x-button {
     position: absolute;
     top: 0;
@@ -97,12 +102,12 @@ button:hover {
 /** -------------------------- DIALOG -------------------------- */
 .modal-dialog {
     position: absolute;
-    margin: auto;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: 200px;
+    /* margin: auto; */
+    /* top: 0; */
+    /* left: 0; */
+    /* bottom: 0; */
+    /* right: 0; */
+    /* width: 200px; */
     height: 300px;
     background-color: rgba(0, 0, 0, 0.5);
     border: 9px solid transparent;
@@ -127,6 +132,38 @@ button:hover {
 /** -------------------------- DIALOG ENDS -------------------------- */
 
 /** -------------------------- EDITOR -------------------------- */
+/** --- Gallery table --- */
+.generic-gallery-table {
+    border-width: 1px;
+    border-spacing: 0;
+    overflow: hidden;
+    background-color: #d2cccc;
+    border-collapse: collapse;
+    font-size: 75%;
+    font-weight: bold;
+}
+
+.generic-gallery-table-row {
+    /* border-width: 15px; */
+    /* border-spacing: 0; */
+    /* overflow: hidden; */
+    /* background-color: #d6d6d6; */
+    /* border-collapse: collapse; */
+    /* font-size: 75%; */
+    /* font-weight: bold; */
+}
+
+.generic-gallery-table-row-selected {
+
+background-color: #060606;
+
+color: white;
+}
+
+.generic-gallery-table-row-not-selected {
+
+}
+
 /** --- Image gallery ---*/
 .gallery-parent {
     overflow-x: hidden;
@@ -158,7 +195,7 @@ button:hover {
 }
 
 .gallery-item-table {
-    border-width: 1px;
+    border-width: 15px;
     border-spacing: 0;
     overflow: hidden;
     background-color: #d6d6d6;

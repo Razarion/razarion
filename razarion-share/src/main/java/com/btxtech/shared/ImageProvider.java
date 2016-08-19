@@ -19,7 +19,7 @@ import java.util.Map;
  * 17.06.2016.
  */
 @Path(RestUrl.IMAGE_SERVICE_PATH)
-public interface ImageService {
+public interface ImageProvider {
 
     @GET
     @Produces({"image/jpeg", "image/png", "image/gif"})
@@ -29,12 +29,12 @@ public interface ImageService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("imagegallery")
-    List<ImageGalleryItem> getImageGalleryItem();
+    List<ImageGalleryItem> getImageGalleryItems();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("imagegallery/{id}")
-    ImageGalleryItem getImageGalleryItem(@PathParam("id") int id);
+    ImageGalleryItem getImageGalleryItems(@PathParam("id") int id);
 
     @POST
     @Path("upload")

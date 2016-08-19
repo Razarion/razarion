@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.servercommon.collada.ColladaConverterMapper;
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 
 import javax.persistence.Basic;
@@ -32,6 +33,14 @@ public class ColladaEntity implements ColladaConverterMapper {
 
     public Long getId() {
         return id;
+    }
+
+    public String getColladaString() {
+        return colladaString;
+    }
+
+    public void setColladaString(String colladaString) {
+        this.colladaString = colladaString;
     }
 
     @Override
@@ -71,5 +80,4 @@ public class ColladaEntity implements ColladaConverterMapper {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

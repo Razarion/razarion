@@ -10,12 +10,12 @@ import java.util.List;
  */
 @Portable
 public class Shape3D {
-    private int dbId;
+    private Integer dbId;
     private String internalName;
     private List<Element3D> element3Ds;
     private List<ModelMatrixAnimation> modelMatrixAnimations;
 
-    public int getDbId() {
+    public Integer getDbId() {
         return dbId;
     }
 

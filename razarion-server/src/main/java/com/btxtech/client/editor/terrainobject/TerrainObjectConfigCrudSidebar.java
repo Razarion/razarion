@@ -76,12 +76,11 @@ public class TerrainObjectConfigCrudSidebar extends Composite implements LeftSid
     }
 
     @EventHandler("newTerrainObject")
-    private void newSlopeButtonClick(ClickEvent event) {
+    private void newTerrainObjectButtonClick(ClickEvent event) {
         TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig();
         initEditor(terrainObjectConfig);
         terrainObjectSelection.setValue(null);
     }
-
 
     @EventHandler("delete")
     private void deleteButtonClick(ClickEvent event) {
@@ -89,6 +88,7 @@ public class TerrainObjectConfigCrudSidebar extends Composite implements LeftSid
         TerrainObjectConfig terrainObjectConfig = getTerrainObjectConfig();
         hideEditor();
         if (terrainObjectConfig != null && terrainObjectConfig.hasId()) {
+            // TODO let TerrainService handle this
             provider.call(response -> updateSlopeSelection(), (message, throwable) -> {
                 logger.log(Level.SEVERE, "deleteTerrainObjectConfig failed: " + message, throwable);
                 return false;
@@ -98,6 +98,7 @@ public class TerrainObjectConfigCrudSidebar extends Composite implements LeftSid
 
     @EventHandler("save")
     private void saveButtonClick(ClickEvent event) {
+        // TODO let TerrainService handle this
         provider.call(new RemoteCallback<TerrainObjectConfig>() {
             @Override
             public void callback(TerrainObjectConfig terrainObjectConfig) {

@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 public class TerrainElementPersistence {
     @PersistenceContext
     private EntityManager entityManager;
+    private Shape3DPersistence shape3DPersistence;
 
     @Transactional
     public GroundSkeletonConfig loadGroundSkeleton() {
@@ -144,11 +145,7 @@ public class TerrainElementPersistence {
         } else {
             terrainObjectEntity = new TerrainObjectEntity();
         }
-        ColladaEntity colladaEntity = null;
-        if (terrainObjectConfig.getShape3DId() != null) {
-            colladaEntity = entityManager.find(ColladaEntity.class, terrainObjectConfig.getShape3DId().longValue());
-        }
-        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, colladaEntity);
+        terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, shape3DPersistence.getColladaEntity(terrainObjectConfig.getShape3DId()));
 
         return entityManager.merge(terrainObjectEntity).toTerrainObjectConfig();
     }

@@ -2,6 +2,13 @@ package com.btxtech.shared.utils;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -15,5 +22,23 @@ public class Shape3DUtils {
             }
         }
         throw new IllegalArgumentException("No Element3D in Shape3D found for: " + id);
+    }
+
+    public static List<VertexContainer> getAllVertexContainers(Shape3D shape3D) {
+        List<VertexContainer> vertexContainers = new ArrayList<>();
+        for (Element3D element3D : shape3D.getElement3Ds()) {
+            vertexContainers.addAll(element3D.getVertexContainers().stream().collect(Collectors.toList()));
+        }
+        return vertexContainers;
+    }
+
+    public static void replaceTextureIds(Shape3D source, Shape3D target) {
+        Map<String, Integer> materials = new HashMap<>();
+        for (VertexContainer vertexContainer : getAllVertexContainers(source)) {
+            materials.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId());
+        }
+        for (VertexContainer vertexContainer : getAllVertexContainers(target)) {
+            vertexContainer.setTextureId(materials.get(vertexContainer.getMaterialId()));
+        }
     }
 }

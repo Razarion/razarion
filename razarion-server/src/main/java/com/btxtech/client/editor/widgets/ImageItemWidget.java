@@ -1,6 +1,5 @@
 package com.btxtech.client.editor.widgets;
 
-import com.btxtech.client.dialog.ApplyListener;
 import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.imageservice.ImageUiService;
@@ -13,7 +12,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import elemental.html.File;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -35,27 +33,35 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
     private ImageUiService imageUiService;
     @Inject
     private ModalDialogManager modalDialogManager;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Image image;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label dimension;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label size;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label type;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label id;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label internalName;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button galleryButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button uploadButton;
@@ -95,25 +101,17 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
 
     @EventHandler("galleryButton")
     private void galleryButtonClicked(ClickEvent event) {
-        modalDialogManager.show("Image Gallery", ImageGalleryDialog.class, imageId, new ApplyListener<Integer>() {
-            @Override
-            public void onApply(Integer id) {
-                imageUiService.removeListener(imageId, ImageItemWidget.this);
-                imageId = id;
-                imageUiService.requestImage(imageId, ImageItemWidget.this);
-                imageItemWidgetListener.onIdChanged(id);
-            }
+        modalDialogManager.show("Image Gallery", ImageGalleryDialog.class, imageId, id1 -> {
+            imageUiService.removeListener(imageId, ImageItemWidget.this);
+            imageId = id1;
+            imageUiService.requestImage(imageId, ImageItemWidget.this);
+            imageItemWidgetListener.onIdChanged(id1);
         });
     }
 
     @EventHandler("uploadButton")
     public void uploadButtonClicked(ClickEvent e) {
-        ControlUtils.openSingleFileDataUrlUpload(new ControlUtils.SingleFileDataUrlListener() {
-            @Override
-            public void onLoaded(String dataUrl, File file) {
-                imageUiService.overrideImage(imageId, dataUrl, (int) file.getSize(), file.getType());
-            }
-        });
+        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.overrideImage(imageId, dataUrl, (int) file.getSize(), file.getType()));
     }
 
 }

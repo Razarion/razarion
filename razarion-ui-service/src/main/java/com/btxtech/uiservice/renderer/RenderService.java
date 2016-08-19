@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
+import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -10,10 +11,15 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -53,6 +59,7 @@ public abstract class RenderService {
     @Inject
     private Instance<Shape3DRenderer> shape3DRendererInstance;
     private List<CompositeRenderer> renderQueue = new ArrayList<>();
+    private Map<TerrainObjectConfig, Shape3DRenderer> terrainObjectRenderers = new HashMap<>();
 
     public void setup() {
         serviceInitEvent.fire(new RenderServiceInitEvent());
@@ -89,12 +96,29 @@ public abstract class RenderService {
 
     private void setupTerrainObjects() {
         for (final TerrainObjectConfig terrainObjectConfig : terrainTypeService.getTerrainObjectConfigs()) {
-            Shape3DRenderer shape3DRenderer = shape3DRendererInstance.get();
-            if (terrainObjectConfig.getShape3DId() != null) {
-                shape3DRenderer.init(terrainObjectConfig.getShape3DId(), () -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig));
-                shape3DRenderer.fillRenderQueue(renderQueue);
-            }
+            setupTerrainObject(terrainObjectConfig);
         }
+    }
+
+    public void onTerrainObjectChanged(@Observes TerrainObjectConfig terrainObjectConfig) {
+        Shape3DRenderer oldShape3DRenderer = terrainObjectRenderers.remove(terrainObjectConfig);
+        if(oldShape3DRenderer != null) {
+            renderQueue.removeAll(oldShape3DRenderer.getMyRenderers());
+        }
+        Shape3DRenderer newShape3DRenderer =setupTerrainObject(terrainObjectConfig);
+        for (CompositeRenderer compositeRenderer : newShape3DRenderer.getMyRenderers()) {
+            compositeRenderer.fillBuffers();
+        }
+    }
+
+    private Shape3DRenderer setupTerrainObject(TerrainObjectConfig terrainObjectConfig) {
+        Shape3DRenderer shape3DRenderer = shape3DRendererInstance.get();
+        if (terrainObjectConfig.getShape3DId() != null) {
+            shape3DRenderer.init(terrainObjectConfig.getShape3DId(), () -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig));
+            shape3DRenderer.fillRenderQueue(renderQueue);
+            terrainObjectRenderers.put(terrainObjectConfig, shape3DRenderer);
+        }
+        return shape3DRenderer;
     }
 
     private void setupBaseItemTypes() {
@@ -132,6 +156,10 @@ public abstract class RenderService {
                 exceptionHandler.handleException(t);
             }
         }
+    }
+
+    public int getRenderQueueSize() {
+        return renderQueue.size();
     }
 
     protected abstract void prepareMainRendering();

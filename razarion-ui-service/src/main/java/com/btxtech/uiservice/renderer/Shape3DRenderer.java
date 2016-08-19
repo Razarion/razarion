@@ -36,7 +36,7 @@ public class Shape3DRenderer {
     // Find better name for this method
     public void fillRenderQueue(List<CompositeRenderer> renderQueue) {
         this.renderQueue = renderQueue;
-        shape3DUiService.get(shape3DId, this::onShape3D);
+        shape3DUiService.request(shape3DId, this::onShape3D, true);
     }
 
     private void onShape3D(Shape3D shape3D) {
@@ -48,6 +48,10 @@ public class Shape3DRenderer {
             myRenderers.addAll(element3DRenderer.createCompositeRenderers());
         }
         renderQueue.addAll(myRenderers);
+    }
+
+    public List<CompositeRenderer> getMyRenderers() {
+        return myRenderers;
     }
 
     private Collection<ModelMatrixAnimation> getAnimations(Shape3D shape3D, Element3D element3D) {

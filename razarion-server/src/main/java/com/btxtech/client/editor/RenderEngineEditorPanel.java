@@ -1,7 +1,6 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.datatypes.Vertex;
@@ -16,8 +15,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.databinding.client.api.handler.property.PropertyChangeEvent;
-import org.jboss.errai.databinding.client.api.handler.property.PropertyChangeHandler;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -54,6 +51,9 @@ public class RenderEngineEditorPanel extends Composite implements LeftSideBarCon
     @Inject
     @DataField
     private CheckBox showNorm;
+    @Inject
+    @DataField
+    private Label rendererCount;
     @Inject
     @DataField("topButton")
     private Button topButton;
@@ -115,6 +115,7 @@ public class RenderEngineEditorPanel extends Composite implements LeftSideBarCon
         displayLightDirectionLabel();
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
         openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
+        rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
     }
 
 
@@ -137,6 +138,7 @@ public class RenderEngineEditorPanel extends Composite implements LeftSideBarCon
     public void showNormChanged(ChangeEvent e) {
         // TODO renderService.setShowNorm(showNorm.getValue());
     }
+
     private void displayLightDirectionLabel() {
         Vertex direction = camera.getDirection();
         directionLabel.setText(DisplayUtils.formatVertex(direction));

@@ -46,7 +46,7 @@ public class Shape3DEmulator {
         try {
             try (BufferedReader buffer = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
                 String colladaString = buffer.lines().collect(Collectors.joining());
-                return ColladaConverter.convertShape3D(colladaString, colladaConverterMapper).setDbId(id).setInternalName(fileName);
+                return ColladaConverter.convertShape3D(colladaString, colladaConverterMapper).setDbId(id);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -1,11 +1,10 @@
 package com.btxtech.client.imageservice;
 
-import com.btxtech.shared.ImageService;
+import com.btxtech.shared.ImageProvider;
 import com.btxtech.shared.RestUrl;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.google.gwt.dom.client.ImageElement;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.inject.Inject;
@@ -45,7 +44,7 @@ public class ImageUiService {
     private Logger logger = Logger.getLogger(ImageListener.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<ImageService> imageService;
+    private Caller<ImageProvider> imageService;
     private Map<Integer, ImageElement> imageElementLibrary = new HashMap<>();
     private Map<Integer, ImageGalleryItem> imageGalleryItemLibrary = new HashMap<>();
     private Map<Integer, Collection<ImageListener>> imageElementListeners = new HashMap<>();
@@ -107,13 +106,10 @@ public class ImageUiService {
                 }
                 imageGalleryItemListener.onLoaded(result);
             }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "getImageGalleryItem failed: " + message, throwable);
-                return false;
-            }
-        }).getImageGalleryItem();
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "getImageGalleryItems failed: " + message, throwable);
+            return false;
+        }).getImageGalleryItems();
     }
 
     public void reload(ImageGalleryItemListener imageGalleryItemListener) {
@@ -131,17 +127,9 @@ public class ImageUiService {
     }
 
     public void create(String dataUrl, final ImageGalleryItemListener imageGalleryItemListener) {
-        imageService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void aVoid) {
-                getImageGalleryItems(imageGalleryItemListener);
-            }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "uploadImage failed: " + message, throwable);
-                return false;
-            }
+        imageService.call(aVoid -> getImageGalleryItems(imageGalleryItemListener), (message, throwable) -> {
+            logger.log(Level.SEVERE, "uploadImage failed: " + message, throwable);
+            return false;
         }).uploadImage(dataUrl);
     }
 
@@ -153,17 +141,9 @@ public class ImageUiService {
         for (ImageGalleryItem imageGalleryItem : changed) {
             dataUrls.put(imageGalleryItem.getId(), imageElementLibrary.get(imageGalleryItem.getId()).getSrc());
         }
-        imageService.call(new RemoteCallback<Void>() {
-            @Override
-            public void callback(Void aVoid) {
-                reload(imageGalleryItemListener);
-            }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "save failed: " + message, throwable);
-                return false;
-            }
+        imageService.call(aVoid -> reload(imageGalleryItemListener), (message, throwable) -> {
+            logger.log(Level.SEVERE, "save failed: " + message, throwable);
+            return false;
         }).save(dataUrls);
     }
 
@@ -190,18 +170,15 @@ public class ImageUiService {
     private void loadImage(final int id, final boolean loadLoadImageGalleyItem) {
         ImageLoader<Integer> imageLoader = new ImageLoader<>();
         imageLoader.addImageUrl(RestUrl.getImageServiceUrl(id), id);
-        imageLoader.startLoading(new ImageLoader.Listener<Integer>() {
-            @Override
-            public void onLoaded(Map<Integer, ImageElement> loadedImageElements, Collection<Integer> failed) {
-                if (!failed.isEmpty()) {
-                    throw new IllegalStateException("Failed loading image with id: " + id);
-                }
-                ImageElement imageElement = loadedImageElements.get(id);
-                if (imageElement == null) {
-                    throw new IllegalStateException("Failed loading texture");
-                }
-                addImage(id, imageElement, loadLoadImageGalleyItem);
+        imageLoader.startLoading((loadedImageElements, failed) -> {
+            if (!failed.isEmpty()) {
+                throw new IllegalStateException("Failed loading image with id: " + id);
             }
+            ImageElement imageElement = loadedImageElements.get(id);
+            if (imageElement == null) {
+                throw new IllegalStateException("Failed loading texture");
+            }
+            addImage(id, imageElement, loadLoadImageGalleyItem);
         });
     }
 
@@ -211,13 +188,10 @@ public class ImageUiService {
             public void callback(ImageGalleryItem imageGalleryItem) {
                 addImageGalleryItem(id, imageGalleryItem, imageElement);
             }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "getImageGalleryItem failed: " + message, throwable);
-                return false;
-            }
-        }).getImageGalleryItem(id);
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "getImageGalleryItems failed: " + message, throwable);
+            return false;
+        }).getImageGalleryItems(id);
     }
 
     private void addImage(int id, ImageElement imageElement, boolean loadLoadImageGalleyItem) {

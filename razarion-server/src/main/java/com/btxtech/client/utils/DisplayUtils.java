@@ -39,4 +39,20 @@ public class DisplayUtils {
             return string;
         }
     }
+
+    public static String handleString(String value) {
+        if (value != null) {
+            return value;
+        } else {
+            return "-";
+        }
+    }
+
+    public static String handleInteger(Integer value) {
+        if (value != null) {
+            return Integer.toString(value);
+        } else {
+            return "-";
+        }
+    }
 }

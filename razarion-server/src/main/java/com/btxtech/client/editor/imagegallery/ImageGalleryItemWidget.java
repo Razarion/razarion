@@ -19,6 +19,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.function.BiConsumer;
 
 /**
  * Created by Beat
@@ -73,12 +74,7 @@ public class ImageGalleryItemWidget extends Composite implements ImageUiService.
 
     @EventHandler("uploadButton")
     public void uploadButtonClicked(ClickEvent e) {
-        ControlUtils.openSingleFileDataUrlUpload(new ControlUtils.SingleFileDataUrlListener() {
-            @Override
-            public void onLoaded(String dataUrl, File file) {
-                imageUiService.overrideImage(imageGalleryItem.getId(), dataUrl, (int) file.getSize(), file.getType());
-            }
-        });
+        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.overrideImage(imageGalleryItem.getId(), dataUrl, (int) file.getSize(), file.getType()));
     }
 
     @Override
