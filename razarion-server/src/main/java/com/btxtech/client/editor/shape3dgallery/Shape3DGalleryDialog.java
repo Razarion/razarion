@@ -2,6 +2,7 @@ package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.dialog.ModalDialogPanel;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.uiservice.Shape3DUiService;
@@ -53,7 +54,7 @@ public class Shape3DGalleryDialog extends Composite implements ModalDialogConten
     @Inject
     @DataField
     private Button newButton;
-    private ModalDialogManager modalDialogManager;
+    private ModalDialogPanel<Integer> modalDialogPanel;
 
     @Override
     public void init(Integer selectedId) {
@@ -79,12 +80,12 @@ public class Shape3DGalleryDialog extends Composite implements ModalDialogConten
     public void selectComponent(final @Observes Shape3DGalleryWidget widget) {
         shape3Ds.deselectAll();
         shape3Ds.selectComponent(widget);
-        modalDialogManager.setApplyValue(widget.getValue().getDbId());
+        modalDialogPanel.setApplyValue(widget.getValue().getDbId());
     }
 
     @Override
-    public void customize(ModalDialogManager modalDialogManager) {
-        this.modalDialogManager = modalDialogManager;
+    public void customize(ModalDialogPanel<Integer> modalDialogPanel) {
+        this.modalDialogPanel = modalDialogPanel;
     }
 
     @Override

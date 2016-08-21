@@ -32,6 +32,6 @@ public class MainCockpit extends Composite {
 
     @EventHandler("editorButton")
     private void onEditorButtonClick(ClickEvent event) {
-        modalDialogManager.show("Editor Menu", EditorMenuDialog.class, null, null);
+        modalDialogManager.show("Editor Menu", ModalDialogManager.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null);
     }
 }

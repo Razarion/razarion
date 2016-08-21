@@ -39,11 +39,11 @@ public class Shape3DWidget extends Composite {
     //    @SuppressWarnings("CdiInjectionPointsInspection")
 //    @Inject
 //    @DataField
-//    private Label loaded;
+//    TODO private Label loaded;
 //    @SuppressWarnings("CdiInjectionPointsInspection")
 //    @Inject
 //    @DataField
-//    private Label lastModified;
+//    TODO private Label lastModified;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -85,7 +85,7 @@ public class Shape3DWidget extends Composite {
 
     @EventHandler("galleryButton")
     private void galleryButtonClicked(ClickEvent event) {
-        modalDialogManager.show("Shape 3D Gallery", Shape3DGalleryDialog.class, shape3DId, selectedId -> {
+        modalDialogManager.show("Shape 3D Gallery", ModalDialogManager.Type.QUEUE_ABLE, Shape3DGalleryDialog.class, shape3DId, selectedId -> {
             shape3DId = selectedId;
             shape3DIdConsumer.accept(shape3DId);
             shape3DUiService.request(shape3DId, this::displayShape3D, true);

@@ -12,6 +12,8 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
@@ -28,9 +30,11 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 06.07.2016.
  */
+@Singleton
 public class TerrainElementPersistence {
     @PersistenceContext
     private EntityManager entityManager;
+    @Inject
     private Shape3DPersistence shape3DPersistence;
 
     @Transactional

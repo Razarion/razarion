@@ -4,7 +4,6 @@ import com.btxtech.client.cockpit.ZIndexConstants;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -12,6 +11,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
@@ -19,8 +19,10 @@ import javax.inject.Inject;
  * 20.05.2016.
  */
 @Templated("ModalDialogPanel.html#modal-dialog")
-public class ModalDialogPanel extends Composite {
+public class ModalDialogPanel<T> extends Composite {
     // private Logger logger = Logger.getLogger(ModalDialogPanel.class.getName());
+    @Inject
+    private Instance<ModalDialogContent> contentInstance;
     @Inject
     private ModalDialogManager modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -43,29 +45,53 @@ public class ModalDialogPanel extends Composite {
     @Inject
     @DataField
     private SimplePanel content;
+    private ModalDialogContent<T> modalDialogContent;
+    private T applyValue;
+    private ApplyListener<T> applyListener;
 
     @PostConstruct
-    public void init() {
+    public void postConstruct() {
         getElement().getStyle().setZIndex(ZIndexConstants.DIALOG);
+    }
+
+    public void init(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {
+        this.applyListener = applyListener;
+        modalDialogContent = contentInstance.select(contentClass).get();
+        modalDialogContent.init(t);
+        headerLabel.setText(title);
+        content.setWidget(modalDialogContent);
+        modalDialogContent.customize(this);
     }
 
     @EventHandler("closeCrossButton")
     private void closeCrossButtonClick(ClickEvent event) {
-        modalDialogManager.cancel();
+        modalDialogManager.close(this);
     }
 
     @EventHandler("cancelButton")
     private void cancelButtonClick(ClickEvent event) {
-        modalDialogManager.cancel();
+        modalDialogManager.close(this);
     }
 
     @EventHandler("applyButton")
     private void applyButtonButtonClick(ClickEvent event) {
-        modalDialogManager.apply();
+        modalDialogManager.close(this);
+        applyListener.onApply(applyValue);
     }
 
-    public void init(String title, ModalDialogContent content) {
-        headerLabel.setText(title);
-        this.content.setWidget(content);
+    public void setApplyValue(T applyValue) {
+        this.applyValue = applyValue;
+    }
+
+    public T getApplyValue() {
+        return applyValue;
+    }
+
+    public void onClose() {
+        modalDialogContent.onClose();
+    }
+
+    public void close() {
+        modalDialogManager.close(this);
     }
 }

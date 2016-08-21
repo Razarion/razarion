@@ -101,7 +101,7 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
 
     @EventHandler("galleryButton")
     private void galleryButtonClicked(ClickEvent event) {
-        modalDialogManager.show("Image Gallery", ImageGalleryDialog.class, imageId, id1 -> {
+        modalDialogManager.show("Image Gallery", ModalDialogManager.Type.QUEUE_ABLE, ImageGalleryDialog.class, imageId, id1 -> {
             imageUiService.removeListener(imageId, ImageItemWidget.this);
             imageId = id1;
             imageUiService.requestImage(imageId, ImageItemWidget.this);

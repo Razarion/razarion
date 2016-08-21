@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -12,57 +14,89 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ModalDialogManager {
+    public enum Type {
+        PROMPTLY,
+        STACK_ABLE,
+        QUEUE_ABLE,
+        UNIMPORTANT
+    }
+
     @Inject
-    private Instance<ModalDialogContent> contentInstance;
-    @Inject
-    private Instance<ModalDialogPanel> containerInstance;
-    private ModalDialogPanel container;
-    private ModalDialogContent content;
-    private ApplyListener applyListener;
-    private Object applyValue;
+    private Instance<ModalDialogPanel<Object>> containerInstance;
+    private ModalDialogPanel activeDialog;
+    private List<DialogParameters> dialogQueue = new ArrayList<>();
+    private List<ModalDialogPanel> stackedDialogs = new ArrayList<>();
 
-    public <T> void show(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {
-        applyValue = null;
-        this.applyListener = applyListener;
-        if (content != null || container != null) {
-            return;
+
+//    private ModalDialogPanel container;
+//    private ModalDialogContent content;
+//    private ApplyListener applyListener;
+
+    public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {
+        if (activeDialog == null) {
+            showDialog(title, contentClass, t, applyListener);
+        } else {
+            switch (type) {
+                case PROMPTLY:
+                    close(activeDialog);
+                    showDialog(title, contentClass, t, applyListener);
+                    break;
+                case QUEUE_ABLE:
+                    dialogQueue.add(new DialogParameters(title, contentClass, t, applyListener));
+                    break;
+                case STACK_ABLE:
+                    showStackedDialog(title, contentClass, t, applyListener);
+                    break;
+                case UNIMPORTANT:
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown dialog type: " + type);
+            }
         }
-        ModalDialogContent<T> content = contentInstance.select(contentClass).get();
-        content.init(t);
-        this.content = content;
-        container = containerInstance.get();
-        container.init(title, content);
-        content.customize(this);
-        RootPanel.get().add(container);
-
     }
 
-    public void hide() {
-        if (container != null) {
-            RootPanel.get().remove(container);
-            container = null;
-            content = null;
-            applyListener = null;
-            applyValue = null;
+    private void showDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, ApplyListener applyListener) {
+        ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
+        modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, applyListener);
+        this.activeDialog = modalDialogPanel;
+        RootPanel.get().add(activeDialog);
+    }
+
+    private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, ApplyListener applyListener) {
+        ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
+        modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, applyListener);
+        stackedDialogs.add(modalDialogPanel);
+        RootPanel.get().add(modalDialogPanel);
+    }
+
+    public void close(ModalDialogPanel modalDialogPanel) {
+        modalDialogPanel.onClose();
+        RootPanel.get().remove(modalDialogPanel);
+        if (modalDialogPanel == activeDialog) {
+            activeDialog = null;
+            if (!dialogQueue.isEmpty()) {
+                dialogQueue.remove(0).showDialog();
+            }
+        } else if(stackedDialogs.contains(modalDialogPanel)) {
+            stackedDialogs.remove(modalDialogPanel);
         }
     }
 
-    public void cancel() {
-        hide();
-    }
+    private class DialogParameters {
+        private String title;
+        private Class<? extends ModalDialogContent> contentClass;
+        private Object object;
+        private ApplyListener<?> applyListener;
 
-    public void setApplyValue(Object applyValue) {
-        this.applyValue = applyValue;
-    }
-
-    public void apply() {
-        if (applyListener != null) {
-            applyListener.onApply(applyValue);
+        public DialogParameters(String title, Class<? extends ModalDialogContent> contentClass, Object object, ApplyListener<?> applyListener) {
+            this.title = title;
+            this.contentClass = contentClass;
+            this.object = object;
+            this.applyListener = applyListener;
         }
-        hide();
-    }
 
-    public ModalDialogPanel getContainer() {
-        return container;
+        public void showDialog() {
+            ModalDialogManager.this.showDialog(title, contentClass, object, applyListener);
+        }
     }
 }

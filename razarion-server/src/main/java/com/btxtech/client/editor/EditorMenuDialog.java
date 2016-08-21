@@ -1,7 +1,7 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.dialog.ModalDialogContent;
-import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.dialog.ModalDialogPanel;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
@@ -21,8 +21,6 @@ import javax.inject.Inject;
  */
 @Templated("EditorMenuDialog.html#editor-menu-dialog")
 public class EditorMenuDialog extends Composite implements ModalDialogContent<Void> {
-    @Inject
-    private ModalDialogManager modalDialogManager;
     @Inject
     private LeftSideBarManager leftSideBarManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -53,6 +51,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button terrainObjectButton;
+    private ModalDialogPanel<Void> modalDialogPanel;
 
     @EventHandler("renderEngineButton")
     private void onRenderEngineButtonClicked(ClickEvent event) {
@@ -98,12 +97,12 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     }
 
     @Override
-    public void customize(ModalDialogManager modalDialogManager) {
-
+    public void customize(ModalDialogPanel<Void> modalDialogPanel) {
+        this.modalDialogPanel = modalDialogPanel;
     }
 
     private void openEditor(Class<? extends LeftSideBarContent> editorPanelClass) {
-        modalDialogManager.hide();
+        modalDialogPanel.close();
         leftSideBarManager.show(editorPanelClass);
     }
 }

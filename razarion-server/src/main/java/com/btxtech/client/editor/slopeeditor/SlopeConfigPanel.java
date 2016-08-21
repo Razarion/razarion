@@ -117,7 +117,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
         if (fractalFieldConfig == null) {
             fractalFieldConfig = slopeConfig.toFractalFiledConfig();
         }
-        modalDialogManager.show("Fractal Dialog", FractalDialog.class, fractalFieldConfig, fractalFieldConfig1 -> {
+        modalDialogManager.show("Fractal Dialog", ModalDialogManager.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, fractalFieldConfig1 -> {
             SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
             slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
         });

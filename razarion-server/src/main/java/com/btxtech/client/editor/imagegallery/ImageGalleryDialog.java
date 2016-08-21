@@ -2,6 +2,7 @@ package com.btxtech.client.editor.imagegallery;
 
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.dialog.ModalDialogPanel;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
@@ -41,7 +42,7 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
     @DataField
     private Button newButton;
     private int selectedImageId;
-    private ModalDialogManager modalDialogManager;
+    private ModalDialogPanel<Integer> modalDialogPanel;
 
     @Override
     public void init(Integer imageId) {
@@ -53,9 +54,9 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
     }
 
     @Override
-    public void customize(ModalDialogManager modalDialogManager) {
-        this.modalDialogManager = modalDialogManager;
-        modalDialogManager.setApplyValue(selectedImageId);
+    public void customize(ModalDialogPanel<Integer> modalDialogPanel) {
+        this.modalDialogPanel = modalDialogPanel;
+        modalDialogPanel.setApplyValue(selectedImageId);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
         }
         selectedImageId = newSelection.getId();
         imageGalleryItemListWidget.getComponent(newSelection).setSelected(true);
-        modalDialogManager.setApplyValue(selectedImageId);
+        modalDialogPanel.setApplyValue(selectedImageId);
     }
 
     @Override

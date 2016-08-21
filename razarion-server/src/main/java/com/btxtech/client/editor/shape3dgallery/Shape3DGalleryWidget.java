@@ -76,6 +76,7 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
 
     @EventHandler("textureButton")
     private void onTextureButtonClicked(ClickEvent event) {
+        // TODO hier
     }
 
     @EventHandler("animationButton")

@@ -4,6 +4,7 @@ import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import org.xml.sax.SAXException;
 
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -19,6 +20,7 @@ import java.util.List;
  * Created by Beat
  * 17.08.2016.
  */
+@Singleton
 public class Shape3DPersistence {
     @PersistenceContext
     private EntityManager entityManager;
