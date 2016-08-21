@@ -64,12 +64,8 @@ public class Shape3DWidget extends Composite {
     @Inject
     @DataField
     private Label internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private VertexContainerWidget vertexContainerWidget;
-    private File file;
-    private String lastLoadedColladaString;
+    private File file; // TODO
+    private String lastLoadedColladaString; // TODO
     private Integer shape3DId;
     private Consumer<Integer> shape3DIdConsumer;
 
@@ -140,7 +136,6 @@ public class Shape3DWidget extends Composite {
         uploadButton.setEnabled(true);
         dbId.setText(DisplayUtils.handleInteger(shape3D.getDbId()));
         internalName.setText(DisplayUtils.handleString(shape3D.getInternalName()));
-        vertexContainerWidget.init(shape3D);
     }
 
 //    private Map<String, Integer> extractTextureIds(int terrainObjectId) {

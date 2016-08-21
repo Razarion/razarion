@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.widgets.shape3dwidget;
+package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.editor.widgets.ImageItemWidget;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 19.08.2016.
  */
-@Templated("VertexContainerWidget.html#textures")
+@Templated("VertexContainerDialog.html#textures")
 public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject

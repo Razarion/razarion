@@ -1,5 +1,7 @@
-package com.btxtech.client.editor.widgets.shape3dwidget;
+package com.btxtech.client.editor.shape3dgallery;
 
+import com.btxtech.client.dialog.ModalDialogContent;
+import com.btxtech.client.dialog.ModalDialogPanel;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.utils.Shape3DUtils;
@@ -18,9 +20,9 @@ import java.util.List;
  * Created by Beat
  * 15.06.2016.
  */
-@Templated("VertexContainerWidget.html#vertex-container-widget")
-public class VertexContainerWidget extends Composite {
-    // private Logger logger = Logger.getLogger(VertexContainerWidget.class.getName());
+@Templated("VertexContainerDialog.html#vertex-container-widget")
+public class VertexContainerDialog extends Composite implements ModalDialogContent<Shape3D> {
+    // private Logger logger = Logger.getLogger(VertexContainerDialog.class.getName());
 //    @SuppressWarnings("CdiInjectionPointsInspection")
 //    @Inject
 //    private RenderService renderService;
@@ -33,7 +35,19 @@ public class VertexContainerWidget extends Composite {
     @DataField
     private ListComponent<VertexContainer, TexturePanel> texturesWidget;
 
+    @Override
     public void init(Shape3D shape3D) {
         binder.setModel(Shape3DUtils.getAllVertexContainers(shape3D));
+    }
+
+    @Override
+    public void onClose() {
+
+    }
+
+    @Override
+    public void customize(ModalDialogPanel<Shape3D> modalDialogPanel) {
+        modalDialogPanel.showApplyButton(false);
+        modalDialogPanel.showCancelButton(false);
     }
 }

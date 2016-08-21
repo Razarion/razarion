@@ -1,6 +1,7 @@
 package com.btxtech.client.dialog;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -93,5 +94,13 @@ public class ModalDialogPanel<T> extends Composite {
 
     public void close() {
         modalDialogManager.close(this);
+    }
+
+    public void showApplyButton(boolean show) {
+        applyButton.getElement().getStyle().setVisibility(show ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
+    }
+
+    public void showCancelButton(boolean show) {
+        cancelButton.getElement().getStyle().setVisibility(show ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
     }
 }

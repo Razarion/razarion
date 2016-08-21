@@ -71,6 +71,11 @@ public class Shape3DGalleryDialog extends Composite implements ModalDialogConten
         ControlUtils.openSingleFileTextUpload((dataUrl, file) -> shape3DUiService.create(dataUrl, this::fill));
     }
 
+    @EventHandler("saveButton")
+    private void saveButtonClicked(ClickEvent event) {
+        // TODO
+    }
+
     private void fill(List<Shape3D> allShape3Ds) {
         // Remove placeholder table row from template.
         DOMUtil.removeAllElementChildren(shape3Ds.getElement());

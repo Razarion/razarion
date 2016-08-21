@@ -1,5 +1,7 @@
 package com.btxtech.client.editor.shape3dgallery;
 
+import com.btxtech.client.dialog.ApplyListener;
+import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.datatypes.shape.Shape3D;
@@ -26,10 +28,11 @@ import javax.inject.Inject;
 @Templated("Shape3DGalleryDialog.html#tableRow")
 public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
     // private Logger logger = Logger.getLogger(Shape3DGalleryWidget.class.getName());
+    @Inject
+    private ModalDialogManager modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Shape3DUiService shape3DUiService;
-    private Shape3D shape3D;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -56,6 +59,7 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
     private Button uploadButton;
     @Inject
     private Event<Shape3DGalleryWidget> eventGunner;
+    private Shape3D shape3D;
 
     @Override
     public void setValue(Shape3D shape3D) {
@@ -76,11 +80,12 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
 
     @EventHandler("textureButton")
     private void onTextureButtonClicked(ClickEvent event) {
-        // TODO hier
+        modalDialogManager.show("Textures", ModalDialogManager.Type.STACK_ABLE, VertexContainerDialog.class, shape3D, null);
     }
 
     @EventHandler("animationButton")
     private void onAnimationButtonClicked(ClickEvent event) {
+        // TODO hier
     }
 
     @EventHandler("uploadButton")
