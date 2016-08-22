@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.shared.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;
 
@@ -37,9 +38,9 @@ public class Shape3DProviderImpl implements Shape3DProvider {
     }
 
     @Override
-    public void create(String colladaString) {
+    public Shape3D create(String colladaString) {
         try {
-            shape3DPersistence.create(colladaString);
+            return shape3DPersistence.create(colladaString);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);
@@ -56,6 +57,29 @@ public class Shape3DProviderImpl implements Shape3DProvider {
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void save(List<Shape3DConfig> shape3DConfigs) {
+        try {
+            shape3DPersistence.save(shape3DConfigs);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            exceptionHandler.handleException(e);
+            throw new RuntimeException(e);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        try {
+            shape3DPersistence.delete(id);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

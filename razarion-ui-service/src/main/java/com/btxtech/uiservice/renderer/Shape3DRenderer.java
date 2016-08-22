@@ -40,6 +40,7 @@ public class Shape3DRenderer {
     }
 
     private void onShape3D(Shape3D shape3D) {
+        boolean running = !myRenderers.isEmpty();
         renderQueue.removeAll(myRenderers);
         myRenderers.clear();
         for (Element3D element3D : shape3D.getElement3Ds()) {
@@ -48,6 +49,11 @@ public class Shape3DRenderer {
             myRenderers.addAll(element3DRenderer.createCompositeRenderers());
         }
         renderQueue.addAll(myRenderers);
+        if(running) {
+            for (CompositeRenderer myRenderer : myRenderers) {
+                myRenderer.fillBuffers();
+            }
+        }
     }
 
     public List<CompositeRenderer> getMyRenderers() {

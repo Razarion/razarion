@@ -25,6 +25,8 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class ImageUiService {
+    // TODO export the CRUD part tp the CRUD service
+
     public interface ImageListener {
         void onLoaded(ImageElement imageElement);
     }

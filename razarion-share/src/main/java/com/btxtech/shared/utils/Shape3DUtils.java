@@ -41,4 +41,14 @@ public class Shape3DUtils {
             vertexContainer.setTextureId(materials.get(vertexContainer.getMaterialId()));
         }
     }
+
+    public static void replaceTextureId(Shape3D shape3D, String materialId, int newImageId) {
+        for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
+            if(vertexContainer.getMaterialId().equals(materialId)) {
+                vertexContainer.setTextureId(newImageId);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("MaterialId not found: " + materialId);
+    }
 }

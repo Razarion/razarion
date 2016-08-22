@@ -1,11 +1,9 @@
 package com.btxtech.client.editor.shape3dgallery;
 
-import com.btxtech.client.dialog.ApplyListener;
 import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Button;
@@ -32,7 +30,7 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
     private ModalDialogManager modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Shape3DUiService shape3DUiService;
+    private Shape3DCrud shape3DCrud;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -57,8 +55,12 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
     @Inject
     @DataField
     private Button uploadButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Event<Shape3DGalleryWidget> eventGunner;
+    @DataField
+    private Button deleteButton;
+    @Inject
+    private Event<Shape3DGalleryWidget> eventTrigger;
     private Shape3D shape3D;
 
     @Override
@@ -83,6 +85,11 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
         modalDialogManager.show("Textures", ModalDialogManager.Type.STACK_ABLE, VertexContainerDialog.class, shape3D, null);
     }
 
+    @EventHandler("deleteButton")
+    private void deleteButtonClicked(ClickEvent event) {
+        shape3DCrud.delete(shape3D);
+    }
+
     @EventHandler("animationButton")
     private void onAnimationButtonClicked(ClickEvent event) {
         // TODO hier
@@ -90,12 +97,12 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
 
     @EventHandler("uploadButton")
     private void onUploadButtonClicked(ClickEvent event) {
-        ControlUtils.openSingleFileTextUpload((colladaText, file) -> shape3DUiService.overrideImage(colladaText, shape3D));
+        ControlUtils.openSingleFileTextUpload((colladaText, file) -> shape3DCrud.updateCollada(shape3D, colladaText));
     }
 
     @EventHandler("tableRow")
     public void onClick(final ClickEvent event) {
-        eventGunner.fire(this);
+        eventTrigger.fire(this);
     }
 
     public void setSelected(boolean selected) {

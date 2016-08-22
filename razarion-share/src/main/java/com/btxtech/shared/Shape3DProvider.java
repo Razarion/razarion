@@ -1,12 +1,14 @@
 package com.btxtech.shared;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.dto.ImageGalleryItem;
+import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -26,18 +28,23 @@ public interface Shape3DProvider {
     @POST
     @Path("create")
     @Consumes(MediaType.TEXT_PLAIN)
-    void create(String colladaString);
+    @Produces(MediaType.APPLICATION_JSON)
+    Shape3D create(String colladaString);
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("colladaConvert")
     Shape3D colladaConvert(String colladaString);
-//
-//    @POST
-//    @Consumes(MediaType.TEXT_PLAIN)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("colladaConvert")
-//    Shape3D save(String colladaString);
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("colladaConvert")
+    void save(List<Shape3DConfig> shape3DConfigs);
+
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("delete/{id}")
+    void delete(@PathParam("id") int id);
 
 }

@@ -2,6 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import org.xml.sax.SAXException;
 
 import javax.inject.Singleton;
@@ -14,7 +15,9 @@ import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -34,18 +37,19 @@ public class Shape3DPersistence {
 
         List<Shape3D> shape3Ds = new ArrayList<>();
         for (ColladaEntity slopeConfigEntity : entityManager.createQuery(userSelect).getResultList()) {
-            shape3Ds.add(ColladaConverter.convertShape3D(slopeConfigEntity.getColladaString(), null).setDbId(slopeConfigEntity.getId().intValue()));
+            shape3Ds.add(ColladaConverter.convertShape3D(slopeConfigEntity.getColladaString(), slopeConfigEntity).setDbId(slopeConfigEntity.getId().intValue()));
         }
 
         return shape3Ds;
     }
 
     @Transactional
-    public void create(String colladaString) throws ParserConfigurationException, SAXException, IOException {
-        ColladaConverter.convertShape3D(colladaString, null); // Verification
+    public Shape3D create(String colladaString) throws ParserConfigurationException, SAXException, IOException {
+        Shape3D shape3D = ColladaConverter.convertShape3D(colladaString, null);
         ColladaEntity colladaEntity = new ColladaEntity();
         colladaEntity.setColladaString(colladaString);
         entityManager.persist(colladaEntity);
+        return shape3D;
     }
 
     @Transactional
@@ -55,5 +59,28 @@ public class Shape3DPersistence {
         } else {
             return null;
         }
+    }
+
+    @Transactional
+    public void save(List<Shape3DConfig> shape3DConfigs) throws ParserConfigurationException, SAXException, IOException {
+        for (Shape3DConfig shape3DConfig : shape3DConfigs) {
+            ColladaEntity colladaEntity = entityManager.find(ColladaEntity.class, (long) shape3DConfig.getDbId());
+            if (shape3DConfig.getColladaString() != null) {
+                ColladaConverter.convertShape3D(shape3DConfig.getColladaString(), null); // Verification
+                colladaEntity.setColladaString(shape3DConfig.getColladaString());
+            }
+            if (shape3DConfig.getTextures() != null) {
+                Map<String, ImageLibraryEntity> imageLibraryEntityMap = new HashMap<>();
+                for (Map.Entry<String, Integer> entry : shape3DConfig.getTextures().entrySet()) {
+                    imageLibraryEntityMap.put(entry.getKey(), entityManager.find(ImageLibraryEntity.class, (long) entry.getValue()));
+                }
+                colladaEntity.setTextures(imageLibraryEntityMap);
+            }
+        }
+    }
+
+    @Transactional
+    public void delete(int id) {
+        entityManager.remove(entityManager.find(ColladaEntity.class, (long) id));
     }
 }

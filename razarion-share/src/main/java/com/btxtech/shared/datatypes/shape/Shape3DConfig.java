@@ -1,0 +1,52 @@
+package com.btxtech.shared.datatypes.shape;
+
+import org.jboss.errai.common.client.api.annotations.Portable;
+
+import java.util.Map;
+
+/**
+ * Created by Beat
+ * 21.08.2016.
+ */
+@Portable
+public class Shape3DConfig {
+    private int dbId;
+    private String colladaString;
+    private Map<String, Integer> textures;
+
+    public int getDbId() {
+        return dbId;
+    }
+
+    public Shape3DConfig setDbId(int dbId) {
+        this.dbId = dbId;
+        return this;
+    }
+
+    public String getColladaString() {
+        return colladaString;
+    }
+
+    public Shape3DConfig setColladaString(String colladaString) {
+        this.colladaString = colladaString;
+        return this;
+    }
+
+    public Map<String, Integer> getTextures() {
+        return textures;
+    }
+
+    public Shape3DConfig setTextures(Map<String, Integer> textures) {
+        this.textures = textures;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Shape3DConfig{" +
+                "dbId=" + dbId +
+                ", colladaString='" + colladaString + '\'' +
+                ", textures=" + textures +
+                '}';
+    }
+}

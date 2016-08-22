@@ -10,12 +10,12 @@ import java.util.List;
  */
 @Portable
 public class Shape3D {
-    private Integer dbId;
+    private int dbId;
     private String internalName;
     private List<Element3D> element3Ds;
     private List<ModelMatrixAnimation> modelMatrixAnimations;
 
-    public Integer getDbId() {
+    public int getDbId() {
         return dbId;
     }
 
@@ -52,6 +52,24 @@ public class Shape3D {
     public Shape3D setModelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
         this.modelMatrixAnimations = modelMatrixAnimations;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Shape3D shape3D = (Shape3D) o;
+        return dbId == shape3D.dbId;
+    }
+
+    @Override
+    public int hashCode() {
+        return dbId;
     }
 
     @Override

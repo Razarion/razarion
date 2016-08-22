@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.widgets.shape3dwidget;
 
 import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.editor.shape3dgallery.Shape3DCrud;
 import com.btxtech.client.editor.shape3dgallery.Shape3DGalleryDialog;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.Shape3DProvider;
@@ -32,6 +33,8 @@ public class Shape3DWidget extends Composite {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<Shape3DProvider> editorHelperCaller;
+    @Inject
+    private Shape3DCrud shape3DCrud;
     @Inject
     private Shape3DUiService shape3DUiService;
     //    @DataField
@@ -82,6 +85,9 @@ public class Shape3DWidget extends Composite {
     @EventHandler("galleryButton")
     private void galleryButtonClicked(ClickEvent event) {
         modalDialogManager.show("Shape 3D Gallery", ModalDialogManager.Type.QUEUE_ABLE, Shape3DGalleryDialog.class, shape3DId, selectedId -> {
+            if(shape3DId != null) {
+                shape3DUiService.removeShape3DObserver(shape3DId, this::displayShape3D);
+            }
             shape3DId = selectedId;
             shape3DIdConsumer.accept(shape3DId);
             shape3DUiService.request(shape3DId, this::displayShape3D, true);
@@ -111,7 +117,7 @@ public class Shape3DWidget extends Composite {
 //
 //    private void loadFile(final File file) {
 //        use below
-//        ControlUtils.openSingleFileTextUpload((dataUrl, file) -> shape3DUiService.create(dataUrl, this::fill));
+//        ControlUtils.openSingleFileTextUpload((dataUrl, file) -> shape3DCrud.create(dataUrl, this::fill));
 //        final FileReader fileReader = Browser.getWindow().newFileReader();
 //        fileReader.setOnload(evt -> {
 //            lastLoadedColladaString = (String) fileReader.getResult();
@@ -138,18 +144,6 @@ public class Shape3DWidget extends Composite {
         internalName.setText(DisplayUtils.handleString(shape3D.getInternalName()));
     }
 
-//    private Map<String, Integer> extractTextureIds(int terrainObjectId) {
-//        Map<String, Integer> textures = new HashMap<>();
-//        TerrainObjectConfig terrainObjectConfig = terrainObjectService.getTerrainObject(terrainObjectId);
-//        // TODO
-////        for (VertexContainer vertexContainer : terrainObjectConfig.getVertexContainers()) {
-////            if (vertexContainer.hasTextureId()) {
-////                textures.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId());
-////            }
-////        }
-//        return textures;
-//    }
-
     private Date getLastModifiedDate(File file) {
         // Unfortunately, the GWT elemental has trouble with the date
         return new Date(Long.parseLong(getLastModifiedDateAsLongString(file)));
@@ -160,4 +154,11 @@ public class Shape3DWidget extends Composite {
         return file.lastModifiedDate.getTime() + "";
     }-*/;
 
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+        if(shape3DId != null) {
+            shape3DUiService.removeShape3DObserver(shape3DId, this::displayShape3D);
+        }
+    }
 }
