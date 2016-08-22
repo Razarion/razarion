@@ -83,6 +83,7 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
+    @Deprecated
     public List<ObjectNameId> getTerrainObjectNameIds() {
         try {
             return persistenceService.getTerrainObjectNameIds();
@@ -93,9 +94,9 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public TerrainObjectConfig loadTerrainObjectConfig(int id) {
+    public TerrainObjectConfig createTerrainObjectConfig() {
         try {
-            return persistenceService.loadTerrainObjectConfig(id);
+            return persistenceService.createTerrainObjectConfig();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
@@ -103,9 +104,30 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public TerrainObjectConfig saveTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
+    @Deprecated
+    public TerrainObjectConfig readTerrainObjectConfig(int id) {
         try {
-            return persistenceService.saveTerrainObject(terrainObjectConfig);
+            return persistenceService.readTerrainObjectConfig(id);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public List<TerrainObjectConfig> readTerrainObjectConfigs() {
+        try {
+            return persistenceService.readTerrainObjects();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void saveTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
+        try {
+            persistenceService.saveTerrainObject(terrainObjectConfig);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

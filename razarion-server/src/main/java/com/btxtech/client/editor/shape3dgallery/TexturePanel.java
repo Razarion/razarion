@@ -5,8 +5,8 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.api.IsElement;
-import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -17,7 +17,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 19.08.2016.
  */
-@Templated("VertexContainerDialog.html#textures")
+@Templated("Shape3DPropertyPanel.html#textures")
 public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     // private Logger logger = Logger.getLogger(TexturePanel.class.getName());
     @Inject
@@ -25,7 +25,7 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("textures")
-    private Div div;
+    private TableRow tableRow;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -39,7 +39,7 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
 
     @Override
     public HTMLElement getElement() {
-        return div;
+        return tableRow;
     }
 
     @Override

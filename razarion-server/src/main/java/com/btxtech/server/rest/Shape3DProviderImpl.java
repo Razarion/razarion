@@ -64,9 +64,9 @@ public class Shape3DProviderImpl implements Shape3DProvider {
     }
 
     @Override
-    public void save(List<Shape3DConfig> shape3DConfigs) {
+    public void save(Shape3DConfig shape3DConfig) {
         try {
-            shape3DPersistence.save(shape3DConfigs);
+            shape3DPersistence.save(shape3DConfig);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

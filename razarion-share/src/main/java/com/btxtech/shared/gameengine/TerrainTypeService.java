@@ -30,10 +30,14 @@ public class TerrainTypeService {
             }
         }
 
-        terrainObjectConfigs.clear();
-        if (engineInitEvent.getGameEngineConfig().getTerrainObjectConfigs() != null) {
-            for (TerrainObjectConfig terrainObjectConfig : engineInitEvent.getGameEngineConfig().getTerrainObjectConfigs()) {
-                terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
+        setTerrainObjectConfigs(engineInitEvent.getGameEngineConfig().getTerrainObjectConfigs());
+    }
+
+    public void setTerrainObjectConfigs(Collection<TerrainObjectConfig> terrainObjectConfigs) {
+        this.terrainObjectConfigs.clear();
+        if (terrainObjectConfigs != null) {
+            for (TerrainObjectConfig terrainObjectConfig : terrainObjectConfigs) {
+                this.terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
             }
         }
     }
@@ -60,6 +64,15 @@ public class TerrainTypeService {
             throw new IllegalArgumentException("No TerrainObjectConfig for id: " + id);
         }
         return terrainObjectConfig;
+    }
+
+    // Methods used by the editors -----------------------------------------------------------------
+    public void overrideTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
+        terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
+    }
+
+    public void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
+        terrainObjectConfigs.remove(terrainObjectConfig.getId());
     }
 
 }

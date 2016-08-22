@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.terrainobject;
 
-import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DWidget;
+import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -18,8 +18,8 @@ import javax.inject.Inject;
  * Created by Beat
  * 16.08.2016.
  */
-@Templated("TerrainObjectConfigPanel.html#terrain-object-config-panel")
-public class TerrainObjectConfigPanel extends Composite {
+@Templated("TerrainObjectPropertyPanel.html#terrain-object-property-panel")
+public class TerrainObjectPropertyPanel extends Composite {
     @Inject
     @AutoBound
     private DataBinder<TerrainObjectConfig> terrainObjectConfigDataBinder;
@@ -35,19 +35,19 @@ public class TerrainObjectConfigPanel extends Composite {
     private TextBox internalName;
     @Inject
     @DataField
-    private Shape3DWidget shape3DWidget;
+    private Shape3DReferenceFiled shape3DReferenceFiled;
     @Inject
     private Event<TerrainObjectConfig> trigger;
 
-    public TerrainObjectConfig getTerrainObjectConfig() {
-        return terrainObjectConfigDataBinder.getModel();
-    }
-
     public void init(TerrainObjectConfig terrainObjectConfig) {
         terrainObjectConfigDataBinder.setModel(terrainObjectConfig);
-        shape3DWidget.init(terrainObjectConfig.getShape3DId(), shape3DId -> {
+        shape3DReferenceFiled.init(terrainObjectConfig.getShape3DId(), shape3DId -> {
             terrainObjectConfigDataBinder.getModel().setShape3DId(shape3DId);
-            trigger.fire(terrainObjectConfigDataBinder.getModel());
+            trigger.fire(terrainObjectConfigDataBinder.getModel()); // Inform Renderer
         });
+    }
+
+    public TerrainObjectConfig getTerrainObjectConfig() {
+        return terrainObjectConfigDataBinder.getModel();
     }
 }

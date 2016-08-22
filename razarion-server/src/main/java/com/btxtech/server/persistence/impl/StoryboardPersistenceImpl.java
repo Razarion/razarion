@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.StoryboardEntity;
 import com.btxtech.server.persistence.TerrainElementPersistence;
 import com.btxtech.servercommon.StoryboardPersistence;
-import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
@@ -42,7 +41,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         GameEngineConfig gameEngineConfig = new GameEngineConfig();
         gameEngineConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
         gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
-        gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.loadTerrainObjects());
+        gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
         // TODO gameEngineConfig.setItemTypes();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations

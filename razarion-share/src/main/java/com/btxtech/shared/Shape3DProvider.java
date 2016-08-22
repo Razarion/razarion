@@ -40,7 +40,7 @@ public interface Shape3DProvider {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("colladaConvert")
-    void save(List<Shape3DConfig> shape3DConfigs);
+    void save(Shape3DConfig shape3DConfig);
 
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)

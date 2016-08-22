@@ -3,7 +3,7 @@ package com.btxtech.client.editor.shape3dgallery;
 import com.btxtech.shared.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import org.jboss.errai.common.client.api.Caller;
@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -33,19 +34,19 @@ public class Shape3DCrud {
     @Inject
     private Shape3DUiService shape3DUiService;
     private Map<Integer, Shape3DConfig> changes = new HashMap<>();
-    private Collection<Consumer<List<Shape3D>>> observers = new ArrayList<>();
+    private Collection<Consumer<List<ObjectNameId>>> observers = new ArrayList<>();
 
-    public void create(String dataUrl) {
+    public void create(String colladaText) {
         caller.call(new RemoteCallback<Shape3D>() {
             @Override
             public void callback(Shape3D shape3D) {
                 shape3DUiService.override(shape3D);
-                fire(shape3DUiService.getShape3Ds());
+                fire();
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
             return false;
-        }).create(dataUrl);
+        }).create(colladaText);
     }
 
     public void reload() {
@@ -54,7 +55,7 @@ public class Shape3DCrud {
             public void callback(List<Shape3D> shape3Ds) {
                 changes.clear();
                 shape3DUiService.setShapes3Ds(shape3Ds);
-                fire(shape3Ds);
+                fire();
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
@@ -82,30 +83,28 @@ public class Shape3DCrud {
         Shape3DUtils.replaceTextureId(originalShape3D, materialId, imageId);
         Shape3DConfig shape3DConfig = getChangedShape3DConfig(originalShape3D.getDbId());
         Map<String, Integer> textureMap = new HashMap<>();
-        for (VertexContainer vertexContainer : Shape3DUtils.getAllVertexContainers(originalShape3D)) {
-            if (vertexContainer.getTextureId() != null) {
-                textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId());
-            }
-        }
+        Shape3DUtils.getAllVertexContainers(originalShape3D).stream().filter(vertexContainer -> vertexContainer.getTextureId() != null).forEach(vertexContainer -> textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId()));
         shape3DConfig.setTextures(textureMap);
         shape3DUiService.override(originalShape3D);
     }
 
-    public void save() {
-        if (changes.isEmpty()) {
+    public void save(Shape3D shape3D) {
+        Shape3DConfig shape3DConfig = changes.get(shape3D.getDbId());
+        if (shape3DConfig == null) {
             return;
         }
-        caller.call(response -> changes.clear(), (message, throwable) -> {
+
+        caller.call(response -> changes.remove(shape3D.getDbId()), (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.save failed: " + message, throwable);
             return false;
-        }).save(new ArrayList<>(changes.values()));
+        }).save(shape3DConfig);
     }
 
 
     public void delete(Shape3D shape3D) {
         caller.call(response -> {
             shape3DUiService.remove(shape3D);
-            fire(shape3DUiService.getShape3Ds());
+            fire();
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.delete failed: " + message, throwable);
             return false;
@@ -127,18 +126,23 @@ public class Shape3DCrud {
         return shape3DConfig;
     }
 
-    public void monitor(Consumer<List<Shape3D>> observer) {
+    public void monitor(Consumer<List<ObjectNameId>> observer) {
         observers.add(observer);
-        observer.accept(shape3DUiService.getShape3Ds());
+        observer.accept(setupObjectNameIds());
     }
 
-    public void removeMonitor(Consumer<List<Shape3D>> observer) {
+    public void removeMonitor(Consumer<List<ObjectNameId>> observer) {
         observers.remove(observer);
     }
 
-    private void fire(List<Shape3D> shape3Ds) {
-        for (Consumer<List<Shape3D>> observer : observers) {
-            observer.accept(shape3Ds);
+    private List<ObjectNameId> setupObjectNameIds() {
+        return shape3DUiService.getShape3Ds().stream().map(Shape3D::createSlopeNameId).collect(Collectors.toList());
+    }
+
+    private void fire() {
+        List<ObjectNameId> objectNameIds = setupObjectNameIds();
+        for (Consumer<List<ObjectNameId>> observer : observers) {
+            observer.accept(objectNameIds);
         }
     }
 }

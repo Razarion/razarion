@@ -125,12 +125,12 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public TerrainObjectConfig loadTerrainObjectConfig(int id) {
+    public TerrainObjectConfig readTerrainObjectConfig(int id) {
         return entityManager.find(TerrainObjectEntity.class, (long) id).toTerrainObjectConfig();
     }
 
     @Transactional
-    public List<TerrainObjectConfig> loadTerrainObjects() throws ParserConfigurationException {
+    public List<TerrainObjectConfig> readTerrainObjects() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<TerrainObjectEntity> userQuery = criteriaBuilder.createQuery(TerrainObjectEntity.class);
@@ -142,21 +142,21 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public TerrainObjectConfig saveTerrainObject(TerrainObjectConfig terrainObjectConfig) {
-        TerrainObjectEntity terrainObjectEntity;
-        if (terrainObjectConfig.hasId()) {
-            terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
-        } else {
-            terrainObjectEntity = new TerrainObjectEntity();
-        }
+    public void saveTerrainObject(TerrainObjectConfig terrainObjectConfig) {
+        TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
         terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, shape3DPersistence.getColladaEntity(terrainObjectConfig.getShape3DId()));
-
-        return entityManager.merge(terrainObjectEntity).toTerrainObjectConfig();
     }
 
     @Transactional
     public void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
         TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
         entityManager.remove(terrainObjectEntity);
+    }
+
+    @Transactional
+    public TerrainObjectConfig createTerrainObjectConfig() {
+        TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
+        entityManager.persist(terrainObjectEntity);
+        return terrainObjectEntity.toTerrainObjectConfig();
     }
 }

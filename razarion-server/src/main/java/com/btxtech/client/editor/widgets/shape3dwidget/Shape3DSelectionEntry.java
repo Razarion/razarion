@@ -1,12 +1,9 @@
-package com.btxtech.client.editor.shape3dgallery;
+package com.btxtech.client.editor.widgets.shape3dwidget;
 
-import com.btxtech.client.dialog.ModalDialogManager;
-import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.DOMUtil;
@@ -21,16 +18,13 @@ import javax.inject.Inject;
 
 /**
  * Created by Beat
- * 17.08.2016.
+ * 22.08.2016.
  */
-@Templated("Shape3DGalleryDialog.html#tableRow")
-public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
-    // private Logger logger = Logger.getLogger(Shape3DGalleryWidget.class.getName());
+
+@Templated("Shape3DSelectionDialog.html#tableRow")
+public class Shape3DSelectionEntry implements TakesValue<Shape3D>, IsElement {
     @Inject
-    private ModalDialogManager modalDialogManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private Shape3DCrud shape3DCrud;
+    private Event<Shape3DSelectionEntry> eventTrigger;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -43,25 +37,12 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
     @Inject
     @DataField
     private Label internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button textureButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button animationButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button uploadButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button deleteButton;
-    @Inject
-    private Event<Shape3DGalleryWidget> eventTrigger;
     private Shape3D shape3D;
+
+    @Override
+    public HTMLElement getElement() {
+        return tableRow;
+    }
 
     @Override
     public void setValue(Shape3D shape3D) {
@@ -73,31 +54,6 @@ public class Shape3DGalleryWidget implements TakesValue<Shape3D>, IsElement {
     @Override
     public Shape3D getValue() {
         return shape3D;
-    }
-
-    @Override
-    public HTMLElement getElement() {
-        return tableRow;
-    }
-
-    @EventHandler("textureButton")
-    private void onTextureButtonClicked(ClickEvent event) {
-        modalDialogManager.show("Textures", ModalDialogManager.Type.STACK_ABLE, VertexContainerDialog.class, shape3D, null);
-    }
-
-    @EventHandler("deleteButton")
-    private void deleteButtonClicked(ClickEvent event) {
-        shape3DCrud.delete(shape3D);
-    }
-
-    @EventHandler("animationButton")
-    private void onAnimationButtonClicked(ClickEvent event) {
-        // TODO hier
-    }
-
-    @EventHandler("uploadButton")
-    private void onUploadButtonClicked(ClickEvent event) {
-        ControlUtils.openSingleFileTextUpload((colladaText, file) -> shape3DCrud.updateCollada(shape3D, colladaText));
     }
 
     @EventHandler("tableRow")

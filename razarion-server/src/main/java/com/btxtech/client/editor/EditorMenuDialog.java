@@ -2,10 +2,11 @@ package com.btxtech.client.editor;
 
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogPanel;
+import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
-import com.btxtech.client.editor.terrainobject.TerrainObjectConfigCrudSidebar;
+import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -51,6 +52,14 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button terrainObjectButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Button imageButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Button shape3DButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
     @EventHandler("renderEngineButton")
@@ -83,7 +92,17 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("terrainObjectButton")
     private void onTerrainObjectButtonClicked(ClickEvent event) {
-        openEditor(TerrainObjectConfigCrudSidebar.class);
+        openEditor(TerrainObjectCrudSidebar.class);
+    }
+
+    @EventHandler("imageButton")
+    private void onImageButtonClicked(ClickEvent event) {
+        // TODO
+    }
+
+    @EventHandler("shape3DButton")
+    private void onShape3DButtonClicked(ClickEvent event) {
+        openEditor(Shape3DCrudeSidebar.class);
     }
 
     @Override

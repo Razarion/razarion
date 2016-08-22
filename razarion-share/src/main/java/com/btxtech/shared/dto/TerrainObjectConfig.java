@@ -11,16 +11,12 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Portable
 @Bindable
 public class TerrainObjectConfig {
-    private Integer id;
+    private int id;
     private String internalName;
     private Integer shape3DId;
 
-    public Integer getId() {
+    public int getId() {
         return id;
-    }
-
-    public boolean hasId() {
-        return id != null;
     }
 
     public String getInternalName() {

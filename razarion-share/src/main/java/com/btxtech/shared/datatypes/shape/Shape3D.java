@@ -1,5 +1,6 @@
 package com.btxtech.shared.datatypes.shape;
 
+import com.btxtech.shared.dto.ObjectNameId;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
@@ -52,6 +53,10 @@ public class Shape3D {
     public Shape3D setModelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
         this.modelMatrixAnimations = modelMatrixAnimations;
         return this;
+    }
+
+    public ObjectNameId createSlopeNameId() {
+        return new ObjectNameId(dbId, internalName);
     }
 
     @Override

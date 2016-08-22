@@ -60,18 +60,29 @@ public interface TerrainElementEditorProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getTerrainObjectNameIds")
+    @Deprecated
     List<ObjectNameId> getTerrainObjectNameIds();
+
+    @POST
+    @Path("createTerrainObjectConfig")
+    @Produces(MediaType.APPLICATION_JSON)
+    TerrainObjectConfig createTerrainObjectConfig();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("loadTerrainObjectConfig/{id}")
-    TerrainObjectConfig loadTerrainObjectConfig(@PathParam("id") int id);
+    @Path("readTerrainObjectConfig/{id}")
+    @Deprecated
+    TerrainObjectConfig readTerrainObjectConfig(@PathParam("id") int id);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readTerrainObjectConfigs")
+    List<TerrainObjectConfig> readTerrainObjectConfigs();
 
     @PUT
     @Path("saveTerrainObjectConfig")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    TerrainObjectConfig saveTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig);
+    void saveTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig);
 
     @DELETE
     @Path("deleteTerrainObjectConfig")
