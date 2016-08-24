@@ -155,9 +155,9 @@ button:disabled {
 
 .generic-gallery-table-row-selected {
 
-background-color: #060606;
+    background-color: #060606;
 
-color: white;
+    color: white;
 }
 
 .generic-gallery-table-row-not-selected {
@@ -250,6 +250,37 @@ color: white;
 .left-side-bar-content {
     height: 100%;
     font-size: 80%;
+}
+
+/** --- CRUD parent ---*/
+.crud-parent {
+    width: 100%;
+    height: 100%;
+    display: table;
+}
+
+.hr-crud {
+	border-top: 1px solid #989898;
+	border-bottom: 0;
+}
+
+.crud-parent-selector {
+    width: 100%;
+    display: table-row;
+    border-spacing: 0;
+    border-collapse: separate;
+}
+
+.crud-parent-content {
+    width: 100%;
+    height: 100%;
+    display: table-row;
+}
+
+.crud-parent-footer {
+    display: table-row;
+    border-spacing: 0;
+    border-collapse: separate;
 }
 
 /** -------------------------- EDITOR ENDS-------------------------- */

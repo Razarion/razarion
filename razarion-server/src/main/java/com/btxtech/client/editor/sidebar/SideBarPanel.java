@@ -24,10 +24,10 @@ public class SideBarPanel extends Composite {
     @Inject
     @DataField
     private SimplePanel content;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button closeButton;
+//    @SuppressWarnings("CdiInjectionPointsInspection")
+//    @Inject
+//    @DataField
+//    private Button closeButton;
 
     @PostConstruct
     public void init() {
@@ -42,9 +42,9 @@ public class SideBarPanel extends Composite {
         return (LeftSideBarContent) content.getWidget();
     }
 
-    @EventHandler("closeButton")
-    private void closeButtonButtonClick(ClickEvent event) {
-        leftSideBarManager.onClose((LeftSideBarContent) content.getWidget());
-    }
+//    @EventHandler("closeButton")
+//    private void closeButtonButtonClick(ClickEvent event) {
+//        leftSideBarManager.close((LeftSideBarContent) content.getWidget());
+//    }
 
 }

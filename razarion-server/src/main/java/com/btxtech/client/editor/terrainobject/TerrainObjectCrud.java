@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.terrainobject;
 
+import com.btxtech.client.editor.framework.AbstractCrudeEditor;
 import com.btxtech.shared.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -22,24 +23,15 @@ import java.util.stream.Collectors;
  * 22.08.2016.
  */
 @ApplicationScoped
-public class TerrainObjectCrud {
+public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> {
     private Logger logger = Logger.getLogger(TerrainObjectCrud.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<TerrainElementEditorProvider> provider;
-    private Collection<Consumer<List<ObjectNameId>>> observers = new ArrayList<>();
 
-    public void monitor(Consumer<List<ObjectNameId>> observer) {
-        observers.add(observer);
-        observer.accept(setupObjectNameIds());
-    }
-
-    public void removeMonitor(Consumer<List<ObjectNameId>> observer) {
-        observers.remove(observer);
-    }
-
+    @Override
     public void create() {
         provider.call(new RemoteCallback<TerrainObjectConfig>() {
             @Override
@@ -53,6 +45,7 @@ public class TerrainObjectCrud {
         }).createTerrainObjectConfig();
     }
 
+    @Override
     public void reload() {
         provider.call(new RemoteCallback<List<TerrainObjectConfig>>() {
             @Override
@@ -66,6 +59,12 @@ public class TerrainObjectCrud {
         }).readTerrainObjectConfigs();
     }
 
+    @Override
+    public TerrainObjectConfig getInstance(ObjectNameId objectNameId) {
+        return terrainTypeService.getTerrainObjectConfig(objectNameId.getId());
+    }
+
+    @Override
     public void save(TerrainObjectConfig terrainObjectConfig) {
         provider.call(ignore -> fire(), (message, throwable) -> {
             logger.log(Level.SEVERE, "TerrainElementEditorProvider.saveTerrainObjectConfig failed: " + message, throwable);
@@ -74,6 +73,7 @@ public class TerrainObjectCrud {
     }
 
 
+    @Override
     public void delete(TerrainObjectConfig terrainObjectConfig) {
         provider.call(ignore -> {
             terrainTypeService.deleteTerrainObjectConfig(terrainObjectConfig);
@@ -84,15 +84,9 @@ public class TerrainObjectCrud {
         }).deleteTerrainObjectConfig(terrainObjectConfig);
     }
 
-    private List<ObjectNameId> setupObjectNameIds() {
-        return terrainTypeService.getTerrainObjectConfigs().stream().map(TerrainObjectConfig::createSlopeNameId).collect(Collectors.toList());
-    }
-
-    private void fire() {
-        List<ObjectNameId> objectNameIds = setupObjectNameIds();
-        for (Consumer<List<ObjectNameId>> observer : observers) {
-            observer.accept(objectNameIds);
-        }
+    @Override
+    protected List<ObjectNameId> setupObjectNameIds() {
+        return terrainTypeService.getTerrainObjectConfigs().stream().map(TerrainObjectConfig::getObjectNameId).collect(Collectors.toList());
     }
 
 }

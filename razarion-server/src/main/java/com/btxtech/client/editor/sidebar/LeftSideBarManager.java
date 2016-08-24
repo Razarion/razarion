@@ -30,11 +30,14 @@ public class LeftSideBarManager {
         sideBarPanel.setContent(leftSideBarContentInstance.select(leftSideBarContentClass).get());
     }
 
-    public void onClose(LeftSideBarContent leftSideBarContent) {
+    public void close(LeftSideBarContent leftSideBarContent) {
         leftSideBarContent.onClose();
         if (sideBarPanel == null) {
             logger.severe("LeftSideBarManager already null");
         } else {
+            if (leftSideBarContent != sideBarPanel.getContent()) {
+                logger.severe("Closing command comes from a different LeftSideBarContent then shown");
+            }
             RootPanel.get().remove(sideBarPanel);
             sideBarPanel = null;
         }

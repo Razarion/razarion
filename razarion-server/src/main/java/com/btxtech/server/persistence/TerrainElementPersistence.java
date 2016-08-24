@@ -21,7 +21,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import javax.xml.parsers.ParserConfigurationException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;

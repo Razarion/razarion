@@ -10,7 +10,7 @@ import org.jboss.errai.databinding.client.api.Bindable;
  */
 @Portable
 @Bindable
-public class TerrainObjectConfig {
+public class TerrainObjectConfig implements ObjectNameIdProvider{
     private int id;
     private String internalName;
     private Integer shape3DId;
@@ -42,7 +42,8 @@ public class TerrainObjectConfig {
         return this;
     }
 
-    public ObjectNameId createSlopeNameId() {
+    @Override
+    public ObjectNameId getObjectNameId() {
         return new ObjectNameId(id, internalName);
     }
 

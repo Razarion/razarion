@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.terrainobject;
 
+import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,7 +20,7 @@ import javax.inject.Inject;
  * 16.08.2016.
  */
 @Templated("TerrainObjectPropertyPanel.html#terrain-object-property-panel")
-public class TerrainObjectPropertyPanel extends Composite {
+public class TerrainObjectPropertyPanel extends AbstractPropertyPanel<TerrainObjectConfig> {
     @Inject
     @AutoBound
     private DataBinder<TerrainObjectConfig> terrainObjectConfigDataBinder;
@@ -47,7 +48,8 @@ public class TerrainObjectPropertyPanel extends Composite {
         });
     }
 
-    public TerrainObjectConfig getTerrainObjectConfig() {
+    @Override
+    public TerrainObjectConfig getConfigObject() {
         return terrainObjectConfigDataBinder.getModel();
     }
 }
