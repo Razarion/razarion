@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.shape3dgallery;
 
+import com.btxtech.client.editor.framework.AbstractCrudeEditor;
 import com.btxtech.shared.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
@@ -11,12 +12,9 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -26,7 +24,7 @@ import java.util.stream.Collectors;
  * 17.08.2016.
  */
 @ApplicationScoped
-public class Shape3DCrud {
+public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     private Logger logger = Logger.getLogger(Shape3DCrud.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -34,9 +32,9 @@ public class Shape3DCrud {
     @Inject
     private Shape3DUiService shape3DUiService;
     private Map<Integer, Shape3DConfig> changes = new HashMap<>();
-    private Collection<Consumer<List<ObjectNameId>>> observers = new ArrayList<>();
 
-    public void create(String colladaText) {
+    @Override
+    public void create() {
         caller.call(new RemoteCallback<Shape3D>() {
             @Override
             public void callback(Shape3D shape3D) {
@@ -46,9 +44,10 @@ public class Shape3DCrud {
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
             return false;
-        }).create(colladaText);
+        }).create();
     }
 
+    @Override
     public void reload() {
         caller.call(new RemoteCallback<List<Shape3D>>() {
             @Override
@@ -61,6 +60,11 @@ public class Shape3DCrud {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
             return false;
         }).getShape3Ds();
+    }
+
+    @Override
+    public Shape3D getInstance(ObjectNameId objectNameId) {
+        return shape3DUiService.getShape3D(objectNameId.getId());
     }
 
     public void updateCollada(Shape3D originalShape3D, String colladaText) {
@@ -88,6 +92,7 @@ public class Shape3DCrud {
         shape3DUiService.override(originalShape3D);
     }
 
+    @Override
     public void save(Shape3D shape3D) {
         Shape3DConfig shape3DConfig = changes.get(shape3D.getDbId());
         if (shape3DConfig == null) {
@@ -101,6 +106,7 @@ public class Shape3DCrud {
     }
 
 
+    @Override
     public void delete(Shape3D shape3D) {
         caller.call(response -> {
             shape3DUiService.remove(shape3D);
@@ -126,23 +132,8 @@ public class Shape3DCrud {
         return shape3DConfig;
     }
 
-    public void monitor(Consumer<List<ObjectNameId>> observer) {
-        observers.add(observer);
-        observer.accept(setupObjectNameIds());
-    }
-
-    public void removeMonitor(Consumer<List<ObjectNameId>> observer) {
-        observers.remove(observer);
-    }
-
-    private List<ObjectNameId> setupObjectNameIds() {
-        return shape3DUiService.getShape3Ds().stream().map(Shape3D::createSlopeNameId).collect(Collectors.toList());
-    }
-
-    private void fire() {
-        List<ObjectNameId> objectNameIds = setupObjectNameIds();
-        for (Consumer<List<ObjectNameId>> observer : observers) {
-            observer.accept(objectNameIds);
-        }
+    @Override
+    protected List<ObjectNameId> setupObjectNameIds() {
+        return shape3DUiService.getShape3Ds().stream().map(Shape3D::getObjectNameId).collect(Collectors.toList());
     }
 }

@@ -25,7 +25,6 @@ public class ColladaEntity implements ColladaConverterMapper {
     @GeneratedValue
     private Long id;
     @Lob
-    @Basic(optional = false)
     private String colladaString;
     @ManyToMany
     @CollectionTable(name = "COLLADA_TEXTURES")

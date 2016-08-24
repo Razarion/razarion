@@ -26,8 +26,10 @@ public class Shape3DUtils {
 
     public static List<VertexContainer> getAllVertexContainers(Shape3D shape3D) {
         List<VertexContainer> vertexContainers = new ArrayList<>();
-        for (Element3D element3D : shape3D.getElement3Ds()) {
-            vertexContainers.addAll(element3D.getVertexContainers().stream().collect(Collectors.toList()));
+        if (shape3D.getElement3Ds() != null) {
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                vertexContainers.addAll(element3D.getVertexContainers().stream().collect(Collectors.toList()));
+            }
         }
         return vertexContainers;
     }
@@ -44,7 +46,7 @@ public class Shape3DUtils {
 
     public static void replaceTextureId(Shape3D shape3D, String materialId, int newImageId) {
         for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
-            if(vertexContainer.getMaterialId().equals(materialId)) {
+            if (vertexContainer.getMaterialId().equals(materialId)) {
                 vertexContainer.setTextureId(newImageId);
                 return;
             }

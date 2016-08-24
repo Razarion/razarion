@@ -44,12 +44,10 @@ public class Shape3DPersistence {
     }
 
     @Transactional
-    public Shape3D create(String colladaString) throws ParserConfigurationException, SAXException, IOException {
-        Shape3D shape3D = ColladaConverter.convertShape3D(colladaString, null);
+    public Shape3D create() throws ParserConfigurationException, SAXException, IOException {
         ColladaEntity colladaEntity = new ColladaEntity();
-        colladaEntity.setColladaString(colladaString);
         entityManager.persist(colladaEntity);
-        return shape3D;
+        return new Shape3D().setDbId(colladaEntity.getId().intValue());
     }
 
     @Transactional

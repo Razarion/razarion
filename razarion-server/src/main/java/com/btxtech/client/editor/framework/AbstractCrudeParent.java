@@ -16,7 +16,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -24,7 +23,7 @@ import java.util.logging.Logger;
  */
 @Templated("AbstractCrudeParent.html#abstract-crud-parent")
 public abstract class AbstractCrudeParent<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends Composite implements LeftSideBarContent {
-    private Logger logger = Logger.getLogger(AbstractCrudeParent.class.getName());
+    // private Logger logger = Logger.getLogger(AbstractCrudeParent.class.getName());
     @Inject
     private LeftSideBarManager leftSideBarManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -62,7 +61,6 @@ public abstract class AbstractCrudeParent<T extends ObjectNameIdProvider, U exte
 
     @PostConstruct
     public void init() {
-        logger.severe("AbstractCrudeParent.init");
         getCrudEditor().monitor(this::updateSelector);
         selector.addValueChangeHandler(event -> displayPropertyBook(selector.getValue()));
     }

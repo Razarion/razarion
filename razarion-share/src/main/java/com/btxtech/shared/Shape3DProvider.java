@@ -27,9 +27,8 @@ public interface Shape3DProvider {
 
     @POST
     @Path("create")
-    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    Shape3D create(String colladaString);
+    Shape3D create();
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)

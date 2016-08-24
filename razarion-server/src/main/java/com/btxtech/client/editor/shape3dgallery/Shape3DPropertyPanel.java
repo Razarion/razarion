@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.shape3dgallery;
 
+import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.datatypes.shape.Shape3D;
@@ -8,12 +9,12 @@ import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import elemental.html.File;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -30,7 +31,7 @@ import java.util.List;
  * 22.08.2016.
  */
 @Templated("Shape3DPropertyPanel.html#shape3d-property-panel")
-public class Shape3DPropertyPanel extends Composite {
+public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
     @Inject
     private Shape3DCrud shape3DCrud;
     @Inject
@@ -42,6 +43,7 @@ public class Shape3DPropertyPanel extends Composite {
     @Inject
     @Bound
     @DataField
+    @ListContainer("tbody")
     private ListComponent<VertexContainer, TexturePanel> textures;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -68,24 +70,25 @@ public class Shape3DPropertyPanel extends Composite {
     @DataField
     private Label fileTimestamp;
     private File file;
-
     private Shape3D shape3D;
 
+    @Override
     public void init(Shape3D shape3D) {
         this.shape3D = shape3D;
         dbId.setText(DisplayUtils.handleInteger(shape3D.getDbId()));
         internalName.setText(shape3D.getInternalName());
         DOMUtil.removeAllElementChildren(textures.getElement()); // Remove placeholder table row from template.
-        shape3DUiService.request(shape3D.getDbId(), this::display, true);
+        shape3DUiService.request(shape3D.getDbId(), this::display);
+    }
+
+    @Override
+    public Shape3D getConfigObject() {
+        return shape3D;
     }
 
     private void display(Shape3D shape3D) {
         internalName.setText(shape3D.getInternalName());
         binder.setModel(Shape3DUtils.getAllVertexContainers(shape3D));
-    }
-
-    public Shape3D getShape3D() {
-        return shape3D;
     }
 
     @EventHandler("selectFileButton")
@@ -134,5 +137,4 @@ public class Shape3DPropertyPanel extends Composite {
         // Unfortunately long can not be returned
         return file.lastModifiedDate.getTime() + "";
     }-*/;
-
 }

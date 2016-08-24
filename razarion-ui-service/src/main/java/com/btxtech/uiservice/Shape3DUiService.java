@@ -29,16 +29,18 @@ public class Shape3DUiService {
         setShapes3Ds(shape3Ds);
     }
 
-    public void request(int shape3DId, Consumer<Shape3D> observer, boolean keepInformed) {
+    public void request(int shape3DId, Consumer<Shape3D> observer) {
         Shape3D shape3D = cache.get(shape3DId);
-        if (keepInformed) {
-            shape3DObserver.put(shape3DId, observer);
-        }
+        shape3DObserver.put(shape3DId, observer);
         if (shape3D != null) {
             observer.accept(shape3D);
         } else {
             logger.warning("No Shape3D for Id: " + shape3DId);
         }
+    }
+
+    public Shape3D getShape3D(int id) {
+        return cache.get(id);
     }
 
     public double getShape3DGeneralScale() {

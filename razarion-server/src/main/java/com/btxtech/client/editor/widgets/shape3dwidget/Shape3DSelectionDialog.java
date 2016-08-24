@@ -44,7 +44,7 @@ public class Shape3DSelectionDialog extends Composite implements ModalDialogCont
         shape3Ds.setSelector(shape3DSelectionEntry -> shape3DSelectionEntry.setSelected(true));
         shape3Ds.setDeselector(shape3DSelectionEntry -> shape3DSelectionEntry.setSelected(false));
         if (selectedId != null) {
-            shape3DUiService.request(selectedId, shape3Ds::selectModel, false);
+            shape3Ds.selectModel(shape3DUiService.getShape3D(selectedId));
         }
     }
 

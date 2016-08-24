@@ -38,9 +38,9 @@ public class Shape3DProviderImpl implements Shape3DProvider {
     }
 
     @Override
-    public Shape3D create(String colladaString) {
+    public Shape3D create() {
         try {
-            return shape3DPersistence.create(colladaString);
+            return shape3DPersistence.create();
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

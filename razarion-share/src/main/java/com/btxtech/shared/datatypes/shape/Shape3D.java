@@ -1,6 +1,7 @@
 package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * 28.07.2016.
  */
 @Portable
-public class Shape3D {
+public class Shape3D implements ObjectNameIdProvider {
     private int dbId;
     private String internalName;
     private List<Element3D> element3Ds;
@@ -55,7 +56,8 @@ public class Shape3D {
         return this;
     }
 
-    public ObjectNameId createSlopeNameId() {
+    @Override
+    public ObjectNameId getObjectNameId() {
         return new ObjectNameId(dbId, internalName);
     }
 

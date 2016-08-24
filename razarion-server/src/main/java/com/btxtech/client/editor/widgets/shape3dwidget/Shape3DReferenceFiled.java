@@ -40,7 +40,7 @@ public class Shape3DReferenceFiled extends Composite {
         this.shape3DId = shape3DId;
         this.shape3DIdConsumer = shape3DIdConsumer;
         if (shape3DId != null) {
-            shape3DUiService.request(shape3DId, this::displayShape3D, false);
+            setupNameLabel(shape3DUiService.getShape3D(shape3DId));
         }
     }
 
@@ -49,11 +49,11 @@ public class Shape3DReferenceFiled extends Composite {
         modalDialogManager.show("Shape 3D Gallery", ModalDialogManager.Type.QUEUE_ABLE, Shape3DSelectionDialog.class, shape3DId, selectedId -> {
             shape3DId = selectedId;
             shape3DIdConsumer.accept(shape3DId);
-            shape3DUiService.request(shape3DId, this::displayShape3D, false);
+            setupNameLabel(shape3DUiService.getShape3D(shape3DId));
         });
     }
 
-    private void displayShape3D(Shape3D shape3D) {
+    private void setupNameLabel(Shape3D shape3D) {
         nameLabel.setText(shape3D.getInternalName() + "(" + shape3D.getDbId() + ")");
     }
 }

@@ -36,7 +36,7 @@ public class Shape3DRenderer {
     // Find better name for this method
     public void fillRenderQueue(List<CompositeRenderer> renderQueue) {
         this.renderQueue = renderQueue;
-        shape3DUiService.request(shape3DId, this::onShape3D, true);
+        shape3DUiService.request(shape3DId, this::onShape3D);
     }
 
     private void onShape3D(Shape3D shape3D) {
@@ -49,7 +49,7 @@ public class Shape3DRenderer {
             myRenderers.addAll(element3DRenderer.createCompositeRenderers());
         }
         renderQueue.addAll(myRenderers);
-        if(running) {
+        if (running) {
             for (CompositeRenderer myRenderer : myRenderers) {
                 myRenderer.fillBuffers();
             }

@@ -24,7 +24,7 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     private Event<TexturePanel> eventTrigger;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    @DataField("textures")
+    @DataField
     private TableRow tableRow;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
