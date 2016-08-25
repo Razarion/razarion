@@ -2,6 +2,7 @@ package com.btxtech.client.editor;
 
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogPanel;
+import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
@@ -88,6 +89,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("itemButton")
     private void onItemButtonClicked(ClickEvent event) {
+        openEditor(BaseItemTypeCrudSidebar.class);
     }
 
     @EventHandler("terrainObjectButton")

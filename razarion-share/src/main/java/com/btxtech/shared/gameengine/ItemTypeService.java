@@ -19,12 +19,7 @@ public class ItemTypeService {
     private final HashMap<Integer, ItemType> itemTypes = new HashMap<>();
 
     public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
-        itemTypes.clear();
-        if (engineInitEvent.getGameEngineConfig().getItemTypes() != null) {
-            for (ItemType itemType : engineInitEvent.getGameEngineConfig().getItemTypes()) {
-                itemTypes.put(itemType.getId(), itemType);
-            }
-        }
+        setItemTypes(engineInitEvent.getGameEngineConfig().getItemTypes());
     }
 
     public ItemType getItemType(int itemTypeId) throws NoSuchItemTypeException {
@@ -47,6 +42,23 @@ public class ItemTypeService {
             }
         }
         return result;
+    }
+
+    public void override(ItemType itemType) {
+        itemTypes.put(itemType.getId(), itemType);
+    }
+
+    public void setItemTypes(Collection<ItemType> itemTypes) {
+        this.itemTypes.clear();
+        if (itemTypes != null) {
+            for (ItemType itemType : itemTypes) {
+                this.itemTypes.put(itemType.getId(), itemType);
+            }
+        }
+    }
+
+    public void deleteBaseItemType(BaseItemType baseItemType) {
+        itemTypes.remove(baseItemType.getId());
     }
 
     // TODO public boolean areItemTypesLoaded()

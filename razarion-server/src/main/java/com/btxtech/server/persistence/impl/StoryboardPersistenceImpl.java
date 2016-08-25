@@ -3,6 +3,7 @@ package com.btxtech.server.persistence.impl;
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.StoryboardEntity;
 import com.btxtech.server.persistence.TerrainElementPersistence;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.dto.LightConfig;
@@ -34,6 +35,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private TerrainElementPersistence terrainElementPersistence;
     @Inject
     private Shape3DPersistence shape3DPersistence;
+    @Inject
+    private ItemTypePersistence itemTypePersistence;
 
     @Override
     @Transactional
@@ -42,7 +45,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameEngineConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
         gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
         gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
-        // TODO gameEngineConfig.setItemTypes();
+        gameEngineConfig.setItemTypes(itemTypePersistence.read());
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<StoryboardEntity> userQuery = criteriaBuilder.createQuery(StoryboardEntity.class);

@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +27,7 @@ import java.util.Map;
  * Date: 24.04.2010
  * Time: 14:16:30
  */
+@Portable
 public enum TerrainType {
     LAND(SurfaceType.LAND), // Tank
     WATER(SurfaceType.WATER), // Ships

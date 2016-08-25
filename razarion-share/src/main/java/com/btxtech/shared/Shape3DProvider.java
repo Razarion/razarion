@@ -17,9 +17,8 @@ import java.util.List;
  * Created by Beat
  * 16.08.2016.
  */
-@Path(RestUrl.EDITOR_HELPER_PATH)
+@Path(RestUrl.SHAPE_3D_PROVIDER)
 public interface Shape3DProvider {
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("imagegallery")
@@ -38,7 +37,7 @@ public interface Shape3DProvider {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("colladaConvert")
+    @Path("save")
     void save(Shape3DConfig shape3DConfig);
 
     @DELETE

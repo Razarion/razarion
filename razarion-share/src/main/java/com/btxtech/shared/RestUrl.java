@@ -11,7 +11,8 @@ public class RestUrl {
     public static final String STORYBOARD_SERVICE_PATH = "storyboard";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
-    public static final String EDITOR_HELPER_PATH = "editorhelper";
+    public static final String SHAPE_3D_PROVIDER = "shape3dprovider";
+    public static final String BASE_ITEM_TYPE_PROVIDER = "baseitemtypeprovider";
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id) + "?t=" + System.currentTimeMillis();

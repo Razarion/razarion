@@ -93,7 +93,7 @@ public class SyncFactory extends SyncBaseAbility {
             activityService.onSyncFactoryProgress(getSyncBaseItem());
             if (buildup >= 1.0) {
                 if (PlanetService.MODE != PlanetMode.MASTER) {
-                    // Wait for server to create currentBuildup
+                    // Wait for server to createBaseItemType currentBuildup
                     return true;
                 }
                 if (!baseService.isItemLimit4ItemAddingAllowed(toBeBuiltType, getSyncBaseItem().getBase())) {

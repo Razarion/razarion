@@ -1,9 +1,12 @@
 package com.btxtech.shared.gameengine.planet.model;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 /**
  * Created by Beat
  * 01.08.2016.
  */
+@Portable
 public enum ItemLifecycle {
     SPAWN,
     ALIVE,

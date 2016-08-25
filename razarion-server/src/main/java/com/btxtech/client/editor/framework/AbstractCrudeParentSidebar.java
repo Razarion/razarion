@@ -21,9 +21,9 @@ import java.util.List;
  * Created by Beat
  * 23.08.2016.
  */
-@Templated("AbstractCrudeParent.html#abstract-crud-parent")
-public abstract class AbstractCrudeParent<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends Composite implements LeftSideBarContent {
-    // private Logger logger = Logger.getLogger(AbstractCrudeParent.class.getName());
+@Templated("AbstractCrudeParentSidebar.html#abstract-crud-parent")
+public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends Composite implements LeftSideBarContent {
+    // private Logger logger = Logger.getLogger(AbstractCrudeParentSidebar.class.getName());
     @Inject
     private LeftSideBarManager leftSideBarManager;
     @SuppressWarnings("CdiInjectionPointsInspection")

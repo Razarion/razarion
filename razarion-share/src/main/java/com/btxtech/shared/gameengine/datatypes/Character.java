@@ -1,9 +1,12 @@
 package com.btxtech.shared.gameengine.datatypes;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 /**
  * Created by Beat
  * 25.07.2016.
  */
+@Portable
 public enum Character {
     HUMAN(false),
     BOT(true),

@@ -28,7 +28,7 @@ public class MapCollection<T, U> {
 
     public Collection<U> getSave(T key) {
         Collection<U> values = get(key);
-        if(values != null) {
+        if (values != null) {
             return values;
         } else {
             return Collections.emptyList();
@@ -37,6 +37,10 @@ public class MapCollection<T, U> {
 
     public Map<T, Collection<U>> getMap() {
         return map;
+    }
+
+    public void remove(T key) {
+        map.remove(key);
     }
 
     public void remove(T key, U value) {

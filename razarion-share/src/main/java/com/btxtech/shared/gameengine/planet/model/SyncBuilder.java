@@ -105,7 +105,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
         if (currentBuildup == null) {
             if (PlanetService.MODE != PlanetMode.MASTER) {
-                // Wait for server to create currentBuildup
+                // Wait for server to createBaseItemType currentBuildup
                 return true;
             }
             if (toBeBuiltType == null || toBeBuildPosition == null) {

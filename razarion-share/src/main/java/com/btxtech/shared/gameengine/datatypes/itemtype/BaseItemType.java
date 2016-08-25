@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 
 /**
  * User: beat
@@ -22,6 +23,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * Time: 20:12:06
  */
 @Portable
+@Bindable
 public class BaseItemType extends ItemType {
     private double radius;
     private int health;
