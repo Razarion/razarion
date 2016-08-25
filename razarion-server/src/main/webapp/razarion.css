@@ -250,6 +250,7 @@ button:disabled {
 .left-side-bar-content {
     height: 100%;
     font-size: 80%;
+    overflow-y: scroll;
 }
 
 /** --- CRUD parent ---*/

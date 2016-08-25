@@ -55,7 +55,7 @@ public class ImageUiService {
     private Collection<ChangeListener> changeListeners = new ArrayList<>();
 
     public void requestImage(final int id, ImageListener listener) {
-        if(id == 0) {
+        if (id == 0) {
             throw new IllegalArgumentException("id 0 is not a valid image");
         }
         addListener(imageElementListeners, id, listener);
@@ -241,7 +241,11 @@ public class ImageUiService {
     }
 
     private void fireImageGalleryListeners(int id, ImageElement imageElement, ImageGalleryItem imageGalleryItem) {
-        for (ImageGalleryListener listener : imageGalleryListeners.get(id)) {
+        Collection<ImageGalleryListener> listeners = imageGalleryListeners.get(id);
+        if (listeners == null) {
+            return;
+        }
+        for (ImageGalleryListener listener : listeners) {
             listener.onLoaded(imageElement, imageGalleryItem);
         }
     }
