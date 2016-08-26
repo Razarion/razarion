@@ -1,0 +1,36 @@
+package com.btxtech.client.editor;
+
+import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.user.client.ui.CheckBox;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+/**
+ * Created by Beat
+ * 26.08.2016.
+ */
+@Templated("GameEngineEditorPanel.html#game-engine")
+public class GameEngineEditorPanel extends LeftSideBarContent {
+    @Inject
+    private PlanetService planetService;
+    @Inject
+    @DataField
+    private CheckBox pauseCheckbox;
+
+    @PostConstruct
+    public void postConstruct() {
+        pauseCheckbox.setValue(planetService.isPause());
+    }
+
+    @EventHandler("pauseCheckbox")
+    public void pauseCheckboxChanged(ChangeEvent e) {
+        planetService.setPause(pauseCheckbox.getValue());
+    }
+
+}

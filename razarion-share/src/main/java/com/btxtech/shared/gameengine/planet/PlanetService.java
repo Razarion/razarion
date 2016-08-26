@@ -260,4 +260,12 @@ public class PlanetService implements Runnable {
     public PlanetConfig getPlanetConfig() {
         return planetConfig;
     }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
 }

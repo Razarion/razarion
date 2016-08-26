@@ -32,6 +32,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
+    private Button gameEngineButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
     private Button visualConfigButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -66,6 +70,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("renderEngineButton")
     private void onRenderEngineButtonClicked(ClickEvent event) {
         openEditor(RenderEngineEditorPanel.class);
+    }
+
+    @EventHandler("gameEngineButton")
+    private void onGameEngineButtonClicked(ClickEvent event) {
+        openEditor(GameEngineEditorPanel.class);
     }
 
     @EventHandler("visualConfigButton")
