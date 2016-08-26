@@ -29,7 +29,7 @@ import javax.inject.Inject;
  * 13.08.2016.
  */
 @Templated("RenderEngineEditorPanel.html#render-engine-editor-panel")
-public class RenderEngineEditorPanel extends Composite implements LeftSideBarContent {
+public class RenderEngineEditorPanel extends LeftSideBarContent {
     @Inject
     private RenderService renderService;
     @Inject
@@ -174,10 +174,5 @@ public class RenderEngineEditorPanel extends Composite implements LeftSideBarCon
     @EventHandler("dumpPositionButton")
     private void handleDumpPositionButtonClick(ClickEvent event) {
         camera.testPrint();
-    }
-
-    @Override
-    public void onClose() {
-
     }
 }

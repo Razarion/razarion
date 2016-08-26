@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  * 06.11.2015.
  */
 @Templated("TerrainEditorSidebar.html#terrainEditor")
-public class TerrainEditorSidebar extends Composite implements LeftSideBarContent {
+public class TerrainEditorSidebar extends LeftSideBarContent {
     private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
     @Inject
     private ClientRenderServiceImpl renderService;

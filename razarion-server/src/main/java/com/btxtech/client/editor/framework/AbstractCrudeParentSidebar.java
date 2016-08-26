@@ -6,7 +6,6 @@ import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.ValueListBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -22,7 +21,7 @@ import java.util.List;
  * 23.08.2016.
  */
 @Templated("AbstractCrudeParentSidebar.html#abstract-crud-parent")
-public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends Composite implements LeftSideBarContent {
+public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends LeftSideBarContent {
     // private Logger logger = Logger.getLogger(AbstractCrudeParentSidebar.class.getName());
     @Inject
     private LeftSideBarManager leftSideBarManager;
@@ -41,18 +40,6 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button deleteButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button saveButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button closeButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
     private SimplePanel content;
 
     protected abstract CrudEditor<T> getCrudEditor();
@@ -65,35 +52,32 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
         selector.addValueChangeHandler(event -> displayPropertyBook(selector.getValue()));
     }
 
+    @Override
+    protected void onConfigureDialog() {
+        registerSaveButton(() -> {
+            T t = getConfigObject();
+            if (t != null) {
+                getCrudEditor().save(t);
+            }
+        });
+        enableSaveButton(false);
+        registerDeleteButton(() -> {
+            T t = getConfigObject();
+            if (t != null) {
+                getCrudEditor().delete(t);
+            }
+        });
+        enableDeleteButton(false);
+    }
+
     @EventHandler("createButton")
     private void newButtonClick(ClickEvent event) {
         getCrudEditor().create();
     }
 
-    @EventHandler("deleteButton")
-    private void deleteButtonClick(ClickEvent event) {
-        T t = getConfigObject();
-        if (t != null) {
-            getCrudEditor().delete(t);
-        }
-    }
-
-    @EventHandler("saveButton")
-    private void saveButtonClick(ClickEvent event) {
-        T t = getConfigObject();
-        if (t != null) {
-            getCrudEditor().save(t);
-        }
-    }
-
     @EventHandler("reloadButton")
     private void reloadButtonClick(ClickEvent event) {
         getCrudEditor().reload();
-    }
-
-    @EventHandler("closeButton")
-    private void closeButtonClick(ClickEvent event) {
-        leftSideBarManager.close(this);
     }
 
     private void updateSelector(List<ObjectNameId> objectNameIds) {
@@ -124,8 +108,8 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
         U u = createPropertyPanel();
         u.init(getCrudEditor().getInstance(objectNameId));
         content.setWidget(u);
-        deleteButton.setEnabled(true);
-        saveButton.setEnabled(true);
+        enableSaveButton(true);
+        enableDeleteButton(true);
     }
 
     @Override

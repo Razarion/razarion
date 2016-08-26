@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  * 22.11.2015.
  */
 @Templated("SlopeConfigCrudSidebar.html#slope-config-crud-panel")
-public class SlopeConfigCrudSidebar extends Composite implements LeftSideBarContent {
+public class SlopeConfigCrudSidebar extends LeftSideBarContent {
     private Logger logger = Logger.getLogger(SlopeConfigCrudSidebar.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -71,11 +71,6 @@ public class SlopeConfigCrudSidebar extends Composite implements LeftSideBarCont
     public void init() {
         updateSlopeSelection();
         slopeSelection.addValueChangeHandler(event -> loadSlopeConfig(slopeSelection.getValue()));
-    }
-
-    @Override
-    public void onClose() {
-        // Ignore
     }
 
     private void updateSlopeSelection() {

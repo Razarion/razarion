@@ -16,28 +16,21 @@ public class LeftSideBarManager {
     private Logger logger = Logger.getLogger(LeftSideBarManager.class.getName());
     @Inject
     private Instance<SideBarPanel> sideBarPanelInstance;
-    @Inject
-    private Instance<LeftSideBarContent> leftSideBarContentInstance;
     private SideBarPanel sideBarPanel;
 
     public void show(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
         if (sideBarPanel == null) {
             sideBarPanel = sideBarPanelInstance.get();
             RootPanel.get().add(sideBarPanel);
-        } else {
-            sideBarPanel.getContent().onClose();
         }
-        sideBarPanel.setContent(leftSideBarContentInstance.select(leftSideBarContentClass).get());
+        sideBarPanel.setContent(leftSideBarContentClass);
     }
 
-    public void close(LeftSideBarContent leftSideBarContent) {
-        leftSideBarContent.onClose();
+    // Is only called from SideBarPanel
+    void close() {
         if (sideBarPanel == null) {
             logger.severe("LeftSideBarManager already null");
         } else {
-            if (leftSideBarContent != sideBarPanel.getContent()) {
-                logger.severe("Closing command comes from a different LeftSideBarContent then shown");
-            }
             RootPanel.get().remove(sideBarPanel);
             sideBarPanel = null;
         }

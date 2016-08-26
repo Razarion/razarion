@@ -34,7 +34,7 @@ import java.util.logging.Logger;
  * 06.11.2015.
  */
 @Templated("GroundSidebar.html#terrain")
-public class GroundSidebar extends Composite implements LeftSideBarContent {
+public class GroundSidebar extends LeftSideBarContent {
     private Logger logger = Logger.getLogger(GroundSidebar.class.getName());
     @Inject
     private TerrainUiService terrainUiService;
@@ -89,11 +89,6 @@ public class GroundSidebar extends Composite implements LeftSideBarContent {
                 return false;
             }
         }).loadGroundConfig();
-    }
-
-    @Override
-    public void onClose() {
-        // Ignore
     }
 
     @EventHandler("updateButton")

@@ -24,7 +24,7 @@ import javax.inject.Inject;
  * 14.08.2016.
  */
 @Templated("VisualConfigPanel.html#visual-panel")
-public class VisualConfigPanel extends Composite implements LeftSideBarContent {
+public class VisualConfigPanel extends LeftSideBarContent {
     @Inject
     private ShadowUiService shadowUiService;
     @Inject
@@ -104,10 +104,5 @@ public class VisualConfigPanel extends Composite implements LeftSideBarContent {
     private void displayLightDirectionLabels() {
         shadowDirectionLabel.setText(DisplayUtils.formatVertex(shadowUiService.getLightDirection()));
         shape3DDirectionLabel.setText(DisplayUtils.formatVertex(visualUiService.getShape3DLightDirection()));
-    }
-
-    @Override
-    public void onClose() {
-
     }
 }
