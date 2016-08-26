@@ -38,43 +38,43 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
 
     @Override
     public StoryboardConfig load() {
-        // TODO StoryboardConfig loadedStoryBoard = jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
+        return jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
 
-        StoryboardConfig storyboardConfig = new StoryboardConfig();
-        // Setup game engine
-        GameEngineConfig gameEngineConfig = new GameEngineConfig().setItemTypes(itemTypeEmulation.createItemTypes());
-        // TODO gameEngineConfig.setGroundSkeletonConfig(loadedStoryBoard.getGameEngineConfig().getGroundSkeletonConfig());
-        // TODO gameEngineConfig.setSlopeSkeletonConfigs(loadedStoryBoard.getGameEngineConfig().getSlopeSkeletonConfigs());
-        // TODO gameEngineConfig.setTerrainObjectConfigs(loadedStoryBoard.getGameEngineConfig().getTerrainObjectConfigs());
-        PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setWaterLevel(-7);
-        // TODO planetConfig.setTerrainSlopePositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions());
-        // TODO planetConfig.setTerrainObjectPositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions());
-        gameEngineConfig.setPlanetConfig(planetConfig);
-        storyboardConfig.setGameEngineConfig(gameEngineConfig);
-        // Setup scenes
-        List<SceneConfig> sceneConfigs = new ArrayList<>();
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(200, 200));
-        List<BotConfig> botConfigs = new ArrayList<>();
-        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
-        Collection<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(ItemTypeEmulation.Id.SIMPLE_MOVABLE.ordinal()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new Index(200, 500))));
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs));
-        storyboardConfig.setSceneConfigs(sceneConfigs);
-        // Setup VisualConfig
-        VisualConfig visualConfig = new VisualConfig();
-        visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(250));
-        visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(290));
-        visualConfig.setWaterGroundLevel(-20).setWaterBmDepth(10).setWaterTransparency(0.65);
-        LightConfig lightConfig = new LightConfig();
-        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setXRotation(Math.toRadians(-20));
-        lightConfig.setYRotation(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
-        visualConfig.setWaterLightConfig(lightConfig);
-        visualConfig.setShape3Ds(shape3DEmulator.getShape3Ds()).setShape3DGeneralScale(10);
-        storyboardConfig.setVisualConfig(visualConfig);
-        return storyboardConfig;
+//        StoryboardConfig storyboardConfig = new StoryboardConfig();
+//        // Setup game engine
+//        GameEngineConfig gameEngineConfig = new GameEngineConfig().setItemTypes(itemTypeEmulation.createItemTypes());
+//        // TODO gameEngineConfig.setGroundSkeletonConfig(loadedStoryBoard.getGameEngineConfig().getGroundSkeletonConfig());
+//        // TODO gameEngineConfig.setSlopeSkeletonConfigs(loadedStoryBoard.getGameEngineConfig().getSlopeSkeletonConfigs());
+//        // TODO gameEngineConfig.setTerrainObjectConfigs(loadedStoryBoard.getGameEngineConfig().getTerrainObjectConfigs());
+//        PlanetConfig planetConfig = new PlanetConfig();
+//        planetConfig.setWaterLevel(-7);
+//        // TODO planetConfig.setTerrainSlopePositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions());
+//        // TODO planetConfig.setTerrainObjectPositions(loadedStoryBoard.getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions());
+//        gameEngineConfig.setPlanetConfig(planetConfig);
+//        storyboardConfig.setGameEngineConfig(gameEngineConfig);
+//        // Setup scenes
+//        List<SceneConfig> sceneConfigs = new ArrayList<>();
+//        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(200, 200));
+//        List<BotConfig> botConfigs = new ArrayList<>();
+//        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+//        Collection<BotItemConfig> botItems = new ArrayList<>();
+//        botItems.add(new BotItemConfig().setBaseItemTypeId(ItemTypeEmulation.Id.SIMPLE_MOVABLE.ordinal()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new Index(200, 500))));
+//        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+//        botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+//        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs));
+//        storyboardConfig.setSceneConfigs(sceneConfigs);
+//        // Setup VisualConfig
+//        VisualConfig visualConfig = new VisualConfig();
+//        visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(250));
+//        visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(290));
+//        visualConfig.setWaterGroundLevel(-20).setWaterBmDepth(10).setWaterTransparency(0.65);
+//        LightConfig lightConfig = new LightConfig();
+//        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setXRotation(Math.toRadians(-20));
+//        lightConfig.setYRotation(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
+//        visualConfig.setWaterLightConfig(lightConfig);
+//        visualConfig.setShape3Ds(shape3DEmulator.getShape3Ds()).setShape3DGeneralScale(10);
+//        storyboardConfig.setVisualConfig(visualConfig);
+//        return storyboardConfig;
     }
 
     private List<SceneConfig> setSceneConfig(List<SceneConfig> originalSceneConfig) {

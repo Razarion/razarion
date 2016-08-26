@@ -64,7 +64,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
         storyboardConfig.setVisualConfig(defaultVisualConfig());
-        // storyboardConfig.setSceneConfigs(setupSceneConfigs());
+        storyboardConfig.setSceneConfigs(setupSceneConfigs());
         return storyboardConfig;
     }
 
