@@ -2,6 +2,7 @@ package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  * 28.07.2016.
  */
 @Portable
+@Bindable
 public class ModelMatrixAnimation {
     public enum Axis {
         X, Y, Z
@@ -82,7 +84,7 @@ public class ModelMatrixAnimation {
                 ", modification=" + modification +
                 ", axis=" + axis +
                 ", timeValueSamples=" + timeValueSamples +
-                ", element3D=" + element3D +
+                ", element3D id=" + element3D.getId()+
                 ", itemState=" + itemState +
                 '}';
     }

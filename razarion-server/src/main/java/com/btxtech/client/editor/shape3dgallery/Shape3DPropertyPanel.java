@@ -3,6 +3,7 @@ package com.btxtech.client.editor.shape3dgallery;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.utils.Shape3DUtils;
@@ -12,11 +13,8 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import elemental.html.File;
 import org.jboss.errai.common.client.dom.DOMUtil;
-import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
-import org.jboss.errai.ui.shared.api.annotations.AutoBound;
-import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -24,7 +22,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.Date;
-import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -32,16 +30,13 @@ import java.util.List;
  */
 @Templated("Shape3DPropertyPanel.html#shape3d-property-panel")
 public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
+    private Logger logger = Logger.getLogger(Shape3DPropertyPanel.class.getName());
     @Inject
     private Shape3DCrud shape3DCrud;
     @Inject
     private Shape3DUiService shape3DUiService;
-    @Inject
-    @AutoBound
-    private DataBinder<List<VertexContainer>> binder;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    @Bound
     @DataField
     @ListContainer("tbody")
     private ListComponent<VertexContainer, TexturePanel> textures;
@@ -69,6 +64,11 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
     @Inject
     @DataField
     private Label fileTimestamp;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    @ListContainer("tbody")
+    private ListComponent<ModelMatrixAnimation, AnimationPanel> animations;
     private File file;
     private Shape3D shape3D;
 
@@ -78,6 +78,7 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
         dbId.setText(DisplayUtils.handleInteger(shape3D.getDbId()));
         internalName.setText(shape3D.getInternalName());
         DOMUtil.removeAllElementChildren(textures.getElement()); // Remove placeholder table row from template.
+        DOMUtil.removeAllElementChildren(animations.getElement()); // Remove placeholder table row from template.
         shape3DUiService.request(shape3D.getDbId(), this::display);
     }
 
@@ -88,7 +89,8 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
 
     private void display(Shape3D shape3D) {
         internalName.setText(shape3D.getInternalName());
-        binder.setModel(Shape3DUtils.getAllVertexContainers(shape3D));
+        textures.setValue(Shape3DUtils.getAllVertexContainers(shape3D));
+        animations.setValue(shape3D.getModelMatrixAnimations());
     }
 
     @EventHandler("selectFileButton")
@@ -119,12 +121,21 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
         shape3DUiService.removeShape3DObserver(shape3D.getDbId(), this::display);
     }
 
-    public void onTextureIdChanged(@Observes TexturePanel texturePanel) {
+    public void texturePanelChanged(@Observes TexturePanel texturePanel) {
         if (!isAttached()) {
             return;
         }
-        if (binder.getModel().contains(texturePanel.getValue())) {
+        if (Shape3DUtils.getAllVertexContainers(shape3D).contains(texturePanel.getValue())) {
             shape3DCrud.updateTexture(shape3D, texturePanel.getValue().getMaterialId(), texturePanel.getNewImageId());
+        }
+    }
+
+    public void animationPanelChanged(@Observes AnimationPanel animationPanel) {
+        if (!isAttached()) {
+            return;
+        }
+        if (shape3D.getModelMatrixAnimations().contains(animationPanel.getValue())) {
+            shape3DCrud.updateAnimation(shape3D, animationPanel.getValue().getId(), animationPanel.getNewItemState());
         }
     }
 

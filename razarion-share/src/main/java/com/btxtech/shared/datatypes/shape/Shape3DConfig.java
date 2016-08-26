@@ -1,5 +1,6 @@
 package com.btxtech.shared.datatypes.shape;
 
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Map;
@@ -13,6 +14,7 @@ public class Shape3DConfig {
     private int dbId;
     private String colladaString;
     private Map<String, Integer> textures;
+    private Map<String, ItemState> animations;
 
     public int getDbId() {
         return dbId;
@@ -41,12 +43,22 @@ public class Shape3DConfig {
         return this;
     }
 
+    public Map<String, ItemState> getAnimations() {
+        return animations;
+    }
+
+    public Shape3DConfig setAnimations(Map<String, ItemState> animations) {
+        this.animations = animations;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Shape3DConfig{" +
                 "dbId=" + dbId +
                 ", colladaString='" + colladaString + '\'' +
                 ", textures=" + textures +
+                ", animations=" + animations +
                 '}';
     }
 }

@@ -1,8 +1,10 @@
 package com.btxtech.shared.utils;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
+import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,5 +54,15 @@ public class Shape3DUtils {
             }
         }
         throw new IllegalArgumentException("MaterialId not found: " + materialId);
+    }
+
+    public static void replaceAnimation(Shape3D shape3D, String animationId, ItemState itemState) {
+        for (ModelMatrixAnimation modelMatrixAnimation : shape3D.getModelMatrixAnimations()) {
+            if (modelMatrixAnimation.getId().equals(animationId)) {
+                modelMatrixAnimation.setItemState(itemState);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("AnimationId not found: " + animationId);
     }
 }

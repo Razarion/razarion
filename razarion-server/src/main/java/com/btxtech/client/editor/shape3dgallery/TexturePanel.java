@@ -17,7 +17,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 19.08.2016.
  */
-@Templated("Shape3DPropertyPanel.html#textures")
+@Templated("Shape3DPropertyPanel.html#tableRowTextures")
 public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     // private Logger logger = Logger.getLogger(TexturePanel.class.getName());
     @Inject
@@ -25,7 +25,7 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private TableRow tableRow;
+    private TableRow tableRowTextures;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -39,7 +39,7 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
 
     @Override
     public HTMLElement getElement() {
-        return tableRow;
+        return tableRowTextures;
     }
 
     @Override

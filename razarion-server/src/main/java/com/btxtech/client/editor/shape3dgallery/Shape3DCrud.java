@@ -5,6 +5,7 @@ import com.btxtech.shared.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import org.jboss.errai.common.client.api.Caller;
@@ -83,13 +84,22 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
         }).colladaConvert(colladaText);
     }
 
-    public void updateTexture(Shape3D originalShape3D, String materialId, int imageId) {
-        Shape3DUtils.replaceTextureId(originalShape3D, materialId, imageId);
-        Shape3DConfig shape3DConfig = getChangedShape3DConfig(originalShape3D.getDbId());
+    public void updateTexture(Shape3D shape3D, String materialId, int imageId) {
+        Shape3DUtils.replaceTextureId(shape3D, materialId, imageId);
+        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
         Map<String, Integer> textureMap = new HashMap<>();
-        Shape3DUtils.getAllVertexContainers(originalShape3D).stream().filter(vertexContainer -> vertexContainer.getTextureId() != null).forEach(vertexContainer -> textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId()));
+        Shape3DUtils.getAllVertexContainers(shape3D).stream().filter(vertexContainer -> vertexContainer.getTextureId() != null).forEach(vertexContainer -> textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId()));
         shape3DConfig.setTextures(textureMap);
-        shape3DUiService.override(originalShape3D);
+        shape3DUiService.override(shape3D);
+    }
+
+    public void updateAnimation(Shape3D shape3D, String animationId, ItemState itemState) {
+        Shape3DUtils.replaceAnimation(shape3D, animationId, itemState);
+        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
+        Map<String, ItemState> animationMap = new HashMap<>();
+        shape3D.getModelMatrixAnimations().stream().filter(modelMatrixAnimation -> modelMatrixAnimation.getItemState() != null).forEach(modelMatrixAnimation -> animationMap.put(modelMatrixAnimation.getId(), modelMatrixAnimation.getItemState()));
+        shape3DConfig.setAnimations(animationMap);
+        shape3DUiService.override(shape3D);
     }
 
     @Override

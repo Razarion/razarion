@@ -1,12 +1,13 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.servercommon.collada.ColladaConverterMapper;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 
-import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -29,6 +30,10 @@ public class ColladaEntity implements ColladaConverterMapper {
     @ManyToMany
     @CollectionTable(name = "COLLADA_TEXTURES")
     private Map<String, ImageLibraryEntity> textures;
+    @ElementCollection
+    @CollectionTable(name = "COLLADA_ANIMATIONS")
+    @Enumerated(EnumType.STRING)
+    private Map<String, ItemState> animations;
 
     public Long getId() {
         return id;
@@ -54,12 +59,17 @@ public class ColladaEntity implements ColladaConverterMapper {
 
     @Override
     public ItemState getItemState(String animationId) {
-        return null;
+        return animations.get(animationId);
     }
 
     public void setTextures(Map<String, ImageLibraryEntity> textures) {
         this.textures.clear();
         this.textures.putAll(textures);
+    }
+
+    public void setAnimations(Map<String, ItemState> animations) {
+        this.animations.clear();
+        this.animations.putAll(animations);
     }
 
     @Override
