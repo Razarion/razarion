@@ -36,7 +36,7 @@ public abstract class LeftSideBarContent extends Composite {
 
     protected void registerSaveButton(Runnable callback) {
         sideBarPanel.getSaveButton().getElement().getStyle().setVisibility(Style.Visibility.VISIBLE);
-        sideBarPanel.getSaveButton().addHandler(event -> callback.run(), ClickEvent.getType());
+        sideBarPanel.getSaveButton().addClickHandler(event -> callback.run());
     }
 
     protected void enableSaveButton(boolean enabled) {
@@ -45,7 +45,7 @@ public abstract class LeftSideBarContent extends Composite {
 
     protected void registerDeleteButton(Runnable callback) {
         sideBarPanel.getDeleteButton().getElement().getStyle().setVisibility(Style.Visibility.VISIBLE);
-        sideBarPanel.getDeleteButton().addHandler(event -> callback.run(), ClickEvent.getType());
+        sideBarPanel.getDeleteButton().addClickHandler(event -> callback.run());
     }
 
     protected void enableDeleteButton(boolean enabled) {

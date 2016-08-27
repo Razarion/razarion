@@ -76,7 +76,6 @@ public class TerrainService {
             slope = new SlopeWater(water, slopeSkeletonConfig, terrainSlopePosition.getPolygon());
         } else if (slopeSkeletonConfig.getType() == SlopeSkeletonConfig.Type.LAND) {
             slope = new Slope(slopeSkeletonConfig, terrainSlopePosition.getPolygon());
-            slope.wrap(groundMesh);
         } else {
             throw new IllegalStateException("Unknown enum type: " + slopeSkeletonConfig.getType());
         }

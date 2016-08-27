@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -31,10 +32,7 @@ public class Element3DRenderer {
         this.element3D = element3D;
         this.modelMatricesProvider = modelMatricesProvider;
         if (modelMatrixAnimations != null) {
-            progressAnimations = new ArrayList<>();
-            for (ModelMatrixAnimation modelMatrixAnimation : modelMatrixAnimations) {
-                progressAnimations.add(new ProgressAnimation(modelMatrixAnimation));
-            }
+            progressAnimations = modelMatrixAnimations.stream().map(ProgressAnimation::new).collect(Collectors.toList());
         }
     }
 

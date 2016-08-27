@@ -41,7 +41,7 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
     @Inject
     @DataField
     private Button newButton;
-    private int selectedImageId;
+    private Integer selectedImageId;
     private ModalDialogPanel<Integer> modalDialogPanel;
 
     @Override

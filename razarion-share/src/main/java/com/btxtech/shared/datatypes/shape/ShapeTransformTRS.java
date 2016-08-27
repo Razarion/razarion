@@ -100,4 +100,18 @@ public class ShapeTransformTRS implements ShapeTransform {
         return matrix;
     }
 
+    @Override
+    public String toString() {
+        return "ShapeTransformTRS{" +
+                "xTranslate=" + xTranslate +
+                ", yTranslate=" + yTranslate +
+                ", zTranslate=" + zTranslate +
+                ", xRotate=" + xRotate +
+                ", yRotate=" + yRotate +
+                ", zRotate=" + zRotate +
+                ", xScale=" + xScale +
+                ", yScale=" + yScale +
+                ", zScale=" + zScale +
+                '}';
+    }
 }

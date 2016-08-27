@@ -84,11 +84,11 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private List<SceneConfig> setupSceneConfigs() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(200, 200));
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         Collection<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new Index(200, 500))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new Index(1040, 800))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs));

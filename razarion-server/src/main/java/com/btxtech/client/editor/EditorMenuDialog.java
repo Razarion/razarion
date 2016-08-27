@@ -1,7 +1,9 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.dialog.ModalDialogContent;
+import com.btxtech.client.dialog.ModalDialogManager;
 import com.btxtech.client.dialog.ModalDialogPanel;
+import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
@@ -25,6 +27,8 @@ import javax.inject.Inject;
 public class EditorMenuDialog extends Composite implements ModalDialogContent<Void> {
     @Inject
     private LeftSideBarManager leftSideBarManager;
+    @Inject
+    private ModalDialogManager modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -108,7 +112,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("imageButton")
     private void onImageButtonClicked(ClickEvent event) {
-        // TODO
+        modalDialogManager.show("Items", ModalDialogManager.Type.STACK_ABLE, ImageGalleryDialog.class, null, null);
     }
 
     @EventHandler("shape3DButton")

@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -65,12 +66,7 @@ public class Shape3DRenderer {
         if (modelMatrixAnimations == null) {
             return null;
         }
-        Collection<ModelMatrixAnimation> animations = new ArrayList<>();
-        for (ModelMatrixAnimation modelMatrixAnimation : modelMatrixAnimations) {
-            if (element3D.equals(modelMatrixAnimation.getElement3D())) {
-                animations.add(modelMatrixAnimation);
-            }
-        }
+        Collection<ModelMatrixAnimation> animations = modelMatrixAnimations.stream().filter(modelMatrixAnimation -> element3D.equals(modelMatrixAnimation.getElement3D())).collect(Collectors.toCollection(ArrayList::new));
         if (animations.isEmpty()) {
             return null;
         } else {
