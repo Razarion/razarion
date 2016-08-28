@@ -44,23 +44,23 @@ public abstract class RenderService {
     private ExceptionHandler exceptionHandler;
     @Inject
     @ColorBufferRenderer
-    private Instance<AbstractGroundRendererUnit> groundRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
-    @Inject
-    @DepthBufferRenderer
-    private Instance<AbstractGroundRendererUnit> groundDepthBufferRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    private Instance<AbstractRenderUnit> rendererInstance;
     @Inject
     @ColorBufferRenderer
-    private Instance<AbstractSlopeRendererUnit> slopeRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
+    private Instance<AbstractRenderUnit> depthBufferRendererInstance;
     @Inject
-    @DepthBufferRenderer
-    private Instance<AbstractSlopeRendererUnit> slopeDepthBufferRendererUnitInstance; // Make instance pre class due to bug in errai: https://issues.jboss.org/browse/ERRAI-937?jql=project%20%3D%20ERRAI%20AND%20text%20~%20%22Instance%20qualifier%22
-    @Inject
-    private Instance<AbstractWaterRendererUnit> waterRendererUnitInstance;
+    @NormRenderer
+    private Instance<AbstractRenderUnit> normRendererInstance;
     @Inject
     private Instance<Shape3DRenderer> shape3DRendererInstance;
     private List<CompositeRenderer> renderQueue = new ArrayList<>();
     private Map<TerrainObjectConfig, Shape3DRenderer> terrainObjectRenderers = new HashMap<>();
     private MapCollection<BaseItemType, Shape3DRenderer> baseItemTypeRenderers = new MapCollection<>();
+    private boolean showNorm;
+
+    protected abstract void prepareMainRendering();
+
+    protected abstract void prepareDepthBufferRendering();
 
     public void setup() {
         serviceInitEvent.fire(new RenderServiceInitEvent());
@@ -77,28 +77,30 @@ public abstract class RenderService {
 
     private void setupGround() {
         CompositeRenderer compositeRenderer = new CompositeRenderer();
-        compositeRenderer.setRenderUnit(groundRendererUnitInstance.get());
-        compositeRenderer.setDepthBufferRenderUnit(groundDepthBufferRendererUnitInstance.get());
+        compositeRenderer.setRenderUnit(rendererInstance.select(AbstractGroundRendererUnit.class).get());
+        compositeRenderer.setDepthBufferRenderUnit(depthBufferRendererInstance.select(AbstractGroundRendererUnit.class).get());
+        compositeRenderer.setNormRenderUnit(normRendererInstance.select(AbstractGroundRendererUnit.class).get());
         renderQueue.add(compositeRenderer);
     }
 
     private void setupSlopes() {
         for (Slope slope : terrainService.getSlopes()) {
             CompositeRenderer compositeRenderer = new CompositeRenderer();
-            AbstractSlopeRendererUnit slopeUnitRenderer = slopeRendererUnitInstance.get();
+            AbstractSlopeRendererUnit slopeUnitRenderer = rendererInstance.select(AbstractSlopeRendererUnit.class).get();
             slopeUnitRenderer.setSlope(slope);
             compositeRenderer.setRenderUnit(slopeUnitRenderer);
-            AbstractSlopeRendererUnit slopeDepthBufferUnitRenderer = slopeDepthBufferRendererUnitInstance.get();
+            AbstractSlopeRendererUnit slopeDepthBufferUnitRenderer = depthBufferRendererInstance.select(AbstractSlopeRendererUnit.class).get();
             slopeDepthBufferUnitRenderer.setSlope(slope);
             compositeRenderer.setDepthBufferRenderUnit(slopeDepthBufferUnitRenderer);
+            AbstractSlopeRendererUnit slopeNormUnitRenderer = normRendererInstance.select(AbstractSlopeRendererUnit.class).get();
+            slopeNormUnitRenderer.setSlope(slope);
+            compositeRenderer.setNormRenderUnit(slopeNormUnitRenderer);
             renderQueue.add(compositeRenderer);
         }
     }
 
     private void setupTerrainObjects() {
-        for (final TerrainObjectConfig terrainObjectConfig : terrainTypeService.getTerrainObjectConfigs()) {
-            setupTerrainObject(terrainObjectConfig);
-        }
+        terrainTypeService.getTerrainObjectConfigs().forEach(this::setupTerrainObject);
     }
 
     public void onTerrainObjectChanged(@Observes TerrainObjectConfig terrainObjectConfig) {
@@ -109,6 +111,9 @@ public abstract class RenderService {
         Shape3DRenderer newShape3DRenderer = setupTerrainObject(terrainObjectConfig);
         for (CompositeRenderer compositeRenderer : newShape3DRenderer.getMyRenderers()) {
             compositeRenderer.fillBuffers();
+            if (showNorm) {
+                compositeRenderer.fillNormBuffer();
+            }
         }
     }
 
@@ -125,9 +130,7 @@ public abstract class RenderService {
     }
 
     private void setupBaseItemTypes() {
-        for (BaseItemType baseItemType : baseItemUiService.getBaseItemTypes()) {
-            setupBaseItemType(baseItemType);
-        }
+        baseItemUiService.getBaseItemTypes().forEach(this::setupBaseItemType);
     }
 
     private Collection<Shape3DRenderer> setupBaseItemType(BaseItemType baseItemType) {
@@ -169,13 +172,17 @@ public abstract class RenderService {
         for (Shape3DRenderer shape3DRenderer : shape3DRenderers) {
             for (CompositeRenderer compositeRenderer : shape3DRenderer.getMyRenderers()) {
                 compositeRenderer.fillBuffers();
+                if (showNorm) {
+                    compositeRenderer.fillNormBuffer();
+                }
             }
         }
     }
 
     private void setupWater() {
         CompositeRenderer compositeRenderer = new CompositeRenderer();
-        compositeRenderer.setRenderUnit(waterRendererUnitInstance.get());
+        compositeRenderer.setRenderUnit(rendererInstance.select(AbstractWaterRendererUnit.class).get());
+        compositeRenderer.setNormRenderUnit(normRendererInstance.select(AbstractWaterRendererUnit.class).get());
         renderQueue.add(compositeRenderer);
     }
 
@@ -185,8 +192,12 @@ public abstract class RenderService {
         renderQueue.forEach(CompositeRenderer::drawDepthBuffer);
         prepareMainRendering();
         renderQueue.forEach(CompositeRenderer::draw);
+        if (showNorm) {
+            renderQueue.forEach(CompositeRenderer::drawNorm);
+        }
     }
 
+    @Deprecated
     public void fillBuffers() {
         for (CompositeRenderer compositeRenderer : renderQueue) {
             try {
@@ -201,7 +212,20 @@ public abstract class RenderService {
         return renderQueue.size();
     }
 
-    protected abstract void prepareMainRendering();
+    public boolean isShowNorm() {
+        return showNorm;
+    }
 
-    protected abstract void prepareDepthBufferRendering();
+    public void setShowNorm(boolean showNorm) {
+        this.showNorm = showNorm;
+        if (showNorm) {
+            for (CompositeRenderer compositeRenderer : renderQueue) {
+                try {
+                    compositeRenderer.fillNormBuffer();
+                } catch (Throwable t) {
+                    exceptionHandler.handleException(t);
+                }
+            }
+        }
+    }
 }

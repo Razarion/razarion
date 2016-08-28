@@ -90,15 +90,4 @@ public class DevToolsRenderServiceImpl extends RenderService {
 //            webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
 //        }
     }
-
-    private List<Double> setupNormDoubles(List<Vertex> vertices, List<Vertex> norms) {
-        List<Double> normDoubles = new ArrayList<>();
-        for (int i = 0; i < vertices.size(); i++) {
-            Vertex vertex = vertices.get(i);
-            Vertex norm = norms.get(i);
-            vertex.appendTo(normDoubles);
-            vertex.add(norm.multiply(10)).appendTo(normDoubles);
-        }
-        return normDoubles;
-    }
 }

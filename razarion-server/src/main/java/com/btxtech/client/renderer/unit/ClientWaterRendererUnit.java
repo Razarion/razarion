@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
@@ -21,6 +22,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 04.09.2015.
  */
+@ColorBufferRenderer
 @Dependent
 public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());

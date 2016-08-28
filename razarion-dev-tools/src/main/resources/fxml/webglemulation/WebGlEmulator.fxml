@@ -46,6 +46,19 @@
                     <children>
                         <VBox prefHeight="537.0" prefWidth="215.0">
                             <children>
+                        <GridPane>
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Show Norm" />
+                              <CheckBox fx:id="showNormCheckBox" mnemonicParsing="false" onAction="#onShowNormCheckBox" text="Show" GridPane.columnIndex="1" />
+                           </children>
+                        </GridPane>
                                 <GridPane prefHeight="122.0" prefWidth="192.0">
                                     <columnConstraints>
                                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="81.0" />

@@ -91,7 +91,6 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
         positions.activate();
         norms.activate();
         textureCoordinateAttribute.activate();
-        webGlFacade.activateReceiveShadow();
     }
 
     @Override

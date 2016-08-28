@@ -3,12 +3,12 @@ package com.btxtech.webglemulator.razarion.renderer;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
-import com.btxtech.shared.gameengine.planet.terrain.Water;
-import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.AbstractWaterRendererUnit;
+import com.btxtech.shared.dto.VertexList;
+import com.btxtech.uiservice.renderer.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ColorBufferRenderer;
+import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.RenderUtil;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -19,10 +19,10 @@ import javax.inject.Inject;
 
 /**
  * Created by Beat
- * 07.08.2016.
+ * 28.08.2016.
  */
-@ColorBufferRenderer
-public class DevToolWaterRendererUnit extends AbstractWaterRendererUnit implements VertexShader {
+@NormRenderer
+public class DevToolGroundNormRendererUnit extends AbstractGroundRendererUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -32,14 +32,14 @@ public class DevToolWaterRendererUnit extends AbstractWaterRendererUnit implemen
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
-    public void setupImages() {
-
+    protected void fillBuffers(VertexList vertexList) {
+        webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
+        webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(vertexList.getVertices(), vertexList.getNormVertices()));
     }
 
     @Override
-    protected void fillBuffers(Water water) {
-        webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLUE).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(water.getVertices()));
+    public void setupImages() {
+        // Ignore
     }
 
     @Override

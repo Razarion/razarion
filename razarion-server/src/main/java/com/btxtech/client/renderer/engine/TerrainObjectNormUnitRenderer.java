@@ -21,6 +21,7 @@ import java.util.logging.Logger;
  * 08.11.2015.
  */
 @Dependent
+@Deprecated
 public class TerrainObjectNormUnitRenderer extends AbstractWebGlUnitRenderer {
     private Logger logger = Logger.getLogger(TerrainObjectNormUnitRenderer.class.getName());
     @Inject

@@ -63,7 +63,6 @@ public class ClientRenderServiceImpl extends RenderService {
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
     private boolean showMonitor = false;
-    private boolean showNorm = false;
     private boolean showDeep = false;
     private boolean showSlopeEditor = false;
     private boolean showObjectEditor = false;
@@ -217,9 +216,9 @@ public class ClientRenderServiceImpl extends RenderService {
             if (!showMonitor && compositeRenderer == monitor) {
                 continue;
             }
-            if (!showNorm && (compositeRenderer == terrainNorm || terrainObjectNorms.contains(compositeRenderer))) {
-                continue;
-            }
+//            if (!showNorm && (compositeRenderer == terrainNorm || terrainObjectNorms.contains(compositeRenderer))) {
+//                continue;
+//            }
             try {
                 compositeRenderer.drawWire();
             } catch (Throwable t) {
@@ -309,14 +308,6 @@ public class ClientRenderServiceImpl extends RenderService {
 
     public void setShowMonitor(boolean showMonitor) {
         this.showMonitor = showMonitor;
-    }
-
-    public boolean isShowNorm() {
-        return showNorm;
-    }
-
-    public void setShowNorm(boolean showNorm) {
-        this.showNorm = showNorm;
     }
 
     public boolean isShowDeep() {

@@ -65,10 +65,18 @@ public class CompositeRenderer {
         draw(depthBufferRenderUnit);
     }
 
+    public void drawNorm() {
+        if (normRenderUnit == null || !normRenderUnit.hasElements()) {
+            return;
+        }
+        draw(normRenderUnit);
+    }
+
     protected void draw(AbstractRenderUnit renderUnit) {
         renderUnit.draw();
     }
 
+    @Deprecated
     public void drawWire() {
         if (wireRenderUnit != null && wireRenderUnit.hasElements()) {
             wireRenderUnit.draw();
@@ -85,6 +93,9 @@ public class CompositeRenderer {
         if (wireRenderUnit != null) {
             wireRenderUnit.fillBuffers();
         }
+    }
+
+    public void fillNormBuffer() {
         if (normRenderUnit != null) {
             normRenderUnit.fillBuffers();
         }

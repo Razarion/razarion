@@ -1,0 +1,60 @@
+package com.btxtech.webglemulator.razarion.renderer;
+
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
+import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.renderer.AbstractSlopeRendererUnit;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ColorBufferRenderer;
+import com.btxtech.uiservice.renderer.DepthBufferRenderer;
+import com.btxtech.uiservice.renderer.NormRenderer;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.RenderUtil;
+import com.btxtech.webglemulator.webgl.RenderMode;
+import com.btxtech.webglemulator.webgl.VertexShader;
+import com.btxtech.webglemulator.webgl.WebGlEmulator;
+import com.btxtech.webglemulator.webgl.WebGlProgramEmulator;
+import javafx.scene.paint.Color;
+
+import javax.inject.Inject;
+
+/**
+ * Created by Beat
+ * 07.08.2016.
+ */
+@NormRenderer
+public class DevToolSlopeNormRendererUnit extends AbstractSlopeRendererUnit implements VertexShader {
+    @Inject
+    private ProjectionTransformation projectionTransformation;
+    @Inject
+    private Camera camera;
+    @Inject
+    private WebGlEmulator webGlEmulator;
+    private WebGlProgramEmulator webGlProgramEmulator;
+
+    @Override
+    protected void fillBuffers(Slope slope) {
+        webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
+        webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(slope.getMesh().getVertices(), slope.getMesh().getNorms()));
+
+        setElementCount(slope.getMesh());
+    }
+
+    @Override
+    protected void draw(Slope slope) {
+        webGlEmulator.drawArrays(webGlProgramEmulator);
+    }
+
+    @Override
+    public void setupImages() {
+
+    }
+
+    @Override
+    public Vertex4 runShader(Vertex vertex) {
+        Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix());
+        return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
+    }
+}

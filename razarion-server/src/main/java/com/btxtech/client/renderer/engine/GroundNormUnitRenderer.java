@@ -22,6 +22,7 @@ import java.util.List;
  * 08.11.2015.
  */
 @Dependent
+@Deprecated
 public class GroundNormUnitRenderer extends AbstractWebGlUnitRenderer {
     // private Logger logger = Logger.getLogger(NormRenderer.class.getName());
     @Inject

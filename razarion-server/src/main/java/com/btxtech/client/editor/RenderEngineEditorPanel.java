@@ -30,6 +30,7 @@ import javax.inject.Inject;
  */
 @Templated("RenderEngineEditorPanel.html#render-engine-editor-panel")
 public class RenderEngineEditorPanel extends LeftSideBarContent {
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private RenderService renderService;
     @Inject
@@ -51,18 +52,23 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     @Inject
     @DataField
     private CheckBox showNorm;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label rendererCount;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("topButton")
     private Button topButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("frontButton")
     private Button frontButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("gameButton")
     private Button gameButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("dumpPositionButton")
     private Button dumpPositionButton;
@@ -94,6 +100,7 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     @Bound(property = "rotateZ", converter = GradToRadConverter.class)
     @DataField
     private DoubleBox rotateZBox;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label directionLabel;
@@ -109,7 +116,7 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
         // TODO showMonitor.setValue(renderService.isShowMonitor());
         // TODO showDeepMap.setValue(renderService.isShowDeep());
         // TODO wireMode.setValue(renderService.isWire());
-        // TODO showNorm.setValue(renderService.isShowNorm());
+        showNorm.setValue(renderService.isShowNorm());
         cameraDataBinder.setModel(camera);
         cameraDataBinder.addPropertyChangeHandler(event -> displayLightDirectionLabel());
         displayLightDirectionLabel();
@@ -136,7 +143,7 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
 
     @EventHandler("showNorm")
     public void showNormChanged(ChangeEvent e) {
-        // TODO renderService.setShowNorm(showNorm.getValue());
+        renderService.setShowNorm(showNorm.getValue());
     }
 
     private void displayLightDirectionLabel() {

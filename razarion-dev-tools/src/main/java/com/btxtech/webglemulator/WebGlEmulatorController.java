@@ -8,10 +8,12 @@ import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +30,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -40,6 +43,8 @@ import java.util.ResourceBundle;
  */
 @Singleton
 public class WebGlEmulatorController implements Initializable {
+    @FXML
+    private CheckBox showNormCheckBox;
     @FXML
     private AnchorPane centerPanel;
     @FXML
@@ -64,6 +69,8 @@ public class WebGlEmulatorController implements Initializable {
     private Canvas canvas;
     @FXML
     private CheckBox showRenderTimeCheckBox;
+    @Inject
+    private Instance<RenderService> renderServiceInstance;
     @Inject
     private RazarionEmulator razarionEmulator;
     @Inject
@@ -141,6 +148,7 @@ public class WebGlEmulatorController implements Initializable {
 
 
     public void onEngineInitialized() {
+        showNormCheckBox.setSelected(renderServiceInstance.get().isShowNorm());
         fovSlider.valueProperty().set(Math.toDegrees(projectionTransformation.getFovY()));
         cameraXRotationSlider.valueProperty().set(Math.toDegrees(camera.getRotateX()));
         cameraZRotationSlider.valueProperty().set(Math.toDegrees(camera.getRotateZ()));
@@ -331,5 +339,9 @@ public class WebGlEmulatorController implements Initializable {
 
     public void onShowRenderTimeCheckBox() {
         razarionEmulator.setShowRenderTime(showRenderTimeCheckBox.isSelected());
+    }
+
+    public void onShowNormCheckBox() {
+        renderServiceInstance.get().setShowNorm(showNormCheckBox.isSelected());
     }
 }
