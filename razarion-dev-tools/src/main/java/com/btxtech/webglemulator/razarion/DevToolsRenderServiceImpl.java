@@ -76,6 +76,11 @@ public class DevToolsRenderServiceImpl extends RenderService {
         }
     }
 
+    @Override
+    protected void depthTest(boolean depthTest) {
+
+    }
+
     @Deprecated
     protected void setupRenderers() {
 //        // Ground

@@ -6,6 +6,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -29,13 +30,13 @@ public class Vertex {
     }
 
     public Vertex(double x, double y, double z) {
-        if(Double.isNaN(x) || Double.isInfinite(x)) {
+        if (Double.isNaN(x) || Double.isInfinite(x)) {
             throw new IllegalArgumentException("x is invalid: " + x);
         }
-        if(Double.isNaN(y) || Double.isInfinite(y)) {
+        if (Double.isNaN(y) || Double.isInfinite(y)) {
             throw new IllegalArgumentException("y is invalid: " + y);
         }
-        if(Double.isNaN(z) || Double.isInfinite(z)) {
+        if (Double.isNaN(z) || Double.isInfinite(z)) {
             throw new IllegalArgumentException("z is invalid: " + z);
         }
         this.x = x;
@@ -44,7 +45,7 @@ public class Vertex {
     }
 
     public Vertex(DecimalPosition xy, double z) {
-        if(Double.isNaN(z) || Double.isInfinite(z)) {
+        if (Double.isNaN(z) || Double.isInfinite(z)) {
             throw new IllegalArgumentException("z is invalid: " + z);
         }
         this.x = xy.getX();
@@ -53,7 +54,7 @@ public class Vertex {
     }
 
     public Vertex(Index xy, double z) {
-        if(Double.isNaN(z) || Double.isInfinite(z)) {
+        if (Double.isNaN(z) || Double.isInfinite(z)) {
             throw new IllegalArgumentException("z is invalid: " + z);
         }
         this.x = xy.getX();
@@ -194,6 +195,10 @@ public class Vertex {
         return new DecimalPosition(x, z);
     }
 
+    public boolean equalsDelta(Vertex other, double delta) {
+        return MathHelper.compareWithPrecision(x, other.x, delta) && MathHelper.compareWithPrecision(y, other.y, delta) && MathHelper.compareWithPrecision(z, other.z, delta);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -238,6 +243,19 @@ public class Vertex {
             decimalPositions.add(vertex.toXY());
         }
         return decimalPositions;
+    }
+
+    public static Comparator<Vertex> createVertexComparator1(double delta) {
+        return (v1, v2) -> {
+            if (v1.equalsDelta(v2, delta)) {
+                return 0;
+            }
+            if (v1.getX() + v1.getY() + v1.getZ() >= v2.getX() + v2.getY() + v2.getZ()) {
+                return 1;
+            } else {
+                return -1;
+            }
+        };
     }
 
     @Override

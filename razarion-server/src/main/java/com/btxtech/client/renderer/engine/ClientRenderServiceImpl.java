@@ -177,6 +177,15 @@ public class ClientRenderServiceImpl extends RenderService {
         gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
     }
 
+    @Override
+    protected void depthTest(boolean depthTest) {
+        if(depthTest) {
+            gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
+        } else {
+            gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
+        }
+    }
+
     protected void doRender() {
 //        for (CompositeRenderer compositeRenderer : renderQueue) {
 //            try {

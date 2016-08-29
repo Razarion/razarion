@@ -40,6 +40,44 @@ public class ColladaConverterTest {
     }
 
     @Test
+    public void testSimpleSphere3x3() throws Exception {
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestSphere3x3.dae", getClass()), null);
+        Assert.assertEquals(1, shape3D.getElement3Ds().size());
+        Element3D planeElement = Shape3DUtils.getElement3D("Element", shape3D);
+        Assert.assertEquals(1, planeElement.getVertexContainers().size());
+        VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
+
+        Assert.assertEquals(12 * 3, vertexContainer.getVerticesCount());
+        Assert.assertEquals(12 * 3, vertexContainer.getNorms().size());
+
+        // Assert vertices
+        Map<Vertex, Integer> vertexGroup = GeometricUtil.groupVertices(vertexContainer.getVertices(), 0.0001);
+        // Top
+//        Assert.assertEquals(3, vertexGroup.get(new Vertex(0, 0, 1)).intValue());
+//        // Top middle
+//        Assert.assertEquals(5, vertexGroup.get(new Vertex(0.43301, -0.75, 0.5)).intValue());
+//        Assert.assertEquals(5, vertexGroup.get(new Vertex(-0.86603, 0, 0.5)).intValue());
+//        Assert.assertEquals(5, vertexGroup.get(new Vertex(0.43301, 0.75, 0.5)).intValue());
+//        // Bottom middle
+//        Assert.assertEquals(5, vertexGroup.get(new Vertex(-0.86603, 0, -0.5)).intValue());
+//        Assert.assertEquals(5, vertexGroup.get(new Vertex(0.43301, -0.75, -0.5)).intValue());
+//        Assert.assertEquals(5, vertexGroup.get(new Vertex(0.43301, 0.75, -0.5)).intValue());
+//        // Bottom
+//        Assert.assertEquals(3, vertexGroup.get(new Vertex(0, 0, -1)).intValue());
+
+        // Assert norms
+        Map<Vertex, Integer> normGroup = GeometricUtil.groupVertices(vertexContainer.getNorms(), 0.0001);
+        // Top
+       //  Assert.assertEquals(3, normGroup.get(new Vertex(0, 0, 1)).intValue());
+
+
+//        List<Vertex> vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
+//        List<Vertex> norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupNormMatrix());
+//        Assert.assertArrayEquals(new double[]{1.00, -1.00, 0.00, 1.00, 1.00, 0.00, -1.00, 1.00, 0.00, -1.00, -1.00, 0.00, 1.00, -1.00, 0.00, -1.00, 1.00, 0.00}, TestHelper.vertices2DoubleArray(vertices), 0.01);
+//        Assert.assertArrayEquals(new double[]{0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00, 0.00, 0.00, 1.00}, TestHelper.vertices2DoubleArray(norms), 0.01);
+    }
+
+    @Test
     public void testPlaneTranslation() throws Exception {
         Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneTranslation.dae", getClass()), null);
         Assert.assertNull(shape3D.getModelMatrixAnimations());

@@ -5,7 +5,10 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by Beat
@@ -62,5 +65,18 @@ public class GeometricUtil {
             output.add(transformation.multiply(vertex, 0.0).normalize(1.0));
         }
         return output;
+    }
+
+    public static Map<Vertex, Integer> groupVertices(Collection<Vertex> input, double delta) {
+        Map<Vertex, Integer> map = new TreeMap<>(Vertex.createVertexComparator1(delta));
+        for (Vertex vertex : input) {
+            Integer count = map.get(vertex);
+            if (count == null) {
+                count = 0;
+            }
+            count = ++count;
+            map.put(vertex, count);
+        }
+        return map;
     }
 }

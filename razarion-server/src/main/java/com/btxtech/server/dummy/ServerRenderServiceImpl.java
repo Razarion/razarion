@@ -18,4 +18,9 @@ public class ServerRenderServiceImpl extends RenderService {
     protected void prepareDepthBufferRendering() {
 
     }
+
+    @Override
+    protected void depthTest(boolean depthTest) {
+
+    }
 }

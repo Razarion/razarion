@@ -193,9 +193,13 @@ public abstract class RenderService {
         prepareMainRendering();
         renderQueue.forEach(CompositeRenderer::draw);
         if (showNorm) {
+            // depthTest(false);
             renderQueue.forEach(CompositeRenderer::drawNorm);
+            // depthTest(true);
         }
     }
+
+    protected abstract void depthTest(boolean depthTest);
 
     @Deprecated
     public void fillBuffers() {
