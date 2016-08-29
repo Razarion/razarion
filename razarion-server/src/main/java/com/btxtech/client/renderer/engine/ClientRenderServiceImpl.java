@@ -89,7 +89,6 @@ public class ClientRenderServiceImpl extends RenderService {
         }
         setupTerrainObjectRenderer();
         monitor = createAndAddRenderSwitch(MonitorUnitRenderer.class, null, null, 0);
-        terrainNorm = createAndAddRenderSwitch(GroundNormUnitRenderer.class, null, GroundNormUnitRenderer.class, 0);
         terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorUnitRenderer.class).get();
         terrainEditorCursorRenderer.fillBuffers();
         terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorUnitRenderer.class).get();
@@ -113,10 +112,6 @@ public class ClientRenderServiceImpl extends RenderService {
         if (terrainObjectNorms != null) {
             renderQueue.removeAll(terrainObjectNorms);
             terrainObjectNorms.clear();
-        }
-        for (int id : terrainObjectService.getVertexContainerIds()) {
-            // terrainObjectRenders.add(createAndAddRenderSwitch(TerrainObjectUnitRenderer.class, ClientVertexContainerDepthBufferRendererUnit.class, TerrainObjectWireRender.class, id));
-            terrainObjectNorms.add(createAndAddRenderSwitch(TerrainObjectNormUnitRenderer.class, null, TerrainObjectNormUnitRenderer.class, id));
         }
         for (CompositeRenderer terrainObjectRender : terrainObjectRenders) {
             terrainObjectRender.fillBuffers();

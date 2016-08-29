@@ -15,9 +15,9 @@ public interface RenderUtil {
         List<Double> normDoubles = new ArrayList<>();
         for (int i = 0; i < vertices.size(); i++) {
             Vertex vertex = vertices.get(i);
-            Vertex norm = norms.get(i);
+            Vertex norm = norms.get(i).normalize(0.1);
             vertex.appendTo(normDoubles);
-            vertex.add(norm.multiply(10)).appendTo(normDoubles);
+            vertex.add(norm).appendTo(normDoubles);
         }
         return normDoubles;
     }
