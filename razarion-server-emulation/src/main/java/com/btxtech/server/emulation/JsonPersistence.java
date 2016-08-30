@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class JsonPersistence {
-    private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-server-emulation\\src\\main\\resources";
+    private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
     @Inject
     private Logger logger;
     @Inject
