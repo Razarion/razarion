@@ -45,11 +45,12 @@ public class BaseItemTypeEntity {
         if (shape3DId != null) {
             baseItemType.setShape3DId(shape3DId.getId().intValue());
         }
+        baseItemType.setRadius(radius);
         if (spawnShape3DId != null) {
             baseItemType.setSpawnShape3DId(spawnShape3DId.getId().intValue());
         }
         baseItemType.setSpawnDurationMillis(spawnDurationMillis);
-        return baseItemType.setHealth(health).setRadius(radius);
+        return baseItemType.setHealth(health);
     }
 
     public void fromBaseItemType(BaseItemType baseItemType) {

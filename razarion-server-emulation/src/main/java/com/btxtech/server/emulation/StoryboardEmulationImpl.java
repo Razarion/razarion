@@ -2,19 +2,16 @@ package com.btxtech.server.emulation;
 
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.Emulation;
-import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.CameraConfig;
-import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
-import com.btxtech.shared.dto.VisualConfig;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.PlaceConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -38,6 +35,22 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
 
     @Override
     public StoryboardConfig load() {
+        StoryboardConfig storyboardConfig = jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name"));
+        storyboardConfig.setSceneConfigs(setupSceneConfigs());
+        return storyboardConfig;
+    }
+
+    private List<SceneConfig> setupSceneConfigs() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
+        StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 400));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointConfig(startPointConfig));
+        return sceneConfigs;
+    }
+
+    // -------------------------------------------------------------------
+    public StoryboardConfig _load() {
         return jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
 
 //        StoryboardConfig storyboardConfig = new StoryboardConfig();

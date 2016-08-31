@@ -123,7 +123,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 return false;
             }
         }
-        getSyncItemArea().turnTo(toBeBuildPosition.toXY().getPosition());
+        getSyncItemArea().turnTo(toBeBuildPosition.toXY());
         if (baseItemService.baseObjectExists(currentBuildup)) {
             double buildFactor = setupBuildFactor(PlanetService.TICK_FACTOR, builderType.getProgress(), toBeBuiltType, currentBuildup);
             try {
@@ -177,7 +177,7 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
+    public void synchronize(SyncItemInfo syncItemInfo) throws ItemDoesNotExistException {
         toBeBuildPosition = syncItemInfo.getToBeBuildPosition();
         if (syncItemInfo.getToBeBuiltTypeId() != null) {
             toBeBuiltType = itemTypeService.getBaseItemType(syncItemInfo.getToBeBuiltTypeId());
@@ -211,7 +211,7 @@ public class SyncBuilder extends SyncBaseAbility {
         if (unlockService.isItemLocked(tmpToBeBuiltType, getSyncBaseItem().getBase())) {
             throw new IllegalArgumentException(this + " item is locked: " + builderCommand.getToBeBuilt());
         }
-        if (!terrainService.isFree(builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType, null, null)) {
+        if (terrainService.overlap(builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType, null, null)) {
             throw new PositionTakenException(builderCommand.getPositionToBeBuilt(), builderCommand.getToBeBuilt());
         }
 

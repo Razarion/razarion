@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.Path;
@@ -38,7 +39,7 @@ public class CollisionService {
         throw new UnsupportedOperationException();
     }
 
-    public Path setupPathToDestination(SyncBaseItem syncItem, Index destination) {
+    public Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         throw new UnsupportedOperationException();
     }
 
@@ -51,7 +52,7 @@ public class CollisionService {
     // TODO @Deprecated
     // TODO Index getFreeRandomPosition(ItemType itemType, Rectangle region, int itemFreeRange, boolean botFree, boolean ignoreMovable);
 
-    public Index getFreeRandomPosition(ItemType itemType, Region region, int itemFreeRange, boolean botFree, boolean ignoreMovable) {
+    public DecimalPosition getFreeRandomPosition(ItemType itemType, Region region, int itemFreeRange, boolean botFree, boolean ignoreMovable) {
         throw new UnsupportedOperationException();
     }
 

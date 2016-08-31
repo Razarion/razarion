@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.exception;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
@@ -29,11 +30,11 @@ public class PositionTakenException extends RuntimeException {
     PositionTakenException() {
     }
 
-    public PositionTakenException(Index position, int itemTypeId) {
+    public PositionTakenException(DecimalPosition position, int itemTypeId) {
         super("The position is not free: " + position + " for itemTypeId: " + itemTypeId);
     }
 
-    public PositionTakenException(Index position, ItemType itemType) {
+    public PositionTakenException(DecimalPosition position, ItemType itemType) {
         super("The position is not free: " + position + " for itemType: " + itemType);
     }
 }

@@ -16,6 +16,7 @@ package com.btxtech.shared.datatypes;
 import com.btxtech.shared.utils.MathHelper;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
+import javax.persistence.Embeddable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -27,6 +28,7 @@ import java.util.List;
  * Time: 13:01:16
  */
 @Portable
+@Embeddable
 public class DecimalPosition {
     public static final DecimalPosition NULL = new DecimalPosition(0, 0);
     private double x;

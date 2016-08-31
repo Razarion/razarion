@@ -60,7 +60,7 @@ public class SyncMovable extends SyncBaseAbility {
     @Inject
     private BoxService boxService;
     private MovableType movableType;
-    private List<Index> pathToDestination;
+    private List<DecimalPosition> pathToDestination;
     private Double destinationAngel;
     private Integer targetContainer;
     private Integer syncBoxItemId;
@@ -112,10 +112,10 @@ public class SyncMovable extends SyncBaseAbility {
             return onFinished(overlappingHandler);
         }
 
-        Index destination = pathToDestination.get(0);
+        DecimalPosition destination = pathToDestination.get(0);
 
         DecimalPosition decimalPoint = getSyncItemArea().getDecimalPosition().getPointWithDistance(getDistance(), destination, false);
-        if (decimalPoint.equalsDelta(new DecimalPosition(destination))) {
+        if (decimalPoint.equalsDelta(destination)) {
             pathToDestination.remove(0);
             if (pathToDestination.isEmpty()) {
                 pathToDestination = null;
@@ -263,7 +263,7 @@ public class SyncMovable extends SyncBaseAbility {
         destinationAngel = pickupBoxCommand.getPathToDestination().getActualDestinationAngel();
     }
 
-    public List<Index> getPathToDestination() {
+    public List<DecimalPosition> getPathToDestination() {
         return pathToDestination;
     }
 
@@ -271,12 +271,12 @@ public class SyncMovable extends SyncBaseAbility {
         return destinationAngel;
     }
 
-    public void setPathToDestination(List<Index> pathToDestination, Double destinationAngel) {
+    public void setPathToDestination(List<DecimalPosition> pathToDestination, Double destinationAngel) {
         this.pathToDestination = pathToDestination;
         this.destinationAngel = destinationAngel;
     }
 
-    public Index getDestination() {
+    public DecimalPosition getDestination() {
         if (pathToDestination != null && !pathToDestination.isEmpty()) {
             return pathToDestination.get(pathToDestination.size() - 1);
         }

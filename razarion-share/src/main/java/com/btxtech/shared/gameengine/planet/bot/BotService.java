@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.BotSyncBaseItemCreatedEvent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -83,10 +84,10 @@ public class BotService {
         }
     }
 
-    public boolean isInRealm(Index point) {
+    public boolean isInRealm(DecimalPosition position) {
         synchronized (botRunners) {
             for (BotRunner botRunner : botRunners.values()) {
-                if (botRunner.isInRealm(point)) {
+                if (botRunner.isInRealm(position)) {
                     return true;
                 }
             }

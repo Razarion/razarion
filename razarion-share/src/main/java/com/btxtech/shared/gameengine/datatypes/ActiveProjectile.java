@@ -13,18 +13,18 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
  */
 public class ActiveProjectile {
     private DecimalPosition decimalPosition;
-    private Index projectileTarget;
+    private DecimalPosition projectileTarget;
     private WeaponType weaponType;
     private int muzzleNr;
     private ActiveProjectileGroup activeProjectileGroup;
     private long lastTick;
 
-    public ActiveProjectile(ActiveProjectileGroup activeProjectileGroup, SyncBaseItem syncBaseItem, Index projectileTarget, int angleIndex, WeaponType weaponType, int muzzleNr) {
+    public ActiveProjectile(ActiveProjectileGroup activeProjectileGroup, SyncBaseItem syncBaseItem, DecimalPosition projectileTarget, int angleIndex, WeaponType weaponType, int muzzleNr) {
         this.activeProjectileGroup = activeProjectileGroup;
         this.projectileTarget = projectileTarget;
         this.weaponType = weaponType;
         this.muzzleNr = muzzleNr;
-        decimalPosition = new DecimalPosition(syncBaseItem.getSyncItemArea().getPosition().add(weaponType.getMuzzleFlashPosition(muzzleNr, angleIndex)));
+        decimalPosition = syncBaseItem.getSyncItemArea().getPosition().add(weaponType.getMuzzleFlashPosition(muzzleNr, angleIndex));
     }
 
     public void tick() {
@@ -33,7 +33,7 @@ public class ActiveProjectile {
     }
 
     public boolean isTargetReached() {
-        return decimalPosition.getPosition().equals(projectileTarget);
+        return decimalPosition.equals(projectileTarget);
     }
 
     public Index getPosition() {

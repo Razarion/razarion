@@ -14,6 +14,7 @@ public class TerrainObjectConfig implements ObjectNameIdProvider{
     private int id;
     private String internalName;
     private Integer shape3DId;
+    private double radius;
 
     public int getId() {
         return id;
@@ -39,6 +40,15 @@ public class TerrainObjectConfig implements ObjectNameIdProvider{
 
     public TerrainObjectConfig setShape3DId(Integer shape3DId) {
         this.shape3DId = shape3DId;
+        return this;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public TerrainObjectConfig setRadius(double radius) {
+        this.radius = radius;
         return this;
     }
 

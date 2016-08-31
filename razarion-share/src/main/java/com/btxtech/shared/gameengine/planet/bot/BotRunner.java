@@ -13,11 +13,11 @@
 
 package com.btxtech.shared.gameengine.planet.bot;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
@@ -137,8 +137,8 @@ public class BotRunner {
         return base;
     }
 
-    public boolean isInRealm(Index point) {
-        return botConfig.getRealm().isInsideAbsolute(point);
+    public boolean isInRealm(DecimalPosition position) {
+        return botConfig.getRealm().isInsideAbsolute(position);
     }
 
     public void onBotItemKilled(SyncBaseItem syncBaseItem, PlayerBase actor) {

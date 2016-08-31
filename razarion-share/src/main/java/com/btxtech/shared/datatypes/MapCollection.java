@@ -5,13 +5,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
  * Created by Beat
  * 09.08.2016.
  */
 public class MapCollection<T, U> {
-    private Map<T, Collection<U>> map = new HashMap<>();
+    private final Map<T, Collection<U>> map = new HashMap<>();
 
     public void put(T key, U value) {
         Collection<U> collection = map.get(key);
@@ -54,4 +56,19 @@ public class MapCollection<T, U> {
         }
     }
 
+    /**
+     * Iterates over the map collection
+     * the callback should return true to stop the iteration
+     *
+     * @param callback callback
+     */
+    public void iterate(BiFunction<T, U, Boolean> callback) {
+        for (Map.Entry<T, Collection<U>> entry : map.entrySet()) {
+            for (U u : entry.getValue()) {
+                if(!callback.apply(entry.getKey(), u)) {
+                    return;
+                }
+            }
+        }
+    }
 }

@@ -13,7 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 
 /**
  * User: beat
@@ -21,13 +21,13 @@ import com.btxtech.shared.datatypes.Index;
  * Time: 12:27:00
  */
 public class UnloadContainerCommand extends BaseCommand {
-    private Index unloadPos;
+    private DecimalPosition unloadPos;
 
-    public Index getUnloadPos() {
+    public DecimalPosition getUnloadPos() {
         return unloadPos;
     }
 
-    public void setUnloadPos(Index unloadPos) {
+    public void setUnloadPos(DecimalPosition unloadPos) {
         this.unloadPos = unloadPos;
     }
 }

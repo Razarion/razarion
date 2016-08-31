@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -34,7 +35,7 @@ public class Region {
         return getTiles().contains(tile);
     }
 
-    public boolean isInsideAbsolute(Index tile) {
+    public boolean isInsideAbsolute(DecimalPosition tile) {
         throw new UnsupportedOperationException("Replace with polygon");
         // return isInsideTile(TerrainUtil.getTerrainTileIndexForAbsPosition(tile));
     }

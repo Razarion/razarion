@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -28,11 +29,11 @@ import java.util.List;
  */
 @Portable
 public class Path {
-    private Index start;
-    private Index destination;
-    private Index alternativeDestination;
+    private DecimalPosition start;
+    private DecimalPosition destination;
+    private DecimalPosition alternativeDestination;
     private boolean destinationReachable;
-    private List<Index> path;
+    private List<DecimalPosition> path;
     private Double destinationAngel;
 
     /**
@@ -41,27 +42,27 @@ public class Path {
     public Path() {
     }
 
-    public Path(Index start, Index destination, boolean destinationReachable) {
+    public Path(DecimalPosition start, DecimalPosition destination, boolean destinationReachable) {
         this.start = start;
         this.destination = destination;
         this.destinationReachable = destinationReachable;
     }
 
     public void makeSameStartAndDestination() {
-        path = new ArrayList<Index>();
+        path = new ArrayList<DecimalPosition>();
         path.add(destination);
         destinationAngel = 0.0;
     }
 
-    public Index getAlternativeDestination() {
+    public DecimalPosition getAlternativeDestination() {
         return alternativeDestination;
     }
 
-    public void setAlternativeDestination(Index alternativeDestination) {
+    public void setAlternativeDestination(DecimalPosition alternativeDestination) {
         this.alternativeDestination = alternativeDestination;
     }
 
-    public void setPath(List<Index> path) {
+    public void setPath(List<DecimalPosition> path) {
         if (path == null || path.isEmpty()) {
             throw new IllegalStateException("Path: empty path not allowed");
         }
@@ -72,11 +73,11 @@ public class Path {
         this.path = path;
     }
 
-    public Index getStart() {
+    public DecimalPosition getStart() {
         return start;
     }
 
-    public Index getDestination() {
+    public DecimalPosition getDestination() {
         return destination;
     }
 
@@ -84,7 +85,7 @@ public class Path {
         return destinationReachable;
     }
 
-    public List<Index> getPath() {
+    public List<DecimalPosition> getPath() {
         return path;
     }
 
@@ -92,7 +93,7 @@ public class Path {
         this.destinationAngel = destinationAngel;
     }
 
-    public Index getActualDestination() {
+    public DecimalPosition getActualDestination() {
         if (destinationReachable) {
             return destination;
         } else {
@@ -104,7 +105,7 @@ public class Path {
         if (destinationAngel != null) {
             return destinationAngel;
         } else if (destinationReachable) {
-            Index secondLastPoint = path.get(path.size() - 2);
+            DecimalPosition secondLastPoint = path.get(path.size() - 2);
             return secondLastPoint.getAngleToNord(getActualDestination());
         } else {
             return alternativeDestination.getAngleToNord(destination);
@@ -118,7 +119,7 @@ public class Path {
                 ", destination=" + destination +
                 ", alternativeDestination=" + alternativeDestination +
                 ", destinationReachable=" + destinationReachable +
-                ", path=" + Index.toString(path) +
+                ", path=" + path +
                 ", destinationAngel=" + destinationAngel +
                 '}';
     }

@@ -7,6 +7,13 @@ package com.btxtech.shared.datatypes;
 public class SingleHolder<T> {
     private T o;
 
+    public SingleHolder() {
+    }
+
+    public SingleHolder(T o) {
+        this.o = o;
+    }
+
     public T getO() {
         return o;
     }

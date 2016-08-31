@@ -1,7 +1,9 @@
 package com.btxtech.uiservice.storyboard;
 
-import com.btxtech.shared.gameengine.GameEngine;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.gameengine.GameEngine;
+import com.btxtech.uiservice.StartPointUiService;
 import com.btxtech.uiservice.VisualUiService;
 
 import javax.enterprise.inject.Instance;
@@ -13,6 +15,7 @@ import javax.inject.Singleton;
  * 05.07.2016.
  */
 @Singleton
+// Better name: something with game-control, client control
 public class StoryboardService {
     @Inject
     private GameEngine gameEngine;
@@ -23,11 +26,13 @@ public class StoryboardService {
     private StoryboardConfig storyboardConfig;
     private int nextSceneNumber;
     private Scene currentScene;
+    private UserContext userContext;
 
     public void init(StoryboardConfig storyboardConfig) {
         this.storyboardConfig = storyboardConfig;
         gameEngine.initialise(storyboardConfig.getGameEngineConfig());
         visualUiService.initialise(storyboardConfig.getVisualConfig());
+        this.userContext = storyboardConfig.getUserContext();
     }
 
     public void start() {
@@ -36,8 +41,12 @@ public class StoryboardService {
         runScene();
     }
 
+    public UserContext getUserContext() {
+        return userContext;
+    }
+
     private void runScene() {
-        if(currentScene != null) {
+        if (currentScene != null) {
             currentScene.cleanup();
         }
         currentScene = sceneInstance.get();
@@ -50,7 +59,7 @@ public class StoryboardService {
             nextSceneNumber++;
             runScene();
         } else {
-            if(currentScene != null) {
+            if (currentScene != null) {
                 currentScene.cleanup();
                 currentScene = null;
             }

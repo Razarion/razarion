@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.command;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 
 /**
@@ -23,7 +24,7 @@ import com.btxtech.shared.datatypes.Index;
  */
 public class BuilderCommand extends PathToDestinationCommand {
     private int toBeBuilt;
-    private Index positionToBeBuilt;
+    private DecimalPosition positionToBeBuilt;
 
     public int getToBeBuilt() {
         return toBeBuilt;
@@ -33,11 +34,11 @@ public class BuilderCommand extends PathToDestinationCommand {
         this.toBeBuilt = toBeBuilt;
     }
 
-    public Index getPositionToBeBuilt() {
+    public DecimalPosition getPositionToBeBuilt() {
         return positionToBeBuilt;
     }
 
-    public void setPositionToBeBuilt(Index positionToBeBuilt) {
+    public void setPositionToBeBuilt(DecimalPosition positionToBeBuilt) {
         this.positionToBeBuilt = positionToBeBuilt;
     }
 

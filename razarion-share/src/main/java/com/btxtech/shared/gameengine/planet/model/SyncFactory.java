@@ -36,8 +36,8 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -190,16 +190,7 @@ public class SyncFactory extends SyncBaseAbility {
     }
 
     void calculateRallyPoint() throws NoSuchItemTypeException {
-        Collection<ItemType> types = new ArrayList<ItemType>();
-        try {
-            for (int id : factoryType.getAbleToBuild()) {
-                types.add(itemTypeService.getItemType(id));
-            }
-            rallyPoint = collisionService.getRallyPoint(getSyncBaseItem(), types);
-        } catch (NoSuchItemTypeException e) {
-            log.log(Level.SEVERE, "Unable to calculate rally point: " + e.getMessage());
-            // TODO rallyPoint = getSyncItemArea().getPosition();
-            throw new UnsupportedOperationException();
-        }
+        Collection<ItemType> types = factoryType.getAbleToBuild().stream().map(id -> itemTypeService.getItemType(id)).collect(Collectors.toCollection(ArrayList::new));
+        rallyPoint = collisionService.getRallyPoint(getSyncBaseItem(), types);
     }
 }

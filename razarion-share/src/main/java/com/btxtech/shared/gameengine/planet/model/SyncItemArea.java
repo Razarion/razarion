@@ -16,6 +16,10 @@ import java.util.logging.Logger;
  * Date: 16.08.2011
  * Time: 21:13:43
  */
+
+
+@Deprecated
+// replaced by SyncItemPosition
 public class SyncItemArea {
     private DecimalPosition position;
     private double angel = 0;
@@ -28,7 +32,7 @@ public class SyncItemArea {
         boundingBox = syncItem.getItemType().getBoundingBox();
     }
 
-    public SyncItemArea(BoundingBox boundingBox, Index position) {
+    public SyncItemArea(BoundingBox boundingBox, DecimalPosition position) {
         this.boundingBox = boundingBox;
         setPosition(position);
     }
@@ -39,16 +43,18 @@ public class SyncItemArea {
         boundingBox = syncItemArea.boundingBox;
     }
 
-    public Index getPosition() {
-        if (position != null) {
-            return position.getPosition();
-        } else {
-            return null;
-        }
+    public DecimalPosition getPosition() {
+        throw new UnsupportedOperationException();
+//        if (position != null) {
+//            return position.getPosition();
+//        } else {
+//            return null;
+//        }
     }
 
     public Index getTopLeftFromImagePosition() {
-        return getPosition().sub(syncItem.getItemType().getItemTypeSpriteMap().getMiddleFromImage());
+        throw new UnsupportedOperationException();
+        // return getPosition().sub(syncItem.getItemType().getItemTypeSpriteMap().getMiddleFromImage());
     }
 
     public DecimalPosition getDecimalPosition() {
@@ -63,12 +69,13 @@ public class SyncItemArea {
         }
     }
 
-    public void setPosition(Index position) {
-        setPositionNoCheck(position);
-        checkPosition();
-        if (syncItem != null) {
-            // TODO syncItem.fireItemChanged(SyncItemListener.Change.POSITION, null);
-        }
+    public void setPosition(DecimalPosition position) {
+        throw new UnsupportedOperationException();
+//        setPositionNoCheck(position);
+//        checkPosition();
+//        if (syncItem != null) {
+//            // TODO syncItem.fireItemChanged(SyncItemListener.Change.POSITION, null);
+//        }
     }
 
     public void setPositionNoCheck(Index position) {
@@ -130,12 +137,13 @@ public class SyncItemArea {
         }
     }
 
-    public void turnTo(Index destination) {
-        if (destination.equals(getPosition())) {
-            return;
-        }
-
-        turnTo(getTurnToAngel(destination));
+    public void turnTo(DecimalPosition destination) {
+        throw new UnsupportedOperationException();
+//        if (destination.equals(getPosition())) {
+//            return;
+//        }
+//
+//        turnTo(getTurnToAngel(destination));
     }
 
     public void turnTo(SyncItem target) {
@@ -143,7 +151,8 @@ public class SyncItemArea {
     }
 
     public void turnTo(SyncItemArea target) {
-        turnTo(target.getPosition());
+        throw new UnsupportedOperationException();
+        // turnTo(target.getPosition());
     }
 
     public double getTurnToAngel(Index destination) {
@@ -151,11 +160,13 @@ public class SyncItemArea {
             return getBoundingBox().getCosmeticAngel();
         }
 
-        return getPosition().getAngleToNord(destination);
+        throw new UnsupportedOperationException();
+        // return getPosition().getAngleToNord(destination);
     }
 
     public double getTurnToAngel(SyncItemArea destination) {
-        return getTurnToAngel(destination.getPosition());
+        throw new UnsupportedOperationException();
+        // return getTurnToAngel(destination.getPosition());
     }
 
     public boolean contains(SyncItemArea syncItemArea) {
@@ -217,26 +228,28 @@ public class SyncItemArea {
     }
 
     public boolean contains(Rectangle rectangle) {
-        if (!hasPosition()) {
-            return false;
-        }
-        if (rectangle.contains(getPosition())) {
-            return true;
-        }
-        Rectangle biggestScope = Rectangle.generateRectangleFromMiddlePoint(rectangle.getCenter(),
-                rectangle.getWidth() + boundingBox.getDiameter(),
-                rectangle.getHeight() + boundingBox.getDiameter());
-        if (!biggestScope.containsExclusive(new DecimalPosition(getPosition()))) {
-            return false;
-        }
-        return rectangle.getNearestPoint(new DecimalPosition(getPosition())).getDistance(getPosition()) <= boundingBox.getRadius();
+        throw new UnsupportedOperationException();
+//        if (!hasPosition()) {
+//            return false;
+//        }
+//        if (rectangle.contains(getPosition())) {
+//            return true;
+//        }
+//        Rectangle biggestScope = Rectangle.generateRectangleFromMiddlePoint(rectangle.getCenter(),
+//                rectangle.getWidth() + boundingBox.getDiameter(),
+//                rectangle.getHeight() + boundingBox.getDiameter());
+//        if (!biggestScope.containsExclusive(new DecimalPosition(getPosition()))) {
+//            return false;
+//        }
+//        return rectangle.getNearestPoint(new DecimalPosition(getPosition())).getDistance(getPosition()) <= boundingBox.getRadius();
     }
 
     public Rectangle generateCoveringRectangle() {
-        return Rectangle.generateRectangleFromMiddlePoint(getPosition(), boundingBox.getDiameter(), boundingBox.getDiameter());
+        throw new UnsupportedOperationException();
+        // return Rectangle.generateRectangleFromMiddlePoint(getPosition(), boundingBox.getDiameter(), boundingBox.getDiameter());
     }
 
-    public boolean positionReached(Index destination) {
+    public boolean positionReached(DecimalPosition destination) {
         return getPosition().equals(destination);
     }
 
@@ -270,7 +283,8 @@ public class SyncItemArea {
         if (contains(syncItemArea)) {
             return 0;
         }
-        return getPosition().getDistanceDouble(syncItemArea.getPosition()) - getBoundingBox().getRadius() - syncItemArea.getBoundingBox().getRadius();
+        throw new UnsupportedOperationException();
+        // return getPosition().getDistanceDouble(syncItemArea.getPosition()) - getBoundingBox().getRadius() - syncItemArea.getBoundingBox().getRadius();
     }
 
     public boolean isInRange(int range, SyncItem target) throws TargetHasNoPositionException {

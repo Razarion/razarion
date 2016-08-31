@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.planet.bot;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
@@ -84,7 +85,7 @@ public class BotSyncBaseItem {
         return syncBaseItem.hasSyncMovable();
     }
 
-    public void buildBuilding(Index position, BaseItemType toBeBuilt) {
+    public void buildBuilding(DecimalPosition position, BaseItemType toBeBuilt) {
         try {
             commandService.build(syncBaseItem, position, toBeBuilt);
             clearIdle();
@@ -104,7 +105,7 @@ public class BotSyncBaseItem {
         }
     }
 
-    public void attack(SyncBaseItem target, Index destinationHint, double destinationAngel) {
+    public void attack(SyncBaseItem target, DecimalPosition destinationHint, double destinationAngel) {
         try {
             commandService.attack(syncBaseItem, target, destinationHint, destinationAngel, true);
             clearIdle();
@@ -116,7 +117,7 @@ public class BotSyncBaseItem {
 
     public void move(Region region) {
         try {
-            Index position = collisionService.getFreeRandomPosition(syncBaseItem.getBaseItemType(), region, 0, false, false);
+            DecimalPosition position = collisionService.getFreeRandomPosition(syncBaseItem.getBaseItemType(), region, 0, false, false);
             commandService.move(syncBaseItem, position);
             clearIdle();
         } catch (Exception e) {
@@ -153,7 +154,7 @@ public class BotSyncBaseItem {
         return this.syncBaseItem.getSyncItemArea().getDistance(syncBaseItem);
     }
 
-    public Index getPosition() {
+    public DecimalPosition getPosition() {
         return syncBaseItem.getSyncItemArea().getPosition();
     }
 

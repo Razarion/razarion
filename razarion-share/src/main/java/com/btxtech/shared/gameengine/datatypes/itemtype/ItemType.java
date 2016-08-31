@@ -41,13 +41,15 @@ public abstract class ItemType implements ObjectNameIdProvider{
     private Integer commandSound;
     private Integer explosionClipId;
     private Integer shape3DId;
+    private double radius;
 
     public int getId() {
         return id;
     }
 
     public BoundingBox getBoundingBox() {
-        return boundingBox;
+        throw new UnsupportedOperationException("Bounding box no longer supported");
+        // return boundingBox;
     }
 
     public ItemType setBoundingBox(BoundingBox boundingBox) {
@@ -156,6 +158,15 @@ public abstract class ItemType implements ObjectNameIdProvider{
 
     public ItemType setShape3DId(Integer shape3DId) {
         this.shape3DId = shape3DId;
+        return this;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public ItemType setRadius(double radius) {
+        this.radius = radius;
         return this;
     }
 

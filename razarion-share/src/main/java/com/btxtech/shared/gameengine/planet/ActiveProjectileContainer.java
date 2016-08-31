@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.ActiveProjectileGroup;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
@@ -25,7 +26,7 @@ public class ActiveProjectileContainer {
     private SyncBaseItem syncBaseItem;
     private WeaponType weaponType;
     private List<ActiveProjectileGroup> projectiles = new ArrayList<ActiveProjectileGroup>();
-    private Index projectileTarget;
+    private DecimalPosition projectileTarget;
     private SyncBaseItem target;
 
     public void init(WeaponType weaponType, SyncBaseItem syncBaseItem) {
@@ -97,7 +98,7 @@ public class ActiveProjectileContainer {
         }
     }
 
-    public Index getProjectileTarget() {
+    public DecimalPosition getProjectileTarget() {
         return projectileTarget;
     }
 

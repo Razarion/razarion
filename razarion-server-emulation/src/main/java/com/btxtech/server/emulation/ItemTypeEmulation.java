@@ -33,9 +33,9 @@ public class ItemTypeEmulation {
 
     public BaseItemType createSimpleMovable() {
         BaseItemType builder = (BaseItemType) new BaseItemType().setName("Builder Emulation").setId(Id.SIMPLE_MOVABLE.ordinal()).setTerrainType(TerrainType.LAND);
-        builder.setShape3DId(1);
+        builder.setShape3DId(1).setRadius(50);
         builder.setSpawnShape3DId(2).setSpawnDurationMillis(5000);
-        return builder.setMovableType(new MovableType().setSpeed(10)).setHealth(100).setRadius(50);
+        return builder.setMovableType(new MovableType().setSpeed(10)).setHealth(100);
     }
 
 }

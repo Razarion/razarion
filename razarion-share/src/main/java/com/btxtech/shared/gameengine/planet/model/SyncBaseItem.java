@@ -14,7 +14,7 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -191,7 +191,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
+    public void synchronize(SyncItemInfo syncItemInfo) throws ItemDoesNotExistException {
         checkBase(syncItemInfo.getBase());
         if (getItemType().getId() != syncItemInfo.getItemTypeId()) {
             setItemType(itemTypeService.getItemType(syncItemInfo.getItemTypeId()));
@@ -595,7 +595,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         getSyncItemArea().setPosition(null);
     }
 
-    public void clearContained(Index position) {
+    public void clearContained(DecimalPosition position) {
         containedIn = null;
         getSyncItemArea().setPosition(position);
     }

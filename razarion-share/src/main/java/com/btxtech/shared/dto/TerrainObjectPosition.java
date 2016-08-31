@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
@@ -13,7 +14,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class TerrainObjectPosition {
     private Integer id;
     private int terrainObjectId;
-    private Index position;
+    private DecimalPosition position;
     private double scale;
     private double zRotation;
 
@@ -37,11 +38,11 @@ public class TerrainObjectPosition {
         this.terrainObjectId = terrainObjectId;
     }
 
-    public Index getPosition() {
+    public DecimalPosition getPosition() {
         return position;
     }
 
-    public void setPosition(Index position) {
+    public void setPosition(DecimalPosition position) {
         this.position = position;
     }
 

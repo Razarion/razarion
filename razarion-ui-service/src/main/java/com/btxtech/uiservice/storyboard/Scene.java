@@ -3,6 +3,7 @@ package com.btxtech.uiservice.storyboard;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.uiservice.StartPointUiService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
  * 05.07.2016.
  */
 @Dependent
+// Better name: something with game-control
 public class Scene {
     private Logger logger = Logger.getLogger(Scene.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -33,6 +35,8 @@ public class Scene {
     private QuestVisualizer questVisualizer;
     @Inject
     private BotService botService;
+    @Inject
+    private StartPointUiService startPointUiService;
     private SceneConfig sceneConfig;
     private Collection<SceneCompletionHandler> completionHandlers = new ArrayList<>();
 
@@ -44,8 +48,11 @@ public class Scene {
         if (sceneConfig.getIntroText() != null) {
             storyCover.show(sceneConfig.getIntroText());
         }
-        if(sceneConfig.getBotConfigs() != null) {
+        if (sceneConfig.getBotConfigs() != null) {
             botService.startBots(sceneConfig.getBotConfigs());
+        }
+        if (sceneConfig.getStartPointConfig() != null) {
+            startPointUiService.activate(sceneConfig.getStartPointConfig());
         }
         questVisualizer.showSideBar(sceneConfig.isShowQuestSideBar());
         setupCameraConfig(sceneConfig.getCameraConfig());
@@ -86,6 +93,9 @@ public class Scene {
     public void cleanup() {
         if (sceneConfig.getIntroText() != null) {
             storyCover.hide();
+        }
+        if (sceneConfig.getStartPointConfig() != null) {
+            startPointUiService.deactivate();
         }
     }
 }

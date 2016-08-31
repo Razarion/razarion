@@ -13,13 +13,12 @@
 
 package com.btxtech.shared.gameengine.planet.model;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemContainerFullException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
@@ -54,7 +53,7 @@ public class SyncItemContainer extends SyncBaseAbility {
     private ActivityService activityService;
     private ItemContainerType itemContainerType;
     private List<Integer> containedItems = new ArrayList<>();
-    private Index unloadPos;
+    private DecimalPosition unloadPos;
 
     public void init(ItemContainerType itemContainerType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -62,14 +61,14 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
+    public void synchronize(SyncItemInfo syncItemInfo) throws ItemDoesNotExistException {
         unloadPos = syncItemInfo.getUnloadPos();
         containedItems = syncItemInfo.getContainedItems();
     }
 
     @Override
     public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
-        syncItemInfo.setUnloadPos(Index.saveCopy(unloadPos));
+        syncItemInfo.setUnloadPos(unloadPos);
         syncItemInfo.setContainedItems(CollectionUtils.saveArrayListCopy(containedItems));
     }
 
@@ -129,11 +128,11 @@ public class SyncItemContainer extends SyncBaseAbility {
         }
     }
 
-    public Index getUnloadPos() {
+    public DecimalPosition getUnloadPos() {
         return unloadPos;
     }
 
-    public void setUnloadPos(Index unloadPos) {
+    public void setUnloadPos(DecimalPosition unloadPos) {
         this.unloadPos = unloadPos;
     }
 
@@ -204,7 +203,7 @@ public class SyncItemContainer extends SyncBaseAbility {
         return false;
     }
 
-    public boolean atLeastOneAllowedToUnload(Index position) {
+    public boolean atLeastOneAllowedToUnload(DecimalPosition position) {
         try {
             isOnOperationSurfaceThrow();
             for (Integer containedItem : containedItems) {
@@ -220,11 +219,12 @@ public class SyncItemContainer extends SyncBaseAbility {
         return false;
     }
 
-    private boolean allowedUnload(Index position, int containedItem) throws ItemDoesNotExistException {
-        return isInUnloadRange(position) && terrainService.isFree(position, baseItemService.getItem(containedItem).getItemType(), null, null);
+    private boolean allowedUnload(DecimalPosition position, int containedItem) throws ItemDoesNotExistException {
+        return isInUnloadRange(position) && !terrainService.overlap(position, baseItemService.getItem(containedItem).getItemType(), null, null);
     }
 
-    private boolean isInUnloadRange(Index unloadPos) {
-        return getSyncItemArea().isInRange(getRange(), unloadPos);
+    private boolean isInUnloadRange(DecimalPosition unloadPos) {
+        // return getSyncItemArea().isInRange(getRange(), unloadPos);
+        throw new UnsupportedOperationException();
     }
 }

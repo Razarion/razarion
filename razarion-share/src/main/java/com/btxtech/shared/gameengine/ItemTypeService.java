@@ -30,7 +30,7 @@ public class ItemTypeService {
         return itemType;
     }
 
-    public BaseItemType getBaseItemType(int baseItemTypeId) throws NoSuchItemTypeException {
+    public BaseItemType getBaseItemType(int baseItemTypeId) {
         return (BaseItemType) getItemType(baseItemTypeId);
     }
 

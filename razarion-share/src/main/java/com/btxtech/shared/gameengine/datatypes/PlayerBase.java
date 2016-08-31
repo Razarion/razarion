@@ -24,14 +24,10 @@ public class PlayerBase {
     private Character character;
     private boolean abandoned;
 
-    public PlayerBase(int baseId, String name, boolean bot, boolean npcBot) {
+    public PlayerBase(int baseId, String name, Character character) {
         this.baseId = baseId;
         this.name = name;
-        if (bot) {
-            character = npcBot ? Character.BOT_NCP : Character.BOT;
-        } else {
-            character = Character.HUMAN;
-        }
+        this.character = character;
     }
 
     public int getBaseId() {

@@ -18,7 +18,7 @@ package com.btxtech.shared.gameengine.datatypes.exception;
  * Date: 02.12.2009
  * Time: 16:10:39
  */
-public class NoSuchItemTypeException extends Exception {
+public class NoSuchItemTypeException extends RuntimeException {
 
     /**
      * Used bw GWT

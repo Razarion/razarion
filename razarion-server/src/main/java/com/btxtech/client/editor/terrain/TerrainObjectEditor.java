@@ -72,7 +72,7 @@ public class TerrainObjectEditor {
             CursorType cursorType;
             hover = false;
             if (selected != null) {
-                selected.setPosition(terrainPosition.toXY().getPosition());
+                selected.setPosition(terrainPosition.toXY());
                 terrainObjectService.setupModelMatrices(terrainObjects);
                 cursorType = CursorType.SELECTED;
             } else if (getAtTerrain(terrainPosition) != null) {
@@ -109,7 +109,7 @@ public class TerrainObjectEditor {
                 }
                 objectPosition.setScale(1.0 / randomScale + (randomScale - 1.0 / randomScale) * Math.random());
                 objectPosition.setZRotation(MathHelper.ONE_RADIANT * Math.random());
-                objectPosition.setPosition(terrainPosition.toXY().getPosition());
+                objectPosition.setPosition(terrainPosition.toXY());
                 objectPosition.setTerrainObjectId(newObjectId.getId());
                 terrainObjects.add(objectPosition);
                 selected = objectPosition;

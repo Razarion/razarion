@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.UserTrackingService;
 import com.btxtech.shared.gameengine.datatypes.Path;
@@ -44,7 +45,7 @@ public class CommandService {
     @Inject
     private PlanetService planetService;
 
-    public void move(SyncBaseItem syncBaseItem, Index destination) {
+    public void move(SyncBaseItem syncBaseItem, DecimalPosition destination) {
         syncBaseItem.stop();
         MoveCommand moveCommand = new MoveCommand();
         moveCommand.setId(syncBaseItem.getId());
@@ -59,7 +60,7 @@ public class CommandService {
         }
     }
 
-    public void build(SyncBaseItem builder, Index position, BaseItemType itemTypeToBuild) {
+    public void build(SyncBaseItem builder, DecimalPosition position, BaseItemType itemTypeToBuild) {
         throw new UnsupportedOperationException();
     }
 
@@ -79,7 +80,7 @@ public class CommandService {
         throw new UnsupportedOperationException();
     }
 
-    public void attack(SyncBaseItem syncBaseItem, SyncBaseItem target, Index destinationHint, double destinationAngel, boolean followTarget) {
+    public void attack(SyncBaseItem syncBaseItem, SyncBaseItem target, DecimalPosition destinationHint, double destinationAngel, boolean followTarget) {
         syncBaseItem.stop();
         Path path;
         AttackCommand attackCommand = new AttackCommand();

@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.planet.model;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
@@ -52,7 +53,7 @@ public class SyncWeapon extends SyncBaseAbility {
     private Integer target;
     private boolean followTarget;
     private double reloadProgress;
-    private Index targetPosition; // Not Synchronized
+    private DecimalPosition targetPosition; // Not Synchronized
     private long targetPositionLastCheck; // Not Synchronized
     private SyncMovable.OverlappingHandler overlappingHandler = new SyncMovable.OverlappingHandler() {
         @Override
@@ -280,7 +281,7 @@ public class SyncWeapon extends SyncBaseAbility {
         this.reloadProgress = reloadProgress;
     }
 
-    public Index getProjectileTarget() {
+    public DecimalPosition getProjectileTarget() {
         return activeProjectileContainer.getProjectileTarget();
     }
 }

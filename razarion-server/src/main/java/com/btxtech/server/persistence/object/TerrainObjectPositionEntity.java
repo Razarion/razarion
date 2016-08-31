@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.object;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 
 import javax.persistence.Embedded;
@@ -26,7 +26,7 @@ public class TerrainObjectPositionEntity {
     @JoinColumn
     private TerrainObjectEntity terrainObjectEntity;
     @Embedded
-    private Index position;
+    private DecimalPosition position;
     private double scale;
     private double zRotation;
 

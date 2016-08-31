@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -17,7 +18,7 @@ public class ActiveProjectileGroup {
     private Collection<ActiveProjectile> projectiles = new ArrayList<ActiveProjectile>();
     private boolean alive;
 
-    public ActiveProjectileGroup(SyncBaseItem syncBaseItem, WeaponType weaponType, Index projectileTarget) {
+    public ActiveProjectileGroup(SyncBaseItem syncBaseItem, WeaponType weaponType, DecimalPosition projectileTarget) {
         int angleIndex = syncBaseItem.getSyncItemArea().getAngelIndex();
         for (int muzzleFlashNr = 0; muzzleFlashNr < weaponType.getMuzzleFlashCount(); muzzleFlashNr++) {
             ActiveProjectile activeProjectile = new ActiveProjectile(this, syncBaseItem, projectileTarget, angleIndex, weaponType, muzzleFlashNr);

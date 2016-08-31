@@ -50,6 +50,10 @@ public class SyncItemPosition {
         return position != null;
     }
 
+    public boolean overlap(DecimalPosition position, double radius) {
+        return this.position.toXY().getDistance(position) > this.radius + radius;
+    }
+
     @Override
     public String toString() {
         return "SyncItemPosition{" +

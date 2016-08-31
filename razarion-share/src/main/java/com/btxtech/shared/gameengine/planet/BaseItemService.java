@@ -1,7 +1,8 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -29,7 +30,7 @@ import java.util.Map;
  * Created by Beat
  * 15.07.2016.
  */
-@ApplicationScoped
+@ApplicationScoped // Rename to BaseService
 public class BaseItemService {
     @Inject
     private ActivityService activityService;
@@ -43,13 +44,21 @@ public class BaseItemService {
     private final Map<PlayerBase, Collection<SyncBaseItem>> baseItems = new HashMap<>();
     private int lastBaseItId;
 
+    public PlayerBase createHumanBase(String name) {
+        return createBase(name, Character.HUMAN);
+    }
+
     public PlayerBase createBotBase(BotConfig botConfig) {
+        return createBase(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT);
+    }
+
+    private PlayerBase createBase(String name, Character character) {
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("Base with Id already exits: " + lastBaseItId);
             }
-            PlayerBase playerBase = new PlayerBase(lastBaseItId, botConfig.getName(), true, botConfig.isNpc());
+            PlayerBase playerBase = new PlayerBase(lastBaseItId, name, character);
             bases.put(lastBaseItId, playerBase);
             activityService.onBaseCreated(playerBase);
             return playerBase;
@@ -66,7 +75,7 @@ public class BaseItemService {
         throw new UnsupportedOperationException();
     }
 
-    public SyncItem createSyncBaseItem4Beam(BaseItemType toBeBuilt, Index position, PlayerBase base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncItem spawnSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
         if (!isAlive(base)) {
             throw new BaseDoesNotExistException(base);
         }
@@ -211,6 +220,11 @@ public class BaseItemService {
         return total;
     }
 
+
+    public boolean hasEnemyForSpawn(DecimalPosition position, double itemFreeRadius) {
+        return false; // TODO if enemies implemented
+    }
+
     // --------------------------------------------------------------------------
 
     public SyncItem getItem(int id) throws ItemDoesNotExistException {
@@ -257,7 +271,7 @@ public class BaseItemService {
         throw new UnsupportedOperationException();
     }
 
-    public Collection<SyncBaseItem> getBaseItemsInRadius(Index position, int radius, PlayerBase playerBase, Collection<BaseItemType> baseItemTypeFilter) {
+    public Collection<SyncBaseItem> getBaseItemsInRadius(DecimalPosition position, int radius, PlayerBase playerBase, Collection<BaseItemType> baseItemTypeFilter) {
         throw new UnsupportedOperationException();
     }
 

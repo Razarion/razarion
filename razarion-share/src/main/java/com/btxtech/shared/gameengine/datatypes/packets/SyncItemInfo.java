@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.packets;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -28,12 +29,12 @@ import java.util.List;
  */
 public class SyncItemInfo extends Packet {
     private int id;
-    private Index position;
+    private DecimalPosition position;
     private int itemTypeId;
     private boolean isAlive = true;
     private PlayerBase base;
     private PlayerBase killedBy;
-    private List<Index> pathToDestination;
+    private List<DecimalPosition> pathToDestination;
     private Double angel;
     private Vertex toBeBuildPosition;
     private Integer toBeBuiltTypeId;
@@ -51,7 +52,7 @@ public class SyncItemInfo extends Packet {
     private List<Integer> containedItems;
     private Integer targetContainer;
     private Integer containedIn;
-    private Index unloadPos;
+    private DecimalPosition unloadPos;
     private boolean explode;
     private Index targetPosition;
     private Double destinationAngel;
@@ -67,12 +68,12 @@ public class SyncItemInfo extends Packet {
         this.id = id;
     }
 
-    public Index getPosition() {
+    public DecimalPosition getPosition() {
         return position;
     }
 
-    public void setPosition(Index position) {
-        this.position = Index.saveCopy(position);
+    public void setPosition(DecimalPosition position) {
+        this.position = position;
     }
 
     public int getItemTypeId() {
@@ -107,7 +108,7 @@ public class SyncItemInfo extends Packet {
         this.base = base;
     }
 
-    public List<Index> getPathToDestination() {
+    public List<DecimalPosition> getPathToDestination() {
         return pathToDestination;
     }
 
@@ -155,7 +156,7 @@ public class SyncItemInfo extends Packet {
         return followTarget;
     }
 
-    public void setPathToDestination(List<Index> pathToDestination) {
+    public void setPathToDestination(List<DecimalPosition> pathToDestination) {
         this.pathToDestination = pathToDestination;
     }
 
@@ -243,11 +244,11 @@ public class SyncItemInfo extends Packet {
         this.containedIn = containedIn;
     }
 
-    public Index getUnloadPos() {
+    public DecimalPosition getUnloadPos() {
         return unloadPos;
     }
 
-    public void setUnloadPos(Index unloadPos) {
+    public void setUnloadPos(DecimalPosition unloadPos) {
         this.unloadPos = unloadPos;
     }
 
@@ -333,7 +334,7 @@ public class SyncItemInfo extends Packet {
                 " isAlive:" + isAlive +
                 " explode:" + explode +
                 base +
-                " pathToDestination:" + Index.toString(pathToDestination) +
+                " pathToDestination:" + pathToDestination +
                 " angel:" + angel +
                 " toBeBuildPosition:" + toBeBuildPosition +
                 " toBeBuiltTypeId:" + toBeBuiltTypeId +

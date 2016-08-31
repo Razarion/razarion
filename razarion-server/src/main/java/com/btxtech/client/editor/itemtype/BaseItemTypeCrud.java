@@ -4,7 +4,6 @@ import com.btxtech.client.editor.framework.AbstractCrudeEditor;
 import com.btxtech.shared.ItemTypeProvider;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import org.jboss.errai.common.client.api.Caller;
@@ -79,11 +78,7 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
 
     @Override
     public BaseItemType getInstance(ObjectNameId objectNameId) {
-        try {
-            return (BaseItemType) itemTypeService.getItemType(objectNameId.getId());
-        } catch (NoSuchItemTypeException e) {
-            throw new RuntimeException(e);
-        }
+        return (BaseItemType) itemTypeService.getItemType(objectNameId.getId());
     }
 
     @Override

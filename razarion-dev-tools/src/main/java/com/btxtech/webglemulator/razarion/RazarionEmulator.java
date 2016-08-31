@@ -54,26 +54,18 @@ public class RazarionEmulator {
     }
 
     private void start() {
-        scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            long time = System.currentTimeMillis();
-                            renderService.render();
-                            sceneController.update();
-                            if (showRenderTime) {
-                                System.out.println("Time for render: " + (System.currentTimeMillis() - time));
-                            }
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                        }
-                    }
-                });
+        scheduler.scheduleWithFixedDelay(() -> Platform.runLater(() -> {
+            try {
+                long time = System.currentTimeMillis();
+                renderService.render();
+                sceneController.update();
+                if (showRenderTime) {
+                    System.out.println("Time for render: " + (System.currentTimeMillis() - time));
+                }
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
             }
-        }, RENDER_DELAY, RENDER_DELAY, TimeUnit.MILLISECONDS);
+        }), RENDER_DELAY, RENDER_DELAY, TimeUnit.MILLISECONDS);
         storyboardService.start();
     }
 }

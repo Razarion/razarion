@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -120,8 +121,9 @@ public class WeaponType {
         return disallowedItemTypes.contains(itemTypeId);
     }
 
-    public Index getMuzzleFlashPosition(int muzzleNr, int angelIndex) {
-        return muzzleFlashPositions[muzzleNr][angelIndex];
+    public DecimalPosition getMuzzleFlashPosition(int muzzleNr, int angelIndex) {
+        throw new UnsupportedOperationException();
+        // return muzzleFlashPositions[muzzleNr][angelIndex];
     }
 
     public void setMuzzleFlashPosition(int muzzleNr, int angelIndex, Index position) {

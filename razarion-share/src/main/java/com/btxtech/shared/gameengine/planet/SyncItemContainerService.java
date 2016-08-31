@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItemPosition;
@@ -63,5 +64,9 @@ public class SyncItemContainerService {
                 logger.severe("Item did not belong to SyncItemContainerService: " + syncItem);
             }
         }
+    }
+
+    public boolean hasItemsInRange(DecimalPosition position, double radius) {
+        return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncItemPosition().overlap(position, radius));
     }
 }

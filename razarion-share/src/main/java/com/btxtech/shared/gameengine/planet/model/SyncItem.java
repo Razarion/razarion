@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;

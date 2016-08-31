@@ -13,7 +13,7 @@
 
 package com.btxtech.shared.gameengine.planet.bot;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
@@ -184,8 +184,8 @@ public class BotItemContainer {
     private void createItem(BotItemConfig botItemConfig, PlayerBase playerBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(botItemConfig.getBaseItemTypeId());
         if (botItemConfig.isCreateDirectly()) {
-            Index position = getPosition(botItemConfig.getPlace(), toBeBuilt);
-            baseItemService.createSyncBaseItem4Beam(toBeBuilt, position, playerBase);
+            DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt);
+            baseItemService.spawnSyncBaseItem(toBeBuilt, position, playerBase);
             currentItemCreation.startSpawning(botItemConfig);
         } else {
             BotSyncBaseItem botSyncBuilder = getFirstIdleBuilder(toBeBuilt);
@@ -197,7 +197,7 @@ public class BotItemContainer {
                 botSyncBuilder.buildUnit(toBeBuilt);
             } else {
                 // botSyncBuilder is builder unit
-                Index position = getPosition(botItemConfig.getPlace(), toBeBuilt);
+                DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt);
                 try {
                     botSyncBuilder.buildBuilding(position, toBeBuilt);
                 } catch (Exception e) {
@@ -208,7 +208,7 @@ public class BotItemContainer {
         }
     }
 
-    private Index getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt) {
+    private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt) {
         if (placeConfig == null) {
             return collisionService.getFreeRandomPosition(toBeBuilt, realm, 0, false, true);
         } else if (placeConfig.getRegion() != null) {

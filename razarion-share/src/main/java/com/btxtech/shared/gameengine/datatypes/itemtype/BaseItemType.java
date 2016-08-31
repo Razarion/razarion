@@ -25,7 +25,6 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Portable
 @Bindable
 public class BaseItemType extends ItemType {
-    private double radius;
     private int health;
     private int price;
     private int buildup;
@@ -46,15 +45,6 @@ public class BaseItemType extends ItemType {
     private Integer unlockCrystals;
     private int spawnDurationMillis;
     private Integer spawnShape3DId;
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public BaseItemType setRadius(double radius) {
-        this.radius = radius;
-        return this;
-    }
 
     public int getHealth() {
         return health;
