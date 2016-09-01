@@ -74,6 +74,7 @@
     </dependencies>
 
     <modules>
+        <module>razarion-client</module>
         <module>razarion-ui-service</module>
         <module>razarion-dev-tools</module>
         <module>razarion-server-common</module>
