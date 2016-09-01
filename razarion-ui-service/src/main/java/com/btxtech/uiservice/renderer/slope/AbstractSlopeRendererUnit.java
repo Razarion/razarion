@@ -1,6 +1,7 @@
-package com.btxtech.uiservice.renderer;
+package com.btxtech.uiservice.renderer.slope;
 
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
+import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 
 /**
  * Created by Beat

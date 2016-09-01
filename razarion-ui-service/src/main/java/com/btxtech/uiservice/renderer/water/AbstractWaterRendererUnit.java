@@ -1,6 +1,7 @@
-package com.btxtech.uiservice.renderer;
+package com.btxtech.uiservice.renderer.water;
 
 import com.btxtech.shared.gameengine.planet.terrain.Water;
+import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.inject.Inject;

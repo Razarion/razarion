@@ -1,6 +1,7 @@
-package com.btxtech.uiservice.renderer;
+package com.btxtech.uiservice.renderer.ground;
 
 import com.btxtech.shared.dto.VertexList;
+import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.inject.Inject;

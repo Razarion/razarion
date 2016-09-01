@@ -2,7 +2,7 @@ package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.uiservice.renderer.AbstractGroundRendererUnit;
+import com.btxtech.uiservice.renderer.ground.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
