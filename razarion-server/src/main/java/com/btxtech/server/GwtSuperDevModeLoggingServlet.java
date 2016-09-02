@@ -3,8 +3,6 @@ package com.btxtech.server;
 import com.google.gwt.logging.server.RemoteLoggingServiceImpl;
 import com.google.gwt.user.client.rpc.SerializationException;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import java.io.File;
 
@@ -12,11 +10,11 @@ import java.io.File;
  * Created by Beat
  * 18.04.2015.
  */
-@WebServlet(urlPatterns = "/razarionServer/remote_logging")
+@WebServlet(urlPatterns = "/razarion_client/remote_logging")
 public class GwtSuperDevModeLoggingServlet extends RemoteLoggingServiceImpl {
     private final static String TEMP_DIR = "C:\\Users\\Beat\\AppData\\Local\\Temp";
-    private final static String MODULE_NAME = "com.btxtech.Razarion-Server";
-    private final static String SIMPLE_MODULE_NAME = "razarionServer";
+    private final static String MODULE_NAME = "com.btxtech.Razarion-Client";
+    private final static String SIMPLE_MODULE_NAME = "razarion_client";
     private String path = null;
 
     @Override

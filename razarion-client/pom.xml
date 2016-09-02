@@ -135,6 +135,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <version>${gwt.pulgin.version}</version>
                 <configuration>
+                    <warSourceDirectory>${project.parent.basedir}/razarion-server/src/main/webapp/</warSourceDirectory>
                     <logLevel>INFO</logLevel>
                     <noServer>true</noServer>
                     <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M </extraJvmArgs>
