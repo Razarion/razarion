@@ -1,7 +1,6 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.List;
  * Created by Beat
  * 05.04.2015.
  */
-@Portable
 @Embeddable
 public class Vertex {
     public static final Vertex ZERO = new Vertex(0, 0, 0);

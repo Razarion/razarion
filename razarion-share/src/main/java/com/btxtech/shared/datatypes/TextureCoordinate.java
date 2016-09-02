@@ -1,14 +1,11 @@
 package com.btxtech.shared.datatypes;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.List;
 
 /**
  * Created by Beat
  * 12.04.2015.
  */
-@Portable
 public class TextureCoordinate {
     // x Axis
     private double s;

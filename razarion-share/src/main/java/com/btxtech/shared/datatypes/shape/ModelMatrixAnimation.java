@@ -1,8 +1,6 @@
 package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
 
 import java.util.List;
 
@@ -10,12 +8,11 @@ import java.util.List;
  * Created by Beat
  * 28.07.2016.
  */
-@Portable
-@Bindable
 public class ModelMatrixAnimation {
     public enum Axis {
         X, Y, Z
     }
+
     private String id;
     private Element3D element3D;
     private TransformationModification modification;
@@ -84,7 +81,7 @@ public class ModelMatrixAnimation {
                 ", modification=" + modification +
                 ", axis=" + axis +
                 ", timeValueSamples=" + timeValueSamples +
-                ", element3D id=" + element3D.getId()+
+                ", element3D id=" + element3D.getId() +
                 ", itemState=" + itemState +
                 '}';
     }

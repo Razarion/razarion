@@ -1,16 +1,10 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.shape.Shape3D;
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
-
 /**
  * Created by Beat
  * 10.05.2016.
  */
-@Portable
-@Bindable
-public class TerrainObjectConfig implements ObjectNameIdProvider{
+public class TerrainObjectConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
     private Integer shape3DId;

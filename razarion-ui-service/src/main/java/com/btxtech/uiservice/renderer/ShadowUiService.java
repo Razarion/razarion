@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Plane3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import org.jboss.errai.databinding.client.api.Bindable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -16,7 +15,6 @@ import javax.inject.Singleton;
  * 23.06.2015.
  */
 @Singleton
-@Bindable
 public class ShadowUiService {
     // private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
     private static final double Z_NEAR = 1;

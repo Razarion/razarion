@@ -1,12 +1,9 @@
 package com.btxtech.shared.datatypes;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 /**
  * Created by Beat
  * 05.04.2015.
  */
-@Portable
 public class Vertex4 {
     private double x;
     private double y;

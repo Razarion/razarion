@@ -3,15 +3,11 @@ package com.btxtech.shared.dto;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
 
 /**
  * Created by Beat
  * 28.05.2016.
  */
-@Portable
-@Bindable
 public class LightConfig {
     private double xRotation;
     private double yRotation;

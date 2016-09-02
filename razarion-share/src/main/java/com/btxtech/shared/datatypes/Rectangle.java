@@ -13,8 +13,6 @@
 
 package com.btxtech.shared.datatypes;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +22,6 @@ import java.util.List;
  * Date: May 23, 2009
  * Time: 11:38:26 AM
  */
-@Portable
 public class Rectangle {
     private Index start;
     private Index endExclusive;

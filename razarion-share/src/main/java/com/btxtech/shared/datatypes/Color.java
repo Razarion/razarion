@@ -1,7 +1,5 @@
 package com.btxtech.shared.datatypes;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import javax.persistence.Embeddable;
 import java.util.List;
 
@@ -9,7 +7,6 @@ import java.util.List;
  * Created by Beat
  * 11.04.2015.
  */
-@Portable
 @Embeddable
 public class Color {
     private double r;

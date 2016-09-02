@@ -13,8 +13,6 @@
 
 package com.btxtech.shared.datatypes;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -23,7 +21,6 @@ import java.util.Collection;
  * Date: May 22, 2009
  * Time: 11:56:58 AM
  */
-@Portable
 public class Vec2dInt {
     public enum Direction {
         N,

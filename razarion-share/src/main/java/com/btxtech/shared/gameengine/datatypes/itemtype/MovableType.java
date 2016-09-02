@@ -13,14 +13,11 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 23:12:43
  */
-@Portable
 public class MovableType {
     private int speed;
 

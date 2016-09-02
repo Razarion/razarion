@@ -1,13 +1,10 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 /**
  * User: beat
  * Date: 10.10.2011
  * Time: 13:37:24
  */
-@Portable
 public class BotItemConfig {
     private int baseItemTypeId;
     private int count;

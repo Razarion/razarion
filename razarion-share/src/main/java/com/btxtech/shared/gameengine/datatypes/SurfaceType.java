@@ -13,8 +13,6 @@
 
 package com.btxtech.shared.gameengine.datatypes;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -23,7 +21,6 @@ import java.util.Iterator;
  * Date: 18.11.2009
  * Time: 15:09:53
  */
-@Portable
 public enum SurfaceType {
     NONE,
     WATER,

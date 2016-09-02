@@ -1,10 +1,10 @@
 package com.btxtech.server.emulation;
 
 import com.btxtech.shared.system.ExceptionHandler;
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,8 +21,10 @@ import java.util.logging.Logger;
 @Singleton
 public class JsonPersistence {
     private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Logger logger;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
 
@@ -30,8 +32,8 @@ public class JsonPersistence {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             // objectMapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
-            objectMapper.setVisibility(JsonMethod.ALL, JsonAutoDetect.Visibility.NONE);
-            objectMapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+            objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             objectMapper.enableDefaultTyping();
             return objectMapper.readValue(getFileReader(fileName), clazz);
         } catch (IOException e) {
@@ -42,9 +44,9 @@ public class JsonPersistence {
     public void writeJson(String fileName, Object object) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
-            objectMapper.setVisibility(JsonMethod.ALL, JsonAutoDetect.Visibility.NONE);
-            objectMapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+            objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
             objectMapper.enableDefaultTyping();
             objectMapper.writeValue(getFileWriter(fileName), object);
         } catch (IOException e) {

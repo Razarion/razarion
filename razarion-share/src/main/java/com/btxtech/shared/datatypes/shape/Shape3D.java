@@ -2,7 +2,6 @@ package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
 
@@ -10,7 +9,6 @@ import java.util.List;
  * Created by Beat
  * 28.07.2016.
  */
-@Portable
 public class Shape3D implements ObjectNameIdProvider {
     private int dbId;
     private String internalName;

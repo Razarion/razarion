@@ -4,14 +4,12 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.model.SyncItemArea;
 import com.btxtech.shared.utils.MathHelper;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 17.08.2011
  * Time: 13:00:05
  */
-@Portable
 public class BoundingBox {
     private int radius;
     private int diameter;

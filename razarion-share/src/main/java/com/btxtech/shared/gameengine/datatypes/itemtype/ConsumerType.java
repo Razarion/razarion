@@ -13,14 +13,11 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 /**
  * User: beat
  * Date: 23.12.2009
  * Time: 12:54:48
  */
-@Portable
 public class ConsumerType {
     private int wattage;
 

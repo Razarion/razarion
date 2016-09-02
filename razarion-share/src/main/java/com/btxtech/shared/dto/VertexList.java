@@ -10,7 +10,6 @@ import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.List;
  * Created by Beat
  * 11.04.2015.
  */
-@Portable
 public class VertexList {
     private String name;
     private List<Vertex> vertices = new ArrayList<>();

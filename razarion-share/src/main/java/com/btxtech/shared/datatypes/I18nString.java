@@ -1,6 +1,5 @@
 package com.btxtech.shared.datatypes;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Map;
 
@@ -9,7 +8,6 @@ import java.util.Map;
  * Date: 13.01.13
  * Time: 13:14
  */
-@Portable
 public class I18nString {
     public enum Language {
         DEFAULT,

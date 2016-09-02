@@ -1,14 +1,10 @@
 package com.btxtech.shared.dto;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
 
 /**
  * Created by Beat
  * 08.05.2016.
  */
-@Portable
-@Bindable
 public class SlopeSkeletonConfig {
     public enum Type {
         LAND,

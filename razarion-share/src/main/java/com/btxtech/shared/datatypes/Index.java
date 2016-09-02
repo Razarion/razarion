@@ -14,7 +14,6 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import java.util.List;
  * Date: May 22, 2009
  * Time: 11:56:58 AM
  */
-@Portable
 @Embeddable
 public class Index {
     public static final Index ZERO = new Index(0, 0);
@@ -125,7 +123,7 @@ public class Index {
      * If the given point is exactly in the north, the angle is PI/2 90dec
      * If the given point is exactly in the west, the angle is PI 180dec
      * If the given point is exactly in the south, the angle is 3/2 * PI 270dec
-     * <p/>
+     * <p>
      * The returned angle is between 0 and 2Pi
      *
      * @param point end point

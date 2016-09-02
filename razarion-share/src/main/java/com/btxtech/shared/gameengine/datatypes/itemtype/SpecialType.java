@@ -15,14 +15,12 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import com.btxtech.shared.gameengine.datatypes.RadarMode;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 23.12.2009
  * Time: 12:44:52
  */
-@Portable
 public class SpecialType {
     private RadarMode radarMode;
 

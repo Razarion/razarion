@@ -1,6 +1,7 @@
 package com.btxtech.server;
 
-import org.apache.commons.codec.binary.Base64;
+
+import java.util.Base64;
 
 /**
  * Created by Beat
@@ -14,7 +15,7 @@ public class DataUrlDecoder {
 
     public DataUrlDecoder(String dataUrl) {
         int contentStartIndex = dataUrl.indexOf(BASE_64) + BASE_64.length();
-        data = Base64.decodeBase64(dataUrl.substring(contentStartIndex));
+        data = Base64.getDecoder().decode(dataUrl.substring(contentStartIndex));
         type = dataUrl.substring(DATA.length(), dataUrl.indexOf(";"));
     }
 

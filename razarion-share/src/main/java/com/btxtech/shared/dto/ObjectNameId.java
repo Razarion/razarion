@@ -1,12 +1,10 @@
 package com.btxtech.shared.dto;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * Created by Beat
  * 23.04.2016.
  */
-@Portable
 public class ObjectNameId {
     private int id;
     private String internalName;

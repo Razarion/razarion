@@ -1,7 +1,6 @@
 package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Map;
 
@@ -9,7 +8,6 @@ import java.util.Map;
  * Created by Beat
  * 21.08.2016.
  */
-@Portable
 public class Shape3DConfig {
     private int dbId;
     private String colladaString;

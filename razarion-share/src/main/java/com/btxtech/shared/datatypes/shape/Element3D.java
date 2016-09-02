@@ -1,14 +1,11 @@
 package com.btxtech.shared.datatypes.shape;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.List;
 
 /**
  * Created by Beat
  * 28.07.2016.
  */
-@Portable
 public class Element3D {
     private String id;
     private String shape3DInternalName;

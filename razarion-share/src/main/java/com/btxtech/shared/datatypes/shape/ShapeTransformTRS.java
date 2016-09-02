@@ -1,13 +1,11 @@
 package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.datatypes.Matrix4;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * Created by Beat
  * 06.08.2016.
  */
-@Portable
 public class ShapeTransformTRS implements ShapeTransform {
     private double xTranslate;
     private double yTranslate;

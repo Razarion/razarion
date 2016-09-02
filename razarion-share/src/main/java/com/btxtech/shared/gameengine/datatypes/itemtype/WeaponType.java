@@ -16,7 +16,6 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -26,7 +25,6 @@ import java.util.Map;
  * Date: 17.11.2009
  * Time: 23:13:22
  */
-@Portable
 public class WeaponType {
     private int range;
     private int damage;

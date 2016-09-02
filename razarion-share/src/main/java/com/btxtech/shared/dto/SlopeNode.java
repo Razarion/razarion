@@ -1,13 +1,11 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.Vertex;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * Created by Beat
  * 08.05.2016.
  */
-@Portable
 public class SlopeNode {
     private Vertex position;
     private double slopeFactor;

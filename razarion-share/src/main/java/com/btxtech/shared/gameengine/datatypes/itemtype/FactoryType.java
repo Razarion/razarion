@@ -13,8 +13,6 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.Collection;
 
 /**
@@ -22,7 +20,6 @@ import java.util.Collection;
  * Date: 17.11.2009
  * Time: 23:18:42
  */
-@Portable
 public class FactoryType {
     private double progress;
     private Collection<Integer> ableToBuild;

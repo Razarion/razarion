@@ -1,9 +1,7 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
 
@@ -11,7 +9,6 @@ import java.util.List;
  * Created by Beat
  * 05.07.2016.
  */
-@Portable
 // Better name: something with game-control, client control
 public class StoryboardConfig {
     private List<SceneConfig> sceneConfigs;

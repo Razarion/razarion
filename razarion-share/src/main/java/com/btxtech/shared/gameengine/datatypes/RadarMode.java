@@ -1,7 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,7 +8,6 @@ import java.util.List;
  * Date: 12.02.2012
  * Time: 11:53:32
  */
-@Portable
 public enum RadarMode {
     DISABLED(0),
     NONE(1),

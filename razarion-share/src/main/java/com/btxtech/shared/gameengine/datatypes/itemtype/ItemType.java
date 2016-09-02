@@ -14,19 +14,17 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
-import org.jboss.errai.databinding.client.api.Bindable;
 
 /**
  * User: beat
  * Date: 17.11.2009
  * Time: 22:50:01
  */
-public abstract class ItemType implements ObjectNameIdProvider{
+public abstract class ItemType implements ObjectNameIdProvider {
     private int id;
     private String name;
     private I18nString i18Name;

@@ -1,12 +1,9 @@
 package com.btxtech.shared.dto;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 /**
  * Created by Beat
  * 15.06.2016.
  */
-@Portable
 public class ImageGalleryItem {
     private int id;
     private int size;

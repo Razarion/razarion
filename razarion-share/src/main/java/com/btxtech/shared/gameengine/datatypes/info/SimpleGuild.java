@@ -1,13 +1,11 @@
 package com.btxtech.shared.gameengine.datatypes.info;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * User: beat
  * Date: 31.05.13
  * Time: 13:44
  */
-@Portable
 public class SimpleGuild {
     private int id;
     private String name;

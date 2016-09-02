@@ -1,7 +1,6 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,7 +10,6 @@ import java.util.List;
  * Created by Beat
  * 11.03.2016.
  */
-@Portable
 public class Polygon2D {
     // private Logger logger = Logger.getLogger(Polygon2D.class.getName());
     private List<DecimalPosition> corners = new ArrayList<>();

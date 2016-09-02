@@ -13,9 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
 
-@Portable
 public class ResourceType extends ItemType {
     private int amount;
 

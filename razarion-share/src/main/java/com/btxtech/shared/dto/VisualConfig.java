@@ -1,8 +1,6 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
 
 import java.util.List;
 
@@ -10,8 +8,6 @@ import java.util.List;
  * Created by Beat
  * 15.08.2016.
  */
-@Portable
-@Bindable
 public class VisualConfig {
     // Divide in 3 parts: shadow, water and Shape3D
     private double shadowRotationX;

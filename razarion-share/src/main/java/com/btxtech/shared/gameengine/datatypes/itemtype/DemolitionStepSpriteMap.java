@@ -1,7 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.Collection;
 
 /**
@@ -9,7 +7,6 @@ import java.util.Collection;
  * Date: 06.11.12
  * Time: 18:02
  */
-@Portable
 public class DemolitionStepSpriteMap {
     private int animationFrames;
     private int animationDuration;

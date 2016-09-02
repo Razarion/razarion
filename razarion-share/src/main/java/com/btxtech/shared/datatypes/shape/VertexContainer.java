@@ -3,7 +3,6 @@ package com.btxtech.shared.datatypes.shape;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
  * Created by Beat
  * 14.05.2016.
  */
-@Portable
 public class VertexContainer {
     private String materialId;
     private String materialName;

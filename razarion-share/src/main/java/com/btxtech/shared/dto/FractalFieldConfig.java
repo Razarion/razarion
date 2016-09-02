@@ -1,14 +1,12 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.utils.InterpolationUtils;
-import org.jboss.errai.databinding.client.api.Bindable;
+import com.btxtech.shared.utils.MathHelper;
 
 /**
  * Created by Beat
  * 20.05.2016.
  */
-@Bindable
 public class FractalFieldConfig {
     // private Logger logger = Logger.getLogger(FractalFieldConfig.class.getName());
     private int xCount;

@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Collection;
 
@@ -24,7 +23,6 @@ import java.util.Collection;
  * Date: 01.05.2010
  * Time: 10:54:25
  */
-@Portable
 public class ItemContainerType {
     private Collection<Integer> ableToContain;
     private SurfaceType operationSurfaceType;

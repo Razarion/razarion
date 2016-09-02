@@ -1,14 +1,9 @@
 package com.btxtech.shared.dto;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
-
 /**
  * Created by Beat
  * 07.05.2016.
  */
-@Bindable
-@Portable
 public class GroundConfig {
     private GroundSkeletonConfig groundSkeletonConfig;
     private double heightFractalRoughness;

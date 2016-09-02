@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,6 @@ import java.util.Map;
  * Created by Beat
  * 05.07.2016.
  */
-@Portable
 public class PlanetConfig {
     private Rectangle dimension;
     private List<TerrainSlopePosition> terrainSlopePositions;

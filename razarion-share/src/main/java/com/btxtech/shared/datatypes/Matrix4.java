@@ -1,7 +1,6 @@
 package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.Arrays;
 
@@ -9,7 +8,6 @@ import java.util.Arrays;
  * Created by Beat
  * 05.04.2015.
  */
-@Portable
 public class Matrix4 {
     public static final int ROWS = 4;
     public static final int COLUMNS = 4;

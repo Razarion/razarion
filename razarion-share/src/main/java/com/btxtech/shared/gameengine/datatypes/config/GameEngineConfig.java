@@ -4,7 +4,6 @@ import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
 import java.util.List;
 
@@ -12,7 +11,6 @@ import java.util.List;
  * Created by Beat
  * 18.07.2016.
  */
-@Portable
 public class GameEngineConfig {
     private GroundSkeletonConfig groundSkeletonConfig;
     private List<SlopeSkeletonConfig> slopeSkeletonConfigs;

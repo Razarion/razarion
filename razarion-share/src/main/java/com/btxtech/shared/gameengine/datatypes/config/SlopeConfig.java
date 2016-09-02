@@ -5,8 +5,6 @@ import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
 
 import java.util.List;
 
@@ -14,8 +12,6 @@ import java.util.List;
  * Created by Beat
  * 08.05.2016.
  */
-@Portable
-@Bindable
 public class SlopeConfig {
     private Integer id;
     private String internalName;

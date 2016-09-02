@@ -1,7 +1,5 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-
 import java.util.Collection;
 
 /**
@@ -9,7 +7,6 @@ import java.util.Collection;
  * Date: 14.06.12
  * Time: 12:41
  */
-@Portable
 public class BotEnragementStateConfig {
     private String name;
     private Collection<BotItemConfig> botItems;

@@ -15,31 +15,7 @@
     <packaging>war</packaging>
     <name>Razarion Server</name>
 
-    <properties>
-        <javaee.version>1.0.2.Final</javaee.version>
-    </properties>
-
-    <dependencyManagement>
-        <!-- TODO remove if all moved to GWT version-->
-        <dependencies>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.6.2</version>
-            </dependency>
-        </dependencies>
-        <!-- TODO remove ENDS if all moved to GWT version-->
-    </dependencyManagement>
-
-
     <dependencies>
-        <!-- TODO remove if all moved to GWT version-->
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.6.2</version>
-            </dependency>
-        <!-- TODO remove ENDS if all moved to GWT version-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-server-common</artifactId>
@@ -52,60 +28,17 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-ui-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <!-- use for GWT compilation only -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-ui-service</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <!-- use for GWT compilation only -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-share</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-            <classifier>sources</classifier>
         </dependency>
         <!-- GWT -->
         <dependency>
             <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
             <version>${gwt.version}</version>
-            <scope>runtime</scope>
         </dependency>
+        <!-- JPA meta model generator -->
         <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-elemental</artifactId>
-            <version>${gwt.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Errai -->
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-cdi-jboss</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-jboss-as-support</artifactId>
-        </dependency>
-        <dependency>
-            <!-- JPA meta model generator -->
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
             <version>5.0.9.Final</version>
@@ -126,13 +59,6 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>JBOSS_NEXUS</id>
-            <url>http://repository.jboss.org/nexus/content/groups/public</url>
-        </repository>
-    </repositories>
-
     <build>
         <finalName>${project.artifactId}</finalName>
         <outputDirectory>src/main/webapp/WEB-INF/classes</outputDirectory>
@@ -143,66 +69,6 @@
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>1.0.2.Final</version>
                 <extensions>false</extensions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}</directory>
-                            <includes>
-                                <include>src/main/webapp/app/</include>
-                                <include>src/main/webapp/WEB-INF/deploy/</include>
-                                <include>src/main/webapp/WEB-INF/lib/</include>
-                                <include>**/gwt-unitCache/**</include>
-                                <include>.errai/</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>${gwt.pulgin.version}</version>
-                <configuration>
-                    <logLevel>INFO</logLevel>
-                    <noServer>true</noServer>
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M </extraJvmArgs>
-                    <!--<extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</extraJvmArgs>-->
-                    <runTarget>webgl.html</runTarget>
-                    <hostedWebapp>src/main/webapp</hostedWebapp>
-                    <strict>true</strict>
-                    <inplace>true</inplace>
-                    <!-- Only work with modified gwt-maven-plugin -->
-                    <!-- mvn gwt:run-codeserver -->
-                    <!-- Adds addition -src to the CodeServer -->
-                    <!-- Modified -->
-                    <!-- org.codehaus.mojo.gwt.shell.SuperDevModeMojo-->
-                    <!-- 1) Add new class attribute
-                         /**
-                           * A directory containing GWT source to be prepended to the classpath for compiling.
-                           * <p>
-                           * Can be set from command line using '-Dgwt.sources=...'
-                           */
-                           @Parameter(property = "gwt.sources")
-                           private String[] sources;
-
-                           2) set -src cmd arguments before calling CodeServer
-                           if(sources != null) {
-                               for (String source : sources) {
-                                   cmd.arg( "-src" ).arg(source);
-                                   System.out.println("add source: " + source);
-                               }
-                           }
-                           System.out.println(cmd);
-                           -->
-                    <sources>
-                        <source>${project.parent.basedir}/razarion-share/src/main/java</source>
-                        <source>${project.parent.basedir}/razarion-ui-service/src/main/java</source>
-                    </sources>
-                </configuration>
             </plugin>
         </plugins>
     </build>

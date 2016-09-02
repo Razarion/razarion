@@ -5,7 +5,6 @@
 <module rename-to="razarionUiService">
     <source path="uiservice" />
 
-    <inherits name="org.jboss.errai.enterprise.All" />
     <inherits name='com.btxtech.Razarion-Share'/>
 
     <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
