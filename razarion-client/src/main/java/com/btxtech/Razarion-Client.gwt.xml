@@ -6,7 +6,12 @@
     <source path="client" />
     <source path="shared" />
 
-    <inherits name="org.jboss.errai.enterprise.All" />
+    <inherits name="org.jboss.errai.enterprise.CDI" />
+    <inherits name="org.jboss.errai.enterprise.Jaxrs" />
+    <inherits name="org.jboss.errai.ui.DataBindingUIExtensions" />
+    <inherits name="org.jboss.errai.ui.UI" />
+    <inherits name="org.jboss.errai.ui.nav.Navigation" />
+
     <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
     <inherits name="elemental.Elemental"/>
     <inherits name='com.btxtech.Razarion-Share'/>

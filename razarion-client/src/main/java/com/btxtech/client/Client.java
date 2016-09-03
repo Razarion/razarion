@@ -21,12 +21,13 @@ import java.util.logging.Logger;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 @EntryPoint
-public class Webgl {
-    private Logger logger = Logger.getLogger(Webgl.class.getName());
+public class Client {
+    private Logger logger = Logger.getLogger(Client.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientRunner clientRunner;
 
-    public Webgl() {
+    public Client() {
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
             @Override
             public void onUncaughtException(Throwable e) {
