@@ -162,7 +162,7 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
         if (postfix == null) {
             postfix = "";
         }
-        uniform3f("uLightDirection" + postfix, lightConfig.getDirection());
+        uniform3f("uLightDirection" + postfix, lightConfig.setupDirection());
         uniform3fNoAlpha("uLightDiffuse" + postfix, lightConfig.getDiffuse());
         uniform3fNoAlpha("uLightAmbient" + postfix, lightConfig.getAmbient());
         uniform1f("uLightSpecularIntensity" + postfix, lightConfig.getSpecularIntensity());

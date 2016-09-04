@@ -29,19 +29,19 @@ public class LightWidget extends Composite {
     @AutoBound
     private DataBinder<LightConfig> lightConfigDataBinder;
     @Inject
-    @Bound(converter = GradToRadConverter.class, property = "xRotation")
+    @Bound(converter = GradToRadConverter.class, property = "rotationX")
     @DataField
     private DoubleBox xRotationSlider;
     @Inject
-    @Bound(converter = GradToRadConverter.class, property = "xRotation")
+    @Bound(converter = GradToRadConverter.class, property = "rotationX")
     @DataField
     private DoubleBox xRotationBox;
     @Inject
-    @Bound(converter = GradToRadConverter.class, property = "yRotation")
+    @Bound(converter = GradToRadConverter.class, property = "rotationY")
     @DataField
     private DoubleBox yRotationSlider;
     @Inject
-    @Bound(converter = GradToRadConverter.class, property = "yRotation")
+    @Bound(converter = GradToRadConverter.class, property = "rotationY")
     @DataField
     private DoubleBox yRotationBox;
     @Inject
@@ -76,7 +76,7 @@ public class LightWidget extends Composite {
     }
 
     private void displayLightDirectionLabel() {
-        Vertex lightDirection = lightConfigDataBinder.getModel().getDirection();
+        Vertex lightDirection = lightConfigDataBinder.getModel().setupDirection();
         directionLabel.setText(DisplayUtils.formatVertex(lightDirection));
     }
 

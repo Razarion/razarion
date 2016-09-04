@@ -9,28 +9,28 @@ import com.btxtech.shared.datatypes.Vertex;
  * 28.05.2016.
  */
 public class LightConfig {
-    private double xRotation;
-    private double yRotation;
+    private double rotationX;
+    private double rotationY;
     private Color diffuse;
     private Color ambient;
     private double specularIntensity;
     private double specularHardness;
 
-    public double getXRotation() {
-        return xRotation;
+    public double getRotationX() {
+        return rotationX;
     }
 
-    public LightConfig setXRotation(double xRotation) {
-        this.xRotation = xRotation;
+    public LightConfig setRotationX(double rotationX) {
+        this.rotationX = rotationX;
         return this;
     }
 
-    public double getYRotation() {
-        return yRotation;
+    public double getRotationY() {
+        return rotationY;
     }
 
-    public LightConfig setYRotation(double yRotation) {
-        this.yRotation = yRotation;
+    public LightConfig setRotationY(double rotationY) {
+        this.rotationY = rotationY;
         return this;
     }
 
@@ -70,7 +70,7 @@ public class LightConfig {
         return this;
     }
 
-    public Vertex getDirection() {
-        return Matrix4.createXRotation(xRotation).multiply(Matrix4.createYRotation(yRotation)).multiply(new Vertex(0, 0, -1), 1.0);
+    public Vertex setupDirection() {
+        return Matrix4.createXRotation(rotationX).multiply(Matrix4.createYRotation(rotationY)).multiply(new Vertex(0, 0, -1), 1.0);
     }
 }

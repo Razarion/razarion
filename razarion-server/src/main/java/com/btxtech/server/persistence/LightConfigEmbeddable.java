@@ -38,8 +38,8 @@ public class LightConfigEmbeddable {
 
     public LightConfig toLightConfig() {
         LightConfig lightConfig = new LightConfig();
-        lightConfig.setXRotation(xRotation);
-        lightConfig.setYRotation(yRotation);
+        lightConfig.setRotationX(xRotation);
+        lightConfig.setRotationY(yRotation);
         lightConfig.setAmbient(ambient);
         lightConfig.setDiffuse(diffuse);
         lightConfig.setSpecularIntensity(specularIntensity);
@@ -48,8 +48,8 @@ public class LightConfigEmbeddable {
     }
 
     public void fromLightConfig(LightConfig lightConfig) {
-        xRotation = lightConfig.getXRotation();
-        yRotation = lightConfig.getYRotation();
+        xRotation = lightConfig.getRotationX();
+        yRotation = lightConfig.getRotationY();
         ambient = lightConfig.getAmbient();
         diffuse = lightConfig.getDiffuse();
         specularIntensity = lightConfig.getSpecularIntensity();

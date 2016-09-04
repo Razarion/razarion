@@ -64,13 +64,13 @@ public class ProgressAnimation {
     private void dispatchLocation(double translation, ShapeTransform shapeTransform) {
         switch (modelMatrixAnimation.getAxis()) {
             case X:
-                shapeTransform.setXTranslate(translation);
+                shapeTransform.setTranslateX(translation);
                 break;
             case Y:
-                shapeTransform.setYTranslate(translation);
+                shapeTransform.setTranslateY(translation);
                 break;
             case Z:
-                shapeTransform.setZTranslate(translation);
+                shapeTransform.setTranslateZ(translation);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -80,13 +80,13 @@ public class ProgressAnimation {
     private void dispatchScale(double scale, ShapeTransform shapeTransform) {
         switch (modelMatrixAnimation.getAxis()) {
             case X:
-                shapeTransform.setXScale(scale);
+                shapeTransform.setScaleX(scale);
                 break;
             case Y:
-                shapeTransform.setYScale(scale);
+                shapeTransform.setScaleY(scale);
                 break;
             case Z:
-                shapeTransform.setZScale(scale);
+                shapeTransform.setScaleZ(scale);
                 break;
             default:
                 throw new IllegalArgumentException();

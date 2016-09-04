@@ -8,15 +8,15 @@ import com.btxtech.shared.datatypes.Matrix4;
  */
 public class ShapeTransform {
     private Matrix4 matrix;
-    private double xTranslate;
-    private double yTranslate;
-    private double zTranslate;
-    private double xRotate;
-    private double yRotate;
-    private double zRotate;
-    private double xScale;
-    private double yScale;
-    private double zScale;
+    private double translateX;
+    private double translateY;
+    private double translateZ;
+    private double rotateX;
+    private double rotateY;
+    private double rotateZ;
+    private double scaleX;
+    private double scaleY;
+    private double scaleZ;
 
     // -------------------------
 
@@ -25,26 +25,26 @@ public class ShapeTransform {
             return matrix;
         } else {
             Matrix4 matrix = Matrix4.createIdentity();
-            matrix = matrix.multiply(Matrix4.createTranslation(xTranslate, yTranslate, zTranslate));
-            matrix = matrix.multiply(Matrix4.createZRotation(zRotate));
-            matrix = matrix.multiply(Matrix4.createYRotation(yRotate));
-            matrix = matrix.multiply(Matrix4.createXRotation(xRotate));
-            matrix = matrix.multiply(Matrix4.createScale(xScale, yScale, zScale));
+            matrix = matrix.multiply(Matrix4.createTranslation(translateX, translateY, translateZ));
+            matrix = matrix.multiply(Matrix4.createZRotation(rotateZ));
+            matrix = matrix.multiply(Matrix4.createYRotation(rotateY));
+            matrix = matrix.multiply(Matrix4.createXRotation(rotateX));
+            matrix = matrix.multiply(Matrix4.createScale(scaleX, scaleY, scaleZ));
             return matrix;
         }
     }
 
     public ShapeTransform copyTRS() {
         ShapeTransform shapeTransform = new ShapeTransform();
-        shapeTransform.xTranslate = xTranslate;
-        shapeTransform.yTranslate = yTranslate;
-        shapeTransform.zTranslate = zTranslate;
-        shapeTransform.xRotate = xRotate;
-        shapeTransform.yRotate = yRotate;
-        shapeTransform.zRotate = zRotate;
-        shapeTransform.xScale = xScale;
-        shapeTransform.yScale = yScale;
-        shapeTransform.zScale = zScale;
+        shapeTransform.translateX = translateX;
+        shapeTransform.translateY = translateY;
+        shapeTransform.translateZ = translateZ;
+        shapeTransform.rotateX = rotateX;
+        shapeTransform.rotateY = rotateY;
+        shapeTransform.rotateZ = rotateZ;
+        shapeTransform.scaleX = scaleX;
+        shapeTransform.scaleY = scaleY;
+        shapeTransform.scaleZ = scaleZ;
 
         return shapeTransform;
     }
@@ -60,99 +60,99 @@ public class ShapeTransform {
         return matrix;
     }
 
-    public ShapeTransform setXTranslate(double xTranslate) {
-        this.xTranslate = xTranslate;
+    public ShapeTransform setTranslateX(double translateX) {
+        this.translateX = translateX;
         return this;
     }
 
-    public ShapeTransform setYTranslate(double yTranslate) {
-        this.yTranslate = yTranslate;
+    public ShapeTransform setTranslateY(double translateY) {
+        this.translateY = translateY;
         return this;
     }
 
-    public ShapeTransform setZTranslate(double zTranslate) {
-        this.zTranslate = zTranslate;
+    public ShapeTransform setTranslateZ(double translateZ) {
+        this.translateZ = translateZ;
         return this;
     }
 
-    public ShapeTransform setXRotate(double xRotate) {
-        this.xRotate = xRotate;
+    public ShapeTransform setRotateX(double rotateX) {
+        this.rotateX = rotateX;
         return this;
     }
 
-    public ShapeTransform setYRotate(double yRotate) {
-        this.yRotate = yRotate;
+    public ShapeTransform setRotateY(double rotateY) {
+        this.rotateY = rotateY;
         return this;
     }
 
-    public ShapeTransform setZRotate(double zRotate) {
-        this.zRotate = zRotate;
+    public ShapeTransform setRotateZ(double rotateZ) {
+        this.rotateZ = rotateZ;
         return this;
     }
 
-    public ShapeTransform setXScale(double xScale) {
-        this.xScale = xScale;
+    public ShapeTransform setScaleX(double scaleX) {
+        this.scaleX = scaleX;
         return this;
     }
 
-    public ShapeTransform setYScale(double yScale) {
-        this.yScale = yScale;
+    public ShapeTransform setScaleY(double scaleY) {
+        this.scaleY = scaleY;
         return this;
     }
 
-    public ShapeTransform setZScale(double zScale) {
-        this.zScale = zScale;
+    public ShapeTransform setScaleZ(double scaleZ) {
+        this.scaleZ = scaleZ;
         return this;
     }
 
-    public double getxTranslate() {
-        return xTranslate;
+    public double getTranslateX() {
+        return translateX;
     }
 
-    public double getyTranslate() {
-        return yTranslate;
+    public double getTranslateY() {
+        return translateY;
     }
 
-    public double getzTranslate() {
-        return zTranslate;
+    public double getTranslateZ() {
+        return translateZ;
     }
 
-    public double getxRotate() {
-        return xRotate;
+    public double getRotateX() {
+        return rotateX;
     }
 
-    public double getyRotate() {
-        return yRotate;
+    public double getRotateY() {
+        return rotateY;
     }
 
-    public double getzRotate() {
-        return zRotate;
+    public double getRotateZ() {
+        return rotateZ;
     }
 
-    public double getxScale() {
-        return xScale;
+    public double getScaleX() {
+        return scaleX;
     }
 
-    public double getyScale() {
-        return yScale;
+    public double getScaleY() {
+        return scaleY;
     }
 
-    public double getzScale() {
-        return zScale;
+    public double getScaleZ() {
+        return scaleZ;
     }
 
     @Override
     public String toString() {
         return "ShapeTransformTRS{" +
-                "xTranslate=" + xTranslate +
-                ", yTranslate=" + yTranslate +
-                ", zTranslate=" + zTranslate +
-                ", xRotate=" + xRotate +
-                ", yRotate=" + yRotate +
-                ", zRotate=" + zRotate +
-                ", xScale=" + xScale +
-                ", yScale=" + yScale +
-                ", zScale=" + zScale +
+                "translateX=" + translateX +
+                ", translateY=" + translateY +
+                ", translateZ=" + translateZ +
+                ", rotateX=" + rotateX +
+                ", rotateY=" + rotateY +
+                ", rotateZ=" + rotateZ +
+                ", scaleX=" + scaleX +
+                ", scaleY=" + scaleY +
+                ", scaleZ=" + scaleZ +
                 '}';
     }
 }

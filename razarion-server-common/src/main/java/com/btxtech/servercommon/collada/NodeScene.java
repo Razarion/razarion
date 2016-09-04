@@ -129,7 +129,7 @@ public class NodeScene extends NameIdColladaXml {
             transform = new ShapeTransform();
         }
 
-        transform.setXTranslate(doubleList.get(0)).setYTranslate(doubleList.get(1)).setZTranslate(doubleList.get(2));
+        transform.setTranslateX(doubleList.get(0)).setTranslateY(doubleList.get(1)).setTranslateZ(doubleList.get(2));
     }
 
     private void scale(Node node) {
@@ -141,7 +141,7 @@ public class NodeScene extends NameIdColladaXml {
             transform = new ShapeTransform();
         }
 
-        transform.setXScale(doubleList.get(0)).setYScale(doubleList.get(1)).setZScale(doubleList.get(2));
+        transform.setScaleX(doubleList.get(0)).setScaleY(doubleList.get(1)).setScaleZ(doubleList.get(2));
     }
 
     private void rotate(Node node) {
@@ -159,11 +159,11 @@ public class NodeScene extends NameIdColladaXml {
 
         double radians = Math.toRadians(doubleList.get(3));
         if (doubleList.get(0) > 0.0) {
-            transform.setXRotate(radians);
+            transform.setRotateX(radians);
         } else if (doubleList.get(1) > 0.0) {
-            transform.setYRotate(radians);
+            transform.setRotateY(radians);
         } else if (doubleList.get(2) > 0.0) {
-            transform.setZRotate(radians);
+            transform.setRotateZ(radians);
         } else {
             throw new IllegalStateException();
         }

@@ -82,8 +82,8 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
 //        visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(290));
 //        visualConfig.setWaterGroundLevel(-20).setWaterBmDepth(10).setWaterTransparency(0.65);
 //        LightConfig lightConfig = new LightConfig();
-//        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setXRotation(Math.toRadians(-20));
-//        lightConfig.setYRotation(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
+//        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
+//        lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
 //        visualConfig.setWaterLightConfig(lightConfig);
 //        visualConfig.setShape3Ds(shape3DEmulator.getShape3Ds()).setShape3DGeneralScale(10);
 //        storyboardConfig.setVisualConfig(visualConfig);
