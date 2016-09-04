@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * User: beat
@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 public class BotEnragementStateConfig {
     private String name;
-    private Collection<BotItemConfig> botItems;
+    private List<BotItemConfig> botItems;
     private Integer enrageUpKills;
 
     public BotEnragementStateConfig setName(String name) {
@@ -17,7 +17,7 @@ public class BotEnragementStateConfig {
         return this;
     }
 
-    public BotEnragementStateConfig setBotItems(Collection<BotItemConfig> botItems) {
+    public BotEnragementStateConfig setBotItems(List<BotItemConfig> botItems) {
         this.botItems = botItems;
         return this;
     }
@@ -31,7 +31,7 @@ public class BotEnragementStateConfig {
         return name;
     }
 
-    public Collection<BotItemConfig> getBotItems() {
+    public List<BotItemConfig> getBotItems() {
         return botItems;
     }
 

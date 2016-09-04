@@ -2,11 +2,9 @@ package com.btxtech.server.rest;
 
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.ColladaException;
-import com.btxtech.servercommon.collada.Emulation;
 import com.btxtech.shared.StoryboardProvider;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -30,7 +28,6 @@ public class StoryboardProviderImpl implements StoryboardProvider {
 
     @Override
     @Transactional
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     public StoryboardConfig loadStoryboard() {
         try {
             StoryboardConfig storyboardConfig = storyboardPersistence.load();

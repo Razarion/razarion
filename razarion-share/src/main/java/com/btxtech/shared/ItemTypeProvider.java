@@ -27,7 +27,7 @@ public interface ItemTypeProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("read")
-    List<ItemType> read();
+    List<BaseItemType> read();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

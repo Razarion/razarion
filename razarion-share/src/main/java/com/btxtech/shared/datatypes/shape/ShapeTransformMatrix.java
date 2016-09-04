@@ -14,6 +14,10 @@ public class ShapeTransformMatrix implements ShapeTransform {
         return this;
     }
 
+    public Matrix4 getMatrix() {
+        return matrix;
+    }
+
     @Override
     public Matrix4 setupMatrix() {
         return matrix;

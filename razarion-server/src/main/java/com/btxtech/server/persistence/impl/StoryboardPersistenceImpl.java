@@ -31,7 +31,6 @@ import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -56,7 +55,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameEngineConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
         gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
         gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
-        gameEngineConfig.setItemTypes(itemTypePersistence.read());
+        gameEngineConfig.setBaseItemTypes(itemTypePersistence.read());
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<StoryboardEntity> userQuery = criteriaBuilder.createQuery(StoryboardEntity.class);
@@ -87,7 +86,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
-        Collection<BotItemConfig> botItems = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
         botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(1040, 800))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));

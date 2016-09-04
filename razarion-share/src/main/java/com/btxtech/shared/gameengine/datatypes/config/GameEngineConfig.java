@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class GameEngineConfig {
     private GroundSkeletonConfig groundSkeletonConfig;
     private List<SlopeSkeletonConfig> slopeSkeletonConfigs;
     private List<TerrainObjectConfig> terrainObjectConfigs;
-    private List<ItemType> itemTypes;
+    private List<BaseItemType> baseItemTypes;
     private PlanetConfig planetConfig;
 
     public GroundSkeletonConfig getGroundSkeletonConfig() {
@@ -45,12 +46,12 @@ public class GameEngineConfig {
         return this;
     }
 
-    public List<ItemType> getItemTypes() {
-        return itemTypes;
+    public List<BaseItemType> getBaseItemTypes() {
+        return baseItemTypes;
     }
 
-    public GameEngineConfig setItemTypes(List<ItemType> itemTypes) {
-        this.itemTypes = itemTypes;
+    public GameEngineConfig setBaseItemTypes(List<BaseItemType> baseItemTypes) {
+        this.baseItemTypes = baseItemTypes;
         return this;
     }
 

@@ -28,14 +28,14 @@ public class Matrix4 {
     }
 
     public Matrix4(Matrix4 matrix4) {
-        this.numbers = matrix4.getElementsCopy();
+        this.numbers = matrix4.elementsCopy();
     }
 
-    public double getNumber(int column, int row) {
+    public double numberAt(int column, int row) {
         return numbers[row][column];
     }
 
-    public double[][] getElementsCopy() {
+    public double[][] elementsCopy() {
         return copyFiled(numbers);
     }
 
@@ -62,10 +62,10 @@ public class Matrix4 {
     }
 
     private double multiply(int row, Matrix4 other, int otherColumn) {
-        return getNumber(0, row) * other.getNumber(otherColumn, 0)
-                + getNumber(1, row) * other.getNumber(otherColumn, 1)
-                + getNumber(2, row) * other.getNumber(otherColumn, 2)
-                + getNumber(3, row) * other.getNumber(otherColumn, 3);
+        return numberAt(0, row) * other.numberAt(otherColumn, 0)
+                + numberAt(1, row) * other.numberAt(otherColumn, 1)
+                + numberAt(2, row) * other.numberAt(otherColumn, 2)
+                + numberAt(3, row) * other.numberAt(otherColumn, 3);
     }
 
     public Vertex multiply(Vertex vertex, double w) {
@@ -77,7 +77,7 @@ public class Matrix4 {
     }
 
     private double multiply(int row, Vertex vertex, double w) {
-        return getNumber(0, row) * vertex.getX() + getNumber(1, row) * vertex.getY() + getNumber(2, row) * vertex.getZ() + getNumber(3, row) * w;
+        return numberAt(0, row) * vertex.getX() + numberAt(1, row) * vertex.getY() + numberAt(2, row) * vertex.getZ() + numberAt(3, row) * w;
     }
 
     public Matrix4 invert() {
@@ -244,6 +244,23 @@ public class Matrix4 {
         return true;
     }
 
+    /**
+     * Should only be used be the jaxrs marshaller
+     *
+     * @return number field
+     */
+    public double[][] getNumbers() {
+        return numbers;
+    }
+
+    /**
+     * Should only be used be the jaxrs marshaller
+     *
+     * @param numbers number field
+     */
+    public void setNumbers(double[][] numbers) {
+        this.numbers = numbers;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -350,9 +367,9 @@ public class Matrix4 {
     }
 
     public static void printMatrix(Matrix4 matrix4) {
-        System.out.println(matrix4.getNumber(0, 0) + ", " + matrix4.getNumber(1, 0) + ", " + matrix4.getNumber(2, 0) + ", " + matrix4.getNumber(3, 0));
-        System.out.println(matrix4.getNumber(0, 1) + ", " + matrix4.getNumber(1, 1) + ", " + matrix4.getNumber(2, 1) + ", " + matrix4.getNumber(3, 1));
-        System.out.println(matrix4.getNumber(0, 2) + ", " + matrix4.getNumber(1, 2) + ", " + matrix4.getNumber(2, 2) + ", " + matrix4.getNumber(3, 2));
-        System.out.println(matrix4.getNumber(0, 3) + ", " + matrix4.getNumber(1, 3) + ", " + matrix4.getNumber(2, 3) + ", " + matrix4.getNumber(3, 3));
+        System.out.println(matrix4.numberAt(0, 0) + ", " + matrix4.numberAt(1, 0) + ", " + matrix4.numberAt(2, 0) + ", " + matrix4.numberAt(3, 0));
+        System.out.println(matrix4.numberAt(0, 1) + ", " + matrix4.numberAt(1, 1) + ", " + matrix4.numberAt(2, 1) + ", " + matrix4.numberAt(3, 1));
+        System.out.println(matrix4.numberAt(0, 2) + ", " + matrix4.numberAt(1, 2) + ", " + matrix4.numberAt(2, 2) + ", " + matrix4.numberAt(3, 2));
+        System.out.println(matrix4.numberAt(0, 3) + ", " + matrix4.numberAt(1, 3) + ", " + matrix4.numberAt(2, 3) + ", " + matrix4.numberAt(3, 3));
     }
 }

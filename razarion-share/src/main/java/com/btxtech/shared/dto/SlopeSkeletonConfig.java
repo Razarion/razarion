@@ -96,7 +96,7 @@ public class SlopeSkeletonConfig {
     }
 
     public void setSlopeNodes(SlopeNode[][] slopeNodes) {
-        this.slopeNodes = slopeNodes;
+       this.slopeNodes = slopeNodes;
     }
 
     public LightConfig getLightConfig() {

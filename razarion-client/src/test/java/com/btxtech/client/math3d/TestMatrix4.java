@@ -182,50 +182,50 @@ public class TestMatrix4 {
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
         // Row 0
-        Assert.assertEquals(1, matrix4.getNumber(0, 0), 0.001);
-        Assert.assertEquals(2, matrix4.getNumber(1, 0), 0.001);
-        Assert.assertEquals(3, matrix4.getNumber(2, 0), 0.001);
-        Assert.assertEquals(4, matrix4.getNumber(3, 0), 0.001);
+        Assert.assertEquals(1, matrix4.numberAt(0, 0), 0.001);
+        Assert.assertEquals(2, matrix4.numberAt(1, 0), 0.001);
+        Assert.assertEquals(3, matrix4.numberAt(2, 0), 0.001);
+        Assert.assertEquals(4, matrix4.numberAt(3, 0), 0.001);
         // Row 1
-        Assert.assertEquals(5, matrix4.getNumber(0, 1), 0.001);
-        Assert.assertEquals(6, matrix4.getNumber(1, 1), 0.001);
-        Assert.assertEquals(7, matrix4.getNumber(2, 1), 0.001);
-        Assert.assertEquals(8, matrix4.getNumber(3, 1), 0.001);
+        Assert.assertEquals(5, matrix4.numberAt(0, 1), 0.001);
+        Assert.assertEquals(6, matrix4.numberAt(1, 1), 0.001);
+        Assert.assertEquals(7, matrix4.numberAt(2, 1), 0.001);
+        Assert.assertEquals(8, matrix4.numberAt(3, 1), 0.001);
         // Row 2
-        Assert.assertEquals(9, matrix4.getNumber(0, 2), 0.001);
-        Assert.assertEquals(10, matrix4.getNumber(1, 2), 0.001);
-        Assert.assertEquals(11, matrix4.getNumber(2, 2), 0.001);
-        Assert.assertEquals(12, matrix4.getNumber(3, 2), 0.001);
+        Assert.assertEquals(9, matrix4.numberAt(0, 2), 0.001);
+        Assert.assertEquals(10, matrix4.numberAt(1, 2), 0.001);
+        Assert.assertEquals(11, matrix4.numberAt(2, 2), 0.001);
+        Assert.assertEquals(12, matrix4.numberAt(3, 2), 0.001);
         // Row 3
-        Assert.assertEquals(13, matrix4.getNumber(0, 3), 0.001);
-        Assert.assertEquals(14, matrix4.getNumber(1, 3), 0.001);
-        Assert.assertEquals(15, matrix4.getNumber(2, 3), 0.001);
-        Assert.assertEquals(16, matrix4.getNumber(3, 3), 0.001);
+        Assert.assertEquals(13, matrix4.numberAt(0, 3), 0.001);
+        Assert.assertEquals(14, matrix4.numberAt(1, 3), 0.001);
+        Assert.assertEquals(15, matrix4.numberAt(2, 3), 0.001);
+        Assert.assertEquals(16, matrix4.numberAt(3, 3), 0.001);
     }
 
     @Test
     public void constructor2() {
         Matrix4 matrix4 = new Matrix4(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         // Row 0
-        Assert.assertEquals(1, matrix4.getNumber(0, 0), 0.001);
-        Assert.assertEquals(2, matrix4.getNumber(1, 0), 0.001);
-        Assert.assertEquals(3, matrix4.getNumber(2, 0), 0.001);
-        Assert.assertEquals(4, matrix4.getNumber(3, 0), 0.001);
+        Assert.assertEquals(1, matrix4.numberAt(0, 0), 0.001);
+        Assert.assertEquals(2, matrix4.numberAt(1, 0), 0.001);
+        Assert.assertEquals(3, matrix4.numberAt(2, 0), 0.001);
+        Assert.assertEquals(4, matrix4.numberAt(3, 0), 0.001);
         // Row 1
-        Assert.assertEquals(5, matrix4.getNumber(0, 1), 0.001);
-        Assert.assertEquals(6, matrix4.getNumber(1, 1), 0.001);
-        Assert.assertEquals(7, matrix4.getNumber(2, 1), 0.001);
-        Assert.assertEquals(8, matrix4.getNumber(3, 1), 0.001);
+        Assert.assertEquals(5, matrix4.numberAt(0, 1), 0.001);
+        Assert.assertEquals(6, matrix4.numberAt(1, 1), 0.001);
+        Assert.assertEquals(7, matrix4.numberAt(2, 1), 0.001);
+        Assert.assertEquals(8, matrix4.numberAt(3, 1), 0.001);
         // Row 2
-        Assert.assertEquals(9, matrix4.getNumber(0, 2), 0.001);
-        Assert.assertEquals(10, matrix4.getNumber(1, 2), 0.001);
-        Assert.assertEquals(11, matrix4.getNumber(2, 2), 0.001);
-        Assert.assertEquals(12, matrix4.getNumber(3, 2), 0.001);
+        Assert.assertEquals(9, matrix4.numberAt(0, 2), 0.001);
+        Assert.assertEquals(10, matrix4.numberAt(1, 2), 0.001);
+        Assert.assertEquals(11, matrix4.numberAt(2, 2), 0.001);
+        Assert.assertEquals(12, matrix4.numberAt(3, 2), 0.001);
         // Row 3
-        Assert.assertEquals(13, matrix4.getNumber(0, 3), 0.001);
-        Assert.assertEquals(14, matrix4.getNumber(1, 3), 0.001);
-        Assert.assertEquals(15, matrix4.getNumber(2, 3), 0.001);
-        Assert.assertEquals(16, matrix4.getNumber(3, 3), 0.001);
+        Assert.assertEquals(13, matrix4.numberAt(0, 3), 0.001);
+        Assert.assertEquals(14, matrix4.numberAt(1, 3), 0.001);
+        Assert.assertEquals(15, matrix4.numberAt(2, 3), 0.001);
+        Assert.assertEquals(16, matrix4.numberAt(3, 3), 0.001);
     }
 
     @Test
@@ -237,25 +237,25 @@ public class TestMatrix4 {
                 {13, 14, 15, 16}});
         Matrix4 matrix4 = new Matrix4(matrix4Tmp);
         // Row 0
-        Assert.assertEquals(1, matrix4.getNumber(0, 0), 0.001);
-        Assert.assertEquals(2, matrix4.getNumber(1, 0), 0.001);
-        Assert.assertEquals(3, matrix4.getNumber(2, 0), 0.001);
-        Assert.assertEquals(4, matrix4.getNumber(3, 0), 0.001);
+        Assert.assertEquals(1, matrix4.numberAt(0, 0), 0.001);
+        Assert.assertEquals(2, matrix4.numberAt(1, 0), 0.001);
+        Assert.assertEquals(3, matrix4.numberAt(2, 0), 0.001);
+        Assert.assertEquals(4, matrix4.numberAt(3, 0), 0.001);
         // Row 1
-        Assert.assertEquals(5, matrix4.getNumber(0, 1), 0.001);
-        Assert.assertEquals(6, matrix4.getNumber(1, 1), 0.001);
-        Assert.assertEquals(7, matrix4.getNumber(2, 1), 0.001);
-        Assert.assertEquals(8, matrix4.getNumber(3, 1), 0.001);
+        Assert.assertEquals(5, matrix4.numberAt(0, 1), 0.001);
+        Assert.assertEquals(6, matrix4.numberAt(1, 1), 0.001);
+        Assert.assertEquals(7, matrix4.numberAt(2, 1), 0.001);
+        Assert.assertEquals(8, matrix4.numberAt(3, 1), 0.001);
         // Row 2
-        Assert.assertEquals(9, matrix4.getNumber(0, 2), 0.001);
-        Assert.assertEquals(10, matrix4.getNumber(1, 2), 0.001);
-        Assert.assertEquals(11, matrix4.getNumber(2, 2), 0.001);
-        Assert.assertEquals(12, matrix4.getNumber(3, 2), 0.001);
+        Assert.assertEquals(9, matrix4.numberAt(0, 2), 0.001);
+        Assert.assertEquals(10, matrix4.numberAt(1, 2), 0.001);
+        Assert.assertEquals(11, matrix4.numberAt(2, 2), 0.001);
+        Assert.assertEquals(12, matrix4.numberAt(3, 2), 0.001);
         // Row 3
-        Assert.assertEquals(13, matrix4.getNumber(0, 3), 0.001);
-        Assert.assertEquals(14, matrix4.getNumber(1, 3), 0.001);
-        Assert.assertEquals(15, matrix4.getNumber(2, 3), 0.001);
-        Assert.assertEquals(16, matrix4.getNumber(3, 3), 0.001);
+        Assert.assertEquals(13, matrix4.numberAt(0, 3), 0.001);
+        Assert.assertEquals(14, matrix4.numberAt(1, 3), 0.001);
+        Assert.assertEquals(15, matrix4.numberAt(2, 3), 0.001);
+        Assert.assertEquals(16, matrix4.numberAt(3, 3), 0.001);
     }
 
     @Test
@@ -347,25 +347,25 @@ public class TestMatrix4 {
     public void createIdentity() {
         Matrix4 matrix4 = Matrix4.createIdentity();
         // Row 0
-        Assert.assertEquals(1, matrix4.getNumber(0, 0), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(1, 0), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(2, 0), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(3, 0), 0.001);
+        Assert.assertEquals(1, matrix4.numberAt(0, 0), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(1, 0), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(2, 0), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(3, 0), 0.001);
         // Row 1
-        Assert.assertEquals(0, matrix4.getNumber(0, 1), 0.001);
-        Assert.assertEquals(1, matrix4.getNumber(1, 1), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(2, 1), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(3, 1), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(0, 1), 0.001);
+        Assert.assertEquals(1, matrix4.numberAt(1, 1), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(2, 1), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(3, 1), 0.001);
         // Row 2
-        Assert.assertEquals(0, matrix4.getNumber(0, 2), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(1, 2), 0.001);
-        Assert.assertEquals(1, matrix4.getNumber(2, 2), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(3, 2), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(0, 2), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(1, 2), 0.001);
+        Assert.assertEquals(1, matrix4.numberAt(2, 2), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(3, 2), 0.001);
         // Row 3
-        Assert.assertEquals(0, matrix4.getNumber(0, 3), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(1, 3), 0.001);
-        Assert.assertEquals(0, matrix4.getNumber(2, 3), 0.001);
-        Assert.assertEquals(1, matrix4.getNumber(3, 3), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(0, 3), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(1, 3), 0.001);
+        Assert.assertEquals(0, matrix4.numberAt(2, 3), 0.001);
+        Assert.assertEquals(1, matrix4.numberAt(3, 3), 0.001);
     }
 
     @Test
@@ -485,14 +485,14 @@ public class TestMatrix4 {
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
-        double[][] filed = matrix4.getElementsCopy();
+        double[][] filed = matrix4.elementsCopy();
         Assert.assertArrayEquals(new double[]{1, 2, 3, 4}, filed[0], 0.001);
         Assert.assertArrayEquals(new double[]{5, 6, 7, 8}, filed[1], 0.001);
         Assert.assertArrayEquals(new double[]{9, 10, 11, 12}, filed[2], 0.001);
         Assert.assertArrayEquals(new double[]{13, 14, 15, 16}, filed[3], 0.001);
 
         filed[0][0] = 99;
-        Assert.assertEquals(1, matrix4.getNumber(0, 0), 0.001);
+        Assert.assertEquals(1, matrix4.numberAt(0, 0), 0.001);
     }
 
     @Test
@@ -639,24 +639,24 @@ public class TestMatrix4 {
 
     public static void assertMatrix(Matrix4 expected, Matrix4 received) {
         String message = "expected:<" + expected + "> but was:<" + received + ">";
-        Assert.assertEquals(message, expected.getNumber(0, 0), received.getNumber(0, 0), 0.001);
-        Assert.assertEquals(message, expected.getNumber(1, 0), received.getNumber(1, 0), 0.001);
-        Assert.assertEquals(message, expected.getNumber(2, 0), received.getNumber(2, 0), 0.001);
-        Assert.assertEquals(message, expected.getNumber(3, 0), received.getNumber(3, 0), 0.001);
+        Assert.assertEquals(message, expected.numberAt(0, 0), received.numberAt(0, 0), 0.001);
+        Assert.assertEquals(message, expected.numberAt(1, 0), received.numberAt(1, 0), 0.001);
+        Assert.assertEquals(message, expected.numberAt(2, 0), received.numberAt(2, 0), 0.001);
+        Assert.assertEquals(message, expected.numberAt(3, 0), received.numberAt(3, 0), 0.001);
         // Row 1
-        Assert.assertEquals(message, expected.getNumber(0, 1), received.getNumber(0, 1), 0.001);
-        Assert.assertEquals(message, expected.getNumber(1, 1), received.getNumber(1, 1), 0.001);
-        Assert.assertEquals(message, expected.getNumber(2, 1), received.getNumber(2, 1), 0.001);
-        Assert.assertEquals(message, expected.getNumber(3, 1), received.getNumber(3, 1), 0.001);
+        Assert.assertEquals(message, expected.numberAt(0, 1), received.numberAt(0, 1), 0.001);
+        Assert.assertEquals(message, expected.numberAt(1, 1), received.numberAt(1, 1), 0.001);
+        Assert.assertEquals(message, expected.numberAt(2, 1), received.numberAt(2, 1), 0.001);
+        Assert.assertEquals(message, expected.numberAt(3, 1), received.numberAt(3, 1), 0.001);
         // Row 2
-        Assert.assertEquals(message, expected.getNumber(0, 2), received.getNumber(0, 2), 0.001);
-        Assert.assertEquals(message, expected.getNumber(1, 2), received.getNumber(1, 2), 0.001);
-        Assert.assertEquals(message, expected.getNumber(2, 2), received.getNumber(2, 2), 0.001);
-        Assert.assertEquals(message, expected.getNumber(3, 2), received.getNumber(3, 2), 0.001);
+        Assert.assertEquals(message, expected.numberAt(0, 2), received.numberAt(0, 2), 0.001);
+        Assert.assertEquals(message, expected.numberAt(1, 2), received.numberAt(1, 2), 0.001);
+        Assert.assertEquals(message, expected.numberAt(2, 2), received.numberAt(2, 2), 0.001);
+        Assert.assertEquals(message, expected.numberAt(3, 2), received.numberAt(3, 2), 0.001);
         // Row 3
-        Assert.assertEquals(message, expected.getNumber(0, 3), received.getNumber(0, 3), 0.001);
-        Assert.assertEquals(message, expected.getNumber(1, 3), received.getNumber(1, 3), 0.001);
-        Assert.assertEquals(message, expected.getNumber(2, 3), received.getNumber(2, 3), 0.001);
-        Assert.assertEquals(message, expected.getNumber(3, 3), received.getNumber(3, 3), 0.001);
+        Assert.assertEquals(message, expected.numberAt(0, 3), received.numberAt(0, 3), 0.001);
+        Assert.assertEquals(message, expected.numberAt(1, 3), received.numberAt(1, 3), 0.001);
+        Assert.assertEquals(message, expected.numberAt(2, 3), received.numberAt(2, 3), 0.001);
+        Assert.assertEquals(message, expected.numberAt(3, 3), received.numberAt(3, 3), 0.001);
     }
 }

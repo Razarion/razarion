@@ -55,7 +55,7 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
 
 //        StoryboardConfig storyboardConfig = new StoryboardConfig();
 //        // Setup game engine
-//        GameEngineConfig gameEngineConfig = new GameEngineConfig().setItemTypes(itemTypeEmulation.createItemTypes());
+//        GameEngineConfig gameEngineConfig = new GameEngineConfig().setBaseItemTypes(itemTypeEmulation.createItemTypes());
 //        // TODO gameEngineConfig.setGroundSkeletonConfig(loadedStoryBoard.getGameEngineConfig().getGroundSkeletonConfig());
 //        // TODO gameEngineConfig.setSlopeSkeletonConfigs(loadedStoryBoard.getGameEngineConfig().getSlopeSkeletonConfigs());
 //        // TODO gameEngineConfig.setTerrainObjectConfigs(loadedStoryBoard.getGameEngineConfig().getTerrainObjectConfigs());
@@ -133,7 +133,7 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
         sceneConfig.setCameraConfig(cameraConfig);
 
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
-        Collection<BotItemConfig> botItems = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
         botItems.add(new BotItemConfig());
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         List<BotConfig> botConfigs = new ArrayList<>();

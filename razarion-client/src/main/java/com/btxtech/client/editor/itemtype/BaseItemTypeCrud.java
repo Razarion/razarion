@@ -5,7 +5,6 @@ import com.btxtech.shared.ItemTypeProvider;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -64,10 +63,10 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
 
     @Override
     public void reload() {
-        provider.call(new RemoteCallback<List<ItemType>>() {
+        provider.call(new RemoteCallback<List<BaseItemType>>() {
             @Override
-            public void callback(List<ItemType> itemTypes) {
-                itemTypeService.setItemTypes(itemTypes);
+            public void callback(List<BaseItemType> baseItemTypes) {
+                itemTypeService.setBaseItemTypes(baseItemTypes);
                 fire();
             }
         }, (message, throwable) -> {

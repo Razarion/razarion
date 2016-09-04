@@ -46,8 +46,8 @@ public abstract class ItemType implements ObjectNameIdProvider {
     }
 
     public BoundingBox getBoundingBox() {
-        throw new UnsupportedOperationException("Bounding box no longer supported");
-        // return boundingBox;
+        // throw new UnsupportedOperationException("Bounding box no longer supported");
+        return boundingBox;
     }
 
     public ItemType setBoundingBox(BoundingBox boundingBox) {

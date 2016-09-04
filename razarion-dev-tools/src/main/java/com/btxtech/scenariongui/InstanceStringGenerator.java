@@ -93,7 +93,7 @@ public class InstanceStringGenerator {
             for (int y = 0; y < Matrix4.ROWS; y++) {
                 s += "{";
                 for (int x = 0; x < Matrix4.COLUMNS; x++) {
-                    s += String.format("%.4f", matrix4.getNumber(x, y));
+                    s += String.format("%.4f", matrix4.numberAt(x, y));
                     if (x + 1 < Matrix4.COLUMNS) {
                         s += ", ";
                     }

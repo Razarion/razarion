@@ -16,14 +16,14 @@ import java.util.HashMap;
  */
 @Singleton
 public class ItemTypeService {
-    private final HashMap<Integer, ItemType> itemTypes = new HashMap<>();
+    private final HashMap<Integer, ItemType> itemBaseTypes = new HashMap<>();
 
     public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
-        setItemTypes(engineInitEvent.getGameEngineConfig().getItemTypes());
+        setBaseItemTypes(engineInitEvent.getGameEngineConfig().getBaseItemTypes());
     }
 
     public ItemType getItemType(int itemTypeId) throws NoSuchItemTypeException {
-        ItemType itemType = itemTypes.get(itemTypeId);
+        ItemType itemType = itemBaseTypes.get(itemTypeId);
         if (itemType == null) {
             throw new NoSuchItemTypeException(itemTypeId);
         }
@@ -36,7 +36,7 @@ public class ItemTypeService {
 
     public <T extends ItemType> Collection<T> getItemTypes(Class<T> filter) {
         Collection<T> result = new ArrayList<>();
-        for (ItemType itemType : itemTypes.values()) {
+        for (ItemType itemType : itemBaseTypes.values()) {
             if (filter == null || filter == itemType.getClass()) {
                 result.add((T) itemType);
             }
@@ -44,21 +44,21 @@ public class ItemTypeService {
         return result;
     }
 
-    public void override(ItemType itemType) {
-        itemTypes.put(itemType.getId(), itemType);
+    public void override(BaseItemType baseItemType) {
+        itemBaseTypes.put(baseItemType.getId(), baseItemType);
     }
 
-    public void setItemTypes(Collection<ItemType> itemTypes) {
-        this.itemTypes.clear();
+    public void setBaseItemTypes(Collection<BaseItemType> itemTypes) {
+        this.itemBaseTypes.clear();
         if (itemTypes != null) {
             for (ItemType itemType : itemTypes) {
-                this.itemTypes.put(itemType.getId(), itemType);
+                this.itemBaseTypes.put(itemType.getId(), itemType);
             }
         }
     }
 
     public void deleteBaseItemType(BaseItemType baseItemType) {
-        itemTypes.remove(baseItemType.getId());
+        itemBaseTypes.remove(baseItemType.getId());
     }
 
     // TODO public boolean areItemTypesLoaded()

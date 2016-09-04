@@ -12,7 +12,7 @@ public class Matrix4Builder {
     }
 
     public Matrix4Builder(Matrix4 matrix4) {
-        this.numbers = matrix4.getElementsCopy();
+        this.numbers = matrix4.elementsCopy();
     }
 
     public Matrix4 toMatrix4() {

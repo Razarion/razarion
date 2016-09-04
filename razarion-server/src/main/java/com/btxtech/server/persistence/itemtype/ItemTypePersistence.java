@@ -38,14 +38,14 @@ public class ItemTypePersistence {
     }
 
     @Transactional
-    public List<ItemType> read() {
+    public List<BaseItemType> read() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<BaseItemTypeEntity> userQuery = criteriaBuilder.createQuery(BaseItemTypeEntity.class);
         Root<BaseItemTypeEntity> from = userQuery.from(BaseItemTypeEntity.class);
         CriteriaQuery<BaseItemTypeEntity> userSelect = userQuery.select(from);
         List<BaseItemTypeEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
 
-        List<ItemType> itemTypes = new ArrayList<>();
+        List<BaseItemType> itemTypes = new ArrayList<>();
         for (BaseItemTypeEntity baseItemTypeEntity : itemTypeEntities) {
             itemTypes.add(baseItemTypeEntity.toBaseItemType());
         }

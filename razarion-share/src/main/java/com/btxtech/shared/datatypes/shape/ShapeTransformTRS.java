@@ -63,6 +63,42 @@ public class ShapeTransformTRS implements ShapeTransform {
         return this;
     }
 
+    public double getxTranslate() {
+        return xTranslate;
+    }
+
+    public double getyTranslate() {
+        return yTranslate;
+    }
+
+    public double getzTranslate() {
+        return zTranslate;
+    }
+
+    public double getxRotate() {
+        return xRotate;
+    }
+
+    public double getyRotate() {
+        return yRotate;
+    }
+
+    public double getzRotate() {
+        return zRotate;
+    }
+
+    public double getxScale() {
+        return xScale;
+    }
+
+    public double getyScale() {
+        return yScale;
+    }
+
+    public double getzScale() {
+        return zScale;
+    }
+
     public ShapeTransformTRS copy() {
         ShapeTransformTRS shapeTransform = new ShapeTransformTRS();
         shapeTransform.xTranslate = xTranslate;

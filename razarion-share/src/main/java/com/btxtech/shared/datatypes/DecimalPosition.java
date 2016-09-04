@@ -259,7 +259,7 @@ public class DecimalPosition {
     public DecimalPosition normalize(double basis) {
         double m = magnitude();
         if (m == 0.0) {
-            return getCopy();
+            return new DecimalPosition(this);
         }
         return multiply(basis / m);
     }
@@ -325,10 +325,6 @@ public class DecimalPosition {
     public double getLength() {
         double sqrtC = Math.pow(x, 2) + Math.pow(y, 2);
         return Math.sqrt(sqrtC);
-    }
-
-    public DecimalPosition getCopy() {
-        return new DecimalPosition(x, y);
     }
 
     public double getX() {

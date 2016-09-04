@@ -31,7 +31,7 @@ public class ItemTypeProviderImpl implements ItemTypeProvider {
     }
 
     @Override
-    public List<ItemType> read() {
+    public List<BaseItemType> read() {
         try {
             return itemTypePersistence.read();
         } catch (Throwable t) {
