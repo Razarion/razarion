@@ -59,8 +59,12 @@ public class Element3DRenderer {
                     throw new UnsupportedOperationException();
                 }
             }
-            Matrix4 matrix = shapeTransform.setupMatrix();
-            return modelMatrix.multiply(matrix, matrix.normTransformation());
+            Matrix4 matrix = shapeTransformTRS.setupMatrix();
+            if (matrix.zero()) {
+                return modelMatrix.multiply(matrix, matrix);
+            } else {
+                return modelMatrix.multiply(matrix, matrix.normTransformation());
+            }
         }
     }
 

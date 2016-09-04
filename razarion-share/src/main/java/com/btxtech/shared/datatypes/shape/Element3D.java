@@ -37,6 +37,26 @@ public class Element3D {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Element3D element3D = (Element3D) o;
+
+        return id != null ? id.equals(element3D.id) : element3D.id == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return "Element3D{" +
                 "id='" + id + '\'' +

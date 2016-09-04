@@ -139,6 +139,19 @@ public class Matrix4 {
         return new Matrix4(array2Field(r));
     }
 
+    public boolean zero() {
+        for (int x = 0; x < COLUMNS; x++) {
+            for (int y = 0; y < ROWS; y++) {
+                if (x != COLUMNS - 1 || y != ROWS - 1) {
+                    if (numbers[x][y] != 0.0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * Setup a matrix which can be used for norm transformation.
      * Works fine as long as the scale-transformation is not negative
