@@ -3,8 +3,6 @@ package com.btxtech.servercommon.collada;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
-import com.btxtech.shared.datatypes.shape.ShapeTransformMatrix;
-import com.btxtech.shared.datatypes.shape.ShapeTransformTRS;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
@@ -119,7 +117,7 @@ public class NodeScene extends NameIdColladaXml {
             throw new IllegalStateException();
         }
 
-        transform = new ShapeTransformMatrix().setMatrix(new Matrix4(doubleArray));
+        transform = new ShapeTransform().setMatrix(new Matrix4(doubleArray));
     }
 
     private void translate(Node node) {
@@ -128,10 +126,10 @@ public class NodeScene extends NameIdColladaXml {
             throw new ColladaRuntimeException("Translation length must be 3. Current length: " + doubleList.size());
         }
         if (transform == null) {
-            transform = new ShapeTransformTRS();
+            transform = new ShapeTransform();
         }
 
-        ((ShapeTransformTRS) transform).setXTranslate(doubleList.get(0)).setYTranslate(doubleList.get(1)).setZTranslate(doubleList.get(2));
+        transform.setXTranslate(doubleList.get(0)).setYTranslate(doubleList.get(1)).setZTranslate(doubleList.get(2));
     }
 
     private void scale(Node node) {
@@ -140,10 +138,10 @@ public class NodeScene extends NameIdColladaXml {
             throw new ColladaRuntimeException("Scale length must be 3. Current length: " + doubleList.size());
         }
         if (transform == null) {
-            transform = new ShapeTransformTRS();
+            transform = new ShapeTransform();
         }
 
-        ((ShapeTransformTRS) transform).setXScale(doubleList.get(0)).setYScale(doubleList.get(1)).setZScale(doubleList.get(2));
+        transform.setXScale(doubleList.get(0)).setYScale(doubleList.get(1)).setZScale(doubleList.get(2));
     }
 
     private void rotate(Node node) {
@@ -156,16 +154,16 @@ public class NodeScene extends NameIdColladaXml {
             throw new IllegalArgumentException();
         }
         if (transform == null) {
-            transform = new ShapeTransformTRS();
+            transform = new ShapeTransform();
         }
 
         double radians = Math.toRadians(doubleList.get(3));
         if (doubleList.get(0) > 0.0) {
-            ((ShapeTransformTRS) transform).setXRotate(radians);
+            transform.setXRotate(radians);
         } else if (doubleList.get(1) > 0.0) {
-            ((ShapeTransformTRS) transform).setYRotate(radians);
+            transform.setYRotate(radians);
         } else if (doubleList.get(2) > 0.0) {
-            ((ShapeTransformTRS) transform).setZRotate(radians);
+            transform.setZRotate(radians);
         } else {
             throw new IllegalStateException();
         }

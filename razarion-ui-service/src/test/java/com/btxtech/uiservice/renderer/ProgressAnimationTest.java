@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
-import com.btxtech.shared.datatypes.shape.ShapeTransformTRS;
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.TimeValueSample;
 import com.btxtech.shared.datatypes.shape.TransformationModification;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class ProgressAnimationTest {
 
         for (int i = 0; i <= 10; i++) {
             double progress = i * 0.1;
-            ShapeTransformTRS shapeTransform = new ShapeTransformTRS();
+            ShapeTransform shapeTransform = new ShapeTransform();
             progressAnimation.dispatch(shapeTransform, progress);
             System.out.println("shapeTransform: " + progress + " " + shapeTransform);
         }

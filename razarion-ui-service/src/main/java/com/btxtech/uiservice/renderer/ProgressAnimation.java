@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
-import com.btxtech.shared.datatypes.shape.ShapeTransformTRS;
+import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.TimeValueSample;
 import com.btxtech.shared.utils.InterpolationUtils;
 
@@ -23,7 +23,7 @@ public class ProgressAnimation {
         long beginTimeStamp = timeValueSamples.get(0).getTimeStamp();
         long endTimeStamp = timeValueSamples.get(timeValueSamples.size() - 1).getTimeStamp();
         for (TimeValueSample timeValueSample : modelMatrixAnimation.getTimeValueSamples()) {
-            double progress = (double)(timeValueSample.getTimeStamp() - beginTimeStamp) / (double)(endTimeStamp - beginTimeStamp);
+            double progress = (double) (timeValueSample.getTimeStamp() - beginTimeStamp) / (double) (endTimeStamp - beginTimeStamp);
             progressAnimationSamples.add(new ProgressAnimationSamples(progress, timeValueSample.getValue()));
         }
     }
@@ -32,7 +32,7 @@ public class ProgressAnimation {
         return modelMatrixAnimation.getItemState() != null;
     }
 
-    public void dispatch(ShapeTransformTRS shapeTransform, double progress) {
+    public void dispatch(ShapeTransform shapeTransform, double progress) {
         double value = calculateValue(progress);
         setupMatrix(value, shapeTransform);
     }
@@ -48,7 +48,7 @@ public class ProgressAnimation {
         throw new IllegalStateException();
     }
 
-    private void setupMatrix(double value, ShapeTransformTRS shapeTransform) {
+    private void setupMatrix(double value, ShapeTransform shapeTransform) {
         switch (modelMatrixAnimation.getModification()) {
             case LOCATION:
                 dispatchLocation(value, shapeTransform);
@@ -61,7 +61,7 @@ public class ProgressAnimation {
         }
     }
 
-    private void dispatchLocation(double translation, ShapeTransformTRS shapeTransform) {
+    private void dispatchLocation(double translation, ShapeTransform shapeTransform) {
         switch (modelMatrixAnimation.getAxis()) {
             case X:
                 shapeTransform.setXTranslate(translation);
@@ -77,7 +77,7 @@ public class ProgressAnimation {
         }
     }
 
-    private void dispatchScale(double scale, ShapeTransformTRS shapeTransform) {
+    private void dispatchScale(double scale, ShapeTransform shapeTransform) {
         switch (modelMatrixAnimation.getAxis()) {
             case X:
                 shapeTransform.setXScale(scale);
