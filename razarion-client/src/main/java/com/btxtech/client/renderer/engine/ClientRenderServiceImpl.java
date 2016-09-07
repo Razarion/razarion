@@ -2,15 +2,10 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.unit.ClientGroundDepthBufferRendererUnit;
-import com.btxtech.client.renderer.unit.ClientGroundRendererUnit;
-import com.btxtech.client.renderer.unit.ClientSlopeRendererUnit;
-import com.btxtech.client.renderer.unit.ClientSlopeDepthBufferRendererUnit;
-import com.btxtech.client.renderer.unit.ClientVertexContainerDepthBufferRendererUnit;
 import com.btxtech.client.renderer.webgl.WebGlException;
+import com.btxtech.uiservice.renderer.AbstractRenderComposite;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.CompositeRenderer;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
@@ -52,9 +47,9 @@ public class ClientRenderServiceImpl extends RenderService {
     @Inject
     private TerrainEditor terrainEditor;
     @Deprecated
-    private List<CompositeRenderer> renderQueue;
+    private List<AbstractRenderComposite> renderQueue;
     @Deprecated
-    private Collection<CompositeRenderer> terrainObjectRenders;
+    private Collection<AbstractRenderComposite> terrainObjectRenders;
     private Collection<TerrainEditorUnitRenderer> terrainEditorRenderers;
     private TerrainEditorCursorUnitRenderer terrainEditorCursorRenderer;
     private TerrainObjectEditorUnitRenderer terrainObjectEditorRenderer;
@@ -66,10 +61,10 @@ public class ClientRenderServiceImpl extends RenderService {
     private boolean showDeep = false;
     private boolean showSlopeEditor = false;
     private boolean showObjectEditor = false;
-    private CompositeRenderer monitor;
-    private CompositeRenderer terrainNorm;
+    private AbstractRenderComposite monitor;
+    private AbstractRenderComposite terrainNorm;
     @Deprecated
-    private Collection<CompositeRenderer> terrainObjectNorms;
+    private Collection<AbstractRenderComposite> terrainObjectNorms;
     private int framesCount = 0;
     private long lastTime = 0;
 
@@ -97,7 +92,7 @@ public class ClientRenderServiceImpl extends RenderService {
 
     // TODO
 //    @Override
-//    protected void initBaseItemTypeRenderer(CompositeRenderer compositeRenderer) {
+//    protected void initBaseItemTypeRenderer(AbstractRenderComposite compositeRenderer) {
 //        compositeRenderer.setRenderUnit(renderInstance.select(ItemUnitRenderer.class).get());
 //        compositeRenderer.setDepthBufferRenderUnit(renderInstance.select(ItemDepthBufferUnitRenderer.class).get());
 //        compositeRenderer.setWireRenderUnit(renderInstance.select(ItemWireUnitRenderer.class).get());
@@ -113,7 +108,7 @@ public class ClientRenderServiceImpl extends RenderService {
             renderQueue.removeAll(terrainObjectNorms);
             terrainObjectNorms.clear();
         }
-        for (CompositeRenderer terrainObjectRender : terrainObjectRenders) {
+        for (AbstractRenderComposite terrainObjectRender : terrainObjectRenders) {
             terrainObjectRender.fillBuffers();
         }
         for (TerrainEditorUnitRenderer terrainEditorRenderer : terrainEditorRenderers) {
@@ -139,7 +134,7 @@ public class ClientRenderServiceImpl extends RenderService {
 //        }
     }
 
-    private CompositeRenderer createAndAddRenderSwitch(Class<? extends AbstractRenderUnit> normalRendererClass, Class<? extends AbstractRenderUnit> depthBufferRendererClass, Class<? extends AbstractRenderUnit> wireRendererClass, int id) {
+    private AbstractRenderComposite createAndAddRenderSwitch(Class<? extends AbstractRenderUnit> normalRendererClass, Class<? extends AbstractRenderUnit> depthBufferRendererClass, Class<? extends AbstractRenderUnit> wireRendererClass, int id) {
         AbstractRenderUnit normalRenderUnit = null;
         if (normalRendererClass != null) {
             normalRenderUnit = renderInstance.select(normalRendererClass).get();
@@ -158,9 +153,10 @@ public class ClientRenderServiceImpl extends RenderService {
             // TODO wireRenderUnit.setId(id);
             wireRenderUnit.setupImages();
         }
-        CompositeRenderer compositeRenderer = new CompositeRenderer(normalRenderUnit, depthBufferRenderUnit, wireRenderUnit, wire);
-        renderQueue.add(compositeRenderer);
-        return compositeRenderer;
+        // TODO AbstractRenderComposite abstractRenderComposite = new AbstractRenderComposite(normalRenderUnit, depthBufferRenderUnit, wireRenderUnit, wire);
+        // TODOrenderQueue.add(abstractRenderComposite);
+        // TODO return abstractRenderComposite;
+        return null;
     }
 
     @Override
@@ -187,14 +183,14 @@ public class ClientRenderServiceImpl extends RenderService {
     }
 
     protected void doRender() {
-//        for (CompositeRenderer compositeRenderer : renderQueue) {
+//        for (AbstractRenderComposite compositeRenderer : renderQueue) {
 //            try {
 //                compositeRenderer.drawDepthBuffer();
 //            } catch (Throwable t) {
 //                logger.log(Level.SEVERE, "drawDepthBuffer failed", t);
 //            }
 //        }
-//        for (CompositeRenderer compositeRenderer : renderQueue) {
+//        for (AbstractRenderComposite compositeRenderer : renderQueue) {
 //            if (!showMonitor && compositeRenderer == monitor) {
 //                continue;
 //            }
@@ -216,15 +212,15 @@ public class ClientRenderServiceImpl extends RenderService {
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
         gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         gameCanvas.getCtx3d().depthMask(false);
-        for (CompositeRenderer compositeRenderer : renderQueue) {
-            if (!showMonitor && compositeRenderer == monitor) {
+        for (AbstractRenderComposite abstractRenderComposite : renderQueue) {
+            if (!showMonitor && abstractRenderComposite == monitor) {
                 continue;
             }
-//            if (!showNorm && (compositeRenderer == terrainNorm || terrainObjectNorms.contains(compositeRenderer))) {
+//            if (!showNorm && (abstractRenderComposite == terrainNorm || terrainObjectNorms.contains(abstractRenderComposite))) {
 //                continue;
 //            }
             try {
-                compositeRenderer.drawWire();
+                abstractRenderComposite.drawWire();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "draw failed", t);
             }
@@ -238,17 +234,17 @@ public class ClientRenderServiceImpl extends RenderService {
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
             for (TerrainEditorUnitRenderer terrainEditorRenderer : terrainEditorRenderers) {
                 if (terrainEditorRenderer.hasElements()) {
-                    terrainEditorRenderer.draw();
+                    terrainEditorRenderer.draw(null);
                 }
             }
             if (terrainEditorCursorRenderer.hasElements()) {
-                terrainEditorCursorRenderer.draw();
+                terrainEditorCursorRenderer.draw(null);
             }
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
         }
         if (showObjectEditor && terrainObjectEditorRenderer.hasElements()) {
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
-            terrainObjectEditorRenderer.draw();
+            terrainObjectEditorRenderer.draw(null);
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
         }
 

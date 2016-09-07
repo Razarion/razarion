@@ -50,12 +50,12 @@ public class ClientVertexContainerNormRendererUnit extends AbstractVertexContain
     }
 
     @Override
-    public void fillBuffers(VertexContainer vertexContainer) {
+    protected void internalFillBuffers(VertexContainer vertexContainer) {
         vertices.fillDoubleBuffer(RenderUtil.setupNormDoubles(vertexContainer.getVertices(), vertexContainer.getNorms()));
     }
 
     @Override
-    protected void preModelDraw() {
+    protected void prepareDraw() {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
@@ -65,7 +65,7 @@ public class ClientVertexContainerNormRendererUnit extends AbstractVertexContain
     }
 
     @Override
-    protected void modelDraw(ModelMatrices modelMatrices) {
+    protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
         webGlFacade.drawArrays(WebGLRenderingContext.LINES);
     }

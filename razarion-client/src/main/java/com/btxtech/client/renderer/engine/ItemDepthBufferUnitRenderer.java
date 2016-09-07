@@ -19,6 +19,7 @@ import javax.inject.Inject;
  * 28.12.2015.
  */
 @Dependent
+@Deprecated
 public class ItemDepthBufferUnitRenderer extends AbstractWebGlUnitRenderer {
     // private Logger logger = Logger.getLogger(ItemDepthBufferUnitRenderer.class.getName());
     @Inject
@@ -48,7 +49,6 @@ public class ItemDepthBufferUnitRenderer extends AbstractWebGlUnitRenderer {
 
     }
 
-    @Override
     public void fillBuffers() {
         VertexContainer vertexContainer = baseItemUiService.getItemTypeVertexContainer(getId());
         if (vertexContainer == null) {
@@ -61,7 +61,7 @@ public class ItemDepthBufferUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    protected void preModelDraw() {
+    protected void prepareDraw() {
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
@@ -73,10 +73,10 @@ public class ItemDepthBufferUnitRenderer extends AbstractWebGlUnitRenderer {
         barycentric.activate();
     }
 
-    @Override
-    protected void modelDraw(ModelMatrices modelMatrices) {
-        uniformMatrix4fv(U_MODEL_MATRIX, modelMatrices.getModel());
-
-        drawArrays(WebGLRenderingContext.TRIANGLES);
-    }
+//    TODO @Override
+//    TODO protected void modelDraw(ModelMatrices modelMatrices) {
+//    TODO     uniformMatrix4fv(U_MODEL_MATRIX, modelMatrices.getModel());
+//
+//    TODO     drawArrays(WebGLRenderingContext.TRIANGLES);
+//    TODO }
 }

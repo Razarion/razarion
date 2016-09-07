@@ -29,6 +29,8 @@ public class Shape3DUiService {
         setShapes3Ds(shape3Ds);
     }
 
+    @Deprecated
+    // TODO too comples in render engine. Editor should handle this
     public void request(int shape3DId, Consumer<Shape3D> observer) {
         Shape3D shape3D = cache.get(shape3DId);
         shape3DObserver.put(shape3DId, observer);

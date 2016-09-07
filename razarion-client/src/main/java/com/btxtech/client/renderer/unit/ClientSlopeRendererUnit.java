@@ -5,13 +5,14 @@ import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.VisualUiService;
-import com.btxtech.uiservice.renderer.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
@@ -63,7 +64,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     }
 
     @Override
-    protected void fillBuffers(Slope slope) {
+    protected void fillBuffer(Slope slope, Mesh mesh) {
         slopeTexture = webGlFacade.createWebGLTexture(slope.getSlopeSkeletonConfig().getImageId(), "uSlopeTexture", "uSlopeTextureScale", slope.getSlopeSkeletonConfig().getImageScale());
         uSlopeBm = webGlFacade.createWebGLBumpMapTexture(slope.getSlopeSkeletonConfig().getBumpImageId(), "uSlopeBm", "uSlopeBmScale", slope.getSlopeSkeletonConfig().getBumpImageScale());
         groundSplattingTexture = webGlFacade.createWebGLTexture(terrainUiService.getSplatting(), "uGroundSplatting");
@@ -72,14 +73,11 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         groundBottomTexture = webGlFacade.createWebGLTexture(terrainUiService.getGroundTexture(), WebGlFacade.U_GROUND_BOTTOM_TEXTURE);
         groundBottomBm = webGlFacade.createWebGLTexture(terrainUiService.getGroundBm(), WebGlFacade.U_GROUND_BOTTOM_BM);
 
-        Mesh mesh = slope.getMesh();
         vertices.fillBuffer(mesh.getVertices());
         normals.fillBuffer(mesh.getNorms());
         tangents.fillBuffer(mesh.getTangents());
         slopeFactors.fillFloatBuffer(mesh.getSlopeFactors());
         groundSplatting.fillFloatBuffer(mesh.getSplatting());
-
-        setElementCount(mesh);
     }
 
 

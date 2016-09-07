@@ -49,14 +49,14 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
     }
 
     @Override
-    protected void fillBuffers(VertexContainer vertexContainer) {
+    protected void internalFillBuffers(VertexContainer vertexContainer) {
         positions.fillBuffer(vertexContainer.getVertices());
         textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
         webGLTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uTexture");
     }
 
     @Override
-    protected void preModelDraw() {
+    protected void prepareDraw() {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.createDepthProjectionTransformation());
@@ -68,7 +68,7 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
     }
 
     @Override
-    protected void modelDraw(ModelMatrices modelMatrices) {
+    protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

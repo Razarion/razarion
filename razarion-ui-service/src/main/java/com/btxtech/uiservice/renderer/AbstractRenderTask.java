@@ -1,18 +1,22 @@
 package com.btxtech.uiservice.renderer;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by Beat
  * 31.08.2016.
  */
-public abstract class AbstractRenderTask {
+public abstract class AbstractRenderTask<T> {
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private RenderService renderService;
-    private List<CompositeRenderer> compositeRenderers = new ArrayList<>();
+    @Inject
+    private Instance<ModelRenderer<T, ?, ?, ?>> instance;
+    private List<ModelRenderer> modelRenderers = new ArrayList<>();
 
     /**
      * Override in sub classes
@@ -23,45 +27,62 @@ public abstract class AbstractRenderTask {
         return true;
     }
 
-    protected void add(CompositeRenderer compositeRenderers) {
-        this.compositeRenderers.add(compositeRenderers);
+    protected void add(ModelRenderer modelRenderer) {
+        this.modelRenderers.add(modelRenderer);
     }
 
-    protected void removeAll(Collection<CompositeRenderer> compositeRenderers) {
-        this.compositeRenderers.removeAll(compositeRenderers);
+    public void removeAll(T model) {
+        for (Iterator<ModelRenderer> iterator = modelRenderers.iterator(); iterator.hasNext(); ) {
+            ModelRenderer modelRenderer = iterator.next();
+            if (model == null) {
+                if (modelRenderer.getModel() == null) {
+                    iterator.remove();
+                }
+            } else {
+                if (model.equals(modelRenderer.getModel())) {
+                    iterator.remove();
+                }
+            }
+        }
     }
 
-    protected List<CompositeRenderer> getAll() {
-        return compositeRenderers;
+    protected List<ModelRenderer> getAll() {
+        return modelRenderers;
     }
 
-    protected boolean isShowNorm() {
-        return renderService.isShowNorm();
+    protected <T, C extends AbstractRenderComposite<U, D>, U extends AbstractRenderUnit<D>, D> ModelRenderer<T, C, U, D> create() {
+        return (ModelRenderer)instance.get();
     }
 
-    public void drawDepthBuffer() {
+    public void prepareDraw() {
         if (isActive()) {
-            compositeRenderers.forEach(CompositeRenderer::drawDepthBuffer);
+            modelRenderers.forEach(ModelRenderer::setupModelMatrices);
         }
     }
 
     public void draw() {
         if (isActive()) {
-            compositeRenderers.forEach(CompositeRenderer::draw);
+            modelRenderers.forEach(ModelRenderer::draw);
+        }
+    }
+
+    public void drawDepthBuffer() {
+        if (isActive()) {
+            modelRenderers.forEach(ModelRenderer::drawDepthBuffer);
         }
     }
 
     public void drawNorm() {
         if (isActive()) {
-            compositeRenderers.forEach(CompositeRenderer::drawNorm);
+            modelRenderers.forEach(ModelRenderer::drawNorm);
         }
     }
 
     public void fillBuffers() {
-        compositeRenderers.forEach(CompositeRenderer::fillBuffers);
+        modelRenderers.forEach(ModelRenderer::fillBuffers);
     }
 
     public void fillNormBuffer() {
-        compositeRenderers.forEach(CompositeRenderer::fillNormBuffer);
+        modelRenderers.forEach(ModelRenderer::fillNormBuffer);
     }
 }

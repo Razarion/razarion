@@ -5,13 +5,14 @@ import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.uiservice.VisualUiService;
-import com.btxtech.uiservice.renderer.water.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderUtil;
+import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
@@ -53,12 +54,12 @@ public class ClientWaterNormRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
-    protected void fillBuffers(Water water) {
+    protected void fillInternalBuffers(Water water) {
         vertices.fillDoubleBuffer(RenderUtil.setupNormDoubles(water.getVertices(), water.getNorms()));
     }
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());

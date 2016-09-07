@@ -2,10 +2,11 @@ package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.uiservice.renderer.ground.AbstractGroundRendererUnit;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.dto.VertexList;
 import elemental.html.WebGLRenderingContext;
@@ -48,7 +49,12 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     }
 
     @Override
-    public void draw() {
+    protected void prepareDraw() {
+
+    }
+
+    @Override
+    public void draw(ModelMatrices modelMatrice) {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.createDepthProjectionTransformation());

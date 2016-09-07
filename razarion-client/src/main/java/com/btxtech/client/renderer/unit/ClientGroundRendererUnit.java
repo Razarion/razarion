@@ -6,12 +6,13 @@ import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.uiservice.renderer.ground.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
@@ -81,7 +82,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     }
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());

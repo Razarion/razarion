@@ -12,6 +12,7 @@ import java.util.List;
  * 20.05.2015.
  */
 @Dependent
+@Deprecated
 public class GroundWireRender extends AbstractViewPerspectiveWireUnitRenderer {
     @Inject
     private TerrainUiService terrainUiService;

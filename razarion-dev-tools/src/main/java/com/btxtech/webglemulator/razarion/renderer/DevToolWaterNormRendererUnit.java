@@ -1,14 +1,15 @@
 package com.btxtech.webglemulator.razarion.renderer;
 
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
-import com.btxtech.uiservice.renderer.water.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderUtil;
+import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -37,7 +38,7 @@ public class DevToolWaterNormRendererUnit extends AbstractWaterRendererUnit impl
     }
 
     @Override
-    protected void fillBuffers(Water water) {
+    protected void fillInternalBuffers(Water water) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(water.getVertices(), water.getNorms()));
     }
@@ -49,7 +50,7 @@ public class DevToolWaterNormRendererUnit extends AbstractWaterRendererUnit impl
     }
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 }

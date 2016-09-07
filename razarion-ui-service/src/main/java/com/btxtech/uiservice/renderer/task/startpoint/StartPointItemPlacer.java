@@ -1,13 +1,16 @@
-package com.btxtech.uiservice;
+package com.btxtech.uiservice.renderer.task.startpoint;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.StartPointItemPlacerChecker;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * User: beat
@@ -23,18 +26,21 @@ public class StartPointItemPlacer {
     private DecimalPosition position;
     private BaseItemType baseItemType;
     private String errorText;
+    private List<Vertex> vertexes;
 
-    public StartPointItemPlacer init(StartPointConfig startPointInfo) {
+    public StartPointItemPlacer init(StartPointConfig startPointConfig) {
         // TODO CursorHandler.getInstance().noCursor();
-        if (startPointInfo.getSuggestedPosition() != null) {
-            position = startPointInfo.getSuggestedPosition();
+        if (startPointConfig.getSuggestedPosition() != null) {
+            position = startPointConfig.getSuggestedPosition();
         } else {
             throw new UnsupportedOperationException("Default position (screen middle) not supported yet");
             // position = new BaseItemType(Window.getClientWidth() / 2, Window.getClientHeight() / 2);
         }
         // TODO TerrainView.getInstance().setFocus();
-        baseItemType = (BaseItemType) itemTypeService.getItemType(startPointInfo.getBaseItemTypeId());
-        startPointItemPlacerChecker.init(baseItemType, startPointInfo.getEnemyFreeRadius(), startPointInfo.getAllowedArea());
+        baseItemType = (BaseItemType) itemTypeService.getItemType(startPointConfig.getBaseItemTypeId());
+        startPointItemPlacerChecker.init(baseItemType, startPointConfig.getEnemyFreeRadius(), startPointConfig.getAllowedArea());
+        Circle2D circle2D = new Circle2D(new DecimalPosition(0, 0), startPointConfig.getEnemyFreeRadius());
+        vertexes = circle2D.triangulation(10, 0);
         onMove(position);
         return this;
     }
@@ -62,6 +68,10 @@ public class StartPointItemPlacer {
 
     public BaseItemType getBaseItemType() {
         return baseItemType;
+    }
+
+    public List<Vertex> getVertexes() {
+        return vertexes;
     }
 
     private void setupErrorText() {

@@ -1,34 +1,29 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
+
+import java.util.List;
 
 /**
  * Created by Beat
  * 03.09.2015.
  */
-public abstract class AbstractRenderUnit {
-    private CompositeRenderer compositeRenderer;
+public abstract class AbstractRenderUnit<D> {
+    private AbstractRenderComposite<AbstractRenderUnit<D>, D> abstractRenderComposite;
     private int elementCount;
 
     @Deprecated
     public abstract void setupImages();
 
-    public abstract void fillBuffers();
+    public abstract void fillBuffers(D d);
 
-    public void draw() {
-        throw new IllegalStateException("AbstractRenderUnit.draw() should be overridden");
-    }
+    protected abstract void prepareDraw();
 
-    protected void preModelDraw() {
-        throw new IllegalStateException("AbstractRenderUnit.preModelDraw() should be overridden");
-    }
-
-    protected void modelDraw(ModelMatrices modelMatrices) {
-        throw new IllegalStateException("AbstractRenderUnit.modelDraw() should be overridden");
-    }
+    protected abstract void draw(ModelMatrices modelMatrice);
 
     public boolean hasElements() {
         return elementCount > 0;
@@ -50,17 +45,25 @@ public abstract class AbstractRenderUnit {
         elementCount = mesh.size();
     }
 
+    protected void setElementCount(List<Vertex> vertices) {
+        elementCount = vertices.size();
+    }
+
     public int getElementCount() {
         return elementCount;
     }
 
-    public void setCompositeRenderer(CompositeRenderer compositeRenderer) {
-        this.compositeRenderer = compositeRenderer;
+    public void setAbstractRenderComposite(AbstractRenderComposite abstractRenderComposite) {
+        this.abstractRenderComposite = abstractRenderComposite;
+    }
+
+    protected D getRenderData() {
+        return abstractRenderComposite.getDernderData();
     }
 
     @Deprecated
     protected int getId() {
-        return compositeRenderer.getId();
+        return abstractRenderComposite.getId();
     }
 
     public String helperString() {

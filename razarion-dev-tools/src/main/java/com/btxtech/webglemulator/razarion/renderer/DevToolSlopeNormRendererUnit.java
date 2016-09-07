@@ -3,12 +3,13 @@ package com.btxtech.webglemulator.razarion.renderer;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
-import com.btxtech.uiservice.renderer.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderUtil;
+import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -32,11 +33,9 @@ public class DevToolSlopeNormRendererUnit extends AbstractSlopeRendererUnit impl
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
-    protected void fillBuffers(Slope slope) {
+    protected void fillBuffer(Slope slope, Mesh mesh) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(slope.getMesh().getVertices(), slope.getMesh().getNorms()));
-
-        setElementCount(slope.getMesh());
+        webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(mesh.getVertices(), mesh.getNorms()));
     }
 
     @Override

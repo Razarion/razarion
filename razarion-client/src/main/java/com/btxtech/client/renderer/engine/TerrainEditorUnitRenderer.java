@@ -4,6 +4,7 @@ import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.editor.terrain.TerrainEditorSlopeModifiedEvent;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Polygon2I;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
@@ -42,7 +43,6 @@ public class TerrainEditorUnitRenderer extends AbstractWebGlUnitRenderer {
         // Ignore
     }
 
-    @Override
     public void fillBuffers() {
         fillBuffers(terrainEditor.getSlopePolygon(getId()));
     }
@@ -63,7 +63,7 @@ public class TerrainEditorUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         useProgram();
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);

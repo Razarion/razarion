@@ -3,13 +3,14 @@ package com.btxtech.webglemulator.razarion.renderer;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -34,10 +35,9 @@ public class DevToolSlopeRendererUnit extends AbstractSlopeRendererUnit implemen
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
-    protected void fillBuffers(Slope slope) {
+    protected void fillBuffer(Slope slope, Mesh mesh) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.GRAY).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(slope.getMesh().getVertices()));
-        setElementCount(slope.getMesh());
+        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(mesh.getVertices()));
     }
 
     @Override

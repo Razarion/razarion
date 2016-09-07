@@ -3,7 +3,10 @@ package com.btxtech.shared.datatypes.shape;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -57,6 +60,18 @@ public class Shape3D implements ObjectNameIdProvider {
     @Override
     public ObjectNameId getObjectNameId() {
         return new ObjectNameId(dbId, internalName);
+    }
+
+    public Collection<ModelMatrixAnimation> setupAnimations(Element3D element3D) {
+        if (modelMatrixAnimations == null) {
+            return null;
+        }
+        Collection<ModelMatrixAnimation> animations = modelMatrixAnimations.stream().filter(modelMatrixAnimation -> element3D.equals(modelMatrixAnimation.getElement3D())).collect(Collectors.toCollection(ArrayList::new));
+        if (animations.isEmpty()) {
+            return null;
+        } else {
+            return animations;
+        }
     }
 
     @Override

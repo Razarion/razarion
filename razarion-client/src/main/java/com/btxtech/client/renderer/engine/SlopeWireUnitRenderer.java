@@ -10,6 +10,7 @@ import java.util.List;
  * Created by Beat
  * 24.01.2016.
  */
+@Deprecated
 public class SlopeWireUnitRenderer extends AbstractViewPerspectiveWireUnitRenderer {
     @Inject
     private TerrainUiService terrainUiService;

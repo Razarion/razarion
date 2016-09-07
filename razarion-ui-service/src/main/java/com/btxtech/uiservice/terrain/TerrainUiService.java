@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.MapCollection;
@@ -13,8 +12,8 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
@@ -22,7 +21,6 @@ import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
 import javax.enterprise.event.Observes;
@@ -30,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -134,7 +133,7 @@ public class TerrainUiService {
 
     public VertexList getGroundVertexList() {
         VertexList vertexList;
-        if(terrainService.getGroundMesh() != null) {
+        if (terrainService.getGroundMesh() != null) {
             vertexList = terrainService.getGroundMesh().provideVertexList();
         } else {
             vertexList = new VertexList();
@@ -208,7 +207,7 @@ public class TerrainUiService {
         return terrainTypeService.getGroundSkeletonConfig();
     }
 
-    public Collection<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {
-        return terrainObjectConfigModelMatrices.get(terrainObjectConfig);
+    public List<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {
+        return new ArrayList<>(terrainObjectConfigModelMatrices.get(terrainObjectConfig));
     }
 }

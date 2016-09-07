@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
@@ -48,7 +49,6 @@ public class MonitorUnitRenderer extends AbstractWebGlUnitRenderer {
 
     }
 
-    @Override
     public void fillBuffers() {
         VertexList vertexList = new VertexList();
         double monitorWidth = 2.0 * SIDE_LENGTH / (double) gameCanvas.getWidth();
@@ -73,7 +73,7 @@ public class MonitorUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
         useProgram();

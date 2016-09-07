@@ -3,9 +3,9 @@ package com.btxtech.uiservice.storyboard;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
-import com.btxtech.uiservice.StartPointUiService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
+import com.btxtech.uiservice.renderer.task.startpoint.StartPointUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.utils.CompletionListener;
 
@@ -52,7 +52,7 @@ public class Scene {
             botService.startBots(sceneConfig.getBotConfigs());
         }
         if (sceneConfig.getStartPointConfig() != null) {
-            startPointUiService.activate(sceneConfig.getStartPointConfig());
+         // TODO   startPointUiService.activate(sceneConfig.getStartPointConfig());
         }
         questVisualizer.showSideBar(sceneConfig.isShowQuestSideBar());
         setupCameraConfig(sceneConfig.getCameraConfig());

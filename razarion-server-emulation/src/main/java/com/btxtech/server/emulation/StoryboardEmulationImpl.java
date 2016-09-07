@@ -37,7 +37,7 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
     public StoryboardConfig load() {
         StoryboardConfig storyboardConfig = jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name"));
-        storyboardConfig.setSceneConfigs(setupSceneConfigs());
+        //storyboardConfig.setSceneConfigs(setupSceneConfigs());
         return storyboardConfig;
     }
 

@@ -5,12 +5,13 @@ import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.uiservice.VisualUiService;
-import com.btxtech.uiservice.renderer.water.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
@@ -57,7 +58,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
-    protected void fillBuffers(Water water) {
+    protected void fillInternalBuffers(Water water) {
         positions.fillBuffer(water.getVertices());
         norms.fillBuffer(water.getNorms());
         tangents.fillBuffer(water.getTangents());
@@ -65,7 +66,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
         gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         gameCanvas.getCtx3d().depthMask(false);

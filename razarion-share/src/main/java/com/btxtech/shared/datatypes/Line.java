@@ -26,7 +26,7 @@ public class Line {
     }
 
     public Line(DecimalPosition start, double angel, int length) {
-        this(start, start.getPointFromAngelToNord(angel, length));
+        this(start, start.getPointWithDistance(angel, length));
     }
 
     public Line(DecimalPosition point1, DecimalPosition point2) {
@@ -64,7 +64,7 @@ public class Line {
     }
 
     public Line translate(double angel, double distance) {
-        return new Line(point1.getPointFromAngelToNord(angel, distance), point2.getPointFromAngelToNord(angel, distance));
+        return new Line(point1.getPointWithDistance(angel, distance), point2.getPointWithDistance(angel, distance));
     }
 
     public double getM() {

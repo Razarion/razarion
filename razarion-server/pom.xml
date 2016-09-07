@@ -21,11 +21,11 @@
             <artifactId>razarion-server-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>${project.groupId}</groupId>-->
-            <!--<artifactId>razarion-server-emulation</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>razarion-server-emulation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-share</artifactId>

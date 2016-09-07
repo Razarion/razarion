@@ -37,7 +37,7 @@ public class DevToolsVertexContainerNormRenderUnit extends AbstractVertexContain
     private ModelMatrices modelMatrices;
 
     @Override
-    public void fillBuffers(VertexContainer vertexContainer) {
+    protected void internalFillBuffers(VertexContainer vertexContainer) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLUE).setVertexShader(this);
         webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(vertexContainer.getVertices(), vertexContainer.getNorms()));
     }
@@ -54,12 +54,12 @@ public class DevToolsVertexContainerNormRenderUnit extends AbstractVertexContain
     }
 
     @Override
-    protected void preModelDraw() {
+    protected void prepareDraw() {
         // Ignore
     }
 
     @Override
-    protected void modelDraw(ModelMatrices modelMatrices) {
+    protected void draw(ModelMatrices modelMatrices) {
         this.modelMatrices = modelMatrices;
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }

@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
@@ -9,7 +10,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -51,7 +51,6 @@ public abstract class AbstractViewPerspectiveWireUnitRenderer extends AbstractWe
 
     }
 
-    @Override
     public void fillBuffers() {
         List<Vertex> vertexList = getVertexList();
         vertices.fillBuffer(vertexList);
@@ -61,7 +60,7 @@ public abstract class AbstractViewPerspectiveWireUnitRenderer extends AbstractWe
 
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         useProgram();
 
         uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
@@ -73,4 +72,13 @@ public abstract class AbstractViewPerspectiveWireUnitRenderer extends AbstractWe
         drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 
+    @Override
+    public void fillBuffers(Object o) {
+
+    }
+
+    @Override
+    protected void prepareDraw() {
+
+    }
 }

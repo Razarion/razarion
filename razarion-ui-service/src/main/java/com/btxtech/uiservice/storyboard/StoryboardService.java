@@ -3,7 +3,6 @@ package com.btxtech.uiservice.storyboard;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.gameengine.GameEngine;
-import com.btxtech.uiservice.StartPointUiService;
 import com.btxtech.uiservice.VisualUiService;
 
 import javax.enterprise.inject.Instance;

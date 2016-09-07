@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainObjectEditorSelectedEvent;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
@@ -50,7 +51,6 @@ public class TerrainObjectEditorUnitRenderer extends AbstractWebGlUnitRenderer {
         // Ignore
     }
 
-    @Override
     public void fillBuffers() {
         List<Vertex> triangleFan = new ArrayList<>();
         triangleFan.add(new Vertex(0, 0, 0));
@@ -65,7 +65,7 @@ public class TerrainObjectEditorUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         useProgram();
 
         uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());

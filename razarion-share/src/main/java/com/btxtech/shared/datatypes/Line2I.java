@@ -24,7 +24,7 @@ public class Line2I {
     }
 
 //    public Line2I(Index start, double angel, int length) {
-//        this(start, start.getPointFromAngelToNord(angel, length));
+//        this(start, start.getPointWithDistance(angel, length));
 //    }
 
     public Line2I(Index point1, Index point2) {
@@ -62,7 +62,7 @@ public class Line2I {
     }
 
 //    public Line2I translate(double angel, double distance) {
-//        return new Line2I(point1.getPointFromAngelToNord(angel, distance), point2.getPointFromAngelToNord(angel, distance));
+//        return new Line2I(point1.getPointWithDistance(angel, distance), point2.getPointWithDistance(angel, distance));
 //    }
 
     public double getM() {

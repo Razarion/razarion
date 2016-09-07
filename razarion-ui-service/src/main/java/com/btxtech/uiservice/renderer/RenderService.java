@@ -1,11 +1,12 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.renderer.ground.GroundRenderTask;
-import com.btxtech.uiservice.renderer.slope.SlopeRenderTask;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
-import com.btxtech.uiservice.renderer.water.WaterRenderTask;
+import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
+import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
+import com.btxtech.uiservice.renderer.task.startpoint.StartPointUiService;
+import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -21,8 +22,6 @@ public abstract class RenderService {
     // private Logger logger = Logger.getLogger(RenderService.class.getName());
     @Inject
     private Event<RenderServiceInitEvent> serviceInitEvent;
-    @Inject
-    private Event<PreRenderEvent> preRenderEvent;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -46,6 +45,7 @@ public abstract class RenderService {
         addRenderTask(TerrainObjectRenderTask.class);
         addRenderTask(BaseItemRenderTask.class);
         addRenderTask(WaterRenderTask.class);
+        addRenderTask(StartPointUiService.class);
 
         fillBuffers();
     }
@@ -55,7 +55,7 @@ public abstract class RenderService {
     }
 
     public void render() {
-        preRenderEvent.fire(new PreRenderEvent());
+        renderTasks.forEach(AbstractRenderTask::prepareDraw);
         prepareDepthBufferRendering();
         renderTasks.forEach(AbstractRenderTask::drawDepthBuffer);
         prepareMainRendering();

@@ -61,7 +61,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     }
 
     @Override
-    public void fillBuffers(VertexContainer vertexContainer) {
+    protected void internalFillBuffers(VertexContainer vertexContainer) {
         texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
         positions.fillBuffer(vertexContainer.getVertices());
         norms.fillBuffer(vertexContainer.getNorms());
@@ -72,7 +72,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     }
 
     @Override
-    protected void preModelDraw() {
+    protected void prepareDraw() {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
@@ -94,7 +94,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     }
 
     @Override
-    protected void modelDraw(ModelMatrices modelMatrices) {
+    protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
         webGlFacade.uniformMatrix4fv("uNMMatrix", modelMatrices.getNorm());
 

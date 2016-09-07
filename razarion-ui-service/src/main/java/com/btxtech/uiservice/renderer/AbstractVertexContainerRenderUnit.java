@@ -8,18 +8,13 @@ import java.util.logging.Logger;
  * Created by Beat
  * 29.07.2016.
  */
-public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUnit {
+public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUnit<VertexContainer> {
     private Logger logger = Logger.getLogger(AbstractVertexContainerRenderUnit.class.getName());
-    private VertexContainer vertexContainer;
 
-    protected abstract void fillBuffers(VertexContainer vertexContainer);
-
-    public void init(VertexContainer vertexContainer) {
-        this.vertexContainer = vertexContainer;
-    }
+    protected abstract void internalFillBuffers(VertexContainer vertexContainer);
 
     @Override
-    public void fillBuffers() {
+    public void fillBuffers(VertexContainer vertexContainer) {
         if (vertexContainer == null || vertexContainer.isEmpty()) {
             logger.warning("No vertices to render");
             return;
@@ -37,13 +32,13 @@ public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUn
             return;
         }
 
-        fillBuffers(vertexContainer);
+        internalFillBuffers(vertexContainer);
 
         setElementCount(vertexContainer);
     }
 
     @Override
     public String helperString() {
-        return vertexContainer.getShapeElementVertexContainerTag();
+        return getRenderData().getShapeElementVertexContainerTag();
     }
 }

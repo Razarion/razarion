@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.renderer.GameCanvas;
@@ -275,5 +276,25 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
     protected void drawArrays(int mode) {
         getCtx3d().drawArrays(mode, 0, getElementCount());
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
+    }
+
+    @Override
+    public void setupImages() {
+
+    }
+
+    @Override
+    public void fillBuffers(Object o) {
+
+    }
+
+    @Override
+    protected void prepareDraw() {
+
+    }
+
+    @Override
+    protected void draw(ModelMatrices modelMatrice) {
+
     }
 }

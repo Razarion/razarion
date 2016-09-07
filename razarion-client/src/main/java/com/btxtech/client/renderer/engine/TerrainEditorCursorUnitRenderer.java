@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.editor.terrain.TerrainEditorCursorShapeEvent;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.client.renderer.shaders.Shaders;
@@ -45,7 +46,6 @@ public class TerrainEditorCursorUnitRenderer extends AbstractWebGlUnitRenderer {
         // Ignore
     }
 
-    @Override
     public void fillBuffers() {
         fillBuffer(terrainEditor.getCursor());
     }
@@ -67,7 +67,7 @@ public class TerrainEditorCursorUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    public void draw() {
+    public void draw(ModelMatrices modelMatrice) {
         useProgram();
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);

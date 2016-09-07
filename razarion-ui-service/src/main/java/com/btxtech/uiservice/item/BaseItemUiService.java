@@ -5,17 +5,17 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -70,19 +70,11 @@ public class BaseItemUiService {
         return itemTypeService.getItemTypes(BaseItemType.class);
     }
 
-    public Collection<ModelMatrices> provideSpawnModelMatrices() {
-        Collection<ModelMatrices> modelMatrices = new ArrayList<>();
-        for (SyncBaseItem syncBaseItem : baseItemService.getBeamingSyncBaseItems()) {
-            modelMatrices.add(syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale()));
-        }
-        return modelMatrices;
+    public List<ModelMatrices> provideSpawnModelMatrices(BaseItemType baseItemType) {
+        return baseItemService.getBeamingSyncBaseItems().stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale())).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public Collection<ModelMatrices> provideAliveModelMatrices() {
-        Collection<ModelMatrices> modelMatrices = new ArrayList<>();
-        for (SyncBaseItem syncBaseItem : baseItemService.getAliveSyncBaseItems()) {
-            modelMatrices.add(syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale()));
-        }
-        return modelMatrices;
+    public List<ModelMatrices> provideAliveModelMatrices(BaseItemType baseItemType) {
+        return baseItemService.getAliveSyncBaseItems().stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale())).collect(Collectors.toCollection(ArrayList::new));
     }
 }

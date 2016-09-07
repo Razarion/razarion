@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.CompositeRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
@@ -18,8 +17,6 @@ import com.btxtech.webglemulator.webgl.WebGlEmulator;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Beat

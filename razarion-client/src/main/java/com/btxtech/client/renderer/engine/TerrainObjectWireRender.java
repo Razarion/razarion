@@ -20,6 +20,7 @@ import java.util.logging.Logger;
  * 20.05.2015.
  */
 @Dependent
+@Deprecated
 public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     private Logger logger = Logger.getLogger(TerrainObjectWireRender.class.getName());
     @Inject
@@ -55,6 +56,10 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     }
 
     @Override
+    public void fillBuffers(Object o) {
+
+    }
+
     public void fillBuffers() {
         terrainObjectId = terrainObjectService.getTerrainObjectId4VertexContainer(getId());
         VertexContainer vertexContainer = terrainObjectService.getVertexContainer(getId());
@@ -70,7 +75,7 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    protected void preModelDraw() {
+    protected void prepareDraw() {
         useProgram();
 
         uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
@@ -84,8 +89,13 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    protected void modelDraw(ModelMatrices modelMatrices) {
-        uniformMatrix4fv(U_MODEL_MATRIX, modelMatrices.getModel());
-        drawArrays(WebGLRenderingContext.TRIANGLES);
+    protected void draw(ModelMatrices modelMatrice) {
+
     }
+
+//  TODO   @Override
+//  TODO   protected void modelDraw(ModelMatrices modelMatrices) {
+//  TODO       uniformMatrix4fv(U_MODEL_MATRIX, modelMatrices.getModel());
+//  TODO       drawArrays(WebGLRenderingContext.TRIANGLES);
+//  TODO   }
 }

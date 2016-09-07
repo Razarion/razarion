@@ -1,11 +1,13 @@
-package com.btxtech.uiservice;
-
+package com.btxtech.uiservice.renderer.task.startpoint;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.CommonRenderComposite;
+import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
@@ -14,12 +16,11 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
- * User: beat
- * Date: 30.04.13
- * Time: 19:41
+ * Created by Beat
+ * 05.09.2016.
  */
 @ApplicationScoped
-public class StartPointUiService {
+public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer> {
     // private Logger log = Logger.getLogger(StartPointUiService.class.getName());
     @Inject
     private Instance<StartPointItemPlacer> instance;
@@ -34,11 +35,23 @@ public class StartPointUiService {
     private StoryboardService storyboardService;
     private StartPointItemPlacer startPointItemPlacer;
 
+    @Override
+    protected boolean isActive() {
+        return startPointItemPlacer != null;
+    }
+
     public void activate(StartPointConfig startPointConfig) {
         if (startPointConfig.getSuggestedPosition() != null) {
             // TODO terrainScrollHandler.moveToMiddle(startPointInfo.getSuggestedPosition());
         }
         startPointItemPlacer = instance.get().init(startPointConfig);
+        ModelRenderer<StartPointItemPlacer, CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer>, AbstractStartPointRendererUnit, StartPointItemPlacer> modelRenderer = create();
+        CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer> compositeRenderer = modelRenderer.create();
+        compositeRenderer.init(startPointItemPlacer);
+        compositeRenderer.setRenderUnit(AbstractStartPointRendererUnit.class);
+        // TODO compositeRenderer.fillBuffers();
+        add(modelRenderer);
+
         // TODO RadarPanel.getInstance().setLevelRadarMode(RadarMode.MAP_AND_UNITS);
         // TODO ClientDeadEndProtection.getInstance().stop();
     }
@@ -47,10 +60,6 @@ public class StartPointUiService {
         startPointItemPlacer = null;
         // TODO RadarPanel.getInstance().setLevelRadarMode(ClientPlanetServices.getInstance().getPlanetInfo().getRadarMode());
         // TODO ClientDeadEndProtection.getInstance().start();
-    }
-
-    public boolean isActive() {
-        return startPointItemPlacer != null;
     }
 
     public StartPointItemPlacer getStartPointPlacer() {
@@ -80,4 +89,5 @@ public class StartPointUiService {
 //   TODO     SideCockpit.getInstance().updateItemLimit();
 //   TODO     activate(baseLostPacket.getRealGameInfo().getStartPointInfo());
 //    }
+
 }

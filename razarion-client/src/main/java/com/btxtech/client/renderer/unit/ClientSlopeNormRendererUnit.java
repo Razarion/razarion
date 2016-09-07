@@ -8,11 +8,11 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
-import com.btxtech.uiservice.renderer.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderUtil;
+import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
@@ -54,10 +54,8 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     }
 
     @Override
-    protected void fillBuffers(Slope slope) {
-        Mesh mesh = slope.getMesh();
+    protected void fillBuffer(Slope slope, Mesh mesh) {
         vertices.fillDoubleBuffer(RenderUtil.setupNormDoubles(mesh.getVertices(), mesh.getNorms()));
-        setElementCount(mesh);
     }
 
     @Override

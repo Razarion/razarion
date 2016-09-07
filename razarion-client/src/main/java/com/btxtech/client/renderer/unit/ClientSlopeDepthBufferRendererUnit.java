@@ -3,10 +3,11 @@ package com.btxtech.client.renderer.unit;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
-import com.btxtech.uiservice.renderer.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
@@ -43,13 +44,12 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
     }
 
     @Override
-    protected void fillBuffers(Slope slope) {
+    protected void fillBuffer(Slope slope, Mesh mesh) {
         vertices.fillBuffer(slope.getMesh().getVertices());
-        setElementCount(slope.getMesh());
     }
 
     @Override
-    public void draw(Slope slope) {
+    protected void draw(Slope slope) {
         webGlFacade.useProgram();
         // Projection uniform
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.createDepthProjectionTransformation());

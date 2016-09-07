@@ -93,7 +93,7 @@ public class DecimalPosition {
         return new DecimalPosition(x + deltaX, y + deltaY);
     }
 
-    public DecimalPosition getPointFromAngelToNord(double angle, double radius) {
+    public DecimalPosition getPointWithDistance(double angle, double radius) {
         double gk = Math.sin(angle) * radius;
         double ak = Math.cos(angle) * radius;
         return new DecimalPosition(x + ak, y + gk);
@@ -392,7 +392,7 @@ public class DecimalPosition {
     }
 
     public static DecimalPosition createVector(double angle, double distance) {
-        return NULL.getPointFromAngelToNord(angle, distance);
+        return NULL.getPointWithDistance(angle, distance);
     }
 
     public static DecimalPosition getNearestPoint(DecimalPosition position, Collection<DecimalPosition> intersections) {

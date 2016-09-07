@@ -20,6 +20,7 @@ import javax.inject.Inject;
  * 04.09.2015.
  */
 @Dependent
+@Deprecated
 public class ItemWireUnitRenderer extends AbstractWebGlUnitRenderer {
     // private Logger logger = Logger.getLogger(ItemWireUnitRenderer.class.getName());
     private VertexShaderAttribute positions;
@@ -52,7 +53,6 @@ public class ItemWireUnitRenderer extends AbstractWebGlUnitRenderer {
         webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, "uSampler");
     }
 
-    @Override
     public void fillBuffers() {
         VertexContainer vertexContainer = baseItemUiService.getItemTypeVertexContainer(getId());
         if (vertexContainer == null) {
@@ -67,7 +67,7 @@ public class ItemWireUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    protected void preModelDraw() {
+    protected void prepareDraw() {
         useProgram();
 
         uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
@@ -79,10 +79,10 @@ public class ItemWireUnitRenderer extends AbstractWebGlUnitRenderer {
         webGLTexture.activate();
     }
 
-    @Override
-    protected void modelDraw(ModelMatrices modelMatrices) {
-        uniformMatrix4fv(U_MODEL_MATRIX, modelMatrices.getModel());
-
-        drawArrays(WebGLRenderingContext.TRIANGLES);
-    }
+//  TODO   @Override
+//  TODO   protected void modelDraw(ModelMatrices modelMatrices) {
+//  TODO       uniformMatrix4fv(U_MODEL_MATRIX, modelMatrices.getModel());
+//TODO
+//   TODO      drawArrays(WebGLRenderingContext.TRIANGLES);
+//   TODO  }
 }
