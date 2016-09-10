@@ -165,6 +165,8 @@ public class TerrainService {
             }
         }
 
+        // TODO water
+
         throw new IllegalArgumentException("No InterpolatedTerrainTriangle at: " + absoluteXY);
     }
 

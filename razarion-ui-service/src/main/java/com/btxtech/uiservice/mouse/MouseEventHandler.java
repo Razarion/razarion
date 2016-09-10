@@ -46,7 +46,7 @@ public class MouseEventHandler {
             terrainScrollHandler.handleMouseMoveScroll(x, y, width, height);
             // Send pick ray event
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
-            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(worldPickRay);
+            Vertex terrainPosition = terrainService.calculatePositionGroundMesh(worldPickRay);
             terrainMouseMoveEvent.fire(new TerrainMouseMoveEvent(worldPickRay, terrainPosition));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -65,7 +65,7 @@ public class MouseEventHandler {
         try {
             if (primary) {
                 Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
-                Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(worldPickRay);
+                Vertex terrainPosition = terrainService.calculatePositionGroundMesh(worldPickRay);
                 if (shiftKey) {
                     logger.severe("Terrain Position: " + terrainPosition);
                 }
