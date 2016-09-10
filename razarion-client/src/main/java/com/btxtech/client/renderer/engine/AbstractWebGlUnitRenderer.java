@@ -294,7 +294,7 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
     }
 
     @Override
-    protected void draw(ModelMatrices modelMatrice) {
+    protected void draw(ModelMatrices modelMatrices) {
 
     }
 }

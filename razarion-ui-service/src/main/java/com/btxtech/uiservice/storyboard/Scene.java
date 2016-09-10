@@ -52,7 +52,7 @@ public class Scene {
             botService.startBots(sceneConfig.getBotConfigs());
         }
         if (sceneConfig.getStartPointConfig() != null) {
-         // TODO   startPointUiService.activate(sceneConfig.getStartPointConfig());
+            startPointUiService.activate(sceneConfig.getStartPointConfig());
         }
         questVisualizer.showSideBar(sceneConfig.isShowQuestSideBar());
         setupCameraConfig(sceneConfig.getCameraConfig());

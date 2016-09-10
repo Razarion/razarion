@@ -1,17 +1,23 @@
 package com.btxtech.uiservice.renderer.task.startpoint;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Ray3d;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.mouse.TerrainMouseDownEvent;
+import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
@@ -41,16 +47,18 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
     }
 
     public void activate(StartPointConfig startPointConfig) {
-        if (startPointConfig.getSuggestedPosition() != null) {
-            // TODO terrainScrollHandler.moveToMiddle(startPointInfo.getSuggestedPosition());
-        }
+//    TODO    if (startPointConfig.getSuggestedPosition() != null) {
+//    TODO        terrainScrollHandler.moveToMiddle(startPointInfo.getSuggestedPosition());
+//    TODO    }
         startPointItemPlacer = instance.get().init(startPointConfig);
         ModelRenderer<StartPointItemPlacer, CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer>, AbstractStartPointRendererUnit, StartPointItemPlacer> modelRenderer = create();
+        modelRenderer.init(startPointItemPlacer, startPointItemPlacer::provideModelMatrices);
         CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(startPointItemPlacer);
         compositeRenderer.setRenderUnit(AbstractStartPointRendererUnit.class);
-        // TODO compositeRenderer.fillBuffers();
+        modelRenderer.add(compositeRenderer);
         add(modelRenderer);
+        compositeRenderer.fillBuffers();
 
         // TODO RadarPanel.getInstance().setLevelRadarMode(RadarMode.MAP_AND_UNITS);
         // TODO ClientDeadEndProtection.getInstance().stop();
@@ -62,21 +70,27 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
         // TODO ClientDeadEndProtection.getInstance().start();
     }
 
-    public StartPointItemPlacer getStartPointPlacer() {
-        return startPointItemPlacer;
-    }
-
-    public void execute(DecimalPosition position) {
-        startPointItemPlacer.onMove(position);
+    public void onMouseDownEvent(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
+        if (!isActive()) {
+            return;
+        }
+        startPointItemPlacer.onMove(terrainMouseDownEvent.getTerrainPosition());
         if (startPointItemPlacer.isPositionValid()) {
-            PlayerBase playerBase = baseItemService.createHumanBase(storyboardService.getUserContext().getName());
+            PlayerBase playerBase = baseItemService.createHumanBase(storyboardService.getUserContext());
             try {
-                baseItemService.spawnSyncBaseItem(startPointItemPlacer.getBaseItemType(), position, playerBase);
+                baseItemService.spawnSyncBaseItem(startPointItemPlacer.getBaseItemType(), terrainMouseDownEvent.getTerrainPosition(), playerBase);
+                deactivate();
             } catch (Exception e) {
                 exceptionHandler.handleException(e);
             }
-            deactivate();
         }
+    }
+
+    public void onMouseMoveEvent(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
+        if (!isActive()) {
+            return;
+        }
+        startPointItemPlacer.onMove(terrainMouseMoveEvent.getTerrainPosition());
     }
 
 //   TODO public void onBaseLost(BaseLostPacket baseLostPacket) {

@@ -13,6 +13,13 @@
 
 package com.btxtech.shared.gameengine.datatypes;
 
+import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * User: beat
  * Date: Aug 5, 2009
@@ -22,12 +29,16 @@ public class PlayerBase {
     private int baseId;
     private String name;
     private Character character;
+    private UserContext userContext;
     private boolean abandoned;
+    private final Collection<SyncBaseItem> items = new ArrayList<>();
+    private int usedHouseSpace = 0;
 
-    public PlayerBase(int baseId, String name, Character character) {
+    public PlayerBase(int baseId, String name, Character character, UserContext userContext) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
+        this.userContext = userContext;
     }
 
     public int getBaseId() {
@@ -52,6 +63,28 @@ public class PlayerBase {
                 && !(character == Character.BOT_NCP || playerBase.character == Character.BOT_NCP)
                 && !(character == Character.HUMAN && playerBase.character == Character.HUMAN);
 
+    }
+
+    public void addItem(SyncBaseItem syncBaseItem) {
+        items.add(syncBaseItem);
+        usedHouseSpace += syncBaseItem.getBaseItemType().getConsumingHouseSpace();
+    }
+
+    public Collection<SyncBaseItem> getItems() {
+        return Collections.unmodifiableCollection(items);
+    }
+
+    public int getUsedHouseSpace() {
+        return usedHouseSpace;
+    }
+
+    public int getHouseSpace() {
+        // TODO
+        return 0;
+    }
+
+    public UserContext getUserContext() {
+        return userContext;
     }
 
     @Override

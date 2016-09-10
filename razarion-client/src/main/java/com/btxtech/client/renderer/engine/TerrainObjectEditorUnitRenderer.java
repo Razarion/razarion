@@ -65,7 +65,7 @@ public class TerrainObjectEditorUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    public void draw(ModelMatrices modelMatrice) {
+    public void draw(ModelMatrices modelMatrices) {
         useProgram();
 
         uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());

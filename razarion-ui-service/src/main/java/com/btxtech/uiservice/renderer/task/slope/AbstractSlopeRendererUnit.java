@@ -27,7 +27,7 @@ public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<Slope
     }
 
     @Override
-    protected void draw(ModelMatrices modelMatrice) {
+    protected void draw(ModelMatrices modelMatrices) {
         draw(getRenderData());
     }
 

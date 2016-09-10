@@ -8,12 +8,16 @@ import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
@@ -31,7 +35,9 @@ import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -56,14 +62,17 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
         gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
         gameEngineConfig.setBaseItemTypes(itemTypePersistence.read());
+        gameEngineConfig.setLevelConfigs(setupLevelConfigs());
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<StoryboardEntity> userQuery = criteriaBuilder.createQuery(StoryboardEntity.class);
         Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));
         storyboardConfig.setVisualConfig(defaultVisualConfig());
-        storyboardConfig.setSceneConfigs(setupSceneConfigs());
+        storyboardConfig.setSceneConfigs(setupSceneConfigs2());
+        completePlanetConfig(gameEngineConfig.getPlanetConfig());
         return storyboardConfig;
     }
 
@@ -81,7 +90,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         return visualConfig;
     }
 
-    private List<SceneConfig> setupSceneConfigs() {
+    private List<SceneConfig> setupSceneConfigs1() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
         List<BotConfig> botConfigs = new ArrayList<>();
@@ -92,6 +101,30 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs));
         return sceneConfigs;
-
     }
+
+
+    private List<SceneConfig> setupSceneConfigs2() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
+        StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointConfig(startPointConfig));
+        return sceneConfigs;
+    }
+
+    private List<LevelConfig> setupLevelConfigs() {
+        List<LevelConfig> levelConfigs = new ArrayList<>();
+        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
+        itemTypeLimitation.put(180807, 1);
+        levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(10).setItemTypeLimitation(itemTypeLimitation));
+        return levelConfigs;
+    }
+
+    private void completePlanetConfig(PlanetConfig planetConfig) {
+        planetConfig.setHouseSpace(10);
+        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
+        itemTypeLimitation.put(180807, 1);
+        planetConfig.setItemTypeLimitation(itemTypeLimitation);
+    }
+
 }

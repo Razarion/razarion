@@ -13,38 +13,38 @@ import javafx.scene.paint.Color;
  * 19.03.2016.
  */
 public class TerrainScenario extends Scenario {
-    private TerrainUiService terrainUiService;
+    // private TerrainUiService terrainUiService;
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-        terrainUiService = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
-        context.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 0.1, Color.BLUE);
-
-        for (Integer slopeId : terrainUiService.getSlopeIds()) {
-            Slope slope = terrainUiService.getSlope(slopeId);
-
-
-            // context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
-            // context.fillVertexList(slope.getGroundPlateauConnector().getOuterConnectionVertexList().getVertices(), 2, Color.RED);
-
-            context.strokeVertexList(slope.getMesh().getVertices(), 0.1, Color.PINK);
-
-
-//            context.strokeCurve(slope.getGroundPlateauConnector().getOuterGroundEdges(), 1, Color.GREEN, true);
-//            context.strokeCurve(slope.getGroundPlateauConnector().getOuterSlopeEdges(), 1, Color.RED, false);
-
-            if (!slope.hasWater()) {
-                context.strokeCurve(slope.getGroundPlateauConnector().getInnerGroundEdges(), 0.1, Color.GREEN, true);
-                context.strokeCurve(slope.getGroundPlateauConnector().getInnerSlopeEdges(), 0.1, Color.RED, true);
-            }
-
-
-        }
+//        terrainUiService = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
+//        context.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 0.1, Color.BLUE);
+//
+//        for (Integer slopeId : terrainUiService.getSlopeIds()) {
+//            Slope slope = terrainUiService.getSlope(slopeId);
+//
+//
+//            // context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
+//            // context.fillVertexList(slope.getGroundPlateauConnector().getOuterConnectionVertexList().getVertices(), 2, Color.RED);
+//
+//            context.strokeVertexList(slope.getMesh().getVertices(), 0.1, Color.PINK);
+//
+//
+////            context.strokeCurve(slope.getGroundPlateauConnector().getOuterGroundEdges(), 1, Color.GREEN, true);
+////            context.strokeCurve(slope.getGroundPlateauConnector().getOuterSlopeEdges(), 1, Color.RED, false);
+//
+//            if (!slope.hasWater()) {
+//                context.strokeCurve(slope.getGroundPlateauConnector().getInnerGroundEdges(), 0.1, Color.GREEN, true);
+//                context.strokeCurve(slope.getGroundPlateauConnector().getInnerSlopeEdges(), 0.1, Color.RED, true);
+//            }
+//
+//
+//        }
     }
 
     @Override
     public boolean onMouseDown(Index position) {
-        terrainUiService.getInterpolatedTerrainTriangle(new DecimalPosition(position));
+        // terrainUiService.getInterpolatedTerrainTriangle(new DecimalPosition(position));
         return false;
     }
 }

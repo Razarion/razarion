@@ -73,7 +73,7 @@ public class MonitorUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    public void draw(ModelMatrices modelMatrice) {
+    public void draw(ModelMatrices modelMatrices) {
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
         useProgram();

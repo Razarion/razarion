@@ -66,7 +66,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
-    public void draw(ModelMatrices modelMatrice) {
+    public void draw(ModelMatrices modelMatrices) {
         gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
         gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         gameCanvas.getCtx3d().depthMask(false);

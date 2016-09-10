@@ -9,6 +9,8 @@ import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
@@ -17,7 +19,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -36,17 +40,34 @@ public class StoryboardEmulationImpl implements StoryboardPersistence {
     @Override
     public StoryboardConfig load() {
         StoryboardConfig storyboardConfig = jsonPersistence.readJson("StoryboardConfig.json", StoryboardConfig.class);
-        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name"));
-        //storyboardConfig.setSceneConfigs(setupSceneConfigs());
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));
+        storyboardConfig.setSceneConfigs(setupSceneConfigs());
+        completePlanetConfig(storyboardConfig.getGameEngineConfig().getPlanetConfig());
+        storyboardConfig.getGameEngineConfig().setLevelConfigs(setupLevelConfigs());
         return storyboardConfig;
     }
 
     private List<SceneConfig> setupSceneConfigs() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
-        StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 400));
+        StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointConfig(startPointConfig));
         return sceneConfigs;
+    }
+
+    private List<LevelConfig> setupLevelConfigs() {
+        List<LevelConfig> levelConfigs = new ArrayList<>();
+        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
+        itemTypeLimitation.put(180807, 1);
+        levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(10).setItemTypeLimitation(itemTypeLimitation));
+        return levelConfigs;
+    }
+
+    private void completePlanetConfig(PlanetConfig planetConfig) {
+        planetConfig.setHouseSpace(10);
+        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
+        itemTypeLimitation.put(180807, 1);
+        planetConfig.setItemTypeLimitation(itemTypeLimitation);
     }
 
     // -------------------------------------------------------------------

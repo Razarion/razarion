@@ -17,6 +17,7 @@ public class PlanetConfig {
     private List<TerrainObjectPosition> terrainObjectPositions;
     private Map<Integer, Integer> itemTypeLimitation;
     private double waterLevel;
+    private int houseSpace;
 
     public List<TerrainSlopePosition> getTerrainSlopePositions() {
         return terrainSlopePositions;
@@ -36,12 +37,16 @@ public class PlanetConfig {
         return this;
     }
 
+    public Map<Integer, Integer> getItemTypeLimitation() {
+        return itemTypeLimitation;
+    }
+
     public PlanetConfig setItemTypeLimitation(Map<Integer, Integer> itemTypeLimitation) {
         this.itemTypeLimitation = itemTypeLimitation;
         return this;
     }
 
-    public int getLimitation4ItemType(int itemTypeId) {
+    public int imitation4ItemType(int itemTypeId) {
         Integer limitation = itemTypeLimitation.get(itemTypeId);
         if (limitation != null) {
             return limitation;
@@ -56,6 +61,15 @@ public class PlanetConfig {
 
     public PlanetConfig setWaterLevel(double waterLevel) {
         this.waterLevel = waterLevel;
+        return this;
+    }
+
+    public int getHouseSpace() {
+        return houseSpace;
+    }
+
+    public PlanetConfig setHouseSpace(int houseSpace) {
+        this.houseSpace = houseSpace;
         return this;
     }
 }

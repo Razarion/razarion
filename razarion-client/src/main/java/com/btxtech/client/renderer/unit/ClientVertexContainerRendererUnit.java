@@ -14,7 +14,6 @@ import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.ShadowUiService;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

@@ -67,7 +67,7 @@ public class TerrainEditorCursorUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    public void draw(ModelMatrices modelMatrice) {
+    public void draw(ModelMatrices modelMatrices) {
         useProgram();
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);

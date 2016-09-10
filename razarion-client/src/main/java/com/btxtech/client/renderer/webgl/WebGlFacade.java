@@ -44,6 +44,8 @@ public class WebGlFacade {
     public static final String A_BARYCENTRIC = "aBarycentric";
     // Attributes Terrain
     public static final String A_GROUND_SPLATTING = "aGroundSplatting";
+    // Uniform common
+    public static final String U_COLOR = "uColor";
     // Uniform model matrix
     public static final String U_PERSPECTIVE_MATRIX = "uPMatrix";
     public static final String U_VIEW_MATRIX = "uVMatrix";
@@ -154,6 +156,16 @@ public class WebGlFacade {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
         gameCanvas.getCtx3d().uniform1i(uniformLocation, value ? 1 : 0);
         WebGlUtil.checkLastWebGlError("uniform1b", gameCanvas.getCtx3d());
+    }
+
+    public void uniform4f(String uniformName, double x, double y, double z, double w) {
+        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+        gameCanvas.getCtx3d().uniform4f(uniformLocation, (float) x, (float) y, (float) z, (float) w);
+        WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
+    }
+
+    public void uniform4f(String uniformName, Color color) {
+        uniform4f(uniformName, color.getR(), color.getG(), color.getB(), color.getA());
     }
 
     @Deprecated

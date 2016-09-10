@@ -144,7 +144,7 @@
                 </AnchorPane>
                 <AnchorPane fx:id="centerPanel" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <children>
-                        <Canvas fx:id="canvas" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" BorderPane.alignment="CENTER" />
+                        <Canvas fx:id="canvas" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onMouseExited="#onMouseOut" BorderPane.alignment="CENTER" />
                     </children>
                 </AnchorPane>
             </items>

@@ -94,4 +94,10 @@ public interface Shaders extends ClientBundle {
 
     @Source("TextureTerrainObject.frag")
     TextResource textureTerrainObjectFragmentShader();
+
+    @Source("RgbaMvp.vert")
+    TextResource RgbaMvpVertexShader();
+
+    @Source("RgbaMvp.frag")
+    TextResource RgbaMvpFragmentShader();
 }

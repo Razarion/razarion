@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.VisualUiService;
 
@@ -27,7 +28,7 @@ public class TerrainObjectService {
     @Inject
     private VisualUiService visualUiService;
     @Inject
-    private TerrainUiService terrainUiService;
+    private TerrainService terrainService;
     @Inject
     private ExceptionHandler exceptionHandler;
     private Collection<TerrainObjectPosition> terrainObjectPositions;
@@ -79,7 +80,7 @@ public class TerrainObjectService {
                     modelMatrices = new ArrayList<>();
                     objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
                 }
-                int z = (int) terrainUiService.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.getPosition())).getHeight();
+                // TODO int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.getPosition())).getHeight();
                 // TODO modelMatrices.add(new ModelMatrices().setModel(terrainObjectPosition.createModelMatrix(shape3DUiService.getGeneralScale(), z)).setNorm(terrainObjectPosition.createRotationModelMatrix()));
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);

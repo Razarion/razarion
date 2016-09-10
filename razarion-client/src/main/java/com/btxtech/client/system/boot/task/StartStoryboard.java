@@ -23,7 +23,6 @@ public class StartStoryboard extends AbstractStartupTask {
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
         storyboardService.start();
-        gameCanvas.init();
         renderService.setup();
         gameCanvas.startRenderLoop();
     }

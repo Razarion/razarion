@@ -29,8 +29,6 @@ public class MainPage extends Composite {
     private ClientRunner clientRunner;
     @Inject
     private KeyboardEventHandler keyboardEventHandler;
-    @Inject
-    private MouseEventHandler mouseEventHandler;
     @DataField
     private Canvas canvas = Canvas.createIfSupported();
     @Inject
@@ -46,9 +44,8 @@ public class MainPage extends Composite {
                 throw new IllegalStateException("Canvas is not supported");
             }
             canvas.getElement().getStyle().setZIndex(ZIndexConstants.WEBGL_CANVAS);
-            gameCanvas.setCanvas(canvas);
+            gameCanvas.init(canvas);
             keyboardEventHandler.init();
-            mouseEventHandler.init();
             clientRunner.start(GameStartupSeq.COLD_SIMULATED);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "MainPage init failed", throwable);

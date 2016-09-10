@@ -63,7 +63,7 @@ public class TerrainUiService {
         terrainObjectConfigModelMatrices = new MapCollection<>();
         for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainService.getTerrainObjectPositions().getMap().entrySet()) {
             for (TerrainObjectPosition objectPosition : entry.getValue()) {
-                int z = (int) getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
+                int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
                 Matrix4 model = objectPosition.createModelMatrix(z).multiply(Matrix4.createScale(shape3DUiService.getShape3DGeneralScale()));
                 terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
             }
@@ -112,24 +112,6 @@ public class TerrainUiService {
         return lowestPointInView;
     }
 
-    public Vertex calculatePositionOnZeroLevel(Ray3d worldPickRay) {
-        // Find multiplier where the ray hits the ground (z = 0). start + m*direction -> z = 0
-        double m = -worldPickRay.getStart().getZ() / worldPickRay.getDirection().getZ();
-        return worldPickRay.getPoint(m);
-//        logger.severe("Point On Ground: " + pointOnGround);
-//        VertexData vertexData = originalGroundMesh.getVertexFromAbsoluteXY(pointOnGround.toXY());
-//        if (vertexData != null) {
-//            logger.severe("Ground VertexData: " + vertexData);
-//        } else {
-//            logger.severe("Position not on ground");
-//        }
-    }
-
-    public Vertex calculatePositionGroundMesh(Ray3d worldPickRay) {
-        DecimalPosition zeroLevel = calculatePositionOnZeroLevel(worldPickRay).toXY();
-        double height = getInterpolatedTerrainTriangle(zeroLevel).getHeight();
-        return new Vertex(zeroLevel, height);
-    }
 
     public VertexList getGroundVertexList() {
         VertexList vertexList;
@@ -155,22 +137,6 @@ public class TerrainUiService {
             obstacles.addAll(slope.generateObstacles());
         }
         return obstacles;
-    }
-
-    public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {
-        InterpolatedTerrainTriangle interpolatedTerrainTriangle = terrainService.getGroundMesh().getInterpolatedTerrainTriangle(absoluteXY);
-        if (interpolatedTerrainTriangle != null) {
-            return interpolatedTerrainTriangle;
-        }
-
-        for (Slope slope : terrainService.getSlopes()) {
-            interpolatedTerrainTriangle = slope.getInterpolatedVertexData(absoluteXY);
-            if (interpolatedTerrainTriangle != null) {
-                return interpolatedTerrainTriangle;
-            }
-        }
-
-        throw new IllegalArgumentException("No InterpolatedTerrainTriangle at: " + absoluteXY);
     }
 
     public Water getWater() {

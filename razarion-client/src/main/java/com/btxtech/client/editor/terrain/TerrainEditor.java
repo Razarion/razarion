@@ -2,8 +2,9 @@ package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.TerrainKeyDownEvent;
 import com.btxtech.client.TerrainKeyUpEvent;
-import com.btxtech.client.TerrainMouseDownEvent;
-import com.btxtech.client.TerrainMouseMoveEvent;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.uiservice.mouse.TerrainMouseDownEvent;
+import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.PlanetEditorProvider;
 import com.btxtech.shared.datatypes.Index;
@@ -14,7 +15,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.events.KeyboardEvent;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -52,7 +52,7 @@ public class TerrainEditor {
     @Inject
     private Event<TerrainEditorSlopeModifiedEvent> terrainEditorSlopeModifiedEvent;
     @Inject
-    private TerrainUiService terrainUiService;
+    private TerrainService terrainService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<PlanetEditorProvider> planetEditorServiceCaller;
@@ -76,7 +76,7 @@ public class TerrainEditor {
     public void onTerrainMouseMoved(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainUiService.calculatePositionOnZeroLevel(ray3d);
+            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
             // Cursor
             cursorModelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
 
@@ -110,7 +110,7 @@ public class TerrainEditor {
     public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainUiService.calculatePositionOnZeroLevel(ray3d);
+            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
             Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().getPosition());
             if (hasSelection()) {
                 ModifiedTerrainSlopePosition slopePosition = modifiedTerrainSlopePositions.get(selectedSlopeId);
@@ -242,7 +242,7 @@ public class TerrainEditor {
                 terrainSlopePositions.add(modifiedTerrainSlopePosition.createRendererTerrainSlopePosition(entry.getKey()));
             }
         }
-        terrainUiService.setTerrainSlopePositions(terrainSlopePositions);
+        // TODO terrainService.setTerrainSlopePositions(terrainSlopePositions);
     }
 
     public void save() {

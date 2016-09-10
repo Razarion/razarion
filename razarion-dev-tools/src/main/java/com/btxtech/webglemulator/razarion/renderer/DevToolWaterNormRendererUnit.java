@@ -50,7 +50,7 @@ public class DevToolWaterNormRendererUnit extends AbstractWaterRendererUnit impl
     }
 
     @Override
-    public void draw(ModelMatrices modelMatrice) {
+    public void draw(ModelMatrices modelMatrices) {
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 }

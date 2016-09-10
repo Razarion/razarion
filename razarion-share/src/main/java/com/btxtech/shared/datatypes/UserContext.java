@@ -7,6 +7,7 @@ package com.btxtech.shared.datatypes;
  */
 public class UserContext {
     private String name;
+    private int levelId;
 
     public String getName() {
         return name;
@@ -14,6 +15,15 @@ public class UserContext {
 
     public UserContext setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public int getLevelId() {
+        return levelId;
+    }
+
+    public UserContext setLevelId(int levelId) {
+        this.levelId = levelId;
         return this;
     }
 }

@@ -50,7 +50,7 @@ public class DevToolGroundNormRendererUnit extends AbstractGroundRendererUnit im
     }
 
     @Override
-    public void draw(ModelMatrices modelMatrice) {
+    public void draw(ModelMatrices modelMatrices) {
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 }

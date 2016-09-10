@@ -8,7 +8,6 @@ import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
-import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -89,7 +88,7 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     }
 
     @Override
-    protected void draw(ModelMatrices modelMatrice) {
+    protected void draw(ModelMatrices modelMatrices) {
 
     }
 

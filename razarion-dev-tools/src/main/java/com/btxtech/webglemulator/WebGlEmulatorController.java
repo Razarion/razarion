@@ -4,16 +4,16 @@ import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.mouse.MouseEventHandler;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -80,7 +80,7 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private Camera camera;
     @Inject
-    private TerrainUiService terrainUiService;
+    private TerrainService terrainService;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -91,6 +91,8 @@ public class WebGlEmulatorController implements Initializable {
     private WebGlEmulatorShadowController shadowController;
     @Inject
     private WebGlEmulatorSceneController sceneController;
+    @Inject
+    private MouseEventHandler mouseEventHandler;
     private DecimalPosition lastCanvasPosition;
 
     @Override
@@ -189,25 +191,11 @@ public class WebGlEmulatorController implements Initializable {
         return new DecimalPosition((canvasPosition.getX() - xOffset) / xScale, (canvasPosition.getY() - yOffset) / yScale);
     }
 
-    public void onMousePressed(Event event) {
-        MouseEvent mouseEvent = (MouseEvent) event;
-        DecimalPosition canvasPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
-        DecimalPosition clipXY = toClipCoordinates(canvasPosition);
-        Ray3d pickRay = projectionTransformation.createPickRay(clipXY);
-        Ray3d worldPickRay = camera.toWorld(pickRay);
-        Vertex groundMeshPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
-        System.out.println("Ground Mesh position: " + groundMeshPosition);
-    }
-
     private Vertex getTerrainPosition(DecimalPosition canvasPosition) {
         DecimalPosition clipXY = toClipCoordinates(canvasPosition);
         Ray3d pickRay = projectionTransformation.createPickRay(clipXY);
         Ray3d worldPickRay = camera.toWorld(pickRay);
-        return terrainUiService.calculatePositionOnZeroLevel(worldPickRay);
-    }
-
-    public void onMouseReleased() {
-        lastCanvasPosition = null;
+        return terrainService.calculatePositionOnZeroLevel(worldPickRay);
     }
 
     public void onDumpProjectionTransformatioClicked() {
@@ -325,8 +313,21 @@ public class WebGlEmulatorController implements Initializable {
         }
     }
 
-    public void onMouseMoved(/*MouseEvent event*/) {
-        // terrainScrollHandler.handleMouseMoveScroll((int)event.getX(), (int)event.getY(), (int)canvas.getWidth(), (int)canvas.getHeight());
+    public void onMouseMoved(MouseEvent event) {
+        mouseEventHandler.onMouseMove((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight());
+    }
+
+    public void onMouseOut() {
+        mouseEventHandler.onMouseOut();
+    }
+
+    public void onMousePressed(MouseEvent event) {
+        mouseEventHandler.onMouseDown((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight(), true, event.isControlDown(), event.isAltDown());
+    }
+
+    public void onMouseReleased(MouseEvent event) {
+        mouseEventHandler.onMouseUp((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight());
+        lastCanvasPosition = null;
     }
 
     public Canvas getCanvas() {

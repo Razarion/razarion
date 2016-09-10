@@ -2,9 +2,10 @@ package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.TerrainKeyDownEvent;
 import com.btxtech.client.TerrainKeyUpEvent;
-import com.btxtech.client.TerrainMouseDownEvent;
-import com.btxtech.client.TerrainMouseMoveEvent;
-import com.btxtech.client.TerrainMouseUpEvent;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.uiservice.mouse.TerrainMouseDownEvent;
+import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
+import com.btxtech.uiservice.mouse.TerrainMouseUpEvent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.PlanetEditorProvider;
 import com.btxtech.shared.datatypes.Ray3d;
@@ -13,7 +14,6 @@ import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.events.KeyboardEvent;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -50,7 +50,7 @@ public class TerrainObjectEditor {
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
-    private TerrainUiService terrainUiService;
+    private TerrainService terrainService;
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject
@@ -67,7 +67,7 @@ public class TerrainObjectEditor {
     public void onTerrainMouseMove(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainUiService.calculatePositionOnZeroLevel(ray3d);
+            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
 
             CursorType cursorType;
             hover = false;
@@ -97,7 +97,7 @@ public class TerrainObjectEditor {
     public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainUiService.calculatePositionOnZeroLevel(ray3d);
+            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
 
             selected = getAtTerrain(terrainPosition);
 
@@ -132,7 +132,7 @@ public class TerrainObjectEditor {
 
     public void onTerrainMouseUp(@Observes TerrainMouseUpEvent terrainMouseDownEvent) {
         Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-        Vertex terrainPosition = terrainUiService.calculatePositionOnZeroLevel(ray3d);
+        Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
 
         if (selected != null) {
             selected = null;

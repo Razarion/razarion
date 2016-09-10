@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -71,10 +71,10 @@ public class BaseItemUiService {
     }
 
     public List<ModelMatrices> provideSpawnModelMatrices(BaseItemType baseItemType) {
-        return baseItemService.getBeamingSyncBaseItems().stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale())).collect(Collectors.toCollection(ArrayList::new));
+        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.SPAWN).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale())).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<ModelMatrices> provideAliveModelMatrices(BaseItemType baseItemType) {
-        return baseItemService.getAliveSyncBaseItems().stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale())).collect(Collectors.toCollection(ArrayList::new));
+        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.ALIVE).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale())).collect(Collectors.toCollection(ArrayList::new));
     }
 }
