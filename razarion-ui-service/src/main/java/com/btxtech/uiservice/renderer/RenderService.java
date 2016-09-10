@@ -65,11 +65,10 @@ public abstract class RenderService {
 
         blend(true);
         renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(RenderOrder.WATER));
-        blend(false);
-
-        // TODO setup for start point
+        depthTest(false);
         renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(RenderOrder.START_POINT));
-        // TODO clean
+        depthTest(true);
+        blend(false);
 
         if (showNorm) {
             // depthTest(false);
