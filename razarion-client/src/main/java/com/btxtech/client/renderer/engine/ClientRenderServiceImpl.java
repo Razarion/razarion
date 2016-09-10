@@ -174,11 +174,21 @@ public class ClientRenderServiceImpl extends RenderService {
     }
 
     @Override
-    protected void depthTest(boolean depthTest) {
-        if(depthTest) {
+    protected void depthTest(boolean enable) {
+        if (enable) {
             gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
         } else {
             gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
+        }
+    }
+
+    @Override
+    protected void blend(boolean enable) {
+        if (enable) {
+            gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
+            gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+        } else {
+            gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
         }
     }
 

@@ -75,7 +75,12 @@ public class DevToolsRenderServiceImpl extends RenderService {
 
     @Override
     protected void depthTest(boolean depthTest) {
+        // Ignore
+    }
 
+    @Override
+    protected void blend(boolean enable) {
+        // Ignore
     }
 
     @Deprecated

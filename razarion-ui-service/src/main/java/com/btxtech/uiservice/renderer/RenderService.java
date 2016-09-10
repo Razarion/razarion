@@ -36,6 +36,8 @@ public abstract class RenderService {
 
     protected abstract void depthTest(boolean depthTest);
 
+    protected abstract void blend(boolean enable);
+
     public void setup() {
         serviceInitEvent.fire(new RenderServiceInitEvent());
         renderTasks.clear();
@@ -55,11 +57,20 @@ public abstract class RenderService {
     }
 
     public void render() {
-        renderTasks.forEach(AbstractRenderTask::prepareDraw);
+        renderTasks.forEach(AbstractRenderTask::setupModelMatrices);
         prepareDepthBufferRendering();
         renderTasks.forEach(AbstractRenderTask::drawDepthBuffer);
         prepareMainRendering();
-        renderTasks.forEach(AbstractRenderTask::draw);
+        renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(RenderOrder.NORMAL));
+
+        blend(true);
+        renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(RenderOrder.WATER));
+        blend(false);
+
+        // TODO setup for start point
+        renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(RenderOrder.START_POINT));
+        // TODO clean
+
         if (showNorm) {
             // depthTest(false);
             renderTasks.forEach(AbstractRenderTask::drawNorm);

@@ -12,6 +12,7 @@ import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
+import com.btxtech.uiservice.renderer.RenderOrder;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -56,7 +57,7 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
         CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(startPointItemPlacer);
         compositeRenderer.setRenderUnit(AbstractStartPointRendererUnit.class);
-        modelRenderer.add(compositeRenderer);
+        modelRenderer.add(RenderOrder.START_POINT, compositeRenderer);
         add(modelRenderer);
         compositeRenderer.fillBuffers();
 

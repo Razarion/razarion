@@ -10,6 +10,7 @@ import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
+import com.btxtech.uiservice.renderer.RenderOrder;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
@@ -53,7 +54,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(compositeRenderer);
+                    modelRenderer.add(RenderOrder.NORMAL, compositeRenderer);
                 }
             }
             add(modelRenderer);
@@ -73,7 +74,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(compositeRenderer);
+                    modelRenderer.add(RenderOrder.NORMAL, compositeRenderer);
                 }
             }
             add(modelRenderer);

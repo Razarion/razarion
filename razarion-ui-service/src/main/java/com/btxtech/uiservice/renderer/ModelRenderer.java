@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.ModelMatrices;
 
 import javax.enterprise.context.Dependent;
@@ -27,7 +28,7 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     private Instance<AbstractRenderComposite> instance;
     @Inject
     private Instance<CommonRenderComposite<?, ?>> instanceCommonRenderComposite;
-    private List<C> abstractRenderComposites = new ArrayList<>();
+    private MapList<RenderOrder, C> abstractRenderComposites = new MapList<>();
     private List<ModelMatrices> modelMatrices;
     private Supplier<List<ModelMatrices>> modelMatricesSupplier;
     private T model;
@@ -41,8 +42,8 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
         return model;
     }
 
-    public void add(C abstractRenderCompositeRenderers) {
-        this.abstractRenderComposites.add(abstractRenderCompositeRenderers);
+    public void add(RenderOrder renderOrder, C abstractRenderCompositeRenderers) {
+        this.abstractRenderComposites.put(renderOrder, abstractRenderCompositeRenderers);
     }
 
     public <U extends AbstractRenderUnit<D>, D> CommonRenderComposite<U, D> create() {
@@ -61,23 +62,23 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
         }
     }
 
-    public void draw() {
-        abstractRenderComposites.forEach(abstractRenderComposite -> abstractRenderComposite.draw(modelMatrices));
+    public void draw(RenderOrder renderOrder) {
+        abstractRenderComposites.getSave(renderOrder).forEach(abstractRenderComposite -> abstractRenderComposite.draw(modelMatrices));
     }
 
     public void drawDepthBuffer() {
-        abstractRenderComposites.forEach(abstractRenderComposite -> abstractRenderComposite.drawDepthBuffer(modelMatrices));
+        abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawDepthBuffer(modelMatrices));
     }
 
     public void drawNorm() {
-        abstractRenderComposites.forEach(abstractRenderComposite -> abstractRenderComposite.drawNorm(modelMatrices));
+        abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawNorm(modelMatrices));
     }
 
     public void fillBuffers() {
-        abstractRenderComposites.forEach(AbstractRenderComposite::fillBuffers);
+        abstractRenderComposites.getAll().forEach(AbstractRenderComposite::fillBuffers);
     }
 
     public void fillNormBuffer() {
-        abstractRenderComposites.forEach(AbstractRenderComposite::fillNormBuffer);
+        abstractRenderComposites.getAll().forEach(AbstractRenderComposite::fillNormBuffer);
     }
 }

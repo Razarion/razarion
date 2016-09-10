@@ -67,10 +67,6 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
     @Override
     public void draw(ModelMatrices modelMatrices) {
-        gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
-        gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
-        gameCanvas.getCtx3d().depthMask(false);
-
         webGlFacade.useProgram();
 
         webGlFacade.setLightUniforms(null, visualUiService.getVisualConfig().getWaterLightConfig());
@@ -91,8 +87,5 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         bumpMap.activate();
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
-
-        gameCanvas.getCtx3d().depthMask(true);
-        gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
     }
 }

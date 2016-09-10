@@ -1,22 +1,21 @@
 package com.btxtech.shared.datatypes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 /**
  * Created by Beat
  * 09.08.2016.
  */
-public class MapCollection<T, U> {
-    private final Map<T, Collection<U>> map = new HashMap<>();
+public class MapList<T, U> {
+    private final Map<T, List<U>> map = new HashMap<>();
 
     public void put(T key, U value) {
-        Collection<U> collection = map.get(key);
+        List<U> collection = map.get(key);
         if (collection == null) {
             collection = new ArrayList<>();
             map.put(key, collection);
@@ -24,12 +23,20 @@ public class MapCollection<T, U> {
         collection.add(value);
     }
 
-    public Collection<U> get(T key) {
+    public List<U> get(T key) {
         return map.get(key);
     }
 
-    public Collection<U> getSave(T key) {
-        Collection<U> values = get(key);
+    public List<U> getAll() {
+        List<U> all = new ArrayList<>();
+        for (List<U> list : map.values()) {
+            all.addAll(list);
+        }
+        return all;
+    }
+
+    public List<U> getSave(T key) {
+        List<U> values = get(key);
         if (values != null) {
             return values;
         } else {
@@ -37,7 +44,7 @@ public class MapCollection<T, U> {
         }
     }
 
-    public Map<T, Collection<U>> getMap() {
+    public Map<T, List<U>> getMap() {
         return map;
     }
 
@@ -46,7 +53,7 @@ public class MapCollection<T, U> {
     }
 
     public void remove(T key, U value) {
-        Collection<U> collection = map.get(key);
+        List<U> collection = map.get(key);
         if (collection == null) {
             return;
         }
@@ -63,7 +70,7 @@ public class MapCollection<T, U> {
      * @param callback callback
      */
     public void iterate(BiFunction<T, U, Boolean> callback) {
-        for (Map.Entry<T, Collection<U>> entry : map.entrySet()) {
+        for (Map.Entry<T, List<U>> entry : map.entrySet()) {
             for (U u : entry.getValue()) {
                 if(!callback.apply(entry.getKey(), u)) {
                     return;

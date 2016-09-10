@@ -54,15 +54,15 @@ public abstract class AbstractRenderTask<T> {
         return (ModelRenderer)instance.get();
     }
 
-    public void prepareDraw() {
+    public void setupModelMatrices() {
         if (isActive()) {
             modelRenderers.forEach(ModelRenderer::setupModelMatrices);
         }
     }
 
-    public void draw() {
+    public void draw(RenderOrder renderOrder) {
         if (isActive()) {
-            modelRenderers.forEach(ModelRenderer::draw);
+            modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderOrder));
         }
     }
 
