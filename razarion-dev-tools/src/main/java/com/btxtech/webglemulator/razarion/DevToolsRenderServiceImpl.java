@@ -7,6 +7,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
+import com.btxtech.uiservice.renderer.RenderUnitControl;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.WebGlEmulatorController;
@@ -74,13 +75,8 @@ public class DevToolsRenderServiceImpl extends RenderService {
     }
 
     @Override
-    protected void depthTest(boolean depthTest) {
-        // Ignore
-    }
+    protected void prepare(RenderUnitControl renderUnitControl) {
 
-    @Override
-    protected void blend(boolean enable) {
-        // Ignore
     }
 
     @Deprecated

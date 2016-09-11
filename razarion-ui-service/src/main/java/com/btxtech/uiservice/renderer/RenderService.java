@@ -34,9 +34,7 @@ public abstract class RenderService {
 
     protected abstract void prepareDepthBufferRendering();
 
-    protected abstract void depthTest(boolean depthTest);
-
-    protected abstract void blend(boolean enable);
+    protected abstract void prepare(RenderUnitControl renderUnitControl);
 
     public void setup() {
         serviceInitEvent.fire(new RenderServiceInitEvent());
@@ -61,14 +59,12 @@ public abstract class RenderService {
         prepareDepthBufferRendering();
         renderTasks.forEach(AbstractRenderTask::drawDepthBuffer);
         prepareMainRendering();
-        renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(RenderOrder.NORMAL));
 
-        blend(true);
-        renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(RenderOrder.WATER));
-        depthTest(false);
-        renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(RenderOrder.START_POINT));
-        depthTest(true);
-        blend(false);
+        for (RenderUnitControl renderUnitControl : RenderUnitControl.getRenderUnitControls()) {
+            prepare(renderUnitControl);
+            renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(renderUnitControl));
+        }
+        prepare(RenderUnitControl.NORMAL);
 
         if (showNorm) {
             // depthTest(false);
@@ -76,6 +72,7 @@ public abstract class RenderService {
             // depthTest(true);
         }
     }
+
 
     @Deprecated
     public void fillBuffers() {

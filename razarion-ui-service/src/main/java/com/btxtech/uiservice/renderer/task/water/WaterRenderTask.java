@@ -5,7 +5,7 @@ import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
-import com.btxtech.uiservice.renderer.RenderOrder;
+import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -27,7 +27,7 @@ public class WaterRenderTask extends AbstractRenderTask<Water> {
         renderComposite.init(terrainService.getWater());
         renderComposite.setRenderUnit(AbstractWaterRendererUnit.class);
         renderComposite.setNormRenderUnit(AbstractWaterRendererUnit.class);
-        modelRenderer.add(RenderOrder.WATER, renderComposite);
+        modelRenderer.add(RenderUnitControl.WATER, renderComposite);
         add(modelRenderer);
     }
 

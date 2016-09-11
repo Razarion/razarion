@@ -7,7 +7,7 @@ import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.NormRenderer;
-import com.btxtech.uiservice.renderer.RenderOrder;
+import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
@@ -41,7 +41,7 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
             renderComposite.setRenderUnit(rendererInstance.get());
             renderComposite.setDepthBufferRenderUnit(depthBufferRendererInstance.get());
             renderComposite.setNormRenderUnit(normRendererInstance.get());
-            modelRenderer.add(RenderOrder.NORMAL, renderComposite);
+            modelRenderer.add(RenderUnitControl.NORMAL, renderComposite);
             add(modelRenderer);
         }
     }

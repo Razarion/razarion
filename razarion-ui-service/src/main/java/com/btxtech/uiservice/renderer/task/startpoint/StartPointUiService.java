@@ -1,26 +1,29 @@
 package com.btxtech.uiservice.renderer.task.startpoint;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Ray3d;
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.Element3D;
+import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.mouse.TerrainMouseDownEvent;
 import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
+import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
-import com.btxtech.uiservice.renderer.RenderOrder;
+import com.btxtech.uiservice.renderer.RenderUnitControl;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -28,7 +31,7 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer> {
-    // private Logger log = Logger.getLogger(StartPointUiService.class.getName());
+    private Logger logger = Logger.getLogger(StartPointUiService.class.getName());
     @Inject
     private Instance<StartPointItemPlacer> instance;
     @Inject
@@ -40,6 +43,8 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
     private ExceptionHandler exceptionHandler;
     @Inject
     private StoryboardService storyboardService;
+    @Inject
+    private Shape3DUiService shape3DUiService;
     private StartPointItemPlacer startPointItemPlacer;
 
     @Override
@@ -52,17 +57,45 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
 //    TODO        terrainScrollHandler.moveToMiddle(startPointInfo.getSuggestedPosition());
 //    TODO    }
         startPointItemPlacer = instance.get().init(startPointConfig);
+        setupCircle();
+        setupItem();
+        // TODO RadarPanel.getInstance().setLevelRadarMode(RadarMode.MAP_AND_UNITS);
+        // TODO ClientDeadEndProtection.getInstance().stop();
+    }
+
+    private void setupCircle() {
         ModelRenderer<StartPointItemPlacer, CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer>, AbstractStartPointRendererUnit, StartPointItemPlacer> modelRenderer = create();
-        modelRenderer.init(startPointItemPlacer, startPointItemPlacer::provideModelMatrices);
+        modelRenderer.init(startPointItemPlacer, startPointItemPlacer::provideCircleModelMatrices);
         CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(startPointItemPlacer);
         compositeRenderer.setRenderUnit(AbstractStartPointRendererUnit.class);
-        modelRenderer.add(RenderOrder.START_POINT, compositeRenderer);
+        modelRenderer.add(RenderUnitControl.START_POINT_CIRCLE, compositeRenderer);
         add(modelRenderer);
         compositeRenderer.fillBuffers();
+    }
 
-        // TODO RadarPanel.getInstance().setLevelRadarMode(RadarMode.MAP_AND_UNITS);
-        // TODO ClientDeadEndProtection.getInstance().stop();
+    private void setupItem() {
+        if (startPointItemPlacer.getBaseItemType().getShape3DId() == null) {
+            logger.warning("StartPointUiService: no shape3DId for BaseItemType: " + startPointItemPlacer.getBaseItemType());
+            return;
+        }
+
+        ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        modelRenderer.init(startPointItemPlacer.getBaseItemType(), startPointItemPlacer::provideItemModelMatrices);
+
+        Shape3D shape3D = shape3DUiService.getShape3D(startPointItemPlacer.getBaseItemType().getShape3DId());
+        for (Element3D element3D : shape3D.getElement3Ds()) {
+            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+                compositeRenderer.init(vertexContainer);
+                compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+                compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
+                compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+                modelRenderer.add(RenderUnitControl.START_POINT_ITEM, compositeRenderer);
+            }
+        }
+        add(modelRenderer);
     }
 
     public void deactivate() {

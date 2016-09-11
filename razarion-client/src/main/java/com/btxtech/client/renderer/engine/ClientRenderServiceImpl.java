@@ -8,6 +8,7 @@ import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
+import com.btxtech.uiservice.renderer.RenderUnitControl;
 import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLFramebuffer;
@@ -174,19 +175,34 @@ public class ClientRenderServiceImpl extends RenderService {
     }
 
     @Override
-    protected void depthTest(boolean enable) {
-        if (enable) {
+    protected void prepare(RenderUnitControl renderUnitControl) {
+        if (renderUnitControl.isDpDepthTest()) {
             gameCanvas.getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
         } else {
             gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
         }
-    }
-
-    @Override
-    protected void blend(boolean enable) {
-        if (enable) {
+        gameCanvas.getCtx3d().depthMask(renderUnitControl.isWriteDepthBuffer());
+        if (renderUnitControl.isBackCull()) {
+            gameCanvas.getCtx3d().enable(WebGLRenderingContext.CULL_FACE);
+        } else {
+            gameCanvas.getCtx3d().disable(WebGLRenderingContext.CULL_FACE);
+        }
+        if (renderUnitControl.getBlend() != null) {
             gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
-            gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+            switch (renderUnitControl.getBlend()) {
+                case SOURCE_ALPHA:
+                    gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
+                    break;
+                case CONST_ALPHA:
+                    gameCanvas.getCtx3d().blendColor(1f, 1f, 1f, renderUnitControl.getConstAlpha());
+                    gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.CONSTANT_ALPHA, WebGLRenderingContext.ONE_MINUS_CONSTANT_ALPHA);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown Blend mode: " + renderUnitControl.getBlend());
+            }
+
+            gameCanvas.getCtx3d().blendColor(1f, 1f, 1f, 0.5f);
+            gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.CONSTANT_ALPHA, WebGLRenderingContext.ONE_MINUS_CONSTANT_ALPHA);
         } else {
             gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
         }

@@ -60,9 +60,9 @@ public abstract class AbstractRenderTask<T> {
         }
     }
 
-    public void draw(RenderOrder renderOrder) {
+    public void draw(RenderUnitControl renderUnitControl) {
         if (isActive()) {
-            modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderOrder));
+            modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderUnitControl));
         }
     }
 

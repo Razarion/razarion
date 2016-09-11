@@ -10,7 +10,7 @@ import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
-import com.btxtech.uiservice.renderer.RenderOrder;
+import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
@@ -54,12 +54,12 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderOrder.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
                 }
             }
             add(modelRenderer);
         } else {
-            logger.warning("No spawnShape3DId for BaseItemType: " + baseItemType);
+            logger.warning("BaseItemRenderTask: no spawnShape3DId for BaseItemType: " + baseItemType);
         }
         // Alive
         if (baseItemType.getShape3DId() != null) {
@@ -74,12 +74,12 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderOrder.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
                 }
             }
             add(modelRenderer);
         } else {
-            logger.warning("No shape3DId for BaseItemType: " + baseItemType);
+            logger.warning("BaseItemRenderTask: no shape3DId for BaseItemType: " + baseItemType);
         }
     }
 

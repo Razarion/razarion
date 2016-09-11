@@ -4,7 +4,7 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
-import com.btxtech.uiservice.renderer.RenderOrder;
+import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -24,7 +24,7 @@ public class GroundRenderTask extends AbstractRenderTask<GroundConfig> {
         renderComposite.setRenderUnit(AbstractGroundRendererUnit.class);
         renderComposite.setDepthBufferRenderUnit(AbstractGroundRendererUnit.class);
         renderComposite.setNormRenderUnit(AbstractGroundRendererUnit.class);
-        modelRenderer.add(RenderOrder.NORMAL, renderComposite);
+        modelRenderer.add(RenderUnitControl.NORMAL, renderComposite);
         add(modelRenderer);
     }
 }
