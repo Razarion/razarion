@@ -2,6 +2,7 @@ package com.btxtech.persistence;
 
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,6 +34,15 @@ public class StoryboardProviderEmulator {
 
     public StoryboardConfig readFromServer() {
         return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(StoryboardConfig.class);
+    }
+
+    public StoryboardConfig readFromFile() {
+        try {
+            String string = new String(Files.readAllBytes(getFile(FILE_NAME).toPath()));
+            return new ObjectMapper().readValue(string, StoryboardConfig.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void fromServerToFile(String fileName, String url) {

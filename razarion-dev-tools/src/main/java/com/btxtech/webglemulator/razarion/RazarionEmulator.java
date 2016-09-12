@@ -35,7 +35,7 @@ public class RazarionEmulator {
 
     public void run() {
         try {
-            storyboardService.init(storyboardProviderEmulator.readFromServer());
+            storyboardService.init(storyboardProviderEmulator.readFromFile());
             renderService.setup();
             controller.onEngineInitialized();
             start();
