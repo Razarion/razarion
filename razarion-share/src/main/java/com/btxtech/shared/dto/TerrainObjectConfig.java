@@ -47,7 +47,7 @@ public class TerrainObjectConfig implements ObjectNameIdProvider {
     }
 
     @Override
-    public ObjectNameId getObjectNameId() {
+    public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, internalName);
     }
 

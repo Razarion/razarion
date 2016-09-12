@@ -47,7 +47,7 @@ public class ColladaConverterTest {
         Assert.assertEquals(1, planeElement.getVertexContainers().size());
         VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
 
-        Assert.assertEquals(12 * 3, vertexContainer.getVerticesCount());
+        Assert.assertEquals(12 * 3, vertexContainer.verticesCount());
         Assert.assertEquals(12 * 3, vertexContainer.getNorms().size());
 
         // Assert vertices
@@ -165,7 +165,7 @@ public class ColladaConverterTest {
         Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
         Assert.assertEquals(new Color(0.64, 0.64, 0.64), vertexContainer.getDiffuse());
         Assert.assertEquals(new Color(0.5, 0.5, 0.5), vertexContainer.getSpecular());
-        Assert.assertEquals(42, vertexContainer.getVerticesCount());
+        Assert.assertEquals(42, vertexContainer.verticesCount());
         List<Vertex> vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
         List<Vertex> norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupMatrix().normTransformation());
         Assert.assertArrayEquals(TestHelper.readArrayFromFile(getClass().getResourceAsStream("TestItem1Chassis1Vertex.arr")), TestHelper.vertices2DoubleArray(vertices), 0.01);
@@ -183,7 +183,7 @@ public class ColladaConverterTest {
         Assert.assertNull(vertexContainer.getEmission());
         Assert.assertNull(vertexContainer.getDiffuse());
         Assert.assertNull(vertexContainer.getSpecular());
-        Assert.assertEquals(57, vertexContainer.getVerticesCount());
+        Assert.assertEquals(57, vertexContainer.verticesCount());
         vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
         norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupMatrix().normTransformation());
         Assert.assertArrayEquals(TestHelper.readArrayFromFile(getClass().getResourceAsStream("TestItem1Wheel1Vertex.arr")), TestHelper.vertices2DoubleArray(vertices), 0.01);
@@ -211,7 +211,7 @@ public class ColladaConverterTest {
         Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
         Assert.assertEquals(new Color(0.64, 0.64, 0.64), vertexContainer.getDiffuse());
         Assert.assertEquals(new Color(0.5, 0.5, 0.5), vertexContainer.getSpecular());
-        Assert.assertEquals(6, vertexContainer.getVerticesCount());
+        Assert.assertEquals(6, vertexContainer.verticesCount());
         List<Vertex> vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
         List<Vertex> norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupMatrix().normTransformation());
         Assert.assertArrayEquals(new double[]{-10.0, 10.0, 10.0, -10.0, -10.0, 10.0, 10.0, -10.0, 10.0, 10.0, 10.0, 10.0, -10.0, 10.0, 10.0, 10.0, -10.0, 10.0}, TestHelper.vertices2DoubleArray(vertices), 0.0001);

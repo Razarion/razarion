@@ -39,7 +39,6 @@ public class Client {
             }
         });
         RestClient.setApplicationRoot(RestUrl.APPLICATION_PATH);
-        // RestClient.setJacksonMarshallingActive(true);
     }
 
     @PostConstruct

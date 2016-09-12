@@ -1,6 +1,5 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.emulation.JsonPersistence;
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.shared.StoryboardProvider;
@@ -24,16 +23,12 @@ public class StoryboardProviderImpl implements StoryboardProvider {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private JsonPersistence jsonPersistence;
 
     @Override
     @Transactional
     public StoryboardConfig loadStoryboard() {
         try {
-            StoryboardConfig storyboardConfig = storyboardPersistence.load();
-            jsonPersistence.writeJson("StoryboardConfig.json", storyboardConfig);
-            return storyboardConfig;
+            return storyboardPersistence.load();
         } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

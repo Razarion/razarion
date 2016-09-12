@@ -46,7 +46,7 @@ public class SyncItemArea {
     public DecimalPosition getPosition() {
         throw new UnsupportedOperationException();
 //        if (position != null) {
-//            return position.getPosition();
+//            return position.toIndex();
 //        } else {
 //            return null;
 //        }
@@ -54,7 +54,7 @@ public class SyncItemArea {
 
     public Index getTopLeftFromImagePosition() {
         throw new UnsupportedOperationException();
-        // return getPosition().sub(syncItem.getItemType().getItemTypeSpriteMap().getMiddleFromImage());
+        // return toIndex().sub(syncItem.getItemType().getItemTypeSpriteMap().getMiddleFromImage());
     }
 
     public DecimalPosition getDecimalPosition() {
@@ -139,7 +139,7 @@ public class SyncItemArea {
 
     public void turnTo(DecimalPosition destination) {
         throw new UnsupportedOperationException();
-//        if (destination.equals(getPosition())) {
+//        if (destination.equals(toIndex())) {
 //            return;
 //        }
 //
@@ -152,7 +152,7 @@ public class SyncItemArea {
 
     public void turnTo(SyncItemArea target) {
         throw new UnsupportedOperationException();
-        // turnTo(target.getPosition());
+        // turnTo(target.toIndex());
     }
 
     public double getTurnToAngel(Index destination) {
@@ -161,12 +161,12 @@ public class SyncItemArea {
         }
 
         throw new UnsupportedOperationException();
-        // return getPosition().getAngleToNord(destination);
+        // return toIndex().getAngleToNord(destination);
     }
 
     public double getTurnToAngel(SyncItemArea destination) {
         throw new UnsupportedOperationException();
-        // return getTurnToAngel(destination.getPosition());
+        // return getTurnToAngel(destination.toIndex());
     }
 
     public boolean contains(SyncItemArea syncItemArea) {
@@ -232,21 +232,21 @@ public class SyncItemArea {
 //        if (!hasPosition()) {
 //            return false;
 //        }
-//        if (rectangle.contains(getPosition())) {
+//        if (rectangle.contains(toIndex())) {
 //            return true;
 //        }
 //        Rectangle biggestScope = Rectangle.generateRectangleFromMiddlePoint(rectangle.getCenter(),
 //                rectangle.getWidth() + boundingBox.getDiameter(),
 //                rectangle.getHeight() + boundingBox.getDiameter());
-//        if (!biggestScope.containsExclusive(new DecimalPosition(getPosition()))) {
+//        if (!biggestScope.containsExclusive(new DecimalPosition(toIndex()))) {
 //            return false;
 //        }
-//        return rectangle.getNearestPoint(new DecimalPosition(getPosition())).getDistance(getPosition()) <= boundingBox.getRadius();
+//        return rectangle.getNearestPoint(new DecimalPosition(toIndex())).getDistance(toIndex()) <= boundingBox.getRadius();
     }
 
     public Rectangle generateCoveringRectangle() {
         throw new UnsupportedOperationException();
-        // return Rectangle.generateRectangleFromMiddlePoint(getPosition(), boundingBox.getDiameter(), boundingBox.getDiameter());
+        // return Rectangle.generateRectangleFromMiddlePoint(toIndex(), boundingBox.getDiameter(), boundingBox.getDiameter());
     }
 
     public boolean positionReached(DecimalPosition destination) {
@@ -284,7 +284,7 @@ public class SyncItemArea {
             return 0;
         }
         throw new UnsupportedOperationException();
-        // return getPosition().getDistanceDouble(syncItemArea.getPosition()) - getBoundingBox().getRadius() - syncItemArea.getBoundingBox().getRadius();
+        // return toIndex().getDistanceDouble(syncItemArea.toIndex()) - getBoundingBox().getRadius() - syncItemArea.getBoundingBox().getRadius();
     }
 
     public boolean isInRange(int range, SyncItem target) throws TargetHasNoPositionException {

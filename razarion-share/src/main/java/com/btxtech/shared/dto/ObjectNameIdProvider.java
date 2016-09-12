@@ -5,5 +5,5 @@ package com.btxtech.shared.dto;
  * 23.08.2016.
  */
 public interface ObjectNameIdProvider {
-    ObjectNameId getObjectNameId();
+    ObjectNameId createObjectNameId();
 }

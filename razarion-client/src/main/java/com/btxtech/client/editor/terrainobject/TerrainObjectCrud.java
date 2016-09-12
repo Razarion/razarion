@@ -10,10 +10,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -86,7 +83,7 @@ public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> 
 
     @Override
     protected List<ObjectNameId> setupObjectNameIds() {
-        return terrainTypeService.getTerrainObjectConfigs().stream().map(TerrainObjectConfig::getObjectNameId).collect(Collectors.toList());
+        return terrainTypeService.getTerrainObjectConfigs().stream().map(TerrainObjectConfig::createObjectNameId).collect(Collectors.toList());
     }
 
 }

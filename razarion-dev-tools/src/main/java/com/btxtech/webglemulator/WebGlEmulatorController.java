@@ -1,5 +1,6 @@
 package com.btxtech.webglemulator;
 
+import com.btxtech.persistence.StoryboardProviderEmulator;
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Ray3d;
@@ -93,6 +94,8 @@ public class WebGlEmulatorController implements Initializable {
     private WebGlEmulatorSceneController sceneController;
     @Inject
     private MouseEventHandler mouseEventHandler;
+    @Inject
+    private StoryboardProviderEmulator storyboardProviderEmulator;
     private DecimalPosition lastCanvasPosition;
 
     @Override
@@ -344,5 +347,9 @@ public class WebGlEmulatorController implements Initializable {
 
     public void onShowNormCheckBox() {
         renderServiceInstance.get().setShowNorm(showNormCheckBox.isSelected());
+    }
+
+    public void getJsonButtonClicked() {
+        storyboardProviderEmulator.fromServerToFile();
     }
 }

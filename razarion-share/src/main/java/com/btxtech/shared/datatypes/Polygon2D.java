@@ -74,7 +74,7 @@ public class Polygon2D {
     }
 
     public double getInnerAngle(int index) {
-        return getCorner(index).getAngle(getCorner(index + 1), getCorner(index - 1));
+        return getCorner(index).angle(getCorner(index + 1), getCorner(index - 1));
     }
 
     public DecimalPosition getCorner(int index) {

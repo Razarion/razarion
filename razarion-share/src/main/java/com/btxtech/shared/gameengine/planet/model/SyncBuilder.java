@@ -149,7 +149,7 @@ public class SyncBuilder extends SyncBaseAbility {
         if (currentBuildup != null) {
             return currentBuildup.getSyncItemArea();
         } else {
-            return toBeBuiltType.getBoundingBox().createSyntheticSyncItemArea(toBeBuildPosition.toXY().getPosition());
+            return toBeBuiltType.getBoundingBox().createSyntheticSyncItemArea(toBeBuildPosition.toXY().toIndex());
         }
     }
 
@@ -162,7 +162,7 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     private boolean isInRange() {
-        return getSyncItemArea().isInRange(builderType.getRange(), toBeBuildPosition.toXY().getPosition(), toBeBuiltType);
+        return getSyncItemArea().isInRange(builderType.getRange(), toBeBuildPosition.toXY().toIndex(), toBeBuiltType);
     }
 
     public synchronized void stop() {
@@ -228,7 +228,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
         currentBuildup = syncBaseItem;
         toBeBuiltType = syncBaseItem.getBaseItemType();
-        // TODO toBeBuildPosition = syncBaseItem.getSyncItemArea().getPosition();
+        // TODO toBeBuildPosition = syncBaseItem.getSyncItemArea().toIndex();
         setPathToDestinationIfSyncMovable(builderFinalizeCommand.getPathToDestination());
     }
 

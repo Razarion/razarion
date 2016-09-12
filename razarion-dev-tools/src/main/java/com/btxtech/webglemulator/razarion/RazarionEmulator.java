@@ -1,7 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
+import com.btxtech.persistence.StoryboardProviderEmulator;
 import com.btxtech.servercommon.StoryboardPersistence;
-import com.btxtech.servercommon.collada.Emulation;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.webglemulator.WebGlEmulatorController;
 import com.btxtech.webglemulator.WebGlEmulatorSceneController;
@@ -29,14 +29,13 @@ public class RazarionEmulator {
     @Inject
     private DevToolsRenderServiceImpl renderService;
     @Inject
-    @Emulation
-    private StoryboardPersistence storyboardPersistence;
+    private StoryboardProviderEmulator storyboardProviderEmulator;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private boolean showRenderTime;
 
     public void run() {
         try {
-            storyboardService.init(storyboardPersistence.load());
+            storyboardService.init(storyboardProviderEmulator.readFromServer());
             renderService.setup();
             controller.onEngineInitialized();
             start();

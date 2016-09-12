@@ -62,7 +62,7 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     public void fillBuffers() {
         terrainObjectId = terrainObjectService.getTerrainObjectId4VertexContainer(getId());
         VertexContainer vertexContainer = terrainObjectService.getVertexContainer(getId());
-        if (vertexContainer == null || vertexContainer.isEmpty()) {
+        if (vertexContainer == null || vertexContainer.empty()) {
             logger.warning("No vertices to render");
             return;
         }

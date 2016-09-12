@@ -19,8 +19,8 @@ public class SlopeSkeletonConfigEntityFactoryTest {
 //        Assert.assertEquals(1, nodes.length);
 //        Assert.assertEquals(2, nodes[0].length);
 //
-//        TestHelper.assertVertex(0, 0, 0, nodes[0][0].getPosition());
-//        TestHelper.assertVertex(0, 0, 100, nodes[0][1].getPosition());
+//        TestHelper.assertVertex(0, 0, 0, nodes[0][0].toIndex());
+//        TestHelper.assertVertex(0, 0, 100, nodes[0][1].toIndex());
     }
 
     @Test
@@ -33,9 +33,9 @@ public class SlopeSkeletonConfigEntityFactoryTest {
 //        Assert.assertEquals(1, nodes.length);
 //        Assert.assertEquals(3, nodes[0].length);
 //
-//        TestHelper.assertVertex(0, 0, 0, nodes[0][0].getPosition());
-//        TestHelper.assertVertex(0, 0, 50, nodes[0][1].getPosition());
-//        TestHelper.assertVertex(0, 0, 100, nodes[0][2].getPosition());
+//        TestHelper.assertVertex(0, 0, 0, nodes[0][0].toIndex());
+//        TestHelper.assertVertex(0, 0, 50, nodes[0][1].toIndex());
+//        TestHelper.assertVertex(0, 0, 100, nodes[0][2].toIndex());
     }
 
     @Test
@@ -49,9 +49,9 @@ public class SlopeSkeletonConfigEntityFactoryTest {
 //
 //        for (SlopeSkeletonEntry[] rows : nodes) {
 //            Assert.assertEquals(3, rows.length);
-//            TestHelper.assertVertex(40, 0, 0, rows[0].getPosition());
-//            TestHelper.assertVertex(20, 0, 50, rows[1].getPosition());
-//            TestHelper.assertVertex(0, 0, 100, rows[2].getPosition());
+//            TestHelper.assertVertex(40, 0, 0, rows[0].toIndex());
+//            TestHelper.assertVertex(20, 0, 50, rows[1].toIndex());
+//            TestHelper.assertVertex(0, 0, 100, rows[2].toIndex());
 //        }
     }
 
@@ -67,12 +67,12 @@ public class SlopeSkeletonConfigEntityFactoryTest {
 //        for (SlopeSkeletonEntry[] rows : nodes) {
 //            Assert.assertEquals(3, rows.length);
 //
-//            TestHelper.assertVertex(40, 0, 0, rows[0].getPosition());
+//            TestHelper.assertVertex(40, 0, 0, rows[0].toIndex());
 //
 //            // Assert.assertEquals("Shift to big: " + rows[1], 2.5, MathHelper.getPythagorasC(rows[1].getX() - 20, rows[1].getZ() - 50), 2.5);
-//            Assert.assertEquals(0, rows[1].getPosition().getY(), 0.001);
+//            Assert.assertEquals(0, rows[1].toIndex().getY(), 0.001);
 //
-//            TestHelper.assertVertex(0, 0, 100, rows[2].getPosition());
+//            TestHelper.assertVertex(0, 0, 100, rows[2].toIndex());
 //        }
     }
 

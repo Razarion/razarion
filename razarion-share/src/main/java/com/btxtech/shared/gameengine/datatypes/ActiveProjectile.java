@@ -37,7 +37,7 @@ public class ActiveProjectile {
     }
 
     public Index getPosition() {
-        return decimalPosition.getPosition();
+        return decimalPosition.toIndex();
     }
 
     public Index getInterpolatedPosition(long timeStamp) {
@@ -45,7 +45,7 @@ public class ActiveProjectile {
             return getPosition();
         } else {
             double factor = (double) (timeStamp - lastTick) / 1000.0;
-            return decimalPosition.getPointWithDistance(factor * (double) weaponType.getProjectileSpeed(), projectileTarget, false).getPosition();
+            return decimalPosition.getPointWithDistance(factor * (double) weaponType.getProjectileSpeed(), projectileTarget, false).toIndex();
         }
     }
 

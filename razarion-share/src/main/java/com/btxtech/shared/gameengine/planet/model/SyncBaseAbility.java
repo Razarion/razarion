@@ -66,11 +66,11 @@ public abstract class SyncBaseAbility {
 //        if (format.isInRange()) {
 //            Path path = getPlanetServices().getCollisionService().setupPathToDestination(syncItem, format.getDestinationHint());
 //            if (!path.isDestinationReachable()) {
-//                throw new PathCanNotBeFoundException("Can not find path in recalculateNewPath: " + syncItem, syncItem.getSyncItemArea().getPosition(), null);
+//                throw new PathCanNotBeFoundException("Can not find path in recalculateNewPath: " + syncItem, syncItem.getSyncItemArea().toIndex(), null);
 //            }
 //            return path;
 //        } else {
-//            throw new PathCanNotBeFoundException("Not in range recalculateNewPath: " + syncItem, syncItem.getSyncItemArea().getPosition(), null);
+//            throw new PathCanNotBeFoundException("Not in range recalculateNewPath: " + syncItem, syncItem.getSyncItemArea().toIndex(), null);
 //        }
     }
 

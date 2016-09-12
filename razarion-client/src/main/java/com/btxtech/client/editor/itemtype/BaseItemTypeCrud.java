@@ -82,6 +82,6 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
 
     @Override
     protected List<ObjectNameId> setupObjectNameIds() {
-        return itemTypeService.getItemTypes(BaseItemType.class).stream().map(BaseItemType::getObjectNameId).collect(Collectors.toList());
+        return itemTypeService.getItemTypes(BaseItemType.class).stream().map(BaseItemType::createObjectNameId).collect(Collectors.toList());
     }
 }

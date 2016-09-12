@@ -82,7 +82,7 @@ public class TerrainEditor {
 
             // Handle inside polygon
             int selectedSlopeId = NO_SELECTION;
-            Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().getPosition());
+            Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().toIndex());
             for (Map.Entry<Integer, ModifiedTerrainSlopePosition> entry : modifiedTerrainSlopePositions.entrySet()) {
                 Polygon2I polygon = entry.getValue().getPolygon2I();
                 if (polygon != null && polygon.adjoins(movedCursor)) {
@@ -111,7 +111,7 @@ public class TerrainEditor {
         if (active) {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
             Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
-            Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().getPosition());
+            Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().toIndex());
             if (hasSelection()) {
                 ModifiedTerrainSlopePosition slopePosition = modifiedTerrainSlopePositions.get(selectedSlopeId);
                 if (deletePressed) {

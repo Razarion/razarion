@@ -168,7 +168,7 @@ public class TerrainObjectEditor {
 
     private TerrainObjectPosition getAtTerrain(Vertex terrainPosition) {
         for (TerrainObjectPosition terrainObject : terrainObjects) {
-            if (terrainObject.getPosition().getDistance(terrainPosition.toXY().getPosition()) < 10) {
+            if (terrainObject.getPosition().getDistance(terrainPosition.toXY().toIndex()) < 10) {
                 return terrainObject;
             }
         }

@@ -1,6 +1,5 @@
 package com.btxtech.gameengine.pathing;
 
-import com.btxtech.GameMock;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line2I;
@@ -474,17 +473,17 @@ public class Scenario {
             @Override
             public void run() {
                 // Terrain
-                TerrainUiService terrainUiService = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
-                Collection<Obstacle> obstacles = terrainUiService.getAllObstacles();
-                for (Obstacle obstacle : obstacles) {
-                    pathingService.addObstacle(obstacle);
-                }
-                // Units
-                for (int x = -2; x < 3; x++) {
-                    for (int y = -2; y < 3; y++) {
-                        createAndUnit(true, 10, new DecimalPosition(20 * x, 20 * y).add(200, 200), new DecimalPosition(2700, 1700));
-                    }
-                }
+//                TerrainUiService terrainUiService = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
+//                Collection<Obstacle> obstacles = terrainUiService.getAllObstacles();
+//                for (Obstacle obstacle : obstacles) {
+//                    pathingService.addObstacle(obstacle);
+//                }
+//                // Units
+//                for (int x = -2; x < 3; x++) {
+//                    for (int y = -2; y < 3; y++) {
+//                        createAndUnit(true, 10, new DecimalPosition(20 * x, 20 * y).add(200, 200), new DecimalPosition(2700, 1700));
+//                    }
+//                }
 
             }
         });

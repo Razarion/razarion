@@ -83,8 +83,8 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
     private void updateSelector(List<ObjectNameId> objectNameIds) {
         T t = getConfigObject();
         if (t != null) {
-            if (objectNameIds.contains(t.getObjectNameId())) {
-                selector.setValue(t.getObjectNameId());
+            if (objectNameIds.contains(t.createObjectNameId())) {
+                selector.setValue(t.createObjectNameId());
             } else {
                 // Config object has been deleted
                 selector.setValue(null);

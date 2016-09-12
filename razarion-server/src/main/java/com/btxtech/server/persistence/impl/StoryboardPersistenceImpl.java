@@ -62,17 +62,17 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
         gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
         gameEngineConfig.setBaseItemTypes(itemTypePersistence.read());
-        gameEngineConfig.setLevelConfigs(setupLevelConfigs());
+        gameEngineConfig.setLevelConfigs(setupLevelConfigs());  // TODO mode to DB
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<StoryboardEntity> userQuery = criteriaBuilder.createQuery(StoryboardEntity.class);
         Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
-        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));
-        storyboardConfig.setVisualConfig(defaultVisualConfig());
-        storyboardConfig.setSceneConfigs(setupSceneConfigs2());
-        completePlanetConfig(gameEngineConfig.getPlanetConfig());
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
+        storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupSceneConfigs1(storyboardConfig.getSceneConfigs())); // TODO mode to DB
+        completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -90,8 +90,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         return visualConfig;
     }
 
-    private List<SceneConfig> setupSceneConfigs1() {
-        List<SceneConfig> sceneConfigs = new ArrayList<>();
+    private List<SceneConfig> setupSceneConfigs1(List<SceneConfig> sceneConfigs) {
+        // List<SceneConfig> sceneConfigs = new ArrayList<>();
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -104,8 +104,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
 
-    private List<SceneConfig> setupSceneConfigs2() {
-        List<SceneConfig> sceneConfigs = new ArrayList<>();
+    private List<SceneConfig> setupSceneConfigs2(List<SceneConfig> sceneConfigs) {
+        // List<SceneConfig> sceneConfigs = new ArrayList<>();
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
         StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointConfig(startPointConfig));

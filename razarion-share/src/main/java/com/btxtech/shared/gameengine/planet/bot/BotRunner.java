@@ -91,8 +91,8 @@ public class BotRunner {
 
     public void start(BotConfig botConfig) {
         this.botConfig = botConfig;
-        if (botConfig.isIntervalBot()) {
-            if (botConfig.isIntervalValid()) {
+        if (botConfig.intervalBot()) {
+            if (botConfig.intervalValid()) {
                 intervalState = IntervalState.INACTIVE;
                 scheduleTimer(botConfig.getMinInactiveMs(), botConfig.getMaxInactiveMs());
             } else {

@@ -144,6 +144,6 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
 
     @Override
     protected List<ObjectNameId> setupObjectNameIds() {
-        return shape3DUiService.getShape3Ds().stream().map(Shape3D::getObjectNameId).collect(Collectors.toList());
+        return shape3DUiService.getShape3Ds().stream().map(Shape3D::createObjectNameId).collect(Collectors.toList());
     }
 }

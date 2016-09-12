@@ -342,14 +342,6 @@ public class Index {
         }
     }
 
-    public boolean isNull() {
-        return x == 0 && y == 0;
-    }
-
-    public boolean isNegative() {
-        return x < 0 || y < 0;
-    }
-
     public String testString() {
         return "new Index(" + getX() + ", " + getY() + ")";
     }

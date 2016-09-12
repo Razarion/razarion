@@ -172,7 +172,7 @@ public class Line2I {
             return null;
         }
         if (isPointInLineInclusive(cross) && other.isPointInLineInclusive(cross)) {
-            return cross.getPositionRound();
+            return cross.toIndexRound();
         } else {
             return null;
         }

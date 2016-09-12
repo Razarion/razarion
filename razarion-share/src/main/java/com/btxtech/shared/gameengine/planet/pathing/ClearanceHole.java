@@ -27,7 +27,7 @@ public class ClearanceHole {
         } else {
             halfBlockingAngle = Math.PI / 2.0;
         }
-        angleSegments.add(new AngleSegment(distanceVector.getAngle(), halfBlockingAngle));
+        angleSegments.add(new AngleSegment(distanceVector.angle(), halfBlockingAngle));
     }
 
     public double getFreeAngle(double desiredAngle) {

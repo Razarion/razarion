@@ -58,11 +58,11 @@ public class DecimalPosition {
         y = position.y;
     }
 
-    public Index getPositionRound() {
+    public Index toIndexRound() {
         return new Index((int) Math.round(x), (int) Math.round(y));
     }
 
-    public Index getPosition() {
+    public Index toIndex() {
         return new Index((int) x, (int) y);
     }
 
@@ -189,33 +189,8 @@ public class DecimalPosition {
         }
     }
 
-    public double getAngle() {
+    public double angle() {
         return Math.atan2(y, x);
-    }
-
-    public double getAngleToNorth() {
-        if (x == 0.0 && y == 0.0) {
-            return MathHelper.NORTH;
-        }
-        if (y == 0.0) {
-            if (x <= 0.0) {
-                return MathHelper.WEST;
-            } else {
-                return MathHelper.EAST;
-            }
-        }
-        if (x == 0.0) {
-            if (y <= 0.0) {
-                return 0.0;
-            } else {
-                return Math.PI;
-            }
-        }
-        double angle = Math.atan(x / y);
-        if (y >= 0.0) {
-            angle += Math.PI;
-        }
-        return angle;
     }
 
     public DecimalPosition rotateCounterClock(DecimalPosition center, double sinus, double cosines) {
@@ -265,7 +240,7 @@ public class DecimalPosition {
     }
 
     public DecimalPosition truncate(double basis) {
-        if (getLength() > basis) {
+        if (length() > basis) {
             return normalize(basis);
         } else {
             return this;
@@ -322,7 +297,7 @@ public class DecimalPosition {
         return Math.sqrt(sqrtC);
     }
 
-    public double getLength() {
+    public double length() {
         double sqrtC = Math.pow(x, 2) + Math.pow(y, 2);
         return Math.sqrt(sqrtC);
     }
@@ -333,10 +308,6 @@ public class DecimalPosition {
 
     public double getY() {
         return y;
-    }
-
-    public boolean isNull() {
-        return x == 0.0 && y == 0.0;
     }
 
     public double determinant(DecimalPosition other) {
@@ -359,7 +330,7 @@ public class DecimalPosition {
      * @param end   end point
      * @return positive angle
      */
-    public double getAngle(DecimalPosition start, DecimalPosition end) {
+    public double angle(DecimalPosition start, DecimalPosition end) {
 //        start = start.sub(this);
 //        end = end.sub(this);
 //        return Math.acos(start.dotProduct(end) / (start.magnitude() * end.magnitude()));

@@ -139,13 +139,13 @@ public class Unit {
             if (velocity == null) {
                 velocity = DecimalPosition.createVector(angle, 0.001);
             }
-            debugHelper.appendAngle("angle from v", velocity.getAngle());
+            debugHelper.appendAngle("angle from v", velocity.angle());
             desiredVelocity = forwardLooking(desiredVelocity, units, tickCount).normalize(SPEED);
-            double desiredAngle = desiredVelocity.getAngle();
+            double desiredAngle = desiredVelocity.angle();
             debugHelper.append("desired v", desiredVelocity);
-            debugHelper.appendAngle("desired a", desiredVelocity.getAngle());
+            debugHelper.appendAngle("desired a", desiredVelocity.angle());
             // double deltaAngle = velocity.getAngleBetween(desiredVelocity);
-            double deltaAngle = PathingService.correctAngle(desiredVelocity.getAngle() - angle);
+            double deltaAngle = PathingService.correctAngle(desiredVelocity.angle() - angle);
             debugHelper.appendAngle("deltaAngle", deltaAngle);
             // Fix angle
             double angleSpeedFactor = 1.0;
@@ -180,7 +180,7 @@ public class Unit {
                 speed = possibleSpeed;
             }
             // Check if destination too near to turn
-            deltaAngle = PathingService.correctAngle(desiredVelocity.getAngle() - angle);
+            deltaAngle = PathingService.correctAngle(desiredVelocity.angle() - angle);
             double turnSteps = Math.abs(deltaAngle) / (ANGULAR_VELOCITY * PathingService.FACTOR);
             double distance = turnSteps * speed * PathingService.FACTOR;
             if (distance > position.getDistance(destination)) {
@@ -213,7 +213,7 @@ public class Unit {
 
     private DecimalPosition forwardLooking(DecimalPosition desiredVelocity, List<Unit> units, long tickCount) {
         DebugHelper debugHelper = new DebugHelper("forwardLooking", this, false);
-        debugHelper.appendAngle("input", desiredVelocity.getAngle());
+        debugHelper.appendAngle("input", desiredVelocity.angle());
         ClearanceHole clearanceHole = new ClearanceHole(this);
         for (Unit other : units) {
             if (this == other) {
@@ -246,7 +246,7 @@ public class Unit {
             }
 
 //                // Check if other is in front
-//                DecimalPosition relativePosition = other.getPosition().sub(position);
+//                DecimalPosition relativePosition = other.toIndex().sub(position);
 //                !relativePosition.normalize();
 //                if (Math.acos(normalizedVelocity.dot(relativePosition)) > Math.PI / 4.0) {
 //                    debugHelper.append("not in front.");
@@ -266,7 +266,7 @@ public class Unit {
             debugHelper.append("dangerous", other);
             clearanceHole.addOther(other);
         }
-        double direction = clearanceHole.getFreeAngle(desiredVelocity.getAngle());
+        double direction = clearanceHole.getFreeAngle(desiredVelocity.angle());
         debugHelper.appendAngle("direction", direction);
         debugHelper.dump();
         return DecimalPosition.createVector(direction, desiredVelocity.magnitude());

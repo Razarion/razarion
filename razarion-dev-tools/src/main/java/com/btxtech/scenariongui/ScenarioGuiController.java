@@ -85,7 +85,7 @@ public class ScenarioGuiController implements Initializable {
     }
 
     public void onMouseMoved(Event event) {
-        Index position = scenarioRenderer.convertMouseToModel(event).getPosition();
+        Index position = scenarioRenderer.convertMouseToModel(event).toIndex();
         mouseLabel.setText(String.format("%d:%d", position.getX(), position.getY()));
         boolean redraw = scenarioRenderer.getScenario().onMouseMove(position);
         if (redraw) {
@@ -94,7 +94,7 @@ public class ScenarioGuiController implements Initializable {
     }
 
     public void onMousePressed(Event event) {
-        Index position = scenarioRenderer.convertMouseToModel(event).getPosition();
+        Index position = scenarioRenderer.convertMouseToModel(event).toIndex();
         boolean redraw = scenarioRenderer.getScenario().onMouseDown(position);
         if (redraw) {
             scenarioRenderer.render();

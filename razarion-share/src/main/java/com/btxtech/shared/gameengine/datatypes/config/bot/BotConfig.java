@@ -108,11 +108,11 @@ public class BotConfig {
         return maxActiveMs;
     }
 
-    public boolean isIntervalBot() {
+    public boolean intervalBot() {
         return minInactiveMs != null || maxInactiveMs != null || minActiveMs != null || maxActiveMs != null;
     }
 
-    public boolean isIntervalValid() {
+    public boolean intervalValid() {
         return !(minInactiveMs == null || maxInactiveMs == null || minActiveMs == null || maxActiveMs == null)
                 && !(minInactiveMs <= 0 || maxInactiveMs <= 0 || minActiveMs <= 0 || maxActiveMs <= 0)
                 && minInactiveMs <= maxInactiveMs

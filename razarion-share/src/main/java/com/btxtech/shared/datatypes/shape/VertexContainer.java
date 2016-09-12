@@ -96,7 +96,7 @@ public class VertexContainer {
         return textureCoordinates;
     }
 
-    public int getVerticesCount() {
+    public int verticesCount() {
         return vertices.size();
     }
 
@@ -146,19 +146,19 @@ public class VertexContainer {
         return materialName;
     }
 
-    public boolean isEmpty() {
+    public boolean empty() {
         return vertices.isEmpty();
     }
 
     public boolean checkWrongTextureSize() {
-        return textureCoordinates == null || textureCoordinates.size() != getVerticesCount();
+        return textureCoordinates == null || textureCoordinates.size() != verticesCount();
     }
 
     public boolean checkWrongNormSize() {
-        return norms == null || norms.size() != getVerticesCount();
+        return norms == null || norms.size() != verticesCount();
     }
 
-    public String getShapeElementVertexContainerTag() {
+    public String createShapeElementVertexContainerTag() {
         return shapeElementInternalName + "|" + materialId + ":" + materialName;
     }
 

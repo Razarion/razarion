@@ -58,7 +58,7 @@ public class Shape3D implements ObjectNameIdProvider {
     }
 
     @Override
-    public ObjectNameId getObjectNameId() {
+    public ObjectNameId createObjectNameId() {
         return new ObjectNameId(dbId, internalName);
     }
 

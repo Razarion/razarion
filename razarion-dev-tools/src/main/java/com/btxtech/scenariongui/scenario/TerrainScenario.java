@@ -1,12 +1,7 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.GameMock;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
-import javafx.scene.paint.Color;
 
 /**
  * Created by Beat

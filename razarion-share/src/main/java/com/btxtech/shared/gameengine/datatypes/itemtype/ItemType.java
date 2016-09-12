@@ -169,7 +169,7 @@ public abstract class ItemType implements ObjectNameIdProvider {
     }
 
     @Override
-    public ObjectNameId getObjectNameId() {
+    public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, name);
     }
 

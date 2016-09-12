@@ -247,9 +247,9 @@ public class Slope {
         fillObstacle(innerLine, obstacles);
         fillObstacle(outerLine, obstacles);
 
-//        Index last = innerLine.get(0).toXY().getPositionRound();
+//        Index last = innerLine.get(0).toXY().toIndexRound();
 //        for (int i = 0; i < innerLine.size(); i++) {
-//            Index next = innerLine.get(CollectionUtils.getCorrectedIndex(i + 1, innerLine.size())).toXY().getPositionRound();;
+//            Index next = innerLine.get(CollectionUtils.getCorrectedIndex(i + 1, innerLine.size())).toXY().toIndexRound();;
 //            if(last.equals(next)) {
 //                continue;
 //            }
@@ -259,16 +259,16 @@ public class Slope {
 //        for (int i = 0; i < outerLine.size(); i++) {
 //            Vertex current = outerLine.get(i);
 //            Vertex next = outerLine.get(CollectionUtils.getCorrectedIndex(i + 1, outerLine.size()));
-//            obstacles.add(new Obstacle(new Line2I(current.toXY().getPositionRound(), next.toXY().getPositionRound())));
+//            obstacles.add(new Obstacle(new Line2I(current.toXY().toIndexRound(), next.toXY().toIndexRound())));
 //        }
 
         return obstacles;
     }
 
     private void fillObstacle(List<Vertex> polygon, Collection<Obstacle> obstacles) {
-        Index last = polygon.get(0).toXY().getPositionRound();
+        Index last = polygon.get(0).toXY().toIndexRound();
         for (int i = 0; i < polygon.size(); i++) {
-            Index next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY().getPositionRound();
+            Index next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY().toIndexRound();
             if (last.equals(next)) {
                 continue;
             }

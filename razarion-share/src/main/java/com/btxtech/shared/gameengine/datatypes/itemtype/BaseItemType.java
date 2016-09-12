@@ -193,7 +193,7 @@ public class BaseItemType extends ItemType {
         return this;
     }
 
-    public boolean isUnlockNeeded() {
+    public boolean unlockNeeded() {
         return unlockCrystals != null;
     }
 
