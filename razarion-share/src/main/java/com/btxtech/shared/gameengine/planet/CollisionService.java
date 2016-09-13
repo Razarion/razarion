@@ -18,12 +18,8 @@ import java.util.Collection;
  * 16.07.2016.
  */
 @Singleton
+@Deprecated
 public class CollisionService {
-    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
-        planetActivationEvent.getPlanetConfig();
-    }
-
-
     public Vertex correctPosition(Vertex position, ItemType itemType) {
         // TODO check if in playground filed. Also check in TerrainScrollHandler.autoScroll()
         return position;

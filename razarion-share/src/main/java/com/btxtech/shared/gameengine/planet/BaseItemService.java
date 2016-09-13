@@ -80,11 +80,11 @@ public class BaseItemService {
         throw new UnsupportedOperationException();
     }
 
-    public SyncItem spawnSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
         return spawnSyncBaseItem(toBeBuilt, terrainService.calculatePositionGroundMesh(position), base);
     }
 
-    public SyncItem spawnSyncBaseItem(BaseItemType toBeBuilt, Vertex position, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, Vertex position, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
         if (!isAlive(base)) {
             throw new BaseDoesNotExistException(base);
         }

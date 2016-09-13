@@ -1,8 +1,7 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.BotSyncBaseItemCreatedEvent;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -14,8 +13,8 @@ import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,10 +42,10 @@ public class BotService {
 
     private void startBot(BotConfig botConfig) {
         BotRunner botRunner = botRunnerInstance.get();
-        botRunner.start(botConfig);
         synchronized (botRunners) {
             botRunners.put(botConfig, botRunner);
         }
+        botRunner.start(botConfig);
     }
 
     protected void killAllBots() {
@@ -76,6 +75,15 @@ public class BotService {
         return botRunners.get(botConfig);
     }
 
+    public BotRunner getBotRunner(int botId) {
+        for (Map.Entry<BotConfig, BotRunner> entry : botRunners.entrySet()) {
+            if (entry.getKey().getId() == botId) {
+                return entry.getValue();
+            }
+        }
+        throw new IllegalArgumentException("No bot runner for id: " + botId);
+    }
+
     // TODO must be called from outside
     public void onBotItemKilled(SyncBaseItem syncBaseItem, PlayerBase actor) {
         synchronized (botRunners) {
@@ -96,15 +104,11 @@ public class BotService {
         return false;
     }
 
-    public void onBotSyncBaseItemCreatedEvent(@Observes BotSyncBaseItemCreatedEvent event) {
-        synchronized (botRunners) {
-            for (BotRunner botRunner : botRunners.values()) {
-                if (botRunner.getBase() != null && botRunner.getBase().equals(event.getSyncBaseItem().getBase())) {
-                    botRunner.onSyncBaseItemCreated(event.getSyncBaseItem(), event.getCreatedBy());
-                    return;
-                }
-            }
+    public void executeCommands(List<BotMoveCommandConfig> botMoveCommandConfigs) {
+        for (BotMoveCommandConfig botMoveCommandConfig : botMoveCommandConfigs) {
+            BotRunner botRunner = getBotRunner(botMoveCommandConfig.getBotId());
+            botRunner.executeCommand(botMoveCommandConfig);
         }
-    }
 
+    }
 }

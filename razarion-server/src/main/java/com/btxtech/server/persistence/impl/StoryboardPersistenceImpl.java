@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.SceneConfig;
@@ -71,9 +72,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
-        addBotSpawnScene(storyboardConfig.getSceneConfigs()); // TODO mode to DB
-        addUserSpawnScene(storyboardConfig.getSceneConfigs()); // TODO mode to DB
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // List<SceneConfig> sceneConfigs =storyboardConfig.getSceneConfigs();
+        addBotSpawnScene(sceneConfigs); // TODO mode to DB
+        // addUserSpawnScene(sceneConfigs); // TODO mode to DB
+        addBotMoveScene(sceneConfigs);// TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
+        storyboardConfig.setSceneConfigs(sceneConfigs);
         return storyboardConfig;
     }
 
@@ -91,7 +96,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         return visualConfig;
     }
 
-    private List<SceneConfig> addBotSpawnScene(List<SceneConfig> sceneConfigs) {
+    private void addBotSpawnScene(List<SceneConfig> sceneConfigs) {
         // List<SceneConfig> sceneConfigs = new ArrayList<>();
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
         List<BotConfig> botConfigs = new ArrayList<>();
@@ -101,15 +106,22 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs));
-        return sceneConfigs;
     }
 
-    private List<SceneConfig> addUserSpawnScene(List<SceneConfig> sceneConfigs) {
+    private void addUserSpawnScene(List<SceneConfig> sceneConfigs) {
         // List<SceneConfig> sceneConfigs = new ArrayList<>();
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
         StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointConfig(startPointConfig));
-        return sceneConfigs;
+    }
+
+    private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
+        // List<SceneConfig> sceneConfigs = new ArrayList<>();
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
+        StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
+        List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
+        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setBaseItemTypeId(180807).setDecimalPosition(new DecimalPosition(1240, 800)));
+        sceneConfigs.add(new SceneConfig().setBotMoveCommandConfigs(botMoveCommandConfigs));
     }
 
     private List<LevelConfig> setupLevelConfigs() {

@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -67,6 +68,7 @@ public class BotEnragementState {
         return botItemContainer.getAllIdleAttackers();
     }
 
+    @Deprecated
     public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         botItemContainer.onSyncBaseItemCreated(syncBaseItem, createdBy);
     }
@@ -110,7 +112,7 @@ public class BotEnragementState {
     }
 
     public void onBotItemKilled(SyncBaseItem botBaseItem, PlayerBase actor) {
-        if (botItemContainer.itemBelongsToMy(botBaseItem)) {
+        if (botItemContainer.itemBelongsToMe(botBaseItem)) {
             if (isEnragementActive) {
                 Integer kills = killsPerBase.get(actor);
                 if (kills == null) {
@@ -129,5 +131,9 @@ public class BotEnragementState {
                 // TODO keep in mind: this method is only called if the actor is not null -> solve
             }
         }
+    }
+
+    public void executeCommand(BotMoveCommandConfig botMoveCommandConfig) {
+        botItemContainer.executeCommand(botMoveCommandConfig);
     }
 }

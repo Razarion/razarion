@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.gameengine.BotSyncBaseItemCreatedEvent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
@@ -18,7 +17,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -29,8 +27,6 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class ActivityService {
     private Logger logger = Logger.getLogger(ActivityService.class.getName());
-    @Inject
-    private Event<BotSyncBaseItemCreatedEvent> botSyncBaseItemCreatedEvent;
     @Inject
     private PlanetService planetService;
     private Collection<Function<SyncBaseItem, Boolean>> spawnFinishCallback = new ArrayList<>();
@@ -96,19 +92,6 @@ public class ActivityService {
     public void onBaseCreated(PlayerBase playerBase) {
         // TODO sendBaseChangedPacket(BaseChangedPacket.Type.CREATED, base.getSimpleBase());
         System.out.println("ActivityService.onBaseCreated(): " + playerBase);
-    }
-
-    public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
-        // TODO planetService.syncItemActivated(syncBaseItem);
-        // TODO historyService.addItemCreatedEntry(syncBaseItem);
-        // TODO planetService.addGuardingBaseItem(syncBaseItem);
-        // TODO planetService.interactionGuardingItems(syncBaseItem);
-        // TODO connectionService.sendSyncInfo(syncBaseItem);
-
-        System.out.println("ActivityService.onSyncBaseItemCreated(): " + syncBaseItem);
-        if (syncBaseItem.getBase().getCharacter().isBot()) {
-            botSyncBaseItemCreatedEvent.fire(new BotSyncBaseItemCreatedEvent(syncBaseItem, createdBy));
-        }
     }
 
     public void onSyncBaseItemCreatedBy(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
@@ -187,6 +170,17 @@ public class ActivityService {
                 spawnFinishCallback.remove(callback);
             }
         }
+    }
+
+    // TODO when to call?
+    public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+        System.out.println("ActivityService.onSyncBaseItemCreated(): " + syncBaseItem);
+        // TODO planetService.syncItemActivated(syncBaseItem);
+        // TODO historyService.addItemCreatedEntry(syncBaseItem);
+        // TODO planetService.addGuardingBaseItem(syncBaseItem);
+        // TODO planetService.interactionGuardingItems(syncBaseItem);
+        // TODO connectionService.sendSyncInfo(syncBaseItem);
+        // TODO may be inform bot about new bot item
     }
 
     public void addSpanFinishedCallback(Function<SyncBaseItem, Boolean> callback) {

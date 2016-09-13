@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.storyboard;
 
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.planet.ActivityService;
@@ -59,6 +60,9 @@ public class Scene {
             hasCompletionCallback = true;
             completionCallbackCount++;
             botService.startBots(sceneConfig.getBotConfigs());
+        }
+        if(sceneConfig.getBotMoveCommandConfigs() != null) {
+            botService.executeCommands(sceneConfig.getBotMoveCommandConfigs());
         }
         if (sceneConfig.getStartPointConfig() != null) {
             activityService.addSpanFinishedCallback(syncBaseItem -> {

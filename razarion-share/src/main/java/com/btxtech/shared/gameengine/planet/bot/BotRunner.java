@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -148,10 +149,15 @@ public class BotRunner {
         }
     }
 
+    @Deprecated
     public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         if (botEnragementState != null) {
             botEnragementState.onSyncBaseItemCreated(syncBaseItem, createdBy);
         }
+    }
+
+    public void executeCommand(BotMoveCommandConfig botMoveCommandConfig) {
+        botEnragementState.executeCommand(botMoveCommandConfig);
     }
 
 

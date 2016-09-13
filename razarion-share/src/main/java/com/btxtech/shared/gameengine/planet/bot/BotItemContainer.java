@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
@@ -24,9 +25,9 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededExcept
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CollisionService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.Dependent;
@@ -63,7 +64,7 @@ public class BotItemContainer {
     private Logger log = Logger.getLogger(BotItemContainer.class.getName());
     private String botName;
     private Region realm;
-    private CurrentItemCreation currentItemCreation = new CurrentItemCreation();
+    private CurrentItemBuildup currentItemBuildup = new CurrentItemBuildup();
 
     public void init(Collection<BotItemConfig> botItems, Region realm, String botName) {
         this.realm = realm;
@@ -129,7 +130,7 @@ public class BotItemContainer {
         return need.getEffectiveItemNeed().isEmpty();
     }
 
-    public boolean itemBelongsToMy(SyncBaseItem syncBaseItem) {
+    public boolean itemBelongsToMe(SyncBaseItem syncBaseItem) {
         synchronized (botItems) {
             return botItems.containsKey(syncBaseItem);
         }
@@ -156,7 +157,7 @@ public class BotItemContainer {
             botItems.remove(botSyncBaseItem.getSyncBaseItem());
         }
         need.onItemRemoved(botSyncBaseItem);
-        currentItemCreation.onPotentialCreatorRemoved(botSyncBaseItem);
+        currentItemBuildup.onPotentialBuilderRemoved(botSyncBaseItem);
     }
 
     private void buildItems(PlayerBase playerBase, Map<BotItemConfig, Integer> effectiveNeeds) {
@@ -164,7 +165,7 @@ public class BotItemContainer {
 
             int effectiveNeed = entry.getValue();
 
-            effectiveNeed -= currentItemCreation.getBuildupCount(entry.getKey());
+            effectiveNeed -= currentItemBuildup.getBuildupCount(entry.getKey());
             if (effectiveNeed < 0) {
                 effectiveNeed = 0;
             }
@@ -185,8 +186,8 @@ public class BotItemContainer {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(botItemConfig.getBaseItemTypeId());
         if (botItemConfig.isCreateDirectly()) {
             DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt);
-            baseItemService.spawnSyncBaseItem(toBeBuilt, position, playerBase);
-            currentItemCreation.startSpawning(botItemConfig);
+            SyncBaseItem spawnItem = baseItemService.spawnSyncBaseItem(toBeBuilt, position, playerBase);
+            insertBotItem(spawnItem, botItemConfig);
         } else {
             BotSyncBaseItem botSyncBuilder = getFirstIdleBuilder(toBeBuilt);
             if (botSyncBuilder == null) {
@@ -204,7 +205,7 @@ public class BotItemContainer {
                     exceptionHandler.handleException(e);
                 }
             }
-            currentItemCreation.startCreation(botItemConfig, botSyncBuilder);
+            currentItemBuildup.startBuildup(botItemConfig, botSyncBuilder);
         }
     }
 
@@ -248,20 +249,41 @@ public class BotItemContainer {
         }
     }
 
+    @Deprecated
     public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         BotSyncBaseItem createdByBotSyncBaseItem = null;
-        if(createdBy != null) {
+        if (createdBy != null) {
             createdByBotSyncBaseItem = botItems.get(createdBy);
         }
 
-        BotItemConfig botItemConfig = currentItemCreation.onNewItem(syncBaseItem, createdByBotSyncBaseItem);
+        BotItemConfig botItemConfig = currentItemBuildup.onNewItem(createdByBotSyncBaseItem);
 
+        insertBotItem(syncBaseItem, botItemConfig);
+
+    }
+
+    private void insertBotItem(SyncBaseItem syncBaseItem, BotItemConfig botItemConfig) {
         BotSyncBaseItem botSyncBaseItem = baseItemInstance.get();
         botSyncBaseItem.init(syncBaseItem, botItemConfig);
         synchronized (botItems) {
             botItems.put(syncBaseItem, botSyncBaseItem);
         }
         need.onItemAdded(botSyncBaseItem);
+    }
 
+    public void executeCommand(BotMoveCommandConfig botMoveCommandConfig) {
+        BotSyncBaseItem botSyncBaseItem = getBotSyncBaseItem(botMoveCommandConfig.getBaseItemTypeId());
+        botSyncBaseItem.move(botMoveCommandConfig.getDecimalPosition());
+    }
+
+    private BotSyncBaseItem getBotSyncBaseItem(int baseItemTypeId) {
+        synchronized (botItems) {
+            for (Map.Entry<SyncBaseItem, BotSyncBaseItem> entry : botItems.entrySet()) {
+                if (entry.getKey().getBaseItemType().getId() == baseItemTypeId) {
+                    return entry.getValue();
+                }
+            }
+        }
+        throw new IllegalArgumentException("BotItemContainer: no BotSyncBaseItem found for baseItemTypeId: " + baseItemTypeId);
     }
 }

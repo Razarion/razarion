@@ -36,6 +36,8 @@ import java.util.logging.Logger;
  */
 @Dependent
 public class BotSyncBaseItem {
+    // private Logger logger = Logger.getLogger(BotSyncBaseItem.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -46,7 +48,6 @@ public class BotSyncBaseItem {
     private CommandService commandService;
     private SyncBaseItem syncBaseItem;
     private BotItemConfig botItemConfig;
-    private Logger log = Logger.getLogger(BotSyncBaseItem.class.getName());
     private boolean idle;
     private long idleTimeStamp;
 
@@ -118,6 +119,16 @@ public class BotSyncBaseItem {
     public void move(Region region) {
         try {
             DecimalPosition position = collisionService.getFreeRandomPosition(syncBaseItem.getBaseItemType(), region, 0, false, false);
+            commandService.move(syncBaseItem, position);
+            clearIdle();
+        } catch (Exception e) {
+            setIdle();
+            exceptionHandler.handleException(e);
+        }
+    }
+
+    public void move(DecimalPosition position) {
+        try {
             commandService.move(syncBaseItem, position);
             clearIdle();
         } catch (Exception e) {

@@ -13,6 +13,7 @@ public class SceneConfig {
     private boolean showQuestSideBar;
     private CameraConfig cameraConfig;
     private List<BotConfig> botConfigs;
+    private List<BotMoveCommandConfig> botMoveCommandConfigs;
     private StartPointConfig startPointConfig;
 
     public String getIntroText() {
@@ -48,6 +49,15 @@ public class SceneConfig {
 
     public SceneConfig setBotConfigs(List<BotConfig> botConfigs) {
         this.botConfigs = botConfigs;
+        return this;
+    }
+
+    public List<BotMoveCommandConfig> getBotMoveCommandConfigs() {
+        return botMoveCommandConfigs;
+    }
+
+    public SceneConfig setBotMoveCommandConfigs(List<BotMoveCommandConfig> botMoveCommandConfigs) {
+        this.botMoveCommandConfigs = botMoveCommandConfigs;
         return this;
     }
 
