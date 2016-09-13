@@ -13,22 +13,27 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 25.07.2016.
  */
-@Singleton
+@ApplicationScoped
 public class ActivityService {
     private Logger logger = Logger.getLogger(ActivityService.class.getName());
     @Inject
     private Event<BotSyncBaseItemCreatedEvent> botSyncBaseItemCreatedEvent;
     @Inject
     private PlanetService planetService;
+    private Collection<Function<SyncBaseItem, Boolean>> spawnFinishCallback = new ArrayList<>();
 
     public void onInsufficientFundsException(InsufficientFundsException e) {
         // TODO connectionService.sendSyncInfo(syncItem);
@@ -176,5 +181,20 @@ public class ActivityService {
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncBaseItem);
+        Collection<Function<SyncBaseItem, Boolean>> tmp = new ArrayList<>(spawnFinishCallback);
+        for (Function<SyncBaseItem, Boolean> callback : tmp) {
+            if (callback.apply(syncBaseItem)) {
+                spawnFinishCallback.remove(callback);
+            }
+        }
+    }
+
+    public void addSpanFinishedCallback(Function<SyncBaseItem, Boolean> callback) {
+        System.out.println("****** addSpanFinishedCallback");
+        spawnFinishCallback.add(callback);
+    }
+
+    public void removeSpanFinishedCallback(Function<SyncBaseItem, Boolean> callback) {
+        spawnFinishCallback.add(callback);
     }
 }

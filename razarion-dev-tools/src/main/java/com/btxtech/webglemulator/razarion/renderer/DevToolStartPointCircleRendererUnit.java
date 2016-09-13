@@ -9,7 +9,8 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.task.startpoint.AbstractStartPointRendererUnit;
+import com.btxtech.uiservice.renderer.task.startpoint.AbstractStartPointCircleRendererUnit;
+import com.btxtech.uiservice.renderer.task.startpoint.AbstractStartPointCircleRendererUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -23,7 +24,7 @@ import java.util.List;
  * 07.08.2016.
  */
 @ColorBufferRenderer
-public class DevToolStartPointRendererUnit extends AbstractStartPointRendererUnit implements VertexShader {
+public class DevToolStartPointCircleRendererUnit extends AbstractStartPointCircleRendererUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

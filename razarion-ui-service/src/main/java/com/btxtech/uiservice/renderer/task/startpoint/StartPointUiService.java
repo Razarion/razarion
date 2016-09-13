@@ -56,25 +56,26 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
 //    TODO    if (startPointConfig.getSuggestedPosition() != null) {
 //    TODO        terrainScrollHandler.moveToMiddle(startPointInfo.getSuggestedPosition());
 //    TODO    }
-        startPointItemPlacer = instance.get().init(startPointConfig);
-        setupCircle();
-        setupItem();
+        StartPointItemPlacer startPointItemPlacer = instance.get().init(startPointConfig);
+        setupCircle(startPointItemPlacer);
+        setupItem(startPointItemPlacer);
+        this.startPointItemPlacer = startPointItemPlacer;
         // TODO RadarPanel.getInstance().setLevelRadarMode(RadarMode.MAP_AND_UNITS);
         // TODO ClientDeadEndProtection.getInstance().stop();
     }
 
-    private void setupCircle() {
-        ModelRenderer<StartPointItemPlacer, CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer>, AbstractStartPointRendererUnit, StartPointItemPlacer> modelRenderer = create();
+    private void setupCircle(StartPointItemPlacer startPointItemPlacer) {
+        ModelRenderer<StartPointItemPlacer, CommonRenderComposite<AbstractStartPointCircleRendererUnit, StartPointItemPlacer>, AbstractStartPointCircleRendererUnit, StartPointItemPlacer> modelRenderer = create();
         modelRenderer.init(startPointItemPlacer, startPointItemPlacer::provideCircleModelMatrices);
-        CommonRenderComposite<AbstractStartPointRendererUnit, StartPointItemPlacer> compositeRenderer = modelRenderer.create();
+        CommonRenderComposite<AbstractStartPointCircleRendererUnit, StartPointItemPlacer> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(startPointItemPlacer);
-        compositeRenderer.setRenderUnit(AbstractStartPointRendererUnit.class);
+        compositeRenderer.setRenderUnit(AbstractStartPointCircleRendererUnit.class);
         modelRenderer.add(RenderUnitControl.START_POINT_CIRCLE, compositeRenderer);
         add(modelRenderer);
         compositeRenderer.fillBuffers();
     }
 
-    private void setupItem() {
+    private void setupItem(StartPointItemPlacer startPointItemPlacer) {
         if (startPointItemPlacer.getBaseItemType().getShape3DId() == null) {
             logger.warning("StartPointUiService: no shape3DId for BaseItemType: " + startPointItemPlacer.getBaseItemType());
             return;
@@ -93,6 +94,7 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
                 compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                 compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                 modelRenderer.add(RenderUnitControl.START_POINT_ITEM, compositeRenderer);
+                compositeRenderer.fillBuffers();
             }
         }
         add(modelRenderer);

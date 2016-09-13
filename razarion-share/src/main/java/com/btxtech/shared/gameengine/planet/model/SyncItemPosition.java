@@ -51,7 +51,7 @@ public class SyncItemPosition {
     }
 
     public boolean overlap(DecimalPosition position, double radius) {
-        return this.position.toXY().getDistance(position) > this.radius + radius;
+        return this.position.toXY().getDistance(position) < this.radius + radius;
     }
 
     @Override

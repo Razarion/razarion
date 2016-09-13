@@ -12,7 +12,7 @@ import java.util.List;
  * Created by Beat
  * 05.09.2016.
  */
-public abstract class AbstractStartPointRendererUnit extends AbstractRenderUnit<StartPointItemPlacer> {
+public abstract class AbstractStartPointCircleRendererUnit extends AbstractRenderUnit<StartPointItemPlacer> {
     private StartPointItemPlacer startPointItemPlacer;
 
     protected abstract void fillBuffers(List<Vertex> vertices);
@@ -44,6 +44,6 @@ public abstract class AbstractStartPointRendererUnit extends AbstractRenderUnit<
 
     @Override
     public String helperString() {
-        return "AbstractStartPointRendererUnit";
+        return "AbstractStartPointCircleRendererUnit";
     }
 }

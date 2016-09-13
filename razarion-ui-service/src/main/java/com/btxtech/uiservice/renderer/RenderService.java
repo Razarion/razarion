@@ -55,7 +55,7 @@ public abstract class RenderService {
     }
 
     public void render() {
-        renderTasks.forEach(AbstractRenderTask::setupModelMatrices);
+        renderTasks.forEach(AbstractRenderTask::prepareRender);
         prepareDepthBufferRendering();
         renderTasks.forEach(AbstractRenderTask::drawDepthBuffer);
         prepareMainRendering();

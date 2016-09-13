@@ -17,6 +17,7 @@ public abstract class AbstractRenderTask<T> {
     @Inject
     private Instance<ModelRenderer<T, ?, ?, ?>> instance;
     private List<ModelRenderer> modelRenderers = new ArrayList<>();
+    private boolean active;
 
     /**
      * Override in sub classes
@@ -54,26 +55,27 @@ public abstract class AbstractRenderTask<T> {
         return (ModelRenderer)instance.get();
     }
 
-    public void setupModelMatrices() {
-        if (isActive()) {
+    public void prepareRender() {
+        active = isActive();
+        if (active) {
             modelRenderers.forEach(ModelRenderer::setupModelMatrices);
         }
     }
 
     public void draw(RenderUnitControl renderUnitControl) {
-        if (isActive()) {
+        if (active) {
             modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderUnitControl));
         }
     }
 
     public void drawDepthBuffer() {
-        if (isActive()) {
+        if (active) {
             modelRenderers.forEach(ModelRenderer::drawDepthBuffer);
         }
     }
 
     public void drawNorm() {
-        if (isActive()) {
+        if (active) {
             modelRenderers.forEach(ModelRenderer::drawNorm);
         }
     }

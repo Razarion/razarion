@@ -2,17 +2,16 @@ package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.renderer.task.startpoint.StartPointUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.utils.CompletionListener;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -37,11 +36,15 @@ public class Scene {
     private BotService botService;
     @Inject
     private StartPointUiService startPointUiService;
+    @Inject
+    private ActivityService activityService;
     private SceneConfig sceneConfig;
-    private Collection<SceneCompletionHandler> completionHandlers = new ArrayList<>();
+    private int completionCallbackCount;
+    private boolean hasCompletionCallback;
 
     public void init(SceneConfig sceneConfig) {
         this.sceneConfig = sceneConfig;
+        completionCallbackCount = 0;
     }
 
     public void run() {
@@ -49,13 +52,28 @@ public class Scene {
             storyCover.show(sceneConfig.getIntroText());
         }
         if (sceneConfig.getBotConfigs() != null) {
+            activityService.addSpanFinishedCallback(syncBaseItem -> {
+                onComplete();
+                return true;
+            });
+            hasCompletionCallback = true;
+            completionCallbackCount++;
             botService.startBots(sceneConfig.getBotConfigs());
         }
         if (sceneConfig.getStartPointConfig() != null) {
+            activityService.addSpanFinishedCallback(syncBaseItem -> {
+                onComplete();
+                return true;
+            });
+            hasCompletionCallback = true;
+            completionCallbackCount++;
             startPointUiService.activate(sceneConfig.getStartPointConfig());
         }
         questVisualizer.showSideBar(sceneConfig.isShowQuestSideBar());
         setupCameraConfig(sceneConfig.getCameraConfig());
+        if (!hasCompletionCallback) {
+            storyboardService.onSceneCompleted();
+        }
     }
 
     private void setupCameraConfig(CameraConfig cameraConfig) {
@@ -63,28 +81,19 @@ public class Scene {
             return;
         }
 
-        CompletionListener completionListener = null;
         if (cameraConfig.isSmooth() && cameraConfig.getToPosition() != null) {
-            completionListener = registerSceneCompletionListener();
+            hasCompletionCallback = true;
+            completionCallbackCount++;
         }
-        terrainScrollHandler.executeCameraConfig(cameraConfig, completionListener);
+        terrainScrollHandler.executeCameraConfig(cameraConfig, Optional.of(this::onComplete));
     }
 
-    private CompletionListener registerSceneCompletionListener() {
-        SceneCompletionHandler completionHandler = new SceneCompletionHandler(this);
-        completionHandlers.add(completionHandler);
-        return completionHandler;
-    }
-
-    public void onComplete(SceneCompletionHandler sceneCompletionHandler) {
-        if (completionHandlers.isEmpty()) {
-            logger.severe("completionHandlers is already empty");
+    public void onComplete() {
+        if (completionCallbackCount == 0) {
+            logger.severe("completionCallbackCount is already zero");
         }
-        boolean removed = completionHandlers.remove(sceneCompletionHandler);
-        if (!removed) {
-            logger.severe("SceneCompletionHandler not removed");
-        }
-        if (completionHandlers.isEmpty()) {
+        completionCallbackCount--;
+        if (completionCallbackCount == 0) {
             storyboardService.onSceneCompleted();
         }
     }
