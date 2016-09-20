@@ -1,11 +1,14 @@
 package com.btxtech;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -135,10 +138,15 @@ public class ExtendedGraphicsContext {
     }
 
     public void drawObstacle(Obstacle obstacle, Paint color) {
-        Index point1 = obstacle.getLine().getPoint1();
-        Index point2 = obstacle.getLine().getPoint2();
         gc.setStroke(color);
-        gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
-        Index middle = point1.add(point2.sub(point1).scale(0.5));
+        gc.setFill(color);
+        if(obstacle instanceof ObstacleLine) {
+            Index point1 = ((ObstacleLine)obstacle).getLine().getPoint1();
+            Index point2 = ((ObstacleLine)obstacle).getLine().getPoint2();
+            gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
+        } else if(obstacle instanceof ObstacleCircle) {
+            Circle2D circle = ((ObstacleCircle)obstacle).getCircle();
+            gc.fillOval(circle.getCenter().getX() - circle.getRadius(), circle.getCenter().getY() - circle.getRadius(), circle.getRadius() * 2, circle.getRadius() * 2);
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.GameEngine;
@@ -38,6 +39,7 @@ public class ScenarioService {
     private static final BaseItemType SIMPLE_FIX_ITEM_TYPE;
     private static final int LEVEL_1_ID = 1;
     private static final int SLOPE_ID = 1;
+    private static final int TERRAIN_OBJECT_ID = 1;
     @Inject
     private GameEngine gameEngine;
     @Inject
@@ -45,7 +47,7 @@ public class ScenarioService {
     @Inject
     private DevToolsSimpleExecutorServiceImpl devToolsSimpleExecutorService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 0;
+    private int number = 35;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -115,7 +117,7 @@ public class ScenarioService {
         GameEngineConfig gameEngineConfig = new GameEngineConfig();
         gameEngineConfig.setGroundSkeletonConfig(setupGroundSkeletonConfig());
         gameEngineConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
-        gameEngineConfig.setTerrainObjectConfigs(new ArrayList<>());
+        gameEngineConfig.setTerrainObjectConfigs(setupTerrainObjectConfigs());
         gameEngineConfig.setLevelConfigs(setupLevels());
         gameEngineConfig.setPlanetConfig(setupPlanetConfig());
         return gameEngineConfig;
@@ -139,6 +141,12 @@ public class ScenarioService {
         slopeSkeletonConfig.setSlopeNodes(new SlopeNode[][]{{new SlopeNode().setPosition(new Vertex(0, 0, 0)), new SlopeNode().setPosition(new Vertex(5, 0, 100))}});
         slopeSkeletonConfigs.add(slopeSkeletonConfig);
         return slopeSkeletonConfigs;
+    }
+
+    private List<TerrainObjectConfig> setupTerrainObjectConfigs() {
+        List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(TERRAIN_OBJECT_ID).setRadius(20));
+        return terrainObjectConfigs;
     }
 
     private PlanetConfig setupPlanetConfig() {
@@ -578,6 +586,31 @@ public class ScenarioService {
 //                    }
 //                }
 
+            }
+        });
+        // Terrain objects
+        // 35
+        scenes.add(new ScenarioProvider() {
+            @Override
+            public void createSyncItems() {
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(200, 0));
+            }
+
+            @Override
+            public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(100, 0)));
+            }
+        });
+        // 35
+        scenes.add(new ScenarioProvider() {
+            @Override
+            public void createSyncItems() {
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(200, 0));
+            }
+
+            @Override
+            public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(100, 5)));
             }
         });
     }

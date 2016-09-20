@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundSlopeConnector;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -272,7 +273,7 @@ public class Slope {
             if (last.equals(next)) {
                 continue;
             }
-            obstacles.add(new Obstacle(new Line2I(last, next)));
+            obstacles.add(new ObstacleLine(new Line2I(last, next)));
             last = next;
         }
     }

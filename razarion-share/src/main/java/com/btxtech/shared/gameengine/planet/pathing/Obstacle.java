@@ -1,20 +1,15 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Line2I;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
 /**
  * Created by Beat
  * 16.05.2016.
  */
-public class Obstacle {
-    // TODO setup obstacles for terrain objects (circle)
-    private Line2I line;
+public abstract class Obstacle {
 
-    public Obstacle(Line2I line) {
-        this.line = line;
-    }
+    public abstract DecimalPosition project(DecimalPosition point);
 
     public Contact hasContact(SyncPhysicalMovable item) {
         // There is no check if the unit is inside the restricted area
@@ -30,20 +25,5 @@ public class Obstacle {
         // There is no check if the unit is inside the restricted area
         DecimalPosition pointOnLine = project(item.getXYPosition());
         return pointOnLine.getDistance(item.getXYPosition()) - item.getRadius();
-    }
-
-    public DecimalPosition project(DecimalPosition point) {
-        return line.getNearestPointOnLine(point);
-    }
-
-    public Line2I getLine() {
-        return line;
-    }
-
-    @Override
-    public String toString() {
-        return "Obstacle{" +
-                "line=" + line +
-                '}';
     }
 }

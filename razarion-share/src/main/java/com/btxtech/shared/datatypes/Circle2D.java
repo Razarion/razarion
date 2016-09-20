@@ -28,4 +28,16 @@ public class Circle2D {
         }
         return triangles;
     }
+
+    public DecimalPosition project(DecimalPosition point) {
+        return center.getPointWithDistance(radius, point, true);
+    }
+
+    public DecimalPosition getCenter() {
+        return center;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -26,6 +27,14 @@ public class MapCollection<T, U> {
 
     public Collection<U> get(T key) {
         return map.get(key);
+    }
+
+    public Collection<U> getAll() {
+        Collection<U> all = new ArrayList<>();
+        for (Collection<U> list : map.values()) {
+            all.addAll(list);
+        }
+        return all;
     }
 
     public Collection<U> getSave(T key) {

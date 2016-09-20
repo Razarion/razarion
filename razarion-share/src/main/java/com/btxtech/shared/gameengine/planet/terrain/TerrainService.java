@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.MapCollection;
@@ -17,6 +18,7 @@ import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundModeler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
@@ -78,7 +80,7 @@ public class TerrainService {
             obstacles.addAll(slope.generateObstacles());
         }
 
-        // TODO setup obstacles for terrain objects (circle)
+        terrainObjectConfigPositions.iterate((terrainObject, position) -> obstacles.add(new ObstacleCircle(new Circle2D(position.getPosition(), terrainObject.getRadius()))));
     }
 
     public Collection<Obstacle> getObstacles() {

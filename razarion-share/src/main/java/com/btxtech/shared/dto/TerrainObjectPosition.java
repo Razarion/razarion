@@ -18,8 +18,9 @@ public class TerrainObjectPosition {
         return id;
     }
 
-    public void setId(int id) {
+    public TerrainObjectPosition setId(int id) {
         this.id = id;
+        return this;
     }
 
     public boolean hasId() {
@@ -30,24 +31,27 @@ public class TerrainObjectPosition {
         return terrainObjectId;
     }
 
-    public void setTerrainObjectId(int terrainObjectId) {
+    public TerrainObjectPosition setTerrainObjectId(int terrainObjectId) {
         this.terrainObjectId = terrainObjectId;
+        return this;
     }
 
     public DecimalPosition getPosition() {
         return position;
     }
 
-    public void setPosition(DecimalPosition position) {
+    public TerrainObjectPosition setPosition(DecimalPosition position) {
         this.position = position;
+        return this;
     }
 
     public double getScale() {
         return scale;
     }
 
-    public void setScale(double scale) {
+    public TerrainObjectPosition setScale(double scale) {
         this.scale = scale;
+        return this;
     }
 
     public double getZRotation() {
