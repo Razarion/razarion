@@ -2,9 +2,10 @@ package com.btxtech;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.Unit;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -124,17 +125,13 @@ public class ExtendedGraphicsContext {
 
     }
 
-    public void drawUnit(Unit unit, Paint movingColor, Paint standingColor, Paint directionColor) {
-        DecimalPosition position = unit.getPosition();
-        if (unit.hasDestination()) {
-            gc.setFill(movingColor);
-        } else {
-            gc.setFill(standingColor);
-        }
-        gc.fillOval(position.getX() - unit.getRadius(), position.getY() - unit.getRadius(), unit.getRadius() * 2, unit.getRadius() * 2);
-        DecimalPosition direction = DecimalPosition.createVector(unit.getAngle(), unit.getRadius()).add(position);
-        gc.setStroke(directionColor);
-        gc.strokeLine(position.getX(), position.getY(), direction.getX(), direction.getY());
+    public void drawUnit(SyncItem syncItem, Paint color) {
+        SyncPhysicalArea syncPhysicalArea = syncItem.getSyncPhysicalArea();
+        DecimalPosition position = syncPhysicalArea.getXYPosition();
+        gc.setFill(color);
+        gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
+        // DecimalPosition direction = DecimalPosition.createVector(syncItem.getAngle(), syncItem.getRadius()).add(position);
+        // gc.strokeLine(position.startX(), position.startY(), direction.startX(), direction.startY());
     }
 
     public void drawObstacle(Obstacle obstacle, Paint color) {

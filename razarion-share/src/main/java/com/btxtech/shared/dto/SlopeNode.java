@@ -10,16 +10,18 @@ public class SlopeNode {
     private Vertex position;
     private double slopeFactor;
 
-    public void setSlopeFactor(double slopeFactor) {
+    public SlopeNode setSlopeFactor(double slopeFactor) {
         this.slopeFactor = slopeFactor;
+        return this;
     }
 
     public double getSlopeFactor() {
         return slopeFactor;
     }
 
-    public void setPosition(Vertex position) {
+    public SlopeNode setPosition(Vertex position) {
         this.position = position;
+        return this;
     }
 
     public Vertex getPosition() {

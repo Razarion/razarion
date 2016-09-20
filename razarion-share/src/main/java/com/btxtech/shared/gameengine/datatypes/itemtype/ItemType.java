@@ -14,10 +14,12 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 import com.btxtech.shared.datatypes.I18nString;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 
 /**
  * User: beat
@@ -29,10 +31,12 @@ public abstract class ItemType implements ObjectNameIdProvider {
     private String name;
     private I18nString i18Name;
     private I18nString description;
+    private PhysicalAreaConfig physicalAreaConfig;
     private TerrainType terrainType;
     private SurfaceType adjoinSurfaceType;
     @Deprecated
     private BoundingBox boundingBox;
+    @Deprecated
     private ItemTypeSpriteMap itemTypeSpriteMap;
     private Integer selectionSound;
     private Integer buildupSound;
@@ -43,6 +47,15 @@ public abstract class ItemType implements ObjectNameIdProvider {
 
     public int getId() {
         return id;
+    }
+
+    public PhysicalAreaConfig getPhysicalAreaConfig() {
+        return physicalAreaConfig;
+    }
+
+    public ItemType setPhysicalAreaConfig(PhysicalAreaConfig physicalAreaConfig) {
+        this.physicalAreaConfig = physicalAreaConfig;
+        return this;
     }
 
     public BoundingBox getBoundingBox() {

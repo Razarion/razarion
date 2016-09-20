@@ -27,4 +27,8 @@ public class GameEngine {
     public void start() {
         planetService.start();
     }
+
+    public void stop() {
+        planetService.stop();
+    }
 }

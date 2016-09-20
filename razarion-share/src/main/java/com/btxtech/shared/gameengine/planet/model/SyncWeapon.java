@@ -14,8 +14,6 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
@@ -23,8 +21,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActiveProjectileContainer;
 import com.btxtech.shared.gameengine.planet.ActivityService;
-import com.btxtech.shared.gameengine.planet.BaseService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BaseService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 
 import javax.enterprise.context.Dependent;
@@ -55,18 +53,18 @@ public class SyncWeapon extends SyncBaseAbility {
     private double reloadProgress;
     private DecimalPosition targetPosition; // Not Synchronized
     private long targetPositionLastCheck; // Not Synchronized
-    private SyncMovable.OverlappingHandler overlappingHandler = new SyncMovable.OverlappingHandler() {
-        @Override
-        public Path calculateNewPath() {
-            try {
-                SyncBaseItem targetItem = (SyncBaseItem) baseItemService.getItem(target);
-                return recalculateNewPath(weaponType.getRange(), targetItem.getSyncItemArea());
-            } catch (ItemDoesNotExistException e) {
-                stop();
-                return null;
-            }
-        }
-    };
+//    private SyncMovable.OverlappingHandler overlappingHandler = new SyncMovable.OverlappingHandler() {
+//        @Override
+//        public Path calculateNewPath() {
+//            try {
+//                SyncBaseItem targetItem = (SyncBaseItem) baseItemService.getItem(target);
+//                return recalculateNewPath(weaponType.getRange(), targetItem.getSyncItemArea());
+//            } catch (ItemDoesNotExistException e) {
+//                stop();
+//                return null;
+//            }
+//        }
+//    };
 
     public void init(WeaponType weaponType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -106,7 +104,7 @@ public class SyncWeapon extends SyncBaseAbility {
 
     private boolean tickAttack() {
         try {
-            if (followTarget && !getSyncBaseItem().hasSyncMovable()) {
+            if (followTarget && !getSyncBaseItem().getSyncPhysicalArea().canMove()) {
                 throw new IllegalArgumentException("Weapon is followTarget but has now SyncMovable: " + getSyncBaseItem());
             }
 
@@ -118,18 +116,20 @@ public class SyncWeapon extends SyncBaseAbility {
             }
 
             // Check if target has moved away
-            if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis() && followTarget && getSyncBaseItem().hasSyncMovable() && isNewPathRecalculationAllowed()) {
+            // TODO targetPositionLastCheck -> replace with tickcount
+            if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis() && followTarget && getSyncBaseItem().getSyncPhysicalArea().canMove()) {
                 if (targetPosition != null) {
-                    if (!targetPosition.equals(targetItem.getSyncItemArea().getPosition())) {
-                        targetPosition = targetItem.getSyncItemArea().getPosition();
+                    if (!targetPosition.equals(targetItem.getSyncPhysicalArea().getXYPosition())) {
+                        targetPosition = targetItem.getSyncPhysicalArea().getXYPosition();
                         targetPositionLastCheck = System.currentTimeMillis();
                         if (isInRange(targetItem)) {
                             doAttack(targetItem);
                             return true;
                         } else {
-                            recalculateAndSetNewPath(weaponType.getRange(), targetItem.getSyncItemArea());
-                            activityService.onNewPathRecalculation(getSyncBaseItem());
-                            return getSyncBaseItem().getSyncMovable().tickMove(overlappingHandler);
+                            throw new UnsupportedOperationException();
+//                            recalculateAndSetNewPath(weaponType.getRange(), targetItem);
+//                            activityService.onNewPathRecalculation(getSyncBaseItem());
+//                            return getSyncBaseItem().getSyncMovable().tickMove(overlappingHandler);
                         }
                     }
                 }
@@ -137,7 +137,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 targetPositionLastCheck = System.currentTimeMillis();
             }
 
-            if (followTarget && getSyncBaseItem().hasSyncMovable() && getSyncBaseItem().getSyncMovable().tickMove(overlappingHandler)) {
+            if (followTarget && getSyncBaseItem().getSyncPhysicalArea().canMove()) {
                 return true;
             }
 
@@ -146,16 +146,16 @@ public class SyncWeapon extends SyncBaseAbility {
                 return returnFalseIfReloaded();
             }
 
-            if (!isInRange(targetItem)) {
-                if (isNewPathRecalculationAllowed()) {
-                    // Destination place was may be taken. Calculate a new one or target has moved away
-                    recalculateAndSetNewPath(weaponType.getRange(), targetItem.getSyncItemArea());
-                    activityService.onNewPathRecalculation(getSyncBaseItem());
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+//         TODO   if (!isInRange(targetItem)) {
+//         TODO       if (isNewPathRecalculationAllowed()) {
+//         TODO           // Destination place was may be taken. Calculate a new one or target has moved away
+//         TODO           recalculateAndSetNewPath(weaponType.getRange(), targetItem.getSyncItemArea());
+//         TODO           activityService.onNewPathRecalculation(getSyncBaseItem());
+//         TODO           return true;
+//         TODO       } else {
+//         TODO           return false;
+//         TODO       }
+//         TODO   }
 
             doAttack(targetItem);
             return true;
@@ -189,9 +189,10 @@ public class SyncWeapon extends SyncBaseAbility {
         targetPosition = null;
         targetPositionLastCheck = 0;
         activeProjectileContainer.clear();
-        if (getSyncBaseItem().hasSyncMovable()) {
-            getSyncBaseItem().getSyncMovable().stop();
-        }
+        throw new UnsupportedOperationException();
+//        if (getSyncBaseItem().hasSyncMovable()) {
+//            getSyncBaseItem().getSyncMovable().stop();
+//        }
     }
 
     @Override
@@ -250,7 +251,7 @@ public class SyncWeapon extends SyncBaseAbility {
     }
 
     public boolean isInRange(SyncBaseItem target) throws TargetHasNoPositionException {
-        return getSyncItemArea().isInRange(weaponType.getRange(), target);
+        return getSyncBaseItem().getSyncPhysicalArea().isInRange(weaponType.getRange(), target);
     }
 
     public Integer getTarget() {

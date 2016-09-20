@@ -12,12 +12,21 @@ import java.util.Map;
  * 05.07.2016.
  */
 public class PlanetConfig {
-    private Rectangle dimension;
+    private Rectangle groundMeshDimension;
     private List<TerrainSlopePosition> terrainSlopePositions;
     private List<TerrainObjectPosition> terrainObjectPositions;
     private Map<Integer, Integer> itemTypeLimitation;
     private double waterLevel;
     private int houseSpace;
+
+    public Rectangle getGroundMeshDimension() {
+        return groundMeshDimension;
+    }
+
+    public PlanetConfig setGroundMeshDimension(Rectangle groundMeshDimension) {
+        this.groundMeshDimension = groundMeshDimension;
+        return this;
+    }
 
     public List<TerrainSlopePosition> getTerrainSlopePositions() {
         return terrainSlopePositions;

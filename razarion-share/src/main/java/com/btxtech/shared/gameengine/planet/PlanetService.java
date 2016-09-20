@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -33,7 +32,7 @@ public class PlanetService implements Runnable {
     public static final PlanetMode MODE = PlanetMode.MASTER;
     public static final int TICK_TIME_MILLI_SECONDS = 100;
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
-    private Logger logger = Logger.getLogger(PlanetService.class.getName());
+    // private Logger logger = Logger.getLogger(PlanetService.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -56,13 +55,15 @@ public class PlanetService implements Runnable {
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
+    private long tickCount;
 
     @PostConstruct
     public void postConstruct() {
-        scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this);
+        scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this, SimpleExecutorService.Type.GAME_ENGINE);
     }
 
     public void initialise(PlanetConfig planetConfig) {
+        tickCount = 0;
         this.planetConfig = planetConfig;
         activationEvent.fire(new PlanetActivationEvent(planetConfig));
         scheduledFuture.start();
@@ -70,10 +71,6 @@ public class PlanetService implements Runnable {
 
     public void start() {
         scheduledFuture.start();
-    }
-
-    void stop() {
-        scheduledFuture.cancel();
     }
 
     @Override
@@ -86,8 +83,6 @@ public class PlanetService implements Runnable {
             // TODO Moving (also pushed away items, ev targed reached)
             // TODO building, attacking,
             pathingService.tick();
-            //
-            //
             synchronized (activeItems) {
                 synchronized (tmpActiveItems) {
                     activeItems.addAll(tmpActiveItems);
@@ -136,8 +131,12 @@ public class PlanetService implements Runnable {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
+        tickCount++;
     }
 
+    public long getTickCount() {
+        return tickCount;
+    }
 
     public void addGuardingBaseItem(SyncTickItem syncTickItem) {
         try {
@@ -267,5 +266,9 @@ public class PlanetService implements Runnable {
 
     public void setPause(boolean pause) {
         this.pause = pause;
+    }
+
+    public void stop() {
+        scheduledFuture.cancel();
     }
 }

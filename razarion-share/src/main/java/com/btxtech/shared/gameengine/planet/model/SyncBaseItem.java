@@ -25,7 +25,6 @@ import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoneyCollectCommand;
-import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -57,6 +56,8 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     @Inject
     private Instance<SyncBaseAbility> instance;
     @Inject
+    private Instance<SyncPhysicalMovable> instanceMovable;
+    @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private BaseService baseService;
@@ -69,7 +70,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private PlayerBase base;
     private double buildup;
     private double health;
-    private SyncMovable syncMovable;
     private SyncWeapon syncWeapon;
     private SyncFactory syncFactory;
     private SyncBuilder syncBuilder;
@@ -91,13 +91,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
         BaseItemType baseItemType = getBaseItemType();
         health = baseItemType.getHealth();
-
-        if (baseItemType.getMovableType() != null) {
-            syncMovable = instance.select(SyncMovable.class).get();
-            syncMovable.init(baseItemType.getMovableType(), this);
-        } else {
-            syncMovable = null;
-        }
 
         if (baseItemType.getWeaponType() != null) {
             syncWeapon = instance.select(SyncWeapon.class).get();
@@ -203,9 +196,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         containedIn = syncItemInfo.getContainedIn();
         killedBy = syncItemInfo.getKilledBy();
 
-        if (syncMovable != null) {
-            syncMovable.synchronize(syncItemInfo);
-        }
+        // TODO if (syncMovable != null) {
+        // TODO     syncMovable.synchronize(syncItemInfo);
+        // TODO }
 
         if (syncWeapon != null) {
             syncWeapon.synchronize(syncItemInfo);
@@ -243,9 +236,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         syncItemInfo.setContainedIn(containedIn);
         syncItemInfo.setKilledBy(killedBy);
 
-        if (syncMovable != null) {
-            syncMovable.fillSyncItemInfo(syncItemInfo);
-        }
+        // TODO if (syncMovable != null) {
+        // TODO     syncMovable.fillSyncItemInfo(syncItemInfo);
+        // TODO }
 
         if (syncWeapon != null) {
             syncWeapon.fillSyncItemInfo(syncItemInfo);
@@ -276,7 +269,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public boolean isIdle() {
         return isReady()
-                && !(syncMovable != null && syncMovable.isActive())
+                // TODO && !(syncMovable != null && syncMovable.isActive())
                 && !(syncWeapon != null && syncWeapon.isActive())
                 && !(syncFactory != null && syncFactory.isActive())
                 && !(syncBuilder != null && syncBuilder.isActive())
@@ -320,7 +313,8 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return syncItemContainer.tick();
         }
 
-        return syncMovable != null && syncMovable.isActive() && syncMovable.tick();
+        return false;
+        // TODO return syncMovable != null && syncMovable.isActive() && syncMovable.tick();
     }
 
     public void stop() {
@@ -340,9 +334,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             syncHarvester.stop();
         }
 
-        if (syncMovable != null) {
-            syncMovable.stop();
-        }
+        // TODO if (syncMovable != null) {
+        // TODO     syncMovable.stop();
+        // TODO }
 
         if (syncItemContainer != null) {
             syncItemContainer.stop();
@@ -354,11 +348,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
         if (baseCommand instanceof AttackCommand) {
             getSyncWeapon().executeCommand((AttackCommand) baseCommand);
-            return;
-        }
-
-        if (baseCommand instanceof MoveCommand) {
-            getSyncMovable().executeCommand((MoveCommand) baseCommand);
             return;
         }
 
@@ -383,8 +372,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (baseCommand instanceof LoadContainerCommand) {
-            getSyncMovable().executeCommand((LoadContainerCommand) baseCommand);
-            return;
+            throw new UnsupportedOperationException();
+            //  getSyncMovable().executeCommand((LoadContainerCommand) baseCommand);
+            // return;
         }
 
         if (baseCommand instanceof UnloadContainerCommand) {
@@ -393,8 +383,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (baseCommand instanceof PickupBoxCommand) {
-            getSyncMovable().executeCommand((PickupBoxCommand) baseCommand);
-            return;
+            throw new UnsupportedOperationException();
+            // getSyncMovable().executeCommand((PickupBoxCommand) baseCommand);
+            // return;
         }
 
         throw new IllegalArgumentException("Command not supported: " + baseCommand);
@@ -406,15 +397,13 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
     }
 
-    public SyncMovable getSyncMovable() {
-        if (syncMovable == null) {
-            throw new IllegalStateException(this + " has no SyncMovable");
-        }
-        return syncMovable;
-    }
+    public SyncPhysicalDirection getSyncMovable() {
+        throw new UnsupportedOperationException();
 
-    public boolean hasSyncMovable() {
-        return syncMovable != null;
+        // if (syncMovable == null) {
+        //     throw new IllegalStateException(this + " has no SyncMovable");
+        // }
+        // return syncMovable;
     }
 
     public boolean hasSyncHarvester() {

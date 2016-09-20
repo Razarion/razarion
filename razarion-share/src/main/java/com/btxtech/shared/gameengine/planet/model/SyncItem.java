@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -37,17 +36,17 @@ public abstract class SyncItem {
     private int id;
     // Own states
     private ItemType itemType;
-    private SyncItemPosition syncItemPosition;
+    private SyncPhysicalArea syncPhysicalArea;
     @Deprecated
     private SyncItemArea syncItemArea;
     // Sync states
     @Deprecated
     private boolean explode = false;
 
-    public void init(int id, ItemType itemType, SyncItemPosition syncItemPosition) {
+    public void init(int id, ItemType itemType, SyncPhysicalArea syncPhysicalArea) {
         this.id = id;
         this.itemType = itemType;
-        this.syncItemPosition = syncItemPosition;
+        this.syncPhysicalArea = syncPhysicalArea;
     }
 
     public int getId() {
@@ -91,17 +90,17 @@ public abstract class SyncItem {
         this.explode = explode;
     }
 
-    public SyncItemPosition getSyncItemPosition() {
-        return syncItemPosition;
+    public SyncPhysicalArea getSyncPhysicalArea() {
+        return syncPhysicalArea;
     }
 
     public ModelMatrices createModelMatrices(double scale) {
-        return syncItemPosition.createModelMatrices((SyncBaseItem) this, scale);
+        return syncPhysicalArea.createModelMatrices((SyncBaseItem) this, scale);
     }
 
     @Override
     public String toString() {
-        return "SyncItem: id=" + id + " " + itemType + " " + syncItemPosition;
+        return "SyncItem: id=" + id + " " + itemType + " " + syncPhysicalArea;
     }
 
     @Override

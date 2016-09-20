@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.gameengine.GameEngineMonitorController">
+    <center>
+        <SplitPane dividerPositions="0.1" orientation="HORIZONTAL" prefHeight="200.0" prefWidth="160.0">
+            <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <children>
+                        <Pane fx:id="leftSidePanel" prefWidth="150" />
+                    </children>
+                </AnchorPane>
+                <AnchorPane fx:id="anchorPanel" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <children>
+                        <Canvas fx:id="canvas" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMove" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onScroll="#onScroll"/>
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </center>
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <MenuBar>
+                    <menus>
+                        <Menu mnemonicParsing="false" text="Test">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#onCreateTestCase" text="Create Test Case" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+                <ToolBar prefHeight="40.0" prefWidth="200.0">
+                    <items>
+                        <HBox alignment="CENTER" spacing="5.0">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#onRun" text="Run" />
+                                <Button mnemonicParsing="false" onAction="#onTurbo" text="Turbo" />
+                                <Button mnemonicParsing="false" onAction="#onHold" text="Hold" />
+                                <Button mnemonicParsing="false" onAction="#onStep" text="S+" />
+                                <Button mnemonicParsing="false" onAction="#onStepBackward" text="S-" />
+                                <TextField fx:id="stepField" editable="false" prefColumnCount="5" />
+                                <Button mnemonicParsing="false" onAction="#onPrevScenario" text="Prev" />
+                                <Button mnemonicParsing="false" onAction="#onRestartScenario" text="Restart" />
+                                <Button mnemonicParsing="false" onAction="#onNextScenario" text="Next" />
+                                <TextField fx:id="scenarioField" editable="false" prefColumnCount="5" />
+                            </children>
+                        </HBox>
+                        <TextField fx:id="mouseField" alignment="TOP_RIGHT" editable="false" prefColumnCount="8" />
+                        <Slider fx:id="zoomSlider" majorTickUnit="10.0" max="30.0" min="-10.0" minorTickCount="1" prefHeight="14.0" prefWidth="79.0" showTickLabels="true" showTickMarks="true" />
+                        <Button mnemonicParsing="false" onAction="#onZoomResetButton" text="1:1" />
+                        <TextField fx:id="scaleField" editable="false" prefWidth="50.0" />
+                    </items>
+                </ToolBar>
+            </children>
+        </VBox>
+    </top>
+</BorderPane>

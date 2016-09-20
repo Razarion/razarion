@@ -11,12 +11,12 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundModeler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
@@ -25,6 +25,7 @@ import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeWater;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,6 @@ import java.util.logging.Logger;
 @Singleton
 public class TerrainService {
     public static final int MESH_NODE_EDGE_LENGTH = 64;
-    public static final int MESH_NODES = 64;
     private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
@@ -45,11 +45,12 @@ public class TerrainService {
     private GroundMesh groundMesh;
     private Map<Integer, Slope> slopeMap = new HashMap<>();
     private MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions;
+    private Collection<Obstacle> obstacles;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
-        setupGround(MESH_NODES, MESH_NODES);
+        setupGround(planetActivationEvent.getPlanetConfig().getGroundMeshDimension());
 
         water = new Water(planetActivationEvent.getPlanetConfig().getWaterLevel());
 
@@ -66,7 +67,22 @@ public class TerrainService {
             }
         }
 
+        setupObstacles();
+
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
+    }
+
+    private void setupObstacles() {
+        obstacles = new ArrayList<>();
+        for (Slope slope : slopeMap.values()) {
+            obstacles.addAll(slope.generateObstacles());
+        }
+
+        // TODO setup obstacles for terrain objects (circle)
+    }
+
+    public Collection<Obstacle> getObstacles() {
+        return obstacles;
     }
 
     public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {
@@ -88,10 +104,10 @@ public class TerrainService {
         slopeMap.put(slopeMap.size(), slope);
     }
 
-    private void setupGround(int xCount, int yCount) {
+    private void setupGround(Rectangle groundMesh) {
         if (terrainTypeService.getGroundSkeletonConfig() != null) {
-            groundMesh = GroundModeler.generateGroundMesh(terrainTypeService.getGroundSkeletonConfig(), xCount, yCount);
-            groundMesh.setupNorms();
+            this.groundMesh = GroundModeler.generateGroundMesh(terrainTypeService.getGroundSkeletonConfig(), groundMesh);
+            this.groundMesh.setupNorms();
         }
     }
 

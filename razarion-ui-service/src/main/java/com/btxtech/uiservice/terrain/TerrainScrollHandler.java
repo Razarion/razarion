@@ -56,7 +56,7 @@ public class TerrainScrollHandler {
             public void run() {
                 autoScroll();
             }
-        });
+        }, SimpleExecutorService.Type.UNSPECIFIED);
     }
 
     public void cleanup() {
@@ -207,7 +207,7 @@ public class TerrainScrollHandler {
                             camera.setTranslateY(newCameraPosition.getY());
                         }
                     }
-                });
+                }, SimpleExecutorService.Type.UNSPECIFIED);
             }
         } else {
             setScrollDisabled(cameraConfig.isCameraLocked());
@@ -223,10 +223,10 @@ public class TerrainScrollHandler {
 //        if (terrainSettings == null) {
 //            return new Index(0, 0);
 //        }
-//        int viewOriginLeft = viewRect.getX();
-//        int viewOriginTop = viewRect.getY();
-//        int viewWidth = viewRect.getWidth();
-//        int viewHeight = viewRect.getHeight();
+//        int viewOriginLeft = viewRect.startX();
+//        int viewOriginTop = viewRect.startY();
+//        int viewWidth = viewRect.width();
+//        int viewHeight = viewRect.height();
 //
 //        if (viewWidth == 0 && viewHeight == 0) {
 //            return new Index(0, 0);

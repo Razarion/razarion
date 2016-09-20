@@ -19,6 +19,7 @@ public class TerrainSlopePosition {
     public TerrainSlopePosition() {
     }
 
+    @Deprecated
     public TerrainSlopePosition(Integer id, int slopeId, List<Index> polygon) {
         this.id = id;
         this.slopeId = slopeId;
@@ -33,23 +34,26 @@ public class TerrainSlopePosition {
         return id != null;
     }
 
-    public void setId(int id) {
+    public TerrainSlopePosition setId(int id) {
         this.id = id;
+        return this;
     }
 
     public int getSlopeId() {
         return slopeId;
     }
 
-    public void setSlopeId(int slopeId) {
+    public TerrainSlopePosition setSlopeId(int slopeId) {
         this.slopeId = slopeId;
+        return this;
     }
 
     public List<Index> getPolygon() {
         return polygon;
     }
 
-    public void setPolygon(List<Index> polygon) {
+    public TerrainSlopePosition setPolygon(List<Index> polygon) {
         this.polygon = polygon;
+        return this;
     }
 }

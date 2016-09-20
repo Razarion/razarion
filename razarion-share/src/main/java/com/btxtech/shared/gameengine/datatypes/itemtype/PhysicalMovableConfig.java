@@ -18,15 +18,35 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
  * Date: 17.11.2009
  * Time: 23:12:43
  */
-public class MovableType {
+public class PhysicalMovableConfig extends PhysicalDirectionConfig {
     private int speed;
+    private double acceleration;
+    private double minTurnSpeed;
 
     public int getSpeed() {
         return speed;
     }
 
-    public MovableType setSpeed(int speed) {
+    public PhysicalMovableConfig setSpeed(int speed) {
         this.speed = speed;
+        return this;
+    }
+
+    public double getAcceleration() {
+        return acceleration;
+    }
+
+    public PhysicalMovableConfig setAcceleration(double acceleration) {
+        this.acceleration = acceleration;
+        return this;
+    }
+
+    public double getMinTurnSpeed() {
+        return minTurnSpeed;
+    }
+
+    public PhysicalMovableConfig setMinTurnSpeed(double minTurnSpeed) {
+        this.minTurnSpeed = minTurnSpeed;
         return this;
     }
 }

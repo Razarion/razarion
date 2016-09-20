@@ -126,7 +126,7 @@ public class WebGlEmulator {
         gc.strokeLine(ndcA.getX(), ndcA.getY(), ndcB.getX(), ndcB.getY());
         gc.strokeLine(ndcB.getX(), ndcB.getY(), ndcC.getX(), ndcC.getY());
         gc.strokeLine(ndcC.getX(), ndcC.getY(), ndcA.getX(), ndcA.getY());
-        //gc.strokeText("X", ndcA.getX(), ndcA.getY(), 0.001);
+        //gc.strokeText("X", ndcA.startX(), ndcA.startY(), 0.001);
     }
 
     private Vertex toNdcVertex(Vertex4 vertex4) {

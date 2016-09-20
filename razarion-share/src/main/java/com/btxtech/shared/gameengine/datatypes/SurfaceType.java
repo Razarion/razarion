@@ -21,6 +21,7 @@ import java.util.Iterator;
  * Date: 18.11.2009
  * Time: 15:09:53
  */
+@Deprecated // Move to SyncPhysicalArea
 public enum SurfaceType {
     NONE,
     WATER,

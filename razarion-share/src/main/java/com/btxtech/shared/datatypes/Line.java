@@ -41,7 +41,7 @@ public class Line {
 //            c = Double.NEGATIVE_INFINITY;
 //        } else if (Math.abs(m) < MIN_M_ZERO) {
 //            m = 0.0;
-//            c = this.point1.getY();
+//            c = this.point1.startY();
 //        } else {
         c = this.point1.getY() - (m * this.point1.getX());
 //        }
@@ -78,12 +78,12 @@ public class Line {
  /*   public double getShortestDistance(DecimalPosition point) {
         DecimalPosition projection = projectOnInfiniteLine(point);
 
-        double xMin = Math.min(point1.getX(), point2.getX());
-        double xMax = Math.max(point1.getX(), point2.getX());
-        double yMin = Math.min(point1.getY(), point2.getY());
-        double yMax = Math.max(point1.getY(), point2.getY());
+        double xMin = Math.min(point1.startX(), point2.startX());
+        double xMax = Math.max(point1.startX(), point2.startX());
+        double yMin = Math.min(point1.startY(), point2.startY());
+        double yMax = Math.max(point1.startY(), point2.startY());
 
-        if (projection.getX() < xMin || projection.getY() < yMin || projection.getX() > xMax || projection.getY() > yMax) {
+        if (projection.startX() < xMin || projection.startY() < yMin || projection.startX() > xMax || projection.startY() > yMax) {
             return Math.min(point.getDistanceDouble(point1), point.getDistanceDouble(point2));
         } else {
             return point.getDistanceDouble(projection);
@@ -121,14 +121,14 @@ public class Line {
      */
    /* public Index projectOnInfiniteLine(Index point) {
         if (m == 0) {
-            return new Index(point.getX(), point1.getY());
+            return new Index(point.startX(), point1.startY());
         } else if (Double.isInfinite(m)) {
-            return new Index(point1.getX(), point.getY());
+            return new Index(point1.startX(), point.startY());
         }
 
         // m2 & c2 are the projection line which crosses this line orthogonally
         double m2 = 1.0 / -m;
-        double c2 = (double) point.getY() - m2 * (double) point.getX();
+        double c2 = (double) point.startY() - m2 * (double) point.startX();
         double x = (c2 - c) / (m - m2);
         double y = m2 * x + c2;
         return new Index((int) Math.round(x), (int) Math.round(y));
@@ -302,13 +302,13 @@ public class Line {
         Index point1Rot = point1.rotateCounterClock(reference, angel);
         Index point2Rot = point2.rotateCounterClock(reference, angel);
         if (counterClock) {
-            if (point1Rot.getX() < point2Rot.getX()) {
+            if (point1Rot.startX() < point2Rot.startX()) {
                 return point1;
             } else {
                 return point2;
             }
         } else {
-            if (point1Rot.getX() > point2Rot.getX()) {
+            if (point1Rot.startX() > point2Rot.startX()) {
                 return point1;
             } else {
                 return point2;

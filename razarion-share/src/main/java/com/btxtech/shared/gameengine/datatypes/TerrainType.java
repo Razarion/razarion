@@ -25,6 +25,7 @@ import java.util.Map;
  * Date: 24.04.2010
  * Time: 14:16:30
  */
+@Deprecated // Move to SyncPhysicalArea
 public enum TerrainType {
     LAND(SurfaceType.LAND), // Tank
     WATER(SurfaceType.WATER), // Ships

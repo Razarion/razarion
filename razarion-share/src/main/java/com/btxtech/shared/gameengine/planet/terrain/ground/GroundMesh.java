@@ -1,11 +1,12 @@
 package com.btxtech.shared.gameengine.planet.terrain.ground;
 
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.VertexList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +16,9 @@ import java.util.Map;
  * 27.06.2015.
  */
 public class GroundMesh {
-    private int maxX;
-    private int maxY;
     private Map<Index, VertexData> grid = new HashMap<>();
     private int edgeLength;
+    private Rectangle groundMeshDimension;
     // private Logger logger = Logger.getLogger(Math.class.getName());
 
     public interface VertexVisitor {
@@ -29,21 +29,29 @@ public class GroundMesh {
         this.edgeLength = edgeLength;
     }
 
-    public void reset(int edgeLength, int xCount, int yCount, double z) {
+    public Rectangle getGroundMeshDimension() {
+        return groundMeshDimension;
+    }
+
+    public void reset(int edgeLength, Rectangle groundMeshDimension, double z) {
         this.edgeLength = edgeLength;
+        this.groundMeshDimension = groundMeshDimension;
         grid.clear();
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
+        for (int x = groundMeshDimension.startX(); x < groundMeshDimension.endX(); x++) {
+            for (int y = groundMeshDimension.startY(); y < groundMeshDimension.endY(); y++) {
                 createVertexData(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, z));
             }
         }
     }
 
+    public void setGroundMeshDimension(Rectangle groundMeshDimension) {
+        this.groundMeshDimension = groundMeshDimension;
+    }
+
     public GroundMesh copy() {
         GroundMesh groundMesh = new GroundMesh();
-        groundMesh.maxX = maxX;
-        groundMesh.maxY = maxY;
         groundMesh.edgeLength = edgeLength;
+        groundMesh.groundMeshDimension = groundMeshDimension;
         for (Map.Entry<Index, VertexData> entry : grid.entrySet()) {
             groundMesh.grid.put(entry.getKey(), new VertexData(entry.getValue()));
         }
@@ -52,21 +60,17 @@ public class GroundMesh {
 
     private void createVertexData(Index index, Vertex vertex) {
         grid.put(index, new VertexData(vertex));
-        maxX = Math.max(index.getX(), maxX);
-        maxY = Math.max(index.getY(), maxY);
     }
 
     public void createVertexData(Index index, GroundMesh groundMesh) {
         VertexData vertexData = groundMesh.getVertexDataSafe(index);
         grid.put(index, new VertexData(vertexData));
-        maxX = Math.max(index.getX(), maxX);
-        maxY = Math.max(index.getY(), maxY);
     }
 
     public VertexData getVertexDataSafe(Index index) {
         VertexData vertexData = getVertexData(index);
         if (vertexData == null) {
-            throw new IndexOutOfBoundsException("No VertexData for: " + index + " maxX: " + maxX + " maxY: " + maxY);
+            throw new IndexOutOfBoundsException("No VertexData for: " + index);
         }
         return vertexData;
     }
@@ -87,52 +91,44 @@ public class GroundMesh {
         return vertexData.getVertex();
     }
 
-    public VertexData getVertexFromAbsoluteXY(DecimalPosition absoluteXY) {
-        Index index = absoluteToIndex(absoluteXY);
-        return getVertexData(index);
-    }
-
     public void remove(Index index) {
         grid.remove(index);
     }
 
     public void setupNorms() {
-        iterate(new VertexVisitor() {
-            @Override
-            public void onVisit(Index index, Vertex vertex) {
-                VertexData center = getVertexData(index);
-                VertexData north = getVertexData(index.add(0, 1));
-                VertexData east = getVertexData(index.add(1, 0));
-                VertexData south = getVertexData(index.sub(0, 1));
-                VertexData west = getVertexData(index.sub(1, 0));
+        iterate((index, vertex) -> {
+            VertexData center = getVertexData(index);
+            VertexData north = getVertexData(index.add(0, 1));
+            VertexData east = getVertexData(index.add(1, 0));
+            VertexData south = getVertexData(index.sub(0, 1));
+            VertexData west = getVertexData(index.sub(1, 0));
 
-                // Setup norm
-                Vertex totalNorm = new Vertex(0, 0, 0);
-                if (north != null && east != null) {
-                    totalNorm = totalNorm.add(center.getVertex().cross(east.getVertex(), north.getVertex()));
-                }
-                if (south != null && east != null) {
-                    totalNorm = totalNorm.add(center.getVertex().cross(south.getVertex(), east.getVertex()));
-                }
-                if (south != null && west != null) {
-                    totalNorm = totalNorm.add(center.getVertex().cross(west.getVertex(), south.getVertex()));
-                }
-                if (north != null && west != null) {
-                    totalNorm = totalNorm.add(center.getVertex().cross(north.getVertex(), west.getVertex()));
-                }
-                center.setNorm(totalNorm.normalize(1.0));
+            // Setup norm
+            Vertex totalNorm = new Vertex(0, 0, 0);
+            if (north != null && east != null) {
+                totalNorm = totalNorm.add(center.getVertex().cross(east.getVertex(), north.getVertex()));
+            }
+            if (south != null && east != null) {
+                totalNorm = totalNorm.add(center.getVertex().cross(south.getVertex(), east.getVertex()));
+            }
+            if (south != null && west != null) {
+                totalNorm = totalNorm.add(center.getVertex().cross(west.getVertex(), south.getVertex()));
+            }
+            if (north != null && west != null) {
+                totalNorm = totalNorm.add(center.getVertex().cross(north.getVertex(), west.getVertex()));
+            }
+            center.setNorm(totalNorm.normalize(1.0));
 
-                // Setup tangent
-                if (west != null && east != null) {
-                    center.setTangent(east.getVertex().sub(west.getVertex()).normalize(1.0));
-                } else if (east != null) {
-                    center.setTangent(east.getVertex().sub(center.getVertex()).normalize(1.0));
-                } else if (west != null) {
-                    center.setTangent(center.getVertex().sub(west.getVertex()).normalize(1.0));
-                } else {
-                    center.setTangent(new Vertex(1, 0, 0)); // TODO is this correct???
-                    // throw new IllegalStateException();
-                }
+            // Setup tangent
+            if (west != null && east != null) {
+                center.setTangent(east.getVertex().sub(west.getVertex()).normalize(1.0));
+            } else if (east != null) {
+                center.setTangent(east.getVertex().sub(center.getVertex()).normalize(1.0));
+            } else if (west != null) {
+                center.setTangent(center.getVertex().sub(west.getVertex()).normalize(1.0));
+            } else {
+                center.setTangent(new Vertex(1, 0, 0)); // TODO is this correct???
+                // throw new IllegalStateException();
             }
         });
     }
@@ -141,31 +137,20 @@ public class GroundMesh {
         return edgeLength;
     }
 
-    public int getX() {
-        return maxX + 1;
-    }
-
-    public int getY() {
-        return maxY + 1;
-    }
-
     public VertexList provideVertexList() {
         final VertexList vertexList = new VertexList();
 
-        iterate(new VertexVisitor() {
-            @Override
-            public void onVisit(Index index, Vertex vertex) {
-                VertexData center = getVertexData(index);
-                VertexData north = getVertexData(index.add(0, 1));
-                VertexData east = getVertexData(index.add(1, 0));
-                VertexData northEast = getVertexData(index.add(1, 1));
+        iterate((index, vertex) -> {
+            VertexData center = getVertexData(index);
+            VertexData north = getVertexData(index.add(0, 1));
+            VertexData east = getVertexData(index.add(1, 0));
+            VertexData northEast = getVertexData(index.add(1, 1));
 
-                if (east != null && north != null && northEast != null) {
-                    generateTriangle(vertexList, center, east, north);
-                    generateTriangle(vertexList, east, northEast, north);
-                }
-
+            if (east != null && north != null && northEast != null) {
+                generateTriangle(vertexList, center, east, north);
+                generateTriangle(vertexList, east, northEast, north);
             }
+
         });
 
         return vertexList;
@@ -178,8 +163,8 @@ public class GroundMesh {
     }
 
     public void iterate(VertexVisitor vertexVisitor) {
-        for (int y = 0; y < getY(); y++) {
-            for (int x = 0; x < getX(); x++) {
+        for (int x = groundMeshDimension.startX(); x < groundMeshDimension.endX(); x++) {
+            for (int y = groundMeshDimension.startY(); y < groundMeshDimension.endY(); y++) {
                 Index index = new Index(x, y);
                 if (grid.containsKey(index)) {
                     vertexVisitor.onVisit(index, getVertexSafe(index));
@@ -196,13 +181,8 @@ public class GroundMesh {
         if (edgeLength == 0) {
             throw new IllegalStateException("edgeLength == 0");
         }
-        double x = (absoluteXY.getX() / (double) edgeLength);
-        double y = (absoluteXY.getY() / (double) edgeLength);
+        Index bottomLeftIndex = absoluteToBottomLeftIndex(absoluteXY);
 
-        if (x < 0 || y < 0) {
-            return null;
-        }
-        Index bottomLeftIndex = new Index((int) x, (int) y);
 
         VertexData vertexDataBL = getVertexData(bottomLeftIndex);
         VertexData vertexDataBR = getVertexData(bottomLeftIndex.add(1, 0));
@@ -230,13 +210,27 @@ public class GroundMesh {
         return interpolatedTerrainTriangle;
     }
 
-    private Index absoluteToIndex(DecimalPosition absoluteXY) {
+    private Index absoluteToBottomLeftIndex(DecimalPosition absoluteXY) {
         if (edgeLength == 0) {
             throw new IllegalStateException("edgeLength == 0");
         }
-        int x = (int) (absoluteXY.getX() / (double) edgeLength);
-        int y = (int) (absoluteXY.getY() / (double) edgeLength);
-        return new Index(x, y);
+        double x = absoluteXY.getX() / (double) edgeLength;
+        double y = absoluteXY.getY() / (double) edgeLength;
+
+        int indexX;
+        if(x > 0) {
+            indexX = (int) x;
+        } else {
+            indexX = (int) Math.floor(x);
+        }
+        int indexY;
+        if(y > 0) {
+            indexY = (int) y;
+        } else {
+            indexY = (int) Math.floor(y);
+        }
+
+        return new Index(indexX, indexY);
     }
 
 }

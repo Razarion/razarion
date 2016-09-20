@@ -3,7 +3,7 @@ package com.btxtech.server.persistence.itemtype;
 import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.MovableType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalMovableConfig;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,7 +41,7 @@ public class BaseItemTypeEntity {
     public BaseItemType toBaseItemType() {
         BaseItemType baseItemType = (BaseItemType) new BaseItemType().setName(name).setId(id.intValue());
         baseItemType.setTerrainType(TerrainType.LAND); // TODO
-        baseItemType.setMovableType(new MovableType().setSpeed(10)); // TODO
+        baseItemType.setPhysicalAreaConfig(new PhysicalMovableConfig().setSpeed(10)); // TODO
         if (shape3DId != null) {
             baseItemType.setShape3DId(shape3DId.getId().intValue());
         }

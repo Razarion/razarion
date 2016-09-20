@@ -19,7 +19,7 @@ public class Abstract2dRenderer {
     protected DecimalPosition shift = new DecimalPosition(0, 0);
     protected DecimalPosition lastShiftPosition;
 
-    public Abstract2dRenderer(Canvas canvas, double scale) {
+    public void init(Canvas canvas, double scale) {
         this.canvas = canvas;
         this.scale = scale;
     }

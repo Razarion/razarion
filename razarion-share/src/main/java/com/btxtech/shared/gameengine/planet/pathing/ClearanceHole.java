@@ -1,6 +1,9 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,17 +13,17 @@ import java.util.List;
  * 16.05.2016.
  */
 public class ClearanceHole {
-    private Unit unit;
+    private SyncPhysicalMovable syncPhysicalMovable;
     private List<AngleSegment> angleSegments = new ArrayList<>();
 
-    public ClearanceHole(Unit unit) {
-        this.unit = unit;
+    public ClearanceHole(SyncPhysicalMovable syncPhysicalMovable) {
+        this.syncPhysicalMovable = syncPhysicalMovable;
     }
 
-    public void addOther(Unit other) {
-        DecimalPosition distanceVector = other.getPosition().sub(unit.getPosition());
+    public void addOther(SyncPhysicalArea other) {
+        DecimalPosition distanceVector = other.getXYPosition().sub(syncPhysicalMovable.getXYPosition());
         double distance = distanceVector.magnitude();
-        double radius = unit.getRadius() + other.getRadius();
+        double radius = syncPhysicalMovable.getRadius() + other.getRadius();
         double halfBlockingAngle;
         if (radius < distance) {
             halfBlockingAngle = Math.asin(radius / distance);
@@ -84,27 +87,27 @@ public class ClearanceHole {
         }
 
         public boolean overlaps(AngleSegment segment) {
-            double deltaMiddle = PathingService.deltaAngle(middle, segment.middle);
+            double deltaMiddle = MathHelper.getAngel(middle, segment.middle);
             return deltaMiddle - half - segment.half < 0;
         }
 
         public AngleSegment combines(AngleSegment segment) {
             double side1 = Math.min(middle - half, segment.middle - segment.half);
             double side2 = Math.max(middle + half, segment.middle + segment.half);
-            double newHalf = PathingService.deltaAngle(side2, side1) / 2.0;
-            return new AngleSegment(PathingService.correctAngle(side1 + newHalf), newHalf);
+            double newHalf = MathHelper.getAngel(side2, side1) / 2.0;
+            return new AngleSegment(MathHelper.negateAngel(side1 + newHalf), newHalf);
         }
 
         public boolean isInside(double angle) {
-            double delta = PathingService.deltaAngle(middle, angle);
+            double delta = MathHelper.getAngel(middle, angle);
             return delta < half;
         }
 
         public double getNearestSide(double angle) {
-            double angle1 = PathingService.correctAngle(middle + half);
-            double angle2 = PathingService.correctAngle(middle - half);
+            double angle1 = MathHelper.negateAngel(middle + half);
+            double angle2 = MathHelper.negateAngel(middle - half);
 
-            if (PathingService.deltaAngle(angle, angle1) < PathingService.deltaAngle(angle, angle2)) {
+            if (MathHelper.getAngel(angle, angle1) < MathHelper.getAngel(angle, angle2)) {
                 return angle1;
             } else {
                 return angle2;

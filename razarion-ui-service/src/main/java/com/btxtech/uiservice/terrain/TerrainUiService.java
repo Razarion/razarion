@@ -130,15 +130,6 @@ public class TerrainUiService {
         return vertexList;
     }
 
-    @Deprecated
-    public Collection<Obstacle> getAllObstacles() {
-        Collection<Obstacle> obstacles = new ArrayList<>();
-        for (Slope slope : terrainService.getSlopes()) {
-            obstacles.addAll(slope.generateObstacles());
-        }
-        return obstacles;
-    }
-
     public Water getWater() {
         return terrainService.getWater();
     }

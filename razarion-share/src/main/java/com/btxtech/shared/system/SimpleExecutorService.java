@@ -5,7 +5,13 @@ package com.btxtech.shared.system;
  * 27.06.2016.
  */
 public interface SimpleExecutorService {
-    SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable);
+    enum Type {
+        GAME_ENGINE,
+        BOT,
+        UNSPECIFIED
+    }
 
-    SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable);
+    SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type);
+
+    SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable, Type type);
 }

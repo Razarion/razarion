@@ -69,8 +69,8 @@ public class SlopeSkeletonConfigEntityFactoryTest {
 //
 //            TestHelper.assertVertex(40, 0, 0, rows[0].toIndex());
 //
-//            // Assert.assertEquals("Shift to big: " + rows[1], 2.5, MathHelper.getPythagorasC(rows[1].getX() - 20, rows[1].getZ() - 50), 2.5);
-//            Assert.assertEquals(0, rows[1].toIndex().getY(), 0.001);
+//            // Assert.assertEquals("Shift to big: " + rows[1], 2.5, MathHelper.getPythagorasC(rows[1].startX() - 20, rows[1].getZ() - 50), 2.5);
+//            Assert.assertEquals(0, rows[1].toIndex().startY(), 0.001);
 //
 //            TestHelper.assertVertex(0, 0, 100, rows[2].toIndex());
 //        }

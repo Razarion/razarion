@@ -12,12 +12,12 @@ import javax.inject.Singleton;
 @Singleton
 public class ServerSimpleExecutorServiceImpl implements SimpleExecutorService {
     @Override
-    public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable) {
+    public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable) {
+    public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable, Type type) {
         throw new UnsupportedOperationException();
     }
 }

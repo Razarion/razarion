@@ -31,28 +31,33 @@ public class SlopeSkeletonConfig {
         return id;
     }
 
-    public void setId(int id) {
+    public SlopeSkeletonConfig setId(int id) {
         this.id = id;
+        return this;
     }
 
     public int getSegments() {
         return segments;
     }
 
-    public void setSegments(int segments) {
+    public SlopeSkeletonConfig setSegments(int segments) {
         this.segments = segments;
+        return this;
     }
 
-    public void setRows(int rows) {
+    public SlopeSkeletonConfig setRows(int rows) {
         this.rows = rows;
+        return this;
     }
 
-    public void setWidth(int width) {
+    public SlopeSkeletonConfig setWidth(int width) {
         this.width = width;
+        return this;
     }
 
-    public void setHeight(int height) {
+    public SlopeSkeletonConfig setHeight(int height) {
         this.height = height;
+        return this;
     }
 
     public int getRows() {
@@ -71,40 +76,45 @@ public class SlopeSkeletonConfig {
         return bumpMapDepth;
     }
 
-    public void setBumpMapDepth(double bumpMapDepth) {
+    public SlopeSkeletonConfig setBumpMapDepth(double bumpMapDepth) {
         this.bumpMapDepth = bumpMapDepth;
+        return this;
     }
 
     public int getVerticalSpace() {
         return verticalSpace;
     }
 
-    public void setVerticalSpace(int verticalSpace) {
+    public SlopeSkeletonConfig setVerticalSpace(int verticalSpace) {
         this.verticalSpace = verticalSpace;
+        return this;
     }
 
     public Type getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public SlopeSkeletonConfig setType(Type type) {
         this.type = type;
+        return this;
     }
 
     public SlopeNode[][] getSlopeNodes() {
         return slopeNodes;
     }
 
-    public void setSlopeNodes(SlopeNode[][] slopeNodes) {
+    public SlopeSkeletonConfig setSlopeNodes(SlopeNode[][] slopeNodes) {
        this.slopeNodes = slopeNodes;
+        return this;
     }
 
     public LightConfig getLightConfig() {
         return lightConfig;
     }
 
-    public void setLightConfig(LightConfig lightConfig) {
+    public SlopeSkeletonConfig setLightConfig(LightConfig lightConfig) {
         this.lightConfig = lightConfig;
+        return this;
     }
 
     // Errai can not handle is-getter
@@ -112,40 +122,45 @@ public class SlopeSkeletonConfig {
         return slopeOriented;
     }
 
-    public void setSlopeOriented(boolean slopeOriented) {
+    public SlopeSkeletonConfig setSlopeOriented(boolean slopeOriented) {
         this.slopeOriented = slopeOriented;
+        return this;
     }
 
     public int getImageId() {
         return imageId;
     }
 
-    public void setImageId(int imageId) {
+    public SlopeSkeletonConfig setImageId(int imageId) {
         this.imageId = imageId;
+        return this;
     }
 
     public double getImageScale() {
         return imageScale;
     }
 
-    public void setImageScale(double imageScale) {
+    public SlopeSkeletonConfig setImageScale(double imageScale) {
         this.imageScale = imageScale;
+        return this;
     }
 
     public int getBumpImageId() {
         return bumpImageId;
     }
 
-    public void setBumpImageId(int bumpImageId) {
+    public SlopeSkeletonConfig setBumpImageId(int bumpImageId) {
         this.bumpImageId = bumpImageId;
+        return this;
     }
 
     public double getBumpImageScale() {
         return bumpImageScale;
     }
 
-    public void setBumpImageScale(double bumpImageScale) {
+    public SlopeSkeletonConfig setBumpImageScale(double bumpImageScale) {
         this.bumpImageScale = bumpImageScale;
+        return this;
     }
 
     @Override

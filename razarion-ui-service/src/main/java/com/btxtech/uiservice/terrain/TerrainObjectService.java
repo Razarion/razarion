@@ -80,7 +80,7 @@ public class TerrainObjectService {
                     modelMatrices = new ArrayList<>();
                     objectIdMatrices.put(terrainObjectPosition.getTerrainObjectId(), modelMatrices);
                 }
-                // TODO int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.toIndex())).getHeight();
+                // TODO int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(terrainObjectPosition.toIndex())).height();
                 // TODO modelMatrices.add(new ModelMatrices().setModel(terrainObjectPosition.createModelMatrix(shape3DUiService.getGeneralScale(), z)).setNorm(terrainObjectPosition.createRotationModelMatrix()));
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);

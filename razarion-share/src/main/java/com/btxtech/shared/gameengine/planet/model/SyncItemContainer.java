@@ -122,10 +122,11 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     public void stop() {
-        unloadPos = null;
-        if (getSyncBaseItem().hasSyncMovable()) {
-            getSyncBaseItem().getSyncMovable().stop();
-        }
+        throw new UnsupportedOperationException();
+//        unloadPos = null;
+//        if (getSyncBaseItem().hasSyncMovable()) {
+//            getSyncBaseItem().getSyncMovable().stop();
+//        }
     }
 
     public DecimalPosition getUnloadPos() {

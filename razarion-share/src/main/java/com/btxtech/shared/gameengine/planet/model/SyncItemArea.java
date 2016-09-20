@@ -19,7 +19,8 @@ import java.util.logging.Logger;
 
 
 @Deprecated
-// replaced by SyncItemPosition
+// DELETE THIS
+// replaced by SyncPhysicalArea
 public class SyncItemArea {
     private DecimalPosition position;
     private double angel = 0;
@@ -235,9 +236,9 @@ public class SyncItemArea {
 //        if (rectangle.contains(toIndex())) {
 //            return true;
 //        }
-//        Rectangle biggestScope = Rectangle.generateRectangleFromMiddlePoint(rectangle.getCenter(),
-//                rectangle.getWidth() + boundingBox.getDiameter(),
-//                rectangle.getHeight() + boundingBox.getDiameter());
+//        Rectangle biggestScope = Rectangle.generateRectangleFromMiddlePoint(rectangle.center(),
+//                rectangle.width() + boundingBox.getDiameter(),
+//                rectangle.height() + boundingBox.getDiameter());
 //        if (!biggestScope.containsExclusive(new DecimalPosition(toIndex()))) {
 //            return false;
 //        }

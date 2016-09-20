@@ -79,11 +79,11 @@ public class BotSyncBaseItem {
     }
 
     public boolean isAbleToAttack(BaseItemType baseItemType) {
-        return syncBaseItem.hasSyncWeapon() && syncBaseItem.hasSyncMovable() && !syncBaseItem.getSyncWeapon().getWeaponType().isItemTypeDisallowed(baseItemType.getId());
+        return syncBaseItem.hasSyncWeapon() && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().getWeaponType().isItemTypeDisallowed(baseItemType.getId());
     }
 
     public boolean canMove() {
-        return syncBaseItem.hasSyncMovable();
+        return syncBaseItem.getSyncPhysicalArea().canMove();
     }
 
     public void buildBuilding(DecimalPosition position, BaseItemType toBeBuilt) {

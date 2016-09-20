@@ -45,23 +45,21 @@ public class GroundSlopeConnector {
         if (hasTop) {
             innerConnectionVertexList = new VertexList();
             topMesh = new GroundMesh();
+            topMesh.setGroundMeshDimension(groundMesh.getGroundMeshDimension());
             topMesh.setEdgeLength(groundMesh.getEdgeLength());
             topIndices = new ArrayList<>();
         }
         bottomIndices = new ArrayList<>();
         try {
-            groundMesh.iterate(new GroundMesh.VertexVisitor() {
-                @Override
-                public void onVisit(Index index, Vertex vertex) {
-                    if (hasTop && slope.isInsideInner(vertex)) {
-                        topMesh.createVertexData(index, groundMesh);
-                        topMesh.getVertexDataSafe(index).addZ(slope.getHeight());
-                        topIndices.add(index);
-                    }
-                    if (slope.isInsideOuter(vertex)) {
-                        bottomIndices.add(index);
-                        groundMesh.remove(index);
-                    }
+            groundMesh.iterate((index, vertex) -> {
+                if (hasTop && slope.isInsideInner(vertex)) {
+                    topMesh.createVertexData(index, groundMesh);
+                    topMesh.getVertexDataSafe(index).addZ(slope.getHeight());
+                    topIndices.add(index);
+                }
+                if (slope.isInsideOuter(vertex)) {
+                    bottomIndices.add(index);
+                    groundMesh.remove(index);
                 }
             });
 

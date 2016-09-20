@@ -62,12 +62,12 @@ public class SyncBuilder extends SyncBaseAbility {
     private SyncBaseItem currentBuildup;
     private Vertex toBeBuildPosition;
     private BaseItemType toBeBuiltType;
-    private SyncMovable.OverlappingHandler overlappingHandler = new SyncMovable.OverlappingHandler() {
-        @Override
-        public Path calculateNewPath() {
-            return recalculateNewPath(builderType.getRange(), getTargetSyncItemArea());
-        }
-    };
+//    private SyncPhysicalMovable.OverlappingHandler overlappingHandler = new SyncMovable.OverlappingHandler() {
+//        @Override
+//        public Path calculateNewPath() {
+//            return recalculateNewPath(builderType.getRange(), getTargetSyncItemArea());
+//        }
+//    };
 
     public void init(BuilderType builderType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -78,30 +78,30 @@ public class SyncBuilder extends SyncBaseAbility {
         return toBeBuildPosition != null && toBeBuiltType != null;
     }
 
-    public boolean isBuilding() {
-        return isActive() && !getSyncBaseItem().getSyncMovable().isActive();
-    }
+//    public boolean isBuilding() {
+//        return isActive() && !getSyncBaseItem().getSyncMovable().isActive();
+//    }
 
     public synchronized boolean tick() throws NoSuchItemTypeException {
         if (toBeBuildPosition == null || toBeBuiltType == null) {
             return false;
         }
 
-        if (getSyncBaseItem().getSyncMovable().tickMove(overlappingHandler)) {
-            return true;
-        }
+        // TODO if (getSyncBaseItem().getSyncMovable().tickMove(overlappingHandler)) {
+        // TODO     return true;
+        // TODO }
 
-        if (!isInRange()) {
-            // Destination place was may be taken. Calculate a new one.
-            if (isNewPathRecalculationAllowed()) {
-                SyncItemArea syncItemArea = getTargetSyncItemArea();
-                recalculateAndSetNewPath(builderType.getRange(), syncItemArea);
-                activityService.onNewPathRecalculation(getSyncBaseItem());
-                return true;
-            } else {
-                return false;
-            }
-        }
+       // TODO if (!isInRange()) {
+       // TODO     // Destination place was may be taken. Calculate a new one.
+       // TODO     if (isNewPathRecalculationAllowed()) {
+       // TODO         SyncItemArea syncItemArea = getTargetSyncItemArea();
+       // TODO         recalculateAndSetNewPath(builderType.getRange(), syncItemArea);
+       // TODO         activityService.onNewPathRecalculation(getSyncBaseItem());
+       // TODO         return true;
+       // TODO     } else {
+       // TODO         return false;
+       // TODO     }
+       // TODO }
 
         if (currentBuildup == null) {
             if (PlanetService.MODE != PlanetMode.MASTER) {
@@ -172,8 +172,9 @@ public class SyncBuilder extends SyncBaseAbility {
         currentBuildup = null;
         toBeBuiltType = null;
         toBeBuildPosition = null;
-        getSyncBaseItem().getSyncMovable().stop();
-        activityService.onSyncBuilderStopped(getSyncBaseItem());
+        // getSyncBaseItem().getSyncMovable().stop();
+        // activityService.onSyncBuilderStopped(getSyncBaseItem());
+        throw new UnsupportedOperationException();
     }
 
     @Override

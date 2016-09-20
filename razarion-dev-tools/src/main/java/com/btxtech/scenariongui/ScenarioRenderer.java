@@ -12,7 +12,7 @@ public class ScenarioRenderer extends Abstract2dRenderer {
     private Scenario scenario;
 
     public ScenarioRenderer(Canvas canvas, Scenario scenario, double scale) {
-        super(canvas, scale);
+        super.init(canvas, scale);
         this.scenario = scenario;
     }
 

@@ -24,7 +24,6 @@ public class FxCdiGui {
     private WebGlEmulatorController webGlEmulatorController;
 
     public void start(final Stage stage) throws Exception {
-        // stage.setFullScreen(true);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulator.fxml"));
         loader.setControllerFactory(new Callback<Class<?>, Object>() {
             @Override
@@ -32,7 +31,7 @@ public class FxCdiGui {
                 return webGlEmulatorController;
             }
         });
-        Parent root = (Parent) loader.load();
+        Parent root = loader.load();
         stage.setTitle("WebGL FX Emulator");
         stage.setScene(new Scene(root));
         stage.setX(-1279);

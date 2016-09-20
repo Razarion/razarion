@@ -37,27 +37,28 @@ public abstract class SyncBaseAbility {
         return syncBaseItem;
     }
 
+    @Deprecated
     public SyncItemArea getSyncItemArea() {
         return syncBaseItem.getSyncItemArea();
     }
 
     public void setPathToDestinationIfSyncMovable(Path path) {
-        if (path != null && syncBaseItem.hasSyncMovable()) {
-            syncBaseItem.getSyncMovable().setPathToDestination(path.getPath(), path.getActualDestinationAngel());
-        }
+        throw new UnsupportedOperationException();
+//        if (path != null && syncBaseItem.hasSyncMovable()) {
+//            syncBaseItem.getSyncMovable().setPathToDestination(path.getPath(), path.getActualDestinationAngel());
+//        }
     }
 
     public boolean isNewPathRecalculationAllowed() {
         return PlanetService.MODE == PlanetMode.MASTER;
     }
 
-    public void recalculateAndSetNewPath(int range, SyncItemArea target) {
-        Path path = recalculateNewPath(range, target);
-        setPathToDestinationIfSyncMovable(path);
+    public void recalculateAndSetNewPath(SyncBaseItem target) {
+        ((SyncPhysicalMovable)syncBaseItem.getSyncPhysicalArea()).setDestination(target.getSyncPhysicalArea().getXYPosition());
     }
 
     public Path recalculateNewPath(int range, SyncItemArea target) {
-        // TODO
+        // TODO use method above
         throw new UnsupportedOperationException();
 //        SyncBaseItem syncItem = getSyncBaseItem();
 //        AttackFormationItem format = getPlanetServices().getCollisionService().getDestinationHint(syncItem,

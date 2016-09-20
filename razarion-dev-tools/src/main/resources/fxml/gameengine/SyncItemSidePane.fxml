@@ -4,7 +4,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<FlowPane maxHeight="-Infinity" maxWidth="140.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="140.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.gameengine.pathing.UnitSidePaneController">
+<FlowPane maxHeight="-Infinity" maxWidth="140.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="140.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.gameengine.SyncItemSidePaneController">
    <children>
       <GridPane prefWidth="140.0">
         <columnConstraints>

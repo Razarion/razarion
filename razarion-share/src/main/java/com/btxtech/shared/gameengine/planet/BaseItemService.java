@@ -17,10 +17,10 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItemPosition;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +48,11 @@ public class BaseItemService {
     private LevelService levelService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId;
+
+    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+        bases.clear();
+        lastBaseItId = 0;
+    }
 
     public PlayerBase createHumanBase(UserContext userContext) {
         return createBase(userContext.getName(), Character.HUMAN, userContext);
@@ -99,7 +104,7 @@ public class BaseItemService {
 
         position = collisionService.correctPosition(position, toBeBuilt);
 
-        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncItem(SyncBaseItem.class, toBeBuilt, new SyncItemPosition(position, toBeBuilt.getRadius()));
+        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncItem(SyncBaseItem.class, toBeBuilt, position);
         syncBaseItem.setup(base, ItemLifecycle.SPAWN);
         syncBaseItem.setSpawnProgress(0);
         base.addItem(syncBaseItem);

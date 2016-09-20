@@ -1,25 +1,27 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
 /**
  * Created by Beat
  * 16.05.2016.
  */
 public class Contact {
-    private Unit unit1;
-    private Unit unit2;
+    private SyncPhysicalMovable item1;
+    private SyncPhysicalArea item2;
     private Obstacle obstacle;
     private DecimalPosition normal;
 
-    public Contact(Unit unit1, Unit unit2, DecimalPosition normal) {
-        this.unit1 = unit1;
-        this.unit2 = unit2;
+    public Contact(SyncPhysicalMovable item1, SyncPhysicalArea item2, DecimalPosition normal) {
+        this.item1 = item1;
+        this.item2 = item2;
         this.normal = normal;
     }
 
-    public Contact(Unit unit, Obstacle obstacle, DecimalPosition normal) {
-        this.unit1 = unit;
+    public Contact(SyncPhysicalMovable unit, Obstacle obstacle, DecimalPosition normal) {
+        this.item1 = unit;
         this.obstacle = obstacle;
         this.normal = normal;
     }
@@ -28,12 +30,12 @@ public class Contact {
         return normal;
     }
 
-    public Unit getUnit1() {
-        return unit1;
+    public SyncPhysicalMovable getItem1() {
+        return item1;
     }
 
-    public Unit getUnit2() {
-        return unit2;
+    public SyncPhysicalArea getItem2() {
+        return item2;
     }
 
     public Obstacle getObstacle() {
@@ -41,14 +43,14 @@ public class Contact {
     }
 
     public boolean hasUnit2AndCanMove() {
-        return unit2 != null && unit2.isCanMove();
+        return item2 != null && item2.canMove();
     }
 
     @Override
     public String toString() {
         return "Contact{" +
-                "unit1=" + unit1 +
-                (unit2 != null ? (", unit2=" + unit2) : (", obstacle=" + obstacle)) +
+                "item1=" + item1 +
+                (item2 != null ? (", item2=" + item2) : (", obstacle=" + obstacle)) +
                 " normal=" + normal +
                 '}';
     }

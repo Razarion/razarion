@@ -17,7 +17,7 @@ public class ClientSimpleExecutorServiceImpl implements SimpleExecutorService {
     private Instance<ClientSimpleScheduledFutureImpl> instance;
 
     @Override
-    public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable) {
+    public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {
         ClientSimpleScheduledFutureImpl clientSimpleScheduledFuture = instance.get();
         clientSimpleScheduledFuture.init(delayMilliS, false, runnable);
         clientSimpleScheduledFuture.start();
@@ -25,7 +25,7 @@ public class ClientSimpleExecutorServiceImpl implements SimpleExecutorService {
     }
 
     @Override
-    public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable) {
+    public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable, Type type) {
         ClientSimpleScheduledFutureImpl clientSimpleScheduledFuture = instance.get();
         clientSimpleScheduledFuture.init(delayMilliS, true, runnable);
         if (start) {

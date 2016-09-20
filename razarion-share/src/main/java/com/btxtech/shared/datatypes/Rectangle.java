@@ -89,7 +89,7 @@ public class Rectangle {
         if (position.getX() < start.getX() || position.getY() < start.getY()) {
             return false;
         }
-        if (getWidth() > 0) {
+        if (width() > 0) {
             if (position.getX() >= endExclusive.getX()) {
                 return false;
             }
@@ -99,7 +99,7 @@ public class Rectangle {
             }
         }
 
-        if (getHeight() > 0) {
+        if (height() > 0) {
             if (position.getY() >= endExclusive.getY()) {
                 return false;
             }
@@ -150,24 +150,24 @@ public class Rectangle {
      * @return true if the position is inside the rectangle
      */
     public boolean adjoinsCircleExclusive(DecimalPosition center, int radius) {
-        double distanceX = Math.abs(center.getX() - (double) getCenter().getX());
-        double distanceY = Math.abs(center.getY() - (double) getCenter().getY());
+        double distanceX = Math.abs(center.getX() - (double) center().getX());
+        double distanceY = Math.abs(center.getY() - (double) center().getY());
 
-        if (distanceX > (getWidth() / 2 + radius)) {
+        if (distanceX > (width() / 2 + radius)) {
             return false;
         }
-        if (distanceY > (getHeight() / 2 + radius)) {
+        if (distanceY > (height() / 2 + radius)) {
             return false;
         }
 
-        if (distanceX <= (getWidth() / 2)) {
+        if (distanceX <= (width() / 2)) {
             return true;
         }
-        if (distanceY <= (getHeight() / 2)) {
+        if (distanceY <= (height() / 2)) {
             return true;
         }
 
-        double squaredCornerDistance = Math.pow((distanceX - getWidth() / 2), 2) + Math.pow((distanceY - getHeight() / 2), 2);
+        double squaredCornerDistance = Math.pow((distanceX - width() / 2), 2) + Math.pow((distanceY - height() / 2), 2);
 
         return squaredCornerDistance <= Math.pow(radius, 2);
     }
@@ -181,7 +181,7 @@ public class Rectangle {
      */
     public double getDistanceToCircle(DecimalPosition center, double radius) {
         if (adjoinsCircleExclusive(center, 0)) {
-            Line line = getNearestLine(center);
+            Line line = nearestLine(center);
             DecimalPosition pointOnRect = line.getNearestPointOnLine(center);
             return -(pointOnRect.getDistance(center) + radius);
         } else {
@@ -267,19 +267,19 @@ public class Rectangle {
 
     public Collection<DecimalPosition> getCrossPointsInfiniteLine(Line line) {
         List<DecimalPosition> crossPoints = new ArrayList<>();
-        DecimalPosition crossPoint = getLineW().getCrossInfinite(line);
+        DecimalPosition crossPoint = lineW().getCrossInfinite(line);
         if (crossPoint != null) {
             crossPoints.add(crossPoint);
         }
-        crossPoint = getLineS().getCrossInfinite(line);
+        crossPoint = lineS().getCrossInfinite(line);
         if (crossPoint != null && !crossPoints.contains(crossPoint)) {
             crossPoints.add(crossPoint);
         }
-        crossPoint = getLineE().getCrossInfinite(line);
+        crossPoint = lineE().getCrossInfinite(line);
         if (crossPoint != null && !crossPoints.contains(crossPoint)) {
             crossPoints.add(crossPoint);
         }
-        crossPoint = getLineN().getCrossInfinite(line);
+        crossPoint = lineN().getCrossInfinite(line);
         if (crossPoint != null && !crossPoints.contains(crossPoint)) {
             crossPoints.add(crossPoint);
         }
@@ -304,46 +304,18 @@ public class Rectangle {
 
         Line line = new Line(point1, point2);
         double d1 = line.getShortestDistance(start);
-        double d2 = line.getShortestDistance(new Index(getX(), getEndY()));
+        double d2 = line.getShortestDistance(new Index(startX(), getEndY()));
         double d3 = line.getShortestDistance(endExclusive);
-        double d4 = line.getShortestDistance(new Index(getEndX(), getY()));
+        double d4 = line.getShortestDistance(new Index(getEndX(), startY()));
 
         double d5 = getNearestPointInclusive(point1).getDistanceDouble(point1);
         double d6 = getNearestPointInclusive(point2).getDistanceDouble(point2);
 
         return Math.min(Math.min(Math.min(d1, d2), Math.min(d3, d4)), Math.min(d5, d6));
     }*/
-    public Rectangle copy() {
-        return new Rectangle(start.copy(), endExclusive.copy());
-    }
-
-    public void growNorth(int size) {
-        start.setY(start.getY() - size);
-    }
-
-    public void growEast(int size) {
-        endExclusive.setX(endExclusive.getX() + size);
-    }
-
-    public void growSouth(int size) {
-        endExclusive.setY(endExclusive.getY() + size);
-    }
-
-    public void growWest(int size) {
-        start.setX(start.getX() - size);
-    }
-
-    public void shift(int deltaX, int deltaY) {
-        shift(new Index(deltaX, deltaY));
-    }
-
-    public void shift(Index delta) {
-        start = start.add(delta);
-        endExclusive = endExclusive.add(delta);
-    }
 
     public Rectangle moveTo(int absX, int absY) {
-        return new Rectangle(absX, absY, getWidth(), getHeight());
+        return new Rectangle(absX, absY, width(), height());
     }
 
     @Override
@@ -366,58 +338,34 @@ public class Rectangle {
 
     @Override
     public String toString() {
-        return "Start " + start + " End " + endExclusive + " Width: " + getWidth() + " Height: " + getHeight();
+        return "Start " + start + " End " + endExclusive + " Width: " + width() + " Height: " + height();
     }
 
-    public int getWidth() {
+    public int width() {
         return endExclusive.getX() - start.getX();
     }
 
-    public int getHeight() {
+    public int height() {
         return endExclusive.getY() - start.getY();
     }
 
-    public void setWidth(int width) {
-        endExclusive.setX(start.getX() + width);
-    }
-
-    public void setHeight(int height) {
-        endExclusive.setY(start.getY() + height);
-    }
-
-    public int getX() {
+    public int startX() {
         return start.getX();
     }
 
-    public int getY() {
+    public int startY() {
         return start.getY();
     }
 
-    public void setX(int x) {
-        start.setX(x);
-    }
-
-    public void setY(int y) {
-        start.setY(y);
-    }
-
-    public int getEndX() {
+    public int endX() {
         return endExclusive.getX();
     }
 
-    public int getEndY() {
+    public int endY() {
         return endExclusive.getY();
     }
 
-    public void setEndX(int x) {
-        endExclusive.setX(x);
-    }
-
-    public void setEndY(int y) {
-        endExclusive.setY(y);
-    }
-
-    public Index getCenter() {
+    public Index center() {
         int centerX = (endExclusive.getX() - start.getX()) / 2;
         int centerY = (endExclusive.getY() - start.getY()) / 2;
         return new Index(start.getX() + centerX, start.getY() + centerY);
@@ -431,8 +379,8 @@ public class Rectangle {
      */
     public DecimalPosition getNearestPoint(DecimalPosition point) {
         // Fist check end point
-        int endXCorrection = getWidth() > 0 ? 1 : 0;
-        int endYCorrection = getHeight() > 0 ? 1 : 0;
+        int endXCorrection = width() > 0 ? 1 : 0;
+        int endYCorrection = height() > 0 ? 1 : 0;
 
         if (point.getX() <= start.getX() && point.getY() <= start.getY()) {
             return new DecimalPosition(start.copy());
@@ -490,11 +438,11 @@ public class Rectangle {
     }
 
     public boolean hasMinSize(int minSize) {
-        return getHeight() >= minSize || getWidth() >= minSize;
+        return height() >= minSize || width() >= minSize;
     }
 
     public boolean isEmpty() {
-        return getHeight() == 0 && getWidth() == 0;
+        return height() == 0 && width() == 0;
     }
 
     /**
@@ -508,8 +456,8 @@ public class Rectangle {
      */
     public Collection<Rectangle> split(int width, int height) {
         ArrayList<Rectangle> split = new ArrayList<Rectangle>();
-        int xCount = (int) Math.ceil((double) getWidth() / (double) width);
-        int yCount = (int) Math.ceil((double) getHeight() / (double) height);
+        int xCount = (int) Math.ceil((double) width() / (double) width);
+        int yCount = (int) Math.ceil((double) height() / (double) height);
         for (int x = 0; x < xCount; x++) {
             for (int y = 0; y < yCount; y++) {
                 split.add(new Rectangle(getStart().getX() + x * width, getStart().getY() + y * height, width, height));
@@ -518,12 +466,12 @@ public class Rectangle {
         return split;
     }
 
-    public double getDiagonally() {
-        return Math.sqrt(getWidth() * getWidth() + getHeight() * getHeight());
+    public double diagonally() {
+        return Math.sqrt(width() * width() + height() * height());
     }
 
-    public double getHalfDiagonally() {
-        return Math.sqrt(getWidth() * getWidth() + getHeight() * getHeight()) / 2.0;
+    public double halfDiagonally() {
+        return Math.sqrt(width() * width() + height() * height()) / 2.0;
     }
 
     /**
@@ -545,63 +493,63 @@ public class Rectangle {
         return generateRectangleFromAnyPoints(newP1, newP2, newP3, newP4);
     }
 
-    public Index getCornerNW() {
+    public Index cornerNW() {
         return start;
     }
 
-    public Index getCornerSW() {
-        return start.add(0, getHeight());
+    public Index cornerSW() {
+        return start.add(0, height());
     }
 
-    public Index getCornerSE() {
+    public Index cornerSE() {
         return endExclusive;
     }
 
-    public Index getCornerNE() {
-        return start.add(getWidth(), 0);
+    public Index cornerNE() {
+        return start.add(width(), 0);
     }
 
-    public Line getLineW() {
-        return new Line(new DecimalPosition(getCornerNW()), new DecimalPosition(getCornerSW()));
+    public Line lineW() {
+        return new Line(new DecimalPosition(cornerNW()), new DecimalPosition(cornerSW()));
     }
 
-    public Line getLineS() {
-        return new Line(new DecimalPosition(getCornerSW()), new DecimalPosition(getCornerSE()));
+    public Line lineS() {
+        return new Line(new DecimalPosition(cornerSW()), new DecimalPosition(cornerSE()));
     }
 
-    public Line getLineSExclusive() {
-        return new Line(new DecimalPosition(getCornerSW().sub(0, 1)), new DecimalPosition(getCornerSE().sub(1, 1)));
+    public Line lineSExclusive() {
+        return new Line(new DecimalPosition(cornerSW().sub(0, 1)), new DecimalPosition(cornerSE().sub(1, 1)));
     }
 
-    public Line getLineE() {
-        return new Line(new DecimalPosition(getCornerSE()), new DecimalPosition(getCornerNE()));
+    public Line lineE() {
+        return new Line(new DecimalPosition(cornerSE()), new DecimalPosition(cornerNE()));
     }
 
-    public Line getLineEExclusive() {
-        return new Line(new DecimalPosition(getCornerSE().sub(1, 1)), new DecimalPosition(getCornerNE().sub(1, 0)));
+    public Line lineEExclusive() {
+        return new Line(new DecimalPosition(cornerSE().sub(1, 1)), new DecimalPosition(cornerNE().sub(1, 0)));
     }
 
-    public Line getLineN() {
-        return new Line(new DecimalPosition(getCornerNE()), new DecimalPosition(getCornerNW()));
+    public Line lineN() {
+        return new Line(new DecimalPosition(cornerNE()), new DecimalPosition(cornerNW()));
     }
 
-    public int getArea() {
-        return getWidth() * getHeight();
+    public int area() {
+        return width() * height();
     }
 
-    public Collection<Line> getLines() {
+    public Collection<Line> lines() {
         Collection<Line> lines = new ArrayList<>();
-        lines.add(new Line(new DecimalPosition(getCornerNW()), new DecimalPosition(getCornerSW())));
-        lines.add(new Line(new DecimalPosition(getCornerSW()), new DecimalPosition(getCornerSE())));
-        lines.add(new Line(new DecimalPosition(getCornerSE()), new DecimalPosition(getCornerNE())));
-        lines.add(new Line(new DecimalPosition(getCornerNE()), new DecimalPosition(getCornerNW())));
+        lines.add(new Line(new DecimalPosition(cornerNW()), new DecimalPosition(cornerSW())));
+        lines.add(new Line(new DecimalPosition(cornerSW()), new DecimalPosition(cornerSE())));
+        lines.add(new Line(new DecimalPosition(cornerSE()), new DecimalPosition(cornerNE())));
+        lines.add(new Line(new DecimalPosition(cornerNE()), new DecimalPosition(cornerNW())));
         return lines;
     }
 
-    public Line getNearestLine(DecimalPosition point) {
+    public Line nearestLine(DecimalPosition point) {
         double bestDistance = Double.MAX_VALUE;
         Line bestLine = null;
-        for (Line line : getLines()) {
+        for (Line line : lines()) {
             double distance = line.getShortestDistance(point);
             if (distance < bestDistance) {
                 bestDistance = distance;
@@ -609,10 +557,6 @@ public class Rectangle {
             }
         }
         return bestLine;
-    }
-
-    public Rectangle grow(int distance) {
-        return new Rectangle(getX() - distance, getY() - distance, getWidth() + 2 * distance, getHeight() + 2 * distance);
     }
 
     public static Rectangle generateRectangleFromAnyPoints(Index point1, Index point2) {
@@ -660,6 +604,6 @@ public class Rectangle {
     }
 
     public String testString() {
-        return "new Rectangle(" + getX() + ", " + getY() + ", " + getWidth() + ", " + getHeight() + ")";
+        return "new Rectangle(" + startX() + ", " + startY() + ", " + width() + ", " + height() + ")";
     }
 }

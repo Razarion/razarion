@@ -102,15 +102,16 @@ public class SyncFactory extends SyncBaseAbility {
                 final SyncBaseItem item = (SyncBaseItem) baseItemService.createSyncBaseItem4Factory(toBeBuiltType, rallyPoint, getSyncBaseItem().getBase(), getSyncBaseItem()); //TODO
                 item.setBuildup(buildup);
                 stop();
-                if (item.hasSyncMovable() && item.getSyncMovable().onFinished(new SyncMovable.OverlappingHandler() {
-                    @Override
-                    public Path calculateNewPath() {
-                        return collisionService.setupPathToSyncMovableRandomPositionIfTaken(item);
-                    }
-                })) {
-                    planetService.syncItemActivated(item);
-                }
-                return false;
+                throw new UnsupportedOperationException();
+//                if (item.hasSyncMovable() && item.getSyncMovable().onFinished(new SyncMovable.OverlappingHandler() {
+//                    @Override
+//                    public Path calculateNewPath() {
+//                        return collisionService.setupPathToSyncMovableRandomPositionIfTaken(item);
+//                    }
+//                })) {
+//                    planetService.syncItemActivated(item);
+//                }
+//                return false;
             }
             return true;
         } catch (InsufficientFundsException e) {
@@ -190,7 +191,8 @@ public class SyncFactory extends SyncBaseAbility {
     }
 
     void calculateRallyPoint() throws NoSuchItemTypeException {
-        Collection<ItemType> types = factoryType.getAbleToBuild().stream().map(id -> itemTypeService.getItemType(id)).collect(Collectors.toCollection(ArrayList::new));
-        rallyPoint = collisionService.getRallyPoint(getSyncBaseItem(), types);
+        throw new UnsupportedOperationException();
+//        Collection<ItemType> types = factoryType.getAbleToBuild().stream().map(id -> itemTypeService.getItemType(id)).collect(Collectors.toCollection(ArrayList::new));
+//        rallyPoint = collisionService.getRallyPoint(getSyncBaseItem(), types);
     }
 }

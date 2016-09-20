@@ -24,7 +24,6 @@ public class BaseItemType extends ItemType {
     private int buildup;
     private int xpOnKilling;
     private int consumingHouseSpace;
-    private MovableType movableType;
     private WeaponType weaponType;
     private FactoryType factoryType;
     private HarvesterType harvesterType;
@@ -73,15 +72,6 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setBoxPickupRange(int boxPickupRange) {
         this.boxPickupRange = boxPickupRange;
-        return this;
-    }
-
-    public MovableType getMovableType() {
-        return movableType;
-    }
-
-    public BaseItemType setMovableType(MovableType movableType) {
-        this.movableType = movableType;
         return this;
     }
 
