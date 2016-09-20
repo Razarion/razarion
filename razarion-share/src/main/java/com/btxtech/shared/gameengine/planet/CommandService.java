@@ -7,7 +7,6 @@ import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
-import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
@@ -16,11 +15,11 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,10 +29,13 @@ import java.util.logging.Logger;
 @Singleton
 public class CommandService {
     private Logger logger = Logger.getLogger(CommandService.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private CollisionService collisionService;
+    @Inject
+    private PathingService pathingService;
     @Inject
     private ActivityService activityService;
     @Inject
@@ -44,15 +46,17 @@ public class CommandService {
     private UserTrackingService userTrackingService;
     @Inject
     private PlanetService planetService;
+    @Inject
+    private SyncItemContainerService syncItemContainerService;
 
     public void move(SyncBaseItem syncBaseItem, DecimalPosition destination) {
         syncBaseItem.stop();
         MoveCommand moveCommand = new MoveCommand();
         moveCommand.setId(syncBaseItem.getId());
         moveCommand.setTimeStamp();
-        moveCommand.setPathToDestination(collisionService.setupPathToDestination(syncBaseItem, destination));
+        moveCommand.setPathToDestination(pathingService.setupPathToDestination(syncBaseItem, destination));
         try {
-            executeCommand(moveCommand, syncBaseItem.getBase().getCharacter().isBot());
+            executeCommand(moveCommand);
         } catch (PathCanNotBeFoundException e) {
             logger.warning("PathCanNotBeFoundException: " + e.getMessage());
         } catch (Exception e) {
@@ -98,7 +102,7 @@ public class CommandService {
         attackCommand.setFollowTarget(followTarget);
 
         try {
-            executeCommand(attackCommand, syncBaseItem.getBase().getCharacter().isBot());
+            executeCommand(attackCommand);
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }
@@ -120,26 +124,8 @@ public class CommandService {
         throw new UnsupportedOperationException();
     }
 
-    private void executeCommand(BaseCommand baseCommand, boolean cmdFromSystem) throws ItemDoesNotExistException, NotYourBaseException {
-        SyncBaseItem syncItem;
-        try {
-            syncItem = (SyncBaseItem) baseItemService.getItem(baseCommand.getId());
-        } catch (ItemDoesNotExistException e) {
-            if (logger.isLoggable(Level.INFO)) {
-                logger.info("Can not execute command. Item does no longer exist " + baseCommand);
-            }
-            return;
-        }
-        if (!cmdFromSystem) {
-            baseService.checkBaseAccess(syncItem);
-            userTrackingService.saveUserCommand(baseCommand);
-            if (baseCommand instanceof PathToDestinationCommand) {
-                if (!collisionService.checkIfPathValid(((PathToDestinationCommand) baseCommand).getPathToDestination())) {
-                    activityService.onInvalidPath(baseCommand);
-                    return;
-                }
-            }
-        }
+    private void executeCommand(BaseCommand baseCommand) throws ItemDoesNotExistException, NotYourBaseException {
+        SyncBaseItem syncItem = (SyncBaseItem) syncItemContainerService.getSyncItem(baseCommand.getId());
         try {
             syncItem.stop();
             syncItem.executeCommand(baseCommand);

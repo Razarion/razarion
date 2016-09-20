@@ -2,15 +2,18 @@ package com.btxtech.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,7 +36,12 @@ public class ScenarioProvider {
     }
 
     // Override in subclasses
-    public void setupBots() {
+    public void setupBots(Collection<BotConfig> botConfigs) {
+
+    }
+
+    // Override in subclasses
+    public void executeBotCommands(Collection<BotMoveCommandConfig> botCommandConfigs) {
 
     }
 

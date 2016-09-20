@@ -48,7 +48,7 @@ public class BotService {
         botRunner.start(botConfig);
     }
 
-    protected void killAllBots() {
+    public void killAllBots() {
         // Kill all bots
         synchronized (botRunners) {
             for (BotRunner botRunner : botRunners.values()) {

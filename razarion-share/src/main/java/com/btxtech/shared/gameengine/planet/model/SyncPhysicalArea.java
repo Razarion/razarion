@@ -83,6 +83,10 @@ public class SyncPhysicalArea {
         return false;
     }
 
+    public void stop() {
+
+    }
+
     protected Collection<SyncPhysicalArea> getNeighbors(SyncItemContainerService syncItemContainerService) {
         java.util.Collection<SyncPhysicalArea> neighbors = new ArrayList<>();
 

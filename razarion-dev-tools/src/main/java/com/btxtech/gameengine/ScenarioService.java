@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -15,16 +16,23 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalMovableConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +54,10 @@ public class ScenarioService {
     private BaseItemService baseItemService;
     @Inject
     private DevToolsSimpleExecutorServiceImpl devToolsSimpleExecutorService;
+    @Inject
+    private BotService botService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 35;
+    private int number = 37;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -101,14 +111,22 @@ public class ScenarioService {
             backgroundWorker.cancel(true);
             backgroundWorker = null;
         }
+        botService.killAllBots();
         gameEngine.stop();
 
         GameEngineConfig gameEngineConfig = setupGameEngineConfig();
         ScenarioProvider scenarioProvider = scenes.get(number);
         scenarioProvider.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
         gameEngine.initialise(gameEngineConfig);
+        Collection<BotConfig> botConfigs = new ArrayList<>();
+        scenarioProvider.setupBots(botConfigs);
+        botService.startBots(botConfigs);
+        gameEngine.start();
         PlayerBase playerBase = baseItemService.createHumanBase(new UserContext().setName("User 1").setLevelId(LEVEL_1_ID));
         scenarioProvider.setupSyncItems(baseItemService, playerBase);
+        List<BotMoveCommandConfig> botCommandConfigs = new ArrayList<>();
+        scenarioProvider.executeBotCommands(botCommandConfigs);
+        botService.executeCommands(botCommandConfigs);
 
         this.number = number;
     }
@@ -119,6 +137,7 @@ public class ScenarioService {
         gameEngineConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
         gameEngineConfig.setTerrainObjectConfigs(setupTerrainObjectConfigs());
         gameEngineConfig.setLevelConfigs(setupLevels());
+        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE));
         gameEngineConfig.setPlanetConfig(setupPlanetConfig());
         return gameEngineConfig;
     }
@@ -601,7 +620,7 @@ public class ScenarioService {
                 terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(100, 0)));
             }
         });
-        // 35
+        // 36
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
@@ -611,6 +630,23 @@ public class ScenarioService {
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
                 terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(100, 5)));
+            }
+        });
+        // Bot
+        // 37
+        scenes.add(new ScenarioProvider() {
+            @Override
+            public void setupBots(Collection<BotConfig> botConfigs) {
+                List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+                List<BotItemConfig> botItems = new ArrayList<>();
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))));
+                botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+            }
+
+            @Override
+            public void executeBotCommands(Collection<BotMoveCommandConfig> botCommandConfigs) {
+                botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setDecimalPosition(new DecimalPosition(0, 200)).setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()));
             }
         });
     }

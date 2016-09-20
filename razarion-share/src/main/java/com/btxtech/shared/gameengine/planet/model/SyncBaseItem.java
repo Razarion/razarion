@@ -25,6 +25,7 @@ import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoneyCollectCommand;
+import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -289,6 +290,8 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             }
         }
 
+
+
         if (hasSyncConsumer() && !getSyncConsumer().isOperating()) {
             return false;
         }
@@ -313,11 +316,12 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return syncItemContainer.tick();
         }
 
-        return false;
-        // TODO return syncMovable != null && syncMovable.isActive() && syncMovable.tick();
+        return getSyncPhysicalArea().canMove() && ((SyncPhysicalMovable) getSyncPhysicalArea()).hasDestination();
     }
 
     public void stop() {
+        getSyncPhysicalArea().stop();
+
         if (syncWeapon != null) {
             syncWeapon.stop();
         }
@@ -348,6 +352,11 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
         if (baseCommand instanceof AttackCommand) {
             getSyncWeapon().executeCommand((AttackCommand) baseCommand);
+            return;
+        }
+
+        if (baseCommand instanceof MoveCommand) {
+            ((SyncPhysicalMovable)getSyncPhysicalArea()).setDestination(((MoveCommand)baseCommand).getPathToDestination().getDestination());
             return;
         }
 

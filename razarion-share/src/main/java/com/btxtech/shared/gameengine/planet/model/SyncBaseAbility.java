@@ -48,33 +48,7 @@ public abstract class SyncBaseAbility {
 //            syncBaseItem.getSyncMovable().setPathToDestination(path.getPath(), path.getActualDestinationAngel());
 //        }
     }
-
-    public boolean isNewPathRecalculationAllowed() {
-        return PlanetService.MODE == PlanetMode.MASTER;
-    }
-
-    public void recalculateAndSetNewPath(SyncBaseItem target) {
-        ((SyncPhysicalMovable)syncBaseItem.getSyncPhysicalArea()).setDestination(target.getSyncPhysicalArea().getXYPosition());
-    }
-
-    public Path recalculateNewPath(int range, SyncItemArea target) {
-        // TODO use method above
-        throw new UnsupportedOperationException();
-//        SyncBaseItem syncItem = getSyncBaseItem();
-//        AttackFormationItem format = getPlanetServices().getCollisionService().getDestinationHint(syncItem,
-//                range,
-//                target);
-//        if (format.isInRange()) {
-//            Path path = getPlanetServices().getCollisionService().setupPathToDestination(syncItem, format.getDestinationHint());
-//            if (!path.isDestinationReachable()) {
-//                throw new PathCanNotBeFoundException("Can not find path in recalculateNewPath: " + syncItem, syncItem.getSyncItemArea().toIndex(), null);
-//            }
-//            return path;
-//        } else {
-//            throw new PathCanNotBeFoundException("Not in range recalculateNewPath: " + syncItem, syncItem.getSyncItemArea().toIndex(), null);
-//        }
-    }
-
+    
     public abstract void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException;
 
     public abstract void fillSyncItemInfo(SyncItemInfo syncItemInfo);

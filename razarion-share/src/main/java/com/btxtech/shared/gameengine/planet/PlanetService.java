@@ -66,7 +66,6 @@ public class PlanetService implements Runnable {
         tickCount = 0;
         this.planetConfig = planetConfig;
         activationEvent.fire(new PlanetActivationEvent(planetConfig));
-        scheduledFuture.start();
     }
 
     public void start() {

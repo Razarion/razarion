@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalDirectionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalMovableConfig;
@@ -140,5 +141,14 @@ public class SyncItemContainerService {
 
     public boolean hasItemsInRange(DecimalPosition position, double radius) {
         return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncPhysicalArea().overlap(position, radius));
+    }
+
+    public SyncItem getSyncItem(int id) {
+        SyncItem syncItem = items.get(id);
+        if (syncItem != null) {
+            return syncItem;
+        } else {
+            throw new ItemDoesNotExistException(id);
+        }
     }
 }

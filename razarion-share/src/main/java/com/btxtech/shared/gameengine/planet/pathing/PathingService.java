@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.SingleHolder;
+import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
@@ -22,6 +23,10 @@ public class PathingService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
+
+    public Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
+        return new Path().setDestination(destination);
+    }
 
     public void tick() {
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {

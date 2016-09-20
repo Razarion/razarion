@@ -19,7 +19,7 @@ package com.btxtech.shared.gameengine.datatypes.exception;
  * Date: 14.11.2009
  * Time: 19:48:26
  */
-public class ItemDoesNotExistException extends Exception {
+public class ItemDoesNotExistException extends RuntimeException {
     private int id;
 
     public ItemDoesNotExistException() {
