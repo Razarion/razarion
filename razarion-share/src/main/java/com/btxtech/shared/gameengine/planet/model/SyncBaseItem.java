@@ -338,10 +338,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             syncHarvester.stop();
         }
 
-        // TODO if (syncMovable != null) {
-        // TODO     syncMovable.stop();
-        // TODO }
-
         if (syncItemContainer != null) {
             syncItemContainer.stop();
         }
