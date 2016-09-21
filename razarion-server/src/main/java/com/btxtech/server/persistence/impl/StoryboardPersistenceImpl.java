@@ -106,13 +106,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(1040, 800))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen."));
     }
 
     private void addUserSpawnScene(List<SceneConfig> sceneConfigs) {
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320)).setCameraLocked(true);;
         StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointConfig(startPointConfig));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointConfig(startPointConfig).setShowQuestSideBar(true));
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {

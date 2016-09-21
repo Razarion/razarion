@@ -41,7 +41,7 @@ public class BaseItemTypeEntity {
     public BaseItemType toBaseItemType() {
         BaseItemType baseItemType = (BaseItemType) new BaseItemType().setName(name).setId(id.intValue());
         baseItemType.setTerrainType(TerrainType.LAND); // TODO
-        baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(40.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(10)); // TODO
+        baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(20)); // TODO
         if (shape3DId != null) {
             baseItemType.setShape3DId(shape3DId.getId().intValue());
         }
