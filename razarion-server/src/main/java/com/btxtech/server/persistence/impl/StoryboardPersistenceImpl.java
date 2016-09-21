@@ -74,7 +74,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         // List<SceneConfig> sceneConfigs = new ArrayList<>();
-        List<SceneConfig> sceneConfigs =storyboardConfig.getSceneConfigs();
+        List<SceneConfig> sceneConfigs = storyboardConfig.getSceneConfigs();
         addBotSpawnScene(sceneConfigs); // TODO mode to DB
         addUserSpawnScene(sceneConfigs); // TODO mode to DB
         addBotMoveScene(sceneConfigs);// TODO mode to DB
@@ -99,7 +99,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private void addBotSpawnScene(List<SceneConfig> sceneConfigs) {
         // List<SceneConfig> sceneConfigs = new ArrayList<>();
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320)).setCameraLocked(true);
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
@@ -110,15 +110,16 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addUserSpawnScene(List<SceneConfig> sceneConfigs) {
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320));
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320)).setCameraLocked(true);;
         StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointConfig(startPointConfig));
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320)).setCameraLocked(true);;
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setBaseItemTypeId(180807).setDecimalPosition(new DecimalPosition(2040, 800)));
-        sceneConfigs.add(new SceneConfig().setBotMoveCommandConfigs(botMoveCommandConfigs));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs));
     }
 
     private List<LevelConfig> setupLevelConfigs() {
