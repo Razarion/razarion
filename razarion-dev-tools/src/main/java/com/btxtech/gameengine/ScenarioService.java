@@ -22,7 +22,6 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalMovableConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
@@ -65,7 +64,7 @@ public class ScenarioService {
         BaseItemType simpleMovable = new BaseItemType();
         simpleMovable.setHealth(100).setSpawnDurationMillis(1000);
         simpleMovable.setId(1);
-        simpleMovable.setPhysicalAreaConfig(new PhysicalMovableConfig().setAcceleration(40).setSpeed(40).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(10));
+        simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(40.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(10));
         SIMPLE_MOVABLE_ITEM_TYPE = simpleMovable;
 
         BaseItemType simpleFix = new BaseItemType();

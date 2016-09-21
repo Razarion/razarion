@@ -4,8 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalDirectionConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalMovableConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
@@ -121,9 +120,10 @@ public class SyncItemContainerService {
     }
 
     private SyncPhysicalArea createSyncPhysicalArea(SyncItem syncItem, ItemType itemType, Vertex position) {
-        if (itemType.getPhysicalAreaConfig() instanceof PhysicalMovableConfig) {
-            return new SyncPhysicalMovable(syncItem, (PhysicalMovableConfig) itemType.getPhysicalAreaConfig(), position, Vertex.Z_NORM, 0, null);
-        } else if (itemType.getPhysicalAreaConfig() instanceof PhysicalDirectionConfig) {
+        PhysicalAreaConfig physicalAreaConfig = itemType.getPhysicalAreaConfig();
+        if (physicalAreaConfig.fulfilledMovable()) {
+            return new SyncPhysicalMovable(syncItem, physicalAreaConfig, position, Vertex.Z_NORM, 0, null);
+        } else if (physicalAreaConfig.fulfilledDirectional()) {
             throw new UnsupportedOperationException();
         } else {
             return new SyncPhysicalArea(syncItem, itemType.getPhysicalAreaConfig(), position, Vertex.Z_NORM);

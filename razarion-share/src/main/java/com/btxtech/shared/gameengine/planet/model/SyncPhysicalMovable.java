@@ -16,7 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalMovableConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
@@ -41,12 +41,12 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
     private DecimalPosition velocity;
     private DecimalPosition lastDestination;
 
-    public SyncPhysicalMovable(SyncItem syncItem, PhysicalMovableConfig physicalMovableConfig, Vertex position, Vertex norm, double angle, DecimalPosition velocity) {
-        super(syncItem, physicalMovableConfig, position, norm, angle);
+    public SyncPhysicalMovable(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, Vertex position, Vertex norm, double angle, DecimalPosition velocity) {
+        super(syncItem, physicalAreaConfig, position, norm, angle);
         this.velocity = velocity;
-        maxSpeed = physicalMovableConfig.getSpeed();
-        acceleration = physicalMovableConfig.getAcceleration();
-        minTurnSpeed = physicalMovableConfig.getMinTurnSpeed();
+        maxSpeed = physicalAreaConfig.getSpeed();
+        acceleration = physicalAreaConfig.getAcceleration();
+        minTurnSpeed = physicalAreaConfig.getMinTurnSpeed();
         lookAheadDistance = LOOK_AHEAD_TICKS * maxSpeed * PlanetService.TICK_FACTOR;
     }
 

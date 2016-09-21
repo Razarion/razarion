@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class Rectangle {
     private Index start;
-    private Index endExclusive;
+    private Index end; // Exclusive
 
     /**
      * Used by Errai
@@ -37,17 +37,17 @@ public class Rectangle {
             throw new IllegalArgumentException("Invalid rectangle start: " + start + " end: " + end);
         }
         this.start = start.copy();
-        this.endExclusive = end.copy();
+        this.end = end.copy();
     }
 
     public Rectangle(int xStart, int yStart, int width, int height) {
         this.start = new Index(xStart, yStart);
-        this.endExclusive = new Index(xStart + width, yStart + height);
+        this.end = new Index(xStart + width, yStart + height);
     }
 
     public void replace(Rectangle target) {
         start = target.start.copy();
-        endExclusive = target.endExclusive.copy();
+        end = target.end.copy();
     }
 
     public Index getStart() {
@@ -55,7 +55,7 @@ public class Rectangle {
     }
 
     public Index getEnd() {
-        return endExclusive.copy();
+        return end.copy();
     }
 
     /**
@@ -65,7 +65,7 @@ public class Rectangle {
      * @return true if adjoins or contains position
      */
     public boolean contains(Index position) { // TODO rename: adjoinsOrContains
-        return position != null && position.getX() + 1 >= start.getX() && position.getY() + 1 >= start.getY() && position.getX() <= endExclusive.getX() && position.getY() <= endExclusive.getY();
+        return position != null && position.getX() + 1 >= start.getX() && position.getY() + 1 >= start.getY() && position.getX() <= end.getX() && position.getY() <= end.getY();
     }
 
     /**
@@ -75,7 +75,7 @@ public class Rectangle {
      * @return true if adjoins or contains position
      */
     public boolean contains2(DecimalPosition position) { // TODO rename: ???
-        return position != null && position.getX() >= start.getX() && position.getY() >= start.getY() && position.getX() <= endExclusive.getX() && position.getY() <= endExclusive.getY();
+        return position != null && position.getX() >= start.getX() && position.getY() >= start.getY() && position.getX() <= end.getX() && position.getY() <= end.getY();
     }
 
 
@@ -90,21 +90,21 @@ public class Rectangle {
             return false;
         }
         if (width() > 0) {
-            if (position.getX() >= endExclusive.getX()) {
+            if (position.getX() >= end.getX()) {
                 return false;
             }
         } else {
-            if (position.getX() > endExclusive.getX()) {
+            if (position.getX() > end.getX()) {
                 return false;
             }
         }
 
         if (height() > 0) {
-            if (position.getY() >= endExclusive.getY()) {
+            if (position.getY() >= end.getY()) {
                 return false;
             }
         } else {
-            if (position.getY() > endExclusive.getY()) {
+            if (position.getY() > end.getY()) {
                 return false;
             }
         }
@@ -121,8 +121,8 @@ public class Rectangle {
         int startX = Math.max(start.getX(), rectangle.start.getX());
         int startY = Math.max(start.getY(), rectangle.start.getY());
 
-        int endX = Math.min(endExclusive.getX(), rectangle.endExclusive.getX());
-        int endY = Math.min(endExclusive.getY(), rectangle.endExclusive.getY());
+        int endX = Math.min(end.getX(), rectangle.end.getX());
+        int endY = Math.min(end.getY(), rectangle.end.getY());
 
         return startX <= endX && startY <= endY;
     }
@@ -137,8 +137,8 @@ public class Rectangle {
         int startX = Math.max(start.getX(), rectangle.start.getX());
         int startY = Math.max(start.getY(), rectangle.start.getY());
 
-        int endX = Math.min(endExclusive.getX(), rectangle.endExclusive.getX());
-        int endY = Math.min(endExclusive.getY(), rectangle.endExclusive.getY());
+        int endX = Math.min(end.getX(), rectangle.end.getX());
+        int endY = Math.min(end.getY(), rectangle.end.getY());
 
         return startX < endX && startY < endY;
     }
@@ -194,8 +194,8 @@ public class Rectangle {
         int startX = Math.max(start.getX(), rectangle.start.getX());
         int startY = Math.max(start.getY(), rectangle.start.getY());
 
-        int endX = Math.min(endExclusive.getX(), rectangle.endExclusive.getX());
-        int endY = Math.min(endExclusive.getY(), rectangle.endExclusive.getY());
+        int endX = Math.min(end.getX(), rectangle.end.getX());
+        int endY = Math.min(end.getY(), rectangle.end.getY());
 
         if (startX > endX || startY > endY) {
             throw new IllegalArgumentException("Rectangles do not overlap");
@@ -241,28 +241,28 @@ public class Rectangle {
             yEast = c;
         } else {
             xNorth = ((double) start.getY() - c) / m;
-            xSouth = ((double) endExclusive.getY() - 1 - c) / m;
+            xSouth = ((double) end.getY() - 1 - c) / m;
             yWest = m * (double) start.getX() + c;
-            yEast = m * (double) endExclusive.getX() - 1 + c;
+            yEast = m * (double) end.getX() - 1 + c;
         }
 
 
         // Since both points are outside the rectangle, one crossed edged is enough.
 
         // Check north
-        if (!Double.isNaN(xNorth) && start.getX() <= xNorth && xNorth < endExclusive.getX() && x1 <= xNorth && xNorth <= x2 && y2 > start.getY() && y1 < endExclusive.getY()) {
+        if (!Double.isNaN(xNorth) && start.getX() <= xNorth && xNorth < end.getX() && x1 <= xNorth && xNorth <= x2 && y2 > start.getY() && y1 < end.getY()) {
             return true;
         }
         // Check east
-        if (!Double.isNaN(yWest) && start.getY() <= yWest && yWest < endExclusive.getY() && y1 <= yWest && yWest <= y2 && x2 > start.getX() && x1 < endExclusive.getX()) {
+        if (!Double.isNaN(yWest) && start.getY() <= yWest && yWest < end.getY() && y1 <= yWest && yWest <= y2 && x2 > start.getX() && x1 < end.getX()) {
             return true;
         }
         // Check south
-        if (!Double.isNaN(xSouth) && start.getX() <= xSouth && xSouth < endExclusive.getX() && x1 <= xSouth && xSouth <= x2 && y2 > start.getY() && y1 < endExclusive.getY()) {
+        if (!Double.isNaN(xSouth) && start.getX() <= xSouth && xSouth < end.getX() && x1 <= xSouth && xSouth <= x2 && y2 > start.getY() && y1 < end.getY()) {
             return true;
         }
         // Check west
-        return !Double.isNaN(yEast) && start.getY() <= yEast && yEast < endExclusive.getY() && y2 <= yEast && yEast <= y2 && x2 > start.getX() && x1 < endExclusive.getX();
+        return !Double.isNaN(yEast) && start.getY() <= yEast && yEast < end.getY() && y2 <= yEast && yEast <= y2 && x2 > start.getX() && x1 < end.getX();
     }
 
     public Collection<DecimalPosition> getCrossPointsInfiniteLine(Line line) {
@@ -325,28 +325,28 @@ public class Rectangle {
 
         Rectangle rectangle = (Rectangle) o;
 
-        return !(endExclusive != null ? !endExclusive.equals(rectangle.endExclusive) : rectangle.endExclusive != null) && !(start != null ? !start.equals(rectangle.start) : rectangle.start != null);
+        return !(end != null ? !end.equals(rectangle.end) : rectangle.end != null) && !(start != null ? !start.equals(rectangle.start) : rectangle.start != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = start != null ? start.hashCode() : 0;
-        result = 31 * result + (endExclusive != null ? endExclusive.hashCode() : 0);
+        result = 31 * result + (end != null ? end.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "Start " + start + " End " + endExclusive + " Width: " + width() + " Height: " + height();
+        return "Start " + start + " End " + end + " Width: " + width() + " Height: " + height();
     }
 
     public int width() {
-        return endExclusive.getX() - start.getX();
+        return end.getX() - start.getX();
     }
 
     public int height() {
-        return endExclusive.getY() - start.getY();
+        return end.getY() - start.getY();
     }
 
     public int startX() {
@@ -358,16 +358,16 @@ public class Rectangle {
     }
 
     public int endX() {
-        return endExclusive.getX();
+        return end.getX();
     }
 
     public int endY() {
-        return endExclusive.getY();
+        return end.getY();
     }
 
     public Index center() {
-        int centerX = (endExclusive.getX() - start.getX()) / 2;
-        int centerY = (endExclusive.getY() - start.getY()) / 2;
+        int centerX = (end.getX() - start.getX()) / 2;
+        int centerY = (end.getY() - start.getY()) / 2;
         return new Index(start.getX() + centerX, start.getY() + centerY);
     }
 
@@ -384,23 +384,23 @@ public class Rectangle {
 
         if (point.getX() <= start.getX() && point.getY() <= start.getY()) {
             return new DecimalPosition(start.copy());
-        } else if (point.getX() >= endExclusive.getX() && point.getY() >= endExclusive.getY()) {
-            return new DecimalPosition(endExclusive.sub(endXCorrection, endYCorrection));
-        } else if (point.getX() <= start.getX() && point.getY() >= endExclusive.getY()) {
-            return new DecimalPosition(start.getX(), endExclusive.getY() - endYCorrection);
-        } else if (point.getX() >= endExclusive.getX() && point.getY() <= start.getY()) {
-            return new DecimalPosition(endExclusive.getX() - endXCorrection, start.getY());
+        } else if (point.getX() >= end.getX() && point.getY() >= end.getY()) {
+            return new DecimalPosition(end.sub(endXCorrection, endYCorrection));
+        } else if (point.getX() <= start.getX() && point.getY() >= end.getY()) {
+            return new DecimalPosition(start.getX(), end.getY() - endYCorrection);
+        } else if (point.getX() >= end.getX() && point.getY() <= start.getY()) {
+            return new DecimalPosition(end.getX() - endXCorrection, start.getY());
         }
 
         // Do projection
         if (point.getX() <= start.getX()) {
             return new DecimalPosition(start.getX(), point.getY());
-        } else if (point.getX() >= endExclusive.getX()) {
-            return new DecimalPosition(endExclusive.getX() - endXCorrection, point.getY());
+        } else if (point.getX() >= end.getX()) {
+            return new DecimalPosition(end.getX() - endXCorrection, point.getY());
         } else if (point.getY() <= start.getY()) {
             return new DecimalPosition(point.getX(), start.getY());
-        } else if (point.getY() >= endExclusive.getY()) {
-            return new DecimalPosition(point.getX(), endExclusive.getY() - endYCorrection);
+        } else if (point.getY() >= end.getY()) {
+            return new DecimalPosition(point.getX(), end.getY() - endYCorrection);
         }
 
         throw new IllegalArgumentException("The point is inside the rectangle. Point: " + point + " rectangel: " + this);
@@ -415,23 +415,23 @@ public class Rectangle {
     public DecimalPosition getNearestPointInclusive(DecimalPosition point) {
         if (point.getX() <= start.getX() && point.getY() <= start.getY()) {
             return new DecimalPosition(start.copy());
-        } else if (point.getX() >= endExclusive.getX() && point.getY() >= endExclusive.getY()) {
-            return new DecimalPosition(endExclusive.copy());
-        } else if (point.getX() <= start.getX() && point.getY() >= endExclusive.getY()) {
-            return new DecimalPosition(start.getX(), endExclusive.getY());
-        } else if (point.getX() >= endExclusive.getX() && point.getY() <= start.getY()) {
-            return new DecimalPosition(endExclusive.getX(), start.getY());
+        } else if (point.getX() >= end.getX() && point.getY() >= end.getY()) {
+            return new DecimalPosition(end.copy());
+        } else if (point.getX() <= start.getX() && point.getY() >= end.getY()) {
+            return new DecimalPosition(start.getX(), end.getY());
+        } else if (point.getX() >= end.getX() && point.getY() <= start.getY()) {
+            return new DecimalPosition(end.getX(), start.getY());
         }
 
         // Do projection
         if (point.getX() <= start.getX()) {
             return new DecimalPosition(start.getX(), point.getY());
-        } else if (point.getX() >= endExclusive.getX()) {
-            return new DecimalPosition(endExclusive.getX(), point.getY());
+        } else if (point.getX() >= end.getX()) {
+            return new DecimalPosition(end.getX(), point.getY());
         } else if (point.getY() <= start.getY()) {
             return new DecimalPosition(point.getX(), start.getY());
-        } else if (point.getY() >= endExclusive.getY()) {
-            return new DecimalPosition(point.getX(), endExclusive.getY());
+        } else if (point.getY() >= end.getY()) {
+            return new DecimalPosition(point.getX(), end.getY());
         }
 
         throw new IllegalArgumentException("The point is inside the rectangle");
@@ -439,10 +439,6 @@ public class Rectangle {
 
     public boolean hasMinSize(int minSize) {
         return height() >= minSize || width() >= minSize;
-    }
-
-    public boolean isEmpty() {
-        return height() == 0 && width() == 0;
     }
 
     /**
@@ -483,9 +479,9 @@ public class Rectangle {
         double sinus = Math.sin(angle);
         double cosinus = Math.cos(angle);
         Index p1 = start;
-        Index p2 = new Index(endExclusive.getX(), start.getY());
-        Index p3 = endExclusive;
-        Index p4 = new Index(start.getX(), endExclusive.getY());
+        Index p2 = new Index(end.getX(), start.getY());
+        Index p3 = end;
+        Index p4 = new Index(start.getX(), end.getY());
         Index newP1 = p1.rotateCounterClock(center, sinus, cosinus);
         Index newP2 = p2.rotateCounterClock(center, sinus, cosinus);
         Index newP3 = p3.rotateCounterClock(center, sinus, cosinus);
@@ -502,7 +498,7 @@ public class Rectangle {
     }
 
     public Index cornerSE() {
-        return endExclusive;
+        return end;
     }
 
     public Index cornerNE() {
