@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
+import com.btxtech.shared.gameengine.planet.condition.ConditionService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -29,6 +30,8 @@ public class ActivityService {
     private Logger logger = Logger.getLogger(ActivityService.class.getName());
     @Inject
     private PlanetService planetService;
+    @Inject
+    private ConditionService conditionService;
     private Collection<Function<SyncBaseItem, Boolean>> spawnFinishCallback = new ArrayList<>();
 
     public void onInsufficientFundsException(InsufficientFundsException e) {
@@ -164,6 +167,7 @@ public class ActivityService {
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncBaseItem);
+        conditionService.onSyncItemBuilt(syncBaseItem);
         Collection<Function<SyncBaseItem, Boolean>> tmp = new ArrayList<>(spawnFinishCallback);
         for (Function<SyncBaseItem, Boolean> callback : tmp) {
             if (callback.apply(syncBaseItem)) {

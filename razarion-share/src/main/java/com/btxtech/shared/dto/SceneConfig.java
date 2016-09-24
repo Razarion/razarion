@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class SceneConfig {
     private String introText;
-    private boolean showQuestSideBar;
+    private QuestConfig questConfig;
     private CameraConfig cameraConfig;
     private List<BotConfig> botConfigs;
     private List<BotMoveCommandConfig> botMoveCommandConfigs;
@@ -34,12 +35,12 @@ public class SceneConfig {
         return this;
     }
 
-    public boolean isShowQuestSideBar() {
-        return showQuestSideBar;
+    public QuestConfig getQuestConfig() {
+        return questConfig;
     }
 
-    public SceneConfig setShowQuestSideBar(boolean showQuestSideBar) {
-        this.showQuestSideBar = showQuestSideBar;
+    public SceneConfig setQuestConfig(QuestConfig questConfig) {
+        this.questConfig = questConfig;
         return this;
     }
 

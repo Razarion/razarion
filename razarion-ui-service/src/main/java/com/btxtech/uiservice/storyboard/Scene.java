@@ -1,9 +1,11 @@
 package com.btxtech.uiservice.storyboard;
 
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.condition.ConditionService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.renderer.task.startpoint.StartPointUiService;
@@ -38,11 +40,15 @@ public class Scene {
     private StartPointUiService startPointUiService;
     @Inject
     private ActivityService activityService;
+    @Inject
+    private ConditionService conditionService;
+    private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
     private boolean hasCompletionCallback;
 
-    public void init(SceneConfig sceneConfig) {
+    public void init(UserContext userContext, SceneConfig sceneConfig) {
+        this.userContext = userContext;
         this.sceneConfig = sceneConfig;
         completionCallbackCount = 0;
     }
@@ -64,15 +70,17 @@ public class Scene {
             botService.executeCommands(sceneConfig.getBotMoveCommandConfigs());
         }
         if (sceneConfig.getStartPointConfig() != null) {
-            activityService.addSpanFinishedCallback(syncBaseItem -> {
-                onComplete();
-                return true;
-            });
-            hasCompletionCallback = true;
-            completionCallbackCount++;
             startPointUiService.activate(sceneConfig.getStartPointConfig());
         }
-        questVisualizer.showSideBar(sceneConfig.isShowQuestSideBar());
+        if (sceneConfig.getQuestConfig() != null) {
+            conditionService.setConditionPassedListener(userContext1 -> onComplete());
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            conditionService.activateCondition(userContext, sceneConfig.getQuestConfig().getConditionConfig());
+            questVisualizer.showSideBar(sceneConfig.getQuestConfig());
+        } else {
+            questVisualizer.showSideBar(null);
+        }
         setupCameraConfig(sceneConfig.getCameraConfig());
         if (!hasCompletionCallback) {
             storyboardService.onSceneCompleted();
@@ -108,6 +116,9 @@ public class Scene {
         }
         if (sceneConfig.getStartPointConfig() != null) {
             startPointUiService.deactivate();
+        }
+        if (sceneConfig.getQuestConfig() != null) {
+            conditionService.setConditionPassedListener(null);
         }
     }
 }

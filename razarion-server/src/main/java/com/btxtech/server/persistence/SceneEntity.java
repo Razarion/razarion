@@ -24,6 +24,7 @@ public class SceneEntity {
     @GeneratedValue
     private Long id;
     private String introText;
+    @Deprecated
     private boolean showQuestSideBar;
     @AttributeOverrides({
             @AttributeOverride(name = "x", column = @Column(name = "cameraConfigFromPositionX")),
@@ -43,7 +44,7 @@ public class SceneEntity {
     public SceneConfig toSceneConfig() {
         SceneConfig sceneConfig = new SceneConfig();
         sceneConfig.setIntroText(introText);
-        sceneConfig.setShowQuestSideBar(showQuestSideBar);
+        // TODO sceneConfig.setShowQuestSideBar(showQuestSideBar);
         CameraConfig cameraConfig = new CameraConfig();
         cameraConfig.setFromPosition(cameraConfigFromPosition);
         cameraConfig.setToPosition(cameraConfigToPosition);

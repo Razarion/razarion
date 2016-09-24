@@ -49,7 +49,7 @@ public class StoryboardService {
             currentScene.cleanup();
         }
         currentScene = sceneInstance.get();
-        currentScene.init(storyboardConfig.getSceneConfigs().get(nextSceneNumber));
+        currentScene.init(userContext, storyboardConfig.getSceneConfigs().get(nextSceneNumber));
         currentScene.run();
     }
 

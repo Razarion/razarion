@@ -1,10 +1,14 @@
 package com.btxtech.client.cockpit.quest;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * Created by Beat
@@ -12,10 +16,23 @@ import javax.annotation.PostConstruct;
  */
 @Templated("QuestSidebar.html#questSidebar")
 public class QuestSidebar extends Composite {
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Label questSidebarTitle;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Label questSidebarCenter;
 
     @PostConstruct
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.QUEST_SIDE_BAR);
         setStyleName("quest-sidebar");
+    }
+
+    public void setQuest(QuestConfig questConfig) {
+        questSidebarTitle.setText(questConfig.getTitle());
+        questSidebarCenter.setText(questConfig.getDescription());
     }
 }
