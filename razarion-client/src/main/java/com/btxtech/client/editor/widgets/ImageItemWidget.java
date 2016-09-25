@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.widgets;
 
-import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.ControlUtils;
@@ -32,7 +33,7 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
     @Inject
     private ImageUiService imageUiService;
     @Inject
-    private ModalDialogManager modalDialogManager;
+    private ClientModalDialogManagerImpl modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -101,7 +102,7 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
 
     @EventHandler("galleryButton")
     private void galleryButtonClicked(ClickEvent event) {
-        modalDialogManager.show("Image Gallery", ModalDialogManager.Type.STACK_ABLE, ImageGalleryDialog.class, imageId, id1 -> {
+        modalDialogManager.show("Image Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, imageId, id1 -> {
             imageUiService.removeListener(imageId, ImageItemWidget.this);
             imageId = id1;
             imageUiService.requestImage(imageId, ImageItemWidget.this);

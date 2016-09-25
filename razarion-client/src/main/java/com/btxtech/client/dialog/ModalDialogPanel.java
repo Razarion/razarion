@@ -1,6 +1,8 @@
 package com.btxtech.client.dialog;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.uiservice.dialog.ApplyListener;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -25,7 +27,7 @@ public class ModalDialogPanel<T> extends Composite {
     @Inject
     private Instance<ModalDialogContent> contentInstance;
     @Inject
-    private ModalDialogManager modalDialogManager;
+    private ClientModalDialogManagerImpl modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField

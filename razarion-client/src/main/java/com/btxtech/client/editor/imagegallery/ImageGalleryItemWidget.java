@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.imagegallery;
 
-import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
@@ -12,14 +12,12 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import elemental.html.File;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.function.BiConsumer;
 
 /**
  * Created by Beat

@@ -1,15 +1,14 @@
 package com.btxtech.client.editor.slopeeditor;
 
-import com.btxtech.client.dialog.ApplyListener;
-import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.fractal.FractalDialog;
-import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
 import com.btxtech.client.editor.widgets.LightWidget;
+import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -42,7 +41,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private ModalDialogManager modalDialogManager;
+    private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     @AutoBound
     private DataBinder<SlopeConfig> slopeConfigDataBinder;
@@ -117,7 +116,7 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
         if (fractalFieldConfig == null) {
             fractalFieldConfig = slopeConfig.toFractalFiledConfig();
         }
-        modalDialogManager.show("Fractal Dialog", ModalDialogManager.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, fractalFieldConfig1 -> {
+        modalDialogManager.show("Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, fractalFieldConfig1 -> {
             SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
             slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
         });

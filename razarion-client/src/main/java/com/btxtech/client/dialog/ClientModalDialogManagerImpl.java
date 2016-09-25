@@ -1,5 +1,10 @@
 package com.btxtech.client.dialog;
 
+import com.btxtech.client.cockpit.quest.QuestPassedDialog;
+import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.uiservice.dialog.ApplyListener;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import javax.enterprise.inject.Instance;
@@ -13,14 +18,13 @@ import java.util.List;
  * 20.05.2016.
  */
 @Singleton
-public class ModalDialogManager {
+public class ClientModalDialogManagerImpl implements ModalDialogManager {
     public enum Type {
         PROMPTLY,
         STACK_ABLE,
         QUEUE_ABLE,
         UNIMPORTANT
     }
-
     @Inject
     private Instance<ModalDialogPanel<Object>> containerInstance;
     private ModalDialogPanel activeDialog;
@@ -31,6 +35,12 @@ public class ModalDialogManager {
 //    private ModalDialogPanel container;
 //    private ModalDialogContent content;
 //    private ApplyListener applyListener;
+
+
+    @Override
+    public void showQuestPassed(QuestConfig questConfig, ApplyListener<QuestConfig> applyListener) {
+        show("Quest bestanden", ClientModalDialogManagerImpl.Type.STACK_ABLE, QuestPassedDialog.class, questConfig, applyListener);
+    }
 
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {
         if (activeDialog == null) {
@@ -96,7 +106,7 @@ public class ModalDialogManager {
         }
 
         public void showDialog() {
-            ModalDialogManager.this.showDialog(title, contentClass, object, applyListener);
+            ClientModalDialogManagerImpl.this.showDialog(title, contentClass, object, applyListener);
         }
     }
 }

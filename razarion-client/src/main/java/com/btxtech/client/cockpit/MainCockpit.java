@@ -1,6 +1,7 @@
 package com.btxtech.client.cockpit;
 
-import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.client.editor.EditorMenuDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -23,7 +24,7 @@ public class MainCockpit extends Composite {
     @DataField
     private Button editorButton;
     @Inject
-    private ModalDialogManager modalDialogManager;
+    private ClientModalDialogManagerImpl modalDialogManager;
 
     @PostConstruct
     public void init() {
@@ -32,6 +33,6 @@ public class MainCockpit extends Composite {
 
     @EventHandler("editorButton")
     private void onEditorButtonClick(ClickEvent event) {
-        modalDialogManager.show("Editor Menu", ModalDialogManager.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null);
+        modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null);
     }
 }

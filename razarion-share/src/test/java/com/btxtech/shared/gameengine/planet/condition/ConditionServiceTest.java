@@ -1,11 +1,11 @@
 package com.btxtech.shared.gameengine.planet.condition;
 
+import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
-import com.btxtech.test.SimpleTestEnvironment;
 import org.easymock.EasyMock;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -43,8 +43,7 @@ public class ConditionServiceTest {
         baseItemTypeCount.put(SimpleTestEnvironment.SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1);
         conditionConfig.setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(baseItemTypeCount));
 
-        conditionService.setConditionPassedListener(conditionPassedListenerMock);
-        conditionService.activateCondition(userContext, conditionConfig);
+        conditionService.activateCondition(userContext, conditionConfig, conditionPassedListenerMock);
 
         PlayerBase playerBase = simpleTestEnvironment.createHumanPlayerBase(userContext);
         conditionService.onSyncItemBuilt(simpleTestEnvironment.createSimpleSyncBaseItem(playerBase));

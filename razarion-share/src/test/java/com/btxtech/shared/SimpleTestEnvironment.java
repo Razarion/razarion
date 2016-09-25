@@ -1,6 +1,5 @@
-package com.btxtech.test;
+package com.btxtech.shared;
 
-import com.btxtech.TestHelper;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -13,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 
 /**
@@ -34,7 +34,10 @@ public class SimpleTestEnvironment {
 
     public void injectItemTypeService(String fieldName, Object service) {
         try {
-            TestHelper.setPrivateField(service, fieldName, itemTypeService);
+            Field field = service.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(service, itemTypeService);
+            field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,7 +1,8 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.dialog.ApplyListener;
-import com.btxtech.client.dialog.ModalDialogManager;
+import com.btxtech.uiservice.dialog.ApplyListener;
+import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.widgets.LightWidget;
@@ -12,7 +13,6 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -39,7 +39,7 @@ public class GroundSidebar extends LeftSideBarContent {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private ModalDialogManager modalDialogManager;
+    private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
@@ -126,7 +126,7 @@ public class GroundSidebar extends LeftSideBarContent {
     private void fractalSplattingButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
-        modalDialogManager.show("Splatting Fractal Dialog", ModalDialogManager.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, new ApplyListener<FractalFieldConfig>() {
+        modalDialogManager.show("Splatting Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, new ApplyListener<FractalFieldConfig>() {
             @Override
             public void onApply(FractalFieldConfig fractalFieldConfig1) {
                 GroundConfig groundConfig = groundConfigDataBinder.getModel();
@@ -139,7 +139,7 @@ public class GroundSidebar extends LeftSideBarContent {
     private void fractalHeightButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toHeightFractalFiledConfig();
-        modalDialogManager.show("Height Fractal Dialog", ModalDialogManager.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, new ApplyListener<FractalFieldConfig>() {
+        modalDialogManager.show("Height Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, new ApplyListener<FractalFieldConfig>() {
             @Override
             public void onApply(FractalFieldConfig fractalFieldConfig1) {
                 GroundConfig groundConfig = groundConfigDataBinder.getModel();

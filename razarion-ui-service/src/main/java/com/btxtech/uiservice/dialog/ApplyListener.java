@@ -1,4 +1,4 @@
-package com.btxtech.client.dialog;
+package com.btxtech.uiservice.dialog;
 
 /**
  * Created by Beat

@@ -17,6 +17,8 @@ package com.btxtech.shared.gameengine.planet.condition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 
+import java.util.function.Consumer;
+
 /**
  * User: beat
  * Date: 27.12.2010
@@ -27,6 +29,7 @@ public class AbstractConditionProgress {
     private AbstractComparison abstractComparison;
     private boolean fulfilled = false;
     private UserContext examinee;
+    private Consumer<UserContext> conditionPassedListener;
 
     public AbstractConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
         this.conditionTrigger = conditionTrigger;
@@ -59,5 +62,13 @@ public class AbstractConditionProgress {
 
     public UserContext getExaminee() {
         return examinee;
+    }
+
+    public Consumer<UserContext> getConditionPassedListener() {
+        return conditionPassedListener;
+    }
+
+    public void setConditionPassedListener(Consumer<UserContext> conditionPassedListener) {
+        this.conditionPassedListener = conditionPassedListener;
     }
 }

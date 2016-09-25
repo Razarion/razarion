@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.condition.ConditionService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.renderer.task.startpoint.StartPointUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
@@ -42,6 +43,9 @@ public class Scene {
     private ActivityService activityService;
     @Inject
     private ConditionService conditionService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ModalDialogManager modalDialogManager;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -73,10 +77,11 @@ public class Scene {
             startPointUiService.activate(sceneConfig.getStartPointConfig());
         }
         if (sceneConfig.getQuestConfig() != null) {
-            conditionService.setConditionPassedListener(userContext1 -> onComplete());
             hasCompletionCallback = true;
             completionCallbackCount++;
-            conditionService.activateCondition(userContext, sceneConfig.getQuestConfig().getConditionConfig());
+            conditionService.activateCondition(userContext, sceneConfig.getQuestConfig().getConditionConfig(), userContext1 -> {
+                modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig(),ignore -> onComplete());
+            });
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
         } else {
             questVisualizer.showSideBar(null);
@@ -116,9 +121,6 @@ public class Scene {
         }
         if (sceneConfig.getStartPointConfig() != null) {
             startPointUiService.deactivate();
-        }
-        if (sceneConfig.getQuestConfig() != null) {
-            conditionService.setConditionPassedListener(null);
         }
     }
 }

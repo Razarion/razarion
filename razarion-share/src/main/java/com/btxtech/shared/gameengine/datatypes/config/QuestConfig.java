@@ -7,7 +7,9 @@ package com.btxtech.shared.gameengine.datatypes.config;
 public class QuestConfig {
     private String title;
     private String description;
+    private String passedMessage;
     private ConditionConfig conditionConfig;
+    private int xp;
 
     public String getTitle() {
         return title;
@@ -33,6 +35,24 @@ public class QuestConfig {
 
     public QuestConfig setConditionConfig(ConditionConfig conditionConfig) {
         this.conditionConfig = conditionConfig;
+        return this;
+    }
+
+    public String getPassedMessage() {
+        return passedMessage;
+    }
+
+    public QuestConfig setPassedMessage(String passedMessage) {
+        this.passedMessage = passedMessage;
+        return this;
+    }
+
+    public int getXp() {
+        return xp;
+    }
+
+    public QuestConfig setXp(int xp) {
+        this.xp = xp;
         return this;
     }
 

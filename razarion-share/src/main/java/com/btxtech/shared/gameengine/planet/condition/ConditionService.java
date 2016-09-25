@@ -37,9 +37,8 @@ public class ConditionService {
     @Inject
     private ItemTypeService itemTypeService;
     private final Map<UserContext, AbstractConditionProgress> progressMap = new HashMap<>();
-    private Consumer<UserContext> conditionPassedListener;
 
-    public void activateCondition(UserContext examinee, ConditionConfig conditionConfig) {
+    public void activateCondition(UserContext examinee, ConditionConfig conditionConfig, Consumer<UserContext> conditionPassedListener) {
         AbstractComparison abstractComparison = null;
         if (conditionConfig.getConditionTrigger().isComparisonNeeded()) {
             abstractComparison = createAbstractComparison(conditionConfig.getComparisonConfig());
@@ -55,6 +54,7 @@ public class ConditionService {
         }
         AbstractConditionProgress conditionProgress = conditionConfig.getConditionTrigger().createConditionProgress(abstractComparison);
         conditionProgress.setExaminee(examinee);
+        conditionProgress.setConditionPassedListener(conditionPassedListener);
         synchronized (progressMap) {
             progressMap.put(examinee, conditionProgress);
         }
@@ -70,10 +70,6 @@ public class ConditionService {
         // TODO if (abstractConditionTrigger != null) {
         // TODO handleTimerRemoval(abstractConditionTrigger);
         // TODO }
-    }
-
-    public void setConditionPassedListener(Consumer<UserContext> conditionPassedListener) {
-        this.conditionPassedListener = conditionPassedListener;
     }
 
     public void onSyncItemBuilt(SyncBaseItem syncBaseItem) {
@@ -116,8 +112,8 @@ public class ConditionService {
 
     private void conditionPassed(AbstractConditionProgress abstractConditionProgress) {
         deactivateActorCondition(abstractConditionProgress.getExaminee());
-        if (conditionPassedListener != null) {
-            conditionPassedListener.accept(abstractConditionProgress.getExaminee());
+        if (abstractConditionProgress.getConditionPassedListener() != null) {
+            abstractConditionProgress.getConditionPassedListener().accept(abstractConditionProgress.getExaminee());
         }
     }
 }
