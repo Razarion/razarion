@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 
 /**
@@ -7,35 +8,35 @@ import com.btxtech.shared.datatypes.Index;
  * 05.07.2016.
  */
 public class CameraConfig {
-    private Index fromPosition;
-    private Index toPosition;
-    private boolean smooth;
+    private DecimalPosition fromPosition;
+    private DecimalPosition toPosition;
+    private Double speed;
     private boolean cameraLocked;
 
-    public Index getFromPosition() {
+    public DecimalPosition getFromPosition() {
         return fromPosition;
     }
 
-    public CameraConfig setFromPosition(Index fromPosition) {
+    public CameraConfig setFromPosition(DecimalPosition fromPosition) {
         this.fromPosition = fromPosition;
         return this;
     }
 
-    public Index getToPosition() {
+    public DecimalPosition getToPosition() {
         return toPosition;
     }
 
-    public CameraConfig setToPosition(Index toPosition) {
+    public CameraConfig setToPosition(DecimalPosition toPosition) {
         this.toPosition = toPosition;
         return this;
     }
 
-    public boolean isSmooth() {
-        return smooth;
+    public Double getSpeed() {
+        return speed;
     }
 
-    public CameraConfig setSmooth(boolean smooth) {
-        this.smooth = smooth;
+    public CameraConfig setSpeed(Double speed) {
+        this.speed = speed;
         return this;
     }
 

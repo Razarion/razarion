@@ -7,7 +7,6 @@ import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
@@ -77,8 +76,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
-        // List<SceneConfig> sceneConfigs = new ArrayList<>();
-        List<SceneConfig> sceneConfigs = storyboardConfig.getSceneConfigs();
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // List<SceneConfig> sceneConfigs = storyboardConfig.getSceneConfigs();
+        addScrollOverTerrain(sceneConfigs); // TODO mode to DB
         addBotSpawnScene(sceneConfigs); // TODO mode to DB
         addUserSpawnScene(sceneConfigs); // TODO mode to DB
         addBotMoveScene(sceneConfigs);// TODO mode to DB
@@ -101,9 +101,16 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         return visualConfig;
     }
 
+    private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {
+        System.out.println("++++ Distance: " + new DecimalPosition(3260, 2900).getDistance(new DecimalPosition(1040, 320)));
+        SceneConfig sceneConfig = new SceneConfig().setIntroText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
+        sceneConfig.setCameraConfig(new CameraConfig().setFromPosition(new DecimalPosition(3260, 2900)).setToPosition(new DecimalPosition(1040, 320)).setSpeed(1000.0).setCameraLocked(true));
+        sceneConfigs.add(sceneConfig);
+    }
+
     private void addBotSpawnScene(List<SceneConfig> sceneConfigs) {
         // List<SceneConfig> sceneConfigs = new ArrayList<>();
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320)).setCameraLocked(true);
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(true);
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
@@ -114,7 +121,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addUserSpawnScene(List<SceneConfig> sceneConfigs) {
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320)).setCameraLocked(true);;
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(true);
         StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(180807).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(180807, 1);
@@ -123,10 +130,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new Index(1040, 320)).setCameraLocked(true);;
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(2040, 520)).setSpeed(80.0).setCameraLocked(false);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
-        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setBaseItemTypeId(180807).setDecimalPosition(new DecimalPosition(2040, 800)));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs));
+        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setBaseItemTypeId(180807).setDecimalPosition(new DecimalPosition(2040, 1000)));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
     }
 
     private List<LevelConfig> setupLevelConfigs() {

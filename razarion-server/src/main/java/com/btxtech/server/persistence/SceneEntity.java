@@ -46,9 +46,9 @@ public class SceneEntity {
         sceneConfig.setIntroText(introText);
         // TODO sceneConfig.setShowQuestSideBar(showQuestSideBar);
         CameraConfig cameraConfig = new CameraConfig();
-        cameraConfig.setFromPosition(cameraConfigFromPosition);
-        cameraConfig.setToPosition(cameraConfigToPosition);
-        cameraConfig.setSmooth(cameraConfigSmooth);
+        // TODO cameraConfig.setFromPosition(cameraConfigFromPosition);
+        // TODO cameraConfig.setToPosition(cameraConfigToPosition);
+        // TODO cameraConfig.setSmooth(cameraConfigSmooth);
         cameraConfig.setCameraLocked(cameraConfigCameraLocked);
         sceneConfig.setCameraConfig(cameraConfig);
         return sceneConfig;

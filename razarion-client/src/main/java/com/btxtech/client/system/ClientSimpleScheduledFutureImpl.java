@@ -13,6 +13,7 @@ import javax.inject.Inject;
  */
 @Dependent
 public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     private Timer timer;

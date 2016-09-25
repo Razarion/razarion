@@ -10,7 +10,10 @@ import com.btxtech.uiservice.renderer.Camera;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -28,7 +31,7 @@ public class TerrainScrollHandler {
     }
 
     private static final int SCROLL_AUTO_MOUSE_DETECTION_WIDTH = 40;
-    private static final int SCROLL_TIMER_DELAY = 40;
+    private static final int SCROLL_TIMER_DELAY = 150; // Browser is not able to go faster due to the AnimationScheduler
     private static final int SCROLL_AUTO_DISTANCE = 60;
     // private Logger logger = Logger.getLogger(TerrainScrollHandler.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -51,12 +54,7 @@ public class TerrainScrollHandler {
 
     @PostConstruct
     public void init() {
-        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, false, new Runnable() {
-            @Override
-            public void run() {
-                autoScroll();
-            }
-        }, SimpleExecutorService.Type.UNSPECIFIED);
+        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, false, this::autoScroll, SimpleExecutorService.Type.UNSPECIFIED);
     }
 
     public void cleanup() {
@@ -177,7 +175,7 @@ public class TerrainScrollHandler {
     }
 
     public void executeCameraConfig(final CameraConfig cameraConfig, Optional<Runnable> completionCallback) {
-        if (cameraConfig.isSmooth()) {
+        if (cameraConfig.getSpeed() != null) {
             setScrollDisabled(true);
             if (cameraConfig.getFromPosition() != null) {
                 camera.setTranslateX(cameraConfig.getFromPosition().getX());
@@ -188,24 +186,20 @@ public class TerrainScrollHandler {
                     moveHandler.cancel();
                     moveHandler = null;
                 }
-                moveHandler = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, true, new Runnable() {
-                    @Override
-                    public void run() {
-                        DecimalPosition cameraPosition = new DecimalPosition(camera.getTranslateX(), camera.getTranslateY());
-                        if (cameraPosition.getDistance(cameraConfig.getToPosition()) < SCROLL_AUTO_DISTANCE) {
-                            camera.setTranslateX(cameraConfig.getToPosition().getX());
-                            camera.setTranslateY(cameraConfig.getToPosition().getY());
-                            completionCallback.ifPresent(runnable -> {
-                                setScrollDisabled(cameraConfig.isCameraLocked());
-                                moveHandler.cancel();
-                                moveHandler = null;
-                                runnable.run();
-                            });
-                        } else {
-                            DecimalPosition newCameraPosition = cameraPosition.getPointWithDistance(SCROLL_AUTO_DISTANCE, cameraConfig.getToPosition(), false);
-                            camera.setTranslateX(newCameraPosition.getX());
-                            camera.setTranslateY(newCameraPosition.getY());
-                        }
+                moveHandler = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, true, () -> {
+                    DecimalPosition cameraPosition = new DecimalPosition(camera.getTranslateX(), camera.getTranslateY());
+                    double distance = cameraConfig.getSpeed() * ((double) SCROLL_TIMER_DELAY / 1000.0);
+                    if (cameraPosition.getDistance(cameraConfig.getToPosition()) < distance) {
+                        camera.setTranslateX(cameraConfig.getToPosition().getX());
+                        camera.setTranslateY(cameraConfig.getToPosition().getY());
+                        setScrollDisabled(cameraConfig.isCameraLocked());
+                        moveHandler.cancel();
+                        moveHandler = null;
+                        completionCallback.ifPresent(Runnable::run);
+                    } else {
+                        DecimalPosition newCameraPosition = cameraPosition.getPointWithDistance(distance, cameraConfig.getToPosition(), false);
+                        camera.setTranslateX(newCameraPosition.getX());
+                        camera.setTranslateY(newCameraPosition.getY());
                     }
                 }, SimpleExecutorService.Type.UNSPECIFIED);
             }

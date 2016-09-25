@@ -97,7 +97,7 @@ public class Scene {
             return;
         }
 
-        if (cameraConfig.isSmooth() && cameraConfig.getToPosition() != null) {
+        if (cameraConfig.getSpeed() != null && cameraConfig.getToPosition() != null) {
             hasCompletionCallback = true;
             completionCallbackCount++;
         }
