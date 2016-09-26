@@ -13,6 +13,7 @@ import java.util.Set;
  * Date: 11.09.12
  * Time: 14:36
  */
+@Deprecated // Use Polygon
 public class Region {
     private int id;
     private Collection<Rectangle> rectangles;

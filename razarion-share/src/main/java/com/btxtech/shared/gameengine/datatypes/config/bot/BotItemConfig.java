@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+
 /**
  * User: beat
  * Date: 10.10.2011

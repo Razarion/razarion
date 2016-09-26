@@ -7,6 +7,7 @@ import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
@@ -26,7 +27,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -40,6 +41,7 @@ import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +84,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addBotSpawnScene(sceneConfigs); // TODO mode to DB
         addUserSpawnScene(sceneConfigs); // TODO mode to DB
         addBotMoveScene(sceneConfigs);// TODO mode to DB
+        addScrollToOwnScene(sceneConfigs);// TODO mode to DB
+        addUserMoveScene(sceneConfigs);// TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         storyboardConfig.setSceneConfigs(sceneConfigs);
         return storyboardConfig;
@@ -102,7 +106,6 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {
-        System.out.println("++++ Distance: " + new DecimalPosition(3260, 2900).getDistance(new DecimalPosition(1040, 320)));
         SceneConfig sceneConfig = new SceneConfig().setIntroText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
         sceneConfig.setCameraConfig(new CameraConfig().setFromPosition(new DecimalPosition(3260, 2900)).setToPosition(new DecimalPosition(1040, 320)).setSpeed(1000.0).setCameraLocked(true));
         sceneConfigs.add(sceneConfig);
@@ -134,6 +137,20 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setBaseItemTypeId(180807).setDecimalPosition(new DecimalPosition(2040, 1000)));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
+    }
+
+    private void addScrollToOwnScene(List<SceneConfig> sceneConfigs) {
+        SceneConfig sceneConfig = new SceneConfig().setIntroText("Fahre deine Einheit zum Vorposten");
+        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(1640, 320)).setSpeed(500.0).setCameraLocked(true));
+        sceneConfigs.add(sceneConfig);
+    }
+
+    private void addUserMoveScene(List<SceneConfig> sceneConfigs) {
+        Map<Integer, Integer> itemTypeCount = new HashMap<>();
+        itemTypeCount.put(180807, 1);
+        ComparisonConfig comparisonConfig = new ComparisonConfig().setBaseItemTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(1600, 700), new DecimalPosition(2000, 700), new DecimalPosition(2000, 1000), new DecimalPosition(1600, 1000)))));
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(comparisonConfig);
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setConditionConfig(conditionConfig)));
     }
 
     private List<LevelConfig> setupLevelConfigs() {

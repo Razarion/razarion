@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.Region;
@@ -9,7 +9,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 import java.util.Collection;
 
@@ -49,6 +48,10 @@ public class CollisionService {
     // TODO Index getFreeRandomPosition(ItemType itemType, Rectangle region, int itemFreeRange, boolean botFree, boolean ignoreMovable);
 
     public DecimalPosition getFreeRandomPosition(ItemType itemType, Region region, int itemFreeRange, boolean botFree, boolean ignoreMovable) {
+        throw new UnsupportedOperationException();
+    }
+
+    public DecimalPosition getFreeRandomPosition(ItemType itemType, Polygon2D region, int itemFreeRange, boolean botFree, boolean ignoreMovable) {
         throw new UnsupportedOperationException();
     }
 

@@ -18,8 +18,8 @@ import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
@@ -212,8 +212,8 @@ public class BotItemContainer {
     private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt) {
         if (placeConfig == null) {
             return collisionService.getFreeRandomPosition(toBeBuilt, realm, 0, false, true);
-        } else if (placeConfig.getRegion() != null) {
-            return collisionService.getFreeRandomPosition(toBeBuilt, placeConfig.getRegion(), 0, false, true);
+        } else if (placeConfig.getPolygon2D() != null) {
+            return collisionService.getFreeRandomPosition(toBeBuilt, placeConfig.getPolygon2D(), 0, false, true);
         } else if (placeConfig.getPosition() != null) {
             return placeConfig.getPosition();
         } else {
