@@ -14,20 +14,18 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CollisionService;
 import com.btxtech.shared.gameengine.planet.CommandService;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -106,9 +104,9 @@ public class BotSyncBaseItem {
         }
     }
 
-    public void attack(SyncBaseItem target, DecimalPosition destinationHint, double destinationAngel) {
+    public void attack(SyncBaseItem target) {
         try {
-            commandService.attack(syncBaseItem, target, destinationHint, destinationAngel, true);
+            commandService.attack(syncBaseItem, target, true);
             clearIdle();
         } catch (Exception e) {
             setIdle();

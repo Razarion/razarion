@@ -8,14 +8,13 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.mouse.MouseEventHandler;
+import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,6 +26,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -93,7 +93,7 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private WebGlEmulatorSceneController sceneController;
     @Inject
-    private MouseEventHandler mouseEventHandler;
+    private TerrainMouseHandler terrainMouseHandler;
     @Inject
     private StoryboardProviderEmulator storyboardProviderEmulator;
     private DecimalPosition lastCanvasPosition;
@@ -164,23 +164,6 @@ public class WebGlEmulatorController implements Initializable {
         shadowXRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationX()));
         shadowZRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationZ()));
     }
-
-    public void onMouseDragged(Event event) {
-        MouseEvent mouseEvent = (MouseEvent) event;
-        DecimalPosition canvasPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
-
-        if (lastCanvasPosition != null) {
-            DecimalPosition terrainOld = getTerrainPosition(lastCanvasPosition).toXY();
-            DecimalPosition terrainNew = getTerrainPosition(canvasPosition).toXY();
-            DecimalPosition deltaTerrain = terrainNew.sub(terrainOld);
-            camera.setTranslateX(camera.getTranslateX() - deltaTerrain.getX());
-            camera.setTranslateY(camera.getTranslateY() - deltaTerrain.getY());
-            xTranslationField.setText(Double.toString(camera.getTranslateX()));
-            yTranslationField.setText(Double.toString(camera.getTranslateY()));
-        }
-        lastCanvasPosition = canvasPosition;
-    }
-
 
     private DecimalPosition toClipCoordinates(DecimalPosition canvasPosition) {
         double canvasWidth = canvas.getWidth();
@@ -317,19 +300,26 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onMouseMoved(MouseEvent event) {
-        mouseEventHandler.onMouseMove((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight());
+        terrainMouseHandler.onMouseMove((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight(), event.isPrimaryButtonDown());
+    }
+
+    public void onMouseDragged(MouseEvent event) {
+        terrainMouseHandler.onMouseMove((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight(), event.isPrimaryButtonDown());
     }
 
     public void onMouseOut() {
-        mouseEventHandler.onMouseOut();
+        terrainMouseHandler.onMouseOut();
     }
 
     public void onMousePressed(MouseEvent event) {
-        mouseEventHandler.onMouseDown((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight(), true, event.isControlDown(), event.isAltDown());
+        terrainMouseHandler.onMouseDown((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight(),
+                event.getButton().equals(MouseButton.PRIMARY), event.getButton().equals(MouseButton.SECONDARY), event.getButton().equals(MouseButton.MIDDLE),
+                event.isControlDown(), event.isAltDown());
     }
 
     public void onMouseReleased(MouseEvent event) {
-        mouseEventHandler.onMouseUp((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight());
+        terrainMouseHandler.onMouseUp((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight(),
+                event.getButton().equals(MouseButton.PRIMARY));
         lastCanvasPosition = null;
     }
 

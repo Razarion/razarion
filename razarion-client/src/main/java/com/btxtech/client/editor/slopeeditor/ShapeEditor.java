@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.slopeeditor;
 
+import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeShape;
@@ -71,7 +72,7 @@ public class ShapeEditor implements Model {
             @Override
             public void handleEvent(Event evt) {
                 MouseEvent event = (MouseEvent) evt;
-                int buttons = getButtons(event);
+                int buttons = GwtUtils.getButtons(event);
                 if ((buttons & 1) == 0) {
                     lastScrollPosition = null;
                 } else if (lastScrollPosition != null) {
@@ -221,8 +222,4 @@ public class ShapeEditor implements Model {
         }
         selectedCornerListener.onSelectionChanged(selected);
     }
-
-    private native int getButtons(MouseEvent event) /*-{
-        return event.buttons;
-    }-*/;
 }

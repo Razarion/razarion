@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -26,6 +27,11 @@ public class PathingService {
 
     public Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return new Path().setDestination(destination);
+    }
+
+    public Path setupPathToDestination(SyncBaseItem syncItem, SyncItem target) {
+        throw new UnsupportedOperationException();
+        // return new Path().setDestination(destination);
     }
 
     public void tick() {

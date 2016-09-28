@@ -3,13 +3,12 @@ package com.btxtech.client.renderer.unit;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.datatypes.Color;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.task.startpoint.AbstractStartPointCircleRendererUnit;
+import com.btxtech.uiservice.renderer.task.selection.AbstractSelectionFrameRenderUnit;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -19,11 +18,11 @@ import java.util.List;
 
 /**
  * Created by Beat
- * 10.09.2016.
+ * 28.09.2016.
  */
-@ColorBufferRenderer
 @Dependent
-public class ClientStartPointCircleRendererUnit extends AbstractStartPointCircleRendererUnit {
+@ColorBufferRenderer
+public class ClientSelectionFrameRenderUnit extends AbstractSelectionFrameRenderUnit {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -35,7 +34,7 @@ public class ClientStartPointCircleRendererUnit extends AbstractStartPointCircle
     @PostConstruct
     public void postConstruct() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.rgbaVpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
@@ -45,19 +44,14 @@ public class ClientStartPointCircleRendererUnit extends AbstractStartPointCircle
     }
 
     @Override
-    protected void prepareDraw() {
+    protected void draw() {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
 
         positions.activate();
-    }
-
-    @Override
-    protected void draw(ModelMatrices modelMatrices, Color color) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, color);
-        webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
+        webGlFacade.uniform4f(WebGlFacade.U_COLOR, Colors.SELECTION_FRAME);
+        webGlFacade.drawArrays(WebGLRenderingContext.LINES);
     }
 }

@@ -51,6 +51,10 @@ public abstract class AbstractRenderTask<T> {
         return modelRenderers;
     }
 
+    protected void clear() {
+        modelRenderers.clear();
+    }
+
     protected <T, C extends AbstractRenderComposite<U, D>, U extends AbstractRenderUnit<D>, D> ModelRenderer<T, C, U, D> create() {
         return (ModelRenderer)instance.get();
     }

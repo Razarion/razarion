@@ -1,5 +1,7 @@
 package com.btxtech.client.utils;
 
+import elemental.events.MouseEvent;
+
 /**
  * Created by Beat
  * 20.06.2016.
@@ -12,4 +14,16 @@ public class GwtUtils {
     public native static elemental.dom.Element castElementToElement(com.google.gwt.dom.client.Element e) /*-{
         return e;
     }-*/;
+
+    public native static int getButtons(MouseEvent event) /*-{
+        return event.buttons;
+    }-*/;
+
+    public static boolean isButtonResponsible4Event(MouseEvent event, int button) {
+        return event.getButton() == button;
+    }
+
+    public static boolean isButtonDown(MouseEvent event, int button) {
+        return (getButtons(event) & button) == button;
+    }
 }

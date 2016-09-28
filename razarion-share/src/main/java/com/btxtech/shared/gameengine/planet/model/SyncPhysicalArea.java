@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -63,8 +64,16 @@ public class SyncPhysicalArea {
         return position != null;
     }
 
+    public boolean overlap(DecimalPosition position) {
+        return this.position.toXY().getDistance(position) < radius;
+    }
+
     public boolean overlap(DecimalPosition position, double radius) {
         return this.position.toXY().getDistance(position) < this.radius + radius;
+    }
+
+    public boolean overlap(Rectangle2D rectangle) {
+        return rectangle.adjoinsCircleExclusive(position.toXY(), radius);
     }
 
     public boolean isInRange(double range, SyncBaseItem target) {

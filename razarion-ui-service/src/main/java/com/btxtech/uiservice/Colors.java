@@ -9,4 +9,6 @@ import com.btxtech.shared.datatypes.Color;
 public interface Colors {
     Color START_POINT_PLACER_VALID = new Color(0.0, 1.0, 0.0, 0.5);
     Color START_POINT_PLACER_IN_VALID = new Color(1.0, 0.0, 0.0, 0.5);
+
+    Color SELECTION_FRAME = new Color(0.2, 1.0, 0.2, 1.0);
 }

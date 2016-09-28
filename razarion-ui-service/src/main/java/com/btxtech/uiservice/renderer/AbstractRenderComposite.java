@@ -23,18 +23,18 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
     private U depthBufferRenderUnit;
     private U wireRenderUnit;
     private U normRenderUnit;
-    private D dernderData;
+    private D rendererData;
     private ShapeTransform shapeTransform;
     private Collection<ProgressAnimation> progressAnimations;
     @Deprecated
     private int id;
 
     public void init(D renderModel) {
-        this.dernderData = renderModel;
+        this.rendererData = renderModel;
     }
 
-    public D getDernderData() {
-        return dernderData;
+    public D getRendererData() {
+        return rendererData;
     }
 
     public void setRenderUnit(U renderUnit) {
@@ -142,19 +142,19 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
 
     public void fillBuffers() {
         if (renderUnit != null) {
-            renderUnit.fillBuffers(dernderData);
+            renderUnit.fillBuffers(rendererData);
         }
         if (depthBufferRenderUnit != null) {
-            depthBufferRenderUnit.fillBuffers(dernderData);
+            depthBufferRenderUnit.fillBuffers(rendererData);
         }
         if (wireRenderUnit != null) {
-            wireRenderUnit.fillBuffers(dernderData);
+            wireRenderUnit.fillBuffers(rendererData);
         }
     }
 
     public void fillNormBuffer() {
         if (normRenderUnit != null) {
-            normRenderUnit.fillBuffers(dernderData);
+            normRenderUnit.fillBuffers(rendererData);
         }
     }
 

@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.Vertex;
  * Created by Beat
  * 05.05.2016.
  */
+@Deprecated
 public class TerrainMouseMoveEvent {
     private Ray3d worldPickRay;
     private Vertex terrainPosition;

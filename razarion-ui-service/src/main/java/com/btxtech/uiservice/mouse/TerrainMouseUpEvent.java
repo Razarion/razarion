@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Ray3d;
  * Created by Beat
  * 05.05.2016.
  */
+@Deprecated
 public class TerrainMouseUpEvent {
     private Ray3d worldPickRay;
 

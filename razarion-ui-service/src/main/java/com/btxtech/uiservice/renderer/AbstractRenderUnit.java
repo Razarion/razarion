@@ -58,7 +58,7 @@ public abstract class AbstractRenderUnit<D> {
     }
 
     protected D getRenderData() {
-        return abstractRenderComposite.getDernderData();
+        return abstractRenderComposite.getRendererData();
     }
 
     @Deprecated

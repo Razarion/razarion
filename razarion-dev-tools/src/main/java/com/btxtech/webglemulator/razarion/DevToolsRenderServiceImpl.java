@@ -15,15 +15,15 @@ import com.btxtech.webglemulator.WebGlEmulatorShadowController;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Created by Beat
  * 12.07.2016.
  */
-@Singleton
+@ApplicationScoped
 public class DevToolsRenderServiceImpl extends RenderService {
     @Inject
     private WebGlEmulator webGlEmulator;

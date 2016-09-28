@@ -315,7 +315,7 @@ public class Line {
             }
         }
     }*/
-    public double getLength() {
+    public double length() {
         return point1.getDistance(point2);
     }
 

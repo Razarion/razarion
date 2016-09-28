@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer.task.startpoint;
 
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
@@ -9,7 +10,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.mouse.TerrainMouseDownEvent;
 import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
@@ -48,7 +48,7 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
     private StartPointItemPlacer startPointItemPlacer;
 
     @Override
-    protected boolean isActive() {
+    public boolean isActive() {
         return startPointItemPlacer != null;
     }
 
@@ -87,14 +87,14 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
         Shape3D shape3D = shape3DUiService.getShape3D(startPointItemPlacer.getBaseItemType().getShape3DId());
         for (Element3D element3D : shape3D.getElement3Ds()) {
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-                compositeRenderer.init(vertexContainer);
-                compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-                compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-                compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                modelRenderer.add(RenderUnitControl.START_POINT_ITEM, compositeRenderer);
-                compositeRenderer.fillBuffers();
+                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();
+                renderComposite.init(vertexContainer);
+                renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+                renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                renderComposite.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
+                renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+                modelRenderer.add(RenderUnitControl.START_POINT_ITEM, renderComposite);
+                renderComposite.fillBuffers();
             }
         }
         add(modelRenderer);
@@ -106,15 +106,15 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
         // TODO ClientDeadEndProtection.getInstance().start();
     }
 
-    public void onMouseDownEvent(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
+    public void onMouseDownEvent(Vertex terrainPosition) {
         if (!isActive()) {
             return;
         }
-        startPointItemPlacer.onMove(terrainMouseDownEvent.getTerrainPosition());
+        startPointItemPlacer.onMove(terrainPosition);
         if (startPointItemPlacer.isPositionValid()) {
             PlayerBase playerBase = baseItemService.createHumanBase(storyboardService.getUserContext());
             try {
-                baseItemService.spawnSyncBaseItem(startPointItemPlacer.getBaseItemType(), terrainMouseDownEvent.getTerrainPosition(), playerBase);
+                baseItemService.spawnSyncBaseItem(startPointItemPlacer.getBaseItemType(), terrainPosition, playerBase);
                 deactivate();
             } catch (Exception e) {
                 exceptionHandler.handleException(e);

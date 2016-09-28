@@ -151,4 +151,14 @@ public class SyncItemContainerService {
             throw new ItemDoesNotExistException(id);
         }
     }
+
+    public SyncItem getItemAtPosition(DecimalPosition position) {
+        return iterateOverBaseItems(false, false, null, syncItem -> {
+            if (syncItem.getSyncPhysicalArea().overlap(position)) {
+                return syncItem;
+            } else {
+                return null;
+            }
+        });
+    }
 }

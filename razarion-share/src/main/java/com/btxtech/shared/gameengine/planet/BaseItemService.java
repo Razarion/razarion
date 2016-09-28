@@ -265,7 +265,7 @@ public class BaseItemService {
         throw new UnsupportedOperationException();
     }
 
-    // TODO SyncItem getItemAtAbsolutePosition(Index absolutePosition);
+    // TODO -- > is in SyncItemContainerService SyncItem getItemAtPosition(Index absolutePosition);
 
     // TODO void sellItem(Id id) throws ItemDoesNotExistException, NotYourBaseException;
 

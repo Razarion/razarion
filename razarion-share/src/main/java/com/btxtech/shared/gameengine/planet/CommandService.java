@@ -20,6 +20,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -49,6 +50,12 @@ public class CommandService {
     @Inject
     private SyncItemContainerService syncItemContainerService;
 
+    public void move(Collection<SyncBaseItem> syncBaseItems, DecimalPosition destination) {
+        for (SyncBaseItem syncBaseItem : syncBaseItems) {
+            move(syncBaseItem, destination);
+        }
+    }
+
     public void move(SyncBaseItem syncBaseItem, DecimalPosition destination) {
         syncBaseItem.stop();
         MoveCommand moveCommand = new MoveCommand();
@@ -72,7 +79,7 @@ public class CommandService {
         throw new UnsupportedOperationException();
     }
 
-    public void finalizeBuild(SyncBaseItem builder, SyncBaseItem building, Index destinationHint, double destinationAngel) {
+    public void finalizeBuild(Collection<SyncBaseItem> syncBaseItems, SyncBaseItem building) {
         throw new UnsupportedOperationException();
     }
 
@@ -80,20 +87,31 @@ public class CommandService {
         throw new UnsupportedOperationException();
     }
 
-    public void collect(SyncBaseItem harvester, SyncResourceItem moneyItem, Index destinationHint, double destinationAngel) {
+    public void collect(Collection<SyncBaseItem> syncBaseItems, SyncResourceItem moneyItem) {
+        for (SyncBaseItem syncBaseItem : syncBaseItems) {
+            collect(syncBaseItem, moneyItem);
+        }
+    }
+
+    public void collect(SyncBaseItem harvester, SyncResourceItem moneyItem) {
         throw new UnsupportedOperationException();
     }
 
-    public void attack(SyncBaseItem syncBaseItem, SyncBaseItem target, DecimalPosition destinationHint, double destinationAngel, boolean followTarget) {
+    public void attack(Collection<SyncBaseItem> syncBaseItems, SyncBaseItem target) {
+        for (SyncBaseItem syncBaseItem : syncBaseItems) {
+            attack(syncBaseItem, target, syncBaseItem.getSyncPhysicalArea().canMove());
+        }
+    }
+
+    public void attack(SyncBaseItem syncBaseItem, SyncBaseItem target, boolean followTarget) {
         syncBaseItem.stop();
         Path path;
         AttackCommand attackCommand = new AttackCommand();
         if (followTarget) {
-            path = collisionService.setupPathToDestination(syncBaseItem, destinationHint);
+            path = pathingService.setupPathToDestination(syncBaseItem, target);
             if (moveIfPathTargetUnreachable(syncBaseItem, path)) {
                 return;
             }
-            path.setDestinationAngel(destinationAngel);
             attackCommand.setPathToDestination(path);
         }
         attackCommand.setId(syncBaseItem.getId());
@@ -108,7 +126,13 @@ public class CommandService {
         }
     }
 
-    public void pickupBox(SyncBaseItem picker, SyncBoxItem box, Index destinationHint, double destinationAngel) {
+    public void pickupBox(Collection<SyncBaseItem> syncBaseItems, SyncBoxItem box) {
+        for (SyncBaseItem syncBaseItem : syncBaseItems) {
+            pickupBox(syncBaseItem, box);
+        }
+    }
+
+    public void pickupBox(SyncBaseItem picker, SyncBoxItem box) {
         throw new UnsupportedOperationException();
     }
 
@@ -116,7 +140,7 @@ public class CommandService {
         throw new UnsupportedOperationException();
     }
 
-    public void loadContainer(SyncBaseItem container, SyncBaseItem item, Index destinationHint, double destinationAngel) {
+    public void loadContainer(SyncBaseItem container, Collection<SyncBaseItem> syncBaseItems) {
         throw new UnsupportedOperationException();
     }
 

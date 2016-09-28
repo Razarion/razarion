@@ -3,13 +3,14 @@ package com.btxtech.client.renderer;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.utils.GwtUtils;
-import com.btxtech.uiservice.mouse.MouseEventHandler;
+import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.Window;
 import elemental.client.Browser;
 import elemental.dom.Element;
+import elemental.events.Event;
 import elemental.events.MouseEvent;
 import elemental.events.WheelEvent;
 import elemental.html.WebGLRenderingContext;
@@ -36,7 +37,7 @@ public class GameCanvas {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
-    private MouseEventHandler mouseEventHandler;
+    private TerrainMouseHandler terrainMouseHandler;
     private int width;
     private int height;
     private Canvas canvas;
@@ -81,14 +82,16 @@ public class GameCanvas {
     }
 
     private void initMouseHandler() {
-        getCanvasElement().addEventListener(elemental.events.Event.MOUSEMOVE, evt -> {
+        getCanvasElement().addEventListener(Event.MOUSEMOVE, evt -> {
             MouseEvent mouseEvent = (MouseEvent) evt;
-            mouseEventHandler.onMouseMove(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height);
+            terrainMouseHandler.onMouseMove(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height, GwtUtils.isButtonDown(mouseEvent, 1));
         }, true);
-        getCanvasElement().addEventListener(elemental.events.Event.MOUSEOUT, evt -> mouseEventHandler.onMouseOut(), true);
-        getCanvasElement().addEventListener(elemental.events.Event.MOUSEDOWN, evt -> {
+        getCanvasElement().addEventListener(Event.MOUSEOUT, evt -> terrainMouseHandler.onMouseOut(), true);
+        getCanvasElement().addEventListener(Event.MOUSEDOWN, evt -> {
             MouseEvent mouseEvent = (MouseEvent) evt;
-            mouseEventHandler.onMouseDown(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height, mouseEvent.getButton() == MouseEvent.Button.PRIMARY, mouseEvent.isCtrlKey(), mouseEvent.isShiftKey());
+            terrainMouseHandler.onMouseDown(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height,
+                    GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY), GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.SECONDARY), GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.AUXILIARY),
+                    mouseEvent.isCtrlKey(), mouseEvent.isShiftKey());
             if (mouseEvent.getButton() == MouseEvent.Button.PRIMARY && mouseEvent.isAltKey()) {
                 JsUint8Array uint8Array = WebGlUtil.createUint8Array(4);
                 ctx3d.readPixels(mouseEvent.getClientX(), canvas.getCoordinateSpaceHeight() - mouseEvent.getClientY(), 1, 1, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, uint8Array);
@@ -100,15 +103,17 @@ public class GameCanvas {
                 logger.severe("x=" + x + " y=" + y + " z=" + z);
             }
         }, true);
-        getCanvasElement().addEventListener(elemental.events.Event.MOUSEUP, evt -> {
+        getCanvasElement().addEventListener(Event.MOUSEUP, evt -> {
             MouseEvent mouseEvent = (MouseEvent) evt;
-            mouseEventHandler.onMouseUp(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height);
+            terrainMouseHandler.onMouseUp(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height,
+                    GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY));
         }, true);
         getCanvasElement().addEventListener("wheel", evt -> {
             WheelEvent wheelEvent = (WheelEvent) evt;
-            mouseEventHandler.onMouseWheel(wheelEvent.getWheelDeltaY());
+            terrainMouseHandler.onMouseWheel(wheelEvent.getWheelDeltaY());
             wheelEvent.preventDefault();
         }, true);
+        getCanvasElement().addEventListener(Event.CONTEXTMENU, Event::preventDefault, true);
     }
 
     public void startRenderLoop() {

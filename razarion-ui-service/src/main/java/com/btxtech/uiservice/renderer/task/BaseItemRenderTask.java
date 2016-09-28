@@ -13,6 +13,7 @@ import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 31.08.2016.
  */
-@Singleton
+@ApplicationScoped
 public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private Logger logger = Logger.getLogger(BaseItemRenderTask.class.getName());
     @Inject
