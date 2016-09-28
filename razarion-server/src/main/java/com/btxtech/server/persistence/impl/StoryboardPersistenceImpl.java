@@ -79,12 +79,11 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        // List<SceneConfig> sceneConfigs = storyboardConfig.getSceneConfigs();
-        addScrollOverTerrain(sceneConfigs); // TODO mode to DB
-        addBotSpawnScene(sceneConfigs); // TODO mode to DB
+        //addScrollOverTerrain(sceneConfigs); // TODO mode to DB
+        //addBotSpawnScene(sceneConfigs); // TODO mode to DB
         addUserSpawnScene(sceneConfigs); // TODO mode to DB
-        addBotMoveScene(sceneConfigs);// TODO mode to DB
-        addScrollToOwnScene(sceneConfigs);// TODO mode to DB
+        //addBotMoveScene(sceneConfigs);// TODO mode to DB
+        //addScrollToOwnScene(sceneConfigs);// TODO mode to DB
         addUserMoveScene(sceneConfigs);// TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         storyboardConfig.setSceneConfigs(sceneConfigs);

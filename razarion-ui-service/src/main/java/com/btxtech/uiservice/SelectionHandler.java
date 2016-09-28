@@ -87,18 +87,18 @@ public class SelectionHandler {
     }
 
     public void setItemGroupSelected(Group selectedGroup) {
-        if (hasOwnSelection() && selectedGroup.getCount() == 1) {
-            if (selectedGroup.getFirst().hasSyncItemContainer()) {
-                if (!this.selectedGroup.equals(selectedGroup) && this.selectedGroup.canMove()) {
-                    commandService.loadContainer(selectedGroup.getFirst(), this.selectedGroup.getItems());
-                    clearSelection();
-                    return;
-                }
-            } else if (!selectedGroup.getFirst().isReady()) {
-                commandService.finalizeBuild(this.selectedGroup.getItems(), selectedGroup.getFirst());
-                return;
-            }
-        }
+//    TODO    if (hasOwnSelection() && selectedGroup.getCount() == 1) {
+//    TODO        if (selectedGroup.getFirst().hasSyncItemContainer()) {
+//    TODO            if (!this.selectedGroup.equals(selectedGroup) && this.selectedGroup.canMove()) {
+//    TODO                commandService.loadContainer(selectedGroup.getFirst(), this.selectedGroup.getItems());
+//    TODO                clearSelection();
+//    TODO                return;
+//    TODO            }
+//    TODO        } else if (!selectedGroup.getFirst().isReady()) {
+//    TODO            commandService.finalizeBuild(this.selectedGroup.getItems(), selectedGroup.getFirst());
+//    TODO            return;
+//    TODO        }
+//    TODO    }
         clearSelection();
         this.selectedGroup = selectedGroup;
         fireOwnItemSelectionChanged(selectedGroup);

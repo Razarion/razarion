@@ -81,7 +81,7 @@ public class StoryboardService {
     public Collection<SyncBaseItem> getMyItemsInRegion(Rectangle2D rectangle) {
         Collection<SyncBaseItem> result = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            if (isMyOwnProperty(syncBaseItem)) {
+            if (!isMyOwnProperty(syncBaseItem)) {
                 return null;
             }
             if (syncBaseItem.getSyncPhysicalArea().overlap(rectangle)) {
