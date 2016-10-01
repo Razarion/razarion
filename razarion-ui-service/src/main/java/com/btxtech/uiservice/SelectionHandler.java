@@ -26,8 +26,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -44,6 +44,8 @@ public class SelectionHandler {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private StoryboardService storyboardService;
+    @Inject
+    private Event<SelectionEvent> selectionEventEventTrigger;
     private Group selectedGroup; // Always my property
     private SyncItem selectedTargetSyncItem; // Not my property
 
@@ -101,9 +103,8 @@ public class SelectionHandler {
 //    TODO    }
         clearSelection();
         this.selectedGroup = selectedGroup;
-        fireOwnItemSelectionChanged(selectedGroup);
+        selectionEventEventTrigger.fire(new SelectionEvent(SelectionEvent.Type.OWN, selectedGroup));
     }
-
 
     public void selectRectangle(Rectangle2D rectangle) {
         Collection<SyncBaseItem> selectedItems = storyboardService.getMyItemsInRegion(rectangle);
@@ -136,6 +137,7 @@ public class SelectionHandler {
 // TODO       CursorHandler.getInstance().onSelectionCleared();
     }
 
+    @Deprecated
     private void fireOwnItemSelectionChanged(Group selection) {
 //  TODO      for (SelectionListener listener : new ArrayList<SelectionListener>(listeners)) {
 //            listener.onOwnSelectionChanged(selection);

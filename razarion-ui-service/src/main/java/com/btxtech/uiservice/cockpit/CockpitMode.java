@@ -13,13 +13,14 @@
 
 package com.btxtech.uiservice.cockpit;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Group;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.GroupSelectionFrame;
+import com.btxtech.uiservice.SelectionEvent;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.ArrayList;
-import java.util.Collection;
+import javax.enterprise.event.Observes;
 import java.util.logging.Logger;
 
 /**
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
  * Time: 22:52:52
  */
 @ApplicationScoped
-public class CockpitMode  {
+public class CockpitMode {
     public enum Mode {
         UNLOAD,
     }
@@ -79,26 +80,25 @@ public class CockpitMode  {
         // inventoryItemPlacer = null;
     }
 
-    public void onTargetSelectionChanged(SyncItem selection) {
-    }
-
-    public void onSelectionCleared() {
-        clearPossibilities();
-    }
-
-    public void onOwnSelectionChanged(Group selectedGroup) {
-        setMode(null);
-
-        if (selectedGroup.canMove()) {
-            isMovePossible = true;
-            isLoadPossible = true;
-        } else {
-            isMovePossible = false;
-            isLoadPossible = false;
+    public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        switch (selectionEvent.getType()) {
+            case CLEAR:
+                setMode(null);
+                if (selectionEvent.getSelectedGroup().canMove()) {
+                    isMovePossible = true;
+                    isLoadPossible = true;
+                } else {
+                    isMovePossible = false;
+                    isLoadPossible = false;
+                }
+                isAttackPossible = selectionEvent.getSelectedGroup().canAttack();
+                isCollectPossible = selectionEvent.getSelectedGroup().canCollect();
+                isFinalizeBuildPossible = selectionEvent.getSelectedGroup().canFinalizeBuild();
+                break;
+            case TRAGET:
+                clearPossibilities();
+                break;
         }
-        isAttackPossible = selectedGroup.canAttack();
-        isCollectPossible = selectedGroup.canCollect();
-        isFinalizeBuildPossible = selectedGroup.canFinalizeBuild();
     }
 
     public boolean isMovePossible() {
@@ -176,9 +176,11 @@ public class CockpitMode  {
 //        }
 //    }
 //
-//    public void setToBeBuildPlacerListener(ToBeBuildPlacerListener toBeBuildPlacerListener) {
+
+    public void setToBeBuildPlacer(BaseItemType itemType, Group builders, DecimalPosition position) {
 //        this.toBeBuildPlacerListener = toBeBuildPlacerListener;
-//    }
+        throw new UnsupportedOperationException();
+    }
 
 //    public void onEscape() {
 //        CockpitMode.getInstance().setToBeBuildPlacer(null);
@@ -198,7 +200,7 @@ public class CockpitMode  {
         isCollectPossible = false;
         isFinalizeBuildPossible = false;
         groupSelectionFrame = null;
-    //    toBeBuildPlacer = null;
+        //    toBeBuildPlacer = null;
     }
 
 }

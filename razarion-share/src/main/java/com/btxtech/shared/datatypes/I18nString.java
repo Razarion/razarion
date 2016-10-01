@@ -9,20 +9,18 @@ import java.util.Map;
  * Time: 13:14
  */
 public class I18nString {
-    public enum Language {
-        DEFAULT,
-        DE
-    }
+    public static final String DEFAULT = "DEFAULT"; // Errai Jackson JSON marshaller can not handle enum as Map keys
+    public static final String DE = "DE"; // Errai Jackson JSON marshaller can not handle enum as Map keys
 
-    private Map<Language, String> localizedStrings;
+    private Map<String, String> localizedStrings;
 
-    public static Language convert(String localName) {
+    public static String convert(String localName) {
         if (localName.toLowerCase().startsWith("default")) {
-            return Language.DEFAULT;
+            return DEFAULT;
         } else if (localName.toLowerCase().startsWith("de")) {
-            return Language.DE;
+            return DE;
         } else {
-            return Language.DEFAULT;
+            return DEFAULT;
         }
     }
 
@@ -32,15 +30,11 @@ public class I18nString {
     public I18nString() {
     }
 
-    public I18nString(Map<Language, String> localizedStrings) {
+    public I18nString(Map<String, String> localizedStrings) {
         this.localizedStrings = localizedStrings;
     }
 
-    public String getString() {
-        return getString(Language.DEFAULT);
-    }
-
-    public String getString(Language language) {
+    public String getString(String language) {
         if (localizedStrings == null) {
             return null;
         }
@@ -48,7 +42,17 @@ public class I18nString {
         if (value != null) {
             return value;
         } else {
-            return localizedStrings.get(Language.DEFAULT);
+            return localizedStrings.get(DEFAULT);
         }
+    }
+
+    // Only used for JAX-RS JSON
+    public Map<String, String> getLocalizedStrings() {
+        return localizedStrings;
+    }
+
+    // Only used for JAX-RS JSON
+    public void setLocalizedStrings(Map<String, String> localizedStrings) {
+        this.localizedStrings = localizedStrings;
     }
 }

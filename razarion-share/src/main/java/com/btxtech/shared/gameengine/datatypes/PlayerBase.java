@@ -27,6 +27,7 @@ import java.util.Collections;
  */
 public class PlayerBase {
     private int baseId;
+    private int accountBalance;
     private String name;
     private Character character;
     private UserContext userContext;
@@ -70,6 +71,10 @@ public class PlayerBase {
         usedHouseSpace += syncBaseItem.getBaseItemType().getConsumingHouseSpace();
     }
 
+    public int getItemCount() {
+        return items.size();
+    }
+
     public Collection<SyncBaseItem> getItems() {
         return Collections.unmodifiableCollection(items);
     }
@@ -85,6 +90,14 @@ public class PlayerBase {
 
     public UserContext getUserContext() {
         return userContext;
+    }
+
+    public int getAccountBalance() {
+        return accountBalance;
+    }
+
+    public void setAccountBalance(int accountBalance) {
+        this.accountBalance = accountBalance;
     }
 
     @Override

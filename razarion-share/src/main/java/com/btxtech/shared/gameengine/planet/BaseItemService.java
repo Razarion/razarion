@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -46,6 +47,8 @@ public class BaseItemService {
     private PlanetService planetService;
     @Inject
     private LevelService levelService;
+    @Inject
+    private ItemTypeService itemTypeService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId;
 
@@ -123,9 +126,13 @@ public class BaseItemService {
         }
     }
 
-
     public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, PlayerBase playerBase) throws NoSuchItemTypeException {
         return getItemCount(playerBase, newItemType) >= getLimitation4ItemType(playerBase, newItemType);
+    }
+
+    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, UserContext userContext) throws NoSuchItemTypeException {
+        PlayerBase playerBase = getPlayerBase(userContext);
+        return playerBase == null || isLevelLimitation4ItemTypeExceeded(newItemType, playerBase);
     }
 
     public int getItemCount(PlayerBase playerBase, BaseItemType baseItemType) {
@@ -144,23 +151,27 @@ public class BaseItemService {
 
     public Collection<SyncBaseItem> getEnemyItems(final PlayerBase playerBase, final Region region) {
         final Collection<SyncBaseItem> enemyItems = new ArrayList<>();
-        syncItemContainerService.iterateOverItems(false, false, null, new ItemIteratorHandler<Void>() {
-            @Override
-            public Void handleItem(SyncItem syncItem) {
-                if (syncItem instanceof SyncBaseItem && ((SyncBaseItem) syncItem).isEnemy(playerBase) && (region == null || region.isInside(syncItem))) {
-                    enemyItems.add((SyncBaseItem) syncItem);
-                }
-
-                return null;
+        syncItemContainerService.iterateOverItems(false, false, null, (ItemIteratorHandler<Void>) syncItem -> {
+            if (syncItem instanceof SyncBaseItem && ((SyncBaseItem) syncItem).isEnemy(playerBase) && (region == null || region.isInside(syncItem))) {
+                enemyItems.add((SyncBaseItem) syncItem);
             }
+            return null;
         });
         return enemyItems;
     }
 
-    public int getLimitation4ItemType(PlayerBase playerBase, BaseItemType itemType) {
-        int levelCount = levelService.getLevel(playerBase).limitation4ItemType(itemType.getId());
-        int planetCount = planetService.getPlanetConfig().imitation4ItemType(itemType.getId());
+    public int getLimitation4ItemType(UserContext userContext, int itemTypeId) {
+        int levelCount = levelService.getLevel(userContext.getLevelId()).limitation4ItemType(itemTypeId);
+        int planetCount = planetService.getPlanetConfig().imitation4ItemType(itemTypeId);
         return Math.min(levelCount, planetCount);
+    }
+
+    public int getLimitation4ItemType(UserContext userContext, BaseItemType itemType) {
+        return getLimitation4ItemType(userContext, itemType.getId());
+    }
+
+    public int getLimitation4ItemType(PlayerBase playerBase, BaseItemType itemType) {
+        return getLimitation4ItemType(playerBase.getUserContext(), itemType);
     }
 
     public boolean isEnemy(SyncBaseItem syncBaseItem1, SyncBaseItem syncBaseItem2) {
@@ -183,12 +194,59 @@ public class BaseItemService {
         return false; // TODO if enemies implemented
     }
 
+    public boolean isHouseSpaceExceeded(UserContext userContext, BaseItemType toBeBuiltType) {
+        PlayerBase playerBase = getPlayerBase(userContext);
+        return playerBase == null || isHouseSpaceExceeded(playerBase, toBeBuiltType);
+    }
+
     public boolean isHouseSpaceExceeded(PlayerBase playerBase, BaseItemType toBeBuiltType) {
         return isHouseSpaceExceeded(playerBase, toBeBuiltType, 1);
     }
 
     public boolean isHouseSpaceExceeded(PlayerBase playerBase, BaseItemType toBeBuiltType, int itemCountToAdd) {
         return playerBase.getUsedHouseSpace() + itemCountToAdd * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetService.getPlanetConfig().getHouseSpace();
+    }
+
+    public PlayerBase getPlayerBase(UserContext userContext) {
+        synchronized (bases) {
+            for (PlayerBase playerBase : bases.values()) {
+                if (userContext.equals(playerBase.getUserContext())) {
+                    return playerBase;
+                }
+            }
+        }
+        return null;
+    }
+
+    public int getItemCount(UserContext userContext) {
+        PlayerBase playerBase = getPlayerBase(userContext);
+        if (playerBase != null) {
+            return playerBase.getItemCount();
+        } else {
+            return 0;
+        }
+    }
+
+    public int getItemCount(UserContext userContext, int itemTypeId) {
+        PlayerBase playerBase = getPlayerBase(userContext);
+        if (playerBase != null) {
+            return getItemCount(playerBase, itemTypeId);
+        } else {
+            return 0;
+        }
+    }
+
+    private int getItemCount(PlayerBase playerBase, int baseItemTypeId) {
+        return getItemCount(playerBase, itemTypeService.getBaseItemType(baseItemTypeId));
+    }
+
+    public int getAccountBalance(UserContext userContext) {
+        PlayerBase playerBase = getPlayerBase(userContext);
+        if (playerBase != null) {
+            return playerBase.getAccountBalance();
+        } else {
+            return 0;
+        }
     }
 
     // --------------------------------------------------------------------------

@@ -10,5 +10,6 @@ public class ZIndexConstants {
     public static final int STORY_COVER = MAIN_COCKPIT + 1;
     public static final int EDITOR_SIDE_BAR = STORY_COVER + 1;
     public static final int QUEST_SIDE_BAR = EDITOR_SIDE_BAR + 1;
+    public static final int ITEM_COCKPIT = QUEST_SIDE_BAR + 1;
     public static final int DIALOG = QUEST_SIDE_BAR + 1;
 }

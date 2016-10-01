@@ -146,6 +146,7 @@
                 <AnchorPane fx:id="centerPanel" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <children>
                         <Canvas fx:id="canvas" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" onMouseDragged="#onMouseDragged" onMouseExited="#onMouseOut" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" BorderPane.alignment="CENTER" />
+                  <Pane fx:id="itemCockpitPanel" layoutX="14.0" layoutY="744.0" prefHeight="200.0" prefWidth="200.0" />
                     </children>
                 </AnchorPane>
             </items>

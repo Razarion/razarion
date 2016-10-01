@@ -31,15 +31,12 @@ public class ImageGalleryItemListWidget extends ListWidget<ImageGalleryItem, Ima
     @Override
     protected void onItemsRendered(List<ImageGalleryItem> items) {
         for (final ImageGalleryItem item : items) {
-            GwtUtils.castElementToElement(getComponent(item).getElement()).addEventListener(Event.CLICK, new EventListener() {
-                @Override
-                public void handleEvent(Event evt) {
-                    Element e = ((JavaScriptObject) evt.getTarget()).cast();
-                    if (e.getTagName().equalsIgnoreCase("BUTTON")) {
-                        return;
-                    }
-                    imageGalleryDialog.selectionChanged(item);
+            GwtUtils.castElementToElement(getComponent(item).getElement()).addEventListener(Event.CLICK, evt -> {
+                Element e = ((JavaScriptObject) evt.getTarget()).cast();
+                if (e.getTagName().equalsIgnoreCase("BUTTON")) {
+                    return;
                 }
+                imageGalleryDialog.selectionChanged(item);
             }, false);
         }
     }

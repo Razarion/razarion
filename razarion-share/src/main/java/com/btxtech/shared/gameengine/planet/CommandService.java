@@ -83,7 +83,13 @@ public class CommandService {
         throw new UnsupportedOperationException();
     }
 
-    public void fabricate(SyncBaseItem builder, BaseItemType itemTypeToBuild) {
+    public void fabricate(Collection<SyncBaseItem> factories, BaseItemType itemTypeToBuild) {
+        for (SyncBaseItem factory : factories) {
+            fabricate(factory, itemTypeToBuild);
+        }
+    }
+
+    public void fabricate(SyncBaseItem factory, BaseItemType itemTypeToBuild) {
         throw new UnsupportedOperationException();
     }
 

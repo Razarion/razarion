@@ -16,7 +16,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.GroupSelectionFrame;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitMode;
-import com.btxtech.uiservice.cockpit.ItemCockpitService;
+import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;

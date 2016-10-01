@@ -29,6 +29,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import javax.enterprise.inject.Instance;
@@ -70,6 +71,8 @@ public class WebGlEmulatorController implements Initializable {
     private Canvas canvas;
     @FXML
     private CheckBox showRenderTimeCheckBox;
+    @FXML
+    private Pane itemCockpitPanel;
     @Inject
     private Instance<RenderService> renderServiceInstance;
     @Inject
@@ -341,5 +344,9 @@ public class WebGlEmulatorController implements Initializable {
 
     public void getJsonButtonClicked() {
         storyboardProviderEmulator.fromServerToFile();
+    }
+
+    public Pane getItemCockpitPanel() {
+        return itemCockpitPanel;
     }
 }

@@ -4,6 +4,8 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.gameengine.GameEngine;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.VisualUiService;
@@ -30,6 +32,8 @@ public class StoryboardService {
     private Instance<Scene> sceneInstance;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private BaseItemService baseItemService;
     private StoryboardConfig storyboardConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -90,5 +94,29 @@ public class StoryboardService {
             return null;
         });
         return result;
+    }
+
+    public int getMyLimitation4ItemType(Integer itemTypeId) {
+        return baseItemService.getLimitation4ItemType(userContext, itemTypeId);
+    }
+
+    public int getItemCount(int itemTypeId) {
+        return baseItemService.getItemCount(userContext, itemTypeId);
+    }
+
+    public int getLimitation4ItemType(BaseItemType itemType) {
+        return baseItemService.getLimitation4ItemType(userContext, itemType);
+    }
+
+    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType itemType) {
+        return baseItemService.isLevelLimitation4ItemTypeExceeded(itemType, userContext);
+    }
+
+    public boolean isHouseSpaceExceeded(BaseItemType itemType) {
+        return baseItemService.isHouseSpaceExceeded(userContext, itemType);
+    }
+
+    public int getAccountBalance() {
+        return baseItemService.getAccountBalance(userContext);
     }
 }
