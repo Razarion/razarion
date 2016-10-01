@@ -15,16 +15,19 @@ package com.btxtech.shared.gameengine.planet.condition;
 
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
+import javax.enterprise.context.Dependent;
+
 /**
  * User: beat
  * Date: 27.12.2010
  * Time: 16:31:29
  */
+@Dependent
 public class CountComparison extends AbstractSyncItemComparison {
     private double count;
     private double countTotal;
 
-    public CountComparison(int count) {
+    public void init(int count) {
         this.count = count;
         countTotal = count;
     }

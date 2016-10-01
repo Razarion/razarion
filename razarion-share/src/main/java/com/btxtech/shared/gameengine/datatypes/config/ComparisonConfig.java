@@ -23,8 +23,8 @@ import java.util.Map;
 public class ComparisonConfig {
     private Integer count;
     private Map<Integer, Integer> baseItemTypeCount;
-    // private Integer time;
-    // private Boolean addExisting;
+    private Integer time;
+    private Boolean addExisting;
     private PlaceConfig placeConfig;
 
     public Integer getCount() {
@@ -42,6 +42,24 @@ public class ComparisonConfig {
 
     public ComparisonConfig setBaseItemTypeCount(Map<Integer, Integer> baseItemTypeCount) {
         this.baseItemTypeCount = baseItemTypeCount;
+        return this;
+    }
+
+    public Integer getTime() {
+        return time;
+    }
+
+    public ComparisonConfig setTime(Integer time) {
+        this.time = time;
+        return this;
+    }
+
+    public Boolean getAddExisting() {
+        return addExisting;
+    }
+
+    public ComparisonConfig setAddExisting(Boolean addExisting) {
+        this.addExisting = addExisting;
         return this;
     }
 

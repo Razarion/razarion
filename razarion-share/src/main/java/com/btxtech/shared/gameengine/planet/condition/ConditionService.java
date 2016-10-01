@@ -15,14 +15,20 @@ package com.btxtech.shared.gameengine.planet.condition;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -36,12 +42,18 @@ import java.util.function.Consumer;
 public class ConditionService {
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private BaseItemService baseItemService;
+    @Inject
+    private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private Instance<AbstractComparison> instance;
     private final Map<UserContext, AbstractConditionProgress> progressMap = new HashMap<>();
 
     public void activateCondition(UserContext examinee, ConditionConfig conditionConfig, Consumer<UserContext> conditionPassedListener) {
         AbstractComparison abstractComparison = null;
         if (conditionConfig.getConditionTrigger().isComparisonNeeded()) {
-            abstractComparison = createAbstractComparison(conditionConfig.getComparisonConfig());
+            abstractComparison = createAbstractComparison(examinee, conditionConfig.getComparisonConfig());
 //            if (abstractComparison instanceof AbstractUpdatingComparison) {
 //                ((AbstractUpdatingComparison) abstractComparison).setGlobalServices(getGlobalServices());
 //            }
@@ -72,6 +84,28 @@ public class ConditionService {
         // TODO }
     }
 
+    public void checkPositionCondition() {
+        Collection<PlayerBase> playerBases = new ArrayList<>();
+        synchronized (progressMap) {
+            for (AbstractConditionProgress abstractConditionProgress : progressMap.values()) {
+                if (abstractConditionProgress.getConditionTrigger().equals(ConditionTrigger.SYNC_ITEM_POSITION)) {
+                    playerBases.add(baseItemService.getPlayerBase(abstractConditionProgress.getExaminee()));
+                    break;
+                }
+            }
+        }
+        if (playerBases.isEmpty()) {
+            return;
+        }
+        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (!playerBases.contains(syncBaseItem.getBase())) {
+                return null;
+            }
+            triggerSyncItem(syncBaseItem.getBase().getUserContext(), ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
+            return null;
+        });
+    }
+
     public void onSyncItemBuilt(SyncBaseItem syncBaseItem) {
         UserContext examinee = syncBaseItem.getBase().getUserContext();
         if (examinee == null) {
@@ -81,15 +115,19 @@ public class ConditionService {
         triggerSyncItem(examinee, ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
     }
 
-    private AbstractComparison createAbstractComparison(ComparisonConfig comparisonConfig) {
+    private AbstractComparison createAbstractComparison(UserContext examinee, ComparisonConfig comparisonConfig) {
         if (comparisonConfig.getCount() != null) {
-            return new CountComparison(comparisonConfig.getCount());
+            CountComparison countComparison = instance.select(CountComparison.class).get();
+            countComparison.init(comparisonConfig.getCount());
+            return countComparison;
+        } else if (comparisonConfig.getPlaceConfig() != null) {
+            ItemTypePositionComparison itemTypePositionComparison = instance.select(ItemTypePositionComparison.class).get();
+            itemTypePositionComparison.init(convertItemCount(comparisonConfig.getBaseItemTypeCount()),comparisonConfig.getPlaceConfig(),comparisonConfig.getTime(), comparisonConfig.getAddExisting(), examinee);
+            return itemTypePositionComparison;
         } else if (comparisonConfig.getBaseItemTypeCount() != null) {
-            Map<BaseItemType, Integer> baseItemType = new HashMap<>();
-            for (Map.Entry<Integer, Integer> entry : comparisonConfig.getBaseItemTypeCount().entrySet()) {
-                baseItemType.put(itemTypeService.getBaseItemType(entry.getKey()), entry.getValue());
-            }
-            return new SyncItemTypeComparison(baseItemType);
+            SyncItemTypeComparison syncItemTypeComparison = instance.select(SyncItemTypeComparison.class).get();
+            syncItemTypeComparison.init(convertItemCount(comparisonConfig.getBaseItemTypeCount()));
+            return syncItemTypeComparison;
         } else {
             throw new UnsupportedOperationException();
         }
@@ -101,6 +139,9 @@ public class ConditionService {
             abstractConditionProgress = progressMap.get(examinee);
         }
         if (abstractConditionProgress == null) {
+            return;
+        }
+        if (!abstractConditionProgress.getConditionTrigger().equals(conditionTrigger)) {
             return;
         }
         SyncBaseItemConditionProgress syncBaseItemConditionProgress = (SyncBaseItemConditionProgress) abstractConditionProgress;
@@ -115,5 +156,13 @@ public class ConditionService {
         if (abstractConditionProgress.getConditionPassedListener() != null) {
             abstractConditionProgress.getConditionPassedListener().accept(abstractConditionProgress.getExaminee());
         }
+    }
+
+    private Map<BaseItemType, Integer> convertItemCount(Map<Integer, Integer> itemIdCount) {
+        Map<BaseItemType, Integer> baseItemType = new HashMap<>();
+        for (Map.Entry<Integer, Integer> entry : itemIdCount.entrySet()) {
+            baseItemType.put(itemTypeService.getBaseItemType(entry.getKey()), entry.getValue());
+        }
+        return baseItemType;
     }
 }

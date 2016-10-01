@@ -16,17 +16,19 @@ package com.btxtech.shared.gameengine.planet.condition;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
+import javax.enterprise.context.Dependent;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * User: beat Date: 18.07.2010 Time: 21:06:41
  */
+@Dependent
 public class SyncItemTypeComparison extends AbstractSyncItemComparison {
     private Map<BaseItemType, Integer> remaining;
     private Map<BaseItemType, Integer> total;
 
-    public SyncItemTypeComparison(Map<BaseItemType, Integer> baseItemType) {
+    public void init(Map<BaseItemType, Integer> baseItemType) {
         remaining = new HashMap<>(baseItemType);
         total = new HashMap<>(baseItemType);
     }

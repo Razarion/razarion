@@ -14,11 +14,13 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -78,6 +80,12 @@ public class PlayerBase {
     public Collection<SyncBaseItem> getItems() {
         return Collections.unmodifiableCollection(items);
     }
+
+
+    public Collection<SyncBaseItem> getItemsInPlace(PlaceConfig placeConfig) {
+        return items.stream().filter(item -> item.getSyncPhysicalArea().contains(placeConfig)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
 
     public int getUsedHouseSpace() {
         return usedHouseSpace;

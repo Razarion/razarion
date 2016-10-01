@@ -147,9 +147,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private void addUserMoveScene(List<SceneConfig> sceneConfigs) {
         Map<Integer, Integer> itemTypeCount = new HashMap<>();
         itemTypeCount.put(180807, 1);
-        ComparisonConfig comparisonConfig = new ComparisonConfig().setBaseItemTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(1600, 700), new DecimalPosition(2000, 700), new DecimalPosition(2000, 1000), new DecimalPosition(1600, 1000)))));
+        ComparisonConfig comparisonConfig = new ComparisonConfig().setBaseItemTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(1600, 700), new DecimalPosition(2000, 700), new DecimalPosition(2000, 1000), new DecimalPosition(1600, 1000))))).setAddExisting(true);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(comparisonConfig);
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setConditionConfig(conditionConfig)));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(new CameraConfig().setCameraLocked(false)).setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setConditionConfig(conditionConfig)));
     }
 
     private List<LevelConfig> setupLevelConfigs() {

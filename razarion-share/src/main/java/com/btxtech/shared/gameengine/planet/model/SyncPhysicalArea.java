@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 
@@ -74,6 +75,21 @@ public class SyncPhysicalArea {
 
     public boolean overlap(Rectangle2D rectangle) {
         return rectangle.adjoinsCircleExclusive(position.toXY(), radius);
+    }
+
+    /**
+     * If PlaceConfig contains a polygon, only the position is checked.
+     * NO CHECK FOR THE RADIUS IS PERFORMED
+     *
+     * @param placeConfig to check
+     * @return true if inside
+     */
+    public boolean contains(PlaceConfig placeConfig) {
+         if(placeConfig.getPosition() != null) {
+             return overlap(placeConfig.getPosition());
+         } else {
+             return placeConfig.getPolygon2D().isInside(position.toXY());
+         }
     }
 
     public boolean isInRange(double range, SyncBaseItem target) {
