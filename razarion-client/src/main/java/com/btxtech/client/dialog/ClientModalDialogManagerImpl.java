@@ -1,7 +1,8 @@
 package com.btxtech.client.dialog;
 
+import com.btxtech.client.cockpit.level.LevelUpDialog;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
-import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.uiservice.dialog.ApplyListener;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -25,6 +26,7 @@ public class ClientModalDialogManagerImpl implements ModalDialogManager {
         QUEUE_ABLE,
         UNIMPORTANT
     }
+
     @Inject
     private Instance<ModalDialogPanel<Object>> containerInstance;
     private ModalDialogPanel activeDialog;
@@ -40,6 +42,11 @@ public class ClientModalDialogManagerImpl implements ModalDialogManager {
     @Override
     public void showQuestPassed(QuestConfig questConfig, ApplyListener<QuestConfig> applyListener) {
         show("Quest bestanden", ClientModalDialogManagerImpl.Type.STACK_ABLE, QuestPassedDialog.class, questConfig, applyListener);
+    }
+
+    @Override
+    public void showLevelUp(UserContext userContext, ApplyListener<QuestConfig> applyListener) {
+        show("Level Up", ClientModalDialogManagerImpl.Type.STACK_ABLE, LevelUpDialog.class, null, applyListener);
     }
 
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {
@@ -87,7 +94,7 @@ public class ClientModalDialogManagerImpl implements ModalDialogManager {
             if (!dialogQueue.isEmpty()) {
                 dialogQueue.remove(0).showDialog();
             }
-        } else if(stackedDialogs.contains(modalDialogPanel)) {
+        } else if (stackedDialogs.contains(modalDialogPanel)) {
             stackedDialogs.remove(modalDialogPanel);
         }
     }

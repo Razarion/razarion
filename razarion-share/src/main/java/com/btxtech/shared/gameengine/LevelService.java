@@ -30,7 +30,7 @@ public class LevelService {
             levels.put(levelConfig.getLevelId(), levelConfig);
             orderedLevels.add(levelConfig);
         }
-        Collections.sort(orderedLevels, (o1, o2) -> -Integer.compare(o1.getNumber(), o2.getNumber()));
+        Collections.sort(orderedLevels, (o1, o2) -> Integer.compare(o1.getNumber(), o2.getNumber()));
     }
 
     public LevelConfig getLevel(int levelId) {
@@ -52,10 +52,10 @@ public class LevelService {
     public void increaseXp(UserContext userContext, int deltaXp) {
         int xp = userContext.getXp() + deltaXp;
         LevelConfig levelConfig = getLevel(userContext);
-        if (levelConfig.getXp2LevelUp() > xp) {
+        if (xp >= levelConfig.getXp2LevelUp()) {
             userContext.setLevelId(getNextLevel(levelConfig).getLevelId());
             userContext.setXp(0);
-            if(levelUpCallback != null) {
+            if (levelUpCallback != null) {
                 levelUpCallback.accept(userContext);
             }
         } else {

@@ -83,7 +83,10 @@ public class Scene {
             hasCompletionCallback = true;
             completionCallbackCount++;
             conditionService.activateCondition(userContext, sceneConfig.getQuestConfig().getConditionConfig(), userContext1 -> {
-                modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig(), ignore -> onComplete());
+                modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig(), ignore -> {
+                    levelService.increaseXp(userContext, sceneConfig.getQuestConfig().getXp());
+                    onComplete();
+                });
             });
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
         } else {
@@ -93,7 +96,7 @@ public class Scene {
         if (sceneConfig.isWait4LevelUp() != null && sceneConfig.isWait4LevelUp()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            levelService.setLevelUpCallback(userContext1 -> onComplete());
+            levelService.setLevelUpCallback(userContext1 -> modalDialogManager.showLevelUp(userContext1, ignore -> onComplete()));
         }
 
         if (!hasCompletionCallback) {
