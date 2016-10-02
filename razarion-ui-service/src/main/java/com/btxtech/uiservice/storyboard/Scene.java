@@ -3,6 +3,7 @@ package com.btxtech.uiservice.storyboard;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.condition.ConditionService;
@@ -46,6 +47,8 @@ public class Scene {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ModalDialogManager modalDialogManager;
+    @Inject
+    private LevelService levelService;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -80,13 +83,19 @@ public class Scene {
             hasCompletionCallback = true;
             completionCallbackCount++;
             conditionService.activateCondition(userContext, sceneConfig.getQuestConfig().getConditionConfig(), userContext1 -> {
-                modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig(),ignore -> onComplete());
+                modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig(), ignore -> onComplete());
             });
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
         } else {
             questVisualizer.showSideBar(null);
         }
         setupCameraConfig(sceneConfig.getCameraConfig());
+        if (sceneConfig.isWait4LevelUp() != null && sceneConfig.isWait4LevelUp()) {
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            levelService.setLevelUpCallback(userContext1 -> onComplete());
+        }
+
         if (!hasCompletionCallback) {
             storyboardService.onSceneCompleted();
         }
@@ -114,13 +123,15 @@ public class Scene {
         }
     }
 
-
     public void cleanup() {
         if (sceneConfig.getIntroText() != null) {
             storyCover.hide();
         }
         if (sceneConfig.getStartPointConfig() != null) {
             startPointUiService.deactivate();
+        }
+        if (sceneConfig.isWait4LevelUp() != null && sceneConfig.isWait4LevelUp()) {
+            levelService.setLevelUpCallback(null);
         }
     }
 }

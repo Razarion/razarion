@@ -16,6 +16,7 @@ public class SceneConfig {
     private List<BotConfig> botConfigs;
     private List<BotMoveCommandConfig> botMoveCommandConfigs;
     private StartPointConfig startPointConfig;
+    private Boolean wait4LevelUp;
 
     public String getIntroText() {
         return introText;
@@ -68,6 +69,15 @@ public class SceneConfig {
 
     public SceneConfig setStartPointConfig(StartPointConfig startPointConfig) {
         this.startPointConfig = startPointConfig;
+        return this;
+    }
+
+    public Boolean isWait4LevelUp() {
+        return wait4LevelUp;
+    }
+
+    public SceneConfig setWait4LevelUp(Boolean wait4LevelUp) {
+        this.wait4LevelUp = wait4LevelUp;
         return this;
     }
 }
