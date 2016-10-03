@@ -41,6 +41,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             public void callback(Shape3D shape3D) {
                 shape3DUiService.override(shape3D);
                 fire();
+                fireSelection(shape3D.createObjectNameId());
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);

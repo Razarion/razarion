@@ -13,6 +13,7 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractCrudeEditor<T> implements CrudEditor<T> {
     private Collection<Consumer<List<ObjectNameId>>> observers = new ArrayList<>();
+    private Collection<Consumer<ObjectNameId>> callbackSelection = new ArrayList<>();
 
     protected abstract List<ObjectNameId> setupObjectNameIds();
 
@@ -23,8 +24,18 @@ public abstract class AbstractCrudeEditor<T> implements CrudEditor<T> {
     }
 
     @Override
+    public void monitorSelection(Consumer<ObjectNameId> callback) {
+        callbackSelection.add(callback);
+    }
+
+    @Override
     public void removeMonitor(Consumer<List<ObjectNameId>> observer) {
         observers.remove(observer);
+    }
+
+    @Override
+    public void removeSelectionMonitor(Consumer<ObjectNameId> callback) {
+        callbackSelection.remove(callback);
     }
 
     protected void fire() {
@@ -33,4 +44,12 @@ public abstract class AbstractCrudeEditor<T> implements CrudEditor<T> {
             observer.accept(objectNameIds);
         }
     }
+
+    protected void fireSelection(ObjectNameId selection) {
+        for (Consumer<ObjectNameId> observer : callbackSelection) {
+            observer.accept(selection);
+        }
+    }
+
+
 }

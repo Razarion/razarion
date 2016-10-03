@@ -49,6 +49,7 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
     @PostConstruct
     public void init() {
         getCrudEditor().monitor(this::updateSelector);
+        getCrudEditor().monitorSelection(this::select);
         selector.addValueChangeHandler(event -> displayPropertyBook(selector.getValue()));
     }
 
@@ -68,6 +69,11 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
             }
         });
         enableDeleteButton(false);
+    }
+
+    public void select(ObjectNameId selection) {
+        selector.setValue(selection);
+        displayPropertyBook(selection); // TODO may changing the selector fire an event
     }
 
     @EventHandler("createButton")
@@ -115,6 +121,7 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
     @Override
     public void onClose() {
         getCrudEditor().removeMonitor(this::updateSelector);
+        getCrudEditor().removeSelectionMonitor(this::select);
     }
 
 }

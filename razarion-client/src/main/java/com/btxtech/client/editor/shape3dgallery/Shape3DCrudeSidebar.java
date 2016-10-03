@@ -19,7 +19,6 @@ public class Shape3DCrudeSidebar extends AbstractCrudeParentSidebar<Shape3D, Sha
     @Inject
     private Instance<Shape3DPropertyPanel> propertyPanelInstance;
 
-
     @Override
     protected Shape3DCrud getCrudEditor() {
         return shape3DCrud;

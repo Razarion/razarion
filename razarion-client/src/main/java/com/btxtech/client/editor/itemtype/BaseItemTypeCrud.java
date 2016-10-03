@@ -35,6 +35,7 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
             public void callback(BaseItemType baseItemType) {
                 itemTypeService.override(baseItemType);
                 fire();
+                fireSelection(baseItemType.createObjectNameId());
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "ItemTypeProvider.getShape3Ds failed: " + message, throwable);

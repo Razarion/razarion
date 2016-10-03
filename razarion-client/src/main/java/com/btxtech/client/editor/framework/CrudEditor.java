@@ -23,4 +23,8 @@ public interface CrudEditor<T> {
     void reload();
 
     T getInstance(ObjectNameId id);
+
+    void monitorSelection(Consumer<ObjectNameId> callback);
+
+    void removeSelectionMonitor(Consumer<ObjectNameId> callback);
 }
