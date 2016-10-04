@@ -25,7 +25,7 @@ import javax.inject.Inject;
  * 15.06.2016.
  */
 @Templated("ImageSelectorDialog.html#imageSelectorItemWidget")
-public class ImageSelectorItemWidget implements TakesValue<ImageGalleryItem>, IsElement {
+public class ImageSelectorItemWidget implements TakesValue<ImageGalleryItem>, IsElement, ImageUiService.ImageGalleryListener {
     // private Logger logger = Logger.getLogger(ImageGalleryItemWidget.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -72,7 +72,7 @@ public class ImageSelectorItemWidget implements TakesValue<ImageGalleryItem>, Is
     @Override
     public void setValue(ImageGalleryItem imageGalleryItem) {
         this.imageGalleryItem = imageGalleryItem;
-        imageUiService.requestImage(imageGalleryItem.getId(), this::onLoaded);
+        imageUiService.requestImage(imageGalleryItem.getId(), this);
         setSelected(false);
     }
 
@@ -87,7 +87,7 @@ public class ImageSelectorItemWidget implements TakesValue<ImageGalleryItem>, Is
     }
 
     public void cleanup() {
-        imageUiService.removeListener(imageGalleryItem.getId(), this::onLoaded);
+        imageUiService.removeListener(imageGalleryItem.getId(), this);
 
         // TODO 2: consumer addListener & remove listener -> ungleicher callback
     }
@@ -102,7 +102,8 @@ public class ImageSelectorItemWidget implements TakesValue<ImageGalleryItem>, Is
         }
     }
 
-    private void onLoaded(ImageElement imageElement, ImageGalleryItem imageGalleryItem) {
+    @Override
+    public void onLoaded(ImageElement imageElement, ImageGalleryItem imageGalleryItem) {
         id.setText(Integer.toString(imageGalleryItem.getId()));
         dimension.setText(imageElement.getWidth() + "*" + imageElement.getHeight());
         size.setText(DisplayUtils.humanReadableSize(imageGalleryItem.getSize(), true));

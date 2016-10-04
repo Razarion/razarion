@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  * 15.06.2016.
  */
 @Templated("ImageItemWidget.html#imageItemWidget")
-public class ImageItemWidget extends Composite {
+public class ImageItemWidget extends Composite implements ImageUiService.ImageGalleryListener {
     // private Logger logger = Logger.getLogger(ImageItemWidget.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -66,7 +66,7 @@ public class ImageItemWidget extends Composite {
         if (imageId != null) {
             this.imageId = imageId;
             id.setText(Integer.toBinaryString(imageId));
-            imageUiService.requestImage(imageId, this::onLoaded);
+            imageUiService.requestImage(imageId, this);
         } else {
             id.setText("");
             dimension.setText("");
@@ -79,7 +79,7 @@ public class ImageItemWidget extends Composite {
     @Override
     protected void onUnload() {
         super.onUnload();
-        imageUiService.removeListener(imageId, this::onLoaded);
+        imageUiService.removeListener(imageId, this);
     }
 
     @EventHandler("galleryButton")
@@ -87,12 +87,13 @@ public class ImageItemWidget extends Composite {
         modalDialogManager.show("Image Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageSelectorDialog.class, imageId, id1 -> {
             imageUiService.removeListener(imageId, this::onLoaded);
             imageId = id1;
-            imageUiService.requestImage(imageId, this::onLoaded);
+            imageUiService.requestImage(imageId, this);
             imageItemWidgetListener.accept(id1);
         });
     }
 
-    private void onLoaded(ImageElement imageElement, ImageGalleryItem imageGalleryItem) {
+    @Override
+    public void onLoaded(ImageElement imageElement, ImageGalleryItem imageGalleryItem) {
         id.setText(Integer.toString(imageId));
         dimension.setText(imageElement.getWidth() + "*" + imageElement.getHeight());
         size.setText(DisplayUtils.humanReadableSize(imageGalleryItem.getSize(), true));
