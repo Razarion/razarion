@@ -88,8 +88,6 @@ public class ImageSelectorItemWidget implements TakesValue<ImageGalleryItem>, Is
 
     public void cleanup() {
         imageUiService.removeListener(imageGalleryItem.getId(), this);
-
-        // TODO 2: consumer addListener & remove listener -> ungleicher callback
     }
 
     public void setSelected(boolean selected) {
