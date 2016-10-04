@@ -195,11 +195,11 @@ button:disabled {
 }
 
 .gallery-item-table-selected {
-    border-style: dashed;
+    border-color: blue;
 }
 
 .gallery-item-table-not-selected {
-    border-style: solid;
+    border-color: transparent;
 }
 
 .gallery-item-table-changed {
@@ -207,17 +207,19 @@ button:disabled {
 }
 
 .gallery-item-table-not-changed {
-    border-color: black;
+    border-color: transparent;
 }
 
 .gallery-item-table {
-    border-width: 15px;
+    border-width: 1px;
     border-spacing: 0;
+    border-style: solid;
     overflow: hidden;
     background-color: #d6d6d6;
     border-collapse: collapse;
-    font-size: 75%;
+    font-size: 65%;
     font-weight: bold;
+    color: black;
 }
 
 .gallery-item-table td:nth-child(2) {
@@ -240,6 +242,25 @@ button:disabled {
     width: 100px;
     height: 100px;
     background: url('images/TransparentBg.png');
+}
+
+.gallery-widget-table {
+    border-spacing: 0;
+}
+
+.gallery-widget-table td:nth-child(2) {
+    text-align: right;
+}
+
+.image-widget {
+    border-width: 2px;
+    border-spacing: 0;
+    overflow: hidden;
+    background-color: #d6d6d6;
+    border-collapse: collapse;
+    font-weight: bold;
+    font-size: 80%;
+    color: black;
 }
 
 /** --- Left side bar ---*/

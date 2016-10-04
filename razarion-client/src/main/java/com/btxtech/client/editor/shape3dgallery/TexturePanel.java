@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.shape3dgallery;
 
-import com.btxtech.client.editor.widgets.ImageItemWidget;
+import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Label;

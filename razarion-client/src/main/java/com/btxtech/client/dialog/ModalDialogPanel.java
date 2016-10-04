@@ -1,12 +1,14 @@
 package com.btxtech.client.dialog;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.utils.ControlUtils;
+import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.uiservice.dialog.ApplyListener;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -48,6 +50,9 @@ public class ModalDialogPanel<T> extends Composite {
     @Inject
     @DataField
     private SimplePanel content;
+    @Inject
+    @DataField
+    private HTML buttonDiv;
     private ModalDialogContent<T> modalDialogContent;
     private T applyValue;
     private ApplyListener<T> applyListener;
@@ -99,10 +104,14 @@ public class ModalDialogPanel<T> extends Composite {
     }
 
     public void showApplyButton(boolean show) {
-        applyButton.getElement().getStyle().setVisibility(show ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
+        applyButton.getElement().getStyle().setDisplay(show ? Style.Display.INLINE : Style.Display.NONE);
     }
 
     public void showCancelButton(boolean show) {
-        cancelButton.getElement().getStyle().setVisibility(show ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
+        cancelButton.getElement().getStyle().setDisplay(show ? Style.Display.INLINE : Style.Display.NONE);
+    }
+
+    public void addFooterButton(String text, Runnable callback) {
+        buttonDiv.getElement().appendChild(GwtUtils.castElementToElement(ControlUtils.createButton(text, "btn btn-default", callback)));
     }
 }

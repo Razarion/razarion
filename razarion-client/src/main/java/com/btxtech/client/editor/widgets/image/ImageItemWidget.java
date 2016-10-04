@@ -1,10 +1,7 @@
-package com.btxtech.client.editor.widgets;
+package com.btxtech.client.editor.widgets.image;
 
 import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
-import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.imageservice.ImageUiService;
-import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.google.gwt.dom.client.ImageElement;
@@ -18,20 +15,19 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
  * 15.06.2016.
  */
 @Templated("ImageItemWidget.html#imageItemWidget")
-public class ImageItemWidget extends Composite implements ImageUiService.ImageGalleryListener {
-    public interface ImageItemWidgetListener {
-        void onIdChanged(int id);
-    }
-
+public class ImageItemWidget extends Composite {
     // private Logger logger = Logger.getLogger(ImageItemWidget.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ImageUiService imageUiService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -62,19 +58,15 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
     @Inject
     @DataField
     private Button galleryButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button uploadButton;
     private int imageId;
-    private ImageItemWidgetListener imageItemWidgetListener;
+    private Consumer<Integer> imageItemWidgetListener;
 
-    public void setImageId(Integer imageId, ImageItemWidgetListener imageItemWidgetListener) {
+    public void setImageId(Integer imageId, Consumer<Integer> imageItemWidgetListener) {
         this.imageItemWidgetListener = imageItemWidgetListener;
         if (imageId != null) {
             this.imageId = imageId;
             id.setText(Integer.toBinaryString(imageId));
-            imageUiService.requestImage(imageId, this);
+            imageUiService.requestImage(imageId, this::onLoaded);
         } else {
             id.setText("");
             dimension.setText("");
@@ -87,11 +79,20 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
     @Override
     protected void onUnload() {
         super.onUnload();
-        imageUiService.removeListener(imageId, this);
+        imageUiService.removeListener(imageId, this::onLoaded);
     }
 
-    @Override
-    public void onLoaded(ImageElement imageElement, ImageGalleryItem imageGalleryItem) {
+    @EventHandler("galleryButton")
+    private void galleryButtonClicked(ClickEvent event) {
+        modalDialogManager.show("Image Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageSelectorDialog.class, imageId, id1 -> {
+            imageUiService.removeListener(imageId, this::onLoaded);
+            imageId = id1;
+            imageUiService.requestImage(imageId, this::onLoaded);
+            imageItemWidgetListener.accept(id1);
+        });
+    }
+
+    private void onLoaded(ImageElement imageElement, ImageGalleryItem imageGalleryItem) {
         id.setText(Integer.toString(imageId));
         dimension.setText(imageElement.getWidth() + "*" + imageElement.getHeight());
         size.setText(DisplayUtils.humanReadableSize(imageGalleryItem.getSize(), true));
@@ -99,20 +100,4 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
         internalName.setText(imageGalleryItem.getInternalName());
         image.setUrl(imageElement.getSrc());
     }
-
-    @EventHandler("galleryButton")
-    private void galleryButtonClicked(ClickEvent event) {
-        modalDialogManager.show("Image Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, imageId, id1 -> {
-            imageUiService.removeListener(imageId, ImageItemWidget.this);
-            imageId = id1;
-            imageUiService.requestImage(imageId, ImageItemWidget.this);
-            imageItemWidgetListener.onIdChanged(id1);
-        });
-    }
-
-    @EventHandler("uploadButton")
-    public void uploadButtonClicked(ClickEvent e) {
-        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.overrideImage(imageId, dataUrl, (int) file.getSize(), file.getType()));
-    }
-
 }

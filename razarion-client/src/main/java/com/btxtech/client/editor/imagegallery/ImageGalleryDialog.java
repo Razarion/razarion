@@ -5,11 +5,11 @@ import com.btxtech.client.dialog.ModalDialogPanel;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
@@ -21,83 +21,48 @@ import java.util.List;
  * 19.06.2016.
  */
 @Templated("ImageGalleryDialog.html#image-gallery-dialog")
-public class ImageGalleryDialog extends Composite implements ModalDialogContent<Integer>, ImageUiService.ImageGalleryItemListener, ImageUiService.ChangeListener {
+public class ImageGalleryDialog extends Composite implements ModalDialogContent<Void> {
     // private Logger logger = Logger.getLogger(ImageGalleryDialog.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ImageUiService imageUiService;
-    @Inject
-    @DataField
-    private ImageGalleryItemListWidget imageGalleryItemListWidget;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button reloadButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button saveButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button newButton;
-    private Integer selectedImageId;
-    private ModalDialogPanel<Integer> modalDialogPanel;
+    @ListContainer("div")
+    private ListComponent<ImageGalleryItem, ImageGalleryItemWidget> imageGallery;
 
     @Override
-    public void init(Integer imageId) {
-        selectedImageId = imageId;
-        imageUiService.getImageGalleryItems(this);
-        imageGalleryItemListWidget.setImageGalleryDialog(this);
-        imageGalleryItemListWidget.setChanged(imageUiService.getChanged());
-        imageUiService.addChangeListener(this);
+    public void init(Void ignore) {
+        DOMUtil.removeAllElementChildren(imageGallery.getElement()); // Remove placeholder table row from template.
+        imageUiService.addChangeListener(this::onChanged);
+        imageUiService.getImageGalleryItems(this::onLoaded);
+    }
+
+    private void onChanged(Collection<ImageGalleryItem> imageGalleryItems) {
+        for (ImageGalleryItem imageGalleryItem : imageGallery.getValue()) {
+            imageGallery.getComponent(imageGalleryItem).ifPresent(arg -> arg.setChanged(imageGalleryItems.contains(imageGalleryItem)));
+        }
     }
 
     @Override
-    public void customize(ModalDialogPanel<Integer> modalDialogPanel) {
-        this.modalDialogPanel = modalDialogPanel;
-        modalDialogPanel.setApplyValue(selectedImageId);
+    public void customize(ModalDialogPanel<Void> modalDialogPanel) {
+        modalDialogPanel.showApplyButton(false);
+        modalDialogPanel.addFooterButton("Reload", () -> imageUiService.reload(this::onLoaded));
+        modalDialogPanel.addFooterButton("New", () -> ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.create(dataUrl, this::onLoaded)));
+        modalDialogPanel.addFooterButton("Save", () -> imageUiService.save(this::onLoaded));
     }
 
     @Override
     public void onClose() {
-        imageUiService.removeChangeListener(this);
-    }
-
-    @Override
-    public void onLoaded(List<ImageGalleryItem> imageGalleryItems) {
-        imageGalleryItemListWidget.setItems(imageGalleryItems);
-        imageGalleryItems.stream().filter(imageGalleryItem -> imageGalleryItem.getId() == selectedImageId).forEach(imageGalleryItem -> imageGalleryItemListWidget.setSelectedImage(imageGalleryItem));
-    }
-
-    @EventHandler("reloadButton")
-    private void reloadButtonClicked(ClickEvent event) {
-        imageUiService.reload(this);
-    }
-
-    @EventHandler("saveButton")
-    private void saveButtonClicked(ClickEvent event) {
-        imageUiService.save(this);
-    }
-
-    @EventHandler("newButton")
-    private void newButtonClicked(ClickEvent event) {
-        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.create(dataUrl, ImageGalleryDialog.this));
-    }
-
-    public void selectionChanged(ImageGalleryItem newSelection) {
-        for (ImageGalleryItem imageGalleryItem : imageGalleryItemListWidget.getValue()) {
-            if (imageGalleryItem.getId() == selectedImageId) {
-                imageGalleryItemListWidget.getComponent(imageGalleryItem).setSelected(false);
-                break;
-            }
+        for (ImageGalleryItem imageGalleryItem : imageGallery.getValue()) {
+            imageGallery.getComponent(imageGalleryItem).ifPresent(ImageGalleryItemWidget::cleanup);
         }
-        selectedImageId = newSelection.getId();
-        imageGalleryItemListWidget.getComponent(newSelection).setSelected(true);
-        modalDialogPanel.setApplyValue(selectedImageId);
+        imageUiService.removeChangeListener(this::onChanged);
     }
 
-    @Override
-    public void onChanged(Collection<ImageGalleryItem> changed) {
-        imageGalleryItemListWidget.setChanged(changed);
+    private void onLoaded(List<ImageGalleryItem> imageGalleryItems) {
+        imageGallery.setValue(imageGalleryItems);
+        onChanged(imageUiService.getChanged());
     }
 }

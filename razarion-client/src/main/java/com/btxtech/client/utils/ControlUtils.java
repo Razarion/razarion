@@ -2,6 +2,7 @@ package com.btxtech.client.utils;
 
 import elemental.client.Browser;
 import elemental.events.Event;
+import elemental.html.ButtonElement;
 import elemental.html.File;
 import elemental.html.FileList;
 import elemental.html.FileReader;
@@ -61,4 +62,13 @@ public class ControlUtils {
         });
         fileReader.readAsText(file);
     }
+
+    public static ButtonElement createButton(String text, String className, Runnable runnable) {
+        ButtonElement button = Browser.getDocument().createButtonElement();
+        button.setClassName(className);
+        button.setInnerHTML(text);
+        button.addEventListener(Event.CLICK, evt -> runnable.run(), false);
+        return button;
+    }
+
 }

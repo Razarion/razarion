@@ -196,10 +196,10 @@ public class ImageUiService {
         }).getImageGalleryItems(id);
     }
 
-    private void addImage(int id, ImageElement imageElement, boolean loadLoadImageGalleyItem) {
+    private void addImage(int id, ImageElement imageElement, boolean loadImageGalleyItem) {
         imageElementLibrary.put(id, imageElement);
         fireImageElementListeners(id, imageElement);
-        if (loadLoadImageGalleyItem) {
+        if (loadImageGalleyItem) {
             loadImageGalleyItem(id, imageElement);
         }
     }

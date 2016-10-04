@@ -1,14 +1,12 @@
-package com.btxtech.client.editor.imagegallery;
+package com.btxtech.client.editor.widgets.image;
 
 import com.btxtech.client.imageservice.ImageUiService;
-import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -26,8 +24,8 @@ import javax.inject.Inject;
  * Created by Beat
  * 15.06.2016.
  */
-@Templated("ImageGalleryDialog.html#imageGalleryItemWidget")
-public class ImageGalleryItemWidget implements TakesValue<ImageGalleryItem>, IsElement {
+@Templated("ImageSelectorDialog.html#imageSelectorItemWidget")
+public class ImageSelectorItemWidget implements TakesValue<ImageGalleryItem>, IsElement {
     // private Logger logger = Logger.getLogger(ImageGalleryItemWidget.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -38,7 +36,7 @@ public class ImageGalleryItemWidget implements TakesValue<ImageGalleryItem>, IsE
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Table imageGalleryItemWidget;
+    private Table imageSelectorItemWidget;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -63,26 +61,29 @@ public class ImageGalleryItemWidget implements TakesValue<ImageGalleryItem>, IsE
     @Inject
     @DataField
     private HTML internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button uploadButton;
     private ImageGalleryItem imageGalleryItem;
+    private ImageSelectorDialog imageGalleryDialog;
 
     @Override
     public HTMLElement getElement() {
-        return imageGalleryItemWidget;
+        return imageSelectorItemWidget;
     }
 
     @Override
     public void setValue(ImageGalleryItem imageGalleryItem) {
         this.imageGalleryItem = imageGalleryItem;
         imageUiService.requestImage(imageGalleryItem.getId(), this::onLoaded);
+        setSelected(false);
     }
 
     @Override
     public ImageGalleryItem getValue() {
         return imageGalleryItem;
+    }
+
+    @EventHandler("imageSelectorItemWidget")
+    public void onClick(final ClickEvent event) {
+        imageGalleryDialog.selectionChanged(imageGalleryItem);
     }
 
     public void cleanup() {
@@ -91,18 +92,13 @@ public class ImageGalleryItemWidget implements TakesValue<ImageGalleryItem>, IsE
         // TODO 2: consumer addListener & remove listener -> ungleicher callback
     }
 
-    @EventHandler("uploadButton")
-    public void uploadButtonClicked(ClickEvent e) {
-        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.overrideImage(imageGalleryItem.getId(), dataUrl, (int) file.getSize(), file.getType()));
-    }
-
-    public void setChanged(boolean changed) {
-        if (changed) {
-            DOMUtil.addCSSClass(imageGalleryItemWidget, "gallery-item-table-changed");
-            DOMUtil.removeCSSClass(imageGalleryItemWidget, "gallery-item-table-not-changed");
+    public void setSelected(boolean selected) {
+        if (selected) {
+            DOMUtil.addCSSClass(imageSelectorItemWidget, "gallery-item-table-selected");
+            DOMUtil.removeCSSClass(imageSelectorItemWidget, "gallery-item-table-not-selected");
         } else {
-            DOMUtil.addCSSClass(imageGalleryItemWidget, "gallery-item-table-not-changed");
-            DOMUtil.removeCSSClass(imageGalleryItemWidget, "gallery-item-table-changed");
+            DOMUtil.addCSSClass(imageSelectorItemWidget, "gallery-item-table-not-selected");
+            DOMUtil.removeCSSClass(imageSelectorItemWidget, "gallery-item-table-selected");
         }
     }
 
@@ -113,5 +109,9 @@ public class ImageGalleryItemWidget implements TakesValue<ImageGalleryItem>, IsE
         type.setText(imageGalleryItem.getType());
         internalName.setHTML(DisplayUtils.handleEmptyHtmlString(imageGalleryItem.getInternalName()));
         image.setUrl(imageElement.getSrc());
+    }
+
+    public void setImageGalleryDialog(ImageSelectorDialog imageGalleryDialog) {
+        this.imageGalleryDialog = imageGalleryDialog;
     }
 }
