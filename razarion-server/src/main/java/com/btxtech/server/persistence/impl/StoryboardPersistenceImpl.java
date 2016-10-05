@@ -22,12 +22,12 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -80,12 +80,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        //addScrollOverTerrain(sceneConfigs); // TODO mode to DB
+        addSetupItems(sceneConfigs); // TODO mode to DB
+        // addScrollOverTerrain(sceneConfigs); // TODO mode to DB
         //addBotSpawnScene(sceneConfigs); // TODO mode to DB
-        addUserSpawnScene(sceneConfigs); // TODO mode to DB
+        // addUserSpawnScene(sceneConfigs); // TODO mode to DB
         //addBotMoveScene(sceneConfigs);// TODO mode to DB
         //addScrollToOwnScene(sceneConfigs);// TODO mode to DB
-        addUserMoveScene(sceneConfigs);// TODO mode to DB
+        // addUserMoveScene(sceneConfigs);// TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         storyboardConfig.setSceneConfigs(sceneConfigs);
         return storyboardConfig;
@@ -103,6 +104,15 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         visualConfig.setWaterLightConfig(lightConfig);
         visualConfig.setShape3DGeneralScale(10).setShape3Ds(shape3DPersistence.getShape3Ds());
         return visualConfig;
+    }
+
+    private void addSetupItems(List<SceneConfig> sceneConfigs) {
+        SceneConfig sceneConfig = new SceneConfig();
+        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(false));
+        Map<Integer, DecimalPosition> resourceItemTypePositions = new HashMap<>();
+        resourceItemTypePositions.put(180829, new DecimalPosition(1040, 800));
+        sceneConfig.setResourceItemTypePositions(resourceItemTypePositions);
+        sceneConfigs.add(sceneConfig);
     }
 
     private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {

@@ -43,7 +43,7 @@ public class ItemTypeService {
         return baseItemTypes.values();
     }
 
-    public Collection<ResourceItemType> getResourceItemType() {
+    public Collection<ResourceItemType> getResourceItemTypes() {
         return resourceItemTypes.values();
     }
 

@@ -101,8 +101,8 @@ public class Scene {
             completionCallbackCount++;
             levelService.setLevelUpCallback(userContext1 -> modalDialogManager.showLevelUp(userContext1, ignore -> onComplete()));
         }
-        if(sceneConfig.getResourceItemType() != null) {
-            resourceService.createResources(sceneConfig.getResourceItemType());
+        if(sceneConfig.getResourceItemTypePositions() != null) {
+            resourceService.createResources(sceneConfig.getResourceItemTypePositions());
         }
 
         if (!hasCompletionCallback) {

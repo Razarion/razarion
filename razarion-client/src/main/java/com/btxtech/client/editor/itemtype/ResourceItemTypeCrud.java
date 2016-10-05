@@ -83,6 +83,6 @@ public class ResourceItemTypeCrud extends AbstractCrudeEditor<ResourceItemType> 
 
     @Override
     protected List<ObjectNameId> setupObjectNameIds() {
-        return itemTypeService.getResourceItemType().stream().map(ResourceItemType::createObjectNameId).collect(Collectors.toList());
+        return itemTypeService.getResourceItemTypes().stream().map(ResourceItemType::createObjectNameId).collect(Collectors.toList());
     }
 }

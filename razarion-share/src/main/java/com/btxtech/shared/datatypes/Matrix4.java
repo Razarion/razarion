@@ -204,6 +204,10 @@ public class Matrix4 {
         return new Matrix4(numbers);
     }
 
+    public static Matrix4 createTranslation(Vertex vertex) {
+        return createTranslation(vertex.getX(), vertex.getY(), vertex.getZ());
+    }
+
     public static Matrix4 createTranslation(double x, double y, double z) {
         double[][] numbers = {
                 {1, 0, 0, x},
