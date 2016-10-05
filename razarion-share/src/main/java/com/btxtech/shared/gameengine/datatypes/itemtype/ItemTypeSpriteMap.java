@@ -12,6 +12,7 @@ import java.util.Collection;
  * Date: 01.08.12
  * Time: 13:43
  */
+@Deprecated
 public class ItemTypeSpriteMap {
     public enum SyncObjectState {
         BUILD_UP,

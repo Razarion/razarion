@@ -28,6 +28,13 @@ public class SyncPhysicalArea {
         this.norm = norm;
     }
 
+    public SyncPhysicalArea(SyncItem syncItem, double radius, Vertex position, Vertex norm) {
+        this.syncItem = syncItem;
+        this.radius = radius;
+        this.position = position;
+        this.norm = norm;
+    }
+
     public ModelMatrices createModelMatrices(SyncBaseItem syncBaseItem, double scale) {
         throw new UnsupportedOperationException();
 //        Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);

@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.ResourceService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -38,6 +39,8 @@ public class SyncHarvester extends SyncBaseAbility {
     private BaseItemService baseItemService;
     @Inject
     private ActivityService activityService;
+    @Inject
+    private ResourceService resourceService;
     @Inject
     private BaseService baseService;
     private HarvesterType harvesterType;
@@ -123,8 +126,7 @@ public class SyncHarvester extends SyncBaseAbility {
     }
 
     public void executeCommand(MoneyCollectCommand attackCommand) throws ItemDoesNotExistException {
-        SyncResourceItem resource = (SyncResourceItem) baseItemService.getItem(attackCommand.getTarget());
-
+        SyncResourceItem resource = resourceService.getSyncResourceItem(attackCommand.getTarget());
         this.target = resource.getId();
         setPathToDestinationIfSyncMovable(attackCommand.getPathToDestination());
     }

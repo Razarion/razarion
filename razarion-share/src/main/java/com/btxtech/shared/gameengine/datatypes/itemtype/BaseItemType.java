@@ -19,6 +19,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
  * Time: 20:12:06
  */
 public class BaseItemType extends ItemType {
+    private PhysicalAreaConfig physicalAreaConfig;
     private int health;
     private int price;
     private int buildup;
@@ -38,6 +39,15 @@ public class BaseItemType extends ItemType {
     private Integer unlockCrystals;
     private int spawnDurationMillis;
     private Integer spawnShape3DId;
+
+    public PhysicalAreaConfig getPhysicalAreaConfig() {
+        return physicalAreaConfig;
+    }
+
+    public BaseItemType setPhysicalAreaConfig(PhysicalAreaConfig physicalAreaConfig) {
+        this.physicalAreaConfig = physicalAreaConfig;
+        return this;
+    }
 
     public int getHealth() {
         return health;

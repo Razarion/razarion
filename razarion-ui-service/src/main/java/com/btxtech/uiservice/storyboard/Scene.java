@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.condition.ConditionService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
@@ -49,6 +50,8 @@ public class Scene {
     private ModalDialogManager modalDialogManager;
     @Inject
     private LevelService levelService;
+    @Inject
+    private ResourceService resourceService;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -97,6 +100,9 @@ public class Scene {
             hasCompletionCallback = true;
             completionCallbackCount++;
             levelService.setLevelUpCallback(userContext1 -> modalDialogManager.showLevelUp(userContext1, ignore -> onComplete()));
+        }
+        if(sceneConfig.getResourceItemType() != null) {
+            resourceService.createResources(sceneConfig.getResourceItemType());
         }
 
         if (!hasCompletionCallback) {

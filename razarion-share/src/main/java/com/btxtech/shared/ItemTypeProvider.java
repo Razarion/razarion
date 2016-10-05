@@ -1,7 +1,7 @@
 package com.btxtech.shared;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,7 +17,7 @@ import java.util.List;
  * Created by Beat
  * 24.08.2016.
  */
-@Path(RestUrl.BASE_ITEM_TYPE_PROVIDER)
+@Path(RestUrl.ITEM_TYPE_PROVIDER)
 public interface ItemTypeProvider {
     @POST
     @Path("createBaseItemType")
@@ -26,8 +26,8 @@ public interface ItemTypeProvider {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("read")
-    List<BaseItemType> read();
+    @Path("readBaseItemType")
+    List<BaseItemType> readBaseItemType();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -37,4 +37,23 @@ public interface ItemTypeProvider {
     @DELETE
     @Path("deleteBaseItemType/{id}")
     void deleteBaseItemType(@PathParam("id") int id);
+
+    @POST
+    @Path("createResourceItemType")
+    @Produces(MediaType.APPLICATION_JSON)
+    ResourceItemType createResourceItemType();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readResourceItemType")
+    List<ResourceItemType> readResourceItemType();
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("updateResourceItemType")
+    void updateResourceItemType(ResourceItemType resourceItemType);
+
+    @DELETE
+    @Path("deleteResourceItemType/{id}")
+    void deleteResourceItemType(@PathParam("id") int id);
 }

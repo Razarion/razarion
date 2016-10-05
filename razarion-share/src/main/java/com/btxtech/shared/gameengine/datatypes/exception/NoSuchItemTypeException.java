@@ -30,7 +30,7 @@ public class NoSuchItemTypeException extends RuntimeException {
         super("No such item type: " + name);
     }
 
-    public NoSuchItemTypeException(int itemTypeId) {
-        super("No such item type id: " + itemTypeId);
+    public NoSuchItemTypeException(Class clazz, int itemTypeId) {
+        super("No such item type: " + clazz + " id: " + itemTypeId);
     }
 }

@@ -33,12 +33,12 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
         provider.call(new RemoteCallback<BaseItemType>() {
             @Override
             public void callback(BaseItemType baseItemType) {
-                itemTypeService.override(baseItemType);
+                itemTypeService.overrideBaseItemType(baseItemType);
                 fire();
                 fireSelection(baseItemType.createObjectNameId());
             }
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ItemTypeProvider.getShape3Ds failed: " + message, throwable);
+            logger.log(Level.SEVERE, "BaseItemTypeCrud.createBaseItemType failed: " + message, throwable);
             return false;
         }).createBaseItemType();
     }
@@ -49,7 +49,7 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
             itemTypeService.deleteBaseItemType(baseItemType);
             fire();
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ItemTypeProvider.deleteBaseItemType failed: " + message, throwable);
+            logger.log(Level.SEVERE, "BaseItemTypeCrud.deleteBaseItemType failed: " + message, throwable);
             return false;
         }).deleteBaseItemType(baseItemType.getId());
     }
@@ -71,18 +71,18 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
                 fire();
             }
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TerrainElementEditorProvider.createTerrainObjectConfig failed: " + message, throwable);
+            logger.log(Level.SEVERE, "BaseItemTypeCrud.readBaseItemType failed: " + message, throwable);
             return false;
-        }).read();
+        }).readBaseItemType();
     }
 
     @Override
     public BaseItemType getInstance(ObjectNameId objectNameId) {
-        return (BaseItemType) itemTypeService.getItemType(objectNameId.getId());
+        return itemTypeService.getBaseItemType(objectNameId.getId());
     }
 
     @Override
     protected List<ObjectNameId> setupObjectNameIds() {
-        return itemTypeService.getItemTypes(BaseItemType.class).stream().map(BaseItemType::createObjectNameId).collect(Collectors.toList());
+        return itemTypeService.getBaseItemTypes().stream().map(BaseItemType::createObjectNameId).collect(Collectors.toList());
     }
 }

@@ -40,7 +40,7 @@ public class StartPointItemPlacer {
     public StartPointItemPlacer init(StartPointConfig startPointConfig) {
         // TODO CursorHandler.getInstance().noCursor();
         // TODO TerrainView.getInstance().setFocus();
-        baseItemType = (BaseItemType) itemTypeService.getItemType(startPointConfig.getBaseItemTypeId());
+        baseItemType = itemTypeService.getBaseItemType(startPointConfig.getBaseItemTypeId());
         startPointItemPlacerChecker.init(baseItemType, startPointConfig.getEnemyFreeRadius(), startPointConfig.getAllowedArea());
         Circle2D circle2D = new Circle2D(new DecimalPosition(0, 0), startPointConfig.getEnemyFreeRadius());
         vertexes = circle2D.triangulation(20, 0);

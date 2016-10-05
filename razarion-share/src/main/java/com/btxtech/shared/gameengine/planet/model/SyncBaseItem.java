@@ -189,7 +189,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     public void synchronize(SyncItemInfo syncItemInfo) throws ItemDoesNotExistException {
         checkBase(syncItemInfo.getBase());
         if (getItemType().getId() != syncItemInfo.getItemTypeId()) {
-            setItemType(itemTypeService.getItemType(syncItemInfo.getItemTypeId()));
+            setItemType(itemTypeService.getBaseItemType(syncItemInfo.getItemTypeId()));
             // TODO fireItemChanged(SyncItemListener.Change.ITEM_TYPE_CHANGED, null);
             // TODO  setup();
         }

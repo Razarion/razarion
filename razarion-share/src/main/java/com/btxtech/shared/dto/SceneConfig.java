@@ -1,9 +1,11 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -17,6 +19,7 @@ public class SceneConfig {
     private List<BotMoveCommandConfig> botMoveCommandConfigs;
     private StartPointConfig startPointConfig;
     private Boolean wait4LevelUp;
+    private Map<Integer, DecimalPosition> resourceItemType;
 
     public String getIntroText() {
         return introText;
@@ -78,6 +81,15 @@ public class SceneConfig {
 
     public SceneConfig setWait4LevelUp(Boolean wait4LevelUp) {
         this.wait4LevelUp = wait4LevelUp;
+        return this;
+    }
+
+    public Map<Integer, DecimalPosition> getResourceItemType() {
+        return resourceItemType;
+    }
+
+    public SceneConfig setResourceItemType(Map<Integer, DecimalPosition> resourceItemType) {
+        this.resourceItemType = resourceItemType;
         return this;
     }
 }

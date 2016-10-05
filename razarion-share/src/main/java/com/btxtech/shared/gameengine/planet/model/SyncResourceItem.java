@@ -14,10 +14,9 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -39,10 +38,8 @@ public class SyncResourceItem extends SyncItem {
     private double amount;
     private boolean missionMoney = false;
 
-    public void init(int id, Index position, ResourceType resourceType) {
-        // TODO super.init(id, position, resourceType);
-        amount = resourceType.getAmount();
-        throw new UnsupportedOperationException();
+    public void setup(int amount) {
+        this.amount = amount;
     }
 
     public double harvest(double amount) {

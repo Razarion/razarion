@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
-import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -108,7 +107,7 @@ public class BaseItemService {
 
         position = collisionService.correctPosition(position, toBeBuilt);
 
-        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncItem(SyncBaseItem.class, toBeBuilt, position);
+        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position);
         syncBaseItem.setup(base, ItemLifecycle.SPAWN);
         syncBaseItem.setSpawnProgress(0);
         base.addItem(syncBaseItem);
@@ -252,7 +251,7 @@ public class BaseItemService {
 
     // --------------------------------------------------------------------------
 
-    public SyncItem getItem(int id) throws ItemDoesNotExistException {
+    public SyncBaseItem getItem(int id) throws ItemDoesNotExistException {
         throw new UnsupportedOperationException();
     }
 

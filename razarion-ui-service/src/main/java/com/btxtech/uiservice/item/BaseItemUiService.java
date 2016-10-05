@@ -67,7 +67,7 @@ public class BaseItemUiService {
 
 
     public Collection<BaseItemType> getBaseItemTypes() {
-        return itemTypeService.getItemTypes(BaseItemType.class);
+        return itemTypeService.getBaseItemTypes();
     }
 
     public List<ModelMatrices> provideSpawnModelMatrices(BaseItemType baseItemType) {

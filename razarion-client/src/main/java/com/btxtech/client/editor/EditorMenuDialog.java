@@ -5,6 +5,7 @@ import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogPanel;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
+import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 public class EditorMenuDialog extends Composite implements ModalDialogContent<Void> {
     @Inject
     private LeftSideBarManager leftSideBarManager;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -56,7 +58,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button itemButton;
+    private Button baseItemButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Button resourceItemButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -100,9 +106,14 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
         openEditor(GroundSidebar.class);
     }
 
-    @EventHandler("itemButton")
-    private void onItemButtonClicked(ClickEvent event) {
+    @EventHandler("baseItemButton")
+    private void onBaseItemButtonClicked(ClickEvent event) {
         openEditor(BaseItemTypeCrudSidebar.class);
+    }
+
+    @EventHandler("resourceItemButton")
+    private void onResourceItemButtonClicked(ClickEvent event) {
+        openEditor(ResourceItemTypeCrudSidebar.class);
     }
 
     @EventHandler("terrainObjectButton")

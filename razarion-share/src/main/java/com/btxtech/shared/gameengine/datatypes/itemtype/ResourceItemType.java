@@ -14,14 +14,25 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
-public class ResourceType extends ItemType {
+public class ResourceItemType extends ItemType {
+    private double radius;
     private int amount;
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public ResourceItemType setRadius(double radius) {
+        this.radius = radius;
+        return this;
+    }
 
     public int getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public ResourceItemType setAmount(int amount) {
         this.amount = amount;
+        return this;
     }
 }

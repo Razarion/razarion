@@ -31,7 +31,6 @@ public abstract class ItemType implements ObjectNameIdProvider {
     private String name;
     private I18nString i18Name;
     private I18nString description;
-    private PhysicalAreaConfig physicalAreaConfig;
     private TerrainType terrainType;
     private SurfaceType adjoinSurfaceType;
     @Deprecated
@@ -41,21 +40,10 @@ public abstract class ItemType implements ObjectNameIdProvider {
     private Integer selectionSound;
     private Integer buildupSound;
     private Integer commandSound;
-    private Integer explosionClipId;
     private Integer shape3DId;
-    private double radius;
 
     public int getId() {
         return id;
-    }
-
-    public PhysicalAreaConfig getPhysicalAreaConfig() {
-        return physicalAreaConfig;
-    }
-
-    public ItemType setPhysicalAreaConfig(PhysicalAreaConfig physicalAreaConfig) {
-        this.physicalAreaConfig = physicalAreaConfig;
-        return this;
     }
 
     public BoundingBox getBoundingBox() {
@@ -154,30 +142,12 @@ public abstract class ItemType implements ObjectNameIdProvider {
         return this;
     }
 
-    public Integer getExplosionClipId() {
-        return explosionClipId;
-    }
-
-    public ItemType setExplosionClipId(Integer explosionClipId) {
-        this.explosionClipId = explosionClipId;
-        return this;
-    }
-
     public Integer getShape3DId() {
         return shape3DId;
     }
 
     public ItemType setShape3DId(Integer shape3DId) {
         this.shape3DId = shape3DId;
-        return this;
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public ItemType setRadius(double radius) {
-        this.radius = radius;
         return this;
     }
 

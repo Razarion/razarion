@@ -3,12 +3,14 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
@@ -108,25 +110,36 @@ public class SyncItemContainerService {
         return defaultReturn;
     }
 
-    public <T extends SyncItem> T createSyncItem(Class<T> clazz, ItemType itemType, Vertex position) {
-        T t = instance.select(clazz).get();
-        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(t, itemType, position);
+    public SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, Vertex position) {
+        SyncBaseItem syncBaseItem = instance.select(SyncBaseItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position);
         synchronized (items) {
-            t.init(lastItemId, itemType, syncPhysicalArea);
-            items.put(lastItemId, t);
+            syncBaseItem.init(lastItemId, baseItemType, syncPhysicalArea);
+            items.put(lastItemId, syncBaseItem);
             lastItemId++;
         }
-        return t;
+        return syncBaseItem;
     }
 
-    private SyncPhysicalArea createSyncPhysicalArea(SyncItem syncItem, ItemType itemType, Vertex position) {
-        PhysicalAreaConfig physicalAreaConfig = itemType.getPhysicalAreaConfig();
+    public SyncResourceItem createSyncResourceItem(ResourceItemType resourceItemType, Vertex position) {
+        SyncResourceItem syncResourceItem = instance.select(SyncResourceItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea(syncResourceItem, resourceItemType.getRadius(), position, Vertex.Z_NORM);
+        synchronized (items) {
+            syncResourceItem.init(lastItemId, resourceItemType, syncPhysicalArea);
+            items.put(lastItemId, syncResourceItem);
+            lastItemId++;
+        }
+        return syncResourceItem;
+    }
+
+    private SyncPhysicalArea createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, Vertex position) {
+        PhysicalAreaConfig physicalAreaConfig = baseItemType.getPhysicalAreaConfig();
         if (physicalAreaConfig.fulfilledMovable()) {
-            return new SyncPhysicalMovable(syncItem, physicalAreaConfig, position, Vertex.Z_NORM, 0, null);
+            return new SyncPhysicalMovable(syncBaseItem, physicalAreaConfig, position, Vertex.Z_NORM, 0, null);
         } else if (physicalAreaConfig.fulfilledDirectional()) {
             throw new UnsupportedOperationException();
         } else {
-            return new SyncPhysicalArea(syncItem, itemType.getPhysicalAreaConfig(), position, Vertex.Z_NORM);
+            return new SyncPhysicalArea(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position, Vertex.Z_NORM);
         }
     }
 

@@ -10,6 +10,7 @@ import com.btxtech.shared.utils.MathHelper;
  * Date: 17.08.2011
  * Time: 13:00:05
  */
+@Deprecated
 public class BoundingBox {
     private int radius;
     private int diameter;

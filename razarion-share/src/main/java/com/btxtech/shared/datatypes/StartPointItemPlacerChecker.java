@@ -33,7 +33,7 @@ public class StartPointItemPlacerChecker {
     public void init(BaseItemType baseItemType, double enemyFreeRadius, Polygon2D allowedArea) {
         this.baseItemType = baseItemType;
         this.allowedArea = allowedArea;
-        this.enemyFreeRadius = enemyFreeRadius + baseItemType.getRadius();
+        this.enemyFreeRadius = enemyFreeRadius + baseItemType.getPhysicalAreaConfig().getRadius();
     }
 
     public void check(DecimalPosition position) {
@@ -44,7 +44,7 @@ public class StartPointItemPlacerChecker {
         }
         isItemsOk = false;
         if (isEnemiesOk) {
-            isItemsOk = !syncItemContainerService.hasItemsInRange(position, baseItemType.getRadius());
+            isItemsOk = !syncItemContainerService.hasItemsInRange(position, baseItemType.getPhysicalAreaConfig().getRadius());
         }
         isTerrainOk = false;
         if (isItemsOk) {

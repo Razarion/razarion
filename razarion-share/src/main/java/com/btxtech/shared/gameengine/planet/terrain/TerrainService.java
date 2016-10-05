@@ -15,6 +15,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
@@ -134,11 +135,11 @@ public class TerrainService {
         return groundMesh;
     }
 
-    public boolean overlap(DecimalPosition position, ItemType itemType, TerrainType builderTerrainType, Integer builderMaxAdjoinDistance) {
+    public boolean overlap(DecimalPosition position, BaseItemType baseItemType, TerrainType builderTerrainType, Integer builderMaxAdjoinDistance) {
         // Check in terrain objects
         SingleHolder<Boolean> result = new SingleHolder<>(false);
         terrainObjectConfigPositions.iterate((terrainObjectConfig, terrainObjectPosition) -> {
-            if (terrainObjectPosition.getPosition().getDistance(position) < terrainObjectConfig.getRadius() + itemType.getRadius()) {
+            if (terrainObjectPosition.getPosition().getDistance(position) < terrainObjectConfig.getRadius() + baseItemType.getPhysicalAreaConfig().getRadius()) {
                 result.setO(true);
                 return true;
             } else {
@@ -150,7 +151,7 @@ public class TerrainService {
         }
         // Check in slopes
         for (Slope slope : slopeMap.values()) {
-            if (slope.isInSlope(position, itemType.getRadius())) {
+            if (slope.isInSlope(position, baseItemType.getPhysicalAreaConfig().getRadius())) {
                 return true;
             }
         }

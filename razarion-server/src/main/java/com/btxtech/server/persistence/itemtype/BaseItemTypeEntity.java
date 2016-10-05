@@ -4,10 +4,8 @@ import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 
-import javax.enterprise.context.Dependent;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -46,13 +44,12 @@ public class BaseItemTypeEntity {
     public BaseItemType toBaseItemType() {
         BaseItemType baseItemType = (BaseItemType) new BaseItemType().setName(name).setId(id.intValue());
         baseItemType.setTerrainType(TerrainType.LAND); // TODO
-        baseItemType.setI18Name(i18nHelper("Simple Item Name"));
-        baseItemType.setDescription(i18nHelper("Simple Item Description"));
-        baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(20)); // TODO
+        baseItemType.setI18Name(i18nHelper("Simple Item Name"));// TODO
+        baseItemType.setDescription(i18nHelper("Simple Item Description"));// TODO
+        baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(radius)); // TODO
         if (shape3DId != null) {
             baseItemType.setShape3DId(shape3DId.getId().intValue());
         }
-        baseItemType.setRadius(radius);
         if (spawnShape3DId != null) {
             baseItemType.setSpawnShape3DId(spawnShape3DId.getId().intValue());
         }
@@ -62,7 +59,7 @@ public class BaseItemTypeEntity {
 
     public void fromBaseItemType(BaseItemType baseItemType) {
         name = baseItemType.getName();
-        radius = baseItemType.getRadius();
+        radius = baseItemType.getPhysicalAreaConfig().getRadius();
         health = baseItemType.getHealth();
         spawnDurationMillis = baseItemType.getSpawnDurationMillis();
     }
@@ -93,7 +90,7 @@ public class BaseItemTypeEntity {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
 
-    @Dependent
+    @Deprecated
     public static I18nString i18nHelper(String text) {
         Map<String, String> localizedStrings = new HashMap<>();
         localizedStrings.put(I18nString.DEFAULT, text);
