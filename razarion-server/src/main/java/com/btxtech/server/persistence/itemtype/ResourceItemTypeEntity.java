@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ColladaEntity;
-import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
 import javax.persistence.Entity;
@@ -32,9 +31,6 @@ public class ResourceItemTypeEntity {
     public ResourceItemType toResourceItemType() {
         ResourceItemType resourceItemType = new ResourceItemType();
         resourceItemType.setRadius(radius).setAmount(amount).setId(id.intValue()).setName(name);
-        resourceItemType.setTerrainType(TerrainType.LAND); // TODO
-        resourceItemType.setI18Name(BaseItemTypeEntity.i18nHelper("Resource Name"));// TODO
-        resourceItemType.setDescription(BaseItemTypeEntity.i18nHelper("Resource Description"));// TODO
         if (shape3DId != null) {
             resourceItemType.setShape3DId(shape3DId.getId().intValue());
         }
