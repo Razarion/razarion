@@ -5,9 +5,17 @@ import com.btxtech.shared.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
+import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
+import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -32,6 +40,16 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     private Caller<Shape3DProvider> caller;
     @Inject
     private Shape3DUiService shape3DUiService;
+    @Inject
+    private ItemTypeService itemTypeService;
+    @Inject
+    private BaseItemRenderTask baseItemRenderTask;
+    @Inject
+    private ResourceItemRenderTask resourceItemRenderTask;
+    @Inject
+    private TerrainTypeService terrainTypeService;
+    @Inject
+    private TerrainObjectRenderTask terrainObjectRenderTask;
     private Map<Integer, Shape3DConfig> changes = new HashMap<>();
 
     @Override
@@ -57,6 +75,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
                 changes.clear();
                 shape3DUiService.setShapes3Ds(shape3Ds);
                 fire();
+                fireChange(shape3Ds);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
@@ -74,10 +93,10 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             @Override
             public void callback(Shape3D shape3D) {
                 shape3D.setDbId(originalShape3D.getDbId());
-                shape3D.setModelMatrixAnimations(originalShape3D.getModelMatrixAnimations());
                 Shape3DUtils.replaceTextureIds(originalShape3D, shape3D);
-                shape3DUiService.override(shape3D);
                 addChangesCollada(originalShape3D.getDbId(), colladaText);
+                shape3DUiService.override(shape3D);
+                fireChange(shape3D);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
@@ -87,20 +106,24 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
 
     public void updateTexture(Shape3D shape3D, String materialId, int imageId) {
         Shape3DUtils.replaceTextureId(shape3D, materialId, imageId);
+        // Update changes set
         Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
         Map<String, Integer> textureMap = new HashMap<>();
         Shape3DUtils.getAllVertexContainers(shape3D).stream().filter(vertexContainer -> vertexContainer.getTextureId() != null).forEach(vertexContainer -> textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId()));
         shape3DConfig.setTextures(textureMap);
         shape3DUiService.override(shape3D);
+        fireChange(shape3D);
     }
 
     public void updateAnimation(Shape3D shape3D, String animationId, ItemState itemState) {
         Shape3DUtils.replaceAnimation(shape3D, animationId, itemState);
+        // Update changes set
         Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
         Map<String, ItemState> animationMap = new HashMap<>();
         shape3D.getModelMatrixAnimations().stream().filter(modelMatrixAnimation -> modelMatrixAnimation.getItemState() != null).forEach(modelMatrixAnimation -> animationMap.put(modelMatrixAnimation.getId(), modelMatrixAnimation.getItemState()));
         shape3DConfig.setAnimations(animationMap);
         shape3DUiService.override(shape3D);
+        fireChange(shape3D);
     }
 
     @Override
@@ -146,5 +169,32 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     @Override
     protected List<ObjectNameId> setupObjectNameIds() {
         return shape3DUiService.getShape3Ds().stream().map(Shape3D::createObjectNameId).collect(Collectors.toList());
+    }
+
+    @Override
+    public void onChange(Shape3D shape3D) {
+        // TODO BaseItemType ResourceItemType and TerraonObject shape3d change and render update
+
+        // Update BaseItemType renderer
+        for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
+            if(baseItemType.getShape3DId() != null && shape3D.getDbId() == baseItemType.getShape3DId()) {
+                baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
+            }
+            if(baseItemType.getSpawnShape3DId() != null && shape3D.getDbId() == baseItemType.getSpawnShape3DId()) {
+                baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
+            }
+        }
+        // Update ResourceItemType renderer
+        for (ResourceItemType resourceItemType : itemTypeService.getResourceItemTypes()) {
+            if(resourceItemType.getShape3DId() != null && shape3D.getDbId() == resourceItemType.getShape3DId()) {
+                resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType);
+            }
+        }
+        // Update TerrainObject renderer
+        for (TerrainObjectConfig terrainObjectConfig : terrainTypeService.getTerrainObjectConfigs()) {
+            if(terrainObjectConfig.getShape3DId() != null && shape3D.getDbId() == terrainObjectConfig.getShape3DId()) {
+                terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfig);
+            }
+        }
     }
 }

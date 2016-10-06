@@ -30,7 +30,7 @@ public class Shape3DUtils {
         List<VertexContainer> vertexContainers = new ArrayList<>();
         if (shape3D.getElement3Ds() != null) {
             for (Element3D element3D : shape3D.getElement3Ds()) {
-                vertexContainers.addAll(element3D.getVertexContainers().stream().collect(Collectors.toList()));
+                vertexContainers.addAll(element3D.getVertexContainers());
             }
         }
         return vertexContainers;

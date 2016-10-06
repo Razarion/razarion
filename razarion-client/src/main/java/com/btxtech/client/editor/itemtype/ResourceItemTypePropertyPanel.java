@@ -3,6 +3,7 @@ package com.btxtech.client.editor.itemtype;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
@@ -13,7 +14,6 @@ import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 /**
@@ -22,6 +22,8 @@ import javax.inject.Inject;
  */
 @Templated("ResourceItemTypePropertyPanel.html#resource-item-property-panel")
 public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<ResourceItemType> {
+    @Inject
+    private ResourceItemRenderTask resourceItemRenderTask;
     @Inject
     @AutoBound
     private DataBinder<ResourceItemType> resourceItemTypeDataBinder;
@@ -35,6 +37,7 @@ public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<Resourc
     @Bound
     @DataField
     private TextBox name;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Shape3DReferenceFiled shape3DReferenceFiled;
@@ -46,22 +49,18 @@ public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<Resourc
     @Bound
     @DataField
     private IntegerBox amount;
-    @Inject
-    private Event<ResourceItemType> trigger;
-    private ResourceItemType resourceItemType;
 
     @Override
     public void init(ResourceItemType resourceItemType) {
-        this.resourceItemType = resourceItemType;
         resourceItemTypeDataBinder.setModel(resourceItemType);
         shape3DReferenceFiled.init(resourceItemType.getShape3DId(), shape3DId -> {
             resourceItemType.setShape3DId(shape3DId);
-            trigger.fire(resourceItemTypeDataBinder.getModel()); // Inform Renderer
+            resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType);
         });
     }
 
     @Override
     public ResourceItemType getConfigObject() {
-        return resourceItemType;
+        return resourceItemTypeDataBinder.getModel();
     }
 }

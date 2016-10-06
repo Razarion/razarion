@@ -10,7 +10,6 @@ import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 /**
@@ -20,8 +19,6 @@ import javax.inject.Inject;
 @Templated("Shape3DPropertyPanel.html#tableRowTextures")
 public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     // private Logger logger = Logger.getLogger(TexturePanel.class.getName());
-    @Inject
-    private Event<TexturePanel> eventTrigger;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -36,6 +33,7 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     private ImageItemWidget imageItemWidget;
     private VertexContainer vertexContainer;
     private Integer newImageId;
+    private Shape3DPropertyPanel shape3DPropertyPanel;
 
     @Override
     public HTMLElement getElement() {
@@ -48,7 +46,7 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
         materialName.setText(vertexContainer.getMaterialName());
         imageItemWidget.setImageId(vertexContainer.getTextureId(), imageId -> {
             newImageId = imageId;
-            eventTrigger.fire(TexturePanel.this);
+            shape3DPropertyPanel.texturePanelChanged(this);
         });
     }
 
@@ -59,5 +57,9 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
 
     public Integer getNewImageId() {
         return newImageId;
+    }
+
+    public void setShape3DPropertyPanel(Shape3DPropertyPanel shape3DPropertyPanel) {
+        this.shape3DPropertyPanel = shape3DPropertyPanel;
     }
 }

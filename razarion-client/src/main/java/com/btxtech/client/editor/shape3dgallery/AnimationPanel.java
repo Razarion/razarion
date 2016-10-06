@@ -26,8 +26,6 @@ import java.util.Arrays;
 @Templated("Shape3DPropertyPanel.html#tableRowAnimation")
 public class AnimationPanel implements TakesValue<ModelMatrixAnimation>, IsElement {
     @Inject
-    private Event<AnimationPanel> eventTrigger;
-    @Inject
     @AutoBound
     private DataBinder<ModelMatrixAnimation> binder;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -44,13 +42,14 @@ public class AnimationPanel implements TakesValue<ModelMatrixAnimation>, IsEleme
     @DataField
     private ValueListBox<ItemState> animationTrigger;
     private ItemState newItemState;
+    private Shape3DPropertyPanel shape3DPropertyPanel;
 
     @PostConstruct
     public void postConstruct() {
         animationTrigger.setAcceptableValues(Arrays.asList(ItemState.values()));
         animationTrigger.addValueChangeHandler(event -> {
             newItemState = animationTrigger.getValue();
-            eventTrigger.fire(this);
+            shape3DPropertyPanel.animationPanelChanged(this);
         });
     }
 
@@ -74,5 +73,9 @@ public class AnimationPanel implements TakesValue<ModelMatrixAnimation>, IsEleme
 
     public ItemState getNewItemState() {
         return newItemState;
+    }
+
+    public void setShape3DPropertyPanel(Shape3DPropertyPanel shape3DPropertyPanel) {
+        this.shape3DPropertyPanel = shape3DPropertyPanel;
     }
 }

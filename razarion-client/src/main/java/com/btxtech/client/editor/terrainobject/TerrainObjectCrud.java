@@ -50,6 +50,7 @@ public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> 
             public void callback(List<TerrainObjectConfig> terrainObjectConfig) {
                 terrainTypeService.setTerrainObjectConfigs(terrainObjectConfig);
                 fire();
+                fireChange(terrainObjectConfig);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "TerrainElementEditorProvider.createTerrainObjectConfig failed: " + message, throwable);

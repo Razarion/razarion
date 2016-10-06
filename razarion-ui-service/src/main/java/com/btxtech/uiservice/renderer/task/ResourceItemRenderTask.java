@@ -15,7 +15,6 @@ import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.logging.Logger;
 
@@ -35,16 +34,15 @@ public class ResourceItemRenderTask extends AbstractRenderTask<ResourceItemType>
 
     @PostConstruct
     public void postConstruct() {
-        itemTypeService.getResourceItemTypes().forEach(this::setupResourceItemType);
+        itemTypeService.getResourceItemTypes().forEach(resourceItemType -> setupResourceItemType(resourceItemType, false));
     }
 
-    public void onBaseItemTypeChanged(@Observes ResourceItemType resourceItemType) {
+    public void onResourceItemTypeChanged(ResourceItemType resourceItemType) {
         removeAll(resourceItemType);
-        setupResourceItemType(resourceItemType);
+        setupResourceItemType(resourceItemType, true);
     }
 
-    private void setupResourceItemType(ResourceItemType resourceItemType) {
-        // Alive
+    private void setupResourceItemType(ResourceItemType resourceItemType, boolean fillBuffer) {
         if (resourceItemType.getShape3DId() != null) {
             ModelRenderer<ResourceItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
             modelRenderer.init(resourceItemType, () -> resourceService.provideModelMatrices(resourceItemType, shape3DUiService.getShape3DGeneralScale()));
@@ -58,6 +56,9 @@ public class ResourceItemRenderTask extends AbstractRenderTask<ResourceItemType>
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    if (fillBuffer) {
+                        compositeRenderer.fillBuffers();
+                    }
                 }
             }
             add(modelRenderer);

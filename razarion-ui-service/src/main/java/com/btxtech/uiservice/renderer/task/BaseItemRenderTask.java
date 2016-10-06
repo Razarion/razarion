@@ -14,9 +14,7 @@ import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.logging.Logger;
 
 /**
@@ -33,15 +31,15 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
 
     @PostConstruct
     public void postConstruct() {
-        baseItemUiService.getBaseItemTypes().forEach(this::setupBaseItemType);
+        baseItemUiService.getBaseItemTypes().forEach(baseItemType -> setupBaseItemType(baseItemType, false));
     }
 
-    public void onBaseItemTypeChanged(@Observes BaseItemType baseItemType) {
+    public void onBaseItemTypeChanged(BaseItemType baseItemType) {
         removeAll(baseItemType);
-        setupBaseItemType(baseItemType);
+        setupBaseItemType(baseItemType, true);
     }
 
-    private void setupBaseItemType(BaseItemType baseItemType) {
+    private void setupBaseItemType(BaseItemType baseItemType, boolean fillBuffer) {
         // Spawn
         if (baseItemType.getSpawnShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
@@ -56,6 +54,9 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    if (fillBuffer) {
+                        compositeRenderer.fillBuffers();
+                    }
                 }
             }
             add(modelRenderer);
@@ -76,6 +77,9 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    if (fillBuffer) {
+                        compositeRenderer.fillBuffers();
+                    }
                 }
             }
             add(modelRenderer);

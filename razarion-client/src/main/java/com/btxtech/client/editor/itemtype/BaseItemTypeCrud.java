@@ -69,6 +69,7 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
             public void callback(List<BaseItemType> baseItemTypes) {
                 itemTypeService.setBaseItemTypes(baseItemTypes);
                 fire();
+                fireChange(baseItemTypes);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "BaseItemTypeCrud.readBaseItemType failed: " + message, throwable);

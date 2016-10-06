@@ -3,7 +3,7 @@ package com.btxtech.client.editor.terrainobject;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.google.gwt.user.client.ui.Composite;
+import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -12,7 +12,6 @@ import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 /**
@@ -21,6 +20,8 @@ import javax.inject.Inject;
  */
 @Templated("TerrainObjectPropertyPanel.html#terrain-object-property-panel")
 public class TerrainObjectPropertyPanel extends AbstractPropertyPanel<TerrainObjectConfig> {
+    @Inject
+    private TerrainObjectRenderTask terrainObjectRenderTask;
     @Inject
     @AutoBound
     private DataBinder<TerrainObjectConfig> terrainObjectConfigDataBinder;
@@ -34,17 +35,16 @@ public class TerrainObjectPropertyPanel extends AbstractPropertyPanel<TerrainObj
     @Bound
     @DataField
     private TextBox internalName;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Shape3DReferenceFiled shape3DReferenceFiled;
-    @Inject
-    private Event<TerrainObjectConfig> trigger;
 
     public void init(TerrainObjectConfig terrainObjectConfig) {
         terrainObjectConfigDataBinder.setModel(terrainObjectConfig);
         shape3DReferenceFiled.init(terrainObjectConfig.getShape3DId(), shape3DId -> {
             terrainObjectConfigDataBinder.getModel().setShape3DId(shape3DId);
-            trigger.fire(terrainObjectConfigDataBinder.getModel()); // Inform Renderer
+            terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfigDataBinder.getModel());
         });
     }
 

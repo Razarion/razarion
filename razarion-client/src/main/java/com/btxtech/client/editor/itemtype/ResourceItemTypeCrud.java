@@ -69,6 +69,7 @@ public class ResourceItemTypeCrud extends AbstractCrudeEditor<ResourceItemType> 
             public void callback(List<ResourceItemType> resourceItemTypes) {
                 itemTypeService.setResourceItemTypes(resourceItemTypes);
                 fire();
+                fireChange(resourceItemTypes);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "ResourceItemTypeCrud.readResourceItemType failed: " + message, throwable);

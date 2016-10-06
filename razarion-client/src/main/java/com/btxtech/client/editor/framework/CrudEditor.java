@@ -3,16 +3,23 @@ package com.btxtech.client.editor.framework;
 import com.btxtech.shared.dto.ObjectNameId;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Created by Beat
  * 23.08.2016.
  */
 public interface CrudEditor<T> {
-    void monitor(Consumer<List<ObjectNameId>> consumer);
+    interface LoadedListener {
+        void onLoaded(List<ObjectNameId> objectNameIds);
+    }
 
-    void removeMonitor(Consumer<List<ObjectNameId>> consumer);
+    interface SelectionListener {
+        void onSelect(ObjectNameId objectNameId);
+    }
+
+    interface ChangeListener<T> {
+        void onChange(T t);
+    }
 
     void create();
 
@@ -24,7 +31,15 @@ public interface CrudEditor<T> {
 
     T getInstance(ObjectNameId id);
 
-    void monitorSelection(Consumer<ObjectNameId> callback);
+    void monitor(LoadedListener loadedListener);
 
-    void removeSelectionMonitor(Consumer<ObjectNameId> callback);
+    void removeMonitor(LoadedListener loadedListener);
+
+    void monitorSelection(SelectionListener selectionListener);
+
+    void removeSelectionMonitor(SelectionListener selectionListener);
+
+    void addChangeListener(ChangeListener<T> changeListener);
+
+    void removeChangeListener(ChangeListener<T> changeListener);
 }

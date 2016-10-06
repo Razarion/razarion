@@ -21,7 +21,7 @@ import java.util.List;
  * 23.08.2016.
  */
 @Templated("AbstractCrudeParentSidebar.html#abstract-crud-parent")
-public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends LeftSideBarContent {
+public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends LeftSideBarContent implements CrudEditor.LoadedListener, CrudEditor.SelectionListener {
     // private Logger logger = Logger.getLogger(AbstractCrudeParentSidebar.class.getName());
     @Inject
     private LeftSideBarManager leftSideBarManager;
@@ -48,8 +48,8 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
 
     @PostConstruct
     public void init() {
-        getCrudEditor().monitor(this::updateSelector);
-        getCrudEditor().monitorSelection(this::select);
+        getCrudEditor().monitor(this);
+        getCrudEditor().monitorSelection(this);
         selector.addValueChangeHandler(event -> displayPropertyBook(selector.getValue()));
     }
 
@@ -71,9 +71,10 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
         enableDeleteButton(false);
     }
 
-    public void select(ObjectNameId selection) {
-        selector.setValue(selection);
-        displayPropertyBook(selection); // TODO may changing the selector fire an event
+    @Override
+    public void onSelect(ObjectNameId objectNameId) {
+        selector.setValue(objectNameId);
+        displayPropertyBook(objectNameId); // TODO may changing the selector fire an event
     }
 
     @EventHandler("createButton")
@@ -86,7 +87,8 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
         getCrudEditor().reload();
     }
 
-    private void updateSelector(List<ObjectNameId> objectNameIds) {
+    @Override
+    public void onLoaded(List<ObjectNameId> objectNameIds) {
         T t = getConfigObject();
         if (t != null) {
             if (objectNameIds.contains(t.createObjectNameId())) {
@@ -111,7 +113,11 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
     }
 
     private void displayPropertyBook(ObjectNameId objectNameId) {
+        if (content.getWidget() == null) {
+            getCrudEditor().removeChangeListener((CrudEditor.ChangeListener) content.getWidget());
+        }
         U u = createPropertyPanel();
+        getCrudEditor().addChangeListener(u);
         u.init(getCrudEditor().getInstance(objectNameId));
         content.setWidget(u);
         enableSaveButton(true);
@@ -120,8 +126,8 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
 
     @Override
     public void onClose() {
-        getCrudEditor().removeMonitor(this::updateSelector);
-        getCrudEditor().removeSelectionMonitor(this::select);
+        getCrudEditor().removeMonitor(this);
+        getCrudEditor().removeSelectionMonitor(this);
     }
 
 }
