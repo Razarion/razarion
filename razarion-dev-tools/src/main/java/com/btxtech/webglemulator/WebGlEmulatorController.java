@@ -317,7 +317,7 @@ public class WebGlEmulatorController implements Initializable {
     public void onMousePressed(MouseEvent event) {
         terrainMouseHandler.onMouseDown((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight(),
                 event.getButton().equals(MouseButton.PRIMARY), event.getButton().equals(MouseButton.SECONDARY), event.getButton().equals(MouseButton.MIDDLE),
-                event.isControlDown(), event.isAltDown());
+                event.isControlDown(), event.isShiftDown());
     }
 
     public void onMouseReleased(MouseEvent event) {

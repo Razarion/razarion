@@ -53,6 +53,8 @@ import java.util.Map;
  */
 @Singleton
 public class StoryboardPersistenceImpl implements StoryboardPersistence {
+    private static final int NPC_BOT_OUTPOST = 1;
+    private static final int NPC_BOT_INSTRUCTOR = 2;
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -81,7 +83,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        addSetupItems(sceneConfigs); // TODO mode to DB
+        addResources(sceneConfigs); // TODO mode to DB
+        addNpcBot(sceneConfigs); // TODO mode to DB
         // addScrollOverTerrain(sceneConfigs); // TODO mode to DB
         //addBotSpawnScene(sceneConfigs); // TODO mode to DB
         // addUserSpawnScene(sceneConfigs); // TODO mode to DB
@@ -107,7 +110,24 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         return visualConfig;
     }
 
-    private void addSetupItems(List<SceneConfig> sceneConfigs) {
+    private void addNpcBot(List<SceneConfig> sceneConfigs) {
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2075, 1151))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2326, 859))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2761, 877))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2603, 948))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2608, 1154))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2484, 1238))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2287, 1405))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2218, 1441))));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(NPC_BOT_OUTPOST).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+        sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs));
+    }
+
+    private void addResources(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
         sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(false));
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
@@ -134,7 +154,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<BotItemConfig> botItems = new ArrayList<>();
         botItems.add(new BotItemConfig().setBaseItemTypeId(180807).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(1040, 800))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+        botConfigs.add(new BotConfig().setId(NPC_BOT_INSTRUCTOR).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen."));
     }
 
@@ -150,7 +170,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(2040, 520)).setSpeed(80.0).setCameraLocked(false);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
-        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setBaseItemTypeId(180807).setDecimalPosition(new DecimalPosition(2040, 1000)));
+        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(180807).setDecimalPosition(new DecimalPosition(2040, 1000)));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
     }
 

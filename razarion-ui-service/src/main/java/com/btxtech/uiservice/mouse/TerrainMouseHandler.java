@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.GroupSelectionFrame;
@@ -91,6 +92,8 @@ public class TerrainMouseHandler {
                     logger.warning("TerrainMouseHandler.onMouseMove(): groupSelectionFrame != null");
                 }
             }
+        } catch (NoInterpolatedTerrainTriangleException e) {
+            logger.warning(e.getMessage());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -145,7 +148,8 @@ public class TerrainMouseHandler {
                     executeMoveCommand(terrainPosition.toXY());
                 }
             }
-
+        } catch (NoInterpolatedTerrainTriangleException e) {
+            logger.warning(e.getMessage());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -170,6 +174,8 @@ public class TerrainMouseHandler {
                     logger.warning("TerrainMouseHandler.onMouseUp(): groupSelectionFrame != null");
                 }
             }
+        } catch (NoInterpolatedTerrainTriangleException e) {
+            logger.warning(e.getMessage());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

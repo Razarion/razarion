@@ -186,7 +186,7 @@ public class TerrainService {
 
         // TODO water
 
-        throw new IllegalArgumentException("No InterpolatedTerrainTriangle at: " + absoluteXY);
+        throw new NoInterpolatedTerrainTriangleException(absoluteXY);
     }
 
     public Vertex calculatePositionGroundMesh(Ray3d worldPickRay) {
