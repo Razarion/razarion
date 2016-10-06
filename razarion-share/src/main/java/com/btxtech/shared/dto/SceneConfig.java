@@ -19,7 +19,7 @@ public class SceneConfig {
     private List<BotMoveCommandConfig> botMoveCommandConfigs;
     private StartPointConfig startPointConfig;
     private Boolean wait4LevelUp;
-    private Map<Integer, DecimalPosition> resourceItemTypePositions;
+    private List<ResourceItemPosition> resourceItemTypePositions;
 
     public String getIntroText() {
         return introText;
@@ -84,11 +84,11 @@ public class SceneConfig {
         return this;
     }
 
-    public Map<Integer, DecimalPosition> getResourceItemTypePositions() {
+    public List<ResourceItemPosition> getResourceItemTypePositions() {
         return resourceItemTypePositions;
     }
 
-    public SceneConfig setResourceItemTypePositions(Map<Integer, DecimalPosition> resourceItemTypePositions) {
+    public SceneConfig setResourceItemTypePositions(List<ResourceItemPosition> resourceItemTypePositions) {
         this.resourceItemTypePositions = resourceItemTypePositions;
         return this;
     }

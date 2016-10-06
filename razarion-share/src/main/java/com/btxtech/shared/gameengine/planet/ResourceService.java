@@ -13,10 +13,9 @@
 
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -25,6 +24,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +44,11 @@ public class ResourceService {
     private TerrainService terrainService;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
 
-    public void createResources(Map<Integer, DecimalPosition> resourceItemType) {
-        for (Map.Entry<Integer, DecimalPosition> entry : resourceItemType.entrySet()) {
-            ResourceItemType resourceItem =  itemTypeService.getResourceItemType(entry.getKey());
-            Vertex position = terrainService.calculatePositionGroundMesh(entry.getValue());
-            SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItem, position);
+    public void createResources(Collection<ResourceItemPosition> resourceItemPositions) {
+        for (ResourceItemPosition resourceItemPosition : resourceItemPositions) {
+            ResourceItemType resourceItem = itemTypeService.getResourceItemType(resourceItemPosition.getResourceItemTypeId());
+            Vertex position = terrainService.calculatePositionGroundMesh(resourceItemPosition.getPosition());
+            SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItem, position, resourceItemPosition.getRotationZ());
             syncResourceItem.setup(resourceItem.getAmount());
             synchronized (resources) {
                 resources.put(syncResourceItem.getId(), syncResourceItem);
@@ -64,11 +64,10 @@ public class ResourceService {
         List<ModelMatrices> modelMatrices = new ArrayList<>();
         synchronized (resources) {
             for (SyncResourceItem syncResourceItem : resources.values()) {
-                if(!syncResourceItem.getItemType().equals(resourceItemType)) {
+                if (!syncResourceItem.getItemType().equals(resourceItemType)) {
                     continue;
                 }
-                Matrix4 matrix = Matrix4.createTranslation(syncResourceItem.getSyncPhysicalArea().getPosition()).multiply(Matrix4.createScale(scale, scale, scale));
-                modelMatrices.add(new ModelMatrices().setModel(matrix).setNorm(matrix.normTransformation()));
+                modelMatrices.add(syncResourceItem.getSyncPhysicalArea().createModelMatrices(null, scale));
             }
         }
         return modelMatrices;

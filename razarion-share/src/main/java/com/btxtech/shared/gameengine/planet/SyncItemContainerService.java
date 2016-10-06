@@ -121,9 +121,9 @@ public class SyncItemContainerService {
         return syncBaseItem;
     }
 
-    public SyncResourceItem createSyncResourceItem(ResourceItemType resourceItemType, Vertex position) {
+    public SyncResourceItem createSyncResourceItem(ResourceItemType resourceItemType, Vertex position, double zRotation) {
         SyncResourceItem syncResourceItem = instance.select(SyncResourceItem.class).get();
-        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea(syncResourceItem, resourceItemType.getRadius(), position, Vertex.Z_NORM);
+        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea(syncResourceItem, resourceItemType.getRadius(), position, Vertex.Z_NORM, zRotation);
         synchronized (items) {
             syncResourceItem.init(lastItemId, resourceItemType, syncPhysicalArea);
             items.put(lastItemId, syncResourceItem);
@@ -139,7 +139,7 @@ public class SyncItemContainerService {
         } else if (physicalAreaConfig.fulfilledDirectional()) {
             throw new UnsupportedOperationException();
         } else {
-            return new SyncPhysicalArea(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position, Vertex.Z_NORM);
+            return new SyncPhysicalArea(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position, Vertex.Z_NORM, 0);
         }
     }
 

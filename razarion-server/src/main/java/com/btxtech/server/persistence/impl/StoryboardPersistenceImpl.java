@@ -13,6 +13,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
@@ -109,8 +110,12 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private void addSetupItems(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
         sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(false));
-        Map<Integer, DecimalPosition> resourceItemTypePositions = new HashMap<>();
-        resourceItemTypePositions.put(180829, new DecimalPosition(1040, 800));
+        List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2358, 1995)).setRotationZ(Math.toRadians(0)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2543, 2002)).setRotationZ(Math.toRadians(80)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2441, 1878)).setRotationZ(Math.toRadians(160)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2642, 1829)).setRotationZ(Math.toRadians(240)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2769, 2119)).setRotationZ(Math.toRadians(320)));
         sceneConfig.setResourceItemTypePositions(resourceItemTypePositions);
         sceneConfigs.add(sceneConfig);
     }
