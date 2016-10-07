@@ -28,8 +28,10 @@ import com.btxtech.uiservice.storyboard.StoryboardService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -38,6 +40,7 @@ import java.util.HashSet;
  */
 @ApplicationScoped
 public class SelectionHandler {
+    private Logger logger = Logger.getLogger(SelectionHandler.class.getName());
     @Inject
     private CommandService commandService;
     @Inject
@@ -83,6 +86,7 @@ public class SelectionHandler {
                 commandService.pickupBox(selectedGroup.getItems(), (SyncBoxItem) target);
             }
         } else {
+            // TODO this may be wrong
             this.selectedTargetSyncItem = target;
             onTargetSelectionItemChanged(this.selectedTargetSyncItem);
         }
@@ -103,15 +107,32 @@ public class SelectionHandler {
 //    TODO    }
         clearSelection();
         this.selectedGroup = selectedGroup;
-        selectionEventEventTrigger.fire(new SelectionEvent(SelectionEvent.Type.OWN, selectedGroup));
+        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup));
     }
 
     public void selectRectangle(Rectangle2D rectangle) {
-        Collection<SyncBaseItem> selectedItems = storyboardService.getMyItemsInRegion(rectangle);
+        Collection<SyncBaseItem> selectedItems = syncItemContainerService.getItemInRect(rectangle);
         if (selectedItems.isEmpty()) {
             clearSelection();
         } else {
-            setItemGroupSelected(new Group(selectedItems));
+            SyncBaseItem enemy = null;
+            Collection<SyncBaseItem> own = new ArrayList<>();
+            for (SyncBaseItem selectedItem : selectedItems) {
+                if (storyboardService.isMyOwnProperty(selectedItem)) {
+                    own.add(selectedItem);
+                } else {
+                    enemy = selectedItem;
+                }
+            }
+
+            if (!own.isEmpty()) {
+                setItemGroupSelected(new Group(selectedItems));
+            } else if (enemy != null) {
+                onTargetSelectionItemChanged(enemy);
+            } else {
+                logger.warning("SelectionHandler.selectRectangle() unknown state");
+            }
+
         }
     }
 
@@ -130,11 +151,9 @@ public class SelectionHandler {
 //   TODO      CursorHandler.getInstance().onSelectionCleared();
     }
 
-    private void onTargetSelectionItemChanged(SyncItem selection) {
-//  TODO      for (SelectionListener listener : new ArrayList<SelectionListener>(listeners)) {
-//            listener.onTargetSelectionChanged(selection);
-//        }
-// TODO       CursorHandler.getInstance().onSelectionCleared();
+    private void onTargetSelectionItemChanged(SyncItem target) {
+        selectionEventEventTrigger.fire(new SelectionEvent(target));
+        // TODO CursorHandler.getInstance().onSelectionCleared();
     }
 
     @Deprecated

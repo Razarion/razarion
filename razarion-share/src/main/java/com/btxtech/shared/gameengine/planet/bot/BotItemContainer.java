@@ -147,9 +147,7 @@ public class BotItemContainer {
                 }
             }
         }
-        for (BotSyncBaseItem botSyncBaseItem : remove) {
-            remove(botSyncBaseItem);
-        }
+        remove.forEach(this::remove);
     }
 
     private void remove(BotSyncBaseItem botSyncBaseItem) {

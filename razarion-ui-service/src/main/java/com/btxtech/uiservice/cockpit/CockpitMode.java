@@ -95,7 +95,7 @@ public class CockpitMode {
                 isCollectPossible = selectionEvent.getSelectedGroup().canCollect();
                 isFinalizeBuildPossible = selectionEvent.getSelectedGroup().canFinalizeBuild();
                 break;
-            case TRAGET:
+            case TARGET:
                 clearPossibilities();
                 break;
         }

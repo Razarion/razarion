@@ -64,7 +64,7 @@ public class ItemCockpitService {
                 isActive = true;
                 itemCockpitPanel.showPanel(true);
                 break;
-            case TRAGET:
+            case TARGET:
                 itemCockpitPanel.maximizeMinButton();
                 itemCockpitPanel.cleanPanels();
                 OtherInfoPanel otherInfoPanel = instance.select(OtherInfoPanel.class).get();

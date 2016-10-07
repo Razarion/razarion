@@ -11,19 +11,20 @@ public class SelectionEvent {
     public enum Type {
         CLEAR,
         OWN,
-        TRAGET
+        TARGET
     }
+
     private Type type;
     private Group selectedGroup;
     private SyncItem targetSelection;
 
-    public SelectionEvent(Type type, Group selectedGroup) {
-        this.type = type;
+    public SelectionEvent(Group selectedGroup) {
+        type = Type.OWN;
         this.selectedGroup = selectedGroup;
     }
 
-    public SelectionEvent(Type type, SyncItem targetSelection) {
-        this.type = type;
+    public SelectionEvent(SyncItem targetSelection) {
+        type = Type.TARGET;
         this.targetSelection = targetSelection;
     }
 

@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -56,7 +57,7 @@ public class ScenarioService {
     @Inject
     private BotService botService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 37;
+    private int number = 38;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -646,6 +647,24 @@ public class ScenarioService {
             @Override
             public void executeBotCommands(Collection<BotMoveCommandConfig> botCommandConfigs) {
                 botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setDecimalPosition(new DecimalPosition(0, 200)).setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()));
+            }
+        });
+        // 38
+        scenes.add(new ScenarioProvider() {
+            @Override
+            public void setupBots(Collection<BotConfig> botConfigs) {
+                List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+                List<BotItemConfig> botItems = new ArrayList<>();
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(287, 405))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(218, 441))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 151))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(326, 859 - 1000))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(761, 877 - 1000))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(603, 948 - 1000))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(608, 154))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(484, 238))));
+                botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
             }
         });
     }

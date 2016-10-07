@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -16,6 +17,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -174,4 +176,16 @@ public class SyncItemContainerService {
             }
         });
     }
+
+    public Collection<SyncBaseItem> getItemInRect(Rectangle2D rectangle) {
+        Collection<SyncBaseItem> result = new ArrayList<>();
+        iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (syncBaseItem.getSyncPhysicalArea().overlap(rectangle)) {
+                result.add(syncBaseItem);
+            }
+            return null;
+        });
+        return result;
+    }
+
 }
