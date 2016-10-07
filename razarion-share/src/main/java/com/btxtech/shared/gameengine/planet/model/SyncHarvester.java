@@ -13,8 +13,7 @@
 
 package com.btxtech.shared.gameengine.planet.model;
 
-import com.btxtech.shared.gameengine.datatypes.Path;
-import com.btxtech.shared.gameengine.datatypes.command.MoneyCollectCommand;
+import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
@@ -22,7 +21,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
 import javax.enterprise.context.Dependent;
@@ -125,7 +123,7 @@ public class SyncHarvester extends SyncBaseAbility {
         syncItemInfo.setTarget(target);
     }
 
-    public void executeCommand(MoneyCollectCommand attackCommand) throws ItemDoesNotExistException {
+    public void executeCommand(HarvestCommand attackCommand) throws ItemDoesNotExistException {
         SyncResourceItem resource = resourceService.getSyncResourceItem(attackCommand.getTarget());
         this.target = resource.getId();
         setPathToDestinationIfSyncMovable(attackCommand.getPathToDestination());

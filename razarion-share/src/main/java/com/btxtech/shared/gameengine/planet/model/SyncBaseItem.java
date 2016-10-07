@@ -24,7 +24,7 @@ import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
-import com.btxtech.shared.gameengine.datatypes.command.MoneyCollectCommand;
+import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
@@ -36,7 +36,6 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -355,8 +354,8 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return;
         }
 
-        if (baseCommand instanceof MoneyCollectCommand) {
-            getSyncHarvester().executeCommand((MoneyCollectCommand) baseCommand);
+        if (baseCommand instanceof HarvestCommand) {
+            getSyncHarvester().executeCommand((HarvestCommand) baseCommand);
             return;
         }
 

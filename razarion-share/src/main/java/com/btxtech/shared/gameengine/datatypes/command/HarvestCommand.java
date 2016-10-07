@@ -18,7 +18,7 @@ package com.btxtech.shared.gameengine.datatypes.command;
  * Date: Aug 1, 2009
  * Time: 1:04:16 PM
  */
-public class MoneyCollectCommand extends PathToDestinationCommand {
+public class HarvestCommand extends PathToDestinationCommand {
     private Integer target;
 
     public int getTarget() {
