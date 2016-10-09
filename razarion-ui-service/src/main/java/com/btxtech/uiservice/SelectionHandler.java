@@ -81,7 +81,7 @@ public class SelectionHandler {
             if (selectedGroup.canAttack() && target instanceof SyncBaseItem) {
                 commandService.attack(selectedGroup.getItems(), (SyncBaseItem) target);
             } else if (selectedGroup.canCollect() && target instanceof SyncResourceItem) {
-                commandService.collect(selectedGroup.getItems(), (SyncResourceItem) target);
+                commandService.harvest(selectedGroup.getItems(), (SyncResourceItem) target);
             } else if (target instanceof SyncBoxItem) {
                 commandService.pickupBox(selectedGroup.getItems(), (SyncBoxItem) target);
             }
@@ -111,7 +111,7 @@ public class SelectionHandler {
     }
 
     public void selectRectangle(Rectangle2D rectangle) {
-        Collection<SyncBaseItem> selectedItems = syncItemContainerService.getItemInRect(rectangle);
+        Collection<SyncBaseItem> selectedItems = syncItemContainerService.findItemInRect(rectangle);
         if (selectedItems.isEmpty()) {
             clearSelection();
         } else {

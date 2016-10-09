@@ -4,8 +4,10 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
@@ -21,6 +23,10 @@ import java.util.List;
  * 19.03.2016.
  */
 public class ExtendedGraphicsContext {
+    private static final Color BASE_ITEM_TYPE_COLOR = new Color(0, 0, 1, 1);
+    private static final Color RESOURCE_ITEM_TYPE_COLOR = new Color(0.8, 0.8, 0, 1);
+    private static final Color TERRAIN_OBSTACLE_COLOR = new Color(0, 0, 0, 0.5);
+
     private GraphicsContext gc;
 
     public ExtendedGraphicsContext(GraphicsContext gc) {
@@ -128,24 +134,30 @@ public class ExtendedGraphicsContext {
 
     }
 
-    public void drawUnit(SyncItem syncItem, Paint color) {
+    public void drawUnit(SyncItem syncItem) {
         SyncPhysicalArea syncPhysicalArea = syncItem.getSyncPhysicalArea();
         DecimalPosition position = syncPhysicalArea.getXYPosition();
-        gc.setFill(color);
+        if (syncItem instanceof SyncBaseItem) {
+            gc.setFill(BASE_ITEM_TYPE_COLOR);
+        } else if (syncItem instanceof SyncResourceItem) {
+            gc.setFill(RESOURCE_ITEM_TYPE_COLOR);
+        } else {
+            throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
+        }
         gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
         // DecimalPosition direction = DecimalPosition.createVector(syncItem.getAngle(), syncItem.getRadius()).add(position);
         // gc.strokeLine(position.startX(), position.startY(), direction.startX(), direction.startY());
     }
 
-    public void drawObstacle(Obstacle obstacle, Paint color) {
-        gc.setStroke(color);
-        gc.setFill(color);
-        if(obstacle instanceof ObstacleLine) {
-            Index point1 = ((ObstacleLine)obstacle).getLine().getPoint1();
-            Index point2 = ((ObstacleLine)obstacle).getLine().getPoint2();
+    public void drawObstacle(Obstacle obstacle) {
+        gc.setStroke(TERRAIN_OBSTACLE_COLOR);
+        gc.setFill(TERRAIN_OBSTACLE_COLOR);
+        if (obstacle instanceof ObstacleLine) {
+            Index point1 = ((ObstacleLine) obstacle).getLine().getPoint1();
+            Index point2 = ((ObstacleLine) obstacle).getLine().getPoint2();
             gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
-        } else if(obstacle instanceof ObstacleCircle) {
-            Circle2D circle = ((ObstacleCircle)obstacle).getCircle();
+        } else if (obstacle instanceof ObstacleCircle) {
+            Circle2D circle = ((ObstacleCircle) obstacle).getCircle();
             gc.fillOval(circle.getCenter().getX() - circle.getRadius(), circle.getCenter().getY() - circle.getRadius(), circle.getRadius() * 2, circle.getRadius() * 2);
         }
     }

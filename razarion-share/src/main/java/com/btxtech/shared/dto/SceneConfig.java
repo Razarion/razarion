@@ -17,6 +17,7 @@ public class SceneConfig {
     private CameraConfig cameraConfig;
     private List<BotConfig> botConfigs;
     private List<BotMoveCommandConfig> botMoveCommandConfigs;
+    private List<BotHarvestCommandConfig> botHarvestCommandConfigs;
     private StartPointConfig startPointConfig;
     private Boolean wait4LevelUp;
     private List<ResourceItemPosition> resourceItemTypePositions;
@@ -63,6 +64,15 @@ public class SceneConfig {
 
     public SceneConfig setBotMoveCommandConfigs(List<BotMoveCommandConfig> botMoveCommandConfigs) {
         this.botMoveCommandConfigs = botMoveCommandConfigs;
+        return this;
+    }
+
+    public List<BotHarvestCommandConfig> getBotHarvestCommandConfigs() {
+        return botHarvestCommandConfigs;
+    }
+
+    public SceneConfig setBotHarvestCommandConfigs(List<BotHarvestCommandConfig> botHarvestCommandConfigs) {
+        this.botHarvestCommandConfigs = botHarvestCommandConfigs;
         return this;
     }
 

@@ -14,6 +14,8 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.AbstractBotCommandConfig;
+import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -27,8 +29,11 @@ import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundExcep
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CollisionService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -48,12 +53,15 @@ import java.util.logging.Logger;
 @Dependent
 public class BotItemContainer {
     private static final int KILL_ITERATION_MAXIMUM = 100;
+    private Logger logger = Logger.getLogger(BotItemContainer.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private BaseItemService baseItemService;
     @Inject
     private CollisionService collisionService;
+    @Inject
+    private SyncItemContainerService syncItemContainerService;
     @Inject
     private Instance<BotSyncBaseItem> baseItemInstance;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -269,19 +277,51 @@ public class BotItemContainer {
         need.onItemAdded(botSyncBaseItem);
     }
 
-    public void executeCommand(BotMoveCommandConfig botMoveCommandConfig) {
-        BotSyncBaseItem botSyncBaseItem = getBotSyncBaseItem(botMoveCommandConfig.getBaseItemTypeId());
-        botSyncBaseItem.move(botMoveCommandConfig.getDecimalPosition());
+    public void executeCommand(AbstractBotCommandConfig botCommandConfig) {
+        if (botCommandConfig instanceof BotMoveCommandConfig) {
+            BotMoveCommandConfig botMoveCommandConfig = (BotMoveCommandConfig) botCommandConfig;
+            Collection<BotSyncBaseItem> mover = getBotSyncBaseItem(botMoveCommandConfig.getBaseItemTypeId());
+            if (mover.isEmpty()) {
+                throw new IllegalArgumentException("Can not execute BotMoveCommandConfig. No BotSyncBaseItem found for baseItemTypeId: " + botMoveCommandConfig.getBaseItemTypeId() + ". Command: " + botMoveCommandConfig);
+            }
+            CollectionUtils.getFirst(mover).move(botMoveCommandConfig.getDecimalPosition());
+        } else if (botCommandConfig instanceof BotHarvestCommandConfig) {
+            BotHarvestCommandConfig botHarvestCommandConfig = (BotHarvestCommandConfig) botCommandConfig;
+            Collection<SyncResourceItem> resources = syncItemContainerService.findResourceItemWithPlace(botHarvestCommandConfig.getResourceItemTypeId(), botHarvestCommandConfig.getResourceSelection());
+            if (resources.isEmpty()) {
+                throw new IllegalArgumentException("Can not execute BotHarvestCommandConfig. No resource available to harvest. Command: " + botHarvestCommandConfig);
+            }
+            Collection<BotSyncBaseItem> harvester = getBotSyncBaseItem(botHarvestCommandConfig.getHarvesterItemTypeId());
+            if (harvester.isEmpty()) {
+                logger.warning("Can not execute BotHarvestCommandConfig. No BotSyncBaseItem found for baseItemTypeId: " + botHarvestCommandConfig.getHarvesterItemTypeId() + ". Command: " + botHarvestCommandConfig);
+                return;
+            }
+            Map<BotSyncBaseItem, SyncResourceItem> assignedCollector = ShortestWaySorter.setupAttackerTarget(harvester, resources, (botSyncBaseItem, syncResourceItem) -> botSyncBaseItem.isAbleToHarvest());
+            if(assignedCollector.isEmpty()) {
+                throw new IllegalArgumentException("Can not execute BotHarvestCommandConfig. Can not assign harvester to resource. Command: " + botHarvestCommandConfig);
+            }
+            for (Map.Entry<BotSyncBaseItem, SyncResourceItem> entry : assignedCollector.entrySet()) {
+                entry.getKey().harvest(entry.getValue());
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown bot command: " + botCommandConfig);
+        }
     }
 
-    private BotSyncBaseItem getBotSyncBaseItem(int baseItemTypeId) {
+    private Collection<BotSyncBaseItem> getBotSyncBaseItem(int baseItemTypeId) {
+        Collection<BotSyncBaseItem> result = new ArrayList<>();
         synchronized (botItems) {
             for (Map.Entry<SyncBaseItem, BotSyncBaseItem> entry : botItems.entrySet()) {
-                if (entry.getKey().getBaseItemType().getId() == baseItemTypeId) {
-                    return entry.getValue();
+                if (entry.getKey().getBaseItemType().getId() != baseItemTypeId) {
+                    continue;
                 }
+                entry.getValue().updateIdleState();
+                if (!entry.getValue().isIdle()) {
+                    continue;
+                }
+                result.add(entry.getValue());
             }
         }
-        throw new IllegalArgumentException("BotItemContainer: no BotSyncBaseItem found for baseItemTypeId: " + baseItemTypeId);
+        return result;
     }
 }

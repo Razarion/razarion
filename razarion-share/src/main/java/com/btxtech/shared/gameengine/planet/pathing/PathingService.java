@@ -30,8 +30,7 @@ public class PathingService {
     }
 
     public Path setupPathToDestination(SyncBaseItem syncItem, SyncItem target) {
-        throw new UnsupportedOperationException();
-        // return new Path().setDestination(destination);
+        return new Path().setDestination(target.getSyncPhysicalArea().getXYPosition());
     }
 
     public void tick() {
@@ -77,7 +76,7 @@ public class PathingService {
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
             if (syncPhysicalMovable.isMoving()) {
                 findObstacleContacts(syncPhysicalMovable, contacts);
-                findUnitContacts(syncBaseItem, alreadyAddedItems, contacts);
+                findItemContacts(syncBaseItem, alreadyAddedItems, contacts);
             }
             alreadyAddedItems.add(syncPhysicalMovable);
 
@@ -95,13 +94,14 @@ public class PathingService {
         }
     }
 
-    private void findUnitContacts(SyncBaseItem syncBaseItem, Collection<SyncPhysicalArea> alreadyAddedItems, Collection<Contact> contacts) {
-        syncItemContainerService.iterateOverBaseItems(false, false, syncBaseItem, null, otherSyncBaseItem -> {
-            SyncPhysicalArea other = otherSyncBaseItem.getSyncPhysicalArea();
+    private void findItemContacts(SyncBaseItem syncBaseItem, Collection<SyncPhysicalArea> alreadyAddedItems, Collection<Contact> contacts) {
+        syncItemContainerService.iterateOverItems(false, false, syncBaseItem, null, otherSyncItem -> {
+            SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
 
             if (alreadyAddedItems.contains(other)) {
                 return null;
             }
+
             Contact contact = ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).hasContact(other);
             if (contact != null) {
                 contacts.add(contact);
@@ -235,7 +235,10 @@ public class PathingService {
     }
 }
 
+// TODO slow down before reach target. Avoid overrun destination.
+
 // TODO make two units dest in middle (both point to the destination before start)
+
 // TODO 1 slow
 // TODO 3: prevent lining up
 // TODO 16,17,23 does not bypass enough

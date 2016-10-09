@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
+import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
@@ -133,7 +134,7 @@ public class BotEnragementState {
         }
     }
 
-    public void executeCommand(BotMoveCommandConfig botMoveCommandConfig) {
-        botItemContainer.executeCommand(botMoveCommandConfig);
+    public void executeCommand(AbstractBotCommandConfig botCommandConfig) {
+        botItemContainer.executeCommand(botCommandConfig);
     }
 }

@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
@@ -112,6 +113,35 @@ public class SyncItemContainerService {
         return defaultReturn;
     }
 
+    /**
+     * Calls function for every sync resource item
+     *
+     * @param itemIteratorHandler syncItem : Function<SyncResourceItem, T> returns null if the iteration shall continue T if the iteration shall stop
+     */
+    public <T> T iterateOverResourceItems(boolean includeDead, SyncBaseItem ignoreMe, T defaultReturn, Function<SyncResourceItem, T> itemIteratorHandler) {
+        synchronized (items) {
+            for (SyncItem syncItem : items.values()) {
+                if (ignoreMe != null && ignoreMe.equals(syncItem)) {
+                    continue;
+                }
+
+                if (!(syncItem instanceof SyncResourceItem)) {
+                    continue;
+                }
+
+                SyncResourceItem resourceItem = (SyncResourceItem) syncItem;
+                if (!includeDead && !resourceItem.isAlive()) {
+                    continue;
+                }
+                T result = itemIteratorHandler.apply(resourceItem);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return defaultReturn;
+    }
+
     public SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, Vertex position) {
         SyncBaseItem syncBaseItem = instance.select(SyncBaseItem.class).get();
         SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position);
@@ -167,7 +197,7 @@ public class SyncItemContainerService {
         }
     }
 
-    public SyncItem getItemAtPosition(DecimalPosition position) {
+    public SyncItem findItemAtPosition(DecimalPosition position) {
         return iterateOverBaseItems(false, false, null, syncItem -> {
             if (syncItem.getSyncPhysicalArea().overlap(position)) {
                 return syncItem;
@@ -177,7 +207,7 @@ public class SyncItemContainerService {
         });
     }
 
-    public Collection<SyncBaseItem> getItemInRect(Rectangle2D rectangle) {
+    public Collection<SyncBaseItem> findItemInRect(Rectangle2D rectangle) {
         Collection<SyncBaseItem> result = new ArrayList<>();
         iterateOverBaseItems(false, false, null, syncBaseItem -> {
             if (syncBaseItem.getSyncPhysicalArea().overlap(rectangle)) {
@@ -188,4 +218,17 @@ public class SyncItemContainerService {
         return result;
     }
 
+    public Collection<SyncResourceItem> findResourceItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {
+        Collection<SyncResourceItem> result = new ArrayList<>();
+        iterateOverResourceItems(false, null, null, syncResourceItem -> {
+            if(syncResourceItem.getItemType().getId() != resourceItemTypeId) {
+                return null;
+            }
+            if (syncResourceItem.getSyncPhysicalArea().contains(resourceSelection)) {
+                result.add(syncResourceItem);
+            }
+            return null;
+        });
+        return result;
+    }
 }

@@ -18,10 +18,6 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
-    private static final Color UNIT_DIRECTION_COLOR = new Color(1.0, 0, 1.0, 1.0);
-    private static final Color UNIT_COLOR_MOVING = new Color(0, 0, 0, 0.5);
-    private static final Color UNIT_COLOR_STANDING = new Color(0, 0, 0, 0.25);
-    private static final Color OBSTACLE_COLOR = new Color(0, 0, 0, 0.75);
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -37,12 +33,12 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
         ExtendedGraphicsContext extendedGraphicsContext = createExtendedGraphicsContext();
 
         syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
-            extendedGraphicsContext.drawUnit(syncItem, UNIT_COLOR_MOVING);
+            extendedGraphicsContext.drawUnit(syncItem);
             return null;
         });
 
         for (Obstacle obstacle : terrainService.getObstacles()) {
-            extendedGraphicsContext.drawObstacle(obstacle, OBSTACLE_COLOR);
+            extendedGraphicsContext.drawObstacle(obstacle);
         }
 
         postRender();

@@ -1,12 +1,12 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.BotMoveCommandConfig;
+import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -28,6 +28,9 @@ public class BotService {
     private Logger logger = Logger.getLogger(BotService.class.getName());
     @Inject
     private Instance<BotRunner> botRunnerInstance;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private final Map<BotConfig, BotRunner> botRunners = new HashMap<>();
 
     public void startBots(Collection<BotConfig> botConfigs) {
@@ -104,11 +107,14 @@ public class BotService {
         return false;
     }
 
-    public void executeCommands(List<BotMoveCommandConfig> botMoveCommandConfigs) {
-        for (BotMoveCommandConfig botMoveCommandConfig : botMoveCommandConfigs) {
-            BotRunner botRunner = getBotRunner(botMoveCommandConfig.getBotId());
-            botRunner.executeCommand(botMoveCommandConfig);
+    public void executeCommands(List<? extends AbstractBotCommandConfig> botCommandConfigs) {
+        for (AbstractBotCommandConfig botCommandConfig : botCommandConfigs) {
+            BotRunner botRunner = getBotRunner(botCommandConfig.getBotId());
+            try {
+                botRunner.executeCommand(botCommandConfig);
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
         }
-
     }
 }

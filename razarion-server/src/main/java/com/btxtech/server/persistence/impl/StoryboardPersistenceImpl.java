@@ -11,6 +11,7 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.LightConfig;
@@ -32,6 +33,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import org.xml.sax.SAXException;
 
@@ -149,6 +151,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setTerrainType(TerrainType.LAND);
         baseItemType.setI18Name(i18nHelper("Harvester Name"));
         baseItemType.setDescription(i18nHelper("Harvester Description"));
+        baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
+        baseItemType.setHarvesterType(new HarvesterType().setProgress(10).setRange(20));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -179,7 +183,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2484, 1238))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(NPC_BOT_OUTPOST).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
-        sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs));
+        List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
+        botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(NPC_BOT_OUTPOST).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(2441, 1878))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
+        botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(NPC_BOT_OUTPOST).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(2642, 1829))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
+        sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
     }
 
     private void addResources(List<SceneConfig> sceneConfigs) {

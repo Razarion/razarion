@@ -17,11 +17,13 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +46,10 @@ public class ResourceService {
     private TerrainService terrainService;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
 
+    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+        resources.clear();
+    }
+
     public void createResources(Collection<ResourceItemPosition> resourceItemPositions) {
         for (ResourceItemPosition resourceItemPosition : resourceItemPositions) {
             ResourceItemType resourceItem = itemTypeService.getResourceItemType(resourceItemPosition.getResourceItemTypeId());
@@ -57,7 +63,11 @@ public class ResourceService {
     }
 
     public SyncResourceItem getSyncResourceItem(int id) {
-        throw new UnsupportedOperationException();
+        SyncResourceItem syncResourceItem = resources.get(id);
+        if(syncResourceItem == null) {
+            throw new ItemDoesNotExistException(id);
+        }
+        return syncResourceItem;
     }
 
     public List<ModelMatrices> provideModelMatrices(ResourceItemType resourceItemType, double scale) {

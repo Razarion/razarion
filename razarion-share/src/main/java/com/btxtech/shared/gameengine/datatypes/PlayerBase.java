@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class PlayerBase {
     private int baseId;
-    private int accountBalance;
+    private double resources;
     private String name;
     private Character character;
     private UserContext userContext;
@@ -100,12 +100,16 @@ public class PlayerBase {
         return userContext;
     }
 
-    public int getAccountBalance() {
-        return accountBalance;
+    public double getResources() {
+        return resources;
     }
 
-    public void setAccountBalance(int accountBalance) {
-        this.accountBalance = accountBalance;
+    public void setResources(double resources) {
+        this.resources = resources;
+    }
+
+    public void addResource(double resources) {
+        this.resources += resources;
     }
 
     @Override

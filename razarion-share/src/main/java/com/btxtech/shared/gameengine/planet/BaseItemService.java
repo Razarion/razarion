@@ -110,6 +110,7 @@ public class BaseItemService {
         SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position);
         syncBaseItem.setup(base, ItemLifecycle.SPAWN);
         syncBaseItem.setSpawnProgress(0);
+        syncBaseItem.setBuildup(1.0);
         base.addItem(syncBaseItem);
 
         activityService.onSpawnSyncItem(syncBaseItem);
@@ -243,7 +244,7 @@ public class BaseItemService {
     public int getAccountBalance(UserContext userContext) {
         PlayerBase playerBase = getPlayerBase(userContext);
         if (playerBase != null) {
-            return playerBase.getAccountBalance();
+            return (int)playerBase.getResources();
         } else {
             return 0;
         }

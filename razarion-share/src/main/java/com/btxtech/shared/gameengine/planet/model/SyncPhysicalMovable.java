@@ -16,6 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -176,12 +177,17 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
         return isIndirectNeighborInDestination(syncItemContainerService, new ArrayList<>(), destination);
     }
 
+    @Override
     public boolean hasDestination() {
         return destination != null;
     }
 
     public void setDestination(DecimalPosition destination) {
         this.destination = destination;
+    }
+
+    public void setDestination(Path path) {
+        destination = path.getDestination();
     }
 
     @Override

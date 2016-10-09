@@ -33,8 +33,6 @@ import javax.inject.Inject;
 public class SyncResourceItem extends SyncItem {
     @Inject
     private BaseItemService baseItemService;
-    @Inject
-    private ActivityService activityService;
     private double amount;
     private boolean missionMoney = false;
 
@@ -45,7 +43,6 @@ public class SyncResourceItem extends SyncItem {
     public double harvest(double amount) {
         if (this.amount > amount) {
             this.amount -= amount;
-            activityService.onResourceAmountChanged(this);
             return amount;
         } else {
             amount = this.amount;

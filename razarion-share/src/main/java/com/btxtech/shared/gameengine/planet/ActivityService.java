@@ -14,7 +14,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -148,10 +147,6 @@ public class ActivityService {
         System.out.println("ActivityService.onSyncFactoryStopped(): " + syncBaseItem);
     }
 
-    public void onResourceAmountChanged(SyncResourceItem syncResourceItem) {
-        System.out.println("ActivityService.onResourceAmountChanged(): " + syncResourceItem);
-    }
-
     public void onProjectileFired(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onProjectileFired(): " + syncBaseItem);
     }
@@ -194,5 +189,9 @@ public class ActivityService {
 
     public void removeSpanFinishedCallback(Function<SyncBaseItem, Boolean> callback) {
         spawnFinishCallback.add(callback);
+    }
+
+    public void onResourcesHarvested(SyncBaseItem syncBaseItem, double harvestedResources, SyncResourceItem resource) {
+        System.out.println("ActivityService.onResourcesHarvested(). Harvester: " + syncBaseItem + ". Amount: " + harvestedResources + ". SyncResourceItem: " + resource);
     }
 }

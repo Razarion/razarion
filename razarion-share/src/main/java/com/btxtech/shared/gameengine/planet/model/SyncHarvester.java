@@ -19,8 +19,8 @@ import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionExce
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActivityService;
-import com.btxtech.shared.gameengine.planet.BaseService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
 import javax.enterprise.context.Dependent;
@@ -34,27 +34,13 @@ import javax.inject.Inject;
 @Dependent
 public class SyncHarvester extends SyncBaseAbility {
     @Inject
-    private BaseItemService baseItemService;
-    @Inject
     private ActivityService activityService;
     @Inject
     private ResourceService resourceService;
     @Inject
-    private BaseService baseService;
+    private BaseItemService baseItemService;
     private HarvesterType harvesterType;
     private Integer target;
-//    private SyncMovable.OverlappingHandler overlappingHandler = new SyncMovable.OverlappingHandler() {
-//        @Override
-//        public Path calculateNewPath() {
-//            try {
-//                SyncResourceItem resource = (SyncResourceItem) baseItemService.getItem(target);
-//                return recalculateNewPath(harvesterType.getRange(), resource.getSyncItemArea());
-//            } catch (ItemDoesNotExistException e) {
-//                stop();
-//                return null;
-//            }
-//        }
-//    };
 
     public void init(HarvesterType harvesterType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -69,48 +55,36 @@ public class SyncHarvester extends SyncBaseAbility {
 //   TODO     return isActive() && !getSyncBaseItem().getSyncMovable().isActive();
 //  TODO  }
 
-    public boolean tick() throws ItemDoesNotExistException {
-        if (!getSyncBaseItem().isAlive()) {
+    public boolean tick() {
+        try {
+            SyncResourceItem resource = resourceService.getSyncResourceItem(target);
+            if (!isInRange(resource)) {
+                if (!getSyncPhysicalMovable().hasDestination()) {
+                    throw new IllegalStateException("Harvester out of range from Resource and SyncPhysicalMovable does not have a position");
+                }
+                return true;
+            }
+            if (getSyncPhysicalMovable().hasDestination()) {
+                getSyncPhysicalMovable().stop();
+            }
+
+            double harvestedResources = resource.harvest(PlanetService.TICK_FACTOR * harvesterType.getProgress());
+            getSyncBaseItem().getBase().addResource(harvestedResources);
+            activityService.onResourcesHarvested(getSyncBaseItem(), harvestedResources, resource);
+            return true;
+        } catch (ItemDoesNotExistException ignore) {
+            // Target may be empty
+            stop();
+            return false;
+        } catch (TargetHasNoPositionException e) {
+            // Target moved to a container
+            stop();
             return false;
         }
-
-        // TODOif (getSyncBaseItem().getSyncMovable().tickMove(overlappingHandler)) {
-        // TODO    return true;
-        // TODO}
-
-//        try {
-//            SyncResourceItem resource = (SyncResourceItem) baseItemService.getItem(target);
-//            if (!isInRange(resource)) {
-//                if (isNewPathRecalculationAllowed()) {
-//                    // Destination place was may be taken. Calculate a new one.
-//                    recalculateAndSetNewPath(harvesterType.getRange(), resource.getSyncItemArea());
-//                    activityService.onNewPathRecalculation(getSyncBaseItem());
-//                    return true;
-//                } else {
-//                    return false;
-//                }
-//            }
-//            getSyncItemArea().turnTo(resource);
-//            double money = resource.harvest(PlanetService.TICK_FACTOR * harvesterType.getProgress());
-//            baseService.depositResource(money, getSyncBaseItem().getBase());
-//            return true;
-//        } catch (ItemDoesNotExistException ignore) {
-//            // Target may be empty
-//            stop();
-//            return false;
-//        } catch (TargetHasNoPositionException e) {
-//            // Target moved to a container
-//            stop();
-//            return false;
-//        }
-        throw new UnsupportedOperationException();
     }
 
     public void stop() {
-//        target = null;
-//        getSyncBaseItem().getSyncMovable().stop();
-        throw new UnsupportedOperationException();
-
+        target = null;
     }
 
     @Override
@@ -123,14 +97,16 @@ public class SyncHarvester extends SyncBaseAbility {
         syncItemInfo.setTarget(target);
     }
 
-    public void executeCommand(HarvestCommand attackCommand) throws ItemDoesNotExistException {
-        SyncResourceItem resource = resourceService.getSyncResourceItem(attackCommand.getTarget());
+    public void executeCommand(HarvestCommand harvestCommand) {
+        SyncResourceItem resource = resourceService.getSyncResourceItem(harvestCommand.getTarget());
         this.target = resource.getId();
-        setPathToDestinationIfSyncMovable(attackCommand.getPathToDestination());
+        if (!isInRange(resource)) {
+            getSyncPhysicalMovable().setDestination(harvestCommand.getPathToDestination());
+        }
     }
 
     public boolean isInRange(SyncResourceItem target) throws TargetHasNoPositionException {
-        return getSyncItemArea().isInRange(harvesterType.getRange(), target);
+        return getSyncPhysicalArea().isInRange(harvesterType.getRange(), target);
     }
 
     public Integer getTarget() {

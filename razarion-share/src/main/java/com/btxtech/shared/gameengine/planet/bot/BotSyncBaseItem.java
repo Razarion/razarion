@@ -22,6 +22,8 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CollisionService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.Dependent;
@@ -80,6 +82,10 @@ public class BotSyncBaseItem {
         return syncBaseItem.hasSyncWeapon() && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().getWeaponType().isItemTypeDisallowed(baseItemType.getId());
     }
 
+    public boolean isAbleToHarvest() {
+        return syncBaseItem.hasSyncHarvester() && syncBaseItem.getSyncPhysicalArea().canMove();
+    }
+
     public boolean canMove() {
         return syncBaseItem.getSyncPhysicalArea().canMove();
     }
@@ -107,6 +113,16 @@ public class BotSyncBaseItem {
     public void attack(SyncBaseItem target) {
         try {
             commandService.attack(syncBaseItem, target, true);
+            clearIdle();
+        } catch (Exception e) {
+            setIdle();
+            exceptionHandler.handleException(e);
+        }
+    }
+
+    public void harvest(SyncResourceItem syncResourceItem) {
+        try {
+            commandService.harvest(syncBaseItem, syncResourceItem);
             clearIdle();
         } catch (Exception e) {
             setIdle();
@@ -159,10 +175,6 @@ public class BotSyncBaseItem {
         setIdle();
     }
 
-    public double getDistanceTo(SyncBaseItem syncBaseItem) throws TargetHasNoPositionException {
-        return this.syncBaseItem.getSyncItemArea().getDistance(syncBaseItem);
-    }
-
     public DecimalPosition getPosition() {
         return syncBaseItem.getSyncItemArea().getPosition();
     }
@@ -175,5 +187,4 @@ public class BotSyncBaseItem {
     private void clearIdle() {
         idle = false;
     }
-
 }

@@ -270,7 +270,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public boolean isIdle() {
         return isReady()
-                // TODO && !(syncMovable != null && syncMovable.isActive())
+                && !getSyncPhysicalArea().hasDestination()
                 && !(syncWeapon != null && syncWeapon.isActive())
                 && !(syncFactory != null && syncFactory.isActive())
                 && !(syncBuilder != null && syncBuilder.isActive())
@@ -350,7 +350,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (baseCommand instanceof MoveCommand) {
-            ((SyncPhysicalMovable)getSyncPhysicalArea()).setDestination(((MoveCommand)baseCommand).getPathToDestination().getDestination());
+            ((SyncPhysicalMovable)getSyncPhysicalArea()).setDestination(((MoveCommand)baseCommand).getPathToDestination());
             return;
         }
 

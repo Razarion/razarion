@@ -128,7 +128,7 @@ public class TerrainMouseHandler {
                 cockpitMode.setGroupSelectionFrame(groupSelectionFrame);
                 renderTask.startGroupSelection(groupSelectionFrame);
             } else if (secondaryButtonPressed) {
-                SyncItem syncItem = syncItemContainerService.getItemAtPosition(terrainPosition.toXY());
+                SyncItem syncItem = syncItemContainerService.findItemAtPosition(terrainPosition.toXY());
                 if (syncItem != null) {
                     // On item clicked
                     if (syncItem instanceof SyncResourceItem) {

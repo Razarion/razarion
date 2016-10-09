@@ -21,35 +21,22 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 public class HarvesterType {
     private int range;
     private double progress;
-    private ItemClipPosition harvesterClip;
-
-    /**
-     * Used by GWT
-     */
-    public HarvesterType() {
-    }
-
-    public HarvesterType(int range, double progress, ItemClipPosition harvesterClip) {
-        this.range = range;
-        this.progress = progress;
-        this.harvesterClip = harvesterClip;
-    }
 
     public int getRange() {
         return range;
+    }
+
+    public HarvesterType setRange(int range) {
+        this.range = range;
+        return this;
     }
 
     public double getProgress() {
         return progress;
     }
 
-    public ItemClipPosition getHarvesterClip() {
-        return harvesterClip;
-    }
-
-    public void changeTo(HarvesterType harvesterType) {
-        range = harvesterType.range;
-        progress = harvesterType.progress;
-        harvesterClip = harvesterType.harvesterClip;
+    public HarvesterType setProgress(double progress) {
+        this.progress = progress;
+        return this;
     }
 }

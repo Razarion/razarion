@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.UserTrackingService;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -93,14 +94,29 @@ public class CommandService {
         throw new UnsupportedOperationException();
     }
 
-    public void collect(Collection<SyncBaseItem> syncBaseItems, SyncResourceItem moneyItem) {
+    public void harvest(Collection<SyncBaseItem> syncBaseItems, SyncResourceItem resource) {
         for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            collect(syncBaseItem, moneyItem);
+            harvest(syncBaseItem, resource);
         }
     }
 
-    public void collect(SyncBaseItem harvester, SyncResourceItem moneyItem) {
-        throw new UnsupportedOperationException();
+    public void harvest(SyncBaseItem harvester, SyncResourceItem resource) {
+        harvester.stop();
+        HarvestCommand harvestCommand = new HarvestCommand();
+        Path path = pathingService.setupPathToDestination(harvester, resource);
+        if (moveIfPathTargetUnreachable(harvester, path)) {
+            return;
+        }
+        harvestCommand.setPathToDestination(path);
+        harvestCommand.setId(harvester.getId());
+        harvestCommand.setTimeStamp();
+        harvestCommand.setTarget(resource.getId());
+
+        try {
+            executeCommand(harvestCommand);
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
     }
 
     public void attack(Collection<SyncBaseItem> syncBaseItems, SyncBaseItem target) {
@@ -173,11 +189,12 @@ public class CommandService {
     }
 
     protected boolean moveIfPathTargetUnreachable(SyncBaseItem syncBaseItem, Path path) {
-        if (path.isDestinationReachable()) {
-            return false;
-        } else {
-            move(syncBaseItem, path.getAlternativeDestination());
-            return true;
-        }
+        return false;
+// TODO       if (path.isDestinationReachable()) {
+// TODO           return false;
+// TODO       } else {
+// TODO           move(syncBaseItem, path.getAlternativeDestination());
+//  TODO          return true;
+// TODO       }
     }
 }

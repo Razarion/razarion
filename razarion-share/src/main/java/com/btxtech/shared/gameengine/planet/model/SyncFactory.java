@@ -192,7 +192,7 @@ public class SyncFactory extends SyncBaseAbility {
 
     void calculateRallyPoint() throws NoSuchItemTypeException {
         throw new UnsupportedOperationException();
-//        Collection<ItemType> types = factoryType.getAbleToBuild().stream().map(id -> itemTypeService.getItemType(id)).collect(Collectors.toCollection(ArrayList::new));
+//        Collection<ItemType> types = factoryType.getAbleToBuild().stream().map(id -> itemTypeService.getItemType(id)).harvest(Collectors.toCollection(ArrayList::new));
 //        rallyPoint = collisionService.getRallyPoint(getSyncBaseItem(), types);
     }
 }

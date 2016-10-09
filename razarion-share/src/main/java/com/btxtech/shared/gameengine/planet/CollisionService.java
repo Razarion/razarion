@@ -20,7 +20,7 @@ import java.util.Collection;
 @Deprecated
 public class CollisionService {
     public Vertex correctPosition(Vertex position, ItemType itemType) {
-        // TODO check if in playground filed. Also check in TerrainScrollHandler.autoScroll()
+        // TODO check if in playground filed. Also check in Terrain.
         return position;
     }
 

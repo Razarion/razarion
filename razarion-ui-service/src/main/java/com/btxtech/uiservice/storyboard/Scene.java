@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.LevelService;
@@ -16,6 +17,7 @@ import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -78,6 +80,9 @@ public class Scene {
         }
         if (sceneConfig.getBotMoveCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotMoveCommandConfigs());
+        }
+        if (sceneConfig.getBotHarvestCommandConfigs() != null) {
+            botService.executeCommands(sceneConfig.getBotHarvestCommandConfigs());
         }
         if (sceneConfig.getStartPointConfig() != null) {
             startPointUiService.activate(sceneConfig.getStartPointConfig());

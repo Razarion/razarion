@@ -64,6 +64,9 @@ public class SyncPhysicalArea {
         return position.toXY();
     }
 
+    public boolean hasDestination() {
+        return false;
+    }
     public void addToXYPosition(DecimalPosition deltaXY) {
         position = position.add(deltaXY.getX(), deltaXY.getY(), 0);
     }
@@ -111,12 +114,16 @@ public class SyncPhysicalArea {
          }
     }
 
-    public boolean isInRange(double range, SyncBaseItem target) {
+    public boolean isInRange(double range, SyncItem target) {
         return getXYPosition().getDistance(target.getSyncPhysicalArea().getXYPosition()) < radius + range;
     }
 
     public double getDistance(SyncPhysicalArea syncPhysicalArea) {
         return getXYPosition().getDistance(syncPhysicalArea.getXYPosition()) - radius - syncPhysicalArea.radius;
+    }
+
+    public double getDistance(SyncItem other) {
+        return getDistance(other.getSyncPhysicalArea());
     }
 
     public SyncItem getSyncItem() {

@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 /**
  * User: beat
@@ -50,22 +51,21 @@ public class ShortestWaySorter {
         }
     }
 
-    static class AttackerTargets {
+    static class AttackerTargets<T extends SyncItem> {
         private BotSyncBaseItem attacker;
         private TargetDistanceCmp targetDistanceCmp = new TargetDistanceCmp();
-        private List<TargetDistance> targetDistance = new ArrayList<TargetDistance>();
+        private List<TargetDistance<T>> targetDistance = new ArrayList<>();
 
-        private AttackerTargets(BotSyncBaseItem attacker, Collection<SyncBaseItem> targets) {
+        private AttackerTargets(BotSyncBaseItem attacker, Collection<T> targets, BiPredicate<BotSyncBaseItem, T> checker) {
             this.attacker = attacker;
-            for (SyncBaseItem target : targets) {
-                if (attacker.isAbleToAttack(target.getBaseItemType())) {
-                    try {
-                        targetDistance.add(new TargetDistance(attacker, target));
-                    } catch (TargetHasNoPositionException e) {
-                        // Target has move to a container
-                    }
+            // Target has move to a container
+            targets.stream().filter(target -> checker.test(attacker, target)).forEach(target -> {
+                try {
+                    targetDistance.add(new TargetDistance<>(attacker, target));
+                } catch (TargetHasNoPositionException e) {
+                    // Target has move to a container
                 }
-            }
+            });
             Collections.sort(targetDistance, targetDistanceCmp);
         }
 
@@ -73,7 +73,7 @@ public class ShortestWaySorter {
             return targetDistance.get(0).distance;
         }
 
-        private TargetDistance removeFirstTarget() {
+        private TargetDistance<T> removeFirstTarget() {
             if (targetDistance.isEmpty()) {
                 return null;
             } else {
@@ -81,8 +81,8 @@ public class ShortestWaySorter {
             }
         }
 
-        private void removeTarget(SyncBaseItem target) {
-            for (Iterator<TargetDistance> iterator = targetDistance.iterator(); iterator.hasNext(); ) {
+        private void removeTarget(T target) {
+            for (Iterator<TargetDistance<T>> iterator = targetDistance.iterator(); iterator.hasNext(); ) {
                 TargetDistance distance = iterator.next();
                 if (distance.target.equals(target)) {
                     iterator.remove();
@@ -96,36 +96,36 @@ public class ShortestWaySorter {
         }
     }
 
-    static private class TargetDistance {
+    static private class TargetDistance<T extends SyncItem> {
         private double distance;
-        private SyncBaseItem target;
+        private T target;
 
-        public TargetDistance(BotSyncBaseItem attacker, SyncBaseItem target) throws TargetHasNoPositionException {
+        public TargetDistance(BotSyncBaseItem attacker, T target) throws TargetHasNoPositionException {
             this.target = target;
-            distance = attacker.getDistanceTo(target);
+            distance = attacker.getSyncBaseItem().getSyncPhysicalArea().getDistance(target);
         }
     }
 
-    public static Map<BotSyncBaseItem, SyncBaseItem> setupAttackerTarget(Collection<BotSyncBaseItem> attackers, Collection<SyncBaseItem> targets) {
+    public static <T extends SyncItem> Map<BotSyncBaseItem, T> setupAttackerTarget(Collection<BotSyncBaseItem> attackers, Collection<T> targets, BiPredicate<BotSyncBaseItem, T> checker) {
         AttackerTargetsCmp attackerTargetsCmp = new AttackerTargetsCmp();
 
-        List<AttackerTargets> attackerTargetsList = new ArrayList<AttackerTargets>();
+        List<AttackerTargets<T>> attackerTargetsList = new ArrayList<>();
         for (BotSyncBaseItem attacker : attackers) {
-            AttackerTargets attackerTargets = new AttackerTargets(attacker, targets);
+            AttackerTargets<T> attackerTargets = new AttackerTargets<>(attacker, targets, checker);
             if (!attackerTargets.isEmpty()) {
                 attackerTargetsList.add(attackerTargets);
             }
         }
 
-        Map<BotSyncBaseItem, SyncBaseItem> result = new HashMap<BotSyncBaseItem, SyncBaseItem>();
+        Map<BotSyncBaseItem, T> result = new HashMap<>();
         while (!attackerTargetsList.isEmpty()) {
             Collections.sort(attackerTargetsList, attackerTargetsCmp);
-            AttackerTargets attackerTargets = attackerTargetsList.remove(0);
-            TargetDistance targetDistance = attackerTargets.removeFirstTarget();
+            AttackerTargets<T> attackerTargets = attackerTargetsList.remove(0);
+            TargetDistance<T> targetDistance = attackerTargets.removeFirstTarget();
             if (targetDistance != null) {
                 result.put(attackerTargets.attacker, targetDistance.target);
-                for (Iterator<AttackerTargets> iterator = attackerTargetsList.iterator(); iterator.hasNext(); ) {
-                    AttackerTargets attackerTargetsToClean = iterator.next();
+                for (Iterator<AttackerTargets<T>> iterator = attackerTargetsList.iterator(); iterator.hasNext(); ) {
+                    AttackerTargets<T> attackerTargetsToClean = iterator.next();
                     attackerTargetsToClean.removeTarget(targetDistance.target);
                     if (attackerTargetsToClean.isEmpty()) {
                         iterator.remove();

@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
  * Date: 22.02.13
  * Time: 16:42
  */
-public class TargetHasNoPositionException extends Exception {
+public class TargetHasNoPositionException extends RuntimeException {
     public TargetHasNoPositionException() {
     }
 

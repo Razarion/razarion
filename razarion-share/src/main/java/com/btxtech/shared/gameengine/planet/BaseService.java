@@ -20,10 +20,6 @@ public class BaseService {
 
     // ---------------------------------------------------------------------------
 
-    public void depositResource(double price, PlayerBase playerBase) {
-        throw new UnsupportedOperationException();
-    }
-
     public void withdrawalMoney(double price, PlayerBase playerBase) throws InsufficientFundsException {
         throw new UnsupportedOperationException();
     }
