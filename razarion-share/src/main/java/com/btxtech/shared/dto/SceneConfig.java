@@ -21,6 +21,7 @@ public class SceneConfig {
     private StartPointConfig startPointConfig;
     private Boolean wait4LevelUp;
     private List<ResourceItemPosition> resourceItemTypePositions;
+    private Integer duration;
 
     public String getIntroText() {
         return introText;
@@ -100,6 +101,15 @@ public class SceneConfig {
 
     public SceneConfig setResourceItemTypePositions(List<ResourceItemPosition> resourceItemTypePositions) {
         this.resourceItemTypePositions = resourceItemTypePositions;
+        return this;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public SceneConfig setDuration(Integer duration) {
+        this.duration = duration;
         return this;
     }
 }

@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -91,7 +90,7 @@ public class PlanetService implements Runnable {
                 if (!activeItem.isAlive()) {
                     return null;
                 }
-                if (!activeItem.isActive()) {
+                if (activeItem.isIdle()) {
                     return null;
                 }
                 try {
@@ -146,7 +145,7 @@ public class PlanetService implements Runnable {
                 return;
             }
 
-            if (!syncBaseItem.isReady()) {
+            if (!syncBaseItem.isBuildup()) {
                 return;
             }
 

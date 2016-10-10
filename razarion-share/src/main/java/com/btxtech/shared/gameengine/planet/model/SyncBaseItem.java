@@ -269,10 +269,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     public boolean isIdle() {
-        return isReady() && !getSyncPhysicalArea().hasDestination() && !isActive();
+        return isBuildup() && itemLifecycle == ItemLifecycle.ALIVE && !getSyncPhysicalArea().hasDestination() &&  !isAbilityActive();
     }
 
-    public boolean isActive() {
+    private boolean isAbilityActive() {
         return (syncWeapon != null && syncWeapon.isActive())
                 || (syncFactory != null && syncFactory.isActive())
                 || (syncBuilder != null && syncBuilder.isActive())
@@ -535,7 +535,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
     }
 
-    public boolean isReady() {
+    public boolean isBuildup() {
         return buildup >= 1.0;
     }
 

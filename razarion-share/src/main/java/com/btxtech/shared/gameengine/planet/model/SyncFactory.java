@@ -16,7 +16,6 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.UnlockService;
-import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -25,7 +24,6 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededExcept
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -34,10 +32,7 @@ import com.btxtech.shared.gameengine.planet.CollisionService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -75,7 +70,7 @@ public class SyncFactory extends SyncBaseAbility {
     }
 
     public boolean isActive() {
-        return getSyncBaseItem().isAlive() && toBeBuiltType != null && getSyncBaseItem().isReady();
+        return getSyncBaseItem().isAlive() && toBeBuiltType != null && getSyncBaseItem().isBuildup();
     }
 
     public boolean tick() throws NoSuchItemTypeException {
@@ -158,7 +153,7 @@ public class SyncFactory extends SyncBaseAbility {
     }
 
     public void executeCommand(FactoryCommand factoryCommand) throws InsufficientFundsException, NoSuchItemTypeException {
-        if (!getSyncBaseItem().isReady()) {
+        if (!getSyncBaseItem().isBuildup()) {
             return;
         }
         if (!factoryType.isAbleToBuild(factoryCommand.getToBeBuilt())) {

@@ -71,7 +71,7 @@ public class ItemTypeSpriteMap {
     public SyncObjectState getSyncObjectState(SyncItem syncItem) {
         if (syncItem instanceof SyncBaseItem) {
             SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-            if (!syncBaseItem.isReady()) {
+            if (!syncBaseItem.isBuildup()) {
                 if (buildupSteps > 0) {
                     return SyncObjectState.BUILD_UP;
                 } else {

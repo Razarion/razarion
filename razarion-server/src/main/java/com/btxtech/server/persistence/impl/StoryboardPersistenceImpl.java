@@ -95,12 +95,12 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         addResources(sceneConfigs); // TODO mode to DB
         addNpcBot(sceneConfigs); // TODO mode to DB
-        // addScrollOverTerrain(sceneConfigs); // TODO mode to DB
-        //addBotSpawnScene(sceneConfigs); // TODO mode to DB
-        // addUserSpawnScene(sceneConfigs); // TODO mode to DB
-        //addBotMoveScene(sceneConfigs);// TODO mode to DB
-        //addScrollToOwnScene(sceneConfigs);// TODO mode to DB
-        // addUserMoveScene(sceneConfigs);// TODO mode to DB
+        addScrollOverTerrain(sceneConfigs); // TODO mode to DB
+        addBotSpawnScene(sceneConfigs); // TODO mode to DB
+        addUserSpawnScene(sceneConfigs); // TODO mode to DB
+        addBotMoveScene(sceneConfigs);// TODO mode to DB
+        addScrollToOwnScene(sceneConfigs);// TODO mode to DB
+        addUserMoveScene(sceneConfigs);// TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         storyboardConfig.setSceneConfigs(sceneConfigs);
         return storyboardConfig;
@@ -192,8 +192,6 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private void addResources(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
-        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(false));
-        // sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(2500, 1300)).setCameraLocked(false));
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2358, 1995)).setRotationZ(Math.toRadians(0)));
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2543, 2002)).setRotationZ(Math.toRadians(80)));
@@ -211,7 +209,6 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addBotSpawnScene(List<SceneConfig> sceneConfigs) {
-        // List<SceneConfig> sceneConfigs = new ArrayList<>();
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(true);
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -219,7 +216,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(1040, 800))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(NPC_BOT_INSTRUCTOR).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen."));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.").setDuration(4000));
     }
 
     private void addUserSpawnScene(List<SceneConfig> sceneConfigs) {

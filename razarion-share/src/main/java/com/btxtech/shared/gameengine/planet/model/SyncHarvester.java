@@ -61,7 +61,6 @@ public class SyncHarvester extends SyncBaseAbility {
 //  TODO  }
 
     public boolean tick() {
-        System.out.println("Tick: " + getSyncBaseItem().getId());
         try {
             SyncResourceItem resource = resourceService.getSyncResourceItem(target);
             if (!isInRange(resource)) {

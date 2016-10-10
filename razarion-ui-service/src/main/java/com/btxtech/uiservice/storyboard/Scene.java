@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.condition.ConditionService;
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -54,6 +55,8 @@ public class Scene {
     private LevelService levelService;
     @Inject
     private ResourceService resourceService;
+    @Inject
+    private SimpleExecutorService simpleExecutorService;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -70,12 +73,6 @@ public class Scene {
             storyCover.show(sceneConfig.getIntroText());
         }
         if (sceneConfig.getBotConfigs() != null) {
-            activityService.addSpanFinishedCallback(syncBaseItem -> {
-                onComplete();
-                return true;
-            });
-            hasCompletionCallback = true;
-            completionCallbackCount++;
             botService.startBots(sceneConfig.getBotConfigs());
         }
         if (sceneConfig.getBotMoveCommandConfigs() != null) {
@@ -108,6 +105,11 @@ public class Scene {
         }
         if(sceneConfig.getResourceItemTypePositions() != null) {
             resourceService.createResources(sceneConfig.getResourceItemTypePositions());
+        }
+        if(sceneConfig.getDuration() != null) {
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            simpleExecutorService.schedule(sceneConfig.getDuration(), this::onComplete, SimpleExecutorService.Type.UNSPECIFIED);
         }
 
         if (!hasCompletionCallback) {

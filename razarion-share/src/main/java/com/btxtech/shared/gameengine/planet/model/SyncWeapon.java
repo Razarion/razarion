@@ -210,7 +210,7 @@ public class SyncWeapon extends SyncBaseAbility {
     }
 
     public void executeCommand(AttackCommand attackCommand) throws ItemDoesNotExistException {
-        if (!getSyncBaseItem().isReady()) {
+        if (!getSyncBaseItem().isBuildup()) {
             return;
         }
         SyncBaseItem target = (SyncBaseItem) baseItemService.getItem(attackCommand.getTarget());

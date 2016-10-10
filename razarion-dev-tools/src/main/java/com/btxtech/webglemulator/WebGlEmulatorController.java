@@ -343,7 +343,9 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void getJsonButtonClicked() {
+        System.out.println("---------- Start loading JSON from server ----------");
         storyboardProviderEmulator.fromServerToFile();
+        System.out.println("---------- JSON loaded ----------");
     }
 
     public Pane getItemCockpitPanel() {

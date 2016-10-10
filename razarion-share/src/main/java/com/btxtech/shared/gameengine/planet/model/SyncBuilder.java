@@ -17,7 +17,6 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.UnlockService;
-import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
@@ -129,7 +128,7 @@ public class SyncBuilder extends SyncBaseAbility {
             try {
                 baseService.withdrawalMoney(buildFactor * (double) toBeBuiltType.getPrice(), getSyncBaseItem().getBase());
                 currentBuildup.addBuildup(buildFactor);
-                if (currentBuildup.isReady()) {
+                if (currentBuildup.isBuildup()) {
                     stop();
                     return false;
                 }

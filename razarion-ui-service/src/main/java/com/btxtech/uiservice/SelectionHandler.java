@@ -100,7 +100,7 @@ public class SelectionHandler {
 //    TODO                clearSelection();
 //    TODO                return;
 //    TODO            }
-//    TODO        } else if (!selectedGroup.getFirst().isReady()) {
+//    TODO        } else if (!selectedGroup.getFirst().isBuildup()) {
 //    TODO            commandService.finalizeBuild(this.selectedGroup.getItems(), selectedGroup.getFirst());
 //    TODO            return;
 //    TODO        }
