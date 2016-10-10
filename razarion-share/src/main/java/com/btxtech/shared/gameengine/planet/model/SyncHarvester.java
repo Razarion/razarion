@@ -41,6 +41,7 @@ public class SyncHarvester extends SyncBaseAbility {
     private BaseItemService baseItemService;
     private HarvesterType harvesterType;
     private Integer target;
+    private boolean harvesting;
 
     public void init(HarvesterType harvesterType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -51,14 +52,20 @@ public class SyncHarvester extends SyncBaseAbility {
         return target != null;
     }
 
-// TODO   public boolean isHarvesting() {
+    public boolean isHarvesting() {
+        return harvesting;
+    }
+
+    // TODO   public boolean isHarvesting() {
 //   TODO     return isActive() && !getSyncBaseItem().getSyncMovable().isActive();
 //  TODO  }
 
     public boolean tick() {
+        System.out.println("Tick: " + getSyncBaseItem().getId());
         try {
             SyncResourceItem resource = resourceService.getSyncResourceItem(target);
             if (!isInRange(resource)) {
+                harvesting = false;
                 if (!getSyncPhysicalMovable().hasDestination()) {
                     throw new IllegalStateException("Harvester out of range from Resource and SyncPhysicalMovable does not have a position");
                 }
@@ -67,6 +74,7 @@ public class SyncHarvester extends SyncBaseAbility {
             if (getSyncPhysicalMovable().hasDestination()) {
                 getSyncPhysicalMovable().stop();
             }
+            harvesting = true;
 
             double harvestedResources = resource.harvest(PlanetService.TICK_FACTOR * harvesterType.getProgress());
             getSyncBaseItem().getBase().addResource(harvestedResources);
@@ -84,6 +92,7 @@ public class SyncHarvester extends SyncBaseAbility {
     }
 
     public void stop() {
+        harvesting = false;
         target = null;
     }
 

@@ -221,7 +221,7 @@ public class SyncItemContainerService {
     public Collection<SyncResourceItem> findResourceItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {
         Collection<SyncResourceItem> result = new ArrayList<>();
         iterateOverResourceItems(false, null, null, syncResourceItem -> {
-            if(syncResourceItem.getItemType().getId() != resourceItemTypeId) {
+            if (syncResourceItem.getItemType().getId() != resourceItemTypeId) {
                 return null;
             }
             if (syncResourceItem.getSyncPhysicalArea().contains(resourceSelection)) {
@@ -231,4 +231,18 @@ public class SyncItemContainerService {
         });
         return result;
     }
+
+
+    public Collection<SyncBaseItem> getSyncBaseItems4BaseItemType(BaseItemType baseItemType) {
+        Collection<SyncBaseItem> result = new ArrayList<>();
+        iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (syncBaseItem.getBaseItemType().equals(baseItemType)) {
+                result.add(syncBaseItem);
+            }
+            return null;
+        });
+        return result;
+    }
+
+
 }

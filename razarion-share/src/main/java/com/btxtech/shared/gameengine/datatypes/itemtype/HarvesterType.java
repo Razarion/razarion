@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import com.btxtech.shared.datatypes.Vertex;
+
 /**
  * User: beat
  * Date: 17.11.2009
@@ -21,6 +23,8 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 public class HarvesterType {
     private int range;
     private double progress;
+    private Vertex animationOrigin;
+    private Integer animationShape3dId;
 
     public int getRange() {
         return range;
@@ -37,6 +41,24 @@ public class HarvesterType {
 
     public HarvesterType setProgress(double progress) {
         this.progress = progress;
+        return this;
+    }
+
+    public Vertex getAnimationOrigin() {
+        return animationOrigin;
+    }
+
+    public HarvesterType setAnimationOrigin(Vertex animationOrigin) {
+        this.animationOrigin = animationOrigin;
+        return this;
+    }
+
+    public Integer getAnimationShape3dId() {
+        return animationShape3dId;
+    }
+
+    public HarvesterType setAnimationShape3dId(Integer animationShape3dId) {
+        this.animationShape3dId = animationShape3dId;
         return this;
     }
 }

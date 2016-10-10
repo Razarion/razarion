@@ -101,49 +101,6 @@ public class DecimalPosition {
 
     /**
      * Angle from this point to the given point.
-     * If the given point is exactly in the north, the angle is 0.0
-     * If the given point is exactly in the west, the angle is PI/2 90dec
-     * If the given point is exactly in the south, the angle is PI 180dec
-     * If the given point is exactly in the east, the angle is 3/2 * PI 270dec
-     * <p>
-     * The returned angle is between 0 and 2Pi
-     *
-     * @param point end point
-     * @return positive angle
-     */
-    @Deprecated
-    public double getAngleToNord(DecimalPosition point) {
-        if (equals(point)) {
-            throw new IllegalArgumentException("Points are equal");
-        }
-        // Computer screen have different axis than the cartesian coordinate system
-        double gk = x - point.x;
-        double ak = y - point.y;
-        if (ak == 0.0) {
-            if (gk > 0.0) {
-                return MathHelper.WEST;
-            } else {
-                return MathHelper.EAST;
-            }
-        }
-        if (gk == 0.0) {
-            if (ak > 0.0) {
-                return MathHelper.NORTH;
-            } else {
-                return MathHelper.SOUTH;
-            }
-        }
-        double angle = Math.atan(gk / ak);
-        if (ak < 0.0) {
-            angle += MathHelper.HALF_RADIANT;
-        } else if (gk < 0.0) {
-            angle += MathHelper.ONE_RADIANT;
-        }
-        return angle;
-    }
-
-    /**
-     * Angle from this point to the given point.
      * If the given point is exactly in the east, the angle is 0.0
      * If the given point is exactly in the north, the angle is PI/2 90dec
      * If the given point is exactly in the west, the angle is PI 180dec
@@ -154,7 +111,7 @@ public class DecimalPosition {
      * @param point end point
      * @return positive angle
      */
-    public double getAngleToNorth(DecimalPosition point) {
+    public double getAngle(DecimalPosition point) {
         if (equals(point)) {
             throw new IllegalArgumentException("Points are equal");
         }
@@ -334,15 +291,9 @@ public class DecimalPosition {
 //        start = start.sub(this);
 //        end = end.sub(this);
 //        return Math.acos(start.dotProduct(end) / (start.magnitude() * end.magnitude()));
-        double startAngle = getAngleToNorth(start);
-        double endAngle = getAngleToNorth(end);
+        double startAngle = getAngle(start);
+        double endAngle = getAngle(end);
         return MathHelper.normaliseAngel(endAngle - startAngle);
-    }
-
-    public double getIncludedAngle(DecimalPosition point1, DecimalPosition point2) {
-        double angle1 = getAngleToNord(point1);
-        double angle2 = getAngleToNord(point2);
-        return MathHelper.getAngel(angle1, angle2);
     }
 
     /**

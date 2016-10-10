@@ -119,7 +119,7 @@ public class PlanetService implements Runnable {
                     activeItem.stop();
                     activityServiceInstance.get().onThrowable(t);
                 }
-                return true;
+                return null;
             });
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

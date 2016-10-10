@@ -11,6 +11,7 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.CameraConfig;
@@ -152,7 +153,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setI18Name(i18nHelper("Harvester Name"));
         baseItemType.setDescription(i18nHelper("Harvester Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        baseItemType.setHarvesterType(new HarvesterType().setProgress(10).setRange(40));
+        baseItemType.setHarvesterType(new HarvesterType().setProgress(1).setRange(40).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -192,6 +193,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private void addResources(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
         sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(false));
+        // sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(2500, 1300)).setCameraLocked(false));
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2358, 1995)).setRotationZ(Math.toRadians(0)));
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2543, 2002)).setRotationZ(Math.toRadians(80)));
