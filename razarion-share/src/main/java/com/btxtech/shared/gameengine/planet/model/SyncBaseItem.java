@@ -23,8 +23,8 @@ import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
-import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
+import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
@@ -269,12 +269,14 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     public boolean isIdle() {
-        return isReady()
-                && !getSyncPhysicalArea().hasDestination()
-                && !(syncWeapon != null && syncWeapon.isActive())
-                && !(syncFactory != null && syncFactory.isActive())
-                && !(syncBuilder != null && syncBuilder.isActive())
-                && !(syncHarvester != null && syncHarvester.isActive());
+        return isReady() && !getSyncPhysicalArea().hasDestination() && !isActive();
+    }
+
+    public boolean isActive() {
+        return (syncWeapon != null && syncWeapon.isActive())
+                || (syncFactory != null && syncFactory.isActive())
+                || (syncBuilder != null && syncBuilder.isActive())
+                || (syncHarvester != null && syncHarvester.isActive());
     }
 
     @Override
@@ -350,7 +352,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (baseCommand instanceof MoveCommand) {
-            ((SyncPhysicalMovable)getSyncPhysicalArea()).setDestination(((MoveCommand)baseCommand).getPathToDestination());
+            ((SyncPhysicalMovable) getSyncPhysicalArea()).setDestination(((MoveCommand) baseCommand).getPathToDestination());
             return;
         }
 

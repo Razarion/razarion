@@ -103,7 +103,7 @@ public class CommandService {
     public void harvest(SyncBaseItem harvester, SyncResourceItem resource) {
         harvester.stop();
         HarvestCommand harvestCommand = new HarvestCommand();
-        Path path = pathingService.setupPathToDestination(harvester, resource);
+        Path path = pathingService.setupPathToDestination(harvester, resource, harvester.getBaseItemType().getHarvesterType().getRange());
         if (moveIfPathTargetUnreachable(harvester, path)) {
             return;
         }
@@ -130,7 +130,7 @@ public class CommandService {
         Path path;
         AttackCommand attackCommand = new AttackCommand();
         if (followTarget) {
-            path = pathingService.setupPathToDestination(syncBaseItem, target);
+            path = pathingService.setupPathToDestination(syncBaseItem, target, syncBaseItem.getBaseItemType().getWeaponType().getRange());
             if (moveIfPathTargetUnreachable(syncBaseItem, path)) {
                 return;
             }
@@ -175,7 +175,6 @@ public class CommandService {
         try {
             syncItem.stop();
             syncItem.executeCommand(baseCommand);
-            planetService.finalizeCommand(syncItem);
             activityService.onCommandSent(syncItem, baseCommand);
         } catch (PathCanNotBeFoundException e) {
             activityService.onPathCanNotBeFoundException(e);

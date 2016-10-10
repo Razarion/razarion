@@ -157,7 +157,6 @@ public class ActivityService {
 
     public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onSpawnSyncItem(): " + syncBaseItem);
-        planetService.syncItemActivated(syncBaseItem);
     }
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {

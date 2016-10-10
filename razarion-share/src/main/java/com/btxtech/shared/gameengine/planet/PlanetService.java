@@ -49,11 +49,11 @@ public class PlanetService implements Runnable {
     @Inject
     private ConditionService conditionService;
     @Inject
+    private SyncItemContainerService syncItemContainerService;
+    @Inject
     private Instance<ActivityService> activityServiceInstance;
     // @Inject
     // private CommandService commandService;
-    private final HashSet<SyncTickItem> activeItems = new HashSet<>();
-    private final ArrayList<SyncTickItem> tmpActiveItems = new ArrayList<>();
     private final HashSet<SyncBaseItem> guardingItems = new HashSet<>();
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
@@ -86,51 +86,41 @@ public class PlanetService implements Runnable {
             // TODO building, attacking,
             pathingService.tick();
             conditionService.checkPositionCondition();
-            synchronized (activeItems) {
-                synchronized (tmpActiveItems) {
-                    activeItems.addAll(tmpActiveItems);
-                    tmpActiveItems.clear();
+
+            syncItemContainerService.iterateOverBaseItems(false, false,null, activeItem ->{
+                if (!activeItem.isAlive()) {
+                    return null;
                 }
-                Iterator<SyncTickItem> iterator = activeItems.iterator();
-                while (iterator.hasNext()) {
-                    SyncTickItem activeItem = iterator.next();
-                    if (!activeItem.isAlive()) {
-                        iterator.remove();
-                        continue;
-                    }
-                    try {
-                        if (!activeItem.tick()) {
-                            iterator.remove();
-                            try {
-                                activeItem.stop();
-                                addGuardingBaseItem(activeItem);
-                                activityServiceInstance.get().onSyncItemDeactivated(activeItem);
-                            } catch (Throwable t) {
-                                exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
-                            }
+                if (!activeItem.isActive()) {
+                    return null;
+                }
+                try {
+                    if (!activeItem.tick()) {
+                        try {
+                            activeItem.stop();
+                            addGuardingBaseItem(activeItem);
+                            activityServiceInstance.get().onSyncItemDeactivated(activeItem);
+                        } catch (Throwable t) {
+                            exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
                         }
-                    } catch (BaseDoesNotExistException e) {
-                        activeItem.stop();
-                        iterator.remove();
-                    } catch (PositionTakenException e) {
-                        activeItem.stop();
-                        iterator.remove();
-                        activityServiceInstance.get().onPositionTakenException(e);
-                    } catch (PathCanNotBeFoundException e) {
-                        activeItem.stop();
-                        iterator.remove();
-                        activityServiceInstance.get().onPathCanNotBeFoundException(e);
-                    } catch (PlaceCanNotBeFoundException e) {
-                        activeItem.stop();
-                        iterator.remove();
-                        activityServiceInstance.get().onPlaceCanNotBeFoundException(e);
-                    } catch (Throwable t) {
-                        activeItem.stop();
-                        iterator.remove();
-                        activityServiceInstance.get().onThrowable(t);
                     }
+                } catch (BaseDoesNotExistException e) {
+                    activeItem.stop();
+                } catch (PositionTakenException e) {
+                    activeItem.stop();
+                    activityServiceInstance.get().onPositionTakenException(e);
+                } catch (PathCanNotBeFoundException e) {
+                    activeItem.stop();
+                    activityServiceInstance.get().onPathCanNotBeFoundException(e);
+                } catch (PlaceCanNotBeFoundException e) {
+                    activeItem.stop();
+                    activityServiceInstance.get().onPlaceCanNotBeFoundException(e);
+                } catch (Throwable t) {
+                    activeItem.stop();
+                    activityServiceInstance.get().onThrowable(t);
                 }
-            }
+                return true;
+            });
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -241,23 +231,15 @@ public class PlanetService implements Runnable {
         }
     }
 
-    public void syncItemActivated(SyncTickItem syncTickItem) {
-        addToQueue(syncTickItem);
-        addGuardingBaseItem(syncTickItem);
-    }
-
-    private void addToQueue(SyncTickItem syncTickItem) {
-        synchronized (tmpActiveItems) {
-            if (!activeItems.contains(syncTickItem) && !tmpActiveItems.contains(syncTickItem)) {
-                tmpActiveItems.add(syncTickItem);
-            }
-        }
-    }
-
-    public void finalizeCommand(SyncBaseItem syncItem) {
-        addToQueue(syncItem);
-        removeGuardingBaseItem(syncItem);
-    }
+//    public void syncItemActivated(SyncTickItem syncTickItem) {
+//        addToQueue(syncTickItem);
+//        TODO addGuardingBaseItem(syncTickItem);
+//    }
+//
+//    public void finalizeCommand(SyncBaseItem syncItem) {
+//        addToQueue(syncItem);
+//        TODO removeGuardingBaseItem(syncItem);
+//    }
 
     public PlanetConfig getPlanetConfig() {
         return planetConfig;

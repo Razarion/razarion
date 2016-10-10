@@ -24,11 +24,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  */
 public class Path {
     private DecimalPosition destination;
+    private double range;
 
-    /**
-     * Used by GWT
-     */
-    @Deprecated
     public Path() {
     }
 
@@ -42,6 +39,15 @@ public class Path {
 
     public Path setDestination(DecimalPosition destination) {
         this.destination = destination;
+        return this;
+    }
+
+    public double getRange() {
+        return range;
+    }
+
+    public Path setRange(double range) {
+        this.range = range;
         return this;
     }
 

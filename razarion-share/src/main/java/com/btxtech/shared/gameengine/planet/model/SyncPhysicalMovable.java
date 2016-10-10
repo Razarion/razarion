@@ -41,6 +41,7 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
     private DecimalPosition destination;
     private DecimalPosition velocity;
     private DecimalPosition lastDestination;
+    private double range;
 
     public SyncPhysicalMovable(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, Vertex position, Vertex norm, double angle, DecimalPosition velocity) {
         super(syncItem, physicalAreaConfig, position, norm, angle);
@@ -75,7 +76,12 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
             double originalSpeed = velocity.magnitude(); // TODO That is wrong... but I don't remember why
             double possibleSpeed = Math.max(minTurnSpeed, angleSpeedFactor * maxSpeed);
             double speed;
-            if (Math.abs(originalSpeed - possibleSpeed) > acceleration * PlanetService.TICK_FACTOR) {
+            double breakingDistance = (originalSpeed * originalSpeed) / (2.0 * acceleration) + range;
+            if (breakingDistance > getXYPosition().getDistance(destination)) {
+                // Breaking distance
+                speed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
+                speed = Math.max(maxSpeed * PlanetService.TICK_FACTOR, speed);
+            } else if (Math.abs(originalSpeed - possibleSpeed) > acceleration * PlanetService.TICK_FACTOR) {
                 if (originalSpeed < possibleSpeed) {
                     speed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
                 } else {
@@ -91,6 +97,7 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
             if (distance > getXYPosition().getDistance(destination)) {
                 speed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
             }
+
             speed = Math.min(maxSpeed, speed);
             speed = Math.max(0.0, speed);
             velocity = DecimalPosition.createVector(getAngle(), speed);
@@ -184,10 +191,12 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
 
     public void setDestination(DecimalPosition destination) {
         this.destination = destination;
+        range = 0;
     }
 
     public void setDestination(Path path) {
         destination = path.getDestination();
+        range = path.getRange();
     }
 
     @Override

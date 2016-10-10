@@ -115,7 +115,7 @@ public class SyncPhysicalArea {
     }
 
     public boolean isInRange(double range, SyncItem target) {
-        return getXYPosition().getDistance(target.getSyncPhysicalArea().getXYPosition()) < radius + range;
+        return getDistance(target) < range;
     }
 
     public double getDistance(SyncPhysicalArea syncPhysicalArea) {

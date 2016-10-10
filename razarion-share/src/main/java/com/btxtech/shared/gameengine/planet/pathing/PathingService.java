@@ -29,8 +29,9 @@ public class PathingService {
         return new Path().setDestination(destination);
     }
 
-    public Path setupPathToDestination(SyncBaseItem syncItem, SyncItem target) {
-        return new Path().setDestination(target.getSyncPhysicalArea().getXYPosition());
+    public Path setupPathToDestination(SyncBaseItem syncItem, SyncItem target, double range) {
+        double totalRange = syncItem.getSyncPhysicalArea().getRadius() + target.getSyncPhysicalArea().getRadius() + range;
+        return new Path().setDestination(target.getSyncPhysicalArea().getXYPosition()).setRange(totalRange);
     }
 
     public void tick() {
