@@ -11,6 +11,7 @@ public class BotItemConfig {
     private int baseItemTypeId;
     private int count;
     private boolean createDirectly;
+    private boolean noSpawn;
     private PlaceConfig place;
     private boolean moveRealmIfIdle;
     private Integer idleTtl;
@@ -29,6 +30,11 @@ public class BotItemConfig {
 
     public BotItemConfig setCreateDirectly(boolean createDirectly) {
         this.createDirectly = createDirectly;
+        return this;
+    }
+
+    public BotItemConfig setNoSpawn(boolean noSpawn) {
+        this.noSpawn = noSpawn;
         return this;
     }
 
@@ -67,6 +73,10 @@ public class BotItemConfig {
 
     public boolean isCreateDirectly() {
         return createDirectly;
+    }
+
+    public boolean isNoSpawn() {
+        return noSpawn;
     }
 
     public PlaceConfig getPlace() {

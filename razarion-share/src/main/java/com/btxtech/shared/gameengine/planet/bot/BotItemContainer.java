@@ -192,7 +192,7 @@ public class BotItemContainer {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(botItemConfig.getBaseItemTypeId());
         if (botItemConfig.isCreateDirectly()) {
             DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt);
-            SyncBaseItem spawnItem = baseItemService.spawnSyncBaseItem(toBeBuilt, position, playerBase);
+            SyncBaseItem spawnItem = baseItemService.spawnSyncBaseItem(toBeBuilt, position, playerBase, botItemConfig.isNoSpawn());
             insertBotItem(spawnItem, botItemConfig);
         } else {
             BotSyncBaseItem botSyncBuilder = getFirstIdleBuilder(toBeBuilt);

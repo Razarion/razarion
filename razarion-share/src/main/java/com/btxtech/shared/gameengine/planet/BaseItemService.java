@@ -88,11 +88,11 @@ public class BaseItemService {
         throw new UnsupportedOperationException();
     }
 
-    public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
-        return spawnSyncBaseItem(toBeBuilt, terrainService.calculatePositionGroundMesh(position), base);
+    public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
+        return spawnSyncBaseItem(toBeBuilt, terrainService.calculatePositionGroundMesh(position), base, noSpawn);
     }
 
-    public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, Vertex position, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, Vertex position, PlayerBase base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
         if (!isAlive(base)) {
             throw new BaseDoesNotExistException(base);
         }
@@ -108,7 +108,11 @@ public class BaseItemService {
         position = collisionService.correctPosition(position, toBeBuilt);
 
         SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position);
-        syncBaseItem.setup(base, ItemLifecycle.SPAWN);
+        if (noSpawn) {
+            syncBaseItem.setup(base, ItemLifecycle.ALIVE);
+        } else {
+            syncBaseItem.setup(base, ItemLifecycle.SPAWN);
+        }
         syncBaseItem.setSpawnProgress(0);
         syncBaseItem.setBuildup(1.0);
         base.addItem(syncBaseItem);
@@ -244,7 +248,7 @@ public class BaseItemService {
     public int getAccountBalance(UserContext userContext) {
         PlayerBase playerBase = getPlayerBase(userContext);
         if (playerBase != null) {
-            return (int)playerBase.getResources();
+            return (int) playerBase.getResources();
         } else {
             return 0;
         }

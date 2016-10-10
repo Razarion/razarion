@@ -60,7 +60,7 @@ public class ScenarioProvider {
 
     protected void createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, DecimalPosition destination) {
         try {
-            SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, playerBase);
+            SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, playerBase, true);
             if (syncBaseItem.getSyncPhysicalArea().canMove()) {
                 ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setDestination(destination);
             }

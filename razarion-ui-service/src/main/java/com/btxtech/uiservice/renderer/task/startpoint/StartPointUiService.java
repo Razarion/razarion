@@ -114,7 +114,7 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
         if (startPointItemPlacer.isPositionValid()) {
             PlayerBase playerBase = baseItemService.createHumanBase(storyboardService.getUserContext());
             try {
-                baseItemService.spawnSyncBaseItem(startPointItemPlacer.getBaseItemType(), terrainPosition, playerBase);
+                baseItemService.spawnSyncBaseItem(startPointItemPlacer.getBaseItemType(), terrainPosition, playerBase, false);
                 deactivate();
             } catch (Exception e) {
                 exceptionHandler.handleException(e);
