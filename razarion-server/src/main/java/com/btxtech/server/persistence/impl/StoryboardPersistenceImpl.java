@@ -62,6 +62,7 @@ import java.util.Map;
 public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private static final int NPC_BOT_OUTPOST = 1;
     private static final int NPC_BOT_INSTRUCTOR = 2;
+    private static final int ENEMY_BOT = 3;
     private static final int BASE_ITEM_TYPE_BULLDOZER = 180807;
     private static final int BASE_ITEM_TYPE_HARVESTER = 180830;
     private static final int RESOURCE_ITEM_TYPE = 180829;
@@ -95,12 +96,14 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         addResources(sceneConfigs); // TODO mode to DB
         addNpcBot(sceneConfigs); // TODO mode to DB
+        addEnemyBot(sceneConfigs); // TODO mode to DB
         addScrollOverTerrain(sceneConfigs); // TODO mode to DB
         addBotSpawnScene(sceneConfigs); // TODO mode to DB
         addUserSpawnScene(sceneConfigs); // TODO mode to DB
         addBotMoveScene(sceneConfigs);// TODO mode to DB
         addScrollToOwnScene(sceneConfigs);// TODO mode to DB
         addUserMoveScene(sceneConfigs);// TODO mode to DB
+        addNpcHarvestAttack(sceneConfigs);// TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         storyboardConfig.setSceneConfigs(sceneConfigs);
         return storyboardConfig;
@@ -190,6 +193,23 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
     }
 
+    private void addEnemyBot(List<SceneConfig> sceneConfigs) {
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2887, 1805))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2818, 1841))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2675, 1551))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2926, 1359))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(3161, 1377))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(3303, 1448))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(3408, 1654))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(3084, 1738))).setNoSpawn(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+        sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs));
+    }
+
     private void addResources(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
@@ -247,6 +267,12 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         ComparisonConfig comparisonConfig = new ComparisonConfig().setBaseItemTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(1600, 700), new DecimalPosition(2000, 700), new DecimalPosition(2000, 1000), new DecimalPosition(1600, 1000))))).setAddExisting(true);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(comparisonConfig);
         sceneConfigs.add(new SceneConfig().setCameraConfig(new CameraConfig().setCameraLocked(false)).setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setWait4LevelUp(true));
+    }
+
+    private void addNpcHarvestAttack(List<SceneConfig> sceneConfigs) {
+        SceneConfig sceneConfig = new SceneConfig();
+        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(2500, 1300)).setSpeed(160.0).setCameraLocked(false));
+        sceneConfigs.add(sceneConfig);
     }
 
     private List<LevelConfig> setupLevelConfigs() {
