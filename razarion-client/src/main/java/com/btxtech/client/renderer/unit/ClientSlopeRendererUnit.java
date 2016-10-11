@@ -97,13 +97,13 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         // Slope
         webGlFacade.uniform1f("uSlopeBmDepth", slope.getSlopeSkeletonConfig().getBumpMapDepth());
         //Ground
-        webGlFacade.uniform1i("uGroundTopTextureSize", terrainUiService.getTopTexture().getQuadraticEdge());
-        webGlFacade.uniform1i("uGroundTopBmSize", terrainUiService.getTopBm().getQuadraticEdge());
+        webGlFacade.uniform1i("uGroundTopTextureSize", (int)(terrainUiService.getTopTexture().getQuadraticEdge() * ClientGroundRendererUnit.UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
+        webGlFacade.uniform1i("uGroundTopBmSize", (int)(terrainUiService.getTopBm().getQuadraticEdge() * ClientGroundRendererUnit.UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
         webGlFacade.uniform1f("uGroundTopBmDepth", terrainUiService.getGroundSkeleton().getTopBmDepth());
-        webGlFacade.uniform1i("uGroundBottomTextureSize", terrainUiService.getGroundTexture().getQuadraticEdge());
-        webGlFacade.uniform1i("uGroundBottomBmSize", terrainUiService.getGroundBm().getQuadraticEdge());
+        webGlFacade.uniform1i("uGroundBottomTextureSize", (int)(terrainUiService.getGroundTexture().getQuadraticEdge() * ClientGroundRendererUnit.UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
+        webGlFacade.uniform1i("uGroundBottomBmSize", (int)(terrainUiService.getGroundBm().getQuadraticEdge() * ClientGroundRendererUnit.UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
         webGlFacade.uniform1f("uGroundBottomBmDepth", terrainUiService.getGroundSkeleton().getBottomBmDepth());
-        webGlFacade.uniform1i("uGroundSplattingSize", terrainUiService.getSplatting().getQuadraticEdge());
+        webGlFacade.uniform1i("uGroundSplattingSize", (int)(terrainUiService.getSplatting().getQuadraticEdge() * ClientGroundRendererUnit.UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
         // Water
         webGlFacade.uniform1b("uHasWater", slope.hasWater());
         webGlFacade.uniform1f("uWaterLevel", slope.getWaterLevel());

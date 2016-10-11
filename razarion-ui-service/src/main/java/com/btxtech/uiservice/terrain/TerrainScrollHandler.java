@@ -32,7 +32,7 @@ public class TerrainScrollHandler {
 
     private static final int SCROLL_AUTO_MOUSE_DETECTION_WIDTH = 40;
     private static final int SCROLL_TIMER_DELAY = 150; // Browser is not able to go faster due to the AnimationScheduler
-    private static final int SCROLL_AUTO_DISTANCE = 60;
+    private static final int SCROLL_AUTO_DISTANCE = 6;
     // private Logger logger = Logger.getLogger(TerrainScrollHandler.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject

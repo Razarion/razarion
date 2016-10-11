@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 
 /**
@@ -8,10 +8,10 @@ import com.btxtech.shared.datatypes.Matrix4;
  * 23.01.2016.
  */
 public class VerticalSegment {
-    private Index inner;
-    private Index outer;
+    private DecimalPosition inner;
+    private DecimalPosition outer;
 
-    public VerticalSegment(Index inner, Index outer) {
+    public VerticalSegment(DecimalPosition inner, DecimalPosition outer) {
         this.inner = inner;
         this.outer = outer;
     }
@@ -21,15 +21,15 @@ public class VerticalSegment {
         if (inner.equals(outer)) {
             return translationMatrix;
         }
-        Matrix4 rotationMatrix = Matrix4.createZRotation(outer.getAngleToNorth(inner));
+        Matrix4 rotationMatrix = Matrix4.createZRotation(outer.getAngle(inner));
         return translationMatrix.multiply(rotationMatrix);
     }
 
-    public Index getInner() {
+    public DecimalPosition getInner() {
         return inner;
     }
 
-    public Index getOuter() {
+    public DecimalPosition getOuter() {
         return outer;
     }
 }

@@ -16,7 +16,6 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
@@ -40,7 +39,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainService {
-    public static final int MESH_NODE_EDGE_LENGTH = 64;
+    public static final int MESH_NODE_EDGE_LENGTH = 8;
     private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;

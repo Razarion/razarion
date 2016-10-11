@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.surface;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeShape;
 
@@ -20,7 +21,7 @@ public class SlopeShapeEntity {
     @GeneratedValue
     private Long id;
     @Embedded
-    private Index position;
+    private DecimalPosition position;
     /**
      * 1.0 is slope 0.0 is ground
      */

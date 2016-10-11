@@ -51,7 +51,7 @@ public class SlopeConfigEntity {
     private double fractalClampMin;
     private double fractalClampMax;
     private double fractalRoughness;
-    private int verticalSpace;
+    private double verticalSpace;
     private int segments;
     private boolean slopeOriented;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
@@ -77,8 +77,8 @@ public class SlopeConfigEntity {
         Shape shape = new Shape(toSlopeShapes());
         slopeSkeletonConfig.setLightConfig(lightConfigEmbeddable.toLightConfig());
         slopeSkeletonConfig.setRows(shape.getVertexCount());
-        slopeSkeletonConfig.setWidth((int) shape.getDistance());
-        slopeSkeletonConfig.setHeight((int) shape.getZInner());
+        slopeSkeletonConfig.setWidth(shape.getDistance());
+        slopeSkeletonConfig.setHeight(shape.getZInner());
         slopeSkeletonConfig.setVerticalSpace(verticalSpace);
         slopeSkeletonConfig.setBumpMapDepth(bumpMapDepth);
         slopeSkeletonConfig.setType(type);

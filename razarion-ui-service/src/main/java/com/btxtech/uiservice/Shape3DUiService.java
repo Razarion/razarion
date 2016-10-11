@@ -32,10 +32,6 @@ public class Shape3DUiService {
         return shape3Ds.get(id);
     }
 
-    public double getShape3DGeneralScale() {
-        return visualConfig.getShape3DGeneralScale();
-    }
-
     // Methods only used by the editor ----------------------------------------------------
     public List<Shape3D> getShape3Ds() {
         return new ArrayList<>(shape3Ds.values());

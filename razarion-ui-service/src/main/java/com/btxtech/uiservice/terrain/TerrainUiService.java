@@ -16,7 +16,6 @@ import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.ImageDescriptor;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
 import javax.enterprise.event.Observes;
@@ -38,8 +37,6 @@ public class TerrainUiService {
     private TerrainTypeService terrainTypeService;
     @Inject
     private TerrainService terrainService;
-    @Inject
-    private Shape3DUiService shape3DUiService;
     private static final double HIGHEST_POINT_IN_VIEW = 200;
     private static final double LOWEST_POINT_IN_VIEW = -20;
     private double highestPointInView; // Should be calculated
@@ -61,7 +58,7 @@ public class TerrainUiService {
         for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainService.getTerrainObjectPositions().getMap().entrySet()) {
             for (TerrainObjectPosition objectPosition : entry.getValue()) {
                 int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
-                Matrix4 model = objectPosition.createModelMatrix(z).multiply(Matrix4.createScale(shape3DUiService.getShape3DGeneralScale()));
+                Matrix4 model = objectPosition.createModelMatrix(z);
                 terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
             }
         }

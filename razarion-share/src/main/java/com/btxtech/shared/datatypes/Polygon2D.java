@@ -147,6 +147,11 @@ public class Polygon2D {
 //        return c;
 //    }
 
+    public Polygon2D remove(Polygon2D other) {
+        // TODO see Polygon2I
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public String toString() {
         return "Polygon2D{" +

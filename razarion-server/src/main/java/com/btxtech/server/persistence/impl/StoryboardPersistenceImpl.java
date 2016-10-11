@@ -156,7 +156,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setI18Name(i18nHelper("Harvester Name"));
         baseItemType.setDescription(i18nHelper("Harvester Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        baseItemType.setHarvesterType(new HarvesterType().setProgress(1).setRange(40).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
+        baseItemType.setHarvesterType(new HarvesterType().setProgress(1).setRange(4).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -169,7 +169,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
         lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
         visualConfig.setWaterLightConfig(lightConfig);
-        visualConfig.setShape3DGeneralScale(10).setShape3Ds(shape3DPersistence.getShape3Ds());
+        visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         return visualConfig;
     }
 
@@ -177,19 +177,19 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2287, 1405))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2218, 1441))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2075, 1151))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2326, 859))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2761, 877))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2603, 948))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2608, 1154))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2484, 1238))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(228, 140))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(221, 144))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(207, 115))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(232, 85))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(276, 87))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(260, 94))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(260, 115))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(248, 123))).setNoSpawn(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(NPC_BOT_OUTPOST).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
-        botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(NPC_BOT_OUTPOST).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(2441, 1878))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
-        botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(NPC_BOT_OUTPOST).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(2642, 1829))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
+        botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(NPC_BOT_OUTPOST).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(244, 187))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
+        botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(NPC_BOT_OUTPOST).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(264, 182))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
         sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
     }
 
@@ -197,14 +197,14 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2887, 1805))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2818, 1841))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2675, 1551))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(2926, 1359))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(3161, 1377))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(3303, 1448))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(3408, 1654))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(3084, 1738))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(288, 180))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(281, 184))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(267, 155))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(292, 135))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(316, 137))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(330, 144))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(340, 165))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(308, 173))).setNoSpawn(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
         sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs));
@@ -213,35 +213,35 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private void addResources(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
-        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2358, 1995)).setRotationZ(Math.toRadians(0)));
-        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2543, 2002)).setRotationZ(Math.toRadians(80)));
-        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2441, 1878)).setRotationZ(Math.toRadians(160)));
-        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2642, 1829)).setRotationZ(Math.toRadians(240)));
-        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(2769, 2119)).setRotationZ(Math.toRadians(320)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(235, 199)).setRotationZ(Math.toRadians(0)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(254, 200)).setRotationZ(Math.toRadians(80)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(244, 187)).setRotationZ(Math.toRadians(160)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(264, 182)).setRotationZ(Math.toRadians(240)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(276, 211)).setRotationZ(Math.toRadians(320)));
         sceneConfig.setResourceItemTypePositions(resourceItemTypePositions);
         sceneConfigs.add(sceneConfig);
     }
 
     private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig().setIntroText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
-        sceneConfig.setCameraConfig(new CameraConfig().setFromPosition(new DecimalPosition(3260, 2900)).setToPosition(new DecimalPosition(1040, 320)).setSpeed(1000.0).setCameraLocked(true));
+        sceneConfig.setCameraConfig(new CameraConfig().setFromPosition(new DecimalPosition(326, 290)).setToPosition(new DecimalPosition(104, 32)).setSpeed(100.0).setCameraLocked(true));
         sceneConfigs.add(sceneConfig);
     }
 
     private void addBotSpawnScene(List<SceneConfig> sceneConfigs) {
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(true);
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(true);
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(1040, 800))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(104, 80))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(NPC_BOT_INSTRUCTOR).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.").setDuration(4000));
     }
 
     private void addUserSpawnScene(List<SceneConfig> sceneConfigs) {
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(1040, 320)).setCameraLocked(true);
-        StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setEnemyFreeRadius(100).setSuggestedPosition(new DecimalPosition(1040, 800));
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(true);
+        StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(104, 80));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(buildupItemTypeCount));
@@ -249,29 +249,29 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(2040, 520)).setSpeed(80.0).setCameraLocked(false);
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(204, 52)).setSpeed(10.0).setCameraLocked(false);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
-        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setDecimalPosition(new DecimalPosition(2040, 1000)));
+        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setDecimalPosition(new DecimalPosition(204, 100)));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
     }
 
     private void addScrollToOwnScene(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig().setIntroText("Fahre deine Einheit zum Vorposten");
-        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(1640, 320)).setSpeed(500.0).setCameraLocked(true));
+        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(164, 32)).setSpeed(50.0).setCameraLocked(true));
         sceneConfigs.add(sceneConfig);
     }
 
     private void addUserMoveScene(List<SceneConfig> sceneConfigs) {
         Map<Integer, Integer> itemTypeCount = new HashMap<>();
         itemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        ComparisonConfig comparisonConfig = new ComparisonConfig().setBaseItemTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(1600, 700), new DecimalPosition(2000, 700), new DecimalPosition(2000, 1000), new DecimalPosition(1600, 1000))))).setAddExisting(true);
+        ComparisonConfig comparisonConfig = new ComparisonConfig().setBaseItemTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(160, 70), new DecimalPosition(300, 70), new DecimalPosition(300, 200), new DecimalPosition(160, 200))))).setAddExisting(true);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(comparisonConfig);
         sceneConfigs.add(new SceneConfig().setCameraConfig(new CameraConfig().setCameraLocked(false)).setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setWait4LevelUp(true));
     }
 
     private void addNpcHarvestAttack(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
-        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(2500, 1300)).setSpeed(160.0).setCameraLocked(false));
+        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(250, 130)).setSpeed(16.0).setCameraLocked(false));
         sceneConfigs.add(sceneConfig);
     }
 

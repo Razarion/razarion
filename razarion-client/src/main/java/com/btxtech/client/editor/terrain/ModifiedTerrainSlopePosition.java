@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.terrain;
 
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.datatypes.Polygon2I;
 
 /**
  * Created by Beat
@@ -10,20 +10,20 @@ import com.btxtech.shared.datatypes.Polygon2I;
 public class ModifiedTerrainSlopePosition {
     private Integer originalId;
     private int slopeId;
-    private Polygon2I polygon;
+    private Polygon2D polygon;
 
     public ModifiedTerrainSlopePosition(TerrainSlopePosition original) {
         originalId = original.getId();
         slopeId = original.getSlopeId();
-        polygon = new Polygon2I(original.getPolygon());
+        polygon = new Polygon2D(original.getPolygon());
     }
 
-    public ModifiedTerrainSlopePosition(int slopeId, Polygon2I polygon) {
+    public ModifiedTerrainSlopePosition(int slopeId, Polygon2D polygon) {
         this.slopeId = slopeId;
         this.polygon = polygon;
     }
 
-    public Polygon2I getPolygon2I() {
+    public Polygon2D getPolygon() {
         return polygon;
     }
 
@@ -39,12 +39,12 @@ public class ModifiedTerrainSlopePosition {
         }
     }
 
-    public Polygon2I combine(Polygon2I other) {
+    public Polygon2D combine(Polygon2D other) {
         polygon = polygon.combine(other);
         return polygon;
     }
 
-    public Polygon2I remove(Polygon2I other) {
+    public Polygon2D remove(Polygon2D other) {
         polygon = polygon.remove(other);
         return polygon;
     }

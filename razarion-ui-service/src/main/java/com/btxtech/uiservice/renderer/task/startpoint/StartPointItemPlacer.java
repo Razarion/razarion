@@ -10,7 +10,6 @@ import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.uiservice.Shape3DUiService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -30,8 +29,6 @@ public class StartPointItemPlacer {
     private ItemTypeService itemTypeService;
     @Inject
     private TerrainService terrainService;
-    @Inject
-    private Shape3DUiService shape3DUiService;
     private Vertex position;
     private BaseItemType baseItemType;
     private String errorText;
@@ -84,7 +81,6 @@ public class StartPointItemPlacer {
 
     public List<ModelMatrices> provideItemModelMatrices() {
         Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), position.getZ());
-        model = model.multiply(Matrix4.createScale(shape3DUiService.getShape3DGeneralScale(), shape3DUiService.getShape3DGeneralScale(), shape3DUiService.getShape3DGeneralScale()));
         ModelMatrices modelMatrices = new ModelMatrices();
         modelMatrices.setModel(model).setNorm(model.normTransformation());
         return Collections.singletonList(modelMatrices);

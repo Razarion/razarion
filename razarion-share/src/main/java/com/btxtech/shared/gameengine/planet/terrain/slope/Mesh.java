@@ -11,12 +11,14 @@ import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 23.01.2016.
  */
 public class Mesh {
+    private Logger logger = Logger.getLogger(Mesh.class.getName());
     private MeshEntry[][] nodes;
     private int xCount;
     private int yCount;
@@ -68,16 +70,20 @@ public class Mesh {
                     Vertex norm = sum(norms);
                     double normMagnitude = norm.magnitude();
                     if (normMagnitude == 0.0) {
-                        // throw new IllegalArgumentException("Norm magnitude is zero " + x + ":" + y + " center: " + center);
+                        logger.warning("Norm magnitude is zero " + x + ":" + y + " center: " + center + ". Using fake norm");
+                        nodes[x][y].setNorm(Vertex.Z_NORM);
+                    } else {
+                        nodes[x][y].setNorm(norm.divide(normMagnitude));
                     }
-                    nodes[x][y].setNorm(norm.divide(normMagnitude));
 
                     Vertex tangent = setupTangent(center, left, right);
                     double tangentMagnitude = tangent.magnitude();
                     if (tangentMagnitude == 0.0) {
-                        //  throw new IllegalArgumentException("Tangent magnitude is zero " + x + ":" + y + " center: " + center);
+                        logger.warning("Tangent magnitude is zero " + x + ":" + y + " center: " + center + ". Using fake tangent");
+                        nodes[x][y].setTangent(Vertex.X_NORM);
+                    } else {
+                        nodes[x][y].setTangent(tangent.divide(tangentMagnitude));
                     }
-                    nodes[x][y].setTangent(tangent.divide(tangentMagnitude));
                 }
             }
         }

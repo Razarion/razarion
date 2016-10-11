@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 
 /**
@@ -7,7 +8,7 @@ import com.btxtech.shared.datatypes.Index;
  * 08.05.2016.
  */
 public class SlopeShape {
-    private Index position;
+    private DecimalPosition position;
     private float slopeFactor;
 
     /**
@@ -16,16 +17,16 @@ public class SlopeShape {
     public SlopeShape() {
     }
 
-    public SlopeShape(Index position, float slopeFactor) {
+    public SlopeShape(DecimalPosition position, float slopeFactor) {
         this.position = position;
         this.slopeFactor = slopeFactor;
     }
 
-    public void setPosition(Index position) {
+    public void setPosition(DecimalPosition position) {
         this.position = position;
     }
 
-    public Index getPosition() {
+    public DecimalPosition getPosition() {
         return position;
     }
 

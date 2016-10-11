@@ -1,9 +1,9 @@
 package com.btxtech.client.editor.slopeeditor;
 
 import com.btxtech.client.utils.GwtUtils;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -33,7 +33,7 @@ public class ShapeEditor implements Model {
     // private Logger logger = Logger.getLogger(SlopeEditor.class.getName());
     private SVGTransform translateTransform;
     private SVGTransform scaleTransform;
-    private Index lastScrollPosition;
+    private DecimalPosition lastScrollPosition;
     private SlopeConfig slopeConfig;
     private SelectedCornerListener selectedCornerListener;
     private SVGLineElement helperLine;
@@ -50,7 +50,7 @@ public class ShapeEditor implements Model {
         translateTransform.setTranslate(0, HEIGHT / 2);
         group.getAnimatedTransform().getBaseVal().appendItem(translateTransform);
         scaleTransform = svg.createSVGTransform();
-        if(scale != null) {
+        if (scale != null) {
             this.scale = scale.floatValue();
         }
         scaleTransform.setScale(this.scale, -this.scale);
@@ -62,7 +62,7 @@ public class ShapeEditor implements Model {
             public void handleEvent(Event evt) {
                 MouseEvent event = (MouseEvent) evt;
                 if (event.getButton() == MouseEvent.Button.PRIMARY) {
-                    lastScrollPosition = new Index(event.getX(), event.getY());
+                    lastScrollPosition = new DecimalPosition(event.getX(), event.getY());
                 }
             }
         }, false);
@@ -76,10 +76,10 @@ public class ShapeEditor implements Model {
                 if ((buttons & 1) == 0) {
                     lastScrollPosition = null;
                 } else if (lastScrollPosition != null) {
-                    int sx = (int) translateTransform.getMatrix().getE() + event.getX() - lastScrollPosition.getX();
-                    int sy = (int) translateTransform.getMatrix().getF() + event.getY() - lastScrollPosition.getY();
-                    translateTransform.setTranslate(sx, sy);
-                    lastScrollPosition = new Index(event.getX(), event.getY());
+                    double sx = translateTransform.getMatrix().getE() + event.getX() - lastScrollPosition.getX();
+                    double sy = translateTransform.getMatrix().getF() + event.getY() - lastScrollPosition.getY();
+                    translateTransform.setTranslate((float) sx, (float) sy);
+                    lastScrollPosition = new DecimalPosition(event.getX(), event.getY());
                 }
             }
         }, false);
@@ -128,16 +128,16 @@ public class ShapeEditor implements Model {
     }
 
     @Override
-    public Index convertMouseToSvg(MouseEvent event) {
+    public DecimalPosition convertMouseToSvg(MouseEvent event) {
         SVGPoint point = svg.createSVGPoint();
         point.setX(event.getOffsetX());
         point.setY(event.getOffsetY());
         SVGPoint convertedPoint = point.matrixTransform(group.getCTM().inverse());
-        return new Index((int) convertedPoint.getX(), (int) convertedPoint.getY());
+        return new DecimalPosition(convertedPoint.getX(), convertedPoint.getY());
     }
 
     @Override
-    public void createCorner(Index position, Corner previous) {
+    public void createCorner(DecimalPosition position, Corner previous) {
         selectionChanged(null);
         int index = slopeConfig.getShape().indexOf(previous.getSlopeShape());
         slopeConfig.getShape().add(index + 1, new SlopeShape(position, 0));
@@ -152,7 +152,7 @@ public class ShapeEditor implements Model {
     }
 
     @Override
-    public void cornerMoved(Index position, Corner corner) {
+    public void cornerMoved(DecimalPosition position, Corner corner) {
         int cornerIndex = corners.indexOf(corner);
         corner.move(position);
         if (cornerIndex < lines.size()) {
@@ -164,7 +164,7 @@ public class ShapeEditor implements Model {
         selectedCornerListener.onSelectionChanged(corner);
     }
 
-    public void moveSelected(Index position) {
+    public void moveSelected(DecimalPosition position) {
         cornerMoved(position, selected);
     }
 

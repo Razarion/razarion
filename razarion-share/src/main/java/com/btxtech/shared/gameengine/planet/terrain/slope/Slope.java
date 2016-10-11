@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -26,7 +27,7 @@ import java.util.List;
 public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private SlopeSkeletonConfig slopeSkeletonConfig;
-    private List<Index> corners;
+    private List<DecimalPosition> corners;
     private List<AbstractBorder> borders = new ArrayList<>();
     private Mesh mesh;
     private int xVertices;
@@ -38,11 +39,11 @@ public class Slope {
     private Polygon2D outerPolygon;
     private GroundSlopeConnector groundPlateauConnector;
 
-    public Slope(SlopeSkeletonConfig slopeSkeletonConfig, List<Index> corners) {
+    public Slope(SlopeSkeletonConfig slopeSkeletonConfig, List<DecimalPosition> corners) {
         this.slopeSkeletonConfig = slopeSkeletonConfig;
         this.corners = new ArrayList<>(corners);
 
-        if (slopeSkeletonConfig.getWidth() > 0) {
+        if (slopeSkeletonConfig.getWidth() > 0.0) {
             setupSlopingBorder(this.corners);
         } else {
             setupStraightBorder(this.corners);
@@ -59,26 +60,26 @@ public class Slope {
         return borders;
     }
 
-    private void setupStraightBorder(List<Index> corners) {
+    private void setupStraightBorder(List<DecimalPosition> corners) {
         for (int i = 0; i < corners.size(); i++) {
-            Index current = corners.get(i);
-            Index next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
+            DecimalPosition current = corners.get(i);
+            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
             borders.add(new LineBorder(current, next));
         }
     }
 
-    private void setupSlopingBorder(List<Index> corners) {
+    private void setupSlopingBorder(List<DecimalPosition> corners) {
         // Correct the borders. Outer corners can not be too close to other corners. Id needs some safety distance
         boolean violationsFound = true;
         while (violationsFound) {
             violationsFound = false;
             for (int i = 0; i < corners.size(); i++) {
-                Index previous = corners.get(CollectionUtils.getCorrectedIndex(i - 1, corners.size()));
-                Index current = corners.get(i);
-                Index next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
-                double innerAngle = current.getAngle(next, previous);
+                DecimalPosition previous = corners.get(CollectionUtils.getCorrectedIndex(i - 1, corners.size()));
+                DecimalPosition current = corners.get(i);
+                DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
+                double innerAngle = current.angle(next, previous);
                 if (innerAngle > MathHelper.HALF_RADIANT) {
-                    double safetyDistance = (double) slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
+                    double safetyDistance = slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
                     if (current.getDistance(previous) < safetyDistance) {
                         violationsFound = true;
                         corners.remove(i);
@@ -95,10 +96,10 @@ public class Slope {
         // Setup inner and outer corner
         List<AbstractCornerBorder> cornerBorders = new ArrayList<>();
         for (int i = 0; i < corners.size(); i++) {
-            Index previous = corners.get(CollectionUtils.getCorrectedIndex(i - 1, corners.size()));
-            Index current = corners.get(i);
-            Index next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
-            if (current.getAngle(next, previous) > MathHelper.HALF_RADIANT) {
+            DecimalPosition previous = corners.get(CollectionUtils.getCorrectedIndex(i - 1, corners.size()));
+            DecimalPosition current = corners.get(i);
+            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
+            if (current.angle(next, previous) > MathHelper.HALF_RADIANT) {
                 cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeletonConfig.getWidth()));
             } else {
                 cornerBorders.add(new InnerCornerBorder(current, previous, next, slopeSkeletonConfig.getWidth()));
@@ -226,16 +227,12 @@ public class Slope {
         return groundPlateauConnector;
     }
 
-    public List<Index> getCorner2d() {
+    public List<DecimalPosition> getCorner2d() {
         return corners;
     }
 
     public List<Vertex> getCorner3d() {
-        List<Vertex> corners = new ArrayList<>();
-        for (Index corner : this.corners) {
-            corners.add(new Vertex(corner.getX(), corner.getY(), 0));
-        }
-        return corners;
+        return this.corners.stream().map(corner -> new Vertex(corner.getX(), corner.getY(), 0)).collect(Collectors.toList());
     }
 
     public void updateSlopeSkeleton(SlopeSkeletonConfig slopeSkeletonConfig) {

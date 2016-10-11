@@ -14,9 +14,9 @@ public class SlopeSkeletonConfig {
     private int id;
     private int segments;
     private int rows;
-    private int width;
-    private int height;
-    private int verticalSpace;
+    private double width;
+    private double height;
+    private double verticalSpace;
     private double bumpMapDepth;
     private Type type;
     private SlopeNode[][] slopeNodes;
@@ -50,12 +50,12 @@ public class SlopeSkeletonConfig {
         return this;
     }
 
-    public SlopeSkeletonConfig setWidth(int width) {
+    public SlopeSkeletonConfig setWidth(double width) {
         this.width = width;
         return this;
     }
 
-    public SlopeSkeletonConfig setHeight(int height) {
+    public SlopeSkeletonConfig setHeight(double height) {
         this.height = height;
         return this;
     }
@@ -64,11 +64,11 @@ public class SlopeSkeletonConfig {
         return rows;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
@@ -81,11 +81,11 @@ public class SlopeSkeletonConfig {
         return this;
     }
 
-    public int getVerticalSpace() {
+    public double getVerticalSpace() {
         return verticalSpace;
     }
 
-    public SlopeSkeletonConfig setVerticalSpace(int verticalSpace) {
+    public SlopeSkeletonConfig setVerticalSpace(double verticalSpace) {
         this.verticalSpace = verticalSpace;
         return this;
     }

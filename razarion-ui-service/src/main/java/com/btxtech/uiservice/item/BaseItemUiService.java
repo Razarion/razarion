@@ -11,9 +11,9 @@ import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.uiservice.ImageDescriptor;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.inject.Inject;
@@ -37,8 +37,6 @@ public class BaseItemUiService {
     private BaseItemService baseItemService;
     @Inject
     private TerrainUiService terrainUiService;
-    @Inject
-    private Shape3DUiService shape3DUiService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -81,11 +79,11 @@ public class BaseItemUiService {
     }
 
     public List<ModelMatrices> provideSpawnModelMatrices(BaseItemType baseItemType) {
-        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.SPAWN).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale())).collect(Collectors.toCollection(ArrayList::new));
+        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.SPAWN).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(SyncItem::createModelMatrices).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<ModelMatrices> provideAliveModelMatrices(BaseItemType baseItemType) {
-        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.ALIVE).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices(shape3DUiService.getShape3DGeneralScale())).collect(Collectors.toCollection(ArrayList::new));
+        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.ALIVE).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(SyncItem::createModelMatrices).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<ModelMatrices> provideHarvestAnimationModelMatrices(BaseItemType baseItemType) {
@@ -95,12 +93,12 @@ public class BaseItemUiService {
             if (!harvester.getSyncHarvester().isHarvesting()) {
                 continue;
             }
-            Vertex origin = harvester.getSyncPhysicalArea().createModelMatrices(harvester, shape3DUiService.getShape3DGeneralScale()).getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
+            Vertex origin = harvester.getSyncPhysicalArea().createModelMatrices(harvester).getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
             SyncResourceItem syncResourceItem = resourceService.getSyncResourceItem(harvester.getSyncHarvester().getTarget());
             Vertex direction = syncResourceItem.getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
             double yRotation = -Math.asin(direction.getZ());
             double zRotation = direction.toXY().angle();
-            Matrix4 model = Matrix4.createTranslation(origin).multiply(Matrix4.createZRotation(zRotation).multiply(Matrix4.createYRotation(yRotation))).multiply(Matrix4.createScale(shape3DUiService.getShape3DGeneralScale()));
+            Matrix4 model = Matrix4.createTranslation(origin).multiply(Matrix4.createZRotation(zRotation).multiply(Matrix4.createYRotation(yRotation)));
             modelMatrices.add(new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
         }
         return modelMatrices;

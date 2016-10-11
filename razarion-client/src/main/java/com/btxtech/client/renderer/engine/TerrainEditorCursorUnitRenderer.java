@@ -2,14 +2,14 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.editor.terrain.TerrainEditorCursorShapeEvent;
+import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Polygon2I;
-import com.btxtech.shared.datatypes.Vertex;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -50,11 +50,11 @@ public class TerrainEditorCursorUnitRenderer extends AbstractWebGlUnitRenderer {
         fillBuffer(terrainEditor.getCursor());
     }
 
-    private void fillBuffer(Polygon2I cursor) {
+    private void fillBuffer(Polygon2D cursor) {
         List<Vertex> triangleFan = new ArrayList<>();
         triangleFan.add(new Vertex(0, 0, 0));
-        List<Index> cursorPositions = cursor.getCorners();
-        for (Index cursorPosition : cursorPositions) {
+        List<DecimalPosition> cursorPositions = cursor.getCorners();
+        for (DecimalPosition cursorPosition : cursorPositions) {
             triangleFan.add(new Vertex(cursorPosition, 0));
         }
         triangleFan.add(new Vertex(cursorPositions.get(0), 0));

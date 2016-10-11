@@ -94,8 +94,8 @@ public abstract class SyncItem {
         return syncPhysicalArea;
     }
 
-    public ModelMatrices createModelMatrices(double scale) {
-        return syncPhysicalArea.createModelMatrices((SyncBaseItem) this, scale);
+    public ModelMatrices createModelMatrices() {
+        return syncPhysicalArea.createModelMatrices((SyncBaseItem) this);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
@@ -16,7 +17,7 @@ import java.util.List;
 public class SlopeWater extends Slope {
     private final Water water;
 
-    public SlopeWater(Water water, SlopeSkeletonConfig slopeSkeletonConfig, List<Index> corners) {
+    public SlopeWater(Water water, SlopeSkeletonConfig slopeSkeletonConfig, List<DecimalPosition> corners) {
         super(slopeSkeletonConfig, corners);
         this.water = water;
     }

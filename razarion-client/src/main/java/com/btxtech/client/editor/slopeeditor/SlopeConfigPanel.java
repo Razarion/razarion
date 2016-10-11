@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
@@ -86,10 +87,10 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     private DoubleBox helperLine;
     @Inject
     @DataField
-    private IntegerBox selectedXPos;
+    private DoubleBox selectedXPos;
     @Inject
     @DataField
-    private IntegerBox selectedYPos;
+    private DoubleBox selectedYPos;
     @Inject
     @DataField
     private DoubleBox selectedSlopeFactor;
@@ -163,12 +164,12 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
 
     @EventHandler("selectedXPos")
     public void selectedXPosChanged(ChangeEvent e) {
-        shapeEditor.moveSelected(new Index(selectedXPos.getValue(), selectedYPos.getValue()));
+        shapeEditor.moveSelected(new DecimalPosition(selectedXPos.getValue(), selectedYPos.getValue()));
     }
 
     @EventHandler("selectedYPos")
     public void selectedYPosChanged(ChangeEvent e) {
-        shapeEditor.moveSelected(new Index(selectedXPos.getValue(), selectedYPos.getValue()));
+        shapeEditor.moveSelected(new DecimalPosition(selectedXPos.getValue(), selectedYPos.getValue()));
     }
 
     @EventHandler("selectedSlopeFactor")

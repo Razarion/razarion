@@ -10,16 +10,17 @@ import com.btxtech.shared.dto.VertexList;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 27.06.2015.
  */
 public class GroundMesh {
+    private Logger logger = Logger.getLogger(Math.class.getName());
     private Map<Index, VertexData> grid = new HashMap<>();
     private int edgeLength;
     private Rectangle groundMeshDimension;
-    // private Logger logger = Logger.getLogger(Math.class.getName());
 
     public interface VertexVisitor {
         void onVisit(Index index, Vertex vertex);
@@ -105,20 +106,28 @@ public class GroundMesh {
 
             // Setup norm
             Vertex totalNorm = new Vertex(0, 0, 0);
+            int foundCount = 0;
             if (north != null && east != null) {
                 totalNorm = totalNorm.add(center.getVertex().cross(east.getVertex(), north.getVertex()));
+                foundCount++;
             }
             if (south != null && east != null) {
                 totalNorm = totalNorm.add(center.getVertex().cross(south.getVertex(), east.getVertex()));
+                foundCount++;
             }
             if (south != null && west != null) {
                 totalNorm = totalNorm.add(center.getVertex().cross(west.getVertex(), south.getVertex()));
+                foundCount++;
             }
             if (north != null && west != null) {
                 totalNorm = totalNorm.add(center.getVertex().cross(north.getVertex(), west.getVertex()));
+                foundCount++;
             }
-            center.setNorm(totalNorm.normalize(1.0));
-
+            if (totalNorm.equals(Vertex.ZERO)) {
+                logger.warning("GroundMesh.setupNorms() calculate norm fails at: " + index);
+            } else {
+                center.setNorm(totalNorm.normalize(1.0));
+            }
             // Setup tangent
             if (west != null && east != null) {
                 center.setTangent(east.getVertex().sub(west.getVertex()).normalize(1.0));
@@ -218,13 +227,13 @@ public class GroundMesh {
         double y = absoluteXY.getY() / (double) edgeLength;
 
         int indexX;
-        if(x > 0) {
+        if (x > 0) {
             indexX = (int) x;
         } else {
             indexX = (int) Math.floor(x);
         }
         int indexY;
-        if(y > 0) {
+        if (y > 0) {
             indexY = (int) y;
         } else {
             indexY = (int) Math.floor(y);

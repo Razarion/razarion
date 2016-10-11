@@ -70,14 +70,14 @@ public class ResourceService {
         return syncResourceItem;
     }
 
-    public List<ModelMatrices> provideModelMatrices(ResourceItemType resourceItemType, double scale) {
+    public List<ModelMatrices> provideModelMatrices(ResourceItemType resourceItemType) {
         List<ModelMatrices> modelMatrices = new ArrayList<>();
         synchronized (resources) {
             for (SyncResourceItem syncResourceItem : resources.values()) {
                 if (!syncResourceItem.getItemType().equals(resourceItemType)) {
                     continue;
                 }
-                modelMatrices.add(syncResourceItem.getSyncPhysicalArea().createModelMatrices(null, scale));
+                modelMatrices.add(syncResourceItem.getSyncPhysicalArea().createModelMatrices(null));
             }
         }
         return modelMatrices;

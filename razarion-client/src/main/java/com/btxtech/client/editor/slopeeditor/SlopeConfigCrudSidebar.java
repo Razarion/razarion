@@ -2,6 +2,7 @@ package com.btxtech.client.editor.slopeeditor;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.TerrainElementEditorProvider;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
@@ -98,8 +99,8 @@ public class SlopeConfigCrudSidebar extends LeftSideBarContent {
         slopeConfig.getSlopeSkeletonConfig().setSegments(1);
         slopeConfig.getSlopeSkeletonConfig().setVerticalSpace(30);
         List<SlopeShape> slopeShapes = new ArrayList<>();
-        slopeShapes.add(new SlopeShape(new Index(0, 0), 0));
-        slopeShapes.add(new SlopeShape(new Index(20, 20), 0));
+        slopeShapes.add(new SlopeShape(new DecimalPosition(0, 0), 0));
+        slopeShapes.add(new SlopeShape(new DecimalPosition(20, 20), 0));
         slopeConfig.setShape(slopeShapes);
         initEditor(slopeConfig);
         slopeSelection.setValue(null);

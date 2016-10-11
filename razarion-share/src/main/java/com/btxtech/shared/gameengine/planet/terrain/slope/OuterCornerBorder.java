@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.utils.MathHelper;
 
 /**
@@ -9,58 +9,58 @@ import com.btxtech.shared.utils.MathHelper;
  * 23.01.2016.
  */
 public class OuterCornerBorder extends AbstractCornerBorder {
-    private Index outerCenter;
-    private Index innerStart;
-    private Index innerEnd;
+    private DecimalPosition outerCenter;
+    private DecimalPosition innerStart;
+    private DecimalPosition innerEnd;
 
-    public OuterCornerBorder(Index current, Index previous, Index next, double distance) {
+    public OuterCornerBorder(DecimalPosition current, DecimalPosition previous, DecimalPosition next, double distance) {
         super(distance);
-        double halfOuterAngle = current.getAngle(previous, next) / 2.0;
-        double angle = current.getAngleToNorth(next) - halfOuterAngle;
+        double halfOuterAngle = current.angle(previous, next) / 2.0;
+        double angle = current.getAngle(next) - halfOuterAngle;
         double cornerDistance = distance / Math.sin(halfOuterAngle);
-        outerCenter = current.getPointFromAngleRound(angle, cornerDistance);
-        double startAngle = current.getAngleToNorth(previous) - MathHelper.QUARTER_RADIANT;
-        innerStart = outerCenter.getPointFromAngleRound(startAngle, distance);
-        double endAngle = current.getAngleToNorth(next) + MathHelper.QUARTER_RADIANT;
-        innerEnd = outerCenter.getPointFromAngleRound(endAngle, distance);
+        outerCenter = current.getPointWithDistance(angle, cornerDistance);
+        double startAngle = current.getAngle(previous) - MathHelper.QUARTER_RADIANT;
+        innerStart = outerCenter.getPointWithDistance(startAngle, distance);
+        double endAngle = current.getAngle(next) + MathHelper.QUARTER_RADIANT;
+        innerEnd = outerCenter.getPointWithDistance(endAngle, distance);
     }
 
     @Override
-    public Index getInnerStart() {
+    public DecimalPosition getInnerStart() {
         return innerStart;
     }
 
     @Override
-    public Index getInnerEnd() {
+    public DecimalPosition getInnerEnd() {
         return innerEnd;
     }
 
     @Override
-    public Index getOuterStart() {
+    public DecimalPosition getOuterStart() {
         return outerCenter;
     }
 
     @Override
-    public Index getOuterEnd() {
+    public DecimalPosition getOuterEnd() {
         return outerCenter;
     }
 
     @Override
     protected double getAngle() {
-        return outerCenter.getAngle(innerEnd, innerStart);
+        return outerCenter.angle(innerEnd, innerStart);
     }
 
     @Override
-    protected Index setupInnerPointFormStart(int verticalSpace, int count) {
+    protected DecimalPosition setupInnerPointFormStart(double verticalSpace, int count) {
         if (count == 0) {
             return innerStart;
         }
-        double totalAngle = outerCenter.getAngleToNorth(innerStart) - getSegmentAngle(verticalSpace) * count;
-        return outerCenter.getPointFromAngleRound(totalAngle, getDistance());
+        double totalAngle = outerCenter.getAngle(innerStart) - getSegmentAngle(verticalSpace) * count;
+        return outerCenter.getPointWithDistance(totalAngle, getDistance());
     }
 
     @Override
-    protected Index setupOuterPointFormStart(int verticalSpace, int count) {
+    protected DecimalPosition setupOuterPointFormStart(double verticalSpace, int count) {
         return outerCenter;
     }
 }

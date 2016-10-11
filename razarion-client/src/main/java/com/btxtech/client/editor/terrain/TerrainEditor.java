@@ -2,14 +2,14 @@ package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.TerrainKeyDownEvent;
 import com.btxtech.client.TerrainKeyUpEvent;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.mouse.TerrainMouseDownEvent;
 import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.PlanetEditorProvider;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Polygon2I;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -59,7 +59,7 @@ public class TerrainEditor {
     @Inject
     private ClientRenderServiceImpl renderService;
     private boolean active;
-    private Polygon2I cursor;
+    private Polygon2D cursor;
     private int cursorRadius = 200;
     private int cursorCorners = 20;
     private int selectedSlopeId = NO_SELECTION;
@@ -82,9 +82,9 @@ public class TerrainEditor {
 
             // Handle inside polygon
             int selectedSlopeId = NO_SELECTION;
-            Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().toIndex());
+            Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
             for (Map.Entry<Integer, ModifiedTerrainSlopePosition> entry : modifiedTerrainSlopePositions.entrySet()) {
-                Polygon2I polygon = entry.getValue().getPolygon2I();
+                Polygon2D polygon = entry.getValue().getPolygon();
                 if (polygon != null && polygon.adjoins(movedCursor)) {
                     selectedSlopeId = entry.getKey();
                     break;
@@ -111,18 +111,18 @@ public class TerrainEditor {
         if (active) {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
             Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
-            Polygon2I movedCursor = cursor.translate(terrainPosition.toXY().toIndex());
+            Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
             if (hasSelection()) {
                 ModifiedTerrainSlopePosition slopePosition = modifiedTerrainSlopePositions.get(selectedSlopeId);
                 if (deletePressed) {
-                    Polygon2I newPolygon = slopePosition.remove(movedCursor);
+                    Polygon2D newPolygon = slopePosition.remove(movedCursor);
                     if (newPolygon != null) {
                         terrainEditorSlopeModifiedEvent.fire(new TerrainEditorSlopeModifiedEvent(selectedSlopeId, newPolygon));
                     } else {
                         renderService.removeTerrainEditorRenderer(selectedSlopeId);
                     }
                 } else {
-                    Polygon2I newPolygon = slopePosition.combine(movedCursor);
+                    Polygon2D newPolygon = slopePosition.combine(movedCursor);
                     terrainEditorSlopeModifiedEvent.fire(new TerrainEditorSlopeModifiedEvent(selectedSlopeId, newPolygon));
                 }
             } else {
@@ -183,15 +183,15 @@ public class TerrainEditor {
     public Collection<Integer> getSlopePolygonIds() {
         Collection<Integer> ids = new ArrayList<>();
         for (Map.Entry<Integer, ModifiedTerrainSlopePosition> entry : modifiedTerrainSlopePositions.entrySet()) {
-            if (entry.getValue().getPolygon2I() != null) {
+            if (entry.getValue().getPolygon() != null) {
                 ids.add(entry.getKey());
             }
         }
         return ids;
     }
 
-    public Polygon2I getSlopePolygon(int id) {
-        return modifiedTerrainSlopePositions.get(id).getPolygon2I();
+    public Polygon2D getSlopePolygon(int id) {
+        return modifiedTerrainSlopePositions.get(id).getPolygon();
     }
 
     public int getCursorRadius() {
@@ -217,16 +217,16 @@ public class TerrainEditor {
         terrainEditorCursorShapeEvent.fire(new TerrainEditorCursorShapeEvent(cursor));
     }
 
-    private Polygon2I setupCursor() {
-        List<Index> corners = new ArrayList<>();
+    private Polygon2D setupCursor() {
+        List<DecimalPosition> corners = new ArrayList<>();
         double deltaAngle = MathHelper.ONE_RADIANT / cursorCorners;
         for (int i = 0; i < cursorCorners; i++) {
-            corners.add(Index.createVector(deltaAngle * i, cursorRadius));
+            corners.add(DecimalPosition.createVector(deltaAngle * (double)i, cursorRadius));
         }
-        return new Polygon2I(corners);
+        return new Polygon2D(corners);
     }
 
-    public Polygon2I getCursor() {
+    public Polygon2D getCursor() {
         return cursor;
     }
 
@@ -238,7 +238,7 @@ public class TerrainEditor {
         Collection<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         for (Map.Entry<Integer, ModifiedTerrainSlopePosition> entry : modifiedTerrainSlopePositions.entrySet()) {
             ModifiedTerrainSlopePosition modifiedTerrainSlopePosition = entry.getValue();
-            if (modifiedTerrainSlopePosition.getPolygon2I() != null) {
+            if (modifiedTerrainSlopePosition.getPolygon() != null) {
                 terrainSlopePositions.add(modifiedTerrainSlopePosition.createRendererTerrainSlopePosition(entry.getKey()));
             }
         }

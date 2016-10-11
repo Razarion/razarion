@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.slopeeditor;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import elemental.events.MouseEvent;
 
@@ -8,11 +9,11 @@ import elemental.events.MouseEvent;
  * 06.02.2016.
  */
 public interface Model {
-    Index convertMouseToSvg(MouseEvent event);
+    DecimalPosition convertMouseToSvg(MouseEvent event);
 
-    void createCorner(Index position, Corner previous);
+    void createCorner(DecimalPosition position, Corner previous);
 
-    void cornerMoved(Index position, Corner corner);
+    void cornerMoved(DecimalPosition position, Corner corner);
 
     void selectionChanged(Corner corner);
 }

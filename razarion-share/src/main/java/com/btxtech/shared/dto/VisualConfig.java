@@ -20,7 +20,6 @@ public class VisualConfig {
     private double waterBmDepth;
     private double waterGroundLevel;
     private List<Shape3D> shape3Ds;
-    private double shape3DGeneralScale;
 
     public double getShadowRotationX() {
         return shadowRotationX;
@@ -111,15 +110,4 @@ public class VisualConfig {
         this.shape3Ds = shape3Ds;
         return this;
     }
-
-    public double getShape3DGeneralScale() {
-        return shape3DGeneralScale;
-    }
-
-    public VisualConfig setShape3DGeneralScale(double shape3DGeneralScale) {
-        this.shape3DGeneralScale = shape3DGeneralScale;
-        return this;
-    }
-
-
 }

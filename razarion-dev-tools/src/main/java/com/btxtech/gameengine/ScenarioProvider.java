@@ -1,9 +1,7 @@
 package com.btxtech.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
-import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -77,8 +75,8 @@ public class ScenarioProvider {
         }
     }
 
-    protected TerrainSlopePosition createRectangleSlope(int slopeSkeletonId, int x, int y, int width, int height) {
-        return new TerrainSlopePosition().setId(slopeId++).setSlopeId(slopeSkeletonId).setPolygon(Arrays.asList(new Index(x, y), new Index(x + width, y), new Index(x + width, y + height), new Index(x, y + height)));
+    protected TerrainSlopePosition createRectangleSlope(int slopeSkeletonId, double x, double y, double width, double height) {
+        return new TerrainSlopePosition().setId(slopeId++).setSlopeId(slopeSkeletonId).setPolygon(Arrays.asList(new DecimalPosition(x, y), new DecimalPosition(x + width, y), new DecimalPosition(x + width, y + height), new DecimalPosition(x, y + height)));
     }
 
 }

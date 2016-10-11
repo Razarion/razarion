@@ -30,7 +30,7 @@ public class Camera {
     public void init() {
         translateX = 1000;
         translateY = 500;
-        translateZ = 720;
+        translateZ = 80;
         rotateX = Math.toRadians(35);
         rotateZ = Math.toRadians(0);
     }

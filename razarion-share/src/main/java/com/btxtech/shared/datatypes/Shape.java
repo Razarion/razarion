@@ -1,7 +1,5 @@
 package com.btxtech.shared.datatypes;
 
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeShape;
 
 import java.util.List;
@@ -40,21 +38,21 @@ public class Shape {
     }
 
     public Vertex getNormShiftedVertex(int row, double distance) {
-        Index previous = entries.get(row - 1).getPosition();
-        Index current = entries.get(row).getPosition();
-        Index next = entries.get(row + 1).getPosition();
+        DecimalPosition previous = entries.get(row - 1).getPosition();
+        DecimalPosition current = entries.get(row).getPosition();
+        DecimalPosition next = entries.get(row + 1).getPosition();
 
-        double deltaAngle = current.getAngle(next, previous) / 2.0;
-        double angle = current.getAngleToNorth(next) + deltaAngle;
-        return toVertex(current.getPointFromAngleRound(angle, distance));
+        double deltaAngle = current.angle(next, previous) / 2.0;
+        double angle = current.getAngle(next) + deltaAngle;
+        return toVertex(current.getPointWithDistance(angle, distance));
     }
 
     public double getDistance() {
         return distance;
     }
 
-    private Vertex toVertex(Index index) {
-        return new Vertex(index.getX(), 0, index.getY());
+    private Vertex toVertex(DecimalPosition xyPosition) {
+        return new Vertex(xyPosition.getX(), 0, xyPosition.getY());
     }
 
     public int getShiftableOffset() {

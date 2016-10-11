@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.slopeeditor;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.SlopeShape;
 import com.google.gwt.dom.client.Style;
 import elemental.client.Browser;
@@ -24,14 +24,14 @@ public class Corner {
     private EventRemover onMouseMoveEventRemover;
     private EventRemover onMouseUpEventRemover;
     private Model model;
-    private Index mouseOffset;
+    private DecimalPosition mouseOffset;
 
     public Corner(SlopeShape slopeShape, Model model) {
         this.slopeShape = slopeShape;
         this.model = model;
         circle = Browser.getDocument().createSVGCircleElement();
-        circle.getCx().getBaseVal().setValue(slopeShape.getPosition().getX());
-        circle.getCy().getBaseVal().setValue(slopeShape.getPosition().getY());
+        circle.getCx().getBaseVal().setValue((float) slopeShape.getPosition().getX());
+        circle.getCy().getBaseVal().setValue((float) slopeShape.getPosition().getY());
         circle.getR().getBaseVal().setValue(RADIUS);
         circle.addEventListener("mousedown", new EventListener() {
             @Override
@@ -43,15 +43,15 @@ public class Corner {
         circle.getStyle().setProperty("fill", COLOR_NORMAL);
     }
 
-    public void move(Index position) {
+    public void move(DecimalPosition position) {
         slopeShape.setPosition(position);
-        circle.getCx().getBaseVal().setValue(position.getX());
-        circle.getCy().getBaseVal().setValue(position.getY());
+        circle.getCx().getBaseVal().setValue((float) position.getX());
+        circle.getCy().getBaseVal().setValue((float) position.getY());
     }
 
     private void move(MouseEvent event) {
-        Index mousePosition = model.convertMouseToSvg(event);
-        if(mouseOffset == null) {
+        DecimalPosition mousePosition = model.convertMouseToSvg(event);
+        if (mouseOffset == null) {
             mouseOffset = mousePosition.sub(slopeShape.getPosition());
         }
         model.cornerMoved(mousePosition.sub(mouseOffset), this);
@@ -94,7 +94,7 @@ public class Corner {
     }
 
     public void setSelected(boolean selected) {
-        if(selected) {
+        if (selected) {
             circle.getStyle().setProperty("fill", COLOR_SELECT);
         } else {
             circle.getStyle().setProperty("fill", COLOR_NORMAL);

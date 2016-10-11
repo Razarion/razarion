@@ -1,17 +1,17 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 
 /**
  * Created by Beat
  * 23.01.2016.
  */
 public class LineBorder extends AbstractBorder {
-    private Index innerStart;
-    private Index innerEnd;
-    private Index outerStart;
-    private Index outerEnd;
+    private DecimalPosition innerStart;
+    private DecimalPosition innerEnd;
+    private DecimalPosition outerStart;
+    private DecimalPosition outerEnd;
 
     public LineBorder(AbstractCornerBorder current, AbstractCornerBorder next, double distance) {
         super(distance);
@@ -21,7 +21,7 @@ public class LineBorder extends AbstractBorder {
         outerEnd = next.getOuterStart();
     }
 
-    public LineBorder(Index current, Index next) {
+    public LineBorder(DecimalPosition current, DecimalPosition next) {
         super(0);
         innerStart = current;
         innerEnd = next;
@@ -31,7 +31,7 @@ public class LineBorder extends AbstractBorder {
 
 
     @Override
-    protected int getSegmentCount(int verticalSpace) {
+    protected int getSegmentCount(double verticalSpace) {
         double distance = innerStart.getDistance(innerEnd);
         int segments = (int) Math.round(distance / verticalSpace);
         if (segments > 0) {
@@ -42,17 +42,17 @@ public class LineBorder extends AbstractBorder {
     }
 
     @Override
-    protected int getSegmentLength(int segmentCount) {
-        return (int) Math.round(innerStart.getDistance(innerEnd) / (double) segmentCount);
+    protected double getSegmentLength(int segmentCount) {
+        return innerStart.getDistance(innerEnd) / (double) segmentCount;
     }
 
     @Override
-    protected Index setupInnerPointFormStart(int verticalSpace, int count) {
+    protected DecimalPosition setupInnerPointFormStart(double verticalSpace, int count) {
         return innerStart.getPointWithDistance(verticalSpace * count, innerEnd, true);
     }
 
     @Override
-    protected Index setupOuterPointFormStart(int verticalSpace, int count) {
+    protected DecimalPosition setupOuterPointFormStart(double verticalSpace, int count) {
         return outerStart.getPointWithDistance(verticalSpace * count, outerEnd, true);
     }
 }

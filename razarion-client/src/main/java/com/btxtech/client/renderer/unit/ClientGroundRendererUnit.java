@@ -3,9 +3,9 @@ package com.btxtech.client.renderer.unit;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
-import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
+import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -27,6 +27,8 @@ import javax.inject.Inject;
 @ColorBufferRenderer
 @Dependent
 public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
+    @Deprecated
+    public static final double UGLY_SIZE_FACTOR = 0.1;
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
@@ -91,11 +93,11 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         webGlFacade.setLightUniforms(null, terrainTypeService.getGroundSkeletonConfig().getLightConfig());
         webGlFacade.uniform1f("uTopBmDepth", terrainTypeService.getGroundSkeletonConfig().getTopBmDepth());
         webGlFacade.uniform1f("uBottomBmDepth", terrainTypeService.getGroundSkeletonConfig().getBottomBmDepth());
-        webGlFacade.uniform1i("uTopTextureSize", terrainUiService.getTopTexture().getQuadraticEdge());
-        webGlFacade.uniform1i("uBottomTextureSize", terrainUiService.getGroundTexture().getQuadraticEdge());
-        webGlFacade.uniform1i("uTopBmSize", terrainUiService.getTopBm().getQuadraticEdge());
-        webGlFacade.uniform1i("uBottomBmSize", terrainUiService.getGroundBm().getQuadraticEdge());
-        webGlFacade.uniform1i("uSplattingSize", terrainUiService.getSplatting().getQuadraticEdge());
+        webGlFacade.uniform1i("uTopTextureSize", (int) (terrainUiService.getTopTexture().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
+        webGlFacade.uniform1i("uBottomTextureSize", (int) (terrainUiService.getGroundTexture().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
+        webGlFacade.uniform1i("uTopBmSize", (int) (terrainUiService.getTopBm().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
+        webGlFacade.uniform1i("uBottomBmSize", (int) (terrainUiService.getGroundBm().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
+        webGlFacade.uniform1i("uSplattingSize", (int) (terrainUiService.getSplatting().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
 
         webGlFacade.activateReceiveShadow();
 

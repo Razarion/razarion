@@ -1,9 +1,10 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
-import com.btxtech.shared.datatypes.Shape;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Shape;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.SlopeNode;
@@ -45,8 +46,8 @@ public class SlopeModeler {
         }
 
         slopeConfig.getSlopeSkeletonConfig().setSlopeNodes(slopeNodes);
-        slopeConfig.getSlopeSkeletonConfig().setWidth((int) shape.getDistance());
-        slopeConfig.getSlopeSkeletonConfig().setHeight((int) shape.getZInner());
+        slopeConfig.getSlopeSkeletonConfig().setWidth(shape.getDistance());
+        slopeConfig.getSlopeSkeletonConfig().setHeight(shape.getZInner());
         slopeConfig.getSlopeSkeletonConfig().setSegments(segments);
         slopeConfig.getSlopeSkeletonConfig().setRows(rows);
     }
@@ -55,7 +56,7 @@ public class SlopeModeler {
         int templateSegment = 0;
         int meshColumn = 0;
 
-        Index lastInnerBorder = null;
+        DecimalPosition lastInnerBorder = null;
         Vertex lastInnerVertex = null;
         for (AbstractBorder border : borders) {
             for (VerticalSegment verticalSegment : border.getVerticalSegments()) {

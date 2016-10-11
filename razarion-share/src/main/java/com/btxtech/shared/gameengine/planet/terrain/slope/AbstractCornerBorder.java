@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 
 /**
  * Created by Beat
@@ -12,18 +12,18 @@ public abstract class AbstractCornerBorder extends AbstractBorder {
         super(distance);
     }
 
-    public abstract Index getInnerStart();
+    public abstract DecimalPosition getInnerStart();
 
-    public abstract Index getInnerEnd();
+    public abstract DecimalPosition getInnerEnd();
 
-    public abstract Index getOuterStart();
+    public abstract DecimalPosition getOuterStart();
 
-    public abstract Index getOuterEnd();
+    public abstract DecimalPosition getOuterEnd();
 
     protected abstract double getAngle();
 
     @Override
-    protected int getSegmentCount(int verticalSpace) {
+    protected int getSegmentCount(double verticalSpace) {
         if (verticalSpace >= 2.0 * getDistance()) {
             return 1;
         }
@@ -37,11 +37,11 @@ public abstract class AbstractCornerBorder extends AbstractBorder {
     }
 
     @Override
-    protected int getSegmentLength(int count) {
-        return (int) Math.round(2.0 * getDistance() * Math.sin(getAngle() / (double) count / 2.0));
+    protected double getSegmentLength(int count) {
+        return 2.0 * getDistance() * Math.sin(getAngle() / (double) count / 2.0);
     }
 
-    protected double getSegmentAngle(int verticalSpace) {
+    protected double getSegmentAngle(double verticalSpace) {
         return 2.0 * Math.asin(verticalSpace / (2.0 * getDistance()));
     }
 

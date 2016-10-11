@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.surface;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
@@ -32,7 +33,7 @@ public class TerrainSlopePositionEntity {
     @ElementCollection
     @CollectionTable(name = "TERRAIN_SLOPE_POSITION_POLYGON", joinColumns = @JoinColumn(name = "OWNER_ID"))
     @OrderColumn(name = "orderColumn")
-    private List<Index> polygon;
+    private List<DecimalPosition> polygon;
 
     public void fromTerrainSlopePosition(TerrainSlopePosition terrainSlopePosition, SlopeConfigEntity slopeConfigEntity) {
         if (terrainSlopePosition.hasId()) {

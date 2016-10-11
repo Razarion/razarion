@@ -178,7 +178,7 @@ public class ScenarioService {
     private List<SlopeSkeletonConfig> setupSlopeSkeletonConfigs() {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
-        slopeSkeletonConfig.setId(SLOPE_ID).setRows(2).setSegments(1).setHeight(100).setType(SlopeSkeletonConfig.Type.LAND).setVerticalSpace(10).setWidth(5);
+        slopeSkeletonConfig.setId(SLOPE_ID).setRows(2).setSegments(1).setHeight(10).setType(SlopeSkeletonConfig.Type.LAND).setVerticalSpace(10).setWidth(0.5);
         slopeSkeletonConfig.setSlopeNodes(new SlopeNode[][]{{new SlopeNode().setPosition(new Vertex(0, 0, 0)), new SlopeNode().setPosition(new Vertex(5, 0, 100))}});
         slopeSkeletonConfigs.add(slopeSkeletonConfig);
         return slopeSkeletonConfigs;

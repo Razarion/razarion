@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.terrain;
 
-import com.btxtech.shared.datatypes.Polygon2I;
+import com.btxtech.shared.datatypes.Polygon2D;
 
 /**
  * Created by Beat
@@ -8,9 +8,9 @@ import com.btxtech.shared.datatypes.Polygon2I;
  */
 public class TerrainEditorSlopeModifiedEvent {
     private int slopeId;
-    private Polygon2I slope;
+    private Polygon2D slope;
 
-    public TerrainEditorSlopeModifiedEvent(int slopeId, Polygon2I slope) {
+    public TerrainEditorSlopeModifiedEvent(int slopeId, Polygon2D slope) {
         this.slopeId = slopeId;
         this.slope = slope;
     }
@@ -19,7 +19,7 @@ public class TerrainEditorSlopeModifiedEvent {
         return slopeId;
     }
 
-    public Polygon2I getSlope() {
+    public Polygon2D getSlope() {
         return slope;
     }
 }
