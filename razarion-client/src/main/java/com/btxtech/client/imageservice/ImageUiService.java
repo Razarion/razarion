@@ -139,14 +139,13 @@ public class ImageUiService {
         if (changed.isEmpty()) {
             return;
         }
-        Map<Integer, String> dataUrls = new HashMap<>();
-        for (ImageGalleryItem imageGalleryItem : changed) {
-            dataUrls.put(imageGalleryItem.getId(), imageElementLibrary.get(imageGalleryItem.getId()).getSrc());
+        Collection<ImageGalleryItem> changedCopy = new ArrayList<>(changed);
+        for (ImageGalleryItem imageGalleryItem : changedCopy) {
+            imageService.call(aVoid -> reload(imageGalleryItemListener), (message, throwable) -> {
+                logger.log(Level.SEVERE, "save failed: " + message, throwable);
+                return false;
+            }).save(imageGalleryItem.getId(), imageElementLibrary.get(imageGalleryItem.getId()).getSrc());
         }
-        imageService.call(aVoid -> reload(imageGalleryItemListener), (message, throwable) -> {
-            logger.log(Level.SEVERE, "save failed: " + message, throwable);
-            return false;
-        }).save(dataUrls);
     }
 
     public void removeListener(int id, ImageListener listener) {

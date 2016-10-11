@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -98,16 +97,14 @@ public class ImageProviderImpl implements ImageProvider {
 
     @Override
     @Transactional
-    public void save(Map<Integer, String> dataUrls) {
+    public void save(int id, String dataUrl) {
         try {
-            for (Map.Entry<Integer, String> entry : dataUrls.entrySet()) {
-                ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, entry.getKey().longValue());
-                DataUrlDecoder dataUrlDecoder = new DataUrlDecoder(entry.getValue());
-                imageLibraryEntity.setType(dataUrlDecoder.getType());
-                imageLibraryEntity.setData(dataUrlDecoder.getData());
-                imageLibraryEntity.setSize(dataUrlDecoder.getDataLength());
-                entityManager.persist(imageLibraryEntity);
-            }
+            ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, (long) id);
+            DataUrlDecoder dataUrlDecoder = new DataUrlDecoder(dataUrl);
+            imageLibraryEntity.setType(dataUrlDecoder.getType());
+            imageLibraryEntity.setData(dataUrlDecoder.getData());
+            imageLibraryEntity.setSize(dataUrlDecoder.getDataLength());
+            entityManager.persist(imageLibraryEntity);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

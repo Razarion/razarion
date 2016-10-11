@@ -46,7 +46,9 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
         materialName.setText(vertexContainer.getMaterialName());
         imageItemWidget.setImageId(vertexContainer.getTextureId(), imageId -> {
             newImageId = imageId;
-            shape3DPropertyPanel.texturePanelChanged(this);
+            if (vertexContainer.getMaterialId() != null) {
+                shape3DPropertyPanel.texturePanelChanged(this);
+            }
         });
     }
 

@@ -42,7 +42,7 @@ public interface ImageProvider {
     void uploadImage(String dataUrl);
 
     @PUT
-    @Path("save")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void save(Map<Integer, String> dataUrls);
+    @Path("save/{id}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    void save(@PathParam("id") int id, String dataUrl);
 }

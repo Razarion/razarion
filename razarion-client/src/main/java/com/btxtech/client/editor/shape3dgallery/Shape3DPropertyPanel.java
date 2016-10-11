@@ -91,7 +91,7 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
     public void onChange(Shape3D shape3D) {
         this.shape3D = shape3D;
         internalName.setText(shape3D.getInternalName());
-        textures.setValue(Shape3DUtils.getAllVertexContainers(shape3D));
+        textures.setValue(Shape3DUtils.getAllVertexContainer4DiffMaterials(shape3D));
         if(shape3D.getModelMatrixAnimations() != null) {
             animations.setValue(shape3D.getModelMatrixAnimations());
         } else {

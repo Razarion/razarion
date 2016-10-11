@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -36,6 +35,18 @@ public class Shape3DUtils {
         return vertexContainers;
     }
 
+    public static List<VertexContainer> getAllVertexContainer4DiffMaterials(Shape3D shape3D) {
+        Map<String, VertexContainer> vertexContainers = new HashMap<>();
+        if (shape3D.getElement3Ds() != null) {
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    vertexContainers.put(vertexContainer.getMaterialId(), vertexContainer);
+                }
+            }
+        }
+        return new ArrayList<>(vertexContainers.values());
+    }
+
     public static void replaceTextureIds(Shape3D source, Shape3D target) {
         Map<String, Integer> materials = new HashMap<>();
         for (VertexContainer vertexContainer : getAllVertexContainers(source)) {
@@ -47,13 +58,16 @@ public class Shape3DUtils {
     }
 
     public static void replaceTextureId(Shape3D shape3D, String materialId, int newImageId) {
+        boolean found = false;
         for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
-            if (vertexContainer.getMaterialId().equals(materialId)) {
+            if (vertexContainer.getMaterialId() != null && vertexContainer.getMaterialId().equals(materialId)) {
                 vertexContainer.setTextureId(newImageId);
-                return;
+                found = true;
             }
         }
-        throw new IllegalArgumentException("MaterialId not found: " + materialId);
+        if (!found) {
+            throw new IllegalArgumentException("MaterialId not found: " + materialId);
+        }
     }
 
     public static void replaceAnimation(Shape3D shape3D, String animationId, ItemState itemState) {
