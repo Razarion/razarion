@@ -66,7 +66,7 @@ public class ScenarioService {
     @Inject
     private ResourceService resourceService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 40;
+    private int number = 38;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -75,24 +75,24 @@ public class ScenarioService {
         BaseItemType simpleMovable = new BaseItemType();
         simpleMovable.setHealth(100).setSpawnDurationMillis(1000);
         simpleMovable.setId(++itemId);
-        simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(40.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(10));
+        simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         SIMPLE_MOVABLE_ITEM_TYPE = simpleMovable;
 
         BaseItemType simpleFix = new BaseItemType();
         simpleFix.setHealth(100).setSpawnDurationMillis(1000);
         simpleFix.setId(++itemId);
-        simpleFix.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(10));
+        simpleFix.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(2));
         SIMPLE_FIX_ITEM_TYPE = simpleFix;
 
         BaseItemType harvester = new BaseItemType();
         harvester.setHealth(100).setSpawnDurationMillis(1000);
         harvester.setId(++itemId);
-        harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(40.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(10));
-        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(20));
+        harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
         HARVESTER_ITEM_TYPE = harvester;
 
         ResourceItemType resource = new ResourceItemType();
-        resource.setRadius(10).setAmount(1000).setId(++itemId);
+        resource.setRadius(2).setAmount(1000).setId(++itemId);
         RESOURCE_ITEM_TYPE = resource;
     }
 
@@ -178,15 +178,15 @@ public class ScenarioService {
     private List<SlopeSkeletonConfig> setupSlopeSkeletonConfigs() {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
-        slopeSkeletonConfig.setId(SLOPE_ID).setRows(2).setSegments(1).setHeight(10).setType(SlopeSkeletonConfig.Type.LAND).setVerticalSpace(10).setWidth(0.5);
-        slopeSkeletonConfig.setSlopeNodes(new SlopeNode[][]{{new SlopeNode().setPosition(new Vertex(0, 0, 0)), new SlopeNode().setPosition(new Vertex(5, 0, 100))}});
+        slopeSkeletonConfig.setId(SLOPE_ID).setRows(2).setSegments(1).setHeight(1).setType(SlopeSkeletonConfig.Type.LAND).setVerticalSpace(0.2).setWidth(0.5);
+        slopeSkeletonConfig.setSlopeNodes(new SlopeNode[][]{{new SlopeNode().setPosition(new Vertex(0, 0, 0)), new SlopeNode().setPosition(new Vertex(0.5, 0, 10))}});
         slopeSkeletonConfigs.add(slopeSkeletonConfig);
         return slopeSkeletonConfigs;
     }
 
     private List<TerrainObjectConfig> setupTerrainObjectConfigs() {
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
-        terrainObjectConfigs.add(new TerrainObjectConfig().setId(TERRAIN_OBJECT_ID).setRadius(20));
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(TERRAIN_OBJECT_ID).setRadius(4));
         return terrainObjectConfigs;
     }
 
@@ -227,10 +227,10 @@ public class ScenarioService {
             @Override
             public void createSyncItems() {
                 DecimalPosition destination = new DecimalPosition(0, 0);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-100, 0), destination);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 0), destination);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), destination);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), destination);
                     }
                 }
             }
@@ -239,10 +239,10 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(200, 0);
+                DecimalPosition direction = new DecimalPosition(50, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), direction);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
                     }
                 }
             }
@@ -253,7 +253,7 @@ public class ScenarioService {
             public void createSyncItems() {
                 backgroundWorker = scheduler.scheduleAtFixedRate((Runnable) () -> {
                     try {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-200, 0), new DecimalPosition(200, 0));
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-20, 0), new DecimalPosition(20, 0));
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }
@@ -264,7 +264,7 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(50, 0);
+                DecimalPosition direction = new DecimalPosition(5, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, -10), direction);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 10), direction);
             }
@@ -273,8 +273,8 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-60, 0), new DecimalPosition(0, 0));
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-20, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-10, 0), new DecimalPosition(0, 0));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-2, 0), null);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), null);
             }
         });
@@ -282,7 +282,7 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(100, 0));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(10, 0));
             }
         });
         // Bypass frontal (bui1dings)
@@ -290,18 +290,18 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(100, 0));
-                createSyncBaseItem(SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(50, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(10, 0));
+                createSyncBaseItem(SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(5, 0), null);
             }
         });
         // 8
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 0), new DecimalPosition(100, 0));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-6, 0), new DecimalPosition(20, 0));
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), null);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 0), null);
-                createSyncBaseItem(SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(40, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4, 0), null);
+                createSyncBaseItem(SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(8, 0), null);
             }
         });
         // Moving units vs fix units
@@ -309,16 +309,16 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(100, 0));
-                createSyncBaseItem(SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(30, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(20, 0));
+                createSyncBaseItem(SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(6, 0), null);
             }
         });
         // 10
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 5), new DecimalPosition(100, 5));
-                createSyncBaseItem(SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(30, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 1), new DecimalPosition(20, 1));
+                createSyncBaseItem(SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(6, 0), null);
             }
         });
         // Moving against each other
@@ -326,16 +326,16 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 5), new DecimalPosition(100, 5));
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(30, 0), new DecimalPosition(-100, 0));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-6, 10), new DecimalPosition(20, 10));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6, 0), new DecimalPosition(-20, 0));
             }
         });
         // 12
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 0), new DecimalPosition(100, 0));
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(30, 0), new DecimalPosition(-100, 0));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-3, 0), new DecimalPosition(10, 0));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(3, 0), new DecimalPosition(-10, 0));
             }
         });
         // Moving vs standing
@@ -343,39 +343,39 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(100, 0);
+                DecimalPosition direction = new DecimalPosition(20, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(30, 5), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(10, 1), null);
             }
         });
         // 14
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(100, 0);
+                DecimalPosition direction = new DecimalPosition(10, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(30, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(10, 0), null);
             }
         });
         // 15
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(100, 0);
+                DecimalPosition direction = new DecimalPosition(30, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(30, 0), null);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(50, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(10, 0), null);
             }
         });
         // 16
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-100, 0), new DecimalPosition(200, 0));
-                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-100, 10), new DecimalPosition(200, 10));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 0), new DecimalPosition(50, 0));
+                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-10, 10), new DecimalPosition(20, 10));
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), null);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), null);
                     }
                 }
             }
@@ -384,13 +384,13 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(200, 0);
+                DecimalPosition direction = new DecimalPosition(50, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), direction);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
                     }
                 }
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(100, 0), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 0), null);
 
             }
         });
@@ -400,13 +400,13 @@ public class ScenarioService {
             public void createSyncItems() {
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x + 100, 20 * y), null);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x + 10, 4 * y), null);
                     }
                 }
-                DecimalPosition direction = new DecimalPosition(200, 0);
+                DecimalPosition direction = new DecimalPosition(50, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x - 50, 20 * y), direction);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x - 20, 4 * y), direction);
                     }
                 }
             }
@@ -417,8 +417,8 @@ public class ScenarioService {
             @Override
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(0, 0);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(30, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-3, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(3, 0), direction);
             }
         });
         // 20
@@ -427,7 +427,7 @@ public class ScenarioService {
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(0, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4, 0), direction);
             }
         });
         // 21
@@ -436,8 +436,8 @@ public class ScenarioService {
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(0, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-20, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-4, 0), direction);
             }
         });
         // 22
@@ -445,10 +445,10 @@ public class ScenarioService {
             @Override
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(0, 0);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(30, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(10, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-10, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(2, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-6, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-2, 0), direction);
             }
         });
         // 23
@@ -456,22 +456,22 @@ public class ScenarioService {
             @Override
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(0, 0);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-80, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-60, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-40, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-20, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-16, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-12, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-8, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-4, 0), direction);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(40, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(60, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(80, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(8, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(12, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(16, 0), direction);
             }
         });
         // 24
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(30, 0);
+                DecimalPosition direction = new DecimalPosition(3, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 10), direction);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, -10), direction);
             }
@@ -480,10 +480,10 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(200, 0);
+                DecimalPosition direction = new DecimalPosition(50, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), direction);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
                     }
                 }
             }
@@ -493,9 +493,9 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(100, 0);
+                DecimalPosition direction = new DecimalPosition(20, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(10, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(1, 0), direction);
             }
         });
         // Resources
@@ -503,9 +503,9 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(100, 0);
+                DecimalPosition direction = new DecimalPosition(20, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncResourceItem(RESOURCE_ITEM_TYPE, new DecimalPosition(50, 0));
+                createSyncResourceItem(RESOURCE_ITEM_TYPE, new DecimalPosition(10, 0));
             }
         });
         // Obstacle
@@ -513,80 +513,80 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(100, 0);
+                DecimalPosition direction = new DecimalPosition(10, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
             }
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                slopePositions.add(createRectangleSlope(SLOPE_ID, 50, -200, 200, 400));
+                slopePositions.add(createRectangleSlope(SLOPE_ID, 5, -20, 20, 40));
             }
         });
         // 29
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(100, 0);
+                DecimalPosition direction = new DecimalPosition(10, 0);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
             }
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                slopePositions.add(createRectangleSlope(SLOPE_ID, 50, 10, 200, 400));
+                slopePositions.add(createRectangleSlope(SLOPE_ID, 5, 1, 20, 40));
             }
         });
         // 30
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(100, 0);
-                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-100, 0), direction);
-                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-80, 0), direction);
-                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-60, 0), direction);
-                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-40, 0), direction);
-                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-20, 0), direction);
+                DecimalPosition direction = new DecimalPosition(20, 0);
+                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-10, 0), direction);
+                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-8, 0), direction);
+                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-6, 0), direction);
+                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-4, 0), direction);
+                // createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-2, 0), direction);
                 createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 0), direction);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(2, 0), direction);
             }
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                slopePositions.add(createRectangleSlope(SLOPE_ID, 50, -200, 200, 400));
+                slopePositions.add(createRectangleSlope(SLOPE_ID, 10, -20, 20, 40));
             }
         });
         // 31
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(200, 0);
+                DecimalPosition direction = new DecimalPosition(20, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), direction);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
                     }
                 }
             }
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                slopePositions.add(createRectangleSlope(SLOPE_ID, 50, -75, 200, 150));
+                slopePositions.add(createRectangleSlope(SLOPE_ID, 20, -7.5, 20, 15));
             }
         });
         // 32
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(200, 0);
+                DecimalPosition direction = new DecimalPosition(50, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), direction);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
                     }
                 }
             }
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                slopePositions.add(createRectangleSlope(SLOPE_ID, 50, 30, 200, 150));
-                slopePositions.add(createRectangleSlope(SLOPE_ID, 50, -180, 200, 150));
+                slopePositions.add(createRectangleSlope(SLOPE_ID, 15, 5, 20, 15));
+                slopePositions.add(createRectangleSlope(SLOPE_ID, 15, -20, 20, 15));
             }
         });
         // Move single unit out of group
@@ -598,9 +598,9 @@ public class ScenarioService {
                     for (int y = -2; y < 3; y++) {
                         DecimalPosition destination = null;
                         if (x == 0 && y == 0) {
-                            destination = new DecimalPosition(200, 0);
+                            destination = new DecimalPosition(50, 0);
                         }
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), destination);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), destination);
                     }
                 }
             }
@@ -613,9 +613,9 @@ public class ScenarioService {
                     for (int y = -2; y < 3; y++) {
                         DecimalPosition destination = null;
                         if (x == -2 && y == 0) {
-                            destination = new DecimalPosition(200, 0);
+                            destination = new DecimalPosition(50, 0);
                         }
-                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y), destination);
+                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), destination);
                     }
                 }
             }
@@ -633,7 +633,7 @@ public class ScenarioService {
 //                // Units
 //                for (int x = -2; x < 3; x++) {
 //                    for (int y = -2; y < 3; y++) {
-//                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20 * x, 20 * y).add(200, 200), new DecimalPosition(2700, 1700));
+//                        createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(2 * x, 2 * y).add(20, 20), new DecimalPosition(2700, 1700));
 //                    }
 //                }
 
@@ -644,24 +644,24 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(200, 0));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(20, 0));
             }
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(100, 0)));
+                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(10, 0)));
             }
         });
         // 37
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(200, 0));
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(20, 0));
             }
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(100, 5)));
+                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(10, 5)));
             }
         });
         // Bot
@@ -671,53 +671,35 @@ public class ScenarioService {
             public void setupBots(Collection<BotConfig> botConfigs) {
                 List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
                 List<BotItemConfig> botItems = new ArrayList<>();
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setNoSpawn(true));
                 botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
                 botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
             }
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setDecimalPosition(new DecimalPosition(0, 200)).setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()));
+                botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setDecimalPosition(new DecimalPosition(0, 20)).setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()));
             }
         });
         // 39
         scenes.add(new ScenarioProvider() {
             @Override
-            public void setupBots(Collection<BotConfig> botConfigs) {
-                List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
-                List<BotItemConfig> botItems = new ArrayList<>();
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(287, 405))));
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(218, 441))));
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 151))));
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(326, 859 - 1000))));
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(761, 877 - 1000))));
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(603, 948 - 1000))));
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(608, 154))));
-                botItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(484, 238))));
-                botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
-            }
-        });
-        // 40
-        scenes.add(new ScenarioProvider() {
-            @Override
             protected void createSyncItems() {
-                createSyncResourceItem(RESOURCE_ITEM_TYPE, new DecimalPosition(200, 0));
+                createSyncResourceItem(RESOURCE_ITEM_TYPE, new DecimalPosition(20, 0));
             }
 
             @Override
             public void setupBots(Collection<BotConfig> botConfigs) {
                 List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
                 List<BotItemConfig> botItems = new ArrayList<>();
-                botItems.add(new BotItemConfig().setBaseItemTypeId(HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setNoSpawn(true));
                 botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
                 botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
             }
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                botCommandConfigs.add(new BotHarvestCommandConfig().setBotId(1).setResourceItemTypeId(RESOURCE_ITEM_TYPE.getId()).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(200, 0))).setHarvesterItemTypeId(HARVESTER_ITEM_TYPE.getId()));
+                botCommandConfigs.add(new BotHarvestCommandConfig().setBotId(1).setResourceItemTypeId(RESOURCE_ITEM_TYPE.getId()).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(20, 0))).setHarvesterItemTypeId(HARVESTER_ITEM_TYPE.getId()));
             }
         });
 

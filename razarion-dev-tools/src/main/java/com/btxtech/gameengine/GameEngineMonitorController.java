@@ -1,5 +1,6 @@
 package com.btxtech.gameengine;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.webglemulator.razarion.DevToolFutureControl;
@@ -75,7 +76,7 @@ public class GameEngineMonitorController implements Initializable {
         gameEngineFutureControl = devToolsSimpleExecutorService.createDevToolFutureControl(SimpleExecutorService.Type.GAME_ENGINE);
         gameEngineFutureControl.setAfterExecutionCallback(this::tick);
 
-        renderer.init(canvas, 1.0);
+        renderer.init(canvas, 4.0);
         onRestartScenario();
         renderer.render();
 
@@ -134,11 +135,11 @@ public class GameEngineMonitorController implements Initializable {
         onRun();
     }
 
-    public void onMouseMove(/*Event event*/) {
-//        // Display mouse position
-//        DecimalPosition position = renderer.convertMouseToModel(event);
-//        mouseField.setText(String.format("%.2f:%.2f", position.startX(), position.startY()));
-//        // Show left side menu
+    public void onMouseMove(Event event) {
+        // Display mouse position
+        DecimalPosition position = renderer.convertMouseToModel(event);
+        mouseField.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
+        // Show left side menu
 //        if (!selected) {
 //            Unit unit = pathingService.getUnit(position);
 //            if (unit != null) {
