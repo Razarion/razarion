@@ -152,6 +152,7 @@ public class ExtendedGraphicsContext {
     public void drawObstacle(Obstacle obstacle) {
         gc.setStroke(TERRAIN_OBSTACLE_COLOR);
         gc.setFill(TERRAIN_OBSTACLE_COLOR);
+        gc.setLineWidth(0.2);
         if (obstacle instanceof ObstacleLine) {
             Index point1 = ((ObstacleLine) obstacle).getLine().getPoint1();
             Index point2 = ((ObstacleLine) obstacle).getLine().getPoint2();
