@@ -1,6 +1,5 @@
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.VisualConfig;
 
@@ -9,8 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -18,7 +15,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class Shape3DUiService {
-    private Logger logger = Logger.getLogger(Shape3DUiService.class.getName());
+    // private Logger logger = Logger.getLogger(Shape3DUiService.class.getName());
     private Map<Integer, Shape3D> shape3Ds = new HashMap<>();
     private VisualConfig visualConfig;
 

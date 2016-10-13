@@ -119,4 +119,9 @@ public class Rectangle2D {
                 ", end=" + end +
                 '}';
     }
+
+    public static Rectangle2D generateRectangleFromMiddlePoint(DecimalPosition middlePoint, double width, double height) {
+        DecimalPosition start = middlePoint.sub(width / 2.0, height / 2.0);
+        return new Rectangle2D(start.getX(), start.getY(), width, height);
+    }
 }

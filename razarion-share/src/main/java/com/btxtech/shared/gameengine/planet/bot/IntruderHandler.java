@@ -88,7 +88,7 @@ public class IntruderHandler {
 
     private void putAttackerToIntruders(Collection<SyncBaseItem> newIntruders) {
         Collection<BotSyncBaseItem> idleAttackers = botEnragementState.getAllIdleAttackers();
-        Map<BotSyncBaseItem, SyncBaseItem> assignedAttackers = ShortestWaySorter.setupAttackerTarget(idleAttackers, newIntruders, (botSyncBaseItem, target) -> botSyncBaseItem.isAbleToAttack(target.getBaseItemType()));
+        Map<BotSyncBaseItem, SyncBaseItem> assignedAttackers = ShortestWaySorter.setupAttackerTarget(idleAttackers, newIntruders, BotSyncBaseItem::isAbleToAttack);
 
         for (Map.Entry<BotSyncBaseItem, SyncBaseItem> entry : assignedAttackers.entrySet()) {
             putAttackerToIntruder(entry.getKey(), entry.getValue());

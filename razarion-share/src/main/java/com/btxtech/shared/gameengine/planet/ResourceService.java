@@ -44,6 +44,8 @@ public class ResourceService {
     private ItemTypeService itemTypeService;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private ActivityService activityService;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
@@ -59,12 +61,20 @@ public class ResourceService {
             synchronized (resources) {
                 resources.put(syncResourceItem.getId(), syncResourceItem);
             }
+            activityService.onResourceCreated(syncResourceItem);
+        }
+    }
+
+    public void resourceExhausted(SyncResourceItem syncResourceItem) {
+        activityService.onResourceExhausted(syncResourceItem);
+        synchronized (resources) {
+            resources.remove(syncResourceItem.getId());
         }
     }
 
     public SyncResourceItem getSyncResourceItem(int id) {
         SyncResourceItem syncResourceItem = resources.get(id);
-        if(syncResourceItem == null) {
+        if (syncResourceItem == null) {
             throw new ItemDoesNotExistException(id);
         }
         return syncResourceItem;

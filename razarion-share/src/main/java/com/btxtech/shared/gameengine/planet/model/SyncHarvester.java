@@ -56,10 +56,6 @@ public class SyncHarvester extends SyncBaseAbility {
         return harvesting;
     }
 
-    // TODO   public boolean isHarvesting() {
-//   TODO     return isActive() && !getSyncBaseItem().getSyncMovable().isActive();
-//  TODO  }
-
     public boolean tick() {
         try {
             SyncResourceItem resource = resourceService.getSyncResourceItem(target);
@@ -123,9 +119,5 @@ public class SyncHarvester extends SyncBaseAbility {
 
     public void setTarget(Integer target) {
         this.target = target;
-    }
-
-    public HarvesterType getHarvesterType() {
-        return harvesterType;
     }
 }

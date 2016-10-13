@@ -108,7 +108,7 @@ public class BotItemContainer {
             synchronized (botItems) {
                 for (SyncBaseItem syncBaseItem : botItems.keySet()) {
                     if (syncBaseItem.isAlive()) {
-                        baseItemService.killSyncItem(syncBaseItem, null, true, false);
+                        baseItemService.removeSyncItem(syncBaseItem);
                     }
                 }
             }

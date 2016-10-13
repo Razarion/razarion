@@ -31,7 +31,7 @@ abstract public class SyncTickItem extends SyncItem {
      * @throws ItemDoesNotExistException if the target item does no exist any longer
      * @throws NoSuchItemTypeException   if the target item type does not exist
      */
-    public abstract boolean tick() throws ItemDoesNotExistException, NoSuchItemTypeException;
+    public abstract boolean tick(long timeStamp) throws ItemDoesNotExistException, NoSuchItemTypeException;
 
     public abstract void stop();
 }

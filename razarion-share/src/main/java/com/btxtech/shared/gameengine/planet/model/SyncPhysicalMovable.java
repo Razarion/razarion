@@ -22,6 +22,7 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
 import com.btxtech.shared.gameengine.planet.pathing.Contact;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -173,7 +174,7 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
 
     public boolean checkDestinationReached(SyncItemContainerService syncItemContainerService) {
         // 1) Position reached directly
-        if (getXYPosition().getDistance(destination) < getRadius() + 1.0) {
+        if (getXYPosition().getDistance(destination) < getRadius() + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
             return true;
         }
         // 2) None moving neighbor reached destination

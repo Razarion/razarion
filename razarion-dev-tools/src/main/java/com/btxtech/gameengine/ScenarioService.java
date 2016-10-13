@@ -26,7 +26,9 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
@@ -51,6 +53,7 @@ public class ScenarioService {
     private static final BaseItemType SIMPLE_MOVABLE_ITEM_TYPE;
     private static final BaseItemType SIMPLE_FIX_ITEM_TYPE;
     private static final BaseItemType HARVESTER_ITEM_TYPE;
+    private static final BaseItemType ATTACKER_ITEM_TYPE;
     private static final ResourceItemType RESOURCE_ITEM_TYPE;
     private static final int LEVEL_1_ID = 1;
     private static final int SLOPE_ID = 1;
@@ -65,8 +68,10 @@ public class ScenarioService {
     private BotService botService;
     @Inject
     private ResourceService resourceService;
+    @Inject
+    private CommandService commandService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 38;
+    private int number = 40;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -90,6 +95,13 @@ public class ScenarioService {
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
         HARVESTER_ITEM_TYPE = harvester;
+
+        BaseItemType attacker = new BaseItemType();
+        attacker.setHealth(100).setSpawnDurationMillis(1000);
+        attacker.setId(++itemId);
+        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        attacker.setWeaponType(new WeaponType().setMuzzlePosition(new Vertex(2, 0, 1)).setProjectileSpeed(50.0).setRange(8).setReloadTime(0.3).setDamage(10));
+        ATTACKER_ITEM_TYPE = attacker;
 
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000).setId(++itemId);
@@ -139,15 +151,14 @@ public class ScenarioService {
         ScenarioProvider scenarioProvider = scenes.get(number);
         scenarioProvider.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
         gameEngine.initialise(gameEngineConfig);
-        Collection<BotConfig> botConfigs = new ArrayList<>();
-        scenarioProvider.setupBots(botConfigs);
-        botService.startBots(botConfigs);
+        scenarioProvider.setupBots(botService);
         gameEngine.start();
         PlayerBase playerBase = baseItemService.createHumanBase(new UserContext().setName("User 1").setLevelId(LEVEL_1_ID));
         scenarioProvider.setupSyncItems(baseItemService, playerBase, resourceService);
         List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
         scenarioProvider.setupBotCommands(botCommandConfigs);
         botService.executeCommands(botCommandConfigs);
+        scenarioProvider.executeCommands(commandService);
 
         this.number = number;
     }
@@ -158,7 +169,7 @@ public class ScenarioService {
         gameEngineConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
         gameEngineConfig.setTerrainObjectConfigs(setupTerrainObjectConfigs());
         gameEngineConfig.setLevelConfigs(setupLevels());
-        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE));
+        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE));
         gameEngineConfig.setResourceItemTypes(Collections.singletonList(RESOURCE_ITEM_TYPE));
         gameEngineConfig.setPlanetConfig(setupPlanetConfig());
         return gameEngineConfig;
@@ -198,6 +209,8 @@ public class ScenarioService {
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         return planetConfig;
     }
@@ -207,6 +220,8 @@ public class ScenarioService {
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);
         levels.add(new LevelConfig().setLevelId(LEVEL_1_ID).setNumber(0).setItemTypeLimitation(itemTypeLimitation));
         return levels;
     }
@@ -700,6 +715,28 @@ public class ScenarioService {
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
                 botCommandConfigs.add(new BotHarvestCommandConfig().setBotId(1).setResourceItemTypeId(RESOURCE_ITEM_TYPE.getId()).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(20, 0))).setHarvesterItemTypeId(HARVESTER_ITEM_TYPE.getId()));
+            }
+        });
+        // Attack
+        // 40
+        scenes.add(new ScenarioProvider() {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItem(ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+            }
+
+            @Override
+            public void setupBots(Collection<BotConfig> botConfigs) {
+                List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+                List<BotItemConfig> botItems = new ArrayList<>();
+                botItems.add(new BotItemConfig().setBaseItemTypeId(HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 20))).setNoSpawn(true).setNoRebuild(true));
+                botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+            }
+
+            @Override
+            public void executeCommands(CommandService commandService) {
+                commandService.attack(getFirstCreatedSyncItems(), getFirstBotItem(1), true);
             }
         });
 

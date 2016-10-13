@@ -18,8 +18,9 @@ import java.util.List;
 
 @Singleton
 public class PathingService {
-    public static final double MAXIMUM_CORRECTION = 0.2;
-    public static final double PENETRATION_TOLERANCE = 1;
+    public static final double MAXIMUM_CORRECTION = 0.02;
+    public static final double PENETRATION_TOLERANCE = 0.1;
+    public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject

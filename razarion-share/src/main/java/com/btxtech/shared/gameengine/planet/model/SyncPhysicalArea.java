@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -144,7 +145,7 @@ public class SyncPhysicalArea {
 
         syncItemContainerService.iterateOverItems(false, false, getSyncItem(), null, syncItem -> {
             SyncPhysicalArea neighbor = syncItem.getSyncPhysicalArea();
-            if (getDistance(neighbor) > 1.0) {
+            if (getDistance(neighbor) > PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
                 return null;
             }
             neighbors.add(neighbor);
@@ -159,7 +160,7 @@ public class SyncPhysicalArea {
                 continue;
             }
 
-            if (neighbor.getXYPosition().getDistance(destination) < neighbor.getRadius() + 1) {
+            if (neighbor.getXYPosition().getDistance(destination) < neighbor.getRadius() + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
                 return true;
             }
         }

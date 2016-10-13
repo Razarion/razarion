@@ -269,7 +269,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     public boolean isIdle() {
-        return isBuildup() && itemLifecycle == ItemLifecycle.ALIVE && !getSyncPhysicalArea().hasDestination() &&  !isAbilityActive();
+        return isBuildup() && itemLifecycle == ItemLifecycle.ALIVE && !getSyncPhysicalArea().hasDestination() && !isAbilityActive();
     }
 
     private boolean isAbilityActive() {
@@ -280,7 +280,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     @Override
-    public boolean tick() throws ItemDoesNotExistException, NoSuchItemTypeException {
+    public boolean tick(long timeStamp) throws ItemDoesNotExistException, NoSuchItemTypeException {
         if (itemLifecycle == ItemLifecycle.SPAWN) {
             spawnProgress += PlanetService.TICK_FACTOR / (getBaseItemType().getSpawnDurationMillis() / 1000.0);
             if (spawnProgress >= 1.0) {
@@ -297,7 +297,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (syncWeapon != null && syncWeapon.isActive()) {
-            return syncWeapon.tick();
+            return syncWeapon.tick(timeStamp);
         }
 
         if (syncFactory != null && syncFactory.isActive()) {
@@ -345,6 +345,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public void executeCommand(BaseCommand baseCommand) throws ItemDoesNotExistException, InsufficientFundsException, NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException, WrongOperationSurfaceException {
         checkId(baseCommand);
+
+        if (!isBuildup()) {
+            throw new java.lang.IllegalStateException("SyncBaseItem is not buildup: " + this);
+        }
 
         if (baseCommand instanceof AttackCommand) {
             getSyncWeapon().executeCommand((AttackCommand) baseCommand);
@@ -518,12 +522,11 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return getBase().isEnemy(playerBase);
     }
 
-    public void decreaseHealth(double progress, PlayerBase actor) {
-        health -= progress;
-        activityService.onHealthDecreased(this); // TODO call baseItemService here
+    private void decreaseHealth(double damage, SyncBaseItem actor) {
+        health -= damage;
         if (health <= 0) {
             health = 0;
-            baseItemService.killSyncItem(this, actor, false, true); // TODO do not call baseItemService
+            baseItemService.killSyncItem(this, actor);
         }
     }
 
@@ -635,8 +638,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return getBaseItemType().getDropBoxPossibility();
     }
 
-    public void onAttacked(SyncBaseItem syncBaseItem) throws TargetHasNoPositionException {
-        activityService.onAttacked(this);
+    public void onAttacked(double damage, SyncBaseItem actor) throws TargetHasNoPositionException {
+        activityService.onAttacked(this, actor, damage);
+        decreaseHealth(damage, actor);
         if (PlanetService.MODE != PlanetMode.MASTER) {
             return;
         }
@@ -650,12 +654,12 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return;
         }
         SyncWeapon syncWeapon = getSyncWeapon();
-        if (!syncWeapon.isAttackAllowed(syncBaseItem)) {
+        if (!syncWeapon.isAttackAllowed(actor)) {
             return;
         }
 
-        if (syncWeapon.isInRange(syncBaseItem)) {
-            commandService.defend(this, syncBaseItem);
+        if (syncWeapon.isInRange(actor)) {
+            commandService.defend(this, actor);
         }
     }
 

@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.ResourceService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -32,9 +33,8 @@ import javax.inject.Inject;
 @Dependent
 public class SyncResourceItem extends SyncItem {
     @Inject
-    private BaseItemService baseItemService;
+    private ResourceService resourceService;
     private double amount;
-    private boolean missionMoney = false;
 
     public void setup(int amount) {
         this.amount = amount;
@@ -47,7 +47,7 @@ public class SyncResourceItem extends SyncItem {
         } else {
             amount = this.amount;
             this.amount = 0;
-            baseItemService.killSyncItem(this, null, false, false);
+            resourceService.resourceExhausted(this);
             return amount;
         }
     }
@@ -76,13 +76,5 @@ public class SyncResourceItem extends SyncItem {
 
     public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    public boolean isMissionMoney() {
-        return missionMoney;
-    }
-
-    public void setMissionMoney(boolean missionMoney) {
-        this.missionMoney = missionMoney;
     }
 }

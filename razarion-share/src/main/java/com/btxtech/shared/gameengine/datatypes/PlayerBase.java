@@ -73,6 +73,11 @@ public class PlayerBase {
         usedHouseSpace += syncBaseItem.getBaseItemType().getConsumingHouseSpace();
     }
 
+    public void removeItem(SyncBaseItem syncBaseItem) {
+        items.remove(syncBaseItem);
+        usedHouseSpace -= syncBaseItem.getBaseItemType().getConsumingHouseSpace();
+    }
+
     public int getItemCount() {
         return items.size();
     }
@@ -80,7 +85,6 @@ public class PlayerBase {
     public Collection<SyncBaseItem> getItems() {
         return Collections.unmodifiableCollection(items);
     }
-
 
     public Collection<SyncBaseItem> getItemsInPlace(PlaceConfig placeConfig) {
         return items.stream().filter(item -> item.getSyncPhysicalArea().contains(placeConfig)).collect(Collectors.toCollection(ArrayList::new));

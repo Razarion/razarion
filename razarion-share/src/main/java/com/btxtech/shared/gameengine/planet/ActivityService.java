@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.condition.ConditionService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.projectile.Projectile;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -96,6 +97,14 @@ public class ActivityService {
         System.out.println("ActivityService.onBaseCreated(): " + playerBase);
     }
 
+    public void onBaseKilled(PlayerBase playerBase, SyncBaseItem actor) {
+        System.out.println("ActivityService.onBaseKilled(). base: " + playerBase + " killed by: " + actor);
+    }
+
+    public void onBaseRemoved(PlayerBase playerBase) {
+        System.out.println("ActivityService.onBaseRemoved(). base: " + playerBase);
+    }
+
     public void onSyncBaseItemCreatedBy(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onSyncBaseItemCreatedBy(): " + createdBy + " " + syncBaseItem);
     }
@@ -123,10 +132,6 @@ public class ActivityService {
         System.out.println("ActivityService.onSyncBuilderStopped(): " + syncBaseItem);
     }
 
-    public void onHealthDecreased(SyncBaseItem syncBaseItem) {
-        System.out.println("ActivityService.onHealthDecreased(): " + syncBaseItem);
-    }
-
     public void onHealthIncreased(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onHealthIncreased(): " + syncBaseItem);
     }
@@ -135,8 +140,8 @@ public class ActivityService {
         System.out.println("ActivityService.onBuildup(): " + syncBaseItem);
     }
 
-    public void onAttacked(SyncBaseItem syncBaseItem) {
-        System.out.println("ActivityService.syncBaseItem(): " + syncBaseItem);
+    public void onAttacked(SyncBaseItem target, SyncBaseItem actor, double damage) {
+        System.out.println("ActivityService.onAttacked(). target: " + target + " actor: " + actor + ". damage: " + damage);
     }
 
     public void onSyncFactoryProgress(SyncBaseItem syncBaseItem) {
@@ -148,15 +153,23 @@ public class ActivityService {
     }
 
     public void onProjectileFired(SyncBaseItem syncBaseItem) {
-        System.out.println("ActivityService.onProjectileFired(): " + syncBaseItem);
+        System.out.println("ActivityService.onProjectileFired(): " + System.currentTimeMillis() + ": " + syncBaseItem);
     }
 
-    public void onProjectileDetonation(SyncBaseItem syncBaseItem) {
-        System.out.println("ActivityService.onProjectileDetonation(): " + syncBaseItem);
+    public void onProjectileDetonation(Projectile syncBaseItem) {
+        System.out.println("ActivityService.onProjectileDetonation(): " + System.currentTimeMillis() + ": " + syncBaseItem.getActor());
     }
 
     public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onSpawnSyncItem(): " + syncBaseItem);
+    }
+
+    public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor) {
+        System.out.println("ActivityService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
+    }
+
+    public void onSyncBaseItemRemoved(SyncBaseItem target) {
+        System.out.println("ActivityService.onSyncBaseItemRemoved(). target: " + target);
     }
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
@@ -192,5 +205,13 @@ public class ActivityService {
 
     public void onResourcesHarvested(SyncBaseItem syncBaseItem, double harvestedResources, SyncResourceItem resource) {
         // System.out.println("ActivityService.onResourcesHarvested(). Harvester: " + syncBaseItem + ". Amount: " + harvestedResources + ". SyncResourceItem: " + resource);
+    }
+
+    public void onResourceCreated(SyncResourceItem syncResourceItem) {
+        System.out.println("ActivityService.onResourceCreated(): " + syncResourceItem);
+    }
+
+    public void onResourceExhausted(SyncResourceItem syncResourceItem) {
+        System.out.println("ActivityService.onResourceExhausted(): " + syncResourceItem);
     }
 }

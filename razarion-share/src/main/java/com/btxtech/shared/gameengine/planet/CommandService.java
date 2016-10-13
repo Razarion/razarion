@@ -58,7 +58,6 @@ public class CommandService {
     }
 
     public void move(SyncBaseItem syncBaseItem, DecimalPosition destination) {
-        syncBaseItem.stop();
         MoveCommand moveCommand = new MoveCommand();
         moveCommand.setId(syncBaseItem.getId());
         moveCommand.setTimeStamp();
@@ -101,7 +100,6 @@ public class CommandService {
     }
 
     public void harvest(SyncBaseItem harvester, SyncResourceItem resource) {
-        harvester.stop();
         HarvestCommand harvestCommand = new HarvestCommand();
         Path path = pathingService.setupPathToDestination(harvester, resource, harvester.getBaseItemType().getHarvesterType().getRange());
         if (moveIfPathTargetUnreachable(harvester, path)) {
@@ -126,7 +124,6 @@ public class CommandService {
     }
 
     public void attack(SyncBaseItem syncBaseItem, SyncBaseItem target, boolean followTarget) {
-        syncBaseItem.stop();
         Path path;
         AttackCommand attackCommand = new AttackCommand();
         if (followTarget) {

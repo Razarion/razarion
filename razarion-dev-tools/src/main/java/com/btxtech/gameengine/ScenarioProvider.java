@@ -10,10 +10,14 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.utils.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +32,8 @@ public class ScenarioProvider {
     private ResourceService resourceService;
     private PlayerBase playerBase;
     private int slopeId = 1;
+    private List<SyncBaseItem> createdSyncItems = new ArrayList<>();
+    private BotService botService;
 
     // Override in subclasses
     protected void createSyncItems() {
@@ -40,7 +46,12 @@ public class ScenarioProvider {
     }
 
     // Override in subclasses
-    public void setupBots(Collection<BotConfig> botConfigs) {
+    protected void setupBots(Collection<BotConfig> botConfigs) {
+
+    }
+
+    // Override in subclasses
+    public void executeCommands(CommandService commandService) {
 
     }
 
@@ -59,9 +70,10 @@ public class ScenarioProvider {
     protected void createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, DecimalPosition destination) {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, playerBase, true);
-            if (syncBaseItem.getSyncPhysicalArea().canMove()) {
+            if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
                 ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setDestination(destination);
             }
+            createdSyncItems.add(syncBaseItem);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -75,8 +87,30 @@ public class ScenarioProvider {
         }
     }
 
+    public void setupBots(BotService botService) {
+        this.botService = botService;
+        Collection<BotConfig> botConfigs = new ArrayList<>();
+        setupBots(botConfigs);
+        botService.startBots(botConfigs);
+    }
+
+    protected Collection<SyncBaseItem> getBotItem(int botId) {
+        return botService.getBotRunner(botId).getBase().getItems();
+    }
+
+    protected SyncBaseItem getFirstBotItem(int botId) {
+        return CollectionUtils.getFirst(getBotItem(botId));
+    }
+
     protected TerrainSlopePosition createRectangleSlope(int slopeSkeletonId, double x, double y, double width, double height) {
         return new TerrainSlopePosition().setId(slopeId++).setSlopeId(slopeSkeletonId).setPolygon(Arrays.asList(new DecimalPosition(x, y), new DecimalPosition(x + width, y), new DecimalPosition(x + width, y + height), new DecimalPosition(x, y + height)));
     }
 
+    protected SyncBaseItem getCreatedSyncItems(int index) {
+        return createdSyncItems.get(index);
+    }
+
+    protected SyncBaseItem getFirstCreatedSyncItems() {
+        return getCreatedSyncItems(0);
+    }
 }

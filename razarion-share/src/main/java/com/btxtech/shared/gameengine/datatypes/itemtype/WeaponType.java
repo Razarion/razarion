@@ -14,8 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.Collection;
 import java.util.Map;
@@ -26,132 +25,88 @@ import java.util.Map;
  * Time: 23:13:22
  */
 public class WeaponType {
-    private int range;
+    private double range;
     private int damage;
-    private Integer detonationRadius;
+    private double detonationRadius;
     private double reloadTime;
     private Collection<Integer> disallowedItemTypes;
     private Map<Integer, Double> itemTypeFactors;
-    // Pixel per second
-    private Integer projectileSpeed;
-    // dimension 1: muzzle nr, dimension 2: image nr
-    private Index[][] muzzleFlashPositions;
-    private Integer muzzleFlashClipId;
-    private Integer projectileClipId;
-    private Integer projectileDetonationClipId;
+    private Double projectileSpeed; // Pixel per second
+    private Vertex muzzlePosition;
 
-    /**
-     * Used by GWT
-     */
-    public WeaponType() {
-    }
-
-    public WeaponType(int range, Integer projectileSpeed, int damage, Integer detonationRadius, double reloadTime, Integer muzzleFlashClipId, Integer projectileClipId, Integer projectileDetonationClipId, Collection<Integer> disallowedItemTypes, Map<Integer, Double> itemTypeFactors, Index[][] muzzleFlashPositions) {
-        this.range = range;
-        this.projectileSpeed = projectileSpeed;
-        this.damage = damage;
-        this.detonationRadius = detonationRadius;
-        this.reloadTime = reloadTime;
-        this.muzzleFlashClipId = muzzleFlashClipId;
-        this.projectileClipId = projectileClipId;
-        this.projectileDetonationClipId = projectileDetonationClipId;
-        this.disallowedItemTypes = disallowedItemTypes;
-        this.itemTypeFactors = itemTypeFactors;
-        this.muzzleFlashPositions = muzzleFlashPositions;
-    }
-
-    public void changeTo(WeaponType weaponType) {
-        range = weaponType.range;
-        projectileSpeed = weaponType.projectileSpeed;
-        damage = weaponType.damage;
-        detonationRadius = weaponType.detonationRadius;
-        reloadTime = weaponType.reloadTime;
-        muzzleFlashClipId = weaponType.muzzleFlashClipId;
-        projectileClipId = weaponType.projectileClipId;
-        projectileDetonationClipId = weaponType.projectileDetonationClipId;
-        disallowedItemTypes = weaponType.disallowedItemTypes;
-        itemTypeFactors = weaponType.itemTypeFactors;
-        muzzleFlashPositions = weaponType.muzzleFlashPositions;
-    }
-
-    public int getRange() {
+    public double getRange() {
         return range;
     }
 
-    public Integer getProjectileSpeed() {
-        return projectileSpeed;
+    public WeaponType setRange(double range) {
+        this.range = range;
+        return this;
     }
 
-    public double getDamage(BaseItemType baseItemType) {
-        Double factor = itemTypeFactors.get(baseItemType.getId());
-        if (factor != null) {
-            return damage * factor;
-        } else {
-            return damage;
-        }
+    public int getDamage() {
+        return damage;
     }
 
-    public boolean hasDetonationRadius() {
-        return detonationRadius != null;
+    public WeaponType setDamage(int damage) {
+        this.damage = damage;
+        return this;
     }
 
-    public Integer getDetonationRadius() {
+    public double getDetonationRadius() {
         return detonationRadius;
+    }
+
+    public WeaponType setDetonationRadius(double detonationRadius) {
+        this.detonationRadius = detonationRadius;
+        return this;
     }
 
     public double getReloadTime() {
         return reloadTime;
     }
 
-    public Integer getMuzzleFlashClipId() {
-        return muzzleFlashClipId;
+    public WeaponType setReloadTime(double reloadTime) {
+        this.reloadTime = reloadTime;
+        return this;
     }
 
-    public Integer getProjectileClipId() {
-        return projectileClipId;
+    public Collection<Integer> getDisallowedItemTypes() {
+        return disallowedItemTypes;
     }
 
-    public Integer getProjectileDetonationClipId() {
-        return projectileDetonationClipId;
+    public WeaponType setDisallowedItemTypes(Collection<Integer> disallowedItemTypes) {
+        this.disallowedItemTypes = disallowedItemTypes;
+        return this;
     }
 
-    public boolean isItemTypeDisallowed(int itemTypeId) {
-        return disallowedItemTypes.contains(itemTypeId);
+    public boolean checkItemTypeDisallowed(int itemTypeId) {
+        return disallowedItemTypes != null && disallowedItemTypes.contains(itemTypeId);
     }
 
-    public DecimalPosition getMuzzleFlashPosition(int muzzleNr, int angelIndex) {
-        throw new UnsupportedOperationException();
-        // return muzzleFlashPositions[muzzleNr][angelIndex];
+    public Map<Integer, Double> getItemTypeFactors() {
+        return itemTypeFactors;
     }
 
-    public void setMuzzleFlashPosition(int muzzleNr, int angelIndex, Index position) {
-        muzzleFlashPositions[muzzleNr][angelIndex] = position;
+    public WeaponType setItemTypeFactors(Map<Integer, Double> itemTypeFactors) {
+        this.itemTypeFactors = itemTypeFactors;
+        return this;
     }
 
-    public int getMuzzleFlashCount() {
-        return muzzleFlashPositions.length;
+    public Double getProjectileSpeed() {
+        return projectileSpeed;
     }
 
-    public Index[][] getMuzzleFlashPositions() {
-        return muzzleFlashPositions;
+    public WeaponType setProjectileSpeed(Double projectileSpeed) {
+        this.projectileSpeed = projectileSpeed;
+        return this;
     }
 
-    public void changeMuzzleFlashCount(int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Item must have at least one muzzle flash");
-        }
-        Index[][] saveMuzzleFlashPositions = muzzleFlashPositions;
-        int imageCount = muzzleFlashPositions[0].length;
-        muzzleFlashPositions = new Index[count][];
-        for (int muzzleFireNr = 0; muzzleFireNr < count; muzzleFireNr++) {
-            muzzleFlashPositions[muzzleFireNr] = new Index[imageCount];
-            for (int imageNr = 0; imageNr < imageCount; imageNr++) {
-                if (muzzleFireNr < saveMuzzleFlashPositions.length) {
-                    muzzleFlashPositions[muzzleFireNr][imageNr] = saveMuzzleFlashPositions[muzzleFireNr][imageNr];
-                } else {
-                    muzzleFlashPositions[muzzleFireNr][imageNr] = new Index(0, 0);
-                }
-            }
-        }
+    public Vertex getMuzzlePosition() {
+        return muzzlePosition;
+    }
+
+    public WeaponType setMuzzlePosition(Vertex muzzlePosition) {
+        this.muzzlePosition = muzzlePosition;
+        return this;
     }
 }

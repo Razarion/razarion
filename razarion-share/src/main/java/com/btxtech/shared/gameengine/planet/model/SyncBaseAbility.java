@@ -48,6 +48,7 @@ public abstract class SyncBaseAbility {
         return (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
     }
 
+    @Deprecated // Just set the path to the SyncPhysicalMovable: getSyncPhysicalMovable().setDestination(path);
     public void setPathToDestinationIfSyncMovable(Path path) {
         throw new UnsupportedOperationException();
 //        if (path != null && syncBaseItem.hasSyncMovable()) {

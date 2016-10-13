@@ -122,6 +122,32 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
+    public void killSyncItem(SyncBaseItem target, SyncBaseItem actor) {
+        activityService.onKilledSyncBaseItem(target, actor);
+        PlayerBase base = target.getBase();
+        base.removeItem(target);
+        syncItemContainerService.destroySyncItem(target);
+        if (base.getItemCount() == 0) {
+            activityService.onBaseKilled(base, actor);
+            synchronized (bases) {
+                bases.remove(base.getBaseId());
+            }
+        }
+    }
+
+    public void removeSyncItem(SyncBaseItem target) {
+        activityService.onSyncBaseItemRemoved(target);
+        PlayerBase base = target.getBase();
+        base.removeItem(target);
+        syncItemContainerService.destroySyncItem(target);
+        if (base.getItemCount() == 0) {
+            activityService.onBaseRemoved(base);
+            synchronized (bases) {
+                bases.remove(base.getBaseId());
+            }
+        }
+    }
+
     public void checkItemLimit4ItemAdding(BaseItemType newItemType, PlayerBase simpleBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         if (isLevelLimitation4ItemTypeExceeded(newItemType, simpleBase)) {
             throw new ItemLimitExceededException();
@@ -256,6 +282,7 @@ public class BaseItemService {
 
     // --------------------------------------------------------------------------
 
+    @Deprecated // Use syncBaseItemContainerService.getSyncItem
     public SyncBaseItem getItem(int id) throws ItemDoesNotExistException {
         throw new UnsupportedOperationException();
     }
@@ -263,10 +290,6 @@ public class BaseItemService {
     // TODO List<SyncBaseItem> getBaseItems(List<Id> baseItemsIds) throws ItemDoesNotExistException;
 
     // TODO List<Id> getBaseItemIds(List<SyncBaseItem> baseItems);
-
-    public void killSyncItem(SyncItem killedItem, PlayerBase actor, boolean force, boolean explode) {
-        throw new UnsupportedOperationException();
-    }
 
     public boolean baseObjectExists(SyncItem currentBuildup) {
         throw new UnsupportedOperationException();

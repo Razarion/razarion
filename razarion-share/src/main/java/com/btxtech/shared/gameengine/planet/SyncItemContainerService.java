@@ -197,6 +197,10 @@ public class SyncItemContainerService {
         }
     }
 
+    public SyncBaseItem getSyncBaseItems(int id) {
+        return (SyncBaseItem) getSyncItem(id);
+    }
+
     public SyncItem findItemAtPosition(DecimalPosition position) {
         return iterateOverBaseItems(false, false, null, syncItem -> {
             if (syncItem.getSyncPhysicalArea().overlap(position)) {
@@ -207,7 +211,7 @@ public class SyncItemContainerService {
         });
     }
 
-    public Collection<SyncBaseItem> findItemInRect(Rectangle2D rectangle) {
+    public Collection<SyncBaseItem> findBaseItemInRect(Rectangle2D rectangle) {
         Collection<SyncBaseItem> result = new ArrayList<>();
         iterateOverBaseItems(false, false, null, syncBaseItem -> {
             if (syncBaseItem.getSyncPhysicalArea().overlap(rectangle)) {
@@ -243,6 +247,4 @@ public class SyncItemContainerService {
         });
         return result;
     }
-
-
 }

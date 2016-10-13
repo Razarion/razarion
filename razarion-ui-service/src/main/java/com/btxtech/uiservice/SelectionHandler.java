@@ -111,7 +111,7 @@ public class SelectionHandler {
     }
 
     public void selectRectangle(Rectangle2D rectangle) {
-        Collection<SyncBaseItem> selectedItems = syncItemContainerService.findItemInRect(rectangle);
+        Collection<SyncBaseItem> selectedItems = syncItemContainerService.findBaseItemInRect(rectangle);
         if (selectedItems.isEmpty()) {
             clearSelection();
         } else {

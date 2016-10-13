@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.planet.condition.ConditionService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncTickItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -50,6 +51,8 @@ public class PlanetService implements Runnable {
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
+    private ProjectileService projectileService;
+    @Inject
     private Instance<ActivityService> activityServiceInstance;
     // @Inject
     // private CommandService commandService;
@@ -80,6 +83,7 @@ public class PlanetService implements Runnable {
             return;
         }
         try {
+            long timeStamp = System.currentTimeMillis();
             // TODO different sets for Active Items
             // TODO Moving (also pushed away items, ev targed reached)
             // TODO building, attacking,
@@ -94,7 +98,7 @@ public class PlanetService implements Runnable {
                     return null;
                 }
                 try {
-                    if (!activeItem.tick()) {
+                    if (!activeItem.tick(timeStamp)) {
                         try {
                             activeItem.stop();
                             addGuardingBaseItem(activeItem);
@@ -120,10 +124,11 @@ public class PlanetService implements Runnable {
                 }
                 return null;
             });
+            projectileService.tick(timeStamp);
+            tickCount++;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
-        tickCount++;
     }
 
     public long getTickCount() {

@@ -78,8 +78,8 @@ public class BotSyncBaseItem {
                 || syncBaseItem.hasSyncBuilder() && syncBaseItem.getSyncBuilder().getBuilderType().isAbleToBuild(toBeBuilt.getId());
     }
 
-    public boolean isAbleToAttack(BaseItemType baseItemType) {
-        return syncBaseItem.hasSyncWeapon() && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().getWeaponType().isItemTypeDisallowed(baseItemType.getId());
+    public boolean isAbleToAttack(SyncBaseItem target) {
+        return syncBaseItem.hasSyncWeapon() && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target);
     }
 
     public boolean isAbleToHarvest() {
@@ -152,7 +152,7 @@ public class BotSyncBaseItem {
     }
 
     public void kill() {
-        baseItemService.killSyncItem(syncBaseItem, null, true, false);
+        baseItemService.removeSyncItem(syncBaseItem);
     }
 
     public void updateIdleState() {
