@@ -31,13 +31,12 @@ public class ProjectileService {
     @Inject
     private SyncItemContainerService syncItemContainerService;
     private final List<Projectile> projectiles = new ArrayList<>();
-    private final List<MuzzleFlash> muzzleFlashes = new ArrayList<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent ignore) {
         projectiles.clear();
     }
 
-    public void createProjectile(long timeStamp, SyncBaseItem actor, SyncBaseItem target) {
+    public void fireProjectile(long timeStamp, SyncBaseItem actor, SyncBaseItem target) {
         WeaponType weaponType = actor.getSyncWeapon().getWeaponType();
         if (weaponType.getMuzzlePosition() == null) {
             throw new IllegalArgumentException("No MuzzlePosition configured for BaseItemType: " + actor);
@@ -51,11 +50,6 @@ public class ProjectileService {
         synchronized (projectiles) {
             projectiles.add(projectile);
         }
-        MuzzleFlash muzzleFlash = new MuzzleFlash();
-        synchronized (muzzleFlashes) {
-            muzzleFlashes.add(muzzleFlash);
-        }
-
         activityService.onProjectileFired(target);
     }
 

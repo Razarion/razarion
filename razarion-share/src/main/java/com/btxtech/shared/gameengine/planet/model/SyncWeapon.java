@@ -120,7 +120,7 @@ public class SyncWeapon extends SyncBaseAbility {
 
     private void doAttack(long timeStamp, SyncBaseItem targetItem) {
         if (reloadProgress >= weaponType.getReloadTime()) {
-            projectileService.createProjectile(timeStamp, getSyncBaseItem(), targetItem);
+            projectileService.fireProjectile(timeStamp, getSyncBaseItem(), targetItem);
             reloadProgress = 0;
         }
     }
