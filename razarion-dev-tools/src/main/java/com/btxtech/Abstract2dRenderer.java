@@ -15,9 +15,9 @@ public class Abstract2dRenderer {
     private static final int GRID_SPACING = 100;
     private Canvas canvas;
     private GraphicsContext gc;
-    protected double scale;
-    protected DecimalPosition shift = new DecimalPosition(0, 0);
-    protected DecimalPosition lastShiftPosition;
+    private double scale;
+    private DecimalPosition shift = new DecimalPosition(0, 0);
+    private DecimalPosition lastShiftPosition;
 
     public void init(Canvas canvas, double scale) {
         this.canvas = canvas;

@@ -33,6 +33,10 @@ public class ExtendedGraphicsContext {
         this.gc = gc;
     }
 
+    public GraphicsContext getGc() {
+        return gc;
+    }
+
     public void strokeVertexList(List<Vertex> vertices, double lineWidth, Paint color) {
         gc.setLineWidth(lineWidth);
         gc.setStroke(color);
@@ -126,12 +130,15 @@ public class ExtendedGraphicsContext {
         }
     }
 
-    public void drawPositions(List<DecimalPosition> positions, double radius, Color color) {
+    public void drawPosition(DecimalPosition position, double radius, Color color) {
         gc.setFill(color);
-        for (DecimalPosition position : positions) {
-            gc.fillOval(position.getX() - radius, position.getY() - radius, radius * 2.0, radius * 2.0);
-        }
+        gc.fillOval(position.getX() - radius, position.getY() - radius, radius * 2.0, radius * 2.0);
+    }
 
+    public void drawPositions(List<DecimalPosition> positions, double radius, Color color) {
+        for (DecimalPosition position : positions) {
+            drawPosition(position, radius, color);
+        }
     }
 
     public void drawUnit(SyncItem syncItem) {

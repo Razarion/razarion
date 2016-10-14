@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.projectile;
 
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -33,12 +34,13 @@ public class Projectile {
         return actor;
     }
 
-    public Vertex getInterpolatedPosition(long timeStamp) {
+    public ModelMatrices getInterpolatedModelMatrices(long timeStamp) {
         double distance = calculateDistance(timeStamp);
         if (distance > totalDistance) {
             distance = totalDistance;
         }
-        return muzzle.interpolate(distance, target);
+        Vertex position = muzzle.interpolate(distance, target);
+        return ModelMatrices.createFromPositionAndDirection(position, target.sub(muzzle));
     }
 
     public Vertex getTarget() {
@@ -46,7 +48,7 @@ public class Projectile {
     }
 
     private double calculateDistance(long timeStamp) {
-        return (double) (timeStamp - startTime) * speed;
+        return (double) (timeStamp - startTime) / 1000.0 * speed;
     }
 
     @Override

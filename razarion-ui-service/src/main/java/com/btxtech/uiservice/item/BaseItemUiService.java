@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.item;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
@@ -96,10 +95,7 @@ public class BaseItemUiService {
             Vertex origin = harvester.getSyncPhysicalArea().createModelMatrices(harvester).getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
             SyncResourceItem syncResourceItem = resourceService.getSyncResourceItem(harvester.getSyncHarvester().getTarget());
             Vertex direction = syncResourceItem.getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
-            double yRotation = -Math.asin(direction.getZ());
-            double zRotation = direction.toXY().angle();
-            Matrix4 model = Matrix4.createTranslation(origin).multiply(Matrix4.createZRotation(zRotation).multiply(Matrix4.createYRotation(yRotation)));
-            modelMatrices.add(new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
+            modelMatrices.add(ModelMatrices.createFromPositionAndDirection(origin, direction));
         }
         return modelMatrices;
     }

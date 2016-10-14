@@ -78,7 +78,7 @@ public class ScenarioService {
     static {
         int itemId = 0;
         BaseItemType simpleMovable = new BaseItemType();
-        simpleMovable.setHealth(100).setSpawnDurationMillis(1000);
+        simpleMovable.setHealth(1000).setSpawnDurationMillis(1000);
         simpleMovable.setId(++itemId);
         simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         SIMPLE_MOVABLE_ITEM_TYPE = simpleMovable;
@@ -100,7 +100,7 @@ public class ScenarioService {
         attacker.setHealth(100).setSpawnDurationMillis(1000);
         attacker.setId(++itemId);
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
-        attacker.setWeaponType(new WeaponType().setMuzzlePosition(new Vertex(2, 0, 1)).setProjectileSpeed(50.0).setRange(8).setReloadTime(0.3).setDamage(10));
+        attacker.setWeaponType(new WeaponType().setMuzzlePosition(new Vertex(2, 0, 1)).setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1));
         ATTACKER_ITEM_TYPE = attacker;
 
         ResourceItemType resource = new ResourceItemType();

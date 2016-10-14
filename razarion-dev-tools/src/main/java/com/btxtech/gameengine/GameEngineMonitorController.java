@@ -30,6 +30,8 @@ public class GameEngineMonitorController implements Initializable {
     @FXML
     private Canvas canvas;
     @FXML
+    private Canvas overlayCanvas;
+    @FXML
     private TextField stepField;
     @FXML
     private TextField scenarioField;
@@ -45,6 +47,8 @@ public class GameEngineMonitorController implements Initializable {
     private AnchorPane anchorPanel;
     @Inject
     private JavaFxGameEngineRenderer renderer;
+    @Inject
+    private OverlayGameEngineRenderer overlayRenderer;
     @Inject
     private ScenarioService scenarioService;
     @Inject
@@ -64,11 +68,13 @@ public class GameEngineMonitorController implements Initializable {
         });
 
         anchorPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> {
+            overlayCanvas.setWidth(width.doubleValue());
             canvas.setWidth(width.doubleValue());
             renderer.render();
         });
 
         anchorPanel.heightProperty().addListener((observableValue, oldSceneWidth, height) -> {
+            overlayCanvas.setHeight(height.doubleValue());
             canvas.setHeight(height.doubleValue());
             renderer.render();
         });
@@ -77,6 +83,7 @@ public class GameEngineMonitorController implements Initializable {
         gameEngineFutureControl.setAfterExecutionCallback(this::tick);
 
         renderer.init(canvas, 4.0);
+        overlayRenderer.init(overlayCanvas, 4.0);
         onRestartScenario();
         renderer.render();
 
@@ -193,6 +200,7 @@ public class GameEngineMonitorController implements Initializable {
 
     private void setZoom(double zoom) {
         renderer.setZoom(zoom);
+        overlayRenderer.setZoom(zoom);
         scaleField.setText(String.format("%.2f", renderer.getScale()));
         renderer.render();
     }
@@ -223,11 +231,13 @@ public class GameEngineMonitorController implements Initializable {
 
     public void onMouseDragged(Event event) {
         renderer.shifting(event);
+        overlayRenderer.shifting(event);
         renderer.render();
     }
 
     public void onMouseReleased() {
         renderer.stopShift();
+        overlayRenderer.stopShift();
     }
 
     public void onMousePressed() {

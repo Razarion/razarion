@@ -53,4 +53,12 @@ public class ModelMatrices {
         }
         return modelMatrices;
     }
+
+    public static ModelMatrices createFromPositionAndDirection(Vertex position, Vertex direction) {
+        direction = direction.normalize(1.0);
+        double yRotation = -Math.asin(direction.getZ());
+        double zRotation = direction.toXY().angle();
+        Matrix4 model = Matrix4.createTranslation(position).multiply(Matrix4.createZRotation(zRotation).multiply(Matrix4.createYRotation(yRotation)));
+        return new ModelMatrices().setModel(model).setNorm(model.normTransformation());
+    }
 }

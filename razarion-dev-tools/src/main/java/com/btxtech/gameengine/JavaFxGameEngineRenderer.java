@@ -13,7 +13,6 @@ import javax.inject.Singleton;
  * Created by Beat
  * 17.05.2016.
  */
-@Singleton
 public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
     @Inject
     private SyncItemContainerService syncItemContainerService;

@@ -14,6 +14,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class ProjectileService {
     @Inject
     private SyncItemContainerService syncItemContainerService;
     private final List<Projectile> projectiles = new ArrayList<>();
+    private final List<MuzzleFlash> muzzleFlashes = new ArrayList<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent ignore) {
         projectiles.clear();
@@ -49,7 +51,10 @@ public class ProjectileService {
         synchronized (projectiles) {
             projectiles.add(projectile);
         }
-
+        MuzzleFlash muzzleFlash = new MuzzleFlash();
+        synchronized (muzzleFlashes) {
+            muzzleFlashes.add(muzzleFlash);
+        }
 
         activityService.onProjectileFired(target);
     }
@@ -65,6 +70,10 @@ public class ProjectileService {
         }
 
         detonationProjectiles.forEach(this::projectileDetonation);
+    }
+
+    public List<Projectile> getProjectiles() {
+        return Collections.unmodifiableList(projectiles);
     }
 
     private void projectileDetonation(Projectile detonationProjectile) {

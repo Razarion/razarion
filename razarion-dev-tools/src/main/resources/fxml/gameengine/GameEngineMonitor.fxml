@@ -32,6 +32,9 @@
                     <children>
                         <Canvas fx:id="canvas" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMove" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onScroll="#onScroll"/>
                     </children>
+                    <children>
+                        <Canvas fx:id="overlayCanvas" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMove" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onScroll="#onScroll"/>
+                    </children>
                 </AnchorPane>
             </items>
         </SplitPane>
