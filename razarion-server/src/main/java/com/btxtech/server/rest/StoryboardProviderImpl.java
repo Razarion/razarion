@@ -2,7 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.servercommon.StoryboardPersistence;
 import com.btxtech.servercommon.collada.ColladaException;
-import com.btxtech.shared.StoryboardProvider;
+import com.btxtech.shared.rest.StoryboardProvider;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;

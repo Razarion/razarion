@@ -1,7 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.PlanetPersistenceService;
-import com.btxtech.shared.PlanetEditorProvider;
+import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.system.ExceptionHandler;

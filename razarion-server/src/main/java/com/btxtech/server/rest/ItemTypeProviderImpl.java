@@ -1,7 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
-import com.btxtech.shared.ItemTypeProvider;
+import com.btxtech.shared.rest.ItemTypeProvider;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.system.ExceptionHandler;

@@ -2,7 +2,7 @@ package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.editor.terrain.TerrainObjectEditor;
 import com.btxtech.client.editor.terrain.TerrainEditor;
-import com.btxtech.shared.StoryboardProvider;
+import com.btxtech.shared.rest.StoryboardProvider;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import org.jboss.errai.common.client.api.Caller;

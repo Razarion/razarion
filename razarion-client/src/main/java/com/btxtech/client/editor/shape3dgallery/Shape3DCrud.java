@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
-import com.btxtech.shared.Shape3DProvider;
+import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.dto.ObjectNameId;

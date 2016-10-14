@@ -1,4 +1,4 @@
-package com.btxtech.shared;
+package com.btxtech.shared.rest;
 
 /**
  * Created by Beat

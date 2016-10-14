@@ -2,12 +2,11 @@ package com.btxtech.client.editor;
 
 import com.btxtech.uiservice.dialog.ApplyListener;
 import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.shared.TerrainElementEditorProvider;
+import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.uiservice.terrain.TerrainUiService;

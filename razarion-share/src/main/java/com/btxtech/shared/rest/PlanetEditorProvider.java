@@ -1,4 +1,4 @@
-package com.btxtech.shared;
+package com.btxtech.shared.rest;
 
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;

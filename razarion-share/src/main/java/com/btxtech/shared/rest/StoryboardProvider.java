@@ -1,4 +1,4 @@
-package com.btxtech.shared;
+package com.btxtech.shared.rest;
 
 import com.btxtech.shared.dto.StoryboardConfig;
 

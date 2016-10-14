@@ -1,7 +1,7 @@
 package com.btxtech.client.imageservice;
 
-import com.btxtech.shared.ImageProvider;
-import com.btxtech.shared.RestUrl;
+import com.btxtech.shared.rest.ImageProvider;
+import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.google.gwt.dom.client.ImageElement;
 import org.jboss.errai.common.client.api.Caller;

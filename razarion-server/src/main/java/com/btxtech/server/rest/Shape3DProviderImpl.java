@@ -2,7 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.servercommon.collada.ColladaConverter;
-import com.btxtech.shared.Shape3DProvider;
+import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.system.ExceptionHandler;

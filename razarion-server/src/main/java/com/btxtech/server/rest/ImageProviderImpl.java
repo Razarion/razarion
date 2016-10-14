@@ -3,7 +3,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity_;
-import com.btxtech.shared.ImageProvider;
+import com.btxtech.shared.rest.ImageProvider;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.system.ExceptionHandler;
 

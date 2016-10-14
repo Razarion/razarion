@@ -6,7 +6,7 @@ import com.btxtech.client.system.boot.StartupSeq;
 import com.btxtech.client.system.boot.StartupTaskEnum;
 import com.btxtech.client.system.boot.StartupTaskInfo;
 import com.btxtech.client.system.boot.task.AbstractStartupTask;
-import com.btxtech.shared.RestUrl;
+import com.btxtech.shared.rest.RestUrl;
 import com.google.gwt.core.client.GWT;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 import org.jboss.errai.ioc.client.api.EntryPoint;

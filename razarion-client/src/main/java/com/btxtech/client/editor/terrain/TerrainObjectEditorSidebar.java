@@ -2,14 +2,13 @@ package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.TerrainElementEditorProvider;
+import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.ValueListBox;
 import org.jboss.errai.common.client.api.Caller;

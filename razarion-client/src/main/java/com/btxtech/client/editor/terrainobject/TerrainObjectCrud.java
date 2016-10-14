@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.terrainobject;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
-import com.btxtech.shared.TerrainElementEditorProvider;
+import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;

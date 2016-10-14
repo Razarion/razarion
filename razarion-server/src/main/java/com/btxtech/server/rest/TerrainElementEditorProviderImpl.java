@@ -1,7 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.TerrainElementPersistence;
-import com.btxtech.shared.TerrainElementEditorProvider;
+import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;

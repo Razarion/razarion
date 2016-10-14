@@ -1,4 +1,4 @@
-package com.btxtech.shared;
+package com.btxtech.shared.rest;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;

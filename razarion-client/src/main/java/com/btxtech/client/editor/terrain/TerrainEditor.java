@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.mouse.TerrainMouseDownEvent;
 import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.shared.PlanetEditorProvider;
+import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
