@@ -49,12 +49,12 @@ public class SyncPhysicalArea {
         this.angle = angle;
     }
 
-    public ModelMatrices createModelMatrices(SyncBaseItem syncBaseItem) {
+    public ModelMatrices createModelMatrices() {
         Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
         double yRotation = direction.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
         Matrix4 rotation = Matrix4.createZRotation(angle).multiply(Matrix4.createYRotation(-yRotation));
         Matrix4 matrix = Matrix4.createTranslation(getPosition().getX(), getPosition().getY(), getPosition().getZ()).multiply(rotation);
-        return new ModelMatrices().setSyncBaseItem(syncBaseItem).setModel(matrix).setNorm(matrix.normTransformation());
+        return new ModelMatrices().setModel(matrix).setNorm(matrix.normTransformation());
     }
 
     public Vertex getPosition() {

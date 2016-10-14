@@ -45,7 +45,7 @@ public class TerrainObjectRenderTask extends AbstractRenderTask<TerrainObjectCon
     private void setupTerrainObject(TerrainObjectConfig terrainObjectConfig, boolean fillBuffer) {
         if (terrainObjectConfig.getShape3DId() != null) {
             ModelRenderer<TerrainObjectConfig, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(terrainObjectConfig, () -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig));
+            modelRenderer.init(terrainObjectConfig, timeStamp -> terrainUiService.provideTerrainObjectModelMatrices(terrainObjectConfig));
             Shape3D shape3D = shape3DUiService.getShape3D(terrainObjectConfig.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {

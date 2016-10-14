@@ -9,11 +9,19 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 public class ModelMatrices {
     private Matrix4 model;
     private Matrix4 norm;
-    private SyncBaseItem syncBaseItem;
+    private double progress;
+
+    public Matrix4 getModel() {
+        return model;
+    }
 
     public ModelMatrices setModel(Matrix4 model) {
         this.model = model;
         return this;
+    }
+
+    public Matrix4 getNorm() {
+        return norm;
     }
 
     public ModelMatrices setNorm(Matrix4 norm) {
@@ -21,26 +29,18 @@ public class ModelMatrices {
         return this;
     }
 
-    public ModelMatrices setSyncBaseItem(SyncBaseItem syncBaseItem) {
-        this.syncBaseItem = syncBaseItem;
+    public double getProgress() {
+        return progress;
+    }
+
+    public ModelMatrices setProgress(double progress) {
+        this.progress = progress;
         return this;
-    }
-
-    public Matrix4 getModel() {
-        return model;
-    }
-
-    public Matrix4 getNorm() {
-        return norm;
-    }
-
-    public SyncBaseItem getSyncBaseItem() {
-        return syncBaseItem;
     }
 
     public ModelMatrices multiply(Matrix4 model, Matrix4 norm) {
         ModelMatrices modelMatrices = new ModelMatrices();
-        modelMatrices.setSyncBaseItem(syncBaseItem);
+        modelMatrices.setProgress(progress);
         if (model != null) {
             modelMatrices.setModel(this.model.multiply(model));
         } else {

@@ -66,7 +66,7 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
 
     private void setupCircle(StartPointItemPlacer startPointItemPlacer) {
         ModelRenderer<StartPointItemPlacer, CommonRenderComposite<AbstractStartPointCircleRendererUnit, StartPointItemPlacer>, AbstractStartPointCircleRendererUnit, StartPointItemPlacer> modelRenderer = create();
-        modelRenderer.init(startPointItemPlacer, startPointItemPlacer::provideCircleModelMatrices);
+        modelRenderer.init(startPointItemPlacer, timeStamp -> startPointItemPlacer.provideCircleModelMatrices());
         CommonRenderComposite<AbstractStartPointCircleRendererUnit, StartPointItemPlacer> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(startPointItemPlacer);
         compositeRenderer.setRenderUnit(AbstractStartPointCircleRendererUnit.class);
@@ -82,7 +82,7 @@ public class StartPointUiService extends AbstractRenderTask<StartPointItemPlacer
         }
 
         ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-        modelRenderer.init(startPointItemPlacer.getBaseItemType(), startPointItemPlacer::provideItemModelMatrices);
+        modelRenderer.init(startPointItemPlacer.getBaseItemType(), timeStamp -> startPointItemPlacer.provideItemModelMatrices());
 
         Shape3D shape3D = shape3DUiService.getShape3D(startPointItemPlacer.getBaseItemType().getShape3DId());
         for (Element3D element3D : shape3D.getElement3Ds()) {

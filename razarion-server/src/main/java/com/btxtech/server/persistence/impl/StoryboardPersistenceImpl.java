@@ -36,6 +36,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -65,6 +66,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private static final int ENEMY_BOT = 3;
     private static final int BASE_ITEM_TYPE_BULLDOZER = 180807;
     private static final int BASE_ITEM_TYPE_HARVESTER = 180830;
+    private static final int BASE_ITEM_TYPE_ATTACKER = 180832;
     private static final int RESOURCE_ITEM_TYPE = 180829;
     @PersistenceContext
     private EntityManager entityManager;
@@ -132,6 +134,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private List<BaseItemType> finalizeBaseItemTypes(List<BaseItemType> baseItemTypes) {
         finalizeBulldozer(findBaseItem(BASE_ITEM_TYPE_BULLDOZER, baseItemTypes));
         finalizeHarvester(findBaseItem(BASE_ITEM_TYPE_HARVESTER, baseItemTypes));
+        finalizeAttacker(findBaseItem(BASE_ITEM_TYPE_ATTACKER, baseItemTypes));
         return baseItemTypes;
     }
 
@@ -157,6 +160,14 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setDescription(i18nHelper("Harvester Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
         baseItemType.setHarvesterType(new HarvesterType().setProgress(1).setRange(4).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
+    }
+
+    private void finalizeAttacker(BaseItemType attacker) {
+        attacker.setTerrainType(TerrainType.LAND);
+        attacker.setI18Name(i18nHelper("Attacker Name"));
+        attacker.setDescription(i18nHelper("Attacker Description"));
+        attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
+        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(10).setReloadTime(1).setDetonationRadius(1).setProjectileSpeed(17.0));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {

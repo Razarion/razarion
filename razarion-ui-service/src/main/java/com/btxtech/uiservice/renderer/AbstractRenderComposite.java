@@ -82,7 +82,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
             ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
             for (ProgressAnimation progressAnimation : progressAnimations) {
                 if (progressAnimation.isItemTriggered()) {
-                    progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getSyncBaseItem().getSpawnProgress());
+                    progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
                 } else {
                     throw new UnsupportedOperationException();
                 }

@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
@@ -18,6 +19,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -33,6 +35,11 @@ public class ActivityService {
     @Inject
     private ConditionService conditionService;
     private Collection<Function<SyncBaseItem, Boolean>> spawnFinishCallback = new ArrayList<>();
+    private Optional<ClipService> clipService = Optional.empty();
+
+    public void setClipService(ClipService clipService) {
+        this.clipService = Optional.of(clipService);
+    }
 
     public void onInsufficientFundsException(InsufficientFundsException e) {
         // TODO connectionService.sendSyncInfo(syncItem);
@@ -152,12 +159,22 @@ public class ActivityService {
         System.out.println("ActivityService.onSyncFactoryStopped(): " + syncBaseItem);
     }
 
-    public void onProjectileFired(SyncBaseItem syncBaseItem) {
+    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex muzzleNorm, Integer clipId, long timeStamp) {
         System.out.println("ActivityService.onProjectileFired(): " + System.currentTimeMillis() + ": " + syncBaseItem);
+        if (clipId != null) {
+            clipService.ifPresent(effectService -> effectService.playClip(muzzlePosition, muzzleNorm, clipId, timeStamp));
+        } else {
+            logger.warning("No MuzzleFlashClipId configured for: " + syncBaseItem);
+        }
     }
 
-    public void onProjectileDetonation(Projectile syncBaseItem) {
-        System.out.println("ActivityService.onProjectileDetonation(): " + System.currentTimeMillis() + ": " + syncBaseItem.getActor());
+    public void onProjectileDetonation(SyncBaseItem syncBaseItem, Vertex position, Integer clipId, long timeStamp) {
+        System.out.println("ActivityService.onProjectileDetonation(): " + System.currentTimeMillis() + ": " + syncBaseItem);
+        if (clipId != null) {
+            clipService.ifPresent(effectService -> effectService.playClip(position, Vertex.Z_NORM, clipId, timeStamp));
+        } else {
+            logger.warning("No projectile detonation configured for: " + syncBaseItem);
+        }
     }
 
     public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {

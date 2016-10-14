@@ -59,10 +59,10 @@ public abstract class AbstractRenderTask<T> {
         return (ModelRenderer)instance.get();
     }
 
-    public void prepareRender() {
+    public void prepareRender(long timeStamp) {
         active = isActive();
         if (active) {
-            modelRenderers.forEach(ModelRenderer::setupModelMatrices);
+            modelRenderers.forEach(modelRenderer -> modelRenderer.setupModelMatrices(timeStamp));
         }
     }
 

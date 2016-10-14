@@ -78,7 +78,7 @@ public class BaseItemUiService {
     }
 
     public List<ModelMatrices> provideSpawnModelMatrices(BaseItemType baseItemType) {
-        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.SPAWN).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(SyncItem::createModelMatrices).collect(Collectors.toCollection(ArrayList::new));
+        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.SPAWN).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices().setProgress(syncBaseItem.getSpawnProgress())).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<ModelMatrices> provideAliveModelMatrices(BaseItemType baseItemType) {
@@ -92,7 +92,7 @@ public class BaseItemUiService {
             if (!harvester.getSyncHarvester().isHarvesting()) {
                 continue;
             }
-            Vertex origin = harvester.getSyncPhysicalArea().createModelMatrices(harvester).getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
+            Vertex origin = harvester.getSyncPhysicalArea().createModelMatrices().getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
             SyncResourceItem syncResourceItem = resourceService.getSyncResourceItem(harvester.getSyncHarvester().getTarget());
             Vertex direction = syncResourceItem.getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
             modelMatrices.add(ModelMatrices.createFromPositionAndDirection(origin, direction));

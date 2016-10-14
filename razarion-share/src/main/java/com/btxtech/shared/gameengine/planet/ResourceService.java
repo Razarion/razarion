@@ -87,7 +87,7 @@ public class ResourceService {
                 if (!syncResourceItem.getItemType().equals(resourceItemType)) {
                     continue;
                 }
-                modelMatrices.add(syncResourceItem.getSyncPhysicalArea().createModelMatrices(null));
+                modelMatrices.add(syncResourceItem.createModelMatrices());
             }
         }
         return modelMatrices;

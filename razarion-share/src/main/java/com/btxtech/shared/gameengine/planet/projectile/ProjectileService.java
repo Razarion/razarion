@@ -41,7 +41,7 @@ public class ProjectileService {
         if (weaponType.getMuzzlePosition() == null) {
             throw new IllegalArgumentException("No MuzzlePosition configured for BaseItemType: " + actor);
         }
-        Vertex muzzle = actor.getSyncPhysicalArea().createModelMatrices(null).getModel().multiply(weaponType.getMuzzlePosition(), 1.0);
+        Vertex muzzle = actor.createModelMatrices().getModel().multiply(weaponType.getMuzzlePosition(), 1.0);
         if (weaponType.getProjectileSpeed() == null) {
             // projectileDetonation(projectileGroup);
             throw new UnsupportedOperationException();
@@ -50,7 +50,8 @@ public class ProjectileService {
         synchronized (projectiles) {
             projectiles.add(projectile);
         }
-        activityService.onProjectileFired(target);
+
+        activityService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition(), weaponType.getDetonationClipId(), timeStamp);
     }
 
     public void tick(long timeStamp) {
@@ -63,16 +64,16 @@ public class ProjectileService {
             }
         }
 
-        detonationProjectiles.forEach(this::projectileDetonation);
+        detonationProjectiles.forEach(projectile -> projectileDetonation(projectile, timeStamp));
     }
 
     public List<Projectile> getProjectiles() {
         return Collections.unmodifiableList(projectiles);
     }
 
-    private void projectileDetonation(Projectile detonationProjectile) {
-        activityService.onProjectileDetonation(detonationProjectile);
+    private void projectileDetonation(Projectile detonationProjectile, long timeStamp) {
         WeaponType weaponType = detonationProjectile.getActor().getSyncWeapon().getWeaponType();
+        activityService.onProjectileDetonation(detonationProjectile.getActor(), detonationProjectile.getTarget(), weaponType.getDetonationClipId(), timeStamp);
         Collection<SyncBaseItem> possibleTargets = syncItemContainerService.findBaseItemInRect(Rectangle2D.generateRectangleFromMiddlePoint(detonationProjectile.getTarget().toXY(), weaponType.getRange(), weaponType.getRange()));
         for (SyncBaseItem target : possibleTargets) {
             if (!target.getSyncPhysicalArea().overlap(detonationProjectile.getTarget().toXY(), weaponType.getRange())) {

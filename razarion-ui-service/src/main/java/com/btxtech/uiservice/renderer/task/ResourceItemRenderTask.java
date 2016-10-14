@@ -45,7 +45,7 @@ public class ResourceItemRenderTask extends AbstractRenderTask<ResourceItemType>
     private void setupResourceItemType(ResourceItemType resourceItemType, boolean fillBuffer) {
         if (resourceItemType.getShape3DId() != null) {
             ModelRenderer<ResourceItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(resourceItemType, () -> resourceService.provideModelMatrices(resourceItemType));
+            modelRenderer.init(resourceItemType, timeStamp -> resourceService.provideModelMatrices(resourceItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(resourceItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {

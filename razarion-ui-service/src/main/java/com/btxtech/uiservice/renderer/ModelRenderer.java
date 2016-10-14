@@ -7,7 +7,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * Created by Beat
@@ -29,10 +29,10 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     private Instance<CommonRenderComposite<?, ?>> instanceCommonRenderComposite;
     private MapList<RenderUnitControl, C> abstractRenderComposites = new MapList<>();
     private List<ModelMatrices> modelMatrices;
-    private Supplier<List<ModelMatrices>> modelMatricesSupplier;
+    private Function<Long, List<ModelMatrices>> modelMatricesSupplier;
     private T model;
 
-    public void init(T model, Supplier<List<ModelMatrices>> modelMatricesProvider) {
+    public void init(T model, Function<Long, List<ModelMatrices>> modelMatricesProvider) {
         this.model = model;
         this.modelMatricesSupplier = modelMatricesProvider;
     }
@@ -53,9 +53,9 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
         return instance.select(clazz).get();
     }
 
-    public void setupModelMatrices() {
+    public void setupModelMatrices(long timeStamp) {
         if (modelMatricesSupplier != null) {
-            modelMatrices = modelMatricesSupplier.get();
+            modelMatrices = modelMatricesSupplier.apply(timeStamp);
         } else {
             modelMatrices = null;
         }

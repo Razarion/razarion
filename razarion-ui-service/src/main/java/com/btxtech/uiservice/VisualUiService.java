@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.VisualConfig;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 /**
@@ -15,12 +16,12 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class VisualUiService {
     @Inject
-    private Shape3DUiService shape3DUiService;
+    private Event<VisualConfig> visualConfigTrigger;
     private VisualConfig visualConfig;
 
     public void initialise(VisualConfig visualConfig) {
         this.visualConfig = visualConfig;
-        shape3DUiService.initialize(visualConfig.getShape3Ds(), visualConfig);
+        visualConfigTrigger.fire(visualConfig);
     }
 
     public VisualConfig getVisualConfig() {

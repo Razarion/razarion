@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.VisualConfig;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +18,10 @@ import java.util.Map;
 public class Shape3DUiService {
     // private Logger logger = Logger.getLogger(Shape3DUiService.class.getName());
     private Map<Integer, Shape3D> shape3Ds = new HashMap<>();
-    private VisualConfig visualConfig;
 
     // Global methods  ----------------------------------------------------
-    public void initialize(List<Shape3D> shape3Ds, VisualConfig visualConfig) {
-        this.visualConfig = visualConfig;
-        setShapes3Ds(shape3Ds);
+    public void onVisualConfig(@Observes VisualConfig visualConfig) {
+        setShapes3Ds(visualConfig.getShape3Ds());
     }
 
     public Shape3D getShape3D(int id) {

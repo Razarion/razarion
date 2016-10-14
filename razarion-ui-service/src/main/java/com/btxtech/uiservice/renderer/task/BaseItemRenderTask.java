@@ -49,7 +49,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void spawn(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getSpawnShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, () -> baseItemUiService.provideSpawnModelMatrices(baseItemType));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideSpawnModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getSpawnShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
@@ -74,7 +74,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void alive(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, () -> baseItemUiService.provideAliveModelMatrices(baseItemType));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
@@ -109,7 +109,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             }
 
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, () -> baseItemUiService.provideHarvestAnimationModelMatrices(baseItemType));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideHarvestAnimationModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(harvesterType.getAnimationShape3dId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
