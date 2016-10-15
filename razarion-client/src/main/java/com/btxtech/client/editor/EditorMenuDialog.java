@@ -3,6 +3,7 @@ package com.btxtech.client.editor;
 import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogPanel;
+import com.btxtech.client.editor.clip.ClipCrudeSidebar;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
@@ -75,6 +76,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button shape3DButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Button clipButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
     @EventHandler("renderEngineButton")
@@ -129,6 +134,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("shape3DButton")
     private void onShape3DButtonClicked(ClickEvent event) {
         openEditor(Shape3DCrudeSidebar.class);
+    }
+
+    @EventHandler("clipButton")
+    private void clipButtonClicked(ClickEvent event) {
+        openEditor(ClipCrudeSidebar.class);
     }
 
     @Override

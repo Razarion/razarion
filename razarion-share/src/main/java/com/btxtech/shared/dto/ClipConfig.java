@@ -4,14 +4,24 @@ package com.btxtech.shared.dto;
  * Created by Beat
  * 14.10.2016.
  */
-public class ClipConfig {
+public class ClipConfig implements ObjectNameIdProvider {
     private int id;
-    private int shape3DId;
+    private String internalName;
+    private Integer shape3DId;
     private Integer soundId;
-    private int durationMillis;
+    private Integer durationMillis;
 
     public int getId() {
         return id;
+    }
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public ClipConfig setInternalName(String internalName) {
+        this.internalName = internalName;
+        return this;
     }
 
     public ClipConfig setId(int id) {
@@ -19,11 +29,11 @@ public class ClipConfig {
         return this;
     }
 
-    public int getShape3DId() {
+    public Integer getShape3DId() {
         return shape3DId;
     }
 
-    public ClipConfig setShape3DId(int shape3DId) {
+    public ClipConfig setShape3DId(Integer shape3DId) {
         this.shape3DId = shape3DId;
         return this;
     }
@@ -37,13 +47,18 @@ public class ClipConfig {
         return this;
     }
 
-    public int getDurationMillis() {
+    public Integer getDurationMillis() {
         return durationMillis;
     }
 
-    public ClipConfig setDurationMillis(int durationMillis) {
+    public ClipConfig setDurationMillis(Integer durationMillis) {
         this.durationMillis = durationMillis;
         return this;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     @Override
@@ -63,5 +78,16 @@ public class ClipConfig {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "ClipConfig{" +
+                "id=" + id +
+                ", internalName='" + internalName + '\'' +
+                ", shape3DId=" + shape3DId +
+                ", soundId=" + soundId +
+                ", durationMillis=" + durationMillis +
+                '}';
     }
 }

@@ -74,6 +74,20 @@ public class ModelMatrixAnimation {
         return this;
     }
 
+    public Long firstTimeStamp() {
+        if(timeValueSamples == null || timeValueSamples.isEmpty()) {
+            return null;
+        }
+        return timeValueSamples.get(0).getTimeStamp();
+    }
+
+    public Long lastTimeStamp() {
+        if(timeValueSamples == null || timeValueSamples.isEmpty()) {
+            return null;
+        }
+        return timeValueSamples.get(timeValueSamples.size() - 1).getTimeStamp();
+    }
+
     @Override
     public String toString() {
         return "ModelMatrixAnimation{" +

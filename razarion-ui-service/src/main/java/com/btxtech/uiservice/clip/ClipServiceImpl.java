@@ -29,6 +29,10 @@ public class ClipServiceImpl implements ClipService {
     private final Collection<PlayingClip> playingClips = new ArrayList<>();
 
     public void onVisualConfig(@Observes VisualConfig visualConfig) {
+        setShapes3Ds(visualConfig.getClipConfigs());
+    }
+
+    public void setShapes3Ds(List<ClipConfig> clipConfigs) {
         clips.clear();
         for (Map.Entry<Integer, ClipConfig> entry : clips.entrySet()) {
             clips.put(entry.getKey(), entry.getValue());
@@ -71,5 +75,13 @@ public class ClipServiceImpl implements ClipService {
             }
         }
         return result;
+    }
+
+    public void override(ClipConfig clipConfig) {
+        clips.put(clipConfig.getId(), clipConfig);
+    }
+
+    public void remove(ClipConfig clipConfig) {
+        clips.remove(clipConfig);
     }
 }

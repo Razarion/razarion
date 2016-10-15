@@ -19,9 +19,8 @@ public class ProgressAnimation {
     public ProgressAnimation(ModelMatrixAnimation modelMatrixAnimation) {
         this.modelMatrixAnimation = modelMatrixAnimation;
         progressAnimationSamples = new ArrayList<>();
-        List<TimeValueSample> timeValueSamples = modelMatrixAnimation.getTimeValueSamples();
-        long beginTimeStamp = timeValueSamples.get(0).getTimeStamp();
-        long endTimeStamp = timeValueSamples.get(timeValueSamples.size() - 1).getTimeStamp();
+        long beginTimeStamp = modelMatrixAnimation.firstTimeStamp();
+        long endTimeStamp = modelMatrixAnimation.lastTimeStamp();
         for (TimeValueSample timeValueSample : modelMatrixAnimation.getTimeValueSamples()) {
             double progress = (double) (timeValueSample.getTimeStamp() - beginTimeStamp) / (double) (endTimeStamp - beginTimeStamp);
             progressAnimationSamples.add(new ProgressAnimationSamples(progress, timeValueSample.getValue()));

@@ -2,6 +2,7 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.dto.ClipConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,33 +16,28 @@ import java.util.List;
 
 /**
  * Created by Beat
- * 16.08.2016.
+ * 14.10.2016.
  */
-@Path(RestUrl.SHAPE_3D_PROVIDER)
-public interface Shape3DProvider {
+@Path(RestUrl.CLIP_PROVIDER)
+public interface ClipProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("imagegallery")
-    List<Shape3D> getShape3Ds();
+    @Path("all")
+    List<ClipConfig> read();
 
     @POST
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)
-    Shape3D create();
-
-    @POST
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("colladaConvert")
-    Shape3D colladaConvert(String colladaString);
+    ClipConfig create();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("save")
-    void save(Shape3DConfig shape3DConfig);
+    void update(ClipConfig clipConfig);
 
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("delete/{id}")
     void delete(@PathParam("id") int id);
+
 }

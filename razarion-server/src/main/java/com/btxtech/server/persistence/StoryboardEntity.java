@@ -33,6 +33,18 @@ public class StoryboardEntity {
     @OrderColumn(name = "orderColumn")
     private List<SceneEntity> scenes;
 
+    public StoryboardConfig toStoryboardConfig(GameEngineConfig gameEngineConfig) {
+        StoryboardConfig storyboardConfig = new StoryboardConfig();
+        storyboardConfig.setGameEngineConfig(gameEngineConfig);
+        gameEngineConfig.setPlanetConfig(planetEntity.toPlanetConfig());
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        for (SceneEntity scene : scenes) {
+            sceneConfigs.add(scene.toSceneConfig());
+        }
+        storyboardConfig.setSceneConfigs(sceneConfigs);
+        return storyboardConfig;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -44,18 +56,6 @@ public class StoryboardEntity {
 
         StoryboardEntity that = (StoryboardEntity) o;
         return id != null && id.equals(that.id);
-    }
-
-    public StoryboardConfig toStoryboardConfig(GameEngineConfig gameEngineConfig) {
-        StoryboardConfig storyboardConfig = new StoryboardConfig();
-        storyboardConfig.setGameEngineConfig(gameEngineConfig);
-        gameEngineConfig.setPlanetConfig(planetEntity.toPlanetConfig());
-        List<SceneConfig> sceneConfigs = new ArrayList<>();
-        for (SceneEntity scene : scenes) {
-            sceneConfigs.add(scene.toSceneConfig());
-        }
-        storyboardConfig.setSceneConfigs(sceneConfigs);
-        return storyboardConfig;
     }
 
     @Override

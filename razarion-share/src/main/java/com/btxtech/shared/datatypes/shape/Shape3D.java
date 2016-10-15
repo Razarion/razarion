@@ -2,6 +2,7 @@ package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
+import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,6 +58,24 @@ public class Shape3D implements ObjectNameIdProvider {
     public Shape3D setModelMatrixAnimations(List<ModelMatrixAnimation> modelMatrixAnimations) {
         this.modelMatrixAnimations = modelMatrixAnimations;
         return this;
+    }
+
+    public int calculateAnimationDuration() {
+        if (modelMatrixAnimations == null) {
+            throw new IllegalArgumentException("No animation configured for Shape3D: " + this);
+        }
+        Long first = null;
+        Long last = null;
+        for (ModelMatrixAnimation modelMatrixAnimation : modelMatrixAnimations) {
+            Long tmpFirst = modelMatrixAnimation.firstTimeStamp();
+            Long tmpLast = modelMatrixAnimation.lastTimeStamp();
+            first = MathHelper.getSafeMin(tmpFirst, first);
+            last = MathHelper.getSafeMax(tmpLast, last);
+        }
+        if (first == null || last == null) {
+            throw new IllegalArgumentException("Invalid Animation in Shape3D: " + this);
+        }
+        return (int) (last - first);
     }
 
     @Override

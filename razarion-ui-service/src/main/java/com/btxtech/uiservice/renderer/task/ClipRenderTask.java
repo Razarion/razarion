@@ -15,6 +15,7 @@ import com.btxtech.uiservice.renderer.RenderUnitControl;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -22,6 +23,7 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class ClipRenderTask extends AbstractRenderTask<ClipConfig> {
+    private Logger logger = Logger.getLogger(ClipRenderTask.class.getName());
     @Inject
     private ClipServiceImpl clipService;
     @Inject
@@ -38,24 +40,27 @@ public class ClipRenderTask extends AbstractRenderTask<ClipConfig> {
     }
 
     private void setupClip(ClipConfig clipConfig, boolean fillBuffer) {
-        ModelRenderer<ClipConfig, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-        modelRenderer.init(clipConfig, timeStamp -> clipService.provideModelMatrices(clipConfig, timeStamp));
-        Shape3D shape3D = shape3DUiService.getShape3D(clipConfig.getShape3DId());
-        for (Element3D element3D : shape3D.getElement3Ds()) {
-            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-                compositeRenderer.init(vertexContainer);
-                compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-                compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-                compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
-                if (fillBuffer) {
-                    compositeRenderer.fillBuffers();
+        if (clipConfig.getShape3DId() != null) {
+            ModelRenderer<ClipConfig, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            modelRenderer.init(clipConfig, timeStamp -> clipService.provideModelMatrices(clipConfig, timeStamp));
+            Shape3D shape3D = shape3DUiService.getShape3D(clipConfig.getShape3DId());
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+                    compositeRenderer.init(vertexContainer);
+                    compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    if (fillBuffer) {
+                        compositeRenderer.fillBuffers();
+                    }
                 }
             }
+            add(modelRenderer);
+        } else {
+            logger.warning("ClipRenderTask: no shape3DId for ClipConfig: " + clipConfig);
         }
-        add(modelRenderer);
     }
-
 }

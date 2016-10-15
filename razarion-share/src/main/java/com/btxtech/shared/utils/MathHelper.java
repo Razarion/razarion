@@ -241,5 +241,27 @@ public class MathHelper {
         return t * t * (3.0 - 2.0 * t);
     }
 
+    public static Long getSafeMin(Long l1, Long l2) {
+        if (l1 != null && l2 != null) {
+            return Math.min(l1, l2);
+        } else if (l1 != null) {
+            return l1;
+        } else if (l2 != null) {
+            return l2;
+        } else {
+            return null;
+        }
+    }
 
+    public static Long getSafeMax(Long l1, Long l2) {
+        if (l1 != null && l2 != null) {
+            return Math.max(l1, l2);
+        } else if (l1 != null) {
+            return l1;
+        } else if (l2 != null) {
+            return l2;
+        } else {
+            return null;
+        }
+    }
 }

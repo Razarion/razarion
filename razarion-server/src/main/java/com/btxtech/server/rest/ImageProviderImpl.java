@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ImageProviderImpl implements ImageProvider {
     @PersistenceContext
-    private EntityManager entityManager;
+    private EntityManager entityManager; // There should be a persistence layer here...
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;

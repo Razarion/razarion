@@ -62,7 +62,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
                 fireSelection(shape3D.createObjectNameId());
             }
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
+            logger.log(Level.SEVERE, "Shape3DProvider.create failed: " + message, throwable);
             return false;
         }).create();
     }
@@ -173,8 +173,6 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
 
     @Override
     public void onChange(Shape3D shape3D) {
-        // TODO BaseItemType ResourceItemType and TerraonObject shape3d change and render update
-
         // Update BaseItemType renderer
         for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
             if(baseItemType.getShape3DId() != null && shape3D.getDbId() == baseItemType.getShape3DId()) {
