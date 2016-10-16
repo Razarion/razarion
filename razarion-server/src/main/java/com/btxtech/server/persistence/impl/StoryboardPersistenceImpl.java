@@ -12,6 +12,7 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.CameraConfig;
@@ -95,19 +96,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
-        List<SceneConfig> sceneConfigs = new ArrayList<>();
-        addResources(sceneConfigs); // TODO mode to DB
-        addNpcBot(sceneConfigs); // TODO mode to DB
-        addEnemyBot(sceneConfigs); // TODO mode to DB
-        addScrollOverTerrain(sceneConfigs); // TODO mode to DB
-        addBotSpawnScene(sceneConfigs); // TODO mode to DB
-        addUserSpawnScene(sceneConfigs); // TODO mode to DB
-        addBotMoveScene(sceneConfigs);// TODO mode to DB
-        addScrollToOwnScene(sceneConfigs);// TODO mode to DB
-        addUserMoveScene(sceneConfigs);// TODO mode to DB
-        addNpcHarvestAttack(sceneConfigs);// TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        storyboardConfig.setSceneConfigs(sceneConfigs);
+        storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -167,7 +158,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
         attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(10).setReloadTime(1).setDetonationRadius(1).setProjectileSpeed(17.0));
+        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(1).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -182,6 +173,72 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         visualConfig.setWaterLightConfig(lightConfig);
         visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         return visualConfig;
+    }
+
+    private List<LevelConfig> setupLevelConfigs() {
+        List<LevelConfig> levelConfigs = new ArrayList<>();
+        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
+        itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(itemTypeLimitation));
+        levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(10).setItemTypeLimitation(itemTypeLimitation));
+        return levelConfigs;
+    }
+
+    private void completePlanetConfig(PlanetConfig planetConfig) {
+        planetConfig.setHouseSpace(10);
+        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
+        itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        planetConfig.setItemTypeLimitation(itemTypeLimitation);
+        planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
+    }
+
+
+    private I18nString i18nHelper(String text) {
+        Map<String, String> localizedStrings = new HashMap<>();
+        localizedStrings.put(I18nString.DEFAULT, text);
+        return new I18nString(localizedStrings);
+    }
+    // Attack -----------------------------------------------------------------------------
+
+    private List<SceneConfig> setupAttack() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        List<BotConfig> botConfigs = new ArrayList<>();
+        // Bot Target
+        List<BotEnragementStateConfig> targetEnragement = new ArrayList<>();
+        List<BotItemConfig> targetBotItems = new ArrayList<>();
+        targetBotItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(100, 80))).setNoSpawn(true).setNoRebuild(true));
+        targetEnragement.add(new BotEnragementStateConfig().setName("Normal").setBotItems(targetBotItems));
+        botConfigs.add(new BotConfig().setId(NPC_BOT_INSTRUCTOR).setActionDelay(3000).setBotEnragementStateConfigs(targetEnragement).setName("Kenny").setNpc(true));
+        // Bot Attacker
+        List<BotEnragementStateConfig> attackerEnragement = new ArrayList<>();
+        List<BotItemConfig> attackerBotItems = new ArrayList<>();
+        attackerBotItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(90, 80))).setNoSpawn(true).setNoRebuild(true));
+        attackerEnragement.add(new BotEnragementStateConfig().setName("Normal").setBotItems(attackerBotItems));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragement).setName("Kenny").setNpc(false));
+        // Attack command
+        List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
+        botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(100, 80))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER));
+        // div
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(true);
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setBotAttackCommandConfigs(botAttackCommandConfigs));
+        return sceneConfigs;
+    }
+
+    // Tutorial -----------------------------------------------------------------------------
+
+    private List<SceneConfig> setupTutorial() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        addResources(sceneConfigs); // TODO mode to DB
+        addNpcBot(sceneConfigs); // TODO mode to DB
+        addEnemyBot(sceneConfigs); // TODO mode to DB
+        addScrollOverTerrain(sceneConfigs); // TODO mode to DB
+        addBotSpawnScene(sceneConfigs); // TODO mode to DB
+        addUserSpawnScene(sceneConfigs); // TODO mode to DB
+        addBotMoveScene(sceneConfigs);// TODO mode to DB
+        addScrollToOwnScene(sceneConfigs);// TODO mode to DB
+        addUserMoveScene(sceneConfigs);// TODO mode to DB
+        addNpcHarvestAttack(sceneConfigs);// TODO mode to DB
+        return sceneConfigs;
     }
 
     private void addNpcBot(List<SceneConfig> sceneConfigs) {
@@ -285,29 +342,4 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(250, 130)).setSpeed(16.0).setCameraLocked(false));
         sceneConfigs.add(sceneConfig);
     }
-
-    private List<LevelConfig> setupLevelConfigs() {
-        List<LevelConfig> levelConfigs = new ArrayList<>();
-        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
-        itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(itemTypeLimitation));
-        levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(10).setItemTypeLimitation(itemTypeLimitation));
-        return levelConfigs;
-    }
-
-    private void completePlanetConfig(PlanetConfig planetConfig) {
-        planetConfig.setHouseSpace(10);
-        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
-        itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        planetConfig.setItemTypeLimitation(itemTypeLimitation);
-        planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
-    }
-
-
-    private I18nString i18nHelper(String text) {
-        Map<String, String> localizedStrings = new HashMap<>();
-        localizedStrings.put(I18nString.DEFAULT, text);
-        return new I18nString(localizedStrings);
-    }
-
 }

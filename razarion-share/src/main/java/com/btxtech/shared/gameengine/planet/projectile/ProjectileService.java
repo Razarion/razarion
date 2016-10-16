@@ -1,7 +1,10 @@
 package com.btxtech.shared.gameengine.planet.projectile;
 
+import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -14,9 +17,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -30,7 +32,7 @@ public class ProjectileService {
     private ActivityService activityService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
-    private final List<Projectile> projectiles = new ArrayList<>();
+    private MapList<BaseItemType, Projectile> projectiles = new MapList<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent ignore) {
         projectiles.clear();
@@ -47,28 +49,23 @@ public class ProjectileService {
             throw new UnsupportedOperationException();
         }
         Projectile projectile = new Projectile(timeStamp, actor, muzzle, target.getSyncPhysicalArea().getPosition());
-        synchronized (projectiles) {
-            projectiles.add(projectile);
-        }
+        projectiles.put(actor.getBaseItemType(), projectile);
 
         activityService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition(), weaponType.getDetonationClipId(), timeStamp);
     }
 
     public void tick(long timeStamp) {
         Collection<Projectile> detonationProjectiles = new ArrayList<>();
-        for (Iterator<Projectile> iterator = projectiles.iterator(); iterator.hasNext(); ) {
-            Projectile projectile = iterator.next();
-            if (projectile.isTargetReached(timeStamp)) {
-                detonationProjectiles.add(projectile);
-                iterator.remove();
-            }
-        }
+        projectiles.getAll().stream().filter(projectile -> projectile.isTargetReached(timeStamp)).forEach(projectile -> {
+            detonationProjectiles.add(projectile);
+            projectiles.remove(projectile.getActor().getBaseItemType(), projectile);
+        });
 
         detonationProjectiles.forEach(projectile -> projectileDetonation(projectile, timeStamp));
     }
 
-    public List<Projectile> getProjectiles() {
-        return Collections.unmodifiableList(projectiles);
+    public List<ModelMatrices> getProjectiles(BaseItemType baseItemType, long timeStamp) {
+        return projectiles.getSave(baseItemType).stream().map(projectile -> projectile.getInterpolatedModelMatrices(timeStamp)).collect(Collectors.toList());
     }
 
     private void projectileDetonation(Projectile detonationProjectile, long timeStamp) {

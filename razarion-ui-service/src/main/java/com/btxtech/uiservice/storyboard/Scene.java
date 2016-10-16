@@ -81,6 +81,9 @@ public class Scene {
         if (sceneConfig.getBotHarvestCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotHarvestCommandConfigs());
         }
+        if (sceneConfig.getBotAttackCommandConfigs() != null) {
+            botService.executeCommands(sceneConfig.getBotAttackCommandConfigs());
+        }
         if (sceneConfig.getStartPointConfig() != null) {
             startPointUiService.activate(sceneConfig.getStartPointConfig());
         }

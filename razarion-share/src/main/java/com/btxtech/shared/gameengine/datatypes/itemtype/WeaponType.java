@@ -33,7 +33,7 @@ public class WeaponType {
     private Map<Integer, Double> itemTypeFactors;
     private Double projectileSpeed; // Pixel per second
     private Vertex muzzlePosition;
-    private Integer projectileShape3D;
+    private Integer projectileShape3DId;
     private Integer muzzleFlashClipId;
     private Integer detonationClipId;
 
@@ -113,12 +113,12 @@ public class WeaponType {
         return this;
     }
 
-    public Integer getProjectileShape3D() {
-        return projectileShape3D;
+    public Integer getProjectileShape3DId() {
+        return projectileShape3DId;
     }
 
-    public WeaponType setProjectileShape3D(Integer projectileShape3D) {
-        this.projectileShape3D = projectileShape3D;
+    public WeaponType setProjectileShape3DId(Integer projectileShape3DId) {
+        this.projectileShape3DId = projectileShape3DId;
         return this;
     }
 

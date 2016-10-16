@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
@@ -14,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
+import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import org.jboss.errai.common.client.api.Caller;
@@ -44,6 +46,8 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     private ItemTypeService itemTypeService;
     @Inject
     private BaseItemRenderTask baseItemRenderTask;
+    @Inject
+    private ProjectileRenderTask projectileRenderTask;
     @Inject
     private ResourceItemRenderTask resourceItemRenderTask;
     @Inject
@@ -180,6 +184,9 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             }
             if(baseItemType.getSpawnShape3DId() != null && shape3D.getDbId() == baseItemType.getSpawnShape3DId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
+            }
+            if(baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getProjectileShape3DId() != null && shape3D.getDbId() ==  baseItemType.getWeaponType().getProjectileShape3DId()) {
+                projectileRenderTask.onBaseItemTypeChanged(baseItemType);
             }
         }
         // Update ResourceItemType renderer

@@ -82,9 +82,9 @@ public class GameEngineMonitorController implements Initializable {
         gameEngineFutureControl = devToolsSimpleExecutorService.createDevToolFutureControl(SimpleExecutorService.Type.GAME_ENGINE);
         gameEngineFutureControl.setAfterExecutionCallback(this::tick);
 
+        onRestartScenario();
         renderer.init(canvas, 4.0);
         overlayRenderer.init(overlayCanvas, 4.0);
-        onRestartScenario();
         renderer.render();
 
         onRun();

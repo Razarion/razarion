@@ -63,9 +63,7 @@ public class PlayerBase {
     public boolean isEnemy(PlayerBase playerBase) {
         return !equals(playerBase)
                 && !(character == Character.BOT && playerBase.character == Character.BOT)
-                && !(character == Character.BOT_NCP || playerBase.character == Character.BOT_NCP)
-                && !(character == Character.HUMAN && playerBase.character == Character.HUMAN);
-
+                && !(character != Character.BOT && playerBase.character != Character.BOT);
     }
 
     public void addItem(SyncBaseItem syncBaseItem) {

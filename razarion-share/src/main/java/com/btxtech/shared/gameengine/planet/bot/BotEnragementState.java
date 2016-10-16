@@ -134,7 +134,7 @@ public class BotEnragementState {
         }
     }
 
-    public void executeCommand(AbstractBotCommandConfig botCommandConfig) {
-        botItemContainer.executeCommand(botCommandConfig);
+    public void executeCommand(AbstractBotCommandConfig botCommandConfig, PlayerBase base) {
+        botItemContainer.executeCommand(botCommandConfig, base);
     }
 }

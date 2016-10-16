@@ -158,7 +158,7 @@ public class BotRunner {
     }
 
     public void executeCommand(AbstractBotCommandConfig botCommandConfig) {
-        botEnragementState.executeCommand(botCommandConfig);
+        botEnragementState.executeCommand(botCommandConfig, base);
     }
 
 

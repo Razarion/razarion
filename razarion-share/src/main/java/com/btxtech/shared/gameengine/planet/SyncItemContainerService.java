@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -209,6 +210,23 @@ public class SyncItemContainerService {
                 return null;
             }
         });
+    }
+
+    public Collection<SyncBaseItem> findEnemyBaseItemWithPlace(int baseItemTypeId, PlayerBase playerBase, PlaceConfig resourceSelection) {
+        Collection<SyncBaseItem> result = new ArrayList<>();
+        iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (syncBaseItem.getItemType().getId() != baseItemTypeId) {
+                return null;
+            }
+            if(!playerBase.isEnemy(syncBaseItem.getBase())) {
+                return null;
+            }
+            if (syncBaseItem.getSyncPhysicalArea().contains(resourceSelection)) {
+                result.add(syncBaseItem);
+            }
+            return null;
+        });
+        return result;
     }
 
     public Collection<SyncBaseItem> findBaseItemInRect(Rectangle2D rectangle) {
