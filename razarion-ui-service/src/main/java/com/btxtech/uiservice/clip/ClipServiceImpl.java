@@ -4,9 +4,11 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.ClipService;
 import com.btxtech.uiservice.Shape3DUiService;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -25,8 +27,15 @@ import java.util.Map;
 public class ClipServiceImpl implements ClipService {
     @Inject
     private Shape3DUiService shape3DUiService;
+    @Inject
+    private ActivityService activityService;
     private Map<Integer, ClipConfig> clips = new HashMap<>();
     private final Collection<PlayingClip> playingClips = new ArrayList<>();
+
+    @PostConstruct
+    public void postConstruct() {
+        activityService.setClipService(this);
+    }
 
     public void onVisualConfig(@Observes VisualConfig visualConfig) {
         setShapes3Ds(visualConfig.getClipConfigs());
@@ -34,8 +43,10 @@ public class ClipServiceImpl implements ClipService {
 
     public void setShapes3Ds(List<ClipConfig> clipConfigs) {
         clips.clear();
-        for (Map.Entry<Integer, ClipConfig> entry : clips.entrySet()) {
-            clips.put(entry.getKey(), entry.getValue());
+        if (clipConfigs != null) {
+            for (ClipConfig clipConfig : clipConfigs) {
+                clips.put(clipConfig.getId(), clipConfig);
+            }
         }
     }
 
@@ -53,7 +64,6 @@ public class ClipServiceImpl implements ClipService {
 
     @Override
     public void playClip(Vertex position, Vertex norm, int clipId, long timeStamp) {
-        clips.get(clipId);
         synchronized (playingClips) {
             playingClips.add(new PlayingClip(position, norm, getClipConfig(clipId), timeStamp));
         }

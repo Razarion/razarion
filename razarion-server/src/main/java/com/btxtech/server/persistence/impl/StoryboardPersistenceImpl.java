@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.impl;
 
+import com.btxtech.server.persistence.ClipPersistence;
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.StoryboardEntity;
 import com.btxtech.server.persistence.TerrainElementPersistence;
@@ -77,6 +78,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private Shape3DPersistence shape3DPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
+    @Inject
+    private ClipPersistence clipPersistence;
 
     @Override
     @Transactional
@@ -158,7 +161,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
         attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(1).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)));
+        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(1).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)).setMuzzleFlashClipId(180836));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -172,6 +175,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
         visualConfig.setWaterLightConfig(lightConfig);
         visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
+        visualConfig.setClipConfigs(clipPersistence.readClipConfigs());
         return visualConfig;
     }
 

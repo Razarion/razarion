@@ -6,6 +6,7 @@ import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -37,7 +38,7 @@ public class ClipPropertyPanel extends AbstractPropertyPanel<ClipConfig> {
     @Inject
     @Bound
     @DataField
-    private Label internalName;
+    private TextBox internalName;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
