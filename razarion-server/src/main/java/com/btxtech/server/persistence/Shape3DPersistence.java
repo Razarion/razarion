@@ -1,9 +1,9 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.servercommon.collada.ColladaConverter;
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import org.xml.sax.SAXException;
 
 import javax.inject.Singleton;
@@ -74,9 +74,9 @@ public class Shape3DPersistence {
             }
             colladaEntity.setTextures(imageLibraryEntityMap);
         }
-        if(shape3DConfig.getAnimations() != null) {
-            Map<String, ItemState> animations = new HashMap<>();
-            for (Map.Entry<String, ItemState> entry : shape3DConfig.getAnimations().entrySet()) {
+        if (shape3DConfig.getAnimations() != null) {
+            Map<String, AnimationTrigger> animations = new HashMap<>();
+            for (Map.Entry<String, AnimationTrigger> entry : shape3DConfig.getAnimations().entrySet()) {
                 animations.put(entry.getKey(), entry.getValue());
             }
             colladaEntity.setAnimations(animations);

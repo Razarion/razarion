@@ -1,6 +1,6 @@
 package com.btxtech.servercommon.collada;
 
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 
 /**
  * Created by Beat
@@ -9,5 +9,5 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 public interface ColladaConverterMapper {
     Integer getTextureId(String materialId);
 
-    ItemState getItemState(String animationId);
+    AnimationTrigger getAnimationTrigger(String animationId);
 }

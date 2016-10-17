@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.servercommon.collada.ColladaConverterMapper;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -33,7 +33,7 @@ public class ColladaEntity implements ColladaConverterMapper {
     @ElementCollection
     @CollectionTable(name = "COLLADA_ANIMATIONS")
     @Enumerated(EnumType.STRING)
-    private Map<String, ItemState> animations;
+    private Map<String, AnimationTrigger> animations;
 
     public Long getId() {
         return id;
@@ -58,7 +58,7 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     @Override
-    public ItemState getItemState(String animationId) {
+    public AnimationTrigger getAnimationTrigger(String animationId) {
         return animations.get(animationId);
     }
 
@@ -67,7 +67,7 @@ public class ColladaEntity implements ColladaConverterMapper {
         this.textures.putAll(textures);
     }
 
-    public void setAnimations(Map<String, ItemState> animations) {
+    public void setAnimations(Map<String, AnimationTrigger> animations) {
         this.animations.clear();
         this.animations.putAll(animations);
     }

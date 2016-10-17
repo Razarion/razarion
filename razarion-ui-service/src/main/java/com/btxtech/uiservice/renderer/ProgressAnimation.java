@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.TimeValueSample;
@@ -27,13 +28,13 @@ public class ProgressAnimation {
         }
     }
 
-    public boolean isItemTriggered() {
-        return modelMatrixAnimation.getItemState() != null;
-    }
-
     public void dispatch(ShapeTransform shapeTransform, double progress) {
         double value = calculateValue(progress);
         setupMatrix(value, shapeTransform);
+    }
+
+    public AnimationTrigger getAnimationTrigger() {
+        return modelMatrixAnimation.getAnimationTrigger();
     }
 
     private double calculateValue(double progress) {

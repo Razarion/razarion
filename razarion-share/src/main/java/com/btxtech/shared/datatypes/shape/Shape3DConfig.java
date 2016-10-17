@@ -1,7 +1,5 @@
 package com.btxtech.shared.datatypes.shape;
 
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
-
 import java.util.Map;
 
 /**
@@ -12,7 +10,7 @@ public class Shape3DConfig {
     private int dbId;
     private String colladaString;
     private Map<String, Integer> textures;
-    private Map<String, ItemState> animations;
+    private Map<String, AnimationTrigger> animations;
 
     public int getDbId() {
         return dbId;
@@ -41,11 +39,11 @@ public class Shape3DConfig {
         return this;
     }
 
-    public Map<String, ItemState> getAnimations() {
+    public Map<String, AnimationTrigger> getAnimations() {
         return animations;
     }
 
-    public Shape3DConfig setAnimations(Map<String, ItemState> animations) {
+    public Shape3DConfig setAnimations(Map<String, AnimationTrigger> animations) {
         this.animations = animations;
         return this;
     }

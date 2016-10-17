@@ -1,5 +1,6 @@
 package com.btxtech.shared.utils;
 
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
@@ -70,10 +71,10 @@ public class Shape3DUtils {
         }
     }
 
-    public static void replaceAnimation(Shape3D shape3D, String animationId, ItemState itemState) {
+    public static void replaceAnimation(Shape3D shape3D, String animationId, AnimationTrigger animationTrigger) {
         for (ModelMatrixAnimation modelMatrixAnimation : shape3D.getModelMatrixAnimations()) {
             if (modelMatrixAnimation.getId().equals(animationId)) {
-                modelMatrixAnimation.setItemState(itemState);
+                modelMatrixAnimation.setAnimationTrigger(animationTrigger);
                 return;
             }
         }

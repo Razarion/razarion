@@ -129,7 +129,7 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
 
     public void animationPanelChanged(AnimationPanel animationPanel) {
         if (shape3D.getModelMatrixAnimations().contains(animationPanel.getValue())) {
-            shape3DCrud.updateAnimation(shape3D, animationPanel.getValue().getId(), animationPanel.getNewItemState());
+            shape3DCrud.updateAnimation(shape3D, animationPanel.getValue().getId(), animationPanel.getNewAnimationTrigger());
         }
     }
 

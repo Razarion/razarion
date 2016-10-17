@@ -3,13 +3,13 @@ package com.btxtech.servercommon.collada;
 import com.btxtech.TestHelper;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.TimeValueSample;
 import com.btxtech.shared.datatypes.shape.TransformationModification;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.Shape3DUtils;
 import org.junit.Assert;
@@ -68,7 +68,7 @@ public class ColladaConverterTest {
         // Assert norms
         Map<Vertex, Integer> normGroup = GeometricUtil.groupVertices(vertexContainer.getNorms(), 0.0001);
         // Top
-       //  Assert.assertEquals(3, normGroup.get(new Vertex(0, 0, 1)).intValue());
+        //  Assert.assertEquals(3, normGroup.get(new Vertex(0, 0, 1)).intValue());
 
 
 //        List<Vertex> vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
@@ -270,13 +270,13 @@ public class ColladaConverterTest {
 
     @Test
     public void testAnimation() throws Exception {
-        Map<String, ItemState> itemStates = new HashMap<>();
-        itemStates.put("CubeId_scale_X", ItemState.BEAM_UP);
-        itemStates.put("CubeId_scale_Y", ItemState.BUILDING);
-        itemStates.put("PlaneId_location_Y", ItemState.BEAM_UP);
-        itemStates.put("PlaneId_location_Z", ItemState.BUILDING);
+        Map<String, AnimationTrigger> animationTriggers = new HashMap<>();
+        animationTriggers.put("CubeId_scale_X", AnimationTrigger.ITEM_PROGRESS);
+        animationTriggers.put("CubeId_scale_Y", AnimationTrigger.ITEM_PROGRESS);
+        animationTriggers.put("PlaneId_location_Y", AnimationTrigger.CONTINUES);
+        animationTriggers.put("PlaneId_location_Z", AnimationTrigger.CONTINUES);
 
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, itemStates));
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, animationTriggers));
         Assert.assertEquals(6, shape3D.getModelMatrixAnimations().size());
         Assert.assertEquals(2, shape3D.getElement3Ds().size());
 
@@ -286,21 +286,21 @@ public class ColladaConverterTest {
         Assert.assertEquals(ModelMatrixAnimation.Axis.X, modelMatrixAnimation.getAxis());
         Assert.assertEquals(TransformationModification.SCALE, modelMatrixAnimation.getModification());
         Assert.assertTrue(cube == modelMatrixAnimation.getElement3D());
-        Assert.assertEquals(ItemState.BEAM_UP, modelMatrixAnimation.getItemState());
+        Assert.assertEquals(AnimationTrigger.ITEM_PROGRESS, modelMatrixAnimation.getAnimationTrigger());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 10), createTvs(8333, 20));
 
         modelMatrixAnimation = getModelMatrixAnimation4Axis("CubeId_scale_Y", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.Y, modelMatrixAnimation.getAxis());
         Assert.assertEquals(TransformationModification.SCALE, modelMatrixAnimation.getModification());
         Assert.assertTrue(cube == modelMatrixAnimation.getElement3D());
-        Assert.assertEquals(ItemState.BUILDING, modelMatrixAnimation.getItemState());
+        Assert.assertEquals(AnimationTrigger.ITEM_PROGRESS, modelMatrixAnimation.getAnimationTrigger());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 10), createTvs(8333, 30));
 
         modelMatrixAnimation = getModelMatrixAnimation4Axis("CubeId_scale_Z", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.Z, modelMatrixAnimation.getAxis());
         Assert.assertEquals(TransformationModification.SCALE, modelMatrixAnimation.getModification());
         Assert.assertTrue(cube == modelMatrixAnimation.getElement3D());
-        Assert.assertNull(modelMatrixAnimation.getItemState());
+        Assert.assertNull(modelMatrixAnimation.getAnimationTrigger());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 20), createTvs(8333, 10));
 
         Element3D plane = Shape3DUtils.getElement3D("PlaneId", shape3D);
@@ -309,21 +309,21 @@ public class ColladaConverterTest {
         Assert.assertEquals(ModelMatrixAnimation.Axis.X, modelMatrixAnimation.getAxis());
         Assert.assertEquals(TransformationModification.LOCATION, modelMatrixAnimation.getModification());
         Assert.assertTrue(plane == modelMatrixAnimation.getElement3D());
-        Assert.assertNull(modelMatrixAnimation.getItemState());
+        Assert.assertNull(modelMatrixAnimation.getAnimationTrigger());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 0), createTvs(4166, 0));
 
         modelMatrixAnimation = getModelMatrixAnimation4Axis("PlaneId_location_Y", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.Y, modelMatrixAnimation.getAxis());
         Assert.assertEquals(TransformationModification.LOCATION, modelMatrixAnimation.getModification());
         Assert.assertTrue(plane == modelMatrixAnimation.getElement3D());
-        Assert.assertEquals(ItemState.BEAM_UP, modelMatrixAnimation.getItemState());
+        Assert.assertEquals(AnimationTrigger.CONTINUES, modelMatrixAnimation.getAnimationTrigger());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 5), createTvs(4166, 15));
 
         modelMatrixAnimation = getModelMatrixAnimation4Axis("PlaneId_location_Z", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.Z, modelMatrixAnimation.getAxis());
         Assert.assertEquals(TransformationModification.LOCATION, modelMatrixAnimation.getModification());
         Assert.assertTrue(plane == modelMatrixAnimation.getElement3D());
-        Assert.assertEquals(ItemState.BUILDING, modelMatrixAnimation.getItemState());
+        Assert.assertEquals(AnimationTrigger.CONTINUES, modelMatrixAnimation.getAnimationTrigger());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 10), createTvs(4166, -50));
     }
 
@@ -343,11 +343,11 @@ public class ColladaConverterTest {
 
     private class TestMapper implements ColladaConverterMapper {
         private Map<String, Integer> textures;
-        private Map<String, ItemState> itemStates;
+        private Map<String, AnimationTrigger> animationTriggers;
 
-        public TestMapper(Map<String, Integer> textures, Map<String, ItemState> itemStates) {
+        public TestMapper(Map<String, Integer> textures, Map<String, AnimationTrigger> animationTriggers) {
             this.textures = textures;
-            this.itemStates = itemStates;
+            this.animationTriggers = animationTriggers;
         }
 
         @Override
@@ -360,9 +360,9 @@ public class ColladaConverterTest {
         }
 
         @Override
-        public ItemState getItemState(String animationId) {
-            if (itemStates != null) {
-                return itemStates.get(animationId);
+        public AnimationTrigger getAnimationTrigger(String animationId) {
+            if (animationTriggers != null) {
+                return animationTriggers.get(animationId);
             } else {
                 return null;
             }

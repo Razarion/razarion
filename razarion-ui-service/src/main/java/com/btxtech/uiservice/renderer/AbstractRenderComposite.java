@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.shape.ShapeTransform;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -81,10 +82,19 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         } else {
             ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
             for (ProgressAnimation progressAnimation : progressAnimations) {
-                if (progressAnimation.isItemTriggered()) {
-                    progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
-                } else {
-                    throw new UnsupportedOperationException();
+                Objects.requireNonNull(progressAnimation.getAnimationTrigger(), "No animation trigger");
+                switch(progressAnimation.getAnimationTrigger()) {
+                    case ITEM_PROGRESS:
+                        progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
+                        break;
+                    case SINGLE_RUN:
+                        progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
+                        break;
+                    case CONTINUES:
+                        throw new UnsupportedOperationException();
+                        // break;
+                    default:
+                        throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
                 }
             }
             Matrix4 matrix = shapeTransformTRS.setupMatrix();

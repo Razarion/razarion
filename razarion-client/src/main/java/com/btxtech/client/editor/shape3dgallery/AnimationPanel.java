@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.shape3dgallery;
 
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ValueListBox;
@@ -15,7 +15,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.Arrays;
 
@@ -40,15 +39,15 @@ public class AnimationPanel implements TakesValue<ModelMatrixAnimation>, IsEleme
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private ValueListBox<ItemState> animationTrigger;
-    private ItemState newItemState;
+    private ValueListBox<AnimationTrigger> animationTrigger;
+    private AnimationTrigger newAnimationTrigger;
     private Shape3DPropertyPanel shape3DPropertyPanel;
 
     @PostConstruct
     public void postConstruct() {
-        animationTrigger.setAcceptableValues(Arrays.asList(ItemState.values()));
+        animationTrigger.setAcceptableValues(Arrays.asList(AnimationTrigger.values()));
         animationTrigger.addValueChangeHandler(event -> {
-            newItemState = animationTrigger.getValue();
+            newAnimationTrigger = animationTrigger.getValue();
             shape3DPropertyPanel.animationPanelChanged(this);
         });
     }
@@ -56,8 +55,8 @@ public class AnimationPanel implements TakesValue<ModelMatrixAnimation>, IsEleme
     @Override
     public void setValue(ModelMatrixAnimation modelMatrixAnimation) {
         binder.setModel(modelMatrixAnimation);
-        if(modelMatrixAnimation.getItemState() != null) {
-            animationTrigger.setValue(modelMatrixAnimation.getItemState());
+        if (modelMatrixAnimation.getAnimationTrigger() != null) {
+            animationTrigger.setValue(modelMatrixAnimation.getAnimationTrigger());
         }
     }
 
@@ -71,8 +70,8 @@ public class AnimationPanel implements TakesValue<ModelMatrixAnimation>, IsEleme
         return binder.getModel();
     }
 
-    public ItemState getNewItemState() {
-        return newItemState;
+    public AnimationTrigger getNewAnimationTrigger() {
+        return newAnimationTrigger;
     }
 
     public void setShape3DPropertyPanel(Shape3DPropertyPanel shape3DPropertyPanel) {

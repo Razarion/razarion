@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
-import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
+import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
@@ -119,12 +119,12 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
         fireChange(shape3D);
     }
 
-    public void updateAnimation(Shape3D shape3D, String animationId, ItemState itemState) {
-        Shape3DUtils.replaceAnimation(shape3D, animationId, itemState);
+    public void updateAnimation(Shape3D shape3D, String animationId, AnimationTrigger animationTrigger) {
+        Shape3DUtils.replaceAnimation(shape3D, animationId, animationTrigger);
         // Update changes set
         Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
-        Map<String, ItemState> animationMap = new HashMap<>();
-        shape3D.getModelMatrixAnimations().stream().filter(modelMatrixAnimation -> modelMatrixAnimation.getItemState() != null).forEach(modelMatrixAnimation -> animationMap.put(modelMatrixAnimation.getId(), modelMatrixAnimation.getItemState()));
+        Map<String, AnimationTrigger> animationMap = new HashMap<>();
+        shape3D.getModelMatrixAnimations().stream().filter(modelMatrixAnimation -> modelMatrixAnimation.getAnimationTrigger() != null).forEach(modelMatrixAnimation -> animationMap.put(modelMatrixAnimation.getId(), modelMatrixAnimation.getAnimationTrigger()));
         shape3DConfig.setAnimations(animationMap);
         shape3DUiService.override(shape3D);
         fireChange(shape3D);

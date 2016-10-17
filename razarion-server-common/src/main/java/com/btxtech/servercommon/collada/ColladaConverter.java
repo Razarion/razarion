@@ -41,7 +41,7 @@ public class ColladaConverter {
             }
             if (shape3D.getModelMatrixAnimations() != null) {
                 for (ModelMatrixAnimation modelMatrixAnimation : shape3D.getModelMatrixAnimations()) {
-                    modelMatrixAnimation.setItemState(colladaConverterMapper.getItemState(modelMatrixAnimation.getId()));
+                    modelMatrixAnimation.setAnimationTrigger(colladaConverterMapper.getAnimationTrigger(modelMatrixAnimation.getId()));
                 }
             }
         }

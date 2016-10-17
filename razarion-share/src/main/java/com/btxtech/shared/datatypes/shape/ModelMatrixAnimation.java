@@ -18,7 +18,7 @@ public class ModelMatrixAnimation {
     private TransformationModification modification;
     private Axis axis;
     private List<TimeValueSample> timeValueSamples;
-    private ItemState itemState;
+    private AnimationTrigger animationTrigger;
 
     public String getId() {
         return id;
@@ -65,12 +65,12 @@ public class ModelMatrixAnimation {
         return this;
     }
 
-    public ItemState getItemState() {
-        return itemState;
+    public AnimationTrigger getAnimationTrigger() {
+        return animationTrigger;
     }
 
-    public ModelMatrixAnimation setItemState(ItemState itemState) {
-        this.itemState = itemState;
+    public ModelMatrixAnimation setAnimationTrigger(AnimationTrigger animationTrigger) {
+        this.animationTrigger = animationTrigger;
         return this;
     }
 
@@ -96,7 +96,7 @@ public class ModelMatrixAnimation {
                 ", axis=" + axis +
                 ", timeValueSamples=" + timeValueSamples +
                 ", element3D id=" + element3D.getId() +
-                ", itemState=" + itemState +
+                ", animationTrigger=" + animationTrigger +
                 '}';
     }
 }
