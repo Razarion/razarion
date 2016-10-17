@@ -165,7 +165,6 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
-        // TODO remove this method. Make method which creates a new default Storyboard
         VisualConfig visualConfig = new VisualConfig();
         visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(250));
         visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
@@ -232,16 +231,16 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private List<SceneConfig> setupTutorial() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        addResources(sceneConfigs); // TODO mode to DB
-        addNpcBot(sceneConfigs); // TODO mode to DB
-        addEnemyBot(sceneConfigs); // TODO mode to DB
-        addScrollOverTerrain(sceneConfigs); // TODO mode to DB
-        addBotSpawnScene(sceneConfigs); // TODO mode to DB
-        addUserSpawnScene(sceneConfigs); // TODO mode to DB
-        addBotMoveScene(sceneConfigs);// TODO mode to DB
-        addScrollToOwnScene(sceneConfigs);// TODO mode to DB
-        addUserMoveScene(sceneConfigs);// TODO mode to DB
-        addNpcHarvestAttack(sceneConfigs);// TODO mode to DB
+        addResources(sceneConfigs);
+        addNpcBot(sceneConfigs);
+        addEnemyBot(sceneConfigs);
+        addScrollOverTerrain(sceneConfigs);
+        addBotSpawnScene(sceneConfigs);
+        addUserSpawnScene(sceneConfigs);
+        addBotMoveScene(sceneConfigs);
+        addScrollToOwnScene(sceneConfigs);
+        addUserMoveScene(sceneConfigs);
+        addNpcHarvestAttack(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -275,10 +274,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(292, 135))).setNoSpawn(true));
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(316, 137))).setNoSpawn(true));
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(330, 144))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(340, 165))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(308, 173))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(340, 165))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(308, 173))).setNoSpawn(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs));
     }
 
@@ -321,7 +320,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(204, 52)).setSpeed(10.0).setCameraLocked(false);
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(204, 52)).setSpeed(50.0).setCameraLocked(false);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setDecimalPosition(new DecimalPosition(204, 100)));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
@@ -343,7 +342,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private void addNpcHarvestAttack(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
-        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(250, 130)).setSpeed(16.0).setCameraLocked(false));
+        //sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(250, 130)).setSpeed(50.0).setCameraLocked(false));
+        sceneConfig.setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(250, 130)).setCameraLocked(false));
+        sceneConfigs.add(sceneConfig);
+        List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
+        botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER).setTargetSelection(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(233, 178, 22, 19))));
+        botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER).setTargetSelection(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(255, 173, 22, 19))));
+        sceneConfig.setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(10000).setIntroText("Hilfe wir werden angegriffen");
         sceneConfigs.add(sceneConfig);
     }
 }

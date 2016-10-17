@@ -3,6 +3,7 @@ package com.btxtech.shared.datatypes;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -171,5 +172,9 @@ public class Polygon2D {
         }
         testString += "))";
         return testString;
+    }
+
+    public static Polygon2D fromRectangle(double x, double y, double width, double height) {
+        return new Polygon2D(Arrays.asList(new DecimalPosition(x, y), new DecimalPosition(x + width, y), new DecimalPosition(x + width, y + height), new DecimalPosition(x, y + height)));
     }
 }

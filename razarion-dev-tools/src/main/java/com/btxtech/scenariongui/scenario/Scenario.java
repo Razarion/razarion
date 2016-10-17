@@ -37,11 +37,12 @@ public abstract class Scenario {
     }
 
     static {
+        register("Polygon2D Test", new TestPolygon2DScenario());
         register("Triangle2D", new Triangle2DScenario());
         register("Terrain", new TerrainScenario());
         register("Draw Polygon", new DrawPolygonScenario());
         register("JUnit Test", new JUnitTestScenario());
-        register("Polygon Test", new TestPolygonScenario());
+        register("Polygon2I Test", new TestPolygon2IScenario());
     }
 
 

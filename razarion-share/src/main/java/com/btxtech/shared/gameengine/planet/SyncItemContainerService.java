@@ -221,6 +221,7 @@ public class SyncItemContainerService {
             if(!playerBase.isEnemy(syncBaseItem.getBase())) {
                 return null;
             }
+            System.out.println(syncBaseItem.getSyncPhysicalArea().getPosition());
             if (syncBaseItem.getSyncPhysicalArea().contains(resourceSelection)) {
                 result.add(syncBaseItem);
             }

@@ -3,6 +3,7 @@ package com.btxtech;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -168,5 +169,9 @@ public class ExtendedGraphicsContext {
             Circle2D circle = ((ObstacleCircle) obstacle).getCircle();
             gc.fillOval(circle.getCenter().getX() - circle.getRadius(), circle.getCenter().getY() - circle.getRadius(), circle.getRadius() * 2, circle.getRadius() * 2);
         }
+    }
+
+    public void strokePolygon(Polygon2D polygon, double strokeWidth, Color color, boolean showPoint) {
+        strokeCurveDecimalPosition(polygon.getCorners(), strokeWidth, color, showPoint);
     }
 }
