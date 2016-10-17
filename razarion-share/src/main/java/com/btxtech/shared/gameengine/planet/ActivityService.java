@@ -159,10 +159,10 @@ public class ActivityService {
         System.out.println("ActivityService.onSyncFactoryStopped(): " + syncBaseItem);
     }
 
-    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex muzzleNorm, Integer clipId, long timeStamp) {
+    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex muzzleDirection, Integer clipId, long timeStamp) {
         System.out.println("ActivityService.onProjectileFired(): " + System.currentTimeMillis() + ": " + syncBaseItem);
         if (clipId != null) {
-            clipService.ifPresent(effectService -> effectService.playClip(muzzlePosition, muzzleNorm, clipId, timeStamp));
+            clipService.ifPresent(effectService -> effectService.playClip(muzzlePosition, muzzleDirection, clipId, timeStamp));
         } else {
             logger.warning("No MuzzleFlashClipId configured for: " + syncBaseItem);
         }

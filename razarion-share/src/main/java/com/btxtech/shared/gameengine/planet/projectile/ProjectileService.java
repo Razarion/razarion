@@ -51,7 +51,7 @@ public class ProjectileService {
         Projectile projectile = new Projectile(timeStamp, actor, muzzle, target.getSyncPhysicalArea().getPosition());
         projectiles.put(actor.getBaseItemType(), projectile);
 
-        activityService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition(), weaponType.getMuzzleFlashClipId(), timeStamp);
+        activityService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition().sub(muzzle), weaponType.getMuzzleFlashClipId(), timeStamp);
     }
 
     public void tick(long timeStamp) {

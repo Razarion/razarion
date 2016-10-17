@@ -10,13 +10,13 @@ import com.btxtech.shared.dto.ClipConfig;
  */
 public class PlayingClip {
     private final Vertex position;
-    private final Vertex norm;
+    private final Vertex direction;
     private final ClipConfig clipConfig;
     private long endTimeStamp;
 
-    public PlayingClip(Vertex position, Vertex norm, ClipConfig clipConfig, long timeStamp) {
+    public PlayingClip(Vertex position, Vertex direction, ClipConfig clipConfig, long timeStamp) {
         this.position = position;
-        this.norm = norm;
+        this.direction = direction;
         this.clipConfig = clipConfig;
         endTimeStamp = timeStamp + clipConfig.getDurationMillis();
     }
@@ -30,6 +30,6 @@ public class PlayingClip {
         if (delta < 0) {
             return null;
         }
-        return ModelMatrices.createFromPositionAndDirection(position, norm).setProgress((double) delta / (double) clipConfig.getDurationMillis());
+        return ModelMatrices.createFromPositionAndDirection(position, direction).setProgress(1.0 - (double) delta / (double) clipConfig.getDurationMillis());
     }
 }

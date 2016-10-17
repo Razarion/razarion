@@ -63,9 +63,9 @@ public class ClipServiceImpl implements ClipService {
     }
 
     @Override
-    public void playClip(Vertex position, Vertex norm, int clipId, long timeStamp) {
+    public void playClip(Vertex position, Vertex direction, int clipId, long timeStamp) {
         synchronized (playingClips) {
-            playingClips.add(new PlayingClip(position, norm, getClipConfig(clipId), timeStamp));
+            playingClips.add(new PlayingClip(position, direction, getClipConfig(clipId), timeStamp));
         }
     }
 
@@ -92,6 +92,6 @@ public class ClipServiceImpl implements ClipService {
     }
 
     public void remove(ClipConfig clipConfig) {
-        clips.remove(clipConfig);
+        clips.remove(clipConfig.getId());
     }
 }
