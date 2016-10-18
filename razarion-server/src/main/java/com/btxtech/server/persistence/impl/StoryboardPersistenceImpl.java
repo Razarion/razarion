@@ -100,8 +100,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -161,7 +161,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
         attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(1).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)).setMuzzleFlashClipId(180836));
+        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)).setMuzzleFlashClipId(180836));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -222,7 +222,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(100, 80))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER));
         // div
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(true);
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setBotAttackCommandConfigs(botAttackCommandConfigs));
         return sceneConfigs;
     }

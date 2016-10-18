@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import org.xml.sax.SAXException;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -73,6 +74,13 @@ public class Shape3DPersistence {
                 imageLibraryEntityMap.put(entry.getKey(), entityManager.find(ImageLibraryEntity.class, (long) entry.getValue()));
             }
             colladaEntity.setTextures(imageLibraryEntityMap);
+        }
+        if (shape3DConfig.getLookUpTextures() != null) {
+            Map<String, ImageLibraryEntity> imageLookUpLibraryEntityMap = new HashMap<>();
+            for (Map.Entry<String, Integer> entry : shape3DConfig.getLookUpTextures().entrySet()) {
+                imageLookUpLibraryEntityMap.put(entry.getKey(), entityManager.find(ImageLibraryEntity.class, (long) entry.getValue()));
+            }
+            colladaEntity.setLookUpTextures(imageLookUpLibraryEntityMap);
         }
         if (shape3DConfig.getAnimations() != null) {
             Map<String, AnimationTrigger> animations = new HashMap<>();

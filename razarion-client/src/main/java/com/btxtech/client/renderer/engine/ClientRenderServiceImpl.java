@@ -200,9 +200,6 @@ public class ClientRenderServiceImpl extends RenderService {
                 default:
                     throw new IllegalArgumentException("Unknown Blend mode: " + renderUnitControl.getBlend());
             }
-
-            gameCanvas.getCtx3d().blendColor(1f, 1f, 1f, 0.5f);
-            gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.CONSTANT_ALPHA, WebGLRenderingContext.ONE_MINUS_CONSTANT_ALPHA);
         } else {
             gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
         }

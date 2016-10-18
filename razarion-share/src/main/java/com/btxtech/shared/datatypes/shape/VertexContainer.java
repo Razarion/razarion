@@ -23,6 +23,7 @@ public class VertexContainer {
     private Color specular;
     private Color emission;
     private Integer textureId;
+    private Integer lookUpTextureId;
     private String shapeElementInternalName;
 
     public VertexContainer setMaterialId(String materialId) {
@@ -136,6 +137,18 @@ public class VertexContainer {
 
     public Integer getTextureId() {
         return textureId;
+    }
+
+    public Integer getLookUpTextureId() {
+        return lookUpTextureId;
+    }
+
+    public boolean hasLookUpTextureId() {
+        return lookUpTextureId != null;
+    }
+
+    public void setLookUpTextureId(Integer lookUpTextureId) {
+        this.lookUpTextureId = lookUpTextureId;
     }
 
     public String getMaterialId() {

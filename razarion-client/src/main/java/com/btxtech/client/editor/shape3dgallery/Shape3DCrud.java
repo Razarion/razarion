@@ -2,19 +2,20 @@ package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
-import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.clip.ClipServiceImpl;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
+import com.btxtech.uiservice.renderer.task.ClipRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
@@ -54,6 +55,10 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     private TerrainTypeService terrainTypeService;
     @Inject
     private TerrainObjectRenderTask terrainObjectRenderTask;
+    @Inject
+    private ClipServiceImpl clipService;
+    @Inject
+    private ClipRenderTask clipRenderTask;
     private Map<Integer, Shape3DConfig> changes = new HashMap<>();
 
     @Override
@@ -97,7 +102,9 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             @Override
             public void callback(Shape3D shape3D) {
                 shape3D.setDbId(originalShape3D.getDbId());
-                Shape3DUtils.replaceTextureIds(originalShape3D, shape3D);
+                Shape3DUtils.saveTextureIds(originalShape3D, shape3D);
+                Shape3DUtils.saveLookUpTextureIds(originalShape3D, shape3D);
+                Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3D);
                 addChangesCollada(originalShape3D.getDbId(), colladaText);
                 shape3DUiService.override(shape3D);
                 fireChange(shape3D);
@@ -115,6 +122,17 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
         Map<String, Integer> textureMap = new HashMap<>();
         Shape3DUtils.getAllVertexContainers(shape3D).stream().filter(vertexContainer -> vertexContainer.getTextureId() != null).forEach(vertexContainer -> textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId()));
         shape3DConfig.setTextures(textureMap);
+        shape3DUiService.override(shape3D);
+        fireChange(shape3D);
+    }
+
+    public void updateLookUpTexture(Shape3D shape3D, String materialId, Integer lookUpTextureId) {
+        Shape3DUtils.replaceLookUpTextureId(shape3D, materialId, lookUpTextureId);
+        // Update changes set
+        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
+        Map<String, Integer> lookUpTextureMap = new HashMap<>();
+        Shape3DUtils.getAllVertexContainers(shape3D).stream().filter(vertexContainer -> vertexContainer.getLookUpTextureId() != null).forEach(vertexContainer -> lookUpTextureMap.put(vertexContainer.getMaterialId(), vertexContainer.getLookUpTextureId()));
+        shape3DConfig.setLookUpTextures(lookUpTextureMap);
         shape3DUiService.override(shape3D);
         fireChange(shape3D);
     }
@@ -179,27 +197,27 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     public void onChange(Shape3D shape3D) {
         // Update BaseItemType renderer
         for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
-            if(baseItemType.getShape3DId() != null && shape3D.getDbId() == baseItemType.getShape3DId()) {
+            if (baseItemType.getShape3DId() != null && shape3D.getDbId() == baseItemType.getShape3DId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
-            if(baseItemType.getSpawnShape3DId() != null && shape3D.getDbId() == baseItemType.getSpawnShape3DId()) {
+            if (baseItemType.getSpawnShape3DId() != null && shape3D.getDbId() == baseItemType.getSpawnShape3DId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
-            if(baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getProjectileShape3DId() != null && shape3D.getDbId() ==  baseItemType.getWeaponType().getProjectileShape3DId()) {
-                projectileRenderTask.onBaseItemTypeChanged(baseItemType);
+            if (baseItemType.getWeaponType() != null) {
+                WeaponType weaponType = baseItemType.getWeaponType();
+                if (weaponType.getProjectileShape3DId() != null && shape3D.getDbId() == weaponType.getProjectileShape3DId()) {
+                    projectileRenderTask.onBaseItemTypeChanged(baseItemType);
+                }
+                if (weaponType.getMuzzleFlashClipId() != null) {
+                    ClipConfig clipConfig = clipService.getClipConfig(weaponType.getMuzzleFlashClipId());
+                    if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId())
+                        clipRenderTask.changeClip(clipConfig);
+                }
             }
         }
         // Update ResourceItemType renderer
-        for (ResourceItemType resourceItemType : itemTypeService.getResourceItemTypes()) {
-            if(resourceItemType.getShape3DId() != null && shape3D.getDbId() == resourceItemType.getShape3DId()) {
-                resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType);
-            }
-        }
+        itemTypeService.getResourceItemTypes().stream().filter(resourceItemType -> resourceItemType.getShape3DId() != null && shape3D.getDbId() == resourceItemType.getShape3DId()).forEach(resourceItemType -> resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType));
         // Update TerrainObject renderer
-        for (TerrainObjectConfig terrainObjectConfig : terrainTypeService.getTerrainObjectConfigs()) {
-            if(terrainObjectConfig.getShape3DId() != null && shape3D.getDbId() == terrainObjectConfig.getShape3DId()) {
-                terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfig);
-            }
-        }
+        terrainTypeService.getTerrainObjectConfigs().stream().filter(terrainObjectConfig -> terrainObjectConfig.getShape3DId() != null && shape3D.getDbId() == terrainObjectConfig.getShape3DId()).forEach(terrainObjectConfig -> terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfig));
     }
 }

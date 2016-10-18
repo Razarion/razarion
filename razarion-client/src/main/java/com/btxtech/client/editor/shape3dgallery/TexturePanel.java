@@ -31,8 +31,13 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     @Inject
     @DataField
     private ImageItemWidget imageItemWidget;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private ImageItemWidget lookUpTextureId;
     private VertexContainer vertexContainer;
     private Integer newImageId;
+    private Integer newLookUpTextureId;
     private Shape3DPropertyPanel shape3DPropertyPanel;
 
     @Override
@@ -47,7 +52,13 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
         imageItemWidget.setImageId(vertexContainer.getTextureId(), imageId -> {
             newImageId = imageId;
             if (vertexContainer.getMaterialId() != null) {
-                shape3DPropertyPanel.texturePanelChanged(this);
+                shape3DPropertyPanel.textureIdChanged(this);
+            }
+        });
+        lookUpTextureId.setImageId(vertexContainer.getLookUpTextureId(), imageId -> {
+            newLookUpTextureId = imageId;
+            if (vertexContainer.getMaterialId() != null) {
+                shape3DPropertyPanel.lookUpTextureIdChanged(this);
             }
         });
     }
@@ -59,6 +70,10 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
 
     public Integer getNewImageId() {
         return newImageId;
+    }
+
+    public Integer getNewLookUpTextureId() {
+        return newLookUpTextureId;
     }
 
     public void setShape3DPropertyPanel(Shape3DPropertyPanel shape3DPropertyPanel) {

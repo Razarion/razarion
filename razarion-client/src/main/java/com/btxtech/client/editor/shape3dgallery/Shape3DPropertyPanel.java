@@ -121,9 +121,15 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
         }
     }
 
-    public void texturePanelChanged(TexturePanel texturePanel) {
+    public void textureIdChanged(TexturePanel texturePanel) {
         if (Shape3DUtils.getAllVertexContainers(shape3D).contains(texturePanel.getValue())) {
             shape3DCrud.updateTexture(shape3D, texturePanel.getValue().getMaterialId(), texturePanel.getNewImageId());
+        }
+    }
+
+    public void lookUpTextureIdChanged(TexturePanel texturePanel) {
+        if (Shape3DUtils.getAllVertexContainers(shape3D).contains(texturePanel.getValue())) {
+            shape3DCrud.updateLookUpTexture(shape3D, texturePanel.getValue().getMaterialId(), texturePanel.getNewLookUpTextureId());
         }
     }
 

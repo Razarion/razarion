@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +47,7 @@ public class Shape3DUtils {
         return new ArrayList<>(vertexContainers.values());
     }
 
-    public static void replaceTextureIds(Shape3D source, Shape3D target) {
+    public static void saveTextureIds(Shape3D source, Shape3D target) {
         Map<String, Integer> materials = new HashMap<>();
         for (VertexContainer vertexContainer : getAllVertexContainers(source)) {
             materials.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId());
@@ -68,6 +67,39 @@ public class Shape3DUtils {
         }
         if (!found) {
             throw new IllegalArgumentException("MaterialId not found: " + materialId);
+        }
+    }
+
+    public static void saveLookUpTextureIds(Shape3D source, Shape3D target) {
+        Map<String, Integer> materials = new HashMap<>();
+        for (VertexContainer vertexContainer : getAllVertexContainers(source)) {
+            materials.put(vertexContainer.getMaterialId(), vertexContainer.getLookUpTextureId());
+        }
+        for (VertexContainer vertexContainer : getAllVertexContainers(target)) {
+            vertexContainer.setLookUpTextureId(materials.get(vertexContainer.getMaterialId()));
+        }
+    }
+
+    public static void replaceLookUpTextureId(Shape3D shape3D, String materialId, Integer lookUpTextureId) {
+        boolean found = false;
+        for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
+            if (vertexContainer.getMaterialId() != null && vertexContainer.getMaterialId().equals(materialId)) {
+                vertexContainer.setLookUpTextureId(lookUpTextureId);
+                found = true;
+            }
+        }
+        if (!found) {
+            throw new IllegalArgumentException("MaterialId not found: " + materialId);
+        }
+    }
+
+    public static void saveAnimationTriggers(Shape3D source, Shape3D target) {
+        Map<String, AnimationTrigger> sourceAnimationTriggers = new HashMap<>();
+        for (ModelMatrixAnimation sourceAnimation : source.getModelMatrixAnimations()) {
+            sourceAnimationTriggers.put(sourceAnimation.getId(), sourceAnimation.getAnimationTrigger());
+        }
+        for (ModelMatrixAnimation targetMatrixAnimation : target.getModelMatrixAnimations()) {
+            targetMatrixAnimation.setAnimationTrigger(sourceAnimationTriggers.get(targetMatrixAnimation.getId()));
         }
     }
 

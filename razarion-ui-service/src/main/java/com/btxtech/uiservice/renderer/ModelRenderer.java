@@ -27,7 +27,7 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     private Instance<AbstractRenderComposite> instance;
     @Inject
     private Instance<CommonRenderComposite<?, ?>> instanceCommonRenderComposite;
-    private MapList<RenderUnitControl, C> abstractRenderComposites = new MapList<>();
+    private MapList<RenderUnitControl, AbstractRenderComposite> abstractRenderComposites = new MapList<>();
     private List<ModelMatrices> modelMatrices;
     private Function<Long, List<ModelMatrices>> modelMatricesSupplier;
     private T model;
@@ -41,7 +41,7 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
         return model;
     }
 
-    public void add(RenderUnitControl renderUnitControl, C abstractRenderCompositeRenderers) {
+    public void add(RenderUnitControl renderUnitControl, AbstractRenderComposite abstractRenderCompositeRenderers) {
         this.abstractRenderComposites.put(renderUnitControl, abstractRenderCompositeRenderers);
     }
 
