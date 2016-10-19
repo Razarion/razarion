@@ -94,6 +94,9 @@ public class Shape3DUtils {
     }
 
     public static void saveAnimationTriggers(Shape3D source, Shape3D target) {
+        if(source.getModelMatrixAnimations() == null) {
+            return;
+        }
         Map<String, AnimationTrigger> sourceAnimationTriggers = new HashMap<>();
         for (ModelMatrixAnimation sourceAnimation : source.getModelMatrixAnimations()) {
             sourceAnimationTriggers.put(sourceAnimation.getId(), sourceAnimation.getAnimationTrigger());

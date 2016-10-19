@@ -60,7 +60,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
 
     public void setupAnimation(Shape3D shape3D, Element3D element3D, ShapeTransform shapeTransform) {
         Collection<ModelMatrixAnimation> modelMatrixAnimations = shape3D.setupAnimations(element3D);
-        if(modelMatrixAnimations != null) {
+        if (modelMatrixAnimations != null) {
             progressAnimations = modelMatrixAnimations.stream().map(ProgressAnimation::new).collect(Collectors.toList());
         }
         this.shapeTransform = shapeTransform;
@@ -72,7 +72,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
     }
 
     public ModelMatrices mixTransformation(ModelMatrices modelMatrix) {
-        if(shapeTransform == null) {
+        if (shapeTransform == null) {
             return modelMatrix;
         }
 
@@ -83,7 +83,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
             ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
             for (ProgressAnimation progressAnimation : progressAnimations) {
                 Objects.requireNonNull(progressAnimation.getAnimationTrigger(), "No animation trigger");
-                switch(progressAnimation.getAnimationTrigger()) {
+                switch (progressAnimation.getAnimationTrigger()) {
                     case ITEM_PROGRESS:
                         progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
                         break;

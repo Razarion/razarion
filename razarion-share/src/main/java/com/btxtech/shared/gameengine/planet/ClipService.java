@@ -7,5 +7,7 @@ import com.btxtech.shared.datatypes.Vertex;
  * 14.10.2016.
  */
 public interface ClipService {
+    void playClip(Vertex position, int clipId, long timeStamp);
+
     void playClip(Vertex position, Vertex direction, int clipId, long timeStamp);
 }

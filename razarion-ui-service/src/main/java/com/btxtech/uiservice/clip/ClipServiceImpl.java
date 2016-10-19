@@ -63,6 +63,13 @@ public class ClipServiceImpl implements ClipService {
     }
 
     @Override
+    public void playClip(Vertex position, int clipId, long timeStamp) {
+        synchronized (playingClips) {
+            playingClips.add(new PlayingClip(position, getClipConfig(clipId), timeStamp));
+        }
+    }
+
+    @Override
     public void playClip(Vertex position, Vertex direction, int clipId, long timeStamp) {
         synchronized (playingClips) {
             playingClips.add(new PlayingClip(position, direction, getClipConfig(clipId), timeStamp));

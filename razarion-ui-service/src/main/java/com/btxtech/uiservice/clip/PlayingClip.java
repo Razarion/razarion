@@ -9,10 +9,16 @@ import com.btxtech.shared.dto.ClipConfig;
  * 14.10.2016.
  */
 public class PlayingClip {
-    private final Vertex position;
-    private final Vertex direction;
-    private final ClipConfig clipConfig;
+    private Vertex position;
+    private Vertex direction;
+    private ClipConfig clipConfig;
     private long endTimeStamp;
+
+    public PlayingClip(Vertex position, ClipConfig clipConfig, long timeStamp) {
+        this.position = position;
+        this.clipConfig = clipConfig;
+        endTimeStamp = timeStamp + clipConfig.getDurationMillis();
+    }
 
     public PlayingClip(Vertex position, Vertex direction, ClipConfig clipConfig, long timeStamp) {
         this.position = position;
@@ -30,6 +36,11 @@ public class PlayingClip {
         if (delta < 0) {
             return null;
         }
-        return ModelMatrices.createFromPositionAndDirection(position, direction).setProgress(1.0 - (double) delta / (double) clipConfig.getDurationMillis());
+        double progress = 1.0 - (double) delta / (double) clipConfig.getDurationMillis();
+        if (direction != null) {
+            return ModelMatrices.createFromPositionAndDirection(position, direction).setProgress(progress);
+        } else {
+            return ModelMatrices.createFromPosition(position).setProgress(progress);
+        }
     }
 }

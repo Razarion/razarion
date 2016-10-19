@@ -161,7 +161,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
         attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)).setMuzzleFlashClipId(180836).setDetonationClipId(180836));
+        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)).setMuzzleFlashClipId(180836).setDetonationClipId(180842));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {

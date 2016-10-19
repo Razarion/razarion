@@ -13,7 +13,6 @@ import com.btxtech.shared.gameengine.planet.condition.ConditionService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.projectile.Projectile;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -171,7 +170,7 @@ public class ActivityService {
     public void onProjectileDetonation(SyncBaseItem syncBaseItem, Vertex position, Integer clipId, long timeStamp) {
         System.out.println("ActivityService.onProjectileDetonation(): " + System.currentTimeMillis() + ": " + syncBaseItem);
         if (clipId != null) {
-            clipService.ifPresent(effectService -> effectService.playClip(position, Vertex.Z_NORM, clipId, timeStamp));
+            clipService.ifPresent(effectService -> effectService.playClip(position, clipId, timeStamp));
         } else {
             logger.warning("No projectile detonation configured for: " + syncBaseItem);
         }
