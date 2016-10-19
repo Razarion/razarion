@@ -51,8 +51,18 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     @Override
-    public Integer getTextureId(String materialIdString) {
-        ImageLibraryEntity imageLibraryEntity = textures.get(materialIdString);
+    public Integer getTextureId(String materialId) {
+        ImageLibraryEntity imageLibraryEntity = textures.get(materialId);
+        if (imageLibraryEntity != null) {
+            return imageLibraryEntity.getId().intValue();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Integer getLookupTextureId(String materialId) {
+        ImageLibraryEntity imageLibraryEntity = lookUpTextures.get(materialId);
         if (imageLibraryEntity != null) {
             return imageLibraryEntity.getId().intValue();
         } else {

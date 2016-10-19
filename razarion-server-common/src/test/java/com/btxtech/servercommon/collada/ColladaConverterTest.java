@@ -195,7 +195,7 @@ public class ColladaConverterTest {
     public void testTerrainObject1() throws Exception {
         Map<String, Integer> textures = new HashMap<>();
         textures.put("Material-material", 99);
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null));
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null, null));
 
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
@@ -206,6 +206,7 @@ public class ColladaConverterTest {
         VertexContainer vertexContainer = cube1Element.getVertexContainers().get(0);
         Assert.assertEquals("Material", vertexContainer.getMaterialName());
         Assert.assertEquals("Material-material", vertexContainer.getMaterialId());
+        Assert.assertNull(vertexContainer.getLookUpTextureId());
         Assert.assertEquals(99, (int) vertexContainer.getTextureId());
         Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getAmbient());
         Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
@@ -223,7 +224,9 @@ public class ColladaConverterTest {
         Map<String, Integer> textures = new HashMap<>();
         textures.put("Material-material", 101);
         textures.put("Material_002-material", 201);
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, null));
+        Map<String, Integer> lookUpTextures = new HashMap<>();
+        lookUpTextures.put("Material-material", 200);
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, lookUpTextures, null));
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(2, shape3D.getElement3Ds().size());
 
@@ -234,6 +237,7 @@ public class ColladaConverterTest {
         Assert.assertEquals("Material", vertexContainer.getMaterialName());
         Assert.assertEquals("Material-material", vertexContainer.getMaterialId());
         Assert.assertEquals(101, (int) vertexContainer.getTextureId());
+        Assert.assertEquals(200, (int) vertexContainer.getLookUpTextureId());
         TestHelper.assertColor(new Color(0.1819462, 1, 0.2208172, 1), vertexContainer.getAmbient());
         TestHelper.assertColor(new Color(0.8, 0.3, 0.2, 1.0), vertexContainer.getDiffuse());
         Assert.assertNull(vertexContainer.getSpecular());
@@ -254,6 +258,7 @@ public class ColladaConverterTest {
         Assert.assertEquals("Material_002-material", vertexContainer.getMaterialId());
         Assert.assertEquals("Material_002", vertexContainer.getMaterialName());
         Assert.assertEquals(201, (int) vertexContainer.getTextureId());
+        Assert.assertNull(vertexContainer.getLookUpTextureId());
         TestHelper.assertColor(new Color(0.09097311, 0.5, 0.1104086, 1), vertexContainer.getAmbient());
         TestHelper.assertColor(new Color(0.0, 0.4, 0.8, 1.0), vertexContainer.getDiffuse());
         TestHelper.assertColor(new Color(0.2, 0.3, 0.4, 1.0), vertexContainer.getSpecular());
@@ -276,7 +281,7 @@ public class ColladaConverterTest {
         animationTriggers.put("PlaneId_location_Y", AnimationTrigger.CONTINUES);
         animationTriggers.put("PlaneId_location_Z", AnimationTrigger.CONTINUES);
 
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, animationTriggers));
+        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, null, animationTriggers));
         Assert.assertEquals(6, shape3D.getModelMatrixAnimations().size());
         Assert.assertEquals(2, shape3D.getElement3Ds().size());
 
@@ -343,10 +348,12 @@ public class ColladaConverterTest {
 
     private class TestMapper implements ColladaConverterMapper {
         private Map<String, Integer> textures;
+        private Map<String, Integer> lookUpTextures;
         private Map<String, AnimationTrigger> animationTriggers;
 
-        public TestMapper(Map<String, Integer> textures, Map<String, AnimationTrigger> animationTriggers) {
+        public TestMapper(Map<String, Integer> textures, Map<String, Integer> lookUpTextures, Map<String, AnimationTrigger> animationTriggers) {
             this.textures = textures;
+            this.lookUpTextures = lookUpTextures;
             this.animationTriggers = animationTriggers;
         }
 
@@ -354,6 +361,15 @@ public class ColladaConverterTest {
         public Integer getTextureId(String materialId) {
             if (textures != null) {
                 return textures.get(materialId);
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public Integer getLookupTextureId(String materialId) {
+            if (lookUpTextures != null) {
+                return lookUpTextures.get(materialId);
             } else {
                 return null;
             }
