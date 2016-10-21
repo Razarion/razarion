@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.unit;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.shaders.Shaders;
@@ -39,7 +40,7 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     }
 
     @Override
-    protected void fillBuffers(VertexList vertexList) {
+    protected void fillBuffers(VertexList vertexList, GroundSkeletonConfig groundSkeletonConfig) {
         vertices.fillBuffer(vertexList.getVertices());
     }
 

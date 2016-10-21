@@ -33,7 +33,7 @@ public interface ImageProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("imagegallery/{id}")
-    ImageGalleryItem getImageGalleryItems(@PathParam("id") int id);
+    ImageGalleryItem getImageGalleryItem(@PathParam("id") int id);
 
     @POST
     @Path("upload")

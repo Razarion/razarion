@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -54,7 +55,7 @@ public class ClientGroundNormRendererUnit extends AbstractGroundRendererUnit {
     }
 
     @Override
-    protected void fillBuffers(VertexList vertexList) {
+    protected void fillBuffers(VertexList vertexList, GroundSkeletonConfig groundSkeletonConfig) {
         vertexList.verify();
 
         vertices.fillDoubleBuffer(RenderUtil.setupNormDoubles(vertexList.getVertices(), vertexList.getNormVertices()));

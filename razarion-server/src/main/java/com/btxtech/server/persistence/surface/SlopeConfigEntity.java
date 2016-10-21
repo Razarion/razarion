@@ -57,11 +57,11 @@ public class SlopeConfigEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<SlopeNodeEntity> slopeSkeletonEntries;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity image;
     private double imageScale;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity imageBm;
     private double imageBmScale;

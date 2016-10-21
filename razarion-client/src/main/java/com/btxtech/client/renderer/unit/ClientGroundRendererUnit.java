@@ -7,6 +7,7 @@ import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -68,14 +69,14 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     }
 
     @Override
-    protected void fillBuffers(VertexList vertexList) {
+    protected void fillBuffers(VertexList vertexList, GroundSkeletonConfig groundSkeletonConfig) {
         vertexList.verify();
 
-        topTexture = webGlFacade.createWebGLTexture(terrainUiService.getTopTexture(), "uTopTexture");
-        topBm = webGlFacade.createWebGLBumpMapTexture(terrainUiService.getTopBm(), "uTopBm");
-        splattingTexture = webGlFacade.createWebGLTexture(terrainUiService.getSplatting(), "uSplatting");
-        bottomTexture = webGlFacade.createWebGLTexture(terrainUiService.getGroundTexture(), "uBottomTexture");
-        bottomBm = webGlFacade.createWebGLBumpMapTexture(terrainUiService.getGroundBm(), "uBottomBm");
+        topTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getTopTextureId(), "uTopTexture", "uTopTextureScale", groundSkeletonConfig.getTopTextureScale());
+        topBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getTopBmId(), "uTopBm", "uTopBmScale", groundSkeletonConfig.getTopBmScale());
+        splattingTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getSplattingId(), "uSplatting", "uSplattingScale", groundSkeletonConfig.getSplattingScale());
+        bottomTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", groundSkeletonConfig.getBottomTextureScale());
+        bottomBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getBottomBmId(), "uBottomBm", "uBottomBmScale", groundSkeletonConfig.getBottomBmScale());
 
         vertices.fillBuffer(vertexList.getVertices());
         normals.fillBuffer(vertexList.getNormVertices());
@@ -93,11 +94,6 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         webGlFacade.setLightUniforms(null, terrainTypeService.getGroundSkeletonConfig().getLightConfig());
         webGlFacade.uniform1f("uTopBmDepth", terrainTypeService.getGroundSkeletonConfig().getTopBmDepth());
         webGlFacade.uniform1f("uBottomBmDepth", terrainTypeService.getGroundSkeletonConfig().getBottomBmDepth());
-        webGlFacade.uniform1i("uTopTextureSize", (int) (terrainUiService.getTopTexture().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
-        webGlFacade.uniform1i("uBottomTextureSize", (int) (terrainUiService.getGroundTexture().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
-        webGlFacade.uniform1i("uTopBmSize", (int) (terrainUiService.getTopBm().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
-        webGlFacade.uniform1i("uBottomBmSize", (int) (terrainUiService.getGroundBm().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
-        webGlFacade.uniform1i("uSplattingSize", (int) (terrainUiService.getSplatting().getQuadraticEdge() * UGLY_SIZE_FACTOR)); // TODO replace with configurable scale
 
         webGlFacade.activateReceiveShadow();
 

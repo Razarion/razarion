@@ -33,6 +33,10 @@ public class TerrainTypeService {
         setTerrainObjectConfigs(engineInitEvent.getGameEngineConfig().getTerrainObjectConfigs());
     }
 
+    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
+        this.groundSkeletonConfig = groundSkeletonConfig;
+    }
+
     public void setTerrainObjectConfigs(Collection<TerrainObjectConfig> terrainObjectConfigs) {
         this.terrainObjectConfigs.clear();
         if (terrainObjectConfigs != null) {

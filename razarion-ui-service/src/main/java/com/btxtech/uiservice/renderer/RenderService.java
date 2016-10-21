@@ -83,7 +83,6 @@ public abstract class RenderService {
     }
 
 
-    @Deprecated
     public void fillBuffers() {
         for (AbstractRenderTask renderTask : renderTasks) {
             try {

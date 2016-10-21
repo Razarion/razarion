@@ -260,6 +260,7 @@ button:disabled {
     font-weight: bold;
     font-size: 80%;
     color: black;
+    width: 102px;
 }
 
 /** --- Left side bar ---*/

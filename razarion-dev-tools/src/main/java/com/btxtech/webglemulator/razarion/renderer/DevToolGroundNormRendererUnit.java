@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
@@ -33,7 +34,7 @@ public class DevToolGroundNormRendererUnit extends AbstractGroundRendererUnit im
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
-    protected void fillBuffers(VertexList vertexList) {
+    protected void fillBuffers(VertexList vertexList, GroundSkeletonConfig groundSkeletonConfig) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(vertexList.getVertices(), vertexList.getNormVertices()));
     }

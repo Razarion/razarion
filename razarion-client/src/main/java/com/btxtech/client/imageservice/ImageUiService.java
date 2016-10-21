@@ -109,7 +109,7 @@ public class ImageUiService {
                 imageGalleryItemListener.onLoaded(result);
             }
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "getImageGalleryItems failed: " + message, throwable);
+            logger.log(Level.SEVERE, "getImageGalleryItem failed: " + message, throwable);
             return false;
         }).getImageGalleryItems();
     }
@@ -192,7 +192,7 @@ public class ImageUiService {
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "getImageGalleryItems failed: " + message, throwable);
             return false;
-        }).getImageGalleryItems(id);
+        }).getImageGalleryItem(id);
     }
 
     private void addImage(int id, ImageElement imageElement, boolean loadImageGalleyItem) {

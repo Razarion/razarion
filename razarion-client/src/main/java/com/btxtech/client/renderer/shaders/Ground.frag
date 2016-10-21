@@ -19,41 +19,42 @@ uniform sampler2D uShadowTexture;
 
 uniform highp mat4 uNMatrix;
 uniform sampler2D uTopTexture;
-uniform int uTopTextureSize;
+uniform float uTopTextureScale;
 uniform sampler2D uTopBm;
-uniform int uTopBmSize;
+uniform float uTopBmScale;
 uniform float uTopBmDepth;
 uniform sampler2D uBottomTexture;
-uniform int uBottomTextureSize;
+uniform float uBottomTextureScale;
 uniform sampler2D uSplatting;
-uniform int uSplattingSize;
+uniform float uSplattingScale;
 uniform sampler2D uBottomBm;
-uniform int uBottomBmSize;
+uniform float uBottomBmScale;
 uniform float uBottomBmDepth;
 
 const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
 const float BIAS = 0.001;
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
-vec4 triPlanarTextureMapping(sampler2D sampler, float size, vec2 addCoord) {
+vec4 triPlanarTextureMapping(sampler2D sampler, float scale, vec2 addCoord) {
     vec3 blending = abs(vVertexNormCoord);
 
     float b = (blending.x + blending.y + blending.z);
     blending /= vec3(b, b, b);
-    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / size + addCoord);
-    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / size + addCoord);
-    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / size + addCoord);
+    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz * scale + addCoord);
+    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz * scale + addCoord);
+    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy * scale + addCoord);
     return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
 }
 
-vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float size) {
+vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale) {
+    // TODO sacle is wrong. It was size before.
     vec3 normal = normalize(vVertexNormal);
     vec3 tangent = normalize(vVertexTangent);
     vec3 binormal = cross(normal, tangent);
 
-    float bm0 = triPlanarTextureMapping(sampler, size, vec2(0, 0)).r;
-    float bmUp = triPlanarTextureMapping(sampler, size, vec2(0.0, 1.0/size)).r;
-    float bmRight = triPlanarTextureMapping(sampler, size, vec2(1.0/size, 0.0)).r;
+    float bm0 = triPlanarTextureMapping(sampler, scale, vec2(0, 0)).r;
+    float bmUp = triPlanarTextureMapping(sampler, scale, vec2(0.0, scale)).r;
+    float bmRight = triPlanarTextureMapping(sampler, scale, vec2(scale, 0.0)).r;
 
     vec3 bumpVector = (bm0 - bmRight) * tangent + (bm0 - bmUp) * binormal;
     return normalize(normal + bumpMapDepth * bumpVector);
@@ -80,11 +81,11 @@ void main(void) {
     float shadowFactor = calculateShadowFactor();
     vec3 correctedLightDirection = normalize((uNMatrix * vec4(uLightDirection, 1.0)).xyz);
 
-    vec4 colorTop = triPlanarTextureMapping(uTopTexture, float(uTopTextureSize), vec2(0,0));
-    vec3 normTop = bumpMapNorm(uTopBm, uTopBmDepth, float(uTopBmSize));
-    vec4 colorBottom = triPlanarTextureMapping(uBottomTexture, float(uBottomTextureSize), vec2(0,0));
-    vec3 normBottom = bumpMapNorm(uBottomBm, uBottomBmDepth, float(uBottomBmSize));
-    float splatting = triPlanarTextureMapping(uSplatting, float(uSplattingSize), vec2(0,0)).r;
+    vec4 colorTop = triPlanarTextureMapping(uTopTexture, uTopTextureScale, vec2(0,0));
+    vec3 normTop = bumpMapNorm(uTopBm, uTopBmDepth, uTopBmScale);
+    vec4 colorBottom = triPlanarTextureMapping(uBottomTexture, uBottomTextureScale, vec2(0,0));
+    vec3 normBottom = bumpMapNorm(uBottomBm, uBottomBmDepth, uBottomBmScale);
+    float splatting = triPlanarTextureMapping(uSplatting, uSplattingScale, vec2(0,0)).r;
 
      vec3 norm;
      vec4 textureColor;
@@ -97,7 +98,7 @@ void main(void) {
         norm = normBottom;
         textureColor = colorBottom;
     } else {
-        float topBmValue = triPlanarTextureMapping(uTopBm, float(uTopBmSize), vec2(0,0)).r;
+        float topBmValue = triPlanarTextureMapping(uTopBm, uTopBmScale, vec2(0,0)).r;
 
         if(topBmValue + splatting > vGroundSplatting) {
             norm = normTop;
@@ -135,7 +136,7 @@ void main(void) {
 //            norm = normBottom;
 //            textureColor = colorBottom;
 //        } else {
-//            vec3 slpattingNorm = bumpMapNorm(uSplatting, 10.0, float(uSplattingSize));
+//            vec3 slpattingNorm = bumpMapNorm(uSplatting, 10.0, uSplattingScale);
 //
 //            float y = (splatting + delta - step) / (2.0 * delta);
 //            norm = mix(slpattingNorm, normTop, y);

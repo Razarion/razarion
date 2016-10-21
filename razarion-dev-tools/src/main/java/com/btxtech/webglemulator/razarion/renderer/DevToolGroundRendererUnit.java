@@ -1,6 +1,7 @@
 package com.btxtech.webglemulator.razarion.renderer;
 
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
@@ -40,7 +41,7 @@ public class DevToolGroundRendererUnit extends AbstractGroundRendererUnit implem
     }
 
     @Override
-    protected void fillBuffers(VertexList vertexList) {
+    protected void fillBuffers(VertexList vertexList, GroundSkeletonConfig groundSkeletonConfig) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.GREEN).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexList.getVertices()));
     }

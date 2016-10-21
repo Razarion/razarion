@@ -29,6 +29,8 @@ import java.util.Map;
 public class Shape3DPersistence {
     @PersistenceContext
     private EntityManager entityManager;
+    @Inject
+    private ImagePersistence imagePersistence;
 
     @Transactional
     public List<Shape3D> getShape3Ds() throws ParserConfigurationException, SAXException, IOException {
@@ -71,14 +73,14 @@ public class Shape3DPersistence {
         if (shape3DConfig.getTextures() != null) {
             Map<String, ImageLibraryEntity> imageLibraryEntityMap = new HashMap<>();
             for (Map.Entry<String, Integer> entry : shape3DConfig.getTextures().entrySet()) {
-                imageLibraryEntityMap.put(entry.getKey(), entityManager.find(ImageLibraryEntity.class, (long) entry.getValue()));
+                imageLibraryEntityMap.put(entry.getKey(), imagePersistence.getImageLibraryEntity(entry.getValue()));
             }
             colladaEntity.setTextures(imageLibraryEntityMap);
         }
         if (shape3DConfig.getLookUpTextures() != null) {
             Map<String, ImageLibraryEntity> imageLookUpLibraryEntityMap = new HashMap<>();
             for (Map.Entry<String, Integer> entry : shape3DConfig.getLookUpTextures().entrySet()) {
-                imageLookUpLibraryEntityMap.put(entry.getKey(), entityManager.find(ImageLibraryEntity.class, (long) entry.getValue()));
+                imageLookUpLibraryEntityMap.put(entry.getKey(), imagePersistence.getImageLibraryEntity(entry.getValue()));
             }
             colladaEntity.setLookUpTextures(imageLookUpLibraryEntityMap);
         }

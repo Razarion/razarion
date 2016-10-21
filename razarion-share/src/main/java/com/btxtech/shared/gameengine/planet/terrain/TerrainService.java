@@ -45,6 +45,7 @@ public class TerrainService {
     private TerrainTypeService terrainTypeService;
     private Water water;
     private GroundMesh groundMesh;
+    private Rectangle groundMeshDimension;
     private Map<Integer, Slope> slopeMap = new HashMap<>();
     private MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions;
     private Collection<Obstacle> obstacles;
@@ -52,7 +53,9 @@ public class TerrainService {
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
-        setupGround(planetActivationEvent.getPlanetConfig().getGroundMeshDimension());
+
+        groundMeshDimension = planetActivationEvent.getPlanetConfig().getGroundMeshDimension();
+        setupGround();
 
         water = new Water(planetActivationEvent.getPlanetConfig().getWaterLevel());
 
@@ -106,9 +109,9 @@ public class TerrainService {
         slopeMap.put(slopeMap.size(), slope);
     }
 
-    private void setupGround(Rectangle groundMesh) {
+    public void setupGround() {
         if (terrainTypeService.getGroundSkeletonConfig() != null) {
-            this.groundMesh = GroundModeler.generateGroundMesh(terrainTypeService.getGroundSkeletonConfig(), groundMesh);
+            this.groundMesh = GroundModeler.generateGroundMesh(terrainTypeService.getGroundSkeletonConfig(), groundMeshDimension);
             this.groundMesh.setupNorms();
         }
     }

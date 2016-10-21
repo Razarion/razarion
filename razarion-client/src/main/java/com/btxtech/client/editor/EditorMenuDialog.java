@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogPanel;
 import com.btxtech.client.editor.clip.ClipCrudeSidebar;
+import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;

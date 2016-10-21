@@ -35,6 +35,8 @@ public class TerrainElementPersistence {
     private EntityManager entityManager;
     @Inject
     private Shape3DPersistence shape3DPersistence;
+    @Inject
+    private ImagePersistence imagePersistence;
 
     @Transactional
     public GroundSkeletonConfig loadGroundSkeleton() {
@@ -64,7 +66,7 @@ public class TerrainElementPersistence {
         Root<GroundConfigEntity> from = userQuery.from(GroundConfigEntity.class);
         CriteriaQuery<GroundConfigEntity> userSelect = userQuery.select(from);
         GroundConfigEntity groundConfigEntity = entityManager.createQuery(userSelect).getSingleResult();
-        groundConfigEntity.fromGroundConfig(groundConfig);
+        groundConfigEntity.fromGroundConfig(groundConfig, imagePersistence);
         return entityManager.merge(groundConfigEntity).toGroundConfig();
     }
 
