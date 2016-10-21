@@ -66,7 +66,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     @Override
     protected void fillBuffer(Slope slope, Mesh mesh) {
         slopeTexture = webGlFacade.createWebGLTexture(slope.getSlopeSkeletonConfig().getImageId(), "uSlopeTexture", "uSlopeTextureScale", slope.getSlopeSkeletonConfig().getImageScale());
-        uSlopeBm = webGlFacade.createWebGLBumpMapTexture(slope.getSlopeSkeletonConfig().getBumpImageId(), "uSlopeBm", "uSlopeBmScale", slope.getSlopeSkeletonConfig().getBumpImageScale());
+        uSlopeBm = webGlFacade.createWebGLBumpMapTexture(slope.getSlopeSkeletonConfig().getBumpImageId(), "uSlopeBm", "uSlopeBmScale", slope.getSlopeSkeletonConfig().getBumpImageScale(), null);
         groundSplattingTexture = webGlFacade.createWebGLTexture(terrainUiService.getSplatting(), "uGroundSplatting");
         groundTopTexture = webGlFacade.createWebGLTexture(terrainUiService.getTopTexture(), WebGlFacade.U_GROUND_TOP_TEXTURE);
         groundTopBm = webGlFacade.createWebGLTexture(terrainUiService.getTopBm(), WebGlFacade.U_GROUND_TOP_BM);

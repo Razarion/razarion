@@ -22,6 +22,7 @@ uniform sampler2D uTopTexture;
 uniform float uTopTextureScale;
 uniform sampler2D uTopBm;
 uniform float uTopBmScale;
+uniform float uTopBmOnePixel;
 uniform float uTopBmDepth;
 uniform sampler2D uBottomTexture;
 uniform float uBottomTextureScale;
@@ -29,6 +30,7 @@ uniform sampler2D uSplatting;
 uniform float uSplattingScale;
 uniform sampler2D uBottomBm;
 uniform float uBottomBmScale;
+uniform float uBottomBmOnePixel;
 uniform float uBottomBmDepth;
 
 const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
@@ -46,15 +48,14 @@ vec4 triPlanarTextureMapping(sampler2D sampler, float scale, vec2 addCoord) {
     return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
 }
 
-vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale) {
-    // TODO sacle is wrong. It was size before.
+vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale, float onePixel) {
     vec3 normal = normalize(vVertexNormal);
     vec3 tangent = normalize(vVertexTangent);
     vec3 binormal = cross(normal, tangent);
 
     float bm0 = triPlanarTextureMapping(sampler, scale, vec2(0, 0)).r;
-    float bmUp = triPlanarTextureMapping(sampler, scale, vec2(0.0, scale)).r;
-    float bmRight = triPlanarTextureMapping(sampler, scale, vec2(scale, 0.0)).r;
+    float bmUp = triPlanarTextureMapping(sampler, scale, vec2(0.0, onePixel)).r;
+    float bmRight = triPlanarTextureMapping(sampler, scale, vec2(onePixel, 0.0)).r;
 
     vec3 bumpVector = (bm0 - bmRight) * tangent + (bm0 - bmUp) * binormal;
     return normalize(normal + bumpMapDepth * bumpVector);
@@ -82,9 +83,9 @@ void main(void) {
     vec3 correctedLightDirection = normalize((uNMatrix * vec4(uLightDirection, 1.0)).xyz);
 
     vec4 colorTop = triPlanarTextureMapping(uTopTexture, uTopTextureScale, vec2(0,0));
-    vec3 normTop = bumpMapNorm(uTopBm, uTopBmDepth, uTopBmScale);
+    vec3 normTop = bumpMapNorm(uTopBm, uTopBmDepth, uTopBmScale, uTopBmOnePixel);
     vec4 colorBottom = triPlanarTextureMapping(uBottomTexture, uBottomTextureScale, vec2(0,0));
-    vec3 normBottom = bumpMapNorm(uBottomBm, uBottomBmDepth, uBottomBmScale);
+    vec3 normBottom = bumpMapNorm(uBottomBm, uBottomBmDepth, uBottomBmScale, uBottomBmOnePixel);
     float splatting = triPlanarTextureMapping(uSplatting, uSplattingScale, vec2(0,0)).r;
 
      vec3 norm;

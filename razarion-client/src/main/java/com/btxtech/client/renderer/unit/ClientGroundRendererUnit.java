@@ -73,10 +73,10 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         vertexList.verify();
 
         topTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getTopTextureId(), "uTopTexture", "uTopTextureScale", groundSkeletonConfig.getTopTextureScale());
-        topBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getTopBmId(), "uTopBm", "uTopBmScale", groundSkeletonConfig.getTopBmScale());
+        topBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getTopBmId(), "uTopBm", "uTopBmScale", groundSkeletonConfig.getTopBmScale(), "uTopBmOnePixel");
         splattingTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getSplattingId(), "uSplatting", "uSplattingScale", groundSkeletonConfig.getSplattingScale());
         bottomTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", groundSkeletonConfig.getBottomTextureScale());
-        bottomBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getBottomBmId(), "uBottomBm", "uBottomBmScale", groundSkeletonConfig.getBottomBmScale());
+        bottomBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getBottomBmId(), "uBottomBm", "uBottomBmScale", groundSkeletonConfig.getBottomBmScale(), "uBottomBmOnePixel");
 
         vertices.fillBuffer(vertexList.getVertices());
         normals.fillBuffer(vertexList.getNormVertices());

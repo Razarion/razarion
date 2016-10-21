@@ -170,7 +170,9 @@ public class WebGlFacade {
 
     @Deprecated
     public WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureIdHandler.create(), null, null);
+        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
+        webGlUniformTexture.setWebGLTexture(setupTexture(imageDescriptor));
+        return webGlUniformTexture;
     }
 
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName) {
@@ -178,20 +180,22 @@ public class WebGlFacade {
     }
 
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTexture(imageId), samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale);
+        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, null);
+        webGlUniformTexture.setWebGLTexture(setupTexture(imageId));
+        return webGlUniformTexture;
     }
 
     @Deprecated
     public WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureIdHandler.create(), null, null);
+        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
+        webGlUniformTexture.setWebGLTexture(setupTextureForBumpMap(imageDescriptor));
+        return webGlUniformTexture;
     }
 
-    public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageId), samplerUniformName, textureIdHandler.create(), null, null);
-    }
-
-    public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale) {
-        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageId), samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale);
+    public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale, String onePixelUniformLocation) {
+        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, onePixelUniformLocation);
+        webGlUniformTexture.setWebGLTexture(setupTextureForBumpMap(imageId, webGlUniformTexture));
+        return webGlUniformTexture;
     }
 
     protected TextureIdHandler.WebGlTextureId createWebGlTextureId() {
@@ -274,9 +278,10 @@ public class WebGlFacade {
         return webGLTexture;
     }
 
-    protected WebGLTexture setupTextureForBumpMap(int imageId) {
+    protected WebGLTexture setupTextureForBumpMap(int imageId, WebGlUniformTexture webGlUniformTexture) {
         final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
         imageUiService.requestImage(imageId, imageElement -> {
+            webGlUniformTexture.onImageSizeReceived(imageElement.getWidth());
             bindTextureForBumpMap(imageElement, webGLTexture);
         });
         return webGLTexture;
