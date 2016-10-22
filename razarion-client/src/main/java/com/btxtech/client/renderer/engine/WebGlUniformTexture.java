@@ -6,14 +6,12 @@ import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
-import java.util.logging.Logger;
-
 /**
  * Created by Beat
  * 19.12.2015.
  */
 public class WebGlUniformTexture {
-    private Logger logger = Logger.getLogger(WebGlUniformTexture.class.getName());
+    // private Logger logger = Logger.getLogger(WebGlUniformTexture.class.getName());
     private WebGLRenderingContext ctx3d;
     private WebGlFacade webGlFacade;
     private WebGLTexture webGLTexture;
@@ -45,7 +43,6 @@ public class WebGlUniformTexture {
     public void onImageSizeReceived(int quadraticLength) {
         if (onePixelUniformLocation != null && scaleUniformLocation != null) {
             onePixel = 1.0 / (double) quadraticLength;
-            logger.warning("onePixel: " + onePixel + " onePixelUniformLocation: " + onePixelUniformLocation);
         }
     }
 
@@ -62,7 +59,7 @@ public class WebGlUniformTexture {
             ctx3d.uniform1f(scaleUniform, scale.floatValue());
             WebGlUtil.checkLastWebGlError("uniform1f", ctx3d);
         }
-        if(onePixelUniformLocation != null && onePixel != null) {
+        if (onePixelUniformLocation != null && onePixel != null) {
             WebGLUniformLocation onePixelUniform = webGlFacade.getUniformLocation(onePixelUniformLocation);
             ctx3d.uniform1f(onePixelUniform, onePixel.floatValue());
             WebGlUtil.checkLastWebGlError("uniform1f", ctx3d);

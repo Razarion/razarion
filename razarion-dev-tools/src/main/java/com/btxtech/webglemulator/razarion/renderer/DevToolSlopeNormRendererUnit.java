@@ -3,6 +3,7 @@ package com.btxtech.webglemulator.razarion.renderer;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.renderer.Camera;
@@ -33,13 +34,13 @@ public class DevToolSlopeNormRendererUnit extends AbstractSlopeRendererUnit impl
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
-    protected void fillBuffer(Slope slope, Mesh mesh) {
+    protected void fillBuffer(Slope slope, Mesh mesh, GroundSkeletonConfig groundSkeletonConfig) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(mesh.getVertices(), mesh.getNorms()));
     }
 
     @Override
-    protected void draw(Slope slope) {
+    protected void draw(Slope slope, GroundSkeletonConfig groundSkeletonConfig) {
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 

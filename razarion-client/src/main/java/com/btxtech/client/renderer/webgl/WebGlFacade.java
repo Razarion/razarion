@@ -58,11 +58,6 @@ public class WebGlFacade {
     public static final String U_LIGHT_AMBIENT = "uLightAmbient";
     public static final String U_LIGHT_SPECULAR_INTENSITY = "uLightSpecularIntensity";
     public static final String U_LIGHT_SPECULAR_HARDNESS = "uLightSpecularHardness";
-    // Uniform Terrain
-    public static final String U_GROUND_TOP_TEXTURE = "uGroundTopTexture";
-    public static final String U_GROUND_TOP_BM = "uGroundTopBm";
-    public static final String U_GROUND_BOTTOM_TEXTURE = "uGroundBottomTexture";
-    public static final String U_GROUND_BOTTOM_BM = "uGroundBottomBm";
     // Unifrom Editor
     public static final String U_CURSOR_TYPE = "uCursorType";
 

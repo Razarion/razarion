@@ -28,8 +28,6 @@ import javax.inject.Inject;
 @ColorBufferRenderer
 @Dependent
 public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
-    @Deprecated
-    public static final double UGLY_SIZE_FACTOR = 0.1;
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;

@@ -5,6 +5,7 @@ import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
@@ -54,12 +55,12 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     }
 
     @Override
-    protected void fillBuffer(Slope slope, Mesh mesh) {
+    protected void fillBuffer(Slope slope, Mesh mesh, GroundSkeletonConfig groundSkeletonConfig) {
         vertices.fillDoubleBuffer(RenderUtil.setupNormDoubles(mesh.getVertices(), mesh.getNorms()));
     }
 
     @Override
-    protected void draw(Slope slope) {
+    protected void draw(Slope slope, GroundSkeletonConfig groundSkeletonConfig) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());

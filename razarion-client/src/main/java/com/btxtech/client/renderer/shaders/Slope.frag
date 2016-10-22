@@ -33,20 +33,23 @@ uniform sampler2D uSlopeTexture;
 uniform float uSlopeTextureScale;
 uniform sampler2D uSlopeBm;
 uniform float uSlopeBmScale;
+uniform float uSlopeBmOnePixel;
 uniform float uSlopeBmDepth;
 // Ground
 uniform sampler2D uGroundTopTexture;
-uniform int uGroundTopTextureSize;
+uniform float uGroundTopTextureScale;
 uniform sampler2D uGroundTopBm;
 uniform float uGroundTopBmDepth;
-uniform int uGroundTopBmSize;
+uniform float uGroundTopBmScale;
+uniform float uGroundTopBmOnePixel;
 uniform sampler2D uGroundBottomTexture;
-uniform int uGroundBottomTextureSize;
+uniform float uGroundBottomTextureScale;
 uniform sampler2D uGroundBottomBm;
-uniform int uGroundBottomBmSize;
+uniform float uGroundBottomBmScale;
+uniform float uGroundBottomBmOnePixel;
 uniform float uGroundBottomBmDepth;
 uniform sampler2D uGroundSplatting;
-uniform int uGroundSplattingSize;
+uniform float uGroundSplattingScale;
 // Water
 uniform bool uHasWater;
 uniform float uWaterLevel;
@@ -63,51 +66,25 @@ const vec3 UNDER_WATER_COLOR = vec3(1.0, 1.0, 1.0);
 // Interpolate x (MIN, MAX) to 0..1: 1.0/(MAX-MIN) * x + MIN/(MAX-MIN)
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
-vec4 triPlanarTextureMapping_OLD(sampler2D sampler, float size, vec2 addCoord) {
-    vec3 blending = abs(vVertexNormCoord);
-
-    float b = (blending.x + blending.y + blending.z);
-    blending /= vec3(b, b, b);
-    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / size + addCoord);
-    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / size + addCoord);
-    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / size + addCoord);
-    return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
-}
-
-vec3 bumpMapNorm_OLD(sampler2D sampler, float bumpMapDepth, float size) {
-    vec3 normal = normalize(vVertexNormal);
-    vec3 tangent = normalize(vVertexTangent);
-    vec3 binormal = cross(normal, tangent);
-
-    float bm0 = triPlanarTextureMapping_OLD(sampler, size, vec2(0, 0)).r;
-    float bmUp = triPlanarTextureMapping_OLD(sampler, size, vec2(0.0, 1.0/size)).r;
-    float bmRight = triPlanarTextureMapping_OLD(sampler, size, vec2(1.0/size, 0.0)).r;
-
-    vec3 bumpVector = (bm0 - bmRight) * tangent + (bm0 - bmUp) * binormal;
-    return normalize(normal + bumpMapDepth * bumpVector);
-}
-
-
-// http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
 vec4 triPlanarTextureMapping(sampler2D sampler, float scale, vec2 addCoord) {
     vec3 blending = abs(vVertexNormCoord);
 
     float b = (blending.x + blending.y + blending.z);
     blending /= vec3(b, b, b);
-    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / scale + addCoord);
-    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / scale + addCoord);
-    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / scale + addCoord);
+    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz * scale + addCoord);
+    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz * scale + addCoord);
+    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy * scale + addCoord);
     return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
 }
 
-vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale) {
+vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale, float onePixel) {
     vec3 normal = normalize(vVertexNormal);
     vec3 tangent = normalize(vVertexTangent);
     vec3 binormal = cross(normal, tangent);
 
     float bm0 = triPlanarTextureMapping(sampler, scale, vec2(0, 0)).r;
-    float bmUp = triPlanarTextureMapping(sampler, scale, vec2(0.0, 1.0/scale)).r;
-    float bmRight = triPlanarTextureMapping(sampler, scale, vec2(1.0/scale, 0.0)).r;
+    float bmUp = triPlanarTextureMapping(sampler, scale, vec2(0.0, onePixel)).r;
+    float bmRight = triPlanarTextureMapping(sampler, scale, vec2(onePixel, 0.0)).r;
 
     vec3 bumpVector = (bm0 - bmRight) * tangent + (bm0 - bmUp) * binormal;
     return normalize(normal + bumpMapDepth * bumpVector);
@@ -146,11 +123,11 @@ void main(void) {
 
     if(vSlopeFactor < SLOPE_FACTOR_BIAS) {
         // Ground
-        vec4 colorTop = triPlanarTextureMapping_OLD(uGroundTopTexture, float(uGroundTopTextureSize), vec2(0,0));
-        vec3 normTop = bumpMapNorm_OLD(uGroundTopBm, uGroundTopBmDepth, float(uGroundTopBmSize));
-        vec4 colorBottom = triPlanarTextureMapping_OLD(uGroundBottomTexture, float(uGroundBottomTextureSize), vec2(0,0));
-        vec3 normBottom = bumpMapNorm_OLD(uGroundBottomBm, uGroundBottomBmDepth, float(uGroundBottomBmSize));
-        float splatting = triPlanarTextureMapping_OLD(uGroundSplatting, float(uGroundSplattingSize), vec2(0,0)).r;
+        vec4 colorTop = triPlanarTextureMapping(uGroundTopTexture, uGroundTopTextureScale, vec2(0,0));
+        vec3 normTop = bumpMapNorm(uGroundTopBm, uGroundTopBmDepth, uGroundTopBmScale, uGroundTopBmOnePixel);
+        vec4 colorBottom = triPlanarTextureMapping(uGroundBottomTexture, uGroundBottomTextureScale, vec2(0,0));
+        vec3 normBottom = bumpMapNorm(uGroundBottomBm, uGroundBottomBmDepth, uGroundBottomBmScale, uGroundBottomBmOnePixel);
+        float splatting = triPlanarTextureMapping(uGroundSplatting, uGroundSplattingScale, vec2(0,0)).r;
 
         // Bottom top splatting
         if(vGroundSplatting + GROUND_FACTOR_BIAS >= 1.0) {
@@ -160,7 +137,7 @@ void main(void) {
             correctedNorm = normBottom;
             textureColor = colorBottom;
         } else {
-            float topBmValue = triPlanarTextureMapping_OLD(uGroundTopBm, float(uGroundTopBmSize), vec2(0,0)).r;
+            float topBmValue = triPlanarTextureMapping(uGroundTopBm, uGroundTopBmScale, vec2(0,0)).r;
 
             if(topBmValue + splatting > vGroundSplatting) {
                 correctedNorm = normTop;
@@ -180,14 +157,14 @@ void main(void) {
             if(z > uWaterLevel + SLOPE_WATER_STRIPE_FADEOUT) {
                 // Over water level: render normal slope
                 textureColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
-                correctedNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale);
+                correctedNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
                 specular = setupSpecularLight(correctedLightSlope, correctedNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
             } else if(z >= uWaterLevel) {
                 // Water slope stripe:
                 float slopeFadeoutFactor = 1.0 - ((z - uWaterLevel) / SLOPE_WATER_STRIPE_FADEOUT); // 1.0 water .. 0.0 beach
                 float colorSlopeFadeoutFactor = mix(1.0, 0.5, slopeFadeoutFactor);
                 vec4 slopeColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
-                vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth * (1.0 - slopeFadeoutFactor), uSlopeBmScale);
+                vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth * (1.0 - slopeFadeoutFactor), uSlopeBmScale, uSlopeBmOnePixel);
                 vec4 ambient = vec4(uLightAmbientSlope, 1.0) * slopeColor /* * colorSlopeFadeoutFactor*/;
                 vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(-correctedLightSlope)), 0.0) * uLightDiffuseSlope * slopeColor.rgb, 1.0);
                 vec4 specular = setupSpecularLight(correctedLightSlope, slopeNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
@@ -196,7 +173,7 @@ void main(void) {
             } else {
                 // Under water level: render slope fadeout
                 float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
-                vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale);
+                vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
                 vec3 ambient = uLightAmbientSlope * UNDER_WATER_COLOR * underWaterFactor;
                 vec3 diffuse = vec3(max(dot(normalize(slopeNorm), normalize(-correctedLightSlope)), 0.0) * underWaterFactor * uLightDiffuseSlope * UNDER_WATER_COLOR);
                 gl_FragColor = vec4(vec3(ambient + diffuse), 1.0) * shadowFactor;
@@ -204,7 +181,7 @@ void main(void) {
             }
         } else {
             textureColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
-            correctedNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale);
+            correctedNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
             specular = setupSpecularLight(correctedLightSlope, correctedNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
         }
         ambient = vec4(uLightAmbientSlope, 1.0) * textureColor;
@@ -213,11 +190,11 @@ void main(void) {
        // Transition
 
        // Ground
-       vec4 colorTop = triPlanarTextureMapping_OLD(uGroundTopTexture, float(uGroundTopTextureSize), vec2(0,0));
-       vec3 normTop = bumpMapNorm_OLD(uGroundTopBm, uGroundTopBmDepth, float(uGroundTopBmSize));
-       vec4 colorBottom = triPlanarTextureMapping_OLD(uGroundBottomTexture, float(uGroundBottomTextureSize), vec2(0,0));
-       vec3 normBottom = bumpMapNorm_OLD(uGroundBottomBm, uGroundBottomBmDepth, float(uGroundBottomBmSize));
-       float splatting = triPlanarTextureMapping(uGroundSplatting, float(uGroundSplattingSize), vec2(0,0)).r;
+       vec4 colorTop = triPlanarTextureMapping(uGroundTopTexture, uGroundTopTextureScale, vec2(0,0));
+       vec3 normTop = bumpMapNorm(uGroundTopBm, uGroundTopBmDepth, uGroundTopBmScale, uGroundTopBmOnePixel);
+       vec4 colorBottom = triPlanarTextureMapping(uGroundBottomTexture, uGroundBottomTextureScale, vec2(0,0));
+       vec3 normBottom = bumpMapNorm(uGroundBottomBm, uGroundBottomBmDepth, uGroundBottomBmScale, uGroundBottomBmOnePixel);
+       float splatting = triPlanarTextureMapping(uGroundSplatting, uGroundSplattingScale, vec2(0,0)).r;
        vec4 groundSpecular = setupSpecularLight(correctedLightGround, correctedNorm, uLightSpecularIntensityGround, uLightSpecularHardnessGround);
        // Bottom top splatting
        vec3 groundNorm;
@@ -229,7 +206,7 @@ void main(void) {
            groundNorm = normBottom;
            groundColor = colorBottom;
        } else {
-           float topBmValue = triPlanarTextureMapping_OLD(uGroundTopBm, float(uGroundTopBmSize), vec2(0,0)).r;
+           float topBmValue = triPlanarTextureMapping(uGroundTopBm, uGroundTopBmScale, vec2(0,0)).r;
 
            if(topBmValue + splatting > vGroundSplatting) {
                groundNorm = normTop;
@@ -241,7 +218,7 @@ void main(void) {
        }
 
        // Slope
-       vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale);
+       vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
        vec4 slopeColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
        float slopeBmFactor = triPlanarTextureMapping(uSlopeBm, uSlopeBmScale, vec2(0,0)).r;
 
@@ -251,8 +228,8 @@ void main(void) {
            float flatFactor = max(dot(slopeNorm, perpendicular), 0.0) - slopeBmFactor;
            renderSlope = flatFactor < vSlopeFactor;
        } else {
-           float groundTopBmValue = triPlanarTextureMapping_OLD(uGroundTopBm, float(uGroundTopBmSize), vec2(0,0)).r;
-           float groundBottomBmValue = triPlanarTextureMapping_OLD(uGroundBottomBm, float(uGroundBottomBmSize), vec2(0,0)).r;
+           float groundTopBmValue = triPlanarTextureMapping(uGroundTopBm, uGroundTopBmScale, vec2(0,0)).r;
+           float groundBottomBmValue = triPlanarTextureMapping(uGroundBottomBm, uGroundBottomBmScale, vec2(0,0)).r;
            float correctedSlopeFactor = vSlopeFactor - 0.5;
            renderSlope = (slopeBmFactor + correctedSlopeFactor > groundBottomBmValue) && (slopeBmFactor + correctedSlopeFactor > groundTopBmValue);
        }
