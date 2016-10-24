@@ -17,6 +17,8 @@ public class VisualConfig {
     private double shape3DLightRotateZ;
     private LightConfig waterLightConfig;
     private double waterTransparency;
+    private Integer waterBmId;
+    private double waterBmScale;
     private double waterBmDepth;
     private double waterGroundLevel;
     private List<Shape3D> shape3Ds;
@@ -82,6 +84,24 @@ public class VisualConfig {
 
     public VisualConfig setWaterTransparency(double waterTransparency) {
         this.waterTransparency = waterTransparency;
+        return this;
+    }
+
+    public Integer getWaterBmId() {
+        return waterBmId;
+    }
+
+    public VisualConfig setWaterBmId(Integer waterBmId) {
+        this.waterBmId = waterBmId;
+        return this;
+    }
+
+    public double getWaterBmScale() {
+        return waterBmScale;
+    }
+
+    public VisualConfig setWaterBmScale(double waterBmScale) {
+        this.waterBmScale = waterBmScale;
         return this;
     }
 

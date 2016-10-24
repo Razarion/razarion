@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -54,7 +55,7 @@ public class ClientWaterNormRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
-    protected void fillInternalBuffers(Water water) {
+    protected void fillInternalBuffers(Water water, VisualConfig visualConfig) {
         vertices.fillDoubleBuffer(RenderUtil.setupNormDoubles(water.getVertices(), water.getNorms()));
     }
 

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
@@ -38,7 +39,7 @@ public class DevToolWaterNormRendererUnit extends AbstractWaterRendererUnit impl
     }
 
     @Override
-    protected void fillInternalBuffers(Water water) {
+    protected void fillInternalBuffers(Water water, VisualConfig visualConfig) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(water.getVertices(), water.getNorms()));
     }

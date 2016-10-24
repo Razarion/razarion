@@ -14,9 +14,10 @@ uniform float uLightSpecularHardness;
 
 uniform highp mat4 uNMatrix;
 uniform float uTransparency;
-uniform sampler2D uSamplerBumpMap;
-uniform int uBumpMapSize;
-uniform float uBumpMapDepth;
+uniform sampler2D uBm;
+uniform float uBmScale;
+uniform float uBmDepth;
+uniform float uBmOnePixel;
 uniform float animation;
 uniform float animation2;
 
@@ -28,17 +29,17 @@ vec3 bumpMapNorm(float scale) {
     vec3 tangent = normalize(vVertexTangent);
     vec3 binormal = cross(normal, tangent);
 
-    float bm0 = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale).r;
-    float bm0Up = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.0, 1.0/scale)).r;
-    float bm0Right = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(1.0/scale, 0.0)).r;
+    float bm0 = texture2D(uBm, vWorldVertexPosition.xy * scale).r;
+    float bm0Up = texture2D(uBm, vWorldVertexPosition.xy * scale + vec2(0.0, uBmOnePixel)).r;
+    float bm0Right = texture2D(uBm, vWorldVertexPosition.xy * scale + vec2(uBmOnePixel, 0.0)).r;
 
-    float bm1 = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1)).r;
-    float bm1Up = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1) + vec2(0.0, 1.0/scale)).r;
-    float bm1Right = texture2D(uSamplerBumpMap, vWorldVertexPosition.xy / scale + vec2(0.1, 0.1) + vec2(1.0/scale, 0.0)).r;
+    float bm1 = texture2D(uBm, vWorldVertexPosition.xy * scale + vec2(0.1, 0.1)).r;
+    float bm1Up = texture2D(uBm, vWorldVertexPosition.xy * scale + vec2(0.1, 0.1) + vec2(0.0, uBmOnePixel)).r;
+    float bm1Right = texture2D(uBm, vWorldVertexPosition.xy * scale + vec2(0.1, 0.1) + vec2(uBmOnePixel, 0.0)).r;
 
     vec3 bump0Vector = (bm0 - bm0Right) * tangent + (bm0 - bm0Up) * binormal;
     vec3 bump1Vector = (bm1 - bm1Right) * tangent + (bm1 - bm1Up) * binormal;
-    return normalize(normal + uBumpMapDepth * (bump0Vector * animation + bump1Vector * animation2));
+    return normalize(normal + uBmDepth * (bump0Vector * animation + bump1Vector * animation2));
 }
 
 vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
@@ -49,7 +50,7 @@ vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
 }
 
 void main(void) {
-    vec3 norm = bumpMapNorm(float(uBumpMapSize));
+    vec3 norm = bumpMapNorm(uBmScale);
     vec3 correctedLigtDirection = (uNMatrix * vec4(uLightDirection, 1.0)).xyz;
 
     vec3 ambient = uLightAmbient * WATER_COLOR;

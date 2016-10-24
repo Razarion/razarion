@@ -180,13 +180,6 @@ public class WebGlFacade {
         return webGlUniformTexture;
     }
 
-    @Deprecated
-    public WebGlUniformTexture createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
-        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
-        webGlUniformTexture.setWebGLTexture(setupTextureForBumpMap(imageDescriptor));
-        return webGlUniformTexture;
-    }
-
     public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale, String onePixelUniformLocation) {
         WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, onePixelUniformLocation);
         webGlUniformTexture.setWebGLTexture(setupTextureForBumpMap(imageId, webGlUniformTexture));

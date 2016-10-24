@@ -91,11 +91,6 @@ public class TerrainUiService {
         return terrainService.getWater();
     }
 
-    @Deprecated
-    public ImageDescriptor getWaterBumpMap() {
-        return ImageDescriptor.BUMP_MAP_01;
-    }
-
     public double getWaterAnimation() {
         return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
     }
