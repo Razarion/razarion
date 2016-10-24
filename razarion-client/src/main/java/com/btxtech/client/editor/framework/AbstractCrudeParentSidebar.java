@@ -118,10 +118,12 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
         }
         U u = createPropertyPanel();
         getCrudEditor().addChangeListener(u);
-        u.init(getCrudEditor().getInstance(objectNameId));
-        content.setWidget(u);
-        enableSaveButton(true);
-        enableDeleteButton(true);
+        getCrudEditor().getInstance(objectNameId, t -> {
+            u.init(t);
+            content.setWidget(u);
+            enableSaveButton(true);
+            enableDeleteButton(true);
+        });
     }
 
     @Override

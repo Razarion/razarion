@@ -4,8 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -41,11 +39,6 @@ public class TerrainUiService {
     private static final double LOWEST_POINT_IN_VIEW = -20;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
-    private ImageDescriptor topTexture = ImageDescriptor.GRASS_TEXTURE_2;
-    private ImageDescriptor topBm = ImageDescriptor.GRASS_BM_1;
-    private ImageDescriptor splatting = ImageDescriptor.BLEND_3;
-    private ImageDescriptor groundTexture = ImageDescriptor.GROUND_6_TEXTURE_2;
-    private ImageDescriptor groundBm = ImageDescriptor.GROUND_6_BM_2;
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
 
     public TerrainUiService() {
@@ -66,36 +59,6 @@ public class TerrainUiService {
 
     public void setTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions) {
         // TODO used in editor this.terrainSlopePositions = terrainSlopePositions;
-    }
-
-    public void setSlopeSkeleton(SlopeSkeletonConfig slopeSkeletonConfig) {
-        // TODO used in editor
-//        slopeSkeletonMap.put(slopeSkeletonConfig.getId(), slopeSkeletonConfig);
-//        for (Slope slope : slopeMap.values()) {
-//            if (slope.getSlopeSkeletonConfig().getId() == slopeSkeletonConfig.getId()) {
-//                slope.updateSlopeSkeleton(slopeSkeletonConfig);
-//            }
-//        }
-    }
-
-    public ImageDescriptor getGroundTexture() {
-        return groundTexture;
-    }
-
-    public ImageDescriptor getGroundBm() {
-        return groundBm;
-    }
-
-    public ImageDescriptor getTopTexture() {
-        return topTexture;
-    }
-
-    public ImageDescriptor getTopBm() {
-        return topBm;
-    }
-
-    public ImageDescriptor getSplatting() {
-        return splatting;
     }
 
     public double getHighestPointInView() {
@@ -152,10 +115,6 @@ public class TerrainUiService {
 
     public Slope getSlope(int id) {
         return terrainService.getSlope(id);
-    }
-
-    public GroundSkeletonConfig getGroundSkeleton() {
-        return terrainTypeService.getGroundSkeletonConfig();
     }
 
     public List<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {

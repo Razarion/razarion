@@ -25,7 +25,7 @@ import java.util.List;
 public class ShapeEditor implements Model {
     @Deprecated
     private static final int HEIGHT = 400; // This is not the real SVG element height
-    private float scale = 0.3f;
+    private float scale = 10f;
     private SVGSVGElement svg;
     private List<Corner> corners = new ArrayList<>();
     private List<Line> lines = new ArrayList<>();
@@ -56,31 +56,23 @@ public class ShapeEditor implements Model {
         scaleTransform.setScale(this.scale, -this.scale);
         group.getAnimatedTransform().getBaseVal().appendItem(scaleTransform);
         drawEnvironment();
-        svg.addEventListener("mousedown", new EventListener() {
-
-            @Override
-            public void handleEvent(Event evt) {
-                MouseEvent event = (MouseEvent) evt;
-                if (event.getButton() == MouseEvent.Button.PRIMARY) {
-                    lastScrollPosition = new DecimalPosition(event.getX(), event.getY());
-                }
+        svg.addEventListener("mousedown", evt -> {
+            MouseEvent event = (MouseEvent) evt;
+            if (event.getButton() == MouseEvent.Button.PRIMARY) {
+                lastScrollPosition = new DecimalPosition(event.getX(), event.getY());
             }
         }, false);
 
-        svg.addEventListener("mousemove", new EventListener() {
-
-            @Override
-            public void handleEvent(Event evt) {
-                MouseEvent event = (MouseEvent) evt;
-                int buttons = GwtUtils.getButtons(event);
-                if ((buttons & 1) == 0) {
-                    lastScrollPosition = null;
-                } else if (lastScrollPosition != null) {
-                    double sx = translateTransform.getMatrix().getE() + event.getX() - lastScrollPosition.getX();
-                    double sy = translateTransform.getMatrix().getF() + event.getY() - lastScrollPosition.getY();
-                    translateTransform.setTranslate((float) sx, (float) sy);
-                    lastScrollPosition = new DecimalPosition(event.getX(), event.getY());
-                }
+        svg.addEventListener("mousemove", evt -> {
+            MouseEvent event = (MouseEvent) evt;
+            int buttons = GwtUtils.getButtons(event);
+            if ((buttons & 1) == 0) {
+                lastScrollPosition = null;
+            } else if (lastScrollPosition != null) {
+                double sx = translateTransform.getMatrix().getE() + event.getX() - lastScrollPosition.getX();
+                double sy = translateTransform.getMatrix().getF() + event.getY() - lastScrollPosition.getY();
+                translateTransform.setTranslate((float) sx, (float) sy);
+                lastScrollPosition = new DecimalPosition(event.getX(), event.getY());
             }
         }, false);
         svg.getStyle().setCursor("all-scroll");
@@ -123,7 +115,7 @@ public class ShapeEditor implements Model {
         xAxis.getX2().getBaseVal().setValue(1000);
         xAxis.getY2().getBaseVal().setValue(0);
         xAxis.getStyle().setProperty("stroke", "#555555");
-        xAxis.getStyle().setProperty("stroke-width", "1");
+        xAxis.getStyle().setProperty("stroke-width", "0.1");
         group.appendChild(xAxis);
     }
 
@@ -173,15 +165,15 @@ public class ShapeEditor implements Model {
     }
 
     public void zoomIn() {
-        scale += 0.1;
+        scale += 1;
         scaleTransform.setScale(scale, -scale);
     }
 
     public void zoomOut() {
-        if (scale - 0.1 <= 0.0) {
+        if (scale - 1 <= 0.0) {
             return;
         }
-        scale -= 0.1;
+        scale -= 1;
         scaleTransform.setScale(scale, -scale);
     }
 
@@ -194,7 +186,7 @@ public class ShapeEditor implements Model {
             if (helperLine == null) {
                 helperLine = Browser.getDocument().createSVGLineElement();
                 helperLine.getStyle().setProperty("stroke", "#222222");
-                helperLine.getStyle().setProperty("stroke-width", "1");
+                helperLine.getStyle().setProperty("stroke-width", "0.1");
                 helperLine.getX1().getBaseVal().setValue(-1000);
                 helperLine.getX2().getBaseVal().setValue(1000);
                 group.appendChild(helperLine);

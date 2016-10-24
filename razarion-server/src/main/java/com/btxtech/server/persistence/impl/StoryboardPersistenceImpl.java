@@ -168,7 +168,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         VisualConfig visualConfig = new VisualConfig();
         visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(250));
         visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
-        visualConfig.setWaterGroundLevel(-20).setWaterBmDepth(10).setWaterTransparency(0.65);
+        visualConfig.setWaterGroundLevel(-2).setWaterBmDepth(10).setWaterTransparency(0.65);
         LightConfig lightConfig = new LightConfig();
         lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
         lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
@@ -193,6 +193,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
+        planetConfig.setWaterLevel(-0.7);
     }
 
 

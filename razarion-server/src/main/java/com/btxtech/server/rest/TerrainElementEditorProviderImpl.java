@@ -33,9 +33,9 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public SlopeConfig loadSlopeConfig(int id) {
+    public SlopeConfig createSlopeConfig() {
         try {
-            return persistenceService.loadSlopeConfig(id);
+            return persistenceService.createSlopeConfig();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
@@ -43,9 +43,9 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public SlopeConfig saveSlopeConfig(SlopeConfig slopeConfig) {
+    public SlopeConfig readSlopeConfig(int id) {
         try {
-            return persistenceService.saveSlopeConfig(slopeConfig);
+            return persistenceService.readSlopeConfig(id);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
@@ -53,9 +53,29 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public void deleteSlopeConfig(SlopeConfig slopeConfig) {
+    public List<SlopeConfig> readSlopeConfigs() {
         try {
-            persistenceService.deleteSlopeConfig(slopeConfig);
+            return persistenceService.readSlopeConfigs();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void updateSlopeConfig(SlopeConfig slopeConfig) {
+        try {
+            persistenceService.updateSlopeConfig(slopeConfig);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void deleteSlopeConfig(int id) {
+        try {
+            persistenceService.deleteSlopeConfig(id);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

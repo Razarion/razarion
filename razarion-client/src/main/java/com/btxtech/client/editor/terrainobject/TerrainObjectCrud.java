@@ -11,6 +11,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -59,8 +60,8 @@ public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> 
     }
 
     @Override
-    public TerrainObjectConfig getInstance(ObjectNameId objectNameId) {
-        return terrainTypeService.getTerrainObjectConfig(objectNameId.getId());
+    public void getInstance(ObjectNameId objectNameId, Consumer<TerrainObjectConfig> callback) {
+        callback.accept(terrainTypeService.getTerrainObjectConfig(objectNameId.getId()));
     }
 
     @Override

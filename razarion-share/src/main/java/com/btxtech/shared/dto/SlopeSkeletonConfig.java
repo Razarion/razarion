@@ -5,27 +5,28 @@ package com.btxtech.shared.dto;
  * Created by Beat
  * 08.05.2016.
  */
-public class SlopeSkeletonConfig {
+public class SlopeSkeletonConfig implements ObjectNameIdProvider{
     public enum Type {
         LAND,
         WATER
     }
 
     private int id;
+    private String internalName;
     private int segments;
     private int rows;
     private double width;
     private double height;
     private double verticalSpace;
-    private double bumpMapDepth;
     private Type type;
     private SlopeNode[][] slopeNodes;
     private LightConfig lightConfig;
     private boolean slopeOriented;
-    private int imageId;
-    private double imageScale;
-    private int bumpImageId;
-    private double bumpImageScale;
+    private Integer textureId;
+    private double textureScale;
+    private Integer bmId;
+    private double bmScale;
+    private double bmDepth;
 
     public int getId() {
         return id;
@@ -34,6 +35,20 @@ public class SlopeSkeletonConfig {
     public SlopeSkeletonConfig setId(int id) {
         this.id = id;
         return this;
+    }
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public SlopeSkeletonConfig setInternalName(String internalName) {
+        this.internalName = internalName;
+        return this;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     public int getSegments() {
@@ -72,12 +87,12 @@ public class SlopeSkeletonConfig {
         return height;
     }
 
-    public double getBumpMapDepth() {
-        return bumpMapDepth;
+    public double getBmDepth() {
+        return bmDepth;
     }
 
-    public SlopeSkeletonConfig setBumpMapDepth(double bumpMapDepth) {
-        this.bumpMapDepth = bumpMapDepth;
+    public SlopeSkeletonConfig setBmDepth(double bmDepth) {
+        this.bmDepth = bmDepth;
         return this;
     }
 
@@ -127,39 +142,39 @@ public class SlopeSkeletonConfig {
         return this;
     }
 
-    public int getImageId() {
-        return imageId;
+    public Integer getTextureId() {
+        return textureId;
     }
 
-    public SlopeSkeletonConfig setImageId(int imageId) {
-        this.imageId = imageId;
+    public SlopeSkeletonConfig setTextureId(Integer textureId) {
+        this.textureId = textureId;
         return this;
     }
 
-    public double getImageScale() {
-        return imageScale;
+    public double getTextureScale() {
+        return textureScale;
     }
 
-    public SlopeSkeletonConfig setImageScale(double imageScale) {
-        this.imageScale = imageScale;
+    public SlopeSkeletonConfig setTextureScale(double textureScale) {
+        this.textureScale = textureScale;
         return this;
     }
 
-    public int getBumpImageId() {
-        return bumpImageId;
+    public Integer getBmId() {
+        return bmId;
     }
 
-    public SlopeSkeletonConfig setBumpImageId(int bumpImageId) {
-        this.bumpImageId = bumpImageId;
+    public SlopeSkeletonConfig setBmId(Integer bmId) {
+        this.bmId = bmId;
         return this;
     }
 
-    public double getBumpImageScale() {
-        return bumpImageScale;
+    public double getBmScale() {
+        return bmScale;
     }
 
-    public SlopeSkeletonConfig setBumpImageScale(double bumpImageScale) {
-        this.bumpImageScale = bumpImageScale;
+    public SlopeSkeletonConfig setBmScale(double bmScale) {
+        this.bmScale = bmScale;
         return this;
     }
 

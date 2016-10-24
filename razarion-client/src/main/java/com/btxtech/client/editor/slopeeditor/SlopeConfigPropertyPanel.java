@@ -2,22 +2,23 @@ package com.btxtech.client.editor.slopeeditor;
 
 import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.fractal.FractalDialog;
+import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.LightWidget;
+import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.FractalFieldConfig;
+import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
-import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import elemental.client.Browser;
@@ -34,37 +35,61 @@ import javax.inject.Inject;
  * Created by Beat
  * 06.11.2015.
  */
-@Templated("SlopeConfigPanel.html#slope")
-public class SlopeConfigPanel extends Composite implements SelectedCornerListener {
-    // private Logger logger = Logger.getLogger(SlopeConfigPanel.class.getName());
+@Templated("SlopeConfigPropertyPanel.html#slope")
+public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig> implements SelectedCornerListener {
+    // private Logger logger = Logger.getLogger(SlopeConfigPropertyPanel.class.getName());
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
-    private TerrainUiService terrainUiService;
+    private TerrainTypeService terrainTypeService;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
+    private TerrainService terrainService;
+    @Inject
+    private SlopeRenderTask slopeRenderTask;
+    @Inject
     @AutoBound
     private DataBinder<SlopeConfig> slopeConfigDataBinder;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private Label id;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private TextBox internalName;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private LightWidget lightConfig;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    @Bound(property = "slopeSkeletonConfig.bumpMapDepth")
     @DataField
-    private DoubleBox bumpMapDepth;
+    private ImageItemWidget textureId;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.textureScale")
+    @DataField
+    private DoubleBox textureScale;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private ImageItemWidget bmId;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.bmScale")
+    @DataField
+    private DoubleBox bmScale;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.bmDepth")
+    @DataField
+    private DoubleBox bmDepth;
     @Inject
     @Bound(property = "slopeSkeletonConfig.verticalSpace")
     @DataField
-    private IntegerBox verticalSpace;
+    private DoubleBox verticalSpace;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button fractalFieldButton;
@@ -74,9 +99,11 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     private CheckBox slopeOriented;
     @DataField
     private Element svgElement = (Element) Browser.getDocument().createSVGElement();
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button zoomIn;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button zoomOut;
@@ -94,21 +121,32 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @Inject
     @DataField
     private DoubleBox selectedSlopeFactor;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button deleteSelected;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button sculpt;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button update;
     private FractalFieldConfig fractalFieldConfig;
 
-    public void init(SlopeConfig slopeConfig, Double zoom) {
+    @Override
+    public void init(SlopeConfig slopeConfig) {
         slopeConfigDataBinder.setModel(slopeConfig);
+        textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId));
+        bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setBmId(imageId));
         lightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getLightConfig());
-        shapeEditor.init(svgElement, slopeConfig, this, zoom);
+        shapeEditor.init(svgElement, slopeConfig, this, 10.0);
+    }
+
+    @Override
+    public SlopeConfig getConfigObject() {
+        return slopeConfigDataBinder.getModel();
     }
 
     @EventHandler("fractalFieldButton")
@@ -121,10 +159,6 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
             SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
             slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
         });
-    }
-
-    public double getZoom() {
-        return shapeEditor.getScale();
     }
 
     @EventHandler("zoomIn")
@@ -140,10 +174,6 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
     @EventHandler("helperLine")
     public void groundChanged(ChangeEvent e) {
         shapeEditor.setHelperLine(helperLine.getValue());
-    }
-
-    public SlopeConfig getSlopeConfig() {
-        return slopeConfigDataBinder.getModel();
     }
 
     @Override
@@ -184,20 +214,22 @@ public class SlopeConfigPanel extends Composite implements SelectedCornerListene
 
     @EventHandler("update")
     private void updateButtonClick(ClickEvent event) {
-        SlopeConfig slopeConfig = getSlopeConfig();
-        terrainUiService.setSlopeSkeleton(slopeConfig.getSlopeSkeletonConfig());
+        SlopeConfig slopeConfig = getConfigObject();
+        terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
+        terrainService.setupGround();
+        terrainService.setupPlateaus();
+        slopeRenderTask.onChanged();
     }
 
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
-        SlopeConfig slopeConfig = getSlopeConfig();
+        SlopeConfig slopeConfig = getConfigObject();
         FractalFieldConfig fractalFieldConfig = this.fractalFieldConfig;
         if (fractalFieldConfig == null) {
             fractalFieldConfig = slopeConfig.toFractalFiledConfig();
         }
         SlopeModeler.sculpt(slopeConfig, fractalFieldConfig);
-        terrainUiService.setSlopeSkeleton(slopeConfig.getSlopeSkeletonConfig());
-        // TODO terrainUiService.setup();
+        terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
         renderService.fillBuffers();
     }
 }

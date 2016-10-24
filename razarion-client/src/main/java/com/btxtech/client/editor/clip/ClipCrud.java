@@ -15,6 +15,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -67,8 +68,8 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
     }
 
     @Override
-    public ClipConfig getInstance(ObjectNameId objectNameId) {
-        return clipService.getClipConfig(objectNameId.getId());
+    public void getInstance(ObjectNameId objectNameId, Consumer<ClipConfig> callback) {
+        callback.accept(clipService.getClipConfig(objectNameId.getId()));
     }
 
     @Override

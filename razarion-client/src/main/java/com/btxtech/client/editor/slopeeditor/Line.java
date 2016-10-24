@@ -3,8 +3,6 @@ package com.btxtech.client.editor.slopeeditor;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import elemental.client.Browser;
 import elemental.dom.Node;
-import elemental.events.Event;
-import elemental.events.EventListener;
 import elemental.events.MouseEvent;
 import elemental.svg.SVGLineElement;
 
@@ -22,15 +20,9 @@ public class Line {
         line.getX2().getBaseVal().setValue((float) next.getX());
         line.getY2().getBaseVal().setValue((float) next.getY());
         line.getStyle().setProperty("stroke", "blue");
-        line.getStyle().setProperty("stroke-width", "2");
+        line.getStyle().setProperty("stroke-width", "0.2");
         line.getStyle().setCursor("copy");
-        line.addEventListener("mousedown", new EventListener() {
-
-            @Override
-            public void handleEvent(Event evt) {
-                model.createCorner(model.convertMouseToSvg((MouseEvent) evt), previous);
-            }
-        }, false);
+        line.addEventListener("mousedown", evt -> model.createCorner(model.convertMouseToSvg((MouseEvent) evt), previous), false);
 
     }
 

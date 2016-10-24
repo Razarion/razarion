@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -93,8 +94,8 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     }
 
     @Override
-    public Shape3D getInstance(ObjectNameId objectNameId) {
-        return shape3DUiService.getShape3D(objectNameId.getId());
+    public void getInstance(ObjectNameId objectNameId, Consumer<Shape3D> callback) {
+        callback.accept(shape3DUiService.getShape3D(objectNameId.getId()));
     }
 
     public void updateCollada(Shape3D originalShape3D, String colladaText) {

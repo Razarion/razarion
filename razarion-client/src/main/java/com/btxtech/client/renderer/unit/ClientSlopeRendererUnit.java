@@ -62,8 +62,8 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
     @Override
     protected void fillBuffer(Slope slope, Mesh mesh, GroundSkeletonConfig groundSkeletonConfig) {
-        slopeTexture = webGlFacade.createWebGLTexture(slope.getSlopeSkeletonConfig().getImageId(), "uSlopeTexture", "uSlopeTextureScale", slope.getSlopeSkeletonConfig().getImageScale());
-        uSlopeBm = webGlFacade.createWebGLBumpMapTexture(slope.getSlopeSkeletonConfig().getBumpImageId(), "uSlopeBm", "uSlopeBmScale", slope.getSlopeSkeletonConfig().getBumpImageScale(), "uSlopeBmOnePixel");
+        slopeTexture = webGlFacade.createWebGLTexture(slope.getSlopeSkeletonConfig().getTextureId(), "uSlopeTexture", "uSlopeTextureScale", slope.getSlopeSkeletonConfig().getTextureScale());
+        uSlopeBm = webGlFacade.createWebGLBumpMapTexture(slope.getSlopeSkeletonConfig().getBmId(), "uSlopeBm", "uSlopeBmScale", slope.getSlopeSkeletonConfig().getBmScale(), "uSlopeBmOnePixel");
 
         groundTopTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getTopTextureId(), "uGroundTopTexture", "uGroundTopTextureScale", groundSkeletonConfig.getTopTextureScale());
         groundTopBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getTopBmId(), "uGroundTopBm", "uGroundTopBmScale", groundSkeletonConfig.getTopBmScale(), "uGroundTopBmOnePixel");
@@ -93,7 +93,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         webGlFacade.uniform1b("slopeOriented", slope.getSlopeSkeletonConfig().getSlopeOriented());
 
         // Slope
-        webGlFacade.uniform1f("uSlopeBmDepth", slope.getSlopeSkeletonConfig().getBumpMapDepth());
+        webGlFacade.uniform1f("uSlopeBmDepth", slope.getSlopeSkeletonConfig().getBmDepth());
         //Ground
         webGlFacade.uniform1f("uGroundTopBmDepth", groundSkeletonConfig.getTopBmDepth());
         webGlFacade.uniform1f("uGroundBottomBmDepth", groundSkeletonConfig.getBottomBmDepth());

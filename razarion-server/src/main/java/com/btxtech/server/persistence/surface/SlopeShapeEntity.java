@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.surface;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeShape;
 
 import javax.persistence.Embedded;
@@ -34,6 +33,16 @@ public class SlopeShapeEntity {
     public void fromSlopeShape(SlopeShape slopeShape) {
         position = slopeShape.getPosition();
         slopeFactor = slopeShape.getSlopeFactor();
+    }
+
+    public SlopeShapeEntity setPosition(DecimalPosition position) {
+        this.position = position;
+        return this;
+    }
+
+    public SlopeShapeEntity setSlopeFactor(float slopeFactor) {
+        this.slopeFactor = slopeFactor;
+        return this;
     }
 
     @Override

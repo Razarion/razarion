@@ -81,8 +81,27 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public SlopeConfig loadSlopeConfig(int id) {
+    public SlopeConfig createSlopeConfig() {
+        SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
+        slopeConfigEntity.setDefault();
+        entityManager.persist(slopeConfigEntity);
+        return slopeConfigEntity.toSlopeConfig();
+    }
+
+    @Transactional
+    public SlopeConfig readSlopeConfig(int id) {
         return entityManager.find(SlopeConfigEntity.class, (long) id).toSlopeConfig();
+    }
+
+    @Transactional
+    public List<SlopeConfig> readSlopeConfigs() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<SlopeConfigEntity> userQuery = criteriaBuilder.createQuery(SlopeConfigEntity.class);
+        Root<SlopeConfigEntity> root = userQuery.from(SlopeConfigEntity.class);
+        CriteriaQuery<SlopeConfigEntity> userSelect = userQuery.select(root);
+        Collection<SlopeConfigEntity> slopeConfigEntities = entityManager.createQuery(userSelect).getResultList();
+
+        return slopeConfigEntities.stream().map(SlopeConfigEntity::toSlopeConfig).collect(Collectors.toList());
     }
 
     @Transactional
@@ -97,21 +116,15 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public SlopeConfig saveSlopeConfig(SlopeConfig slopeConfig) {
-        SlopeConfigEntity slopeConfigEntity;
-        if (slopeConfig.hasId()) {
-            slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) slopeConfig.getId());
-        } else {
-            slopeConfigEntity = new SlopeConfigEntity();
-        }
-        slopeConfigEntity.fromSlopeConfig(slopeConfig);
-
-        return entityManager.merge(slopeConfigEntity).toSlopeConfig();
+    public void updateSlopeConfig(SlopeConfig slopeConfig) {
+        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) slopeConfig.getId());
+        slopeConfigEntity.fromSlopeConfig(slopeConfig, imagePersistence);
+        entityManager.merge(slopeConfigEntity);
     }
 
     @Transactional
-    public void deleteSlopeConfig(SlopeConfig slopeConfig) {
-        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) slopeConfig.getId());
+    public void deleteSlopeConfig(int id) {
+        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) id);
         entityManager.remove(slopeConfigEntity);
     }
 

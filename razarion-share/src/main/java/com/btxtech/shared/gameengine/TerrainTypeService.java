@@ -23,18 +23,22 @@ public class TerrainTypeService {
     public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
         groundSkeletonConfig = engineInitEvent.getGameEngineConfig().getGroundSkeletonConfig();
 
-        slopeSkeletonConfigs.clear();
-        if (engineInitEvent.getGameEngineConfig().getSlopeSkeletonConfigs() != null) {
-            for (SlopeSkeletonConfig slopeSkeletonConfig : engineInitEvent.getGameEngineConfig().getSlopeSkeletonConfigs()) {
-                slopeSkeletonConfigs.put(slopeSkeletonConfig.getId(), slopeSkeletonConfig);
-            }
-        }
+        setSlopeSkeletonConfigs(engineInitEvent.getGameEngineConfig().getSlopeSkeletonConfigs());
 
         setTerrainObjectConfigs(engineInitEvent.getGameEngineConfig().getTerrainObjectConfigs());
     }
 
     public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
         this.groundSkeletonConfig = groundSkeletonConfig;
+    }
+
+    public void setSlopeSkeletonConfigs(Collection<SlopeSkeletonConfig> slopeSkeletonConfigs) {
+        this.slopeSkeletonConfigs.clear();
+        if (slopeSkeletonConfigs != null) {
+            for (SlopeSkeletonConfig slopeSkeletonConfig : slopeSkeletonConfigs) {
+                this.slopeSkeletonConfigs.put(slopeSkeletonConfig.getId(), slopeSkeletonConfig);
+            }
+        }
     }
 
     public void setTerrainObjectConfigs(Collection<TerrainObjectConfig> terrainObjectConfigs) {
@@ -58,6 +62,10 @@ public class TerrainTypeService {
         return slopeSkeletonConfig;
     }
 
+    public Collection<SlopeSkeletonConfig> getSlopeSkeletonConfigs() {
+        return slopeSkeletonConfigs.values();
+    }
+
     public Collection<TerrainObjectConfig> getTerrainObjectConfigs() {
         return terrainObjectConfigs.values();
     }
@@ -79,4 +87,11 @@ public class TerrainTypeService {
         terrainObjectConfigs.remove(terrainObjectConfig.getId());
     }
 
+    public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
+        slopeSkeletonConfigs.put(slopeSkeletonConfig.getId(), slopeSkeletonConfig);
+    }
+
+    public void deleteSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
+        slopeSkeletonConfigs.remove(slopeSkeletonConfig.getId());
+    }
 }

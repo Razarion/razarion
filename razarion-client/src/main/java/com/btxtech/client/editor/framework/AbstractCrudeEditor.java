@@ -81,9 +81,7 @@ public abstract class AbstractCrudeEditor<T> implements CrudEditor<T>, CrudEdito
      * Fire if values have changed
      */
     protected void fireChange(Collection<T> changes) {
-        for (T change : changes) {
-            fireChange(change);
-        }
+        changes.forEach(this::fireChange);
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -78,8 +79,8 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
     }
 
     @Override
-    public BaseItemType getInstance(ObjectNameId objectNameId) {
-        return itemTypeService.getBaseItemType(objectNameId.getId());
+    public void getInstance(ObjectNameId objectNameId, Consumer<BaseItemType> callback) {
+        callback.accept(itemTypeService.getBaseItemType(objectNameId.getId()));
     }
 
     @Override

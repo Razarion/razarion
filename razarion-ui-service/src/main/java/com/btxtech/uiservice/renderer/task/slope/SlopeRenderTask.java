@@ -34,6 +34,15 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
 
     @PostConstruct
     public void postConstruct() {
+        setupSlopes(false);
+    }
+
+    public void onChanged() {
+        clear();
+        setupSlopes(true);
+    }
+
+    private void setupSlopes(boolean fillBuffer) {
         for (Slope slope : terrainService.getSlopes()) {
             ModelRenderer<Slope, CommonRenderComposite<AbstractSlopeRendererUnit, Slope>, AbstractSlopeRendererUnit, Slope> modelRenderer = create();
             CommonRenderComposite<AbstractSlopeRendererUnit, Slope> renderComposite = modelRenderer.create();
@@ -43,7 +52,9 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
             renderComposite.setNormRenderUnit(normRendererInstance.get());
             modelRenderer.add(RenderUnitControl.NORMAL, renderComposite);
             add(modelRenderer);
+            if (fillBuffer) {
+                renderComposite.fillBuffers();
+            }
         }
     }
-
 }

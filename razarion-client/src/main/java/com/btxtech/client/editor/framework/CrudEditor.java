@@ -3,6 +3,7 @@ package com.btxtech.client.editor.framework;
 import com.btxtech.shared.dto.ObjectNameId;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -29,7 +30,7 @@ public interface CrudEditor<T> {
 
     void reload();
 
-    T getInstance(ObjectNameId id);
+    void getInstance(ObjectNameId id, Consumer<T> callback);
 
     void monitor(LoadedListener loadedListener);
 

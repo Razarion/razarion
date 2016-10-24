@@ -1,12 +1,15 @@
 package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.LightConfigEmbeddable;
+import com.btxtech.server.persistence.PersistenceUtil;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Shape;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -45,7 +48,6 @@ public class SlopeConfigEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SlopeSkeletonConfig.Type type;
-    private double bumpMapDepth;
     private double fractalMin;
     private double fractalMax;
     private double fractalClampMin;
@@ -59,12 +61,13 @@ public class SlopeConfigEntity {
     private List<SlopeNodeEntity> slopeSkeletonEntries;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ImageLibraryEntity image;
-    private double imageScale;
+    private ImageLibraryEntity texture;
+    private double textureScale;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ImageLibraryEntity imageBm;
-    private double imageBmScale;
+    private ImageLibraryEntity bm;
+    private double bmScale;
+    private double bmDepth;
 
     public Long getId() {
         return id;
@@ -73,6 +76,7 @@ public class SlopeConfigEntity {
     public SlopeSkeletonConfig toSlopeSkeleton() {
         SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
         slopeSkeletonConfig.setId(id.intValue());
+        slopeSkeletonConfig.setInternalName(internalName);
         slopeSkeletonConfig.setSegments(segments);
         Shape shape = new Shape(toSlopeShapes());
         slopeSkeletonConfig.setLightConfig(lightConfigEmbeddable.toLightConfig());
@@ -80,13 +84,13 @@ public class SlopeConfigEntity {
         slopeSkeletonConfig.setWidth(shape.getDistance());
         slopeSkeletonConfig.setHeight(shape.getZInner());
         slopeSkeletonConfig.setVerticalSpace(verticalSpace);
-        slopeSkeletonConfig.setBumpMapDepth(bumpMapDepth);
         slopeSkeletonConfig.setType(type);
         slopeSkeletonConfig.setSlopeOriented(slopeOriented);
-        slopeSkeletonConfig.setImageId(image.getId().intValue());
-        slopeSkeletonConfig.setImageScale(imageScale);
-        slopeSkeletonConfig.setBumpImageId(imageBm.getId().intValue());
-        slopeSkeletonConfig.setBumpImageScale(imageBmScale);
+        slopeSkeletonConfig.setTextureId(PersistenceUtil.getImageIdSafe(texture));
+        slopeSkeletonConfig.setTextureScale(textureScale);
+        slopeSkeletonConfig.setBmId(PersistenceUtil.getImageIdSafe(bm));
+        slopeSkeletonConfig.setBmScale(bmScale);
+        slopeSkeletonConfig.setBmDepth(bmDepth);
         SlopeNode[][] slopeNodes = new SlopeNode[segments][shape.getVertexCount()];
         for (SlopeNodeEntity slopeSkeletonEntry : slopeSkeletonEntries) {
             slopeNodes[slopeSkeletonEntry.getSegmentIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry.toSlopeNode();
@@ -109,7 +113,7 @@ public class SlopeConfigEntity {
         return slopeConfig;
     }
 
-    public void fromSlopeConfig(SlopeConfig slopeConfig) {
+    public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence) {
         shape.clear();
         for (SlopeShape slopeShape : slopeConfig.getShape()) {
             SlopeShapeEntity slopeShapeEntity = new SlopeShapeEntity();
@@ -124,7 +128,11 @@ public class SlopeConfigEntity {
         fractalClampMax = slopeConfig.getFractalClampMax();
         fractalRoughness = slopeConfig.getFractalRoughness();
         type = slopeConfig.getSlopeSkeletonConfig().getType();
-        bumpMapDepth = slopeConfig.getSlopeSkeletonConfig().getBumpMapDepth();
+        texture = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getTextureId());
+        textureScale = slopeConfig.getSlopeSkeletonConfig().getTextureScale();
+        bm = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getBmId());
+        bmScale = slopeConfig.getSlopeSkeletonConfig().getBmScale();
+        bmDepth = slopeConfig.getSlopeSkeletonConfig().getBmDepth();
         verticalSpace = slopeConfig.getSlopeSkeletonConfig().getVerticalSpace();
         slopeOriented = slopeConfig.getSlopeSkeletonConfig().getSlopeOriented();
         segments = slopeConfig.getSlopeSkeletonConfig().getSegments();
@@ -136,6 +144,14 @@ public class SlopeConfigEntity {
                 slopeSkeletonEntries.add(slopeNodeEntity);
             }
         }
+    }
+
+    public void setDefault() {
+        segments = 1;
+        verticalSpace = 0.5;
+        shape = new ArrayList<>();
+        shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(0, 0)).setSlopeFactor(1));
+        shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(1, 1)).setSlopeFactor(1));
     }
 
     private List<SlopeShape> toSlopeShapes() {
@@ -153,7 +169,7 @@ public class SlopeConfigEntity {
                 ", internalName='" + internalName + '\'' +
                 ", lightConfigEmbeddable=" + lightConfigEmbeddable +
                 ", shape=" + shape +
-                ", bumpMapDepth=" + bumpMapDepth +
+                ", bmDepth=" + bmDepth +
                 ", fractalMin=" + fractalMin +
                 ", fractalMax=" + fractalMax +
                 ", fractalClampMin=" + fractalClampMin +

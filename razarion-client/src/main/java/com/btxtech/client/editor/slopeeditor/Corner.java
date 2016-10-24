@@ -4,8 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.SlopeShape;
 import com.google.gwt.dom.client.Style;
 import elemental.client.Browser;
-import elemental.events.Event;
-import elemental.events.EventListener;
 import elemental.events.EventRemover;
 import elemental.events.MouseEvent;
 import elemental.svg.SVGCircleElement;
@@ -18,7 +16,7 @@ public class Corner {
     // private Logger logger = Logger.getLogger(Corner.class.getName());
     private static final String COLOR_NORMAL = "blue";
     private static final String COLOR_SELECT = "red";
-    private static final float RADIUS = 5;
+    private static final float RADIUS = 0.25f;
     private SVGCircleElement circle;
     private SlopeShape slopeShape;
     private EventRemover onMouseMoveEventRemover;
@@ -33,12 +31,7 @@ public class Corner {
         circle.getCx().getBaseVal().setValue((float) slopeShape.getPosition().getX());
         circle.getCy().getBaseVal().setValue((float) slopeShape.getPosition().getY());
         circle.getR().getBaseVal().setValue(RADIUS);
-        circle.addEventListener("mousedown", new EventListener() {
-            @Override
-            public void handleEvent(Event event) {
-                select();
-            }
-        }, false);
+        circle.addEventListener("mousedown", event -> select(), false);
         circle.getStyle().setCursor(Style.Cursor.CROSSHAIR.getCssName());
         circle.getStyle().setProperty("fill", COLOR_NORMAL);
     }
@@ -59,20 +52,12 @@ public class Corner {
 
     private void select() {
         mouseOffset = null;
-        onMouseMoveEventRemover = Browser.getWindow().addEventListener("mousemove", new EventListener() {
-            @Override
-            public void handleEvent(Event event) {
-                move((MouseEvent) event);
-                event.stopPropagation();
-                // event.preventDefault();
-            }
+        onMouseMoveEventRemover = Browser.getWindow().addEventListener("mousemove", event -> {
+            move((MouseEvent) event);
+            event.stopPropagation();
+            // event.preventDefault();
         }, true);
-        onMouseUpEventRemover = Browser.getWindow().addEventListener("mouseup", new EventListener() {
-            @Override
-            public void handleEvent(Event event) {
-                deselect();
-            }
-        }, true);
+        onMouseUpEventRemover = Browser.getWindow().addEventListener("mouseup", event -> deselect(), true);
         model.selectionChanged(this);
     }
 

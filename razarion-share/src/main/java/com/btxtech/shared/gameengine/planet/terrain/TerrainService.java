@@ -15,6 +15,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
@@ -49,20 +50,19 @@ public class TerrainService {
     private Map<Integer, Slope> slopeMap = new HashMap<>();
     private MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions;
     private Collection<Obstacle> obstacles;
+    private PlanetConfig planetConfig;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
+        planetConfig = planetActivationEvent.getPlanetConfig();
 
         groundMeshDimension = planetActivationEvent.getPlanetConfig().getGroundMeshDimension();
         setupGround();
 
         water = new Water(planetActivationEvent.getPlanetConfig().getWaterLevel());
 
-        slopeMap.clear();
-        if (planetActivationEvent.getPlanetConfig().getTerrainSlopePositions() != null) {
-            planetActivationEvent.getPlanetConfig().getTerrainSlopePositions().forEach(this::setupPlateau);
-        }
+        setupPlateaus();
 
         terrainObjectConfigPositions = new MapCollection<>();
         if (planetActivationEvent.getPlanetConfig().getTerrainObjectPositions() != null) {
@@ -92,6 +92,13 @@ public class TerrainService {
 
     public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {
         return terrainObjectConfigPositions;
+    }
+
+    public void setupPlateaus() {
+        slopeMap.clear();
+        if (planetConfig.getTerrainSlopePositions() != null) {
+            planetConfig.getTerrainSlopePositions().forEach(this::setupPlateau);
+        }
     }
 
     private void setupPlateau(TerrainSlopePosition terrainSlopePosition) {

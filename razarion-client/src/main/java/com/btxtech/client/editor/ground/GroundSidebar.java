@@ -170,6 +170,7 @@ public class GroundSidebar extends LeftSideBarContent {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         terrainTypeService.setGroundSkeletonConfig(groundConfig.getGroundSkeletonConfig());
         terrainService.setupGround();
+        terrainService.setupPlateaus();
         groundRenderTask.onChanged();
     }
 

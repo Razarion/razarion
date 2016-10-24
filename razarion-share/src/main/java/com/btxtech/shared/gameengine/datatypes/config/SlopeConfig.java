@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.datatypes.Shape;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 
@@ -12,8 +13,8 @@ import java.util.List;
  * Created by Beat
  * 08.05.2016.
  */
-public class SlopeConfig {
-    private Integer id;
+public class SlopeConfig implements ObjectNameIdProvider {
+    private int id;
     private String internalName;
     private List<SlopeShape> shape;
     private SlopeSkeletonConfig slopeSkeletonConfig;
@@ -23,12 +24,8 @@ public class SlopeConfig {
     private double fractalClampMax;
     private double fractalRoughness;
 
-    public Integer getId() {
+    public int getId() {
         return id;
-    }
-
-    public boolean hasId() {
-        return id != null;
     }
 
     public void setId(int id) {
@@ -67,7 +64,8 @@ public class SlopeConfig {
         this.fractalRoughness = fractalRoughness;
     }
 
-    public ObjectNameId createSlopeNameId() {
+    @Override
+    public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, internalName);
     }
 
