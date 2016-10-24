@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.uiservice.cockpit.item.OtherInfoPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -19,7 +20,7 @@ import javax.inject.Inject;
  * 30.09.2016.
  */
 @Templated("ClientOtherInfoPanel.html#other-info-panel")
-public class ClientOtherInfoPanel implements OtherInfoPanel {
+public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
