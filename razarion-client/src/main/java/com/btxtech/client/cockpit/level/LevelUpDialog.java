@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * 24.09.2016.
  */
 @Templated("LevelUpDialog.html#level-up-dialog")
-public class LevelUpDialog extends Composite implements ModalDialogContent<QuestConfig> {
+public class LevelUpDialog extends Composite implements ModalDialogContent<Void> {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -24,12 +24,12 @@ public class LevelUpDialog extends Composite implements ModalDialogContent<Quest
 
 
     @Override
-    public void init(QuestConfig questConfig) {
+    public void init(Void ignore) {
         unlocked.setText("Unlocked text");
     }
 
     @Override
-    public void customize(ModalDialogPanel<QuestConfig> modalDialogPanel) {
+    public void customize(ModalDialogPanel<Void> modalDialogPanel) {
 
     }
 

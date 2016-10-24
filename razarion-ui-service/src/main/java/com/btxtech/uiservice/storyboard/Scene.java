@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.LevelService;
@@ -18,7 +17,6 @@ import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -106,13 +104,24 @@ public class Scene {
             completionCallbackCount++;
             levelService.setLevelUpCallback(userContext1 -> modalDialogManager.showLevelUp(userContext1, ignore -> onComplete()));
         }
-        if(sceneConfig.getResourceItemTypePositions() != null) {
+        if (sceneConfig.getResourceItemTypePositions() != null) {
             resourceService.createResources(sceneConfig.getResourceItemTypePositions());
         }
-        if(sceneConfig.getDuration() != null) {
+        if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
             completionCallbackCount++;
             simpleExecutorService.schedule(sceneConfig.getDuration(), this::onComplete, SimpleExecutorService.Type.UNSPECIFIED);
+        }
+        if (sceneConfig.getScrollUiQuest() != null) {
+            questVisualizer.showSideBar(sceneConfig.getScrollUiQuest());
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            terrainScrollHandler.setPositionListener(sceneConfig.getScrollUiQuest().getScrollTargetRectangle(), () -> {
+                modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest(), ignore -> {
+                    levelService.increaseXp(userContext, sceneConfig.getScrollUiQuest().getXp());
+                    onComplete();
+                });
+            });
         }
 
         if (!hasCompletionCallback) {
@@ -151,6 +160,9 @@ public class Scene {
         }
         if (sceneConfig.isWait4LevelUp() != null && sceneConfig.isWait4LevelUp()) {
             levelService.setLevelUpCallback(null);
+        }
+        if (sceneConfig.getQuestConfig() != null || sceneConfig.getScrollUiQuest() != null) {
+            questVisualizer.showSideBar(null);
         }
     }
 }

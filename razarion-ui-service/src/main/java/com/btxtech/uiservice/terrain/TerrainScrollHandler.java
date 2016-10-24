@@ -1,19 +1,18 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -42,6 +41,8 @@ public class TerrainScrollHandler {
     private SimpleExecutorService simpleExecutorService;
     @Inject
     private Camera camera;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
     private ScrollDirection scrollDirectionXKey = ScrollDirection.STOP;
     private ScrollDirection scrollDirectionYKey = ScrollDirection.STOP;
     private ScrollDirection scrollDirectionXMouse = ScrollDirection.STOP;
@@ -51,6 +52,8 @@ public class TerrainScrollHandler {
     private boolean scrollDisabled;
     private SimpleScheduledFuture simpleScheduledFuture;
     private SimpleScheduledFuture moveHandler;
+    private Rectangle2D destination2Scroll;
+    private Runnable destination2ScrollCallback;
 
     @PostConstruct
     public void init() {
@@ -172,6 +175,14 @@ public class TerrainScrollHandler {
 
         // TODO check if camera is in valid playground filed. Also check in CollisionService.correctPosition()
         camera.setTranslateDeltaXY(scrollX, scrollY);
+
+        if (destination2Scroll != null && destination2ScrollCallback != null) {
+            if (projectionTransformation.calculateViewField(0).isInside(destination2Scroll)) {
+                destination2Scroll = null;
+                destination2ScrollCallback.run();
+                destination2ScrollCallback = null;
+            }
+        }
     }
 
     public void executeCameraConfig(final CameraConfig cameraConfig, Optional<Runnable> completionCallback) {
@@ -212,6 +223,10 @@ public class TerrainScrollHandler {
         }
     }
 
+    public void setPositionListener(Rectangle2D destination2Scroll, Runnable completionCallback) {
+        this.destination2Scroll = destination2Scroll;
+        this.destination2ScrollCallback = completionCallback;
+    }
 
 //    public static Index calculateSafeDelta(int deltaX, int deltaY, TerrainSettings terrainSettings, Rectangle viewRect) {
 //        if (terrainSettings == null) {

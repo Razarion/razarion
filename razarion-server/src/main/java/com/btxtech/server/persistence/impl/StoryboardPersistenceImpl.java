@@ -11,6 +11,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
@@ -20,6 +21,7 @@ import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.dto.ScrollUiQuest;
 import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.dto.VisualConfig;
@@ -100,8 +102,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -202,8 +205,27 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         localizedStrings.put(I18nString.DEFAULT, text);
         return new I18nString(localizedStrings);
     }
-    // Attack -----------------------------------------------------------------------------
 
+
+    // Find Enemy Base -----------------------------------------------------------------------------
+    private List<SceneConfig> findEnemyBase() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        List<BotConfig> botConfigs = new ArrayList<>();
+        // Bot Attacker
+        List<BotEnragementStateConfig> attackerEnragement = new ArrayList<>();
+        List<BotItemConfig> attackerBotItems = new ArrayList<>();
+        attackerBotItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(305, 175))).setNoSpawn(true));
+        attackerEnragement.add(new BotEnragementStateConfig().setName("Normal").setBotItems(attackerBotItems));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragement).setName("Kenny").setNpc(false));
+        // Scroll Quest
+        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
+        // div
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setScrollUiQuest(scrollUiQuest));
+        return sceneConfigs;
+    }
+
+    // Attack -----------------------------------------------------------------------------
     private List<SceneConfig> setupAttack() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         List<BotConfig> botConfigs = new ArrayList<>();
@@ -242,6 +264,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addScrollToOwnScene(sceneConfigs);
         addUserMoveScene(sceneConfigs);
         addNpcHarvestAttack(sceneConfigs);
+        addFindEnemyBase(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -276,7 +299,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(316, 137))).setNoSpawn(true));
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(330, 144))).setNoSpawn(true));
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(340, 165))).setNoSpawn(true));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(308, 173))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(305, 175))).setNoSpawn(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs));
@@ -351,5 +374,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER).setTargetSelection(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(255, 173, 22, 19))));
         sceneConfig.setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(10000).setIntroText("Hilfe wir werden angegriffen");
         sceneConfigs.add(sceneConfig);
+    }
+
+    private void addFindEnemyBase(List<SceneConfig> sceneConfigs) {
+        // Scroll Quest
+        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
+        // div
+        CameraConfig cameraConfig = new CameraConfig().setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setScrollUiQuest(scrollUiQuest));
     }
 }

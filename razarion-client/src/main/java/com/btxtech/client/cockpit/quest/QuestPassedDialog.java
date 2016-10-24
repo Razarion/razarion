@@ -2,7 +2,7 @@ package com.btxtech.client.cockpit.quest;
 
 import com.btxtech.client.dialog.ModalDialogContent;
 import com.btxtech.client.dialog.ModalDialogPanel;
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * 24.09.2016.
  */
 @Templated("QuestPassedDialog.html#quest-passed-dialog")
-public class QuestPassedDialog extends Composite implements ModalDialogContent<QuestConfig> {
+public class QuestPassedDialog extends Composite implements ModalDialogContent<QuestDescriptionConfig> {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -28,13 +28,13 @@ public class QuestPassedDialog extends Composite implements ModalDialogContent<Q
 
 
     @Override
-    public void init(QuestConfig questConfig) {
-        questPassedLabel.setText(questConfig.getPassedMessage());
-        rewardLabel.setText("Belohnung: " + questConfig.getXp() + "XP");
+    public void init(QuestDescriptionConfig questDescriptionConfig) {
+        questPassedLabel.setText(questDescriptionConfig.getPassedMessage());
+        rewardLabel.setText("Belohnung: " + questDescriptionConfig.getXp() + "XP");
     }
 
     @Override
-    public void customize(ModalDialogPanel<QuestConfig> modalDialogPanel) {
+    public void customize(ModalDialogPanel<QuestDescriptionConfig> modalDialogPanel) {
 
     }
 

@@ -1,7 +1,7 @@
 package com.btxtech.client.cockpit.quest;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -31,8 +31,8 @@ public class QuestSidebar extends Composite {
         setStyleName("quest-sidebar");
     }
 
-    public void setQuest(QuestConfig questConfig) {
-        questSidebarTitle.setText(questConfig.getTitle());
-        questSidebarCenter.setText(questConfig.getDescription());
+    public void setQuest(QuestDescriptionConfig descriptionConfig) {
+        questSidebarTitle.setText(descriptionConfig.getTitle());
+        questSidebarCenter.setText(descriptionConfig.getDescription());
     }
 }

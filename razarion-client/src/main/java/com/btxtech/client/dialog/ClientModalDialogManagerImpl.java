@@ -3,7 +3,7 @@ package com.btxtech.client.dialog;
 import com.btxtech.client.cockpit.level.LevelUpDialog;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.uiservice.dialog.ApplyListener;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -40,12 +40,12 @@ public class ClientModalDialogManagerImpl implements ModalDialogManager {
 
 
     @Override
-    public void showQuestPassed(QuestConfig questConfig, ApplyListener<QuestConfig> applyListener) {
-        show("Quest bestanden", ClientModalDialogManagerImpl.Type.STACK_ABLE, QuestPassedDialog.class, questConfig, applyListener);
+    public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, ApplyListener<QuestDescriptionConfig> applyListener) {
+        show("Quest bestanden", ClientModalDialogManagerImpl.Type.STACK_ABLE, QuestPassedDialog.class, questDescriptionConfig, applyListener);
     }
 
     @Override
-    public void showLevelUp(UserContext userContext, ApplyListener<QuestConfig> applyListener) {
+    public void showLevelUp(UserContext userContext, ApplyListener<Void> applyListener) {
         show("Level Up", ClientModalDialogManagerImpl.Type.STACK_ABLE, LevelUpDialog.class, null, applyListener);
     }
 

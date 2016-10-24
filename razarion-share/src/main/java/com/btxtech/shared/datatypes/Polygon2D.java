@@ -4,6 +4,7 @@ import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,7 +49,16 @@ public class Polygon2D {
         return c;
     }
 
-    public boolean isLineCrossing(Line testLine) {
+    public boolean isInside(Collection<DecimalPosition> positions) {
+        for (DecimalPosition position : positions) {
+            if(!isInside(position)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+        public boolean isLineCrossing(Line testLine) {
         for (Line line : lines) {
             if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
                 continue;

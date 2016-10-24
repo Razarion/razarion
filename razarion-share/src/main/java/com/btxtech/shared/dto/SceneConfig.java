@@ -23,6 +23,7 @@ public class SceneConfig {
     private Boolean wait4LevelUp;
     private List<ResourceItemPosition> resourceItemTypePositions;
     private Integer duration;
+    private ScrollUiQuest scrollUiQuest;
 
     public String getIntroText() {
         return introText;
@@ -120,6 +121,15 @@ public class SceneConfig {
 
     public SceneConfig setDuration(Integer duration) {
         this.duration = duration;
+        return this;
+    }
+
+    public ScrollUiQuest getScrollUiQuest() {
+        return scrollUiQuest;
+    }
+
+    public SceneConfig setScrollUiQuest(ScrollUiQuest scrollUiQuest) {
+        this.scrollUiQuest = scrollUiQuest;
         return this;
     }
 }

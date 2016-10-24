@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 
 /**
@@ -10,7 +10,7 @@ import com.btxtech.uiservice.cockpit.QuestVisualizer;
 public class DevToolsQuestVisualizerImpl implements QuestVisualizer {
 
     @Override
-    public void showSideBar(QuestConfig questConfig) {
-        System.out.println("++++ DevToolsQuestVisualizerImpl.showSideBar(): " + questConfig);
+    public void showSideBar(QuestDescriptionConfig descriptionConfig) {
+        System.out.println("++++ DevToolsQuestVisualizerImpl.showSideBar(): " + descriptionConfig);
     }
 }

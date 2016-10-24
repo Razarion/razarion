@@ -1,6 +1,6 @@
 package com.btxtech.client.cockpit.quest;
 
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -19,11 +19,11 @@ public class ClientQuestVisualizerImpl implements QuestVisualizer {
     private QuestSidebar questSidebar;
 
     @Override
-    public void showSideBar(QuestConfig questConfig) {
-        if (questConfig != null) {
+    public void showSideBar(QuestDescriptionConfig descriptionConfig) {
+        if (descriptionConfig != null) {
             if (questSidebar == null) {
                 questSidebar = questCockpitInstance.get();
-                questSidebar.setQuest(questConfig);
+                questSidebar.setQuest(descriptionConfig);
                 RootPanel.get().add(questSidebar);
             }
         } else {

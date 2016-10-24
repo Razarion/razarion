@@ -1,8 +1,10 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.utils.GeometricUtil;
+import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -133,7 +135,7 @@ public class ViewField {
 
     /**
      * Axis-aligned minimum bounding box
-     * <p/>
+     * <p>
      * https://en.wikipedia.org/wiki/Minimum_bounding_box#Axis-aligned_minimum_bounding_box
      *
      * @return Axis-aligned minimum bounding box
@@ -147,5 +149,10 @@ public class ViewField {
         viewField.setTopRight(newTopRight);
         viewField.setTopLeft(new DecimalPosition(newBottomLeft.getX(), newTopRight.getY()));
         return viewField;
+    }
+
+    public boolean isInside(Rectangle2D rectangle2D) {
+        Polygon2D viewPolygon = new Polygon2D(toList());
+        return viewPolygon.isInside(rectangle2D.toCorners());
     }
 }
