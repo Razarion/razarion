@@ -13,6 +13,7 @@ import javax.inject.Inject;
  */
 @Dependent
 public class StartStoryboard extends AbstractStartupTask {
+    // private Logger logger = Logger.getLogger(StartStoryboard.class.getName());
     @Inject
     private GameCanvas gameCanvas;
     @Inject

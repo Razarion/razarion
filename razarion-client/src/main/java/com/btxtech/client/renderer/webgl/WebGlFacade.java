@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.webgl;
 
-import com.btxtech.client.imageservice.ImageLoader;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
@@ -15,7 +14,6 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.LightConfig;
-import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.google.gwt.dom.client.ImageElement;
@@ -27,8 +25,6 @@ import elemental.html.WebGLUniformLocation;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -36,6 +32,7 @@ import java.util.Map;
  */
 @Dependent
 public class WebGlFacade {
+    // private Logger logger = Logger.getLogger(WebGlFacade.class.getName());
     // Attributes
     public static final String A_VERTEX_POSITION = "aVertexPosition";
     public static final String A_VERTEX_NORMAL = "aVertexNormal";
@@ -163,13 +160,6 @@ public class WebGlFacade {
         uniform4f(uniformName, color.getR(), color.getG(), color.getB(), color.getA());
     }
 
-    @Deprecated
-    public WebGlUniformTexture createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
-        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
-        webGlUniformTexture.setWebGLTexture(setupTexture(imageDescriptor));
-        return webGlUniformTexture;
-    }
-
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName) {
         return createWebGLTexture(imageId, samplerUniformName, null, null);
     }
@@ -205,27 +195,6 @@ public class WebGlFacade {
         uniform1f("uLightSpecularHardness" + postfix, lightConfig.getSpecularHardness());
     }
 
-    protected WebGLTexture setupTexture(final ImageDescriptor imageDescriptor) {
-        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
-        ImageLoader<WebGLTexture> textureLoader = new ImageLoader<>();
-        textureLoader.addImageUrl(imageDescriptor.getUrl(), webGLTexture);
-        textureLoader.startLoading(new ImageLoader.Listener<WebGLTexture>() {
-            @Override
-            public void onLoaded(Map<WebGLTexture, ImageElement> loadedImageElements, Collection<WebGLTexture> failed) {
-                if (!failed.isEmpty()) {
-                    throw new IllegalStateException("Failed loading texture: " + imageDescriptor.getUrl());
-                }
-                ImageElement imageElement = loadedImageElements.get(webGLTexture);
-                if (imageElement == null) {
-                    throw new IllegalStateException("Failed loading texture: " + imageDescriptor.getUrl());
-                }
-
-                bindTexture(imageElement, webGLTexture);
-            }
-        });
-        return webGLTexture;
-    }
-
     protected WebGLTexture setupTexture(int imageId) {
         final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
         imageUiService.requestImage(imageId, imageElement -> {
@@ -243,27 +212,6 @@ public class WebGlFacade {
         gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
         WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
-    }
-
-    protected WebGLTexture setupTextureForBumpMap(ImageDescriptor imageDescriptor) {
-        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
-        ImageLoader<WebGLTexture> textureLoader = new ImageLoader<>();
-        textureLoader.addImageUrl(imageDescriptor.getUrl(), webGLTexture);
-        textureLoader.startLoading(new ImageLoader.Listener<WebGLTexture>() {
-            @Override
-            public void onLoaded(Map<WebGLTexture, ImageElement> loadedImageElements, Collection<WebGLTexture> failed) {
-                if (!failed.isEmpty()) {
-                    throw new IllegalStateException("Failed loading texture");
-                }
-                ImageElement imageElement = loadedImageElements.get(webGLTexture);
-                if (imageElement == null) {
-                    throw new IllegalStateException("Failed loading texture");
-                }
-
-                bindTextureForBumpMap(imageElement, webGLTexture);
-            }
-        });
-        return webGLTexture;
     }
 
     protected WebGLTexture setupTextureForBumpMap(int imageId, WebGlUniformTexture webGlUniformTexture) {

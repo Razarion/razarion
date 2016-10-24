@@ -1,8 +1,8 @@
 package com.btxtech.client.imageservice;
 
+import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import com.btxtech.shared.rest.RestUrl;
-import com.btxtech.shared.dto.ImageGalleryItem;
 import com.google.gwt.dom.client.ImageElement;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -53,6 +53,7 @@ public class ImageUiService {
     private Map<Integer, Collection<ImageGalleryListener>> imageGalleryListeners = new HashMap<>();
     private Set<ImageGalleryItem> changed = new HashSet<>();
     private Collection<ChangeListener> changeListeners = new ArrayList<>();
+    private Set<Integer> currentlyLoading = new HashSet<>();
 
     public void requestImage(final int id, ImageListener listener) {
         if (id == 0) {
@@ -169,6 +170,10 @@ public class ImageUiService {
     }
 
     private void loadImage(final int id, final boolean loadLoadImageGalleyItem) {
+        if (currentlyLoading.contains(id)) {
+            return;
+        }
+        currentlyLoading.add(id);
         ImageLoader<Integer> imageLoader = new ImageLoader<>();
         imageLoader.addImageUrl(RestUrl.getImageServiceUrl(id), id);
         imageLoader.startLoading((loadedImageElements, failed) -> {
@@ -179,6 +184,7 @@ public class ImageUiService {
             if (imageElement == null) {
                 throw new IllegalStateException("Failed loading texture");
             }
+            currentlyLoading.remove(id);
             addImage(id, imageElement, loadLoadImageGalleyItem);
         });
     }

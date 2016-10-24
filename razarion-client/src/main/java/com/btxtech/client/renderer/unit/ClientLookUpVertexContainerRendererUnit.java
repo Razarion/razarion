@@ -25,7 +25,7 @@ import javax.inject.Inject;
  */
 @ColorBufferRenderer
 @Dependent
-public class ClientLoopUpVertexContainerRendererUnit extends AbstractLoopUpVertexContainerRenderUnit {
+public class ClientLookUpVertexContainerRendererUnit extends AbstractLoopUpVertexContainerRenderUnit {
     // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;

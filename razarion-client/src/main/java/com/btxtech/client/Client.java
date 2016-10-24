@@ -28,14 +28,11 @@ public class Client {
     private ClientRunner clientRunner;
 
     public Client() {
-        GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
-            @Override
-            public void onUncaughtException(Throwable e) {
-                if (logger != null) {
-                    logger.log(Level.SEVERE, "UncaughtExceptionHandler", e);
-                } else {
-                    GWT.log("UncaughtExceptionHandler", e);
-                }
+        GWT.setUncaughtExceptionHandler(e -> {
+            if (logger != null) {
+                logger.log(Level.SEVERE, "UncaughtExceptionHandler", e);
+            } else {
+                GWT.log("UncaughtExceptionHandler", e);
             }
         });
         RestClient.setApplicationRoot(RestUrl.APPLICATION_PATH);
