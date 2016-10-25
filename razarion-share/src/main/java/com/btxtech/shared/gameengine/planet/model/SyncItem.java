@@ -75,6 +75,7 @@ public abstract class SyncItem {
         this.itemType = itemType;
     }
 
+    @Deprecated
     public abstract boolean isAlive();
 
     @Deprecated

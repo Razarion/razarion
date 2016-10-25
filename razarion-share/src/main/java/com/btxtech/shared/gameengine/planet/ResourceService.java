@@ -49,7 +49,9 @@ public class ResourceService {
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
-        resources.clear();
+        synchronized (resources) {
+            resources.clear();
+        }
     }
 
     public void createResources(Collection<ResourceItemPosition> resourceItemPositions) {

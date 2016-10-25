@@ -73,9 +73,9 @@ public class ResourceItemTypeCrud extends AbstractCrudeEditor<ResourceItemType> 
                 fireChange(resourceItemTypes);
             }
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ResourceItemTypeCrud.readResourceItemType failed: " + message, throwable);
+            logger.log(Level.SEVERE, "ResourceItemTypeCrud.readResourceItemTypes failed: " + message, throwable);
             return false;
-        }).readResourceItemType();
+        }).readResourceItemTypes();
     }
 
     @Override

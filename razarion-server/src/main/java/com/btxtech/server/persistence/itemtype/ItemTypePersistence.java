@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -13,8 +14,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -38,18 +39,14 @@ public class ItemTypePersistence {
     }
 
     @Transactional
-    public List<BaseItemType> readBaseItemType() {
+    public List<BaseItemType> readBaseItemTypes() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<BaseItemTypeEntity> userQuery = criteriaBuilder.createQuery(BaseItemTypeEntity.class);
         Root<BaseItemTypeEntity> from = userQuery.from(BaseItemTypeEntity.class);
         CriteriaQuery<BaseItemTypeEntity> userSelect = userQuery.select(from);
         List<BaseItemTypeEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
 
-        List<BaseItemType> itemTypes = new ArrayList<>();
-        for (BaseItemTypeEntity baseItemTypeEntity : itemTypeEntities) {
-            itemTypes.add(baseItemTypeEntity.toBaseItemType());
-        }
-        return itemTypes;
+        return itemTypeEntities.stream().map(BaseItemTypeEntity::toBaseItemType).collect(Collectors.toList());
     }
 
     @Transactional
@@ -74,18 +71,14 @@ public class ItemTypePersistence {
     }
 
     @Transactional
-    public List<ResourceItemType> readResourceItemType() {
+    public List<ResourceItemType> readResourceItemTypes() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<ResourceItemTypeEntity> userQuery = criteriaBuilder.createQuery(ResourceItemTypeEntity.class);
         Root<ResourceItemTypeEntity> from = userQuery.from(ResourceItemTypeEntity.class);
         CriteriaQuery<ResourceItemTypeEntity> userSelect = userQuery.select(from);
         List<ResourceItemTypeEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
 
-        List<ResourceItemType> itemTypes = new ArrayList<>();
-        for (ResourceItemTypeEntity resourceItemTypeEntity : itemTypeEntities) {
-            itemTypes.add(resourceItemTypeEntity.toResourceItemType());
-        }
-        return itemTypes;
+        return itemTypeEntities.stream().map(ResourceItemTypeEntity::toResourceItemType).collect(Collectors.toList());
     }
 
     @Transactional
@@ -99,5 +92,36 @@ public class ItemTypePersistence {
     @Transactional
     public void deleteResourceItemType(int id) {
         entityManager.remove(entityManager.find(ResourceItemTypeEntity.class, (long) id));
+    }
+
+    @Transactional
+   public BoxItemType createBoxItemType() {
+        BoxItemTypeEntity boxItemTypeEntity = new BoxItemTypeEntity();
+        entityManager.persist(boxItemTypeEntity);
+        return boxItemTypeEntity.toBoxItemType();
+    }
+
+    @Transactional
+    public List<BoxItemType> readBoxItemTypes() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<BoxItemTypeEntity> userQuery = criteriaBuilder.createQuery(BoxItemTypeEntity.class);
+        Root<BoxItemTypeEntity> from = userQuery.from(BoxItemTypeEntity.class);
+        CriteriaQuery<BoxItemTypeEntity> userSelect = userQuery.select(from);
+        List<BoxItemTypeEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
+
+        return itemTypeEntities.stream().map(BoxItemTypeEntity::toBoxItemType).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteBoxItemType(int id) {
+        entityManager.remove(entityManager.find(BoxItemTypeEntity.class, (long) id));
+    }
+
+    @Transactional
+    public void updateBoxItemType(BoxItemType boxItemType) {
+        BoxItemTypeEntity boxItemTypeEntity = entityManager.find(BoxItemTypeEntity.class, (long) boxItemType.getId());
+        boxItemTypeEntity.fromBoxItemType(boxItemType);
+        boxItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(boxItemType.getShape3DId()));
+        entityManager.merge(boxItemTypeEntity);
     }
 }

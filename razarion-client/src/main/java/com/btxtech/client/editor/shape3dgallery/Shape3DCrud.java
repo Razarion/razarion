@@ -15,6 +15,7 @@ import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.clip.ClipServiceImpl;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
+import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ClipRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
@@ -52,6 +53,8 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     private ProjectileRenderTask projectileRenderTask;
     @Inject
     private ResourceItemRenderTask resourceItemRenderTask;
+    @Inject
+    private BoxItemRenderTask boxItemRenderTask;
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
@@ -218,6 +221,8 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
         }
         // Update ResourceItemType renderer
         itemTypeService.getResourceItemTypes().stream().filter(resourceItemType -> resourceItemType.getShape3DId() != null && shape3D.getDbId() == resourceItemType.getShape3DId()).forEach(resourceItemType -> resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType));
+        // Update BoxItemType renderer
+        itemTypeService.getBoxItemTypes().stream().filter(boxItemType -> boxItemType.getShape3DId() != null && shape3D.getDbId() == boxItemType.getShape3DId()).forEach(boxItemType -> boxItemRenderTask.onBoxItemTypeChanged(boxItemType));
         // Update TerrainObject renderer
         terrainTypeService.getTerrainObjectConfigs().stream().filter(terrainObjectConfig -> terrainObjectConfig.getShape3DId() != null && shape3D.getDbId() == terrainObjectConfig.getShape3DId()).forEach(terrainObjectConfig -> terrainObjectRenderTask.onTerrainObjectChanged(terrainObjectConfig));
     }

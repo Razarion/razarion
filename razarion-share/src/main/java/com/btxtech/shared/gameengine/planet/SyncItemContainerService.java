@@ -7,9 +7,11 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
@@ -163,6 +165,17 @@ public class SyncItemContainerService {
             lastItemId++;
         }
         return syncResourceItem;
+    }
+
+    public SyncBoxItem createSyncBoxItem(BoxItemType boxItemType, Vertex position, double zRotation) {
+        SyncBoxItem syncBoxItem = instance.select(SyncBoxItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea(syncBoxItem, boxItemType.getRadius(), position, Vertex.Z_NORM, zRotation);
+        synchronized (items) {
+            syncBoxItem.init(lastItemId, boxItemType, syncPhysicalArea);
+            items.put(lastItemId, syncBoxItem);
+            lastItemId++;
+        }
+        return syncBoxItem;
     }
 
     private SyncPhysicalArea createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, Vertex position) {

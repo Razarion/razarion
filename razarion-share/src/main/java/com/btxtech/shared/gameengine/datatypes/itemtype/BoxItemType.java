@@ -14,14 +14,38 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
-public class BoxItemType extends ItemType {
-    private long ttl;
+import java.util.List;
 
-    public long getTtl() {
+public class BoxItemType extends ItemType {
+    private int ttl;
+    private double radius;
+    private List<BoxItemTypePossibility> boxItemTypePossibilities;
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public int getTtl() {
         return ttl;
     }
 
-    public void setTtl(long ttl) {
+    public List<BoxItemTypePossibility> getBoxItemTypePossibilities() {
+        return boxItemTypePossibilities;
+    }
+
+    public BoxItemType ttl(int ttl) {
         this.ttl = ttl;
+        return this;
+    }
+
+    public BoxItemType boxItemTypePossibilities(List<BoxItemTypePossibility> boxItemTypePossibilities) {
+        this.boxItemTypePossibilities = boxItemTypePossibilities;
+        return this;
+    }
+
+
+    public BoxItemType setRadius(double radius) {
+        this.radius = radius;
+        return this;
     }
 }

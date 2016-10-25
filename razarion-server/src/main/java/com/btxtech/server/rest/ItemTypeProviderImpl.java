@@ -1,6 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.rest.ItemTypeProvider;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -31,9 +32,9 @@ public class ItemTypeProviderImpl implements ItemTypeProvider {
     }
 
     @Override
-    public List<BaseItemType> readBaseItemType() {
+    public List<BaseItemType> readBaseItemTypes() {
         try {
-            return itemTypePersistence.readBaseItemType();
+            return itemTypePersistence.readBaseItemTypes();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
@@ -71,9 +72,9 @@ public class ItemTypeProviderImpl implements ItemTypeProvider {
     }
 
     @Override
-    public List<ResourceItemType> readResourceItemType() {
+    public List<ResourceItemType> readResourceItemTypes() {
         try {
-            return itemTypePersistence.readResourceItemType();
+            return itemTypePersistence.readResourceItemTypes();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
@@ -94,6 +95,46 @@ public class ItemTypeProviderImpl implements ItemTypeProvider {
     public void deleteResourceItemType(int id) {
         try {
             itemTypePersistence.deleteResourceItemType(id);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public BoxItemType createBoxItemType() {
+        try {
+            return itemTypePersistence.createBoxItemType();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public List<BoxItemType> readBoxItemTypes() {
+        try {
+            return itemTypePersistence.readBoxItemTypes();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void deleteBoxItemType(int id) {
+        try {
+            itemTypePersistence.deleteBoxItemType(id);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void updateBoxItemType(BoxItemType boxItemType) {
+        try {
+            itemTypePersistence.updateBoxItemType(boxItemType);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

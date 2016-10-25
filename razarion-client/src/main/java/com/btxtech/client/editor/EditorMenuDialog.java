@@ -7,6 +7,7 @@ import com.btxtech.client.editor.clip.ClipCrudeSidebar;
 import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
+import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
@@ -68,6 +69,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
+    private Button boxItemButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
     private Button terrainObjectButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -120,6 +125,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("resourceItemButton")
     private void onResourceItemButtonClicked(ClickEvent event) {
         openEditor(ResourceItemTypeCrudSidebar.class);
+    }
+
+    @EventHandler("boxItemButton")
+    private void onBoxItemButtonClicked(ClickEvent event) {
+        openEditor(BoxItemTypeCrudSidebar.class);
     }
 
     @EventHandler("terrainObjectButton")

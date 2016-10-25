@@ -2,6 +2,7 @@ package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
+import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ClipRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
@@ -49,6 +50,7 @@ public abstract class RenderService {
         addRenderTask(TerrainObjectRenderTask.class);
         addRenderTask(BaseItemRenderTask.class);
         addRenderTask(ResourceItemRenderTask.class);
+        addRenderTask(BoxItemRenderTask.class);
         addRenderTask(WaterRenderTask.class);
         addRenderTask(ProjectileRenderTask.class);
         addRenderTask(ClipRenderTask.class);

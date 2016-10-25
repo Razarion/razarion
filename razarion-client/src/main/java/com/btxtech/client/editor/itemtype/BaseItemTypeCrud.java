@@ -73,9 +73,9 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
                 fireChange(baseItemTypes);
             }
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "BaseItemTypeCrud.readBaseItemType failed: " + message, throwable);
+            logger.log(Level.SEVERE, "BaseItemTypeCrud.readBaseItemTypes failed: " + message, throwable);
             return false;
-        }).readBaseItemType();
+        }).readBaseItemTypes();
     }
 
     @Override

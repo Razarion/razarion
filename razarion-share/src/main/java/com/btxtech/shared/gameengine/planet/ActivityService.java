@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundExcep
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.planet.condition.ConditionService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 
@@ -229,5 +230,9 @@ public class ActivityService {
 
     public void onResourceExhausted(SyncResourceItem syncResourceItem) {
         System.out.println("ActivityService.onResourceExhausted(): " + syncResourceItem);
+    }
+
+    public void onBoxCreated(SyncBoxItem syncBoxItem) {
+        System.out.println("ActivityService.onBoxCreated(): " + syncBoxItem);
     }
 }
