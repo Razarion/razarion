@@ -47,4 +47,8 @@ public class SyncBoxItem extends SyncItem {
     public boolean isInTTL() {
         return System.currentTimeMillis() - createdTimeStamp < ((BoxItemType) getItemType()).getTtl();
     }
+
+    public BoxItemType getBoxItemType() {
+        return (BoxItemType) getItemType();
+    }
 }

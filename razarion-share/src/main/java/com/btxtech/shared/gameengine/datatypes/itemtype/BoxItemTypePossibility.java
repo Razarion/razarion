@@ -7,7 +7,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 public class BoxItemTypePossibility {
     private int id;
     private double possibility;
-    private InventoryItem inventoryItem;
+    private Integer inventoryItemId;
 
     public int getId() {
         return id;
@@ -17,8 +17,8 @@ public class BoxItemTypePossibility {
         return possibility;
     }
 
-    public InventoryItem getInventoryItem() {
-        return inventoryItem;
+    public Integer getInventoryItemId() {
+        return inventoryItemId;
     }
 
     public BoxItemTypePossibility id(int id) {
@@ -31,8 +31,8 @@ public class BoxItemTypePossibility {
         return this;
     }
 
-    public BoxItemTypePossibility inventoryItem(InventoryItem inventoryItem) {
-        this.inventoryItem = inventoryItem;
+    public BoxItemTypePossibility inventoryItem(Integer inventoryItemId) {
+        this.inventoryItemId = inventoryItemId;
         return this;
     }
 }

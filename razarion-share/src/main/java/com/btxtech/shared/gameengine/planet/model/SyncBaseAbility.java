@@ -45,7 +45,7 @@ public abstract class SyncBaseAbility {
     }
 
     public SyncPhysicalMovable getSyncPhysicalMovable() {
-        return (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
+        return syncBaseItem.getSyncPhysicalMovable();
     }
 
     @Deprecated // Just set the path to the SyncPhysicalMovable: getSyncPhysicalMovable().setDestination(path);

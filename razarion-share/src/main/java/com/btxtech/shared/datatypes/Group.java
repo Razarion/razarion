@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -157,12 +158,12 @@ public class Group {
         return syncBaseItems;
     }
 
-    public Collection<SyncBaseItem> getSyncBaseItems() {
-        return syncBaseItems;
-    }
-
     public SyncBaseItem getFirst() {
         return syncBaseItems.iterator().next();
+    }
+
+    public Collection<SyncBaseItem> getMovables() {
+        return syncBaseItems.stream().filter(syncBaseItem -> syncBaseItem.getSyncPhysicalArea().canMove()).collect(Collectors.toList());
     }
 
     public int count() {
@@ -217,5 +218,4 @@ public class Group {
             }
         }
     }
-
 }

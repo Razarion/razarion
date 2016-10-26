@@ -264,25 +264,6 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
 //    private Double destinationAngel;
 //    private Integer targetContainer;
 //    private Integer syncBoxItemId;
-//    private OverlappingHandler overlappingHandler = new OverlappingHandler() {
-//        @Override
-//        public Path calculateNewPath() {
-//            try {
-//                if (syncBoxItemId != null) {
-//                    SyncBoxItem syncBoxItem = (SyncBoxItem) baseItemService.getItem(syncBoxItemId);
-//                    return recalculateNewPath(getSyncBaseItem().getBaseItemType().getBoxPickupRange(), syncBoxItem.getSyncItemArea());
-//                } else if (targetContainer != null) {
-//                    SyncBaseItem container = (SyncBaseItem) baseItemService.getItem(targetContainer);
-//                    return recalculateNewPath(container.getSyncItemContainer().getRange(), container.getSyncItemArea());
-//                } else {
-//                    return collisionService.setupPathToSyncMovableRandomPositionIfTaken(getSyncBaseItem());
-//                }
-//            } catch (ItemDoesNotExistException e) {
-//                stop();
-//                return null;
-//            }
-//        }
-//    };
 //
 //    public boolean isActive() {
 //        return getSyncBaseItem().isAlive() && (targetContainer != null || syncBoxItemId != null || (pathToDestination != null && !pathToDestination.isEmpty()));
@@ -379,34 +360,6 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
 //        return false;
 //    }
 //
-//    private boolean pickupBox() {
-//        try {
-//            SyncBoxItem syncBoxItem = (SyncBoxItem) baseItemService.getItem(syncBoxItemId);
-//            if (getSyncItemArea().isInRange(getSyncBaseItem().getBaseItemType().getBoxPickupRange(), syncBoxItem)) {
-//                getSyncItemArea().turnTo(syncBoxItem);
-//                boxService.onSyncBoxItemPicked(syncBoxItem, getSyncBaseItem());
-//                stop();
-//                return false;
-//            } else {
-//                if (isNewPathRecalculationAllowed()) {
-//                    // Destination place was may be taken. Calculate a new one or target has moved away
-//                    recalculateAndSetNewPath(getSyncBaseItem().getBaseItemType().getBoxPickupRange(), syncBoxItem.getSyncItemArea());
-//                    activityService.onNewPathRecalculation(getSyncBaseItem());
-//                    return true;
-//                } else {
-//                    return false;
-//                }
-//            }
-//        } catch (ItemDoesNotExistException ignore) {
-//            // Target may be killed
-//            stop();
-//            return false;
-//        } catch (TargetHasNoPositionException e) {
-//            // Target moved to a container
-//            stop();
-//            return false;
-//        }
-//    }
 //
 //    @Override
 //    public void synchronize(SyncItemInfo syncItemInfo) {
@@ -446,12 +399,6 @@ public class SyncPhysicalMovable extends SyncPhysicalDirection {
 //        targetContainer = loadContainerCommand.getItemContainer();
 //        pathToDestination = loadContainerCommand.getPathToDestination().getPath();
 //        destinationAngel = loadContainerCommand.getPathToDestination().getActualDestinationAngel();
-//    }
-//
-//    public void executeCommand(PickupBoxCommand pickupBoxCommand) {
-//        syncBoxItemId = pickupBoxCommand.getBox();
-//        pathToDestination = pickupBoxCommand.getPathToDestination().getPath();
-//        destinationAngel = pickupBoxCommand.getPathToDestination().getActualDestinationAngel();
 //    }
 //
 //    public List<DecimalPosition> getPathToDestination() {

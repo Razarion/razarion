@@ -35,7 +35,7 @@ public class BaseItemType extends ItemType {
     private ItemContainerType itemContainerType;
     private HouseType houseType;
     private double dropBoxPossibility;
-    private int boxPickupRange;
+    private double boxPickupRange;
     private Integer unlockCrystals;
     private int spawnDurationMillis;
     private Integer spawnShape3DId;
@@ -76,11 +76,11 @@ public class BaseItemType extends ItemType {
         return this;
     }
 
-    public int getBoxPickupRange() {
+    public double getBoxPickupRange() {
         return boxPickupRange;
     }
 
-    public BaseItemType setBoxPickupRange(int boxPickupRange) {
+    public BaseItemType setBoxPickupRange(double boxPickupRange) {
         this.boxPickupRange = boxPickupRange;
         return this;
     }

@@ -1,11 +1,9 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -24,6 +22,7 @@ public class SceneConfig {
     private List<ResourceItemPosition> resourceItemTypePositions;
     private Integer duration;
     private ScrollUiQuest scrollUiQuest;
+    private List<BoxItemPosition> boxItemPositions;
 
     public String getIntroText() {
         return introText;
@@ -130,6 +129,15 @@ public class SceneConfig {
 
     public SceneConfig setScrollUiQuest(ScrollUiQuest scrollUiQuest) {
         this.scrollUiQuest = scrollUiQuest;
+        return this;
+    }
+
+    public List<BoxItemPosition> getBoxItemPositions() {
+        return boxItemPositions;
+    }
+
+    public SceneConfig setBoxItemPositions(List<BoxItemPosition> boxItemPositions) {
+        this.boxItemPositions = boxItemPositions;
         return this;
     }
 }

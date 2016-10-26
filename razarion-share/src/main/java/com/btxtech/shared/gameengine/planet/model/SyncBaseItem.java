@@ -39,7 +39,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.BaseService;
+import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 
@@ -61,13 +61,13 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private BaseService baseService;
-    @Inject
     private BaseItemService baseItemService;
     @Inject
     private CommandService commandService;
     @Inject
     private ActivityService activityService;
+    @Inject
+    private BoxService boxService;
     private PlayerBase base;
     private double buildup;
     private double health;
@@ -85,6 +85,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private PlayerBase killedBy;
     private ItemLifecycle itemLifecycle;
     private double spawnProgress;
+    private SyncBoxItem syncBoxItemToPick;
 
     public void setup(PlayerBase base, ItemLifecycle itemLifecycle) throws NoSuchItemTypeException {
         this.base = base;
@@ -269,7 +270,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     public boolean isIdle() {
-        return isBuildup() && itemLifecycle == ItemLifecycle.ALIVE && !getSyncPhysicalArea().hasDestination() && !isAbilityActive();
+        return isBuildup() && itemLifecycle == ItemLifecycle.ALIVE && !getSyncPhysicalArea().hasDestination() && !isAbilityActive() && syncBoxItemToPick == null;
     }
 
     private boolean isAbilityActive() {
@@ -290,6 +291,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             } else {
                 return true;
             }
+        }
+
+        if (syncBoxItemToPick != null) {
+            return pickSyncBoxItem();
         }
 
         if (hasSyncConsumer() && !getSyncConsumer().isOperating()) {
@@ -316,11 +321,13 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return syncItemContainer.tick();
         }
 
-        return getSyncPhysicalArea().canMove() && ((SyncPhysicalMovable) getSyncPhysicalArea()).hasDestination();
+        return getSyncPhysicalArea().canMove() && getSyncPhysicalArea().hasDestination();
     }
 
     public void stop() {
         getSyncPhysicalArea().stop();
+
+        syncBoxItemToPick = null;
 
         if (syncWeapon != null) {
             syncWeapon.stop();
@@ -392,9 +399,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (baseCommand instanceof PickupBoxCommand) {
-            throw new UnsupportedOperationException();
-            // getSyncMovable().executeCommand((PickupBoxCommand) baseCommand);
-            // return;
+            PickupBoxCommand pickupBoxCommand = (PickupBoxCommand) baseCommand;
+            getSyncPhysicalMovable().setDestination(pickupBoxCommand.getPathToDestination());
+            syncBoxItemToPick = boxService.getSyncBoxItem(pickupBoxCommand.getSynBoxItemId());
+            return;
         }
 
         throw new IllegalArgumentException("Command not supported: " + baseCommand);
@@ -611,6 +619,25 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public void setKilledBy(PlayerBase killedBy) {
         this.killedBy = killedBy;
+    }
+
+    private boolean pickSyncBoxItem() {
+        if (!syncBoxItemToPick.isAlive()) {
+            stop();
+            return false;
+        }
+        if (!getSyncPhysicalArea().isInRange(getBaseItemType().getBoxPickupRange(), syncBoxItemToPick)) {
+            if (!getSyncPhysicalArea().canMove()) {
+                throw new IllegalStateException("SyncBaseItem out of range from Box and getSyncPhysicalArea can not move");
+            }
+            if (!getSyncPhysicalMovable().hasDestination()) {
+                throw new IllegalStateException("SyncBaseItem out of range from Box and SyncPhysicalMovable does not have a destination");
+            }
+            return true;
+        }
+        boxService.onSyncBoxItemPicked(syncBoxItemToPick, this);
+        stop();
+        return false;
     }
 
     @Override

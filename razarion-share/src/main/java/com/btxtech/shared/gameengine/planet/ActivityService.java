@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
@@ -93,10 +94,6 @@ public class ActivityService {
 //   TODO         activityService.sendAccountBaseUpdate((SyncBaseItem) activeItem);
 //    TODO    }
 
-    }
-
-    public void onNewPathRecalculation(SyncBaseItem syncBaseItem) {
-        System.out.println("ActivityService.onNewPathRecalculation(): " + syncBaseItem);
     }
 
     public void onBaseCreated(PlayerBase playerBase) {
@@ -234,5 +231,9 @@ public class ActivityService {
 
     public void onBoxCreated(SyncBoxItem syncBoxItem) {
         System.out.println("ActivityService.onBoxCreated(): " + syncBoxItem);
+    }
+
+    public void onBoxPicket(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
+        System.out.println("ActivityService.onBoxPicket(): " + box + " picker: " + picker + " boxContent: " + boxContent);
     }
 }

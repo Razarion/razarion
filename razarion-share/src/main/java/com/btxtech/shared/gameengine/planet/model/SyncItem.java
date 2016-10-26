@@ -95,6 +95,13 @@ public abstract class SyncItem {
         return syncPhysicalArea;
     }
 
+    public SyncPhysicalMovable getSyncPhysicalMovable() {
+        if(syncPhysicalArea instanceof SyncPhysicalMovable) {
+            return (SyncPhysicalMovable) syncPhysicalArea;
+        }
+        throw new IllegalStateException("SyncItem does not have a SyncPhysicalMovable: " + this);
+    }
+
     public ModelMatrices createModelMatrices() {
         return syncPhysicalArea.createModelMatrices();
     }

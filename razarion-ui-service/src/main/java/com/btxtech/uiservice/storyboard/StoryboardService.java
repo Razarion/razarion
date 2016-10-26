@@ -20,7 +20,7 @@ import java.util.Collection;
  * Created by Beat
  * 05.07.2016.
  */
-@Singleton // @ApplicationScoped lead to crashes with errai
+@Singleton // @ApplicationScoped lead to crashes with errai CDI
 // Better name: something with game-control, client control
 public class StoryboardService {
     // private Logger logger = Logger.getLogger(StoryboardService.class.getName());

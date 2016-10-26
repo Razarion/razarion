@@ -82,8 +82,8 @@ public class SelectionHandler {
                 commandService.attack(selectedGroup.getItems(), (SyncBaseItem) target);
             } else if (selectedGroup.canCollect() && target instanceof SyncResourceItem) {
                 commandService.harvest(selectedGroup.getItems(), (SyncResourceItem) target);
-            } else if (target instanceof SyncBoxItem) {
-                commandService.pickupBox(selectedGroup.getItems(), (SyncBoxItem) target);
+            } else if (selectedGroup.canMove() && target instanceof SyncBoxItem) {
+                commandService.pickupBox(selectedGroup.getMovables(), (SyncBoxItem) target);
             }
         } else {
             // TODO this may be wrong

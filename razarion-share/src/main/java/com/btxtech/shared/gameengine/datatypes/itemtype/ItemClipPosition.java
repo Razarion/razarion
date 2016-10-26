@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
  * Date: 01.11.12
  * Time: 14:04
  */
+@Deprecated
 public class ItemClipPosition {
     private int clipId;
     private Index[] positions;

@@ -6,13 +6,13 @@ package com.btxtech.shared.gameengine.datatypes.command;
  * Time: 00:27
  */
 public class PickupBoxCommand extends PathToDestinationCommand {
-    private int box;
+    private int synBoxItemId;
 
-    public int getBox() {
-        return box;
+    public int getSynBoxItemId() {
+        return synBoxItemId;
     }
 
-    public void setBox(int box) {
-        this.box = box;
+    public void setSynBoxItemId(int synBoxItemId) {
+        this.synBoxItemId = synBoxItemId;
     }
 }

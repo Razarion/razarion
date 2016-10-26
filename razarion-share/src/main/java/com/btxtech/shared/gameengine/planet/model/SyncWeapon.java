@@ -84,7 +84,7 @@ public class SyncWeapon extends SyncBaseAbility {
                     throw new IllegalStateException("SyncWeapon out of range from Target and getSyncPhysicalArea can not move");
                 }
                 if (!getSyncPhysicalMovable().hasDestination()) {
-                     throw new IllegalStateException("SyncWeapon out of range from Target and SyncPhysicalMovable does not have a position");
+                     throw new IllegalStateException("SyncWeapon out of range from Target and SyncPhysicalMovable does not have a destination");
                 }
 
                 // Check if target has moved away

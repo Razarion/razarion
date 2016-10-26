@@ -7,6 +7,7 @@ import java.util.Collection;
  * Date: 06.11.12
  * Time: 18:02
  */
+@Deprecated
 public class DemolitionStepSpriteMap {
     private int animationFrames;
     private int animationDuration;

@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.condition.ConditionService;
@@ -55,6 +56,8 @@ public class Scene {
     private ResourceService resourceService;
     @Inject
     private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private BoxService boxService;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -122,6 +125,9 @@ public class Scene {
                     onComplete();
                 });
             });
+        }
+        if(sceneConfig.getBoxItemPositions() != null) {
+            boxService.dropBoxes(sceneConfig.getBoxItemPositions());
         }
 
         if (!hasCompletionCallback) {
