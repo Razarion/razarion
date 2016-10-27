@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
-import com.btxtech.shared.gameengine.planet.condition.ConditionService;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncTickItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
@@ -47,7 +47,7 @@ public class PlanetService implements Runnable {
     @Inject
     private BaseItemService baseItemService;
     @Inject
-    private ConditionService conditionService;
+    private QuestService questService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -88,7 +88,7 @@ public class PlanetService implements Runnable {
             // TODO Moving (also pushed away items, ev targed reached)
             // TODO building, attacking,
             pathingService.tick();
-            conditionService.checkPositionCondition();
+            questService.checkPositionCondition();
 
             syncItemContainerService.iterateOverBaseItems(false, false,null, activeItem ->{
                 if (!activeItem.isAlive()) {

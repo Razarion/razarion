@@ -1,13 +1,16 @@
 package com.btxtech.client.dialog;
 
+import com.btxtech.client.cockpit.BoxContentDialog;
 import com.btxtech.client.cockpit.level.LevelUpDialog;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.uiservice.dialog.ApplyListener;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.google.gwt.user.client.ui.RootPanel;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,7 +22,7 @@ import java.util.List;
  * 20.05.2016.
  */
 @Singleton
-public class ClientModalDialogManagerImpl implements ModalDialogManager {
+public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
     public enum Type {
         PROMPTLY,
         STACK_ABLE,
@@ -38,15 +41,19 @@ public class ClientModalDialogManagerImpl implements ModalDialogManager {
 //    private ModalDialogContent content;
 //    private ApplyListener applyListener;
 
-
     @Override
-    public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, ApplyListener<QuestDescriptionConfig> applyListener) {
-        show("Quest bestanden", ClientModalDialogManagerImpl.Type.STACK_ABLE, QuestPassedDialog.class, questDescriptionConfig, applyListener);
+    protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, ApplyListener<QuestDescriptionConfig> applyListener) {
+        show("Quest bestanden", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, applyListener);
     }
 
     @Override
-    public void showLevelUp(UserContext userContext, ApplyListener<Void> applyListener) {
-        show("Level Up", ClientModalDialogManagerImpl.Type.STACK_ABLE, LevelUpDialog.class, null, applyListener);
+    protected void showLevelUp(UserContext userContext, ApplyListener<Void> applyListener) {
+        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, null, applyListener);
+    }
+
+    @Override
+    public void showBoxPicked(BoxContent boxContent) {
+        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null);
     }
 
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {

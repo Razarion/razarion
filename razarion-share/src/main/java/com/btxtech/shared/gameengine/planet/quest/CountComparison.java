@@ -11,7 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.planet.condition;
+package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -67,7 +67,7 @@ public class CountComparison extends AbstractSyncItemComparison {
 //    }
 //
 //    @Override
-//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, ConditionService conditionService) {
+//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, QuestService conditionService) {
 //        questProgressInfo.setAmount(new QuestProgressInfo.Amount((int) (countTotal - count), (int) countTotal));
 //    }
 }

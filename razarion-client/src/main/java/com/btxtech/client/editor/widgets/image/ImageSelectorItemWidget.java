@@ -3,7 +3,6 @@ package com.btxtech.client.editor.widgets.image;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
@@ -30,9 +29,6 @@ public class ImageSelectorItemWidget implements TakesValue<ImageGalleryItem>, Is
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ImageUiService imageUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private ModalDialogManager modalDialogManager;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField

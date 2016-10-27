@@ -18,7 +18,8 @@ public class SceneConfig {
     private List<BotHarvestCommandConfig> botHarvestCommandConfigs;
     private List<BotAttackCommandConfig> botAttackCommandConfigs;
     private StartPointConfig startPointConfig;
-    private Boolean wait4LevelUp;
+    private Boolean wait4LevelUpDialog;
+    private Boolean wait4QuestPassedDialog;
     private List<ResourceItemPosition> resourceItemTypePositions;
     private Integer duration;
     private ScrollUiQuest scrollUiQuest;
@@ -96,12 +97,21 @@ public class SceneConfig {
         return this;
     }
 
-    public Boolean isWait4LevelUp() {
-        return wait4LevelUp;
+    public Boolean isWait4QuestPassedDialog() {
+        return wait4QuestPassedDialog;
     }
 
-    public SceneConfig setWait4LevelUp(Boolean wait4LevelUp) {
-        this.wait4LevelUp = wait4LevelUp;
+    public SceneConfig setWait4QuestPassedDialog(Boolean wait4QuestPassedDialog) {
+        this.wait4QuestPassedDialog = wait4QuestPassedDialog;
+        return this;
+    }
+
+    public Boolean isWait4LevelUpDialog() {
+        return wait4LevelUpDialog;
+    }
+
+    public SceneConfig setWait4LevelUpDialog(Boolean wait4LevelUpDialog) {
+        this.wait4LevelUpDialog = wait4LevelUpDialog;
         return this;
     }
 

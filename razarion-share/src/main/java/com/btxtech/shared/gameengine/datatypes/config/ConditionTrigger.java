@@ -14,9 +14,9 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 
-import com.btxtech.shared.gameengine.planet.condition.AbstractComparison;
-import com.btxtech.shared.gameengine.planet.condition.AbstractConditionProgress;
-import com.btxtech.shared.gameengine.planet.condition.SyncBaseItemConditionProgress;
+import com.btxtech.shared.gameengine.planet.quest.AbstractComparison;
+import com.btxtech.shared.gameengine.planet.quest.AbstractConditionProgress;
+import com.btxtech.shared.gameengine.planet.quest.SyncBaseItemConditionProgress;
 
 /**
  * User: beat

@@ -11,7 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.planet.condition;
+package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -192,7 +192,7 @@ public class ItemTypePositionComparison extends AbstractSyncItemComparison /*imp
 
 
 //    @Override
-//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, ConditionService conditionService) {
+//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, QuestService conditionService) {
 //        // Add time
 //        if (time != null) {
 //            int amount = 0;

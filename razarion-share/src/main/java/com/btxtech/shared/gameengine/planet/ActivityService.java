@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.ModalDialogManager;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
@@ -10,7 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
-import com.btxtech.shared.gameengine.planet.condition.ConditionService;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -34,9 +35,14 @@ public class ActivityService {
     @Inject
     private PlanetService planetService;
     @Inject
-    private ConditionService conditionService;
+    private QuestService questService;
     private Collection<Function<SyncBaseItem, Boolean>> spawnFinishCallback = new ArrayList<>();
     private Optional<ClipService> clipService = Optional.empty();
+    private ModalDialogManager modalDialogManager;
+
+    public void setModalDialogManager(ModalDialogManager modalDialogManager) {
+        this.modalDialogManager = modalDialogManager;
+    }
 
     public void setClipService(ClipService clipService) {
         this.clipService = Optional.of(clipService);
@@ -188,7 +194,7 @@ public class ActivityService {
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncBaseItem);
-        conditionService.onSyncItemBuilt(syncBaseItem);
+        questService.onSyncItemBuilt(syncBaseItem);
         Collection<Function<SyncBaseItem, Boolean>> tmp = new ArrayList<>(spawnFinishCallback);
         for (Function<SyncBaseItem, Boolean> callback : tmp) {
             if (callback.apply(syncBaseItem)) {
@@ -235,5 +241,8 @@ public class ActivityService {
 
     public void onBoxPicket(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
         System.out.println("ActivityService.onBoxPicket(): " + box + " picker: " + picker + " boxContent: " + boxContent);
+        if (modalDialogManager != null) {
+            modalDialogManager.showBoxPicked(boxContent);
+        }
     }
 }

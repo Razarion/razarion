@@ -1,20 +1,12 @@
-package com.btxtech.shared.gameengine.planet.condition;
+package com.btxtech.shared.gameengine.planet.quest;
 
-import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
-import org.easymock.EasyMock;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.MockType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -22,18 +14,18 @@ import java.util.function.Consumer;
  * 23.09.2016.
  */
 @RunWith(EasyMockRunner.class)
-public class ConditionServiceTest {
+public class QuestServiceTest {
     @Mock(type = MockType.STRICT)
     private Consumer<UserContext> conditionPassedListenerMock;
 
     @Test
     public void test1() {
         // TODO
-//        UserContext userContext = new UserContext().setName("ConditionServiceTest Base");
+//        UserContext userContext = new UserContext().setName("QuestServiceTest Base");
 //
 //        conditionPassedListenerMock.accept(userContext);
 //        EasyMock.replay(conditionPassedListenerMock);
-//        ConditionService conditionService = new ConditionService();
+//        QuestService conditionService = new QuestService();
 //
 //        SimpleTestEnvironment simpleTestEnvironment = new SimpleTestEnvironment();
 //        simpleTestEnvironment.injectItemTypeService(conditionService);

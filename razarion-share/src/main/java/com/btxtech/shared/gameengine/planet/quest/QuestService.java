@@ -11,14 +11,15 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.planet.condition;
+package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * User: beat
@@ -39,7 +39,7 @@ import java.util.function.Consumer;
  * Time: 13:09:19
  */
 @ApplicationScoped
-public class ConditionService {
+public class QuestService {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -48,12 +48,15 @@ public class ConditionService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private Instance<AbstractComparison> instance;
+    @Inject
+    private LevelService levelService;
+    private Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<UserContext, AbstractConditionProgress> progressMap = new HashMap<>();
 
-    public void activateCondition(UserContext examinee, ConditionConfig conditionConfig, Consumer<UserContext> conditionPassedListener) {
+    public void activateCondition(UserContext examinee, QuestConfig questConfig) {
         AbstractComparison abstractComparison = null;
-        if (conditionConfig.getConditionTrigger().isComparisonNeeded()) {
-            abstractComparison = createAbstractComparison(examinee, conditionConfig.getComparisonConfig());
+        if (questConfig.getConditionConfig().getConditionTrigger().isComparisonNeeded()) {
+            abstractComparison = createAbstractComparison(examinee, questConfig.getConditionConfig().getComparisonConfig());
 //            if (abstractComparison instanceof AbstractUpdatingComparison) {
 //                ((AbstractUpdatingComparison) abstractComparison).setGlobalServices(getGlobalServices());
 //            }
@@ -64,9 +67,9 @@ public class ConditionService {
 //   TODO             }
 //   TODO         }
         }
-        AbstractConditionProgress conditionProgress = conditionConfig.getConditionTrigger().createConditionProgress(abstractComparison);
+        AbstractConditionProgress conditionProgress = questConfig.getConditionConfig().getConditionTrigger().createConditionProgress(abstractComparison);
         conditionProgress.setExaminee(examinee);
-        conditionProgress.setConditionPassedListener(conditionPassedListener);
+        conditionProgress.setQuestConfig(questConfig);
         synchronized (progressMap) {
             progressMap.put(examinee, conditionProgress);
         }
@@ -115,6 +118,14 @@ public class ConditionService {
         triggerSyncItem(examinee, ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
     }
 
+    public void addQuestListener(QuestListener questListener) {
+        questListeners.add(questListener);
+    }
+
+    public void removeQuestListener(QuestListener questListener) {
+        questListeners.remove(questListener);
+    }
+
     private AbstractComparison createAbstractComparison(UserContext examinee, ComparisonConfig comparisonConfig) {
         if (comparisonConfig.getCount() != null) {
             CountComparison countComparison = instance.select(CountComparison.class).get();
@@ -122,7 +133,7 @@ public class ConditionService {
             return countComparison;
         } else if (comparisonConfig.getPlaceConfig() != null) {
             ItemTypePositionComparison itemTypePositionComparison = instance.select(ItemTypePositionComparison.class).get();
-            itemTypePositionComparison.init(convertItemCount(comparisonConfig.getBaseItemTypeCount()),comparisonConfig.getPlaceConfig(),comparisonConfig.getTime(), comparisonConfig.getAddExisting(), examinee);
+            itemTypePositionComparison.init(convertItemCount(comparisonConfig.getBaseItemTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), examinee);
             return itemTypePositionComparison;
         } else if (comparisonConfig.getBaseItemTypeCount() != null) {
             SyncItemTypeComparison syncItemTypeComparison = instance.select(SyncItemTypeComparison.class).get();
@@ -153,9 +164,8 @@ public class ConditionService {
 
     private void conditionPassed(AbstractConditionProgress abstractConditionProgress) {
         deactivateActorCondition(abstractConditionProgress.getExaminee());
-        if (abstractConditionProgress.getConditionPassedListener() != null) {
-            abstractConditionProgress.getConditionPassedListener().accept(abstractConditionProgress.getExaminee());
-        }
+        questListeners.stream().forEach(questListener -> questListener.onQuestPassed(abstractConditionProgress.getExaminee(), abstractConditionProgress.getQuestConfig()));
+        levelService.increaseXp(abstractConditionProgress.getExaminee(), abstractConditionProgress.getQuestConfig().getXp());
     }
 
     private Map<BaseItemType, Integer> convertItemCount(Map<Integer, Integer> itemIdCount) {

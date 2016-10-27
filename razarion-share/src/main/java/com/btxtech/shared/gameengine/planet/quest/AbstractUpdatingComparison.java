@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.condition;
+package com.btxtech.shared.gameengine.planet.quest;
 
 
 /**

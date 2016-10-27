@@ -84,7 +84,9 @@ public class ModalDialogPanel<T> extends Composite {
     @EventHandler("applyButton")
     private void applyButtonButtonClick(ClickEvent event) {
         modalDialogManager.close(this);
-        applyListener.onApply(applyValue);
+        if (applyListener != null) {
+            applyListener.onApply(applyValue);
+        }
     }
 
     public void setApplyValue(T applyValue) {

@@ -21,8 +21,10 @@ public class InventoryService {
 
     private void setInventoryItems(List<InventoryItem> inventoryItems) {
         this.inventoryItems.clear();
-        for (InventoryItem inventoryItem : inventoryItems) {
-            this.inventoryItems.put(inventoryItem.getId(), inventoryItem);
+        if (inventoryItems != null) {
+            for (InventoryItem inventoryItem : inventoryItems) {
+                this.inventoryItems.put(inventoryItem.getId(), inventoryItem);
+            }
         }
     }
 

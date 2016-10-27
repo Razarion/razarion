@@ -11,7 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.planet.condition;
+package com.btxtech.shared.gameengine.planet.quest;
 
 
 /**
@@ -30,7 +30,7 @@ public interface AbstractComparison {
 
     // TODO dave & reload void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer);
 
-    // TODO visualization void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, ConditionService aconditionService);
+    // TODO visualization void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, QuestService aconditionService);
 
     void handleDeferredUpdate();
 }

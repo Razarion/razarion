@@ -1,9 +1,10 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.uiservice.dialog.ApplyListener;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
@@ -14,7 +15,7 @@ import javax.inject.Singleton;
  * 24.09.2016.
  */
 @Singleton
-public class DevToolModalDialogManagerImpl implements ModalDialogManager {
+public class DevToolModalDialogManagerImpl extends AbstractModalDialogManager {
     @Override
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, ApplyListener<QuestDescriptionConfig> applyListener) {
         Platform.runLater(() -> {
@@ -36,6 +37,17 @@ public class DevToolModalDialogManagerImpl implements ModalDialogManager {
             alert.setContentText("Neuer level");
             alert.showAndWait();
             applyListener.onApply(null);
+        });
+    }
+
+    @Override
+    public void showBoxPicked(BoxContent boxContent) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Box picked");
+            alert.setHeaderText(null);
+            alert.setContentText("Box picked");
+            alert.showAndWait();
         });
     }
 }

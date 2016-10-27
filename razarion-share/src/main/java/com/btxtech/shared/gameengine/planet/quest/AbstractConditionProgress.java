@@ -11,13 +11,12 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.planet.condition;
+package com.btxtech.shared.gameengine.planet.quest;
 
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
-
-import java.util.function.Consumer;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
 /**
  * User: beat
@@ -29,7 +28,7 @@ public class AbstractConditionProgress {
     private AbstractComparison abstractComparison;
     private boolean fulfilled = false;
     private UserContext examinee;
-    private Consumer<UserContext> conditionPassedListener;
+    private QuestConfig questConfig;
 
     public AbstractConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
         this.conditionTrigger = conditionTrigger;
@@ -64,11 +63,11 @@ public class AbstractConditionProgress {
         return examinee;
     }
 
-    public Consumer<UserContext> getConditionPassedListener() {
-        return conditionPassedListener;
+    public void setQuestConfig(QuestConfig questConfig) {
+        this.questConfig = questConfig;
     }
 
-    public void setConditionPassedListener(Consumer<UserContext> conditionPassedListener) {
-        this.conditionPassedListener = conditionPassedListener;
+    public QuestConfig getQuestConfig() {
+        return questConfig;
     }
 }

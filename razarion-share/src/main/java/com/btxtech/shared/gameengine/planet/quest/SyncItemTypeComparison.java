@@ -11,7 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.shared.gameengine.planet.condition;
+package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -79,7 +79,7 @@ public class SyncItemTypeComparison extends AbstractSyncItemComparison {
 //    }
 //
 //    @Override
-//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, ConditionService conditionService) {
+//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, QuestService conditionService) {
 //        Map<Integer, QuestProgressInfo.Amount> itemIdAmounts = new HashMap<Integer, QuestProgressInfo.Amount>();
 //        for (Map.Entry<BaseItemType, Integer> entry : total.entrySet()) {
 //            Integer remaining = this.remaining.get(entry.getKey());

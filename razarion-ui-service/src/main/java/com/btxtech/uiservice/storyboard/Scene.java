@@ -8,11 +8,11 @@ import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
-import com.btxtech.shared.gameengine.planet.condition.ConditionService;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.renderer.task.startpoint.StartPointUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
@@ -46,10 +46,10 @@ public class Scene {
     @Inject
     private ActivityService activityService;
     @Inject
-    private ConditionService conditionService;
+    private QuestService questService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private ModalDialogManager modalDialogManager;
+    private AbstractModalDialogManager abstractModalDialogManager;
     @Inject
     private LevelService levelService;
     @Inject
@@ -89,23 +89,21 @@ public class Scene {
             startPointUiService.activate(sceneConfig.getStartPointConfig());
         }
         if (sceneConfig.getQuestConfig() != null) {
-            hasCompletionCallback = true;
-            completionCallbackCount++;
-            conditionService.activateCondition(userContext, sceneConfig.getQuestConfig().getConditionConfig(), userContext1 -> {
-                modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig(), ignore -> {
-                    levelService.increaseXp(userContext, sceneConfig.getQuestConfig().getXp());
-                    onComplete();
-                });
-            });
+            questService.activateCondition(userContext, sceneConfig.getQuestConfig());
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
         } else {
             questVisualizer.showSideBar(null);
         }
         setupCameraConfig(sceneConfig.getCameraConfig());
-        if (sceneConfig.isWait4LevelUp() != null && sceneConfig.isWait4LevelUp()) {
+        if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            levelService.setLevelUpCallback(userContext1 -> modalDialogManager.showLevelUp(userContext1, ignore -> onComplete()));
+            abstractModalDialogManager.setLevelUpDialogCallback(this::onComplete);
+        }
+        if (sceneConfig.isWait4QuestPassedDialog() != null && sceneConfig.isWait4QuestPassedDialog()) {
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            abstractModalDialogManager.setQuestPassedCallback(this::onComplete);
         }
         if (sceneConfig.getResourceItemTypePositions() != null) {
             resourceService.createResources(sceneConfig.getResourceItemTypePositions());
@@ -120,13 +118,11 @@ public class Scene {
             hasCompletionCallback = true;
             completionCallbackCount++;
             terrainScrollHandler.setPositionListener(sceneConfig.getScrollUiQuest().getScrollTargetRectangle(), () -> {
-                modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest(), ignore -> {
-                    levelService.increaseXp(userContext, sceneConfig.getScrollUiQuest().getXp());
-                    onComplete();
-                });
+                abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
+                levelService.increaseXp(userContext, sceneConfig.getScrollUiQuest().getXp());
             });
         }
-        if(sceneConfig.getBoxItemPositions() != null) {
+        if (sceneConfig.getBoxItemPositions() != null) {
             boxService.dropBoxes(sceneConfig.getBoxItemPositions());
         }
 
@@ -163,12 +159,6 @@ public class Scene {
         }
         if (sceneConfig.getStartPointConfig() != null) {
             startPointUiService.deactivate();
-        }
-        if (sceneConfig.isWait4LevelUp() != null && sceneConfig.isWait4LevelUp()) {
-            levelService.setLevelUpCallback(null);
-        }
-        if (sceneConfig.getQuestConfig() != null || sceneConfig.getScrollUiQuest() != null) {
-            questVisualizer.showSideBar(null);
         }
     }
 }

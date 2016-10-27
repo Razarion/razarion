@@ -1,7 +1,6 @@
 package com.btxtech.client.editor.widgets.shape3dwidget;
 
 import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.google.gwt.event.dom.client.ClickEvent;

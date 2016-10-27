@@ -1,7 +1,6 @@
 package com.btxtech.client.cockpit;
 
 import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.client.editor.EditorMenuDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
