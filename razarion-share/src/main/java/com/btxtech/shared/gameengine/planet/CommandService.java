@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
+import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
@@ -152,7 +153,21 @@ public class CommandService {
     }
 
     public void pickupBox(SyncBaseItem picker, SyncBoxItem box) {
-        throw new UnsupportedOperationException();
+        PickupBoxCommand pickupBoxCommand = new PickupBoxCommand();
+        Path path = pathingService.setupPathToDestination(picker, box, picker.getBaseItemType().getWeaponType().getRange());
+        if (moveIfPathTargetUnreachable(picker, path)) {
+            return;
+        }
+        pickupBoxCommand.setPathToDestination(path);
+        pickupBoxCommand.setId(picker.getId());
+        pickupBoxCommand.setTimeStamp();
+        pickupBoxCommand.setSynBoxItemId(box.getId());
+
+        try {
+            executeCommand(pickupBoxCommand);
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
     }
 
     public void defend(SyncBaseItem attacker, SyncBaseItem target) {

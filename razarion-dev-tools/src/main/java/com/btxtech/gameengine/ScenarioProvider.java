@@ -8,12 +8,15 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.utils.CollectionUtils;
 
@@ -30,9 +33,11 @@ import java.util.List;
 public class ScenarioProvider {
     private BaseItemService baseItemService;
     private ResourceService resourceService;
+    private BoxService boxService;
     private PlayerBase playerBase;
     private int slopeId = 1;
-    private List<SyncBaseItem> createdSyncItems = new ArrayList<>();
+    private List<SyncBaseItem> createdSyncBaseItems = new ArrayList<>();
+    private List<SyncBoxItem> createdSyncBoxItems = new ArrayList<>();
     private BotService botService;
 
     // Override in subclasses
@@ -60,10 +65,11 @@ public class ScenarioProvider {
 
     }
 
-    public void setupSyncItems(BaseItemService baseItemService, PlayerBase playerBase, ResourceService resourceService) {
+    public void setupSyncItems(BaseItemService baseItemService, PlayerBase playerBase, ResourceService resourceService, BoxService boxService) {
         this.baseItemService = baseItemService;
         this.playerBase = playerBase;
         this.resourceService = resourceService;
+        this.boxService = boxService;
         createSyncItems();
     }
 
@@ -73,7 +79,7 @@ public class ScenarioProvider {
             if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
                 ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setDestination(destination);
             }
-            createdSyncItems.add(syncBaseItem);
+            createdSyncBaseItems.add(syncBaseItem);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -82,6 +88,14 @@ public class ScenarioProvider {
     protected void createSyncResourceItem(ResourceItemType resourceItemType, DecimalPosition position) {
         try {
             resourceService.createResources(Collections.singletonList(new ResourceItemPosition().setResourceItemTypeId(resourceItemType.getId()).setPosition(position)));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void createBoxItem(BoxItemType boxItemType, DecimalPosition position) {
+        try {
+            createdSyncBoxItems.add(boxService.dropBox(boxItemType.getId(), position, 0));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -106,11 +120,19 @@ public class ScenarioProvider {
         return new TerrainSlopePosition().setId(slopeId++).setSlopeId(slopeSkeletonId).setPolygon(Arrays.asList(new DecimalPosition(x, y), new DecimalPosition(x + width, y), new DecimalPosition(x + width, y + height), new DecimalPosition(x, y + height)));
     }
 
-    protected SyncBaseItem getCreatedSyncItems(int index) {
-        return createdSyncItems.get(index);
+    protected SyncBaseItem getCreatedSyncBaseItems(int index) {
+        return createdSyncBaseItems.get(index);
     }
 
-    protected SyncBaseItem getFirstCreatedSyncItems() {
-        return getCreatedSyncItems(0);
+    protected SyncBaseItem getFirstCreatedSyncBaseItem() {
+        return getCreatedSyncBaseItems(0);
+    }
+
+    protected SyncBoxItem getCreatedSyncBoxItems(int index) {
+        return createdSyncBoxItems.get(index);
+    }
+
+    protected SyncBoxItem getFirstCreatedSyncBoxItem() {
+        return getCreatedSyncBoxItems(0);
     }
 }

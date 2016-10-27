@@ -158,13 +158,13 @@ public class PlanetService implements Runnable {
                 return;
             }
 
-            if (!syncBaseItem.getSyncItemArea().hasPosition()) {
+            if (!syncBaseItem.getSyncPhysicalArea().hasPosition()) {
                 return;
             }
 
-            if (checkGuardingItemHasEnemiesInRange(syncBaseItem)) {
-                return;
-            }
+//  TODO          if (checkGuardingItemHasEnemiesInRange(syncBaseItem)) {
+//  TODO              return;
+//  TODO          }
 
             synchronized (guardingItems) {
                 guardingItems.add(syncBaseItem);

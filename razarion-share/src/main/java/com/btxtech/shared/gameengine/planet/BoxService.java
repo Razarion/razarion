@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -50,14 +51,20 @@ public class BoxService {
 
     public void dropBoxes(List<BoxItemPosition> boxItemPositions) {
         for (BoxItemPosition boxItemPosition : boxItemPositions) {
-            BoxItemType boxItemType = itemTypeService.getBoxItemType(boxItemPosition.getBoxItemTypeId());
-            Vertex position = terrainService.calculatePositionGroundMesh(boxItemPosition.getPosition());
-            SyncBoxItem syncBoxItem = syncItemContainerService.createSyncBoxItem(boxItemType, position, boxItemPosition.getRotationZ());
-            synchronized (boxes) {
-                boxes.put(syncBoxItem.getId(), syncBoxItem);
-            }
-            activityService.onBoxCreated(syncBoxItem);
+            dropBox(boxItemPosition.getBoxItemTypeId(), boxItemPosition.getPosition(), boxItemPosition.getRotationZ());
         }
+    }
+
+    public SyncBoxItem dropBox(int boxItemTypeId, DecimalPosition position, double zRotation) {
+        BoxItemType boxItemType = itemTypeService.getBoxItemType(boxItemTypeId);
+        Vertex vertex = terrainService.calculatePositionGroundMesh(position);
+        SyncBoxItem syncBoxItem = syncItemContainerService.createSyncBoxItem(boxItemType, vertex, zRotation);
+        synchronized (boxes) {
+            boxes.put(syncBoxItem.getId(), syncBoxItem);
+        }
+        syncBoxItem.setup();
+        activityService.onBoxCreated(syncBoxItem);
+        return syncBoxItem;
     }
 
     public void onSyncBoxItemPicked(SyncBoxItem box, SyncBaseItem picker) {

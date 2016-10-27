@@ -14,7 +14,7 @@ public class DevToolsExceptionHandlerImpl implements ExceptionHandler {
 
     @Override
     public void handleException(String message, Throwable t) {
-        System.out.println(message);
+        System.err.println(message);
         t.printStackTrace();
     }
 }

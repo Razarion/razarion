@@ -7,19 +7,9 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  * 06.10.2016.
  */
 public class BoxItemPosition {
-    private Integer id;
     private int boxItemTypeId;
     private DecimalPosition position;
     private double rotationZ;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public BoxItemPosition setId(Integer id) {
-        this.id = id;
-        return this;
-    }
 
     public int getBoxItemTypeId() {
         return boxItemTypeId;

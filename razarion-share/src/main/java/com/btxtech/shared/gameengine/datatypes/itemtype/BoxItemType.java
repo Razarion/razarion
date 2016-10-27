@@ -33,12 +33,12 @@ public class BoxItemType extends ItemType {
         return boxItemTypePossibilities;
     }
 
-    public BoxItemType ttl(int ttl) {
+    public BoxItemType setTtl(int ttl) {
         this.ttl = ttl;
         return this;
     }
 
-    public BoxItemType boxItemTypePossibilities(List<BoxItemTypePossibility> boxItemTypePossibilities) {
+    public BoxItemType setBoxItemTypePossibilities(List<BoxItemTypePossibility> boxItemTypePossibilities) {
         this.boxItemTypePossibilities = boxItemTypePossibilities;
         return this;
     }

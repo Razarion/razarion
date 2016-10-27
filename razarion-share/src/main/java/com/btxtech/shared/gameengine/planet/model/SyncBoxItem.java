@@ -28,11 +28,9 @@ public class SyncBoxItem extends SyncItem {
     private long createdTimeStamp; // Is not synchronized
     private boolean alive; // Synchronized in super class
 
-    public void inti(int id, Index position, BoxItemType boxItemType) {
-        // TODO super.init(id, position, boxItemType);
+    public void setup() {
         createdTimeStamp = System.currentTimeMillis();
         alive = true;
-        throw new UnsupportedOperationException();
     }
 
     @Override

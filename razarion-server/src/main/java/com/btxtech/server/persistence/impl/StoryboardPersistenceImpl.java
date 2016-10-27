@@ -25,6 +25,7 @@ import com.btxtech.shared.dto.ScrollUiQuest;
 import com.btxtech.shared.dto.StartPointConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
@@ -38,6 +39,8 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
@@ -72,6 +75,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private static final int BASE_ITEM_TYPE_HARVESTER = 180830;
     private static final int BASE_ITEM_TYPE_ATTACKER = 180832;
     private static final int RESOURCE_ITEM_TYPE = 180829;
+    private static final int BOX_ITEM_TYPE = 272481;
+    private static final int INVENTORY_ITEM = 1;
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -92,8 +97,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
         gameEngineConfig.setBaseItemTypes(finalizeBaseItemTypes(itemTypePersistence.readBaseItemTypes()));// TODO mode to DB
         gameEngineConfig.setResourceItemTypes(finalizeResourceItemTypes(itemTypePersistence.readResourceItemTypes()));// TODO mode to DB
-        gameEngineConfig.setBoxItemTypes(itemTypePersistence.readBoxItemTypes());
+        gameEngineConfig.setBoxItemTypes(finalizeBoxItemTypes(itemTypePersistence.readBoxItemTypes()));
         gameEngineConfig.setLevelConfigs(setupLevelConfigs());  // TODO mode to DB
+        gameEngineConfig.setInventoryItems(setupInventoryItems()); // TODO mode to DB
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<StoryboardEntity> userQuery = criteriaBuilder.createQuery(StoryboardEntity.class);
@@ -127,6 +133,29 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         resource.setTerrainType(TerrainType.LAND);
         resource.setI18Name(i18nHelper("Resource Name"));
         resource.setDescription(i18nHelper("Resource Description"));
+    }
+
+    private List<BoxItemType> finalizeBoxItemTypes(List<BoxItemType> boxItemTypes) {
+        finalizeSimpleBox(findBox(BOX_ITEM_TYPE, boxItemTypes));
+        return boxItemTypes;
+    }
+
+    private BoxItemType findBox(int id, List<BoxItemType> boxItemTypes) {
+        for (BoxItemType boxItemType : boxItemTypes) {
+            if (boxItemType.getId() == id) {
+                return boxItemType;
+            }
+        }
+        throw new IllegalArgumentException("No BoxItemType for id: " + id);
+    }
+
+    private void finalizeSimpleBox(BoxItemType boxItemType) {
+        boxItemType.setTerrainType(TerrainType.LAND);
+        boxItemType.setI18Name(i18nHelper("Box Name"));
+        boxItemType.setDescription(i18nHelper("Box Description"));
+        List<BoxItemTypePossibility> boxItemTypePossibilities = new ArrayList<>();
+        boxItemTypePossibilities.add(new BoxItemTypePossibility().setPossibility(1.0).setInventoryItemId(INVENTORY_ITEM));
+        boxItemType.setBoxItemTypePossibilities(boxItemTypePossibilities);
     }
 
     private List<BaseItemType> finalizeBaseItemTypes(List<BaseItemType> baseItemTypes) {
@@ -191,6 +220,12 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         return levelConfigs;
     }
 
+    public List<InventoryItem> setupInventoryItems() {
+        List<InventoryItem> inventoryItems = new ArrayList<>();
+        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM).setBaseItemType(BASE_ITEM_TYPE_ATTACKER).setBaseItemTypeCount(3).setItemFreeRange(5).setName("3 Attacker pack"));
+        return inventoryItems;
+    }
+
     private void completePlanetConfig(PlanetConfig planetConfig) {
         planetConfig.setHouseSpace(10);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
@@ -206,7 +241,6 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         localizedStrings.put(I18nString.DEFAULT, text);
         return new I18nString(localizedStrings);
     }
-
 
     // Find Enemy Base -----------------------------------------------------------------------------
     private List<SceneConfig> findEnemyBase() {

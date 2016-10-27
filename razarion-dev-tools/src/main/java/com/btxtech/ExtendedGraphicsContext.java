@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -26,6 +27,7 @@ import java.util.List;
 public class ExtendedGraphicsContext {
     private static final Color BASE_ITEM_TYPE_COLOR = new Color(0, 0, 1, 1);
     private static final Color RESOURCE_ITEM_TYPE_COLOR = new Color(0.8, 0.8, 0, 1);
+    private static final Color BOX_ITEM_TYPE_COLOR = new Color(1, 0.0, 1, 1);
     private static final Color TERRAIN_OBSTACLE_COLOR = new Color(0, 0, 0, 0.5);
 
     private GraphicsContext gc;
@@ -149,6 +151,8 @@ public class ExtendedGraphicsContext {
             gc.setFill(BASE_ITEM_TYPE_COLOR);
         } else if (syncItem instanceof SyncResourceItem) {
             gc.setFill(RESOURCE_ITEM_TYPE_COLOR);
+        } else if (syncItem instanceof SyncBoxItem) {
+            gc.setFill(BOX_ITEM_TYPE_COLOR);
         } else {
             throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
         }

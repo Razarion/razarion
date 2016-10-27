@@ -14,6 +14,7 @@ import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.GameEngine;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
@@ -23,11 +24,14 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
@@ -55,6 +59,8 @@ public class ScenarioService {
     private static final BaseItemType HARVESTER_ITEM_TYPE;
     private static final BaseItemType ATTACKER_ITEM_TYPE;
     private static final ResourceItemType RESOURCE_ITEM_TYPE;
+    private static final BoxItemType BOX_ITEM_TYPE;
+    private static final InventoryItem INVENTORY_ITEM;
     private static final int LEVEL_1_ID = 1;
     private static final int SLOPE_ID = 1;
     private static final int TERRAIN_OBJECT_ID = 1;
@@ -69,9 +75,11 @@ public class ScenarioService {
     @Inject
     private ResourceService resourceService;
     @Inject
+    private BoxService boxService;
+    @Inject
     private CommandService commandService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 40;
+    private int number = 41;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -97,7 +105,7 @@ public class ScenarioService {
         HARVESTER_ITEM_TYPE = harvester;
 
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(100).setSpawnDurationMillis(1000);
+        attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5);
         attacker.setId(++itemId);
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         attacker.setWeaponType(new WeaponType().setMuzzlePosition(new Vertex(2, 0, 1)).setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1));
@@ -106,6 +114,17 @@ public class ScenarioService {
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000).setId(++itemId);
         RESOURCE_ITEM_TYPE = resource;
+
+        InventoryItem inventoryItem = new InventoryItem();
+        inventoryItem.setId(++itemId).setName("Inventory Item Name").setBaseItemType(ATTACKER_ITEM_TYPE.getId()).setBaseItemTypeCount(1);
+        INVENTORY_ITEM = inventoryItem;
+
+        BoxItemType box = new BoxItemType();
+        box.setRadius(0.5);
+        box.setId(++itemId);
+        box.setBoxItemTypePossibilities(Collections.singletonList(new BoxItemTypePossibility().setPossibility(1.0).setInventoryItemId(INVENTORY_ITEM.getId())));
+        BOX_ITEM_TYPE = box;
+
     }
 
     @PostConstruct
@@ -154,7 +173,7 @@ public class ScenarioService {
         scenarioProvider.setupBots(botService);
         gameEngine.start();
         PlayerBase playerBase = baseItemService.createHumanBase(new UserContext().setName("User 1").setLevelId(LEVEL_1_ID));
-        scenarioProvider.setupSyncItems(baseItemService, playerBase, resourceService);
+        scenarioProvider.setupSyncItems(baseItemService, playerBase, resourceService, boxService);
         List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
         scenarioProvider.setupBotCommands(botCommandConfigs);
         botService.executeCommands(botCommandConfigs);
@@ -171,6 +190,8 @@ public class ScenarioService {
         gameEngineConfig.setLevelConfigs(setupLevels());
         gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE));
         gameEngineConfig.setResourceItemTypes(Collections.singletonList(RESOURCE_ITEM_TYPE));
+        gameEngineConfig.setBoxItemTypes(Collections.singletonList(BOX_ITEM_TYPE));
+        gameEngineConfig.setInventoryItems(Collections.singletonList(INVENTORY_ITEM));
         gameEngineConfig.setPlanetConfig(setupPlanetConfig());
         return gameEngineConfig;
     }
@@ -736,7 +757,21 @@ public class ScenarioService {
 
             @Override
             public void executeCommands(CommandService commandService) {
-                commandService.attack(getFirstCreatedSyncItems(), getFirstBotItem(1), true);
+                commandService.attack(getFirstCreatedSyncBaseItem(), getFirstBotItem(1), true);
+            }
+        });
+        // Attack
+        // 41
+        scenes.add(new ScenarioProvider() {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItem(ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createBoxItem(BOX_ITEM_TYPE, new DecimalPosition(15, 0));
+            }
+
+            @Override
+            public void executeCommands(CommandService commandService) {
+                commandService.pickupBox(getFirstCreatedSyncBaseItem(), getFirstCreatedSyncBoxItem());
             }
         });
 
