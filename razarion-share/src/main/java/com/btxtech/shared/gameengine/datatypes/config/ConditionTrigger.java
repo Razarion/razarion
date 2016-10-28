@@ -16,7 +16,8 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.gameengine.planet.quest.AbstractComparison;
 import com.btxtech.shared.gameengine.planet.quest.AbstractConditionProgress;
-import com.btxtech.shared.gameengine.planet.quest.SyncBaseItemConditionProgress;
+import com.btxtech.shared.gameengine.planet.quest.ValueConditionTrigger;
+import com.btxtech.shared.gameengine.planet.quest.BaseItemConditionProgress;
 
 /**
  * User: beat
@@ -27,7 +28,7 @@ public enum ConditionTrigger {
     SYNC_ITEM_KILLED(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-            return new SyncBaseItemConditionProgress(this, abstractComparison);
+            return new BaseItemConditionProgress(this, abstractComparison);
         }
     },
 //    MONEY_INCREASED(true) {
@@ -39,7 +40,7 @@ public enum ConditionTrigger {
     SYNC_ITEM_CREATED(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-            return new SyncBaseItemConditionProgress(this, abstractComparison);
+            return new BaseItemConditionProgress(this, abstractComparison);
         }
     },
 //    XP_INCREASED(true) {
@@ -63,9 +64,9 @@ public enum ConditionTrigger {
     SYNC_ITEM_POSITION(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-            return new SyncBaseItemConditionProgress(this, abstractComparison);
+            return new BaseItemConditionProgress(this, abstractComparison);
         }
-    };
+    },
 //    CRYSTALS_INCREASED(true) {
 //        @Override
 //        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
@@ -78,12 +79,12 @@ public enum ConditionTrigger {
 //            return new ArtifactItemIdConditionTrigger(this, abstractComparison);
 //        }
 //    },
-//    BOX_PICKED(true) {
-//        @Override
-//        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-//            return new BoxPickedConditionTrigger(this, abstractComparison);
-//        }
-//    };
+    BOX_PICKED(true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new ValueConditionTrigger(this, abstractComparison);
+        }
+    };
 
     private boolean comparisonNeeded;
 

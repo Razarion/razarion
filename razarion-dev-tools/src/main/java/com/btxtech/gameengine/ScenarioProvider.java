@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -63,6 +64,11 @@ public class ScenarioProvider {
     // Override in subclasses
     public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
 
+    }
+
+    // Override in subclasses
+    public QuestConfig setupQuest() {
+        return null;
     }
 
     public void setupSyncItems(BaseItemService baseItemService, PlayerBase playerBase, ResourceService resourceService, BoxService boxService) {

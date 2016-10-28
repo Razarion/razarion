@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 public class DevToolModalDialogManagerImpl extends AbstractModalDialogManager {
     @Override
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, ApplyListener<QuestDescriptionConfig> applyListener) {
+        System.out.println("*** showQuestPassed Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Quest bestanden");
@@ -30,6 +31,7 @@ public class DevToolModalDialogManagerImpl extends AbstractModalDialogManager {
 
     @Override
     public void showLevelUp(UserContext userContext, ApplyListener<Void> applyListener) {
+        System.out.println("*** showLevelUp Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Level Up");
@@ -42,6 +44,7 @@ public class DevToolModalDialogManagerImpl extends AbstractModalDialogManager {
 
     @Override
     public void showBoxPicked(BoxContent boxContent) {
+        System.out.println("*** showBoxPicked Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Box picked");

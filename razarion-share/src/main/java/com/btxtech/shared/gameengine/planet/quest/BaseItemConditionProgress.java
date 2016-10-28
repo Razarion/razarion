@@ -21,9 +21,9 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
  * Date: 27.12.2010
  * Time: 18:58:14
  */
-public class SyncBaseItemConditionProgress extends AbstractConditionProgress {
+public class BaseItemConditionProgress extends AbstractConditionProgress {
 
-    public SyncBaseItemConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
+    public BaseItemConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
         super(conditionTrigger, abstractComparison);
     }
 

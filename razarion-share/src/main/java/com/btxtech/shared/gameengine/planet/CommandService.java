@@ -187,7 +187,7 @@ public class CommandService { // Is part of the Base service
         } catch (InsufficientFundsException e) {
             activityService.onInsufficientFundsException(e);
         } catch (Throwable t) {
-            activityService.onThrowable(t);
+            exceptionHandler.handleException(t);
         }
     }
 

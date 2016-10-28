@@ -2,7 +2,7 @@ package com.btxtech.shared.datatypes;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -13,8 +13,8 @@ public class UserContext {
     private int levelId;
     private int xp;
     private int crystals;
-    private Collection<Integer> inventoryItemIds = new ArrayList<>();
-    private Collection<Integer> inventoryArtifactIds = new ArrayList<>();
+    private List<Integer> inventoryItemIds = new ArrayList<>();
+    private List<Integer> inventoryArtifactIds = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -43,11 +43,11 @@ public class UserContext {
         return this;
     }
 
-    public Collection<Integer> getInventoryItemIds() {
+    public List<Integer> getInventoryItemIds() {
         return inventoryItemIds;
     }
 
-    public UserContext setInventoryItemIds(Collection<Integer> inventoryItemIds) {
+    public UserContext setInventoryItemIds(List<Integer> inventoryItemIds) {
         this.inventoryItemIds = inventoryItemIds;
         return this;
     }
@@ -56,11 +56,11 @@ public class UserContext {
         inventoryItemIds.add(inventoryItemId);
     }
 
-    public Collection<Integer> getInventoryArtifactIds() {
+    public List<Integer> getInventoryArtifactIds() {
         return inventoryArtifactIds;
     }
 
-    public UserContext setInventoryArtifactIds(Collection<Integer> inventoryArtifactIds) {
+    public UserContext setInventoryArtifactIds(List<Integer> inventoryArtifactIds) {
         this.inventoryArtifactIds = inventoryArtifactIds;
         return this;
     }

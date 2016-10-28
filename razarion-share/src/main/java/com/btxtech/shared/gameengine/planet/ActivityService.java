@@ -11,18 +11,15 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
-import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -36,7 +33,6 @@ public class ActivityService {
     private PlanetService planetService;
     @Inject
     private QuestService questService;
-    private Collection<Function<SyncBaseItem, Boolean>> spawnFinishCallback = new ArrayList<>();
     private Optional<ClipService> clipService = Optional.empty();
     private ModalDialogManager modalDialogManager;
 
@@ -70,11 +66,6 @@ public class ActivityService {
 
     public void onPlaceCanNotBeFoundException(PlaceCanNotBeFoundException e) {
         e.printStackTrace();
-    }
-
-    public void onThrowable(Throwable t) {
-        // TODO connectionService.sendSyncInfo(syncItem);
-        t.printStackTrace();
     }
 
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
@@ -195,12 +186,6 @@ public class ActivityService {
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncBaseItem);
         questService.onSyncItemBuilt(syncBaseItem);
-        Collection<Function<SyncBaseItem, Boolean>> tmp = new ArrayList<>(spawnFinishCallback);
-        for (Function<SyncBaseItem, Boolean> callback : tmp) {
-            if (callback.apply(syncBaseItem)) {
-                spawnFinishCallback.remove(callback);
-            }
-        }
     }
 
     // TODO when to call?
@@ -212,15 +197,6 @@ public class ActivityService {
         // TODO planetService.interactionGuardingItems(syncBaseItem);
         // TODO connectionService.sendSyncInfo(syncBaseItem);
         // TODO may be inform bot about new bot item
-    }
-
-    public void addSpanFinishedCallback(Function<SyncBaseItem, Boolean> callback) {
-        System.out.println("****** addSpanFinishedCallback");
-        spawnFinishCallback.add(callback);
-    }
-
-    public void removeSpanFinishedCallback(Function<SyncBaseItem, Boolean> callback) {
-        spawnFinishCallback.add(callback);
     }
 
     public void onResourcesHarvested(SyncBaseItem syncBaseItem, double harvestedResources, SyncResourceItem resource) {
@@ -244,5 +220,6 @@ public class ActivityService {
         if (modalDialogManager != null) {
             modalDialogManager.showBoxPicked(boxContent);
         }
+        questService.onSyncBoxItemPicked(picker);
     }
 }

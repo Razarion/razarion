@@ -335,7 +335,7 @@ public class BaseItemService {
                     iterator.remove();
                 } catch (Throwable t) {
                     activeItem.stop();
-                    activityService.onThrowable(t);
+                    exceptionHandler.handleException(t);
                     iterator.remove();
                 }
             }

@@ -24,6 +24,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -118,6 +119,14 @@ public class QuestService {
         triggerSyncItem(examinee, ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
     }
 
+    public void onSyncBoxItemPicked(SyncBaseItem picker) {
+        UserContext examinee = picker.getBase().getUserContext();
+        if (examinee == null) {
+            return;
+        }
+        triggerValue(examinee, ConditionTrigger.BOX_PICKED, 1.0);
+    }
+
     public void addQuestListener(QuestListener questListener) {
         questListeners.add(questListener);
     }
@@ -144,21 +153,39 @@ public class QuestService {
         }
     }
 
-    private void triggerSyncItem(UserContext examinee, ConditionTrigger conditionTrigger, SyncBaseItem syncBaseItem) {
+    private AbstractConditionProgress findProgress(UserContext examinee, ConditionTrigger conditionTrigger) {
         AbstractConditionProgress abstractConditionProgress;
         synchronized (progressMap) {
             abstractConditionProgress = progressMap.get(examinee);
         }
         if (abstractConditionProgress == null) {
-            return;
+            return null;
         }
         if (!abstractConditionProgress.getConditionTrigger().equals(conditionTrigger)) {
+            return null;
+        }
+        return abstractConditionProgress;
+    }
+
+    protected void triggerValue(UserContext examinee, ConditionTrigger conditionTrigger, double value) {
+        ValueConditionTrigger valueConditionTrigger = (ValueConditionTrigger) findProgress(examinee, conditionTrigger);
+        if (valueConditionTrigger == null) {
             return;
         }
-        SyncBaseItemConditionProgress syncBaseItemConditionProgress = (SyncBaseItemConditionProgress) abstractConditionProgress;
-        syncBaseItemConditionProgress.onItem(syncBaseItem);
-        if (syncBaseItemConditionProgress.isFulfilled()) {
-            conditionPassed(syncBaseItemConditionProgress);
+        valueConditionTrigger.onTriggerValue(value);
+        if (valueConditionTrigger.isFulfilled()) {
+            conditionPassed(valueConditionTrigger);
+        }
+    }
+
+    private void triggerSyncItem(UserContext examinee, ConditionTrigger conditionTrigger, SyncBaseItem syncBaseItem) {
+        BaseItemConditionProgress baseItemConditionProgress = (BaseItemConditionProgress) findProgress(examinee, conditionTrigger);
+        if (baseItemConditionProgress == null) {
+            return;
+        }
+        baseItemConditionProgress.onItem(syncBaseItem);
+        if (baseItemConditionProgress.isFulfilled()) {
+            conditionPassed(baseItemConditionProgress);
         }
     }
 

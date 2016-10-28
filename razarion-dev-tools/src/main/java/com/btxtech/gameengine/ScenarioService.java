@@ -16,10 +16,14 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.GameEngine;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
@@ -35,6 +39,8 @@ import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.quest.QuestListener;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
 
 import javax.annotation.PostConstruct;
@@ -53,7 +59,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
-public class ScenarioService {
+public class ScenarioService implements QuestListener {
     private static final BaseItemType SIMPLE_MOVABLE_ITEM_TYPE;
     private static final BaseItemType SIMPLE_FIX_ITEM_TYPE;
     private static final BaseItemType HARVESTER_ITEM_TYPE;
@@ -78,6 +84,8 @@ public class ScenarioService {
     private BoxService boxService;
     @Inject
     private CommandService commandService;
+    @Inject
+    private QuestService questService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
     private int number = 41;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -124,11 +132,11 @@ public class ScenarioService {
         box.setId(++itemId);
         box.setBoxItemTypePossibilities(Collections.singletonList(new BoxItemTypePossibility().setPossibility(1.0).setInventoryItemId(INVENTORY_ITEM.getId())));
         BOX_ITEM_TYPE = box;
-
     }
 
     @PostConstruct
     public void postConstruct() {
+        questService.addQuestListener(this);
         setupSzenarios();
     }
 
@@ -172,11 +180,16 @@ public class ScenarioService {
         gameEngine.initialise(gameEngineConfig);
         scenarioProvider.setupBots(botService);
         gameEngine.start();
-        PlayerBase playerBase = baseItemService.createHumanBase(new UserContext().setName("User 1").setLevelId(LEVEL_1_ID));
+        UserContext userContext = new UserContext().setName("User 1").setLevelId(LEVEL_1_ID);
+        PlayerBase playerBase = baseItemService.createHumanBase(userContext);
         scenarioProvider.setupSyncItems(baseItemService, playerBase, resourceService, boxService);
         List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
         scenarioProvider.setupBotCommands(botCommandConfigs);
         botService.executeCommands(botCommandConfigs);
+        QuestConfig questConfig = scenarioProvider.setupQuest();
+        if(questConfig != null) {
+            questService.activateCondition(userContext, questConfig);
+        }
         scenarioProvider.executeCommands(commandService);
 
         this.number = number;
@@ -243,7 +256,7 @@ public class ScenarioService {
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);
-        levels.add(new LevelConfig().setLevelId(LEVEL_1_ID).setNumber(0).setItemTypeLimitation(itemTypeLimitation));
+        levels.add(new LevelConfig().setLevelId(LEVEL_1_ID).setNumber(0).setItemTypeLimitation(itemTypeLimitation).setXp2LevelUp(10));
         return levels;
     }
 
@@ -773,9 +786,20 @@ public class ScenarioService {
             public void executeCommands(CommandService commandService) {
                 commandService.pickupBox(getFirstCreatedSyncBaseItem(), getFirstCreatedSyncBoxItem());
             }
+
+            @Override
+            public QuestConfig setupQuest() {
+                return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
+            }
         });
 
     }
 
+    @Override
+    public void onQuestPassed(UserContext examinee, QuestConfig questConfig) {
+        System.out.println("************************************************");
+        System.out.println("**************** Quest passed ******************");
+        System.out.println("************************************************");
+    }
 }
 

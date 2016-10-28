@@ -53,7 +53,7 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
 
     @Override
     public void showBoxPicked(BoxContent boxContent) {
-        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null);
+        show("Box gesammelt", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null);
     }
 
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {
