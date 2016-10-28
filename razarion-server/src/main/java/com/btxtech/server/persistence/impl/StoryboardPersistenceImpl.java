@@ -17,6 +17,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
+import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -111,7 +112,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -240,6 +242,20 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<String, String> localizedStrings = new HashMap<>();
         localizedStrings.put(I18nString.DEFAULT, text);
         return new I18nString(localizedStrings);
+    }
+
+    // Find Pick  Box -----------------------------------------------------------------------------
+    private List<SceneConfig> setupPickBox() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // Drop box
+        List<BoxItemPosition> boxItemPositions = new ArrayList<>();
+        boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(BOX_ITEM_TYPE).setPosition(new DecimalPosition(110, 80)));
+        // Camera
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
+
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBoxItemPositions(boxItemPositions));
+        addUserSpawnScene(sceneConfigs);
+        return sceneConfigs;
     }
 
     // Find Enemy Base -----------------------------------------------------------------------------

@@ -145,7 +145,7 @@ public class CommandService { // Is part of the Base service
 
     public void pickupBox(SyncBaseItem picker, SyncBoxItem box) {
         PickupBoxCommand pickupBoxCommand = new PickupBoxCommand();
-        Path path = pathingService.setupPathToDestination(picker, box, picker.getBaseItemType().getWeaponType().getRange());
+        Path path = pathingService.setupPathToDestination(picker, box, picker.getBaseItemType().getBoxPickupRange());
         if (moveIfPathTargetUnreachable(picker, path)) {
             return;
         }

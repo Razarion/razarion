@@ -216,7 +216,7 @@ public class SyncItemContainerService {
     }
 
     public SyncItem findItemAtPosition(DecimalPosition position) {
-        return iterateOverBaseItems(false, false, null, syncItem -> {
+        return iterateOverItems(false, false, null, syncItem -> {
             if (syncItem.getSyncPhysicalArea().overlap(position)) {
                 return syncItem;
             } else {
