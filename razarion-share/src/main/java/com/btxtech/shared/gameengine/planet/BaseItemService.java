@@ -14,11 +14,15 @@ import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededExcep
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
+import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
+import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -26,6 +30,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -35,6 +40,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped // Rename to BaseService
 public class BaseItemService {
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ExceptionHandler exceptionHandler;
     @Inject
     private ActivityService activityService;
     @Inject
@@ -51,6 +59,8 @@ public class BaseItemService {
     private ItemTypeService itemTypeService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId;
+    private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
+    private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         bases.clear();
@@ -117,6 +127,7 @@ public class BaseItemService {
         syncBaseItem.setBuildup(1.0);
         base.addItem(syncBaseItem);
 
+        addToQueue(syncBaseItem);
         activityService.onSpawnSyncItem(syncBaseItem);
 
         return syncBaseItem;
@@ -277,6 +288,65 @@ public class BaseItemService {
             return (int) playerBase.getResources();
         } else {
             return 0;
+        }
+    }
+
+    public void tick(long timeStamp) {
+        synchronized (activeItems) {
+            synchronized (activeItemQueue) {
+                activeItems.addAll(activeItemQueue);
+                activeItemQueue.clear();
+            }
+            Iterator<SyncBaseItem> iterator = activeItems.iterator();
+            while (iterator.hasNext()) {
+                SyncBaseItem activeItem = iterator.next();
+                if (!activeItem.isAlive()) {
+                    iterator.remove();
+                    break;
+                }
+                if (activeItem.isIdle()) {
+                    iterator.remove();
+                    break;
+                }
+                try {
+                    if (!activeItem.tick(timeStamp)) {
+                        try {
+                            activeItem.stop();
+                            // TODO addGuardingBaseItem(activeItem);
+                            iterator.remove();
+                        } catch (Throwable t) {
+                            exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
+                        }
+                    }
+                } catch (BaseDoesNotExistException e) {
+                    activeItem.stop();
+                    iterator.remove();
+                } catch (PositionTakenException e) {
+                    activeItem.stop();
+                    activityService.onPositionTakenException(e);
+                    iterator.remove();
+                } catch (PathCanNotBeFoundException e) {
+                    activeItem.stop();
+                    activityService.onPathCanNotBeFoundException(e);
+                    iterator.remove();
+                } catch (PlaceCanNotBeFoundException e) {
+                    activeItem.stop();
+                    activityService.onPlaceCanNotBeFoundException(e);
+                    iterator.remove();
+                } catch (Throwable t) {
+                    activeItem.stop();
+                    activityService.onThrowable(t);
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    public void addToQueue(SyncBaseItem activeItem) {
+        synchronized (activeItemQueue) {
+            if (!activeItems.contains(activeItem) && !activeItemQueue.contains(activeItem)) {
+                activeItemQueue.add(activeItem);
+            }
         }
     }
 

@@ -594,7 +594,7 @@ public class ScenarioService {
         scenes.add(new ScenarioProvider() {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(20, 0);
+                DecimalPosition direction = new DecimalPosition(60, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
                         createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
@@ -760,7 +760,7 @@ public class ScenarioService {
                 commandService.attack(getFirstCreatedSyncBaseItem(), getFirstBotItem(1), true);
             }
         });
-        // Attack
+        // Pick box
         // 41
         scenes.add(new ScenarioProvider() {
             @Override

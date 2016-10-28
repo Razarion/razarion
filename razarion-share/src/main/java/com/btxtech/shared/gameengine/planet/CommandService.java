@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.UserTrackingService;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
@@ -30,25 +29,17 @@ import java.util.logging.Logger;
  * 18.07.2016.
  */
 @Singleton
-public class CommandService {
+public class CommandService { // Is part of the Base service
     private Logger logger = Logger.getLogger(CommandService.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private CollisionService collisionService;
-    @Inject
     private PathingService pathingService;
     @Inject
     private ActivityService activityService;
     @Inject
-    private BaseService baseService;
-    @Inject
     private BaseItemService baseItemService;
-    @Inject
-    private UserTrackingService userTrackingService;
-    @Inject
-    private PlanetService planetService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
 
@@ -183,11 +174,12 @@ public class CommandService {
     }
 
     private void executeCommand(BaseCommand baseCommand) throws ItemDoesNotExistException, NotYourBaseException {
-        SyncBaseItem syncItem = (SyncBaseItem) syncItemContainerService.getSyncItem(baseCommand.getId());
+        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItems(baseCommand.getId());
         try {
-            syncItem.stop();
-            syncItem.executeCommand(baseCommand);
-            activityService.onCommandSent(syncItem, baseCommand);
+            syncBaseItem.stop();
+            syncBaseItem.executeCommand(baseCommand);
+            baseItemService.addToQueue(syncBaseItem);
+            activityService.onCommandSent(syncBaseItem, baseCommand);
         } catch (PathCanNotBeFoundException e) {
             activityService.onPathCanNotBeFoundException(e);
         } catch (ItemDoesNotExistException e) {

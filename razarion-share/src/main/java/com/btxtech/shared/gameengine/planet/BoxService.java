@@ -125,4 +125,8 @@ public class BoxService {
         }
         return modelMatrices;
     }
+
+    public void tick() {
+        // TODO check TTL
+    }
 }
