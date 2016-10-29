@@ -1,8 +1,8 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
-import com.btxtech.client.dialog.ModalDialogContent;
-import com.btxtech.client.dialog.ModalDialogPanel;
+import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
+import com.btxtech.client.dialog.framework.ModalDialogContent;
+import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.clip.ClipCrudeSidebar;
 import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;

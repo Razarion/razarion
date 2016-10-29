@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.widgets.shape3dwidget;
 
-import com.btxtech.client.dialog.ModalDialogContent;
-import com.btxtech.client.dialog.ModalDialogPanel;
+import com.btxtech.client.dialog.framework.ModalDialogContent;
+import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.google.gwt.user.client.ui.Composite;

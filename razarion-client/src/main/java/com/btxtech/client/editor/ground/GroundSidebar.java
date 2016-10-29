@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.ground;
 
-import com.btxtech.client.dialog.ClientModalDialogManagerImpl;
+import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.widgets.LightWidget;

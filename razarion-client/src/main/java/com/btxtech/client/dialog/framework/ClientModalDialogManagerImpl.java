@@ -1,4 +1,4 @@
-package com.btxtech.client.dialog;
+package com.btxtech.client.dialog.framework;
 
 import com.btxtech.client.cockpit.BoxContentDialog;
 import com.btxtech.client.cockpit.level.LevelUpDialog;
@@ -10,7 +10,6 @@ import com.btxtech.uiservice.dialog.ApplyListener;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.google.gwt.user.client.ui.RootPanel;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;

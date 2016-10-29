@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.fractal;
 
-import com.btxtech.client.dialog.ModalDialogContent;
-import com.btxtech.client.dialog.ModalDialogPanel;
+import com.btxtech.client.dialog.framework.ModalDialogContent;
+import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.uiservice.utils.FractalField;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.google.gwt.dom.client.Element;

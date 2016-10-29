@@ -1,7 +1,7 @@
 package com.btxtech.client.cockpit;
 
-import com.btxtech.client.dialog.ModalDialogContent;
-import com.btxtech.client.dialog.ModalDialogPanel;
+import com.btxtech.client.dialog.framework.ModalDialogContent;
+import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;

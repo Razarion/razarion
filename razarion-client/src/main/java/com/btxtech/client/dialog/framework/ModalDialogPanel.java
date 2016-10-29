@@ -1,4 +1,4 @@
-package com.btxtech.client.dialog;
+package com.btxtech.client.dialog.framework;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.utils.ControlUtils;
