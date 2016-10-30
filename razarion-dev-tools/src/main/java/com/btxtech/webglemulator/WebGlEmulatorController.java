@@ -5,6 +5,8 @@ import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.InventoryService;
+import com.btxtech.shared.gameengine.datatypes.InventoryItemModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -13,13 +15,19 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -37,6 +45,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -99,6 +108,10 @@ public class WebGlEmulatorController implements Initializable {
     private TerrainMouseHandler terrainMouseHandler;
     @Inject
     private StoryboardProviderEmulator storyboardProviderEmulator;
+    @Inject
+    private InventoryService inventoryService;
+    @Inject
+    private StoryboardService storyboardService;
     private DecimalPosition lastCanvasPosition;
 
     @Override
@@ -350,5 +363,21 @@ public class WebGlEmulatorController implements Initializable {
 
     public Pane getItemCockpitPanel() {
         return itemCockpitPanel;
+    }
+
+    public void onInventoryButtonClicked(ActionEvent actionEvent) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Inventory Dialog");
+            alert.setHeaderText("Inventory Items");
+            alert.setContentText("Choose your option.");
+
+            for (InventoryItemModel inventoryItemModel : inventoryService.gatherInventoryItemModels(storyboardService.getUserContext())) {
+                alert.getButtonTypes().add(new ButtonType(inventoryItemModel.getInventoryItem().getName() + ": " + inventoryItemModel.getItemCount()));
+            }
+
+            Optional<ButtonType> result = alert.showAndWait();
+            System.out.println("pressed: " + result.get().getText());
+        });
     }
 }

@@ -1,6 +1,7 @@
 package com.btxtech.client.cockpit;
 
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
+import com.btxtech.client.dialog.inventory.InventoryDialog;
 import com.btxtech.client.editor.EditorMenuDialog;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -21,6 +22,10 @@ public class MainCockpit extends Composite {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
+    private Button inventoryButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
     private Button editorButton;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
@@ -28,6 +33,11 @@ public class MainCockpit extends Composite {
     @PostConstruct
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.MAIN_COCKPIT);
+    }
+
+    @EventHandler("inventoryButton")
+    private void onInventoryButtonClick(ClickEvent event) {
+        modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null);
     }
 
     @EventHandler("editorButton")

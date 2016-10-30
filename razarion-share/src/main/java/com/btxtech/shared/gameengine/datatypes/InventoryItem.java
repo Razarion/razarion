@@ -11,6 +11,7 @@ public class InventoryItem {
     private Integer baseItemType;
     private int baseItemTypeCount;
     private double itemFreeRange;
+    private Integer imageId;
 
     public Integer getId() {
         return id;
@@ -63,6 +64,15 @@ public class InventoryItem {
 
     public InventoryItem setItemFreeRange(double itemFreeRange) {
         this.itemFreeRange = itemFreeRange;
+        return this;
+    }
+
+    public Integer getImageId() {
+        return imageId;
+    }
+
+    public InventoryItem setImageId(Integer imageId) {
+        this.imageId = imageId;
         return this;
     }
 }

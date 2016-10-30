@@ -10,6 +10,7 @@ import com.btxtech.shared.rest.RestUrl;
 import com.google.gwt.core.client.GWT;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -21,6 +22,7 @@ import java.util.logging.Logger;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 @EntryPoint
+@Bundle("clientI18n/ErraiI18nBundle.properties")
 public class Client {
     private Logger logger = Logger.getLogger(Client.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")

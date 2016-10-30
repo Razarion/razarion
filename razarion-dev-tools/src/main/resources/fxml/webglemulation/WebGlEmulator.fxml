@@ -37,6 +37,8 @@
             <Button mnemonicParsing="false" onAction="#onSceneButtonClicked" text="Scene" />
             <CheckBox fx:id="showRenderTimeCheckBox" mnemonicParsing="false" onAction="#onShowRenderTimeCheckBox" text="Display Render Time" />
             <Button mnemonicParsing="false" onAction="#getJsonButtonClicked" text="Get JSON" />
+            <Separator orientation="VERTICAL" />
+            <Button mnemonicParsing="false" onAction="#onInventoryButtonClicked" text="Inventory" />
             </items>
         </ToolBar>
     </top>

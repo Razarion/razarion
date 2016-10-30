@@ -227,7 +227,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     public List<InventoryItem> setupInventoryItems() {
         List<InventoryItem> inventoryItems = new ArrayList<>();
-        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM).setBaseItemType(BASE_ITEM_TYPE_ATTACKER).setBaseItemTypeCount(3).setItemFreeRange(5).setName("3 Attacker pack"));
+        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM).setBaseItemType(BASE_ITEM_TYPE_ATTACKER).setBaseItemTypeCount(3).setItemFreeRange(5).setName("3 Attacker pack").setImageId(272484));
         return inventoryItems;
     }
 

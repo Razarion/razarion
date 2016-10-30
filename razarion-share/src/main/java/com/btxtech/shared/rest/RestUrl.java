@@ -19,4 +19,12 @@ public class RestUrl {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id) + "?t=" + System.currentTimeMillis();
     }
 
+    public static String getImageServiceUrlSafe(Integer id) {
+        if (id != null) {
+            return getImageServiceUrl(id);
+        } else {
+            return "";
+        }
+    }
+
 }

@@ -33,6 +33,7 @@ button:disabled {
     right: 0;
     background-color: transparent;
 }
+
 /** -------------------------- COMMON ENDS -------------------------- */
 
 /** -------------------------- COCKPIT -------------------------- */
@@ -111,6 +112,7 @@ button:disabled {
     border-image-slice: 9;
     border-image-repeat: repeat;
 }
+
 /** -------------------------- COCKPIT ENDS -------------------------- */
 
 /** -------------------------- DIALOG FRAMEWORK -------------------------- */
@@ -328,3 +330,8 @@ button:disabled {
 }
 /** -------------------------- EDITOR ENDS-------------------------- */
 
+/** -------------------------- DUMMY FOR LOCAL TESTING/EDITING -------------------------- */
+.dummy-local-test {
+    background-color: #b8c3ab;
+}
+/** -------------------------- DUMMY FOR LOCAL TESTING/EDITING ENDS-------------------------- */
