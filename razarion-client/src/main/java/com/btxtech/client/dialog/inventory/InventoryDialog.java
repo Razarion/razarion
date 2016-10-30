@@ -4,8 +4,8 @@ import com.btxtech.client.clientI18n.ClientI18nHelper;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItemModel;
+import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -16,7 +16,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 
 /**
  * Created by Beat
@@ -27,7 +26,7 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
     @Inject
     private StoryboardService storyboardService;
     @Inject
-    private InventoryService inventoryService;
+    private InventoryUiService inventoryUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -37,6 +36,7 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
     @DataField
     @ListContainer("div")
     private ListComponent<InventoryItemModel, InventoryItemWidget> inventoryItemTable;
+    private ModalDialogPanel<Void> modalDialogPanel;
 
     @Override
     public void init(Void aVoid) {
@@ -44,16 +44,21 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
         crystalsLabel.setText(ClientI18nHelper.CONSTANTS.crystalAmount(userContext.getCrystals()));
 
         DOMUtil.removeAllElementChildren(inventoryItemTable.getElement()); // Remove placeholder table row from template.
-        inventoryItemTable.setValue(new ArrayList<>(inventoryService.gatherInventoryItemModels(userContext)));
+        inventoryItemTable.addComponentCreationHandler(inventoryItemWidget -> inventoryItemWidget.setInventoryDialog(this));
+        inventoryItemTable.setValue(inventoryUiService.gatherInventoryItemModels(userContext));
     }
 
     @Override
     public void customize(ModalDialogPanel<Void> modalDialogPanel) {
-
+        this.modalDialogPanel = modalDialogPanel;
     }
 
     @Override
     public void onClose() {
 
+    }
+
+    public void close() {
+        modalDialogPanel.close();
     }
 }

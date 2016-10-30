@@ -3,6 +3,7 @@ package com.btxtech.client.dialog.inventory;
 import com.btxtech.client.clientI18n.ClientI18nHelper;
 import com.btxtech.shared.gameengine.datatypes.InventoryItemModel;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Button;
@@ -24,6 +25,8 @@ import javax.inject.Named;
  */
 @Templated("InventoryDialog.html#inventoryItem")
 public class InventoryItemWidget implements TakesValue<InventoryItemModel>, IsElement {
+    @Inject
+    private InventoryUiService inventoryUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -46,6 +49,7 @@ public class InventoryItemWidget implements TakesValue<InventoryItemModel>, IsEl
     @DataField
     private Button inventoryItemUseButton;
     private InventoryItemModel inventoryItemModel;
+    private InventoryDialog inventoryDialog;
 
     @Override
     public void setValue(InventoryItemModel inventoryItemModel) {
@@ -67,7 +71,11 @@ public class InventoryItemWidget implements TakesValue<InventoryItemModel>, IsEl
 
     @EventHandler("inventoryItemUseButton")
     private void onInventoryItemUseButtonClicked(ClickEvent event) {
-        // TODO inventoryItemModel.use()
+        inventoryDialog.close();
+        inventoryUiService.useItem(inventoryItemModel.getInventoryItem());
     }
 
+    public void setInventoryDialog(InventoryDialog inventoryDialog) {
+        this.inventoryDialog = inventoryDialog;
+    }
 }

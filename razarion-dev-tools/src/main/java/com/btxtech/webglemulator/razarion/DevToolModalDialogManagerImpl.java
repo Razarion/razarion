@@ -3,6 +3,7 @@ package com.btxtech.webglemulator.razarion;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.dialog.ApplyListener;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import javafx.application.Platform;
@@ -50,6 +51,30 @@ public class DevToolModalDialogManagerImpl extends AbstractModalDialogManager {
             alert.setTitle("Box picked");
             alert.setHeaderText(null);
             alert.setContentText("Box picked");
+            alert.showAndWait();
+        });
+    }
+
+    @Override
+    public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
+        System.out.println("*** showUseInventoryItemLimitExceeded Dialog");
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("showUseInventoryHouseSpaceExceeded");
+            alert.setHeaderText(null);
+            alert.setContentText("showUseInventoryHouseSpaceExceeded");
+            alert.showAndWait();
+        });
+    }
+
+    @Override
+    public void showUseInventoryHouseSpaceExceeded() {
+        System.out.println("*** showUseInventoryHouseSpaceExceeded Dialog");
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("showUseInventoryHouseSpaceExceeded");
+            alert.setHeaderText(null);
+            alert.setContentText("showUseInventoryHouseSpaceExceeded");
             alert.showAndWait();
         });
     }

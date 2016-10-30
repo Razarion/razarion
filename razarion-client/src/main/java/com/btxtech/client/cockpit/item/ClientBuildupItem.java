@@ -124,11 +124,11 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     private void discoverEnableState() {
         itemCount = storyboardService.getItemCount(buildupItem.getItemType().getId());
         itemLimit = storyboardService.getLimitation4ItemType(buildupItem.getItemType());
-        if (storyboardService.isLevelLimitation4ItemTypeExceeded(buildupItem.getItemType())) {
+        if (storyboardService.isLevelLimitation4ItemTypeExceeded(buildupItem.getItemType(), 1)) {
             enableState = EnableState.DISABLED_LEVEL_EXCEEDED;
             return;
         }
-        if (storyboardService.isHouseSpaceExceeded(buildupItem.getItemType())) {
+        if (storyboardService.isHouseSpaceExceeded(buildupItem.getItemType(), 1)) {
             enableState = EnableState.DISABLED_HOUSE_SPACE_EXCEEDED;
             return;
         }

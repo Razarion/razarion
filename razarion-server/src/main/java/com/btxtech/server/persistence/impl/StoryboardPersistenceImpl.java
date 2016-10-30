@@ -220,6 +220,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<LevelConfig> levelConfigs = new ArrayList<>();
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        itemTypeLimitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
         levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(itemTypeLimitation));
         levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(10).setItemTypeLimitation(itemTypeLimitation));
         return levelConfigs;
@@ -235,6 +236,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         planetConfig.setHouseSpace(10);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        itemTypeLimitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setWaterLevel(-0.7);

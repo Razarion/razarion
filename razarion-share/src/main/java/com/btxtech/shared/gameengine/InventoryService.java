@@ -40,18 +40,4 @@ public class InventoryService {
         return inventoryItem;
     }
 
-    public List<InventoryItemModel> gatherInventoryItemModels(UserContext userContext) {
-        Map<Integer, InventoryItemModel> inventoryItemModels = new HashMap<>();
-        for (Integer inventoryItemId : userContext.getInventoryItemIds()) {
-            InventoryItemModel model = inventoryItemModels.get(inventoryItemId);
-            if (model == null) {
-                model = new InventoryItemModel(getInventoryItem(inventoryItemId));
-                inventoryItemModels.put(inventoryItemId, model);
-            }
-            model.increaseItemCount();
-        }
-        return new ArrayList<>(inventoryItemModels.values());
-    }
-
-
 }

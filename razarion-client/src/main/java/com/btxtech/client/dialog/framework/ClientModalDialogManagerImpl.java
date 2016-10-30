@@ -1,11 +1,14 @@
 package com.btxtech.client.dialog.framework;
 
+import com.btxtech.client.clientI18n.ClientI18nHelper;
 import com.btxtech.client.cockpit.BoxContentDialog;
 import com.btxtech.client.cockpit.level.LevelUpDialog;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
+import com.btxtech.client.dialog.common.MessageDialog;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.dialog.ApplyListener;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -53,6 +56,16 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
     @Override
     public void showBoxPicked(BoxContent boxContent) {
         show("Box gesammelt", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null);
+    }
+
+    @Override
+    public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
+        show(ClientI18nHelper.CONSTANTS.useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, ClientI18nHelper.CONSTANTS.useItemLimit(ClientI18nHelper.getLocalizedString(baseItemType.getI18Name())), null);
+    }
+
+    @Override
+    public void showUseInventoryHouseSpaceExceeded() {
+        show(ClientI18nHelper.CONSTANTS.useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, ClientI18nHelper.CONSTANTS.useItemHouseSpace(), null);
     }
 
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {

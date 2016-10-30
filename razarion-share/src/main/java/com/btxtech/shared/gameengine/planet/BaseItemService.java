@@ -112,7 +112,7 @@ public class BaseItemService {
         }
 
         if (base.getCharacter().isHuman()) {
-            checkItemLimit4ItemAdding(toBeBuilt, base);
+            checkItemLimit4ItemAdding(toBeBuilt, 1, base);
         }
 
         position = collisionService.correctPosition(position, toBeBuilt);
@@ -159,8 +159,8 @@ public class BaseItemService {
         }
     }
 
-    public void checkItemLimit4ItemAdding(BaseItemType newItemType, PlayerBase simpleBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
-        if (isLevelLimitation4ItemTypeExceeded(newItemType, simpleBase)) {
+    public void checkItemLimit4ItemAdding(BaseItemType newItemType, int itemCount2Add, PlayerBase simpleBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
+        if (isLevelLimitation4ItemTypeExceeded(newItemType, itemCount2Add, simpleBase)) {
             throw new ItemLimitExceededException();
         }
         if (isHouseSpaceExceeded(simpleBase, newItemType)) {
@@ -168,13 +168,13 @@ public class BaseItemService {
         }
     }
 
-    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, PlayerBase playerBase) throws NoSuchItemTypeException {
-        return getItemCount(playerBase, newItemType) >= getLimitation4ItemType(playerBase, newItemType);
+    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, int itemCount2Add, PlayerBase playerBase) throws NoSuchItemTypeException {
+        return getItemCount(playerBase, newItemType) + itemCount2Add > getLimitation4ItemType(playerBase, newItemType);
     }
 
-    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, UserContext userContext) throws NoSuchItemTypeException {
+    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, int itemCount2Add, UserContext userContext) throws NoSuchItemTypeException {
         PlayerBase playerBase = getPlayerBase(userContext);
-        return playerBase == null || isLevelLimitation4ItemTypeExceeded(newItemType, playerBase);
+        return playerBase == null || isLevelLimitation4ItemTypeExceeded(newItemType, itemCount2Add, playerBase);
     }
 
     public int getItemCount(PlayerBase playerBase, BaseItemType baseItemType) {
@@ -236,17 +236,17 @@ public class BaseItemService {
         return false; // TODO if enemies implemented
     }
 
-    public boolean isHouseSpaceExceeded(UserContext userContext, BaseItemType toBeBuiltType) {
+    public boolean isHouseSpaceExceeded(UserContext userContext, BaseItemType toBeBuiltType, int itemCount2Add) {
         PlayerBase playerBase = getPlayerBase(userContext);
-        return playerBase == null || isHouseSpaceExceeded(playerBase, toBeBuiltType);
+        return playerBase == null || isHouseSpaceExceeded(playerBase, toBeBuiltType, itemCount2Add);
     }
 
     public boolean isHouseSpaceExceeded(PlayerBase playerBase, BaseItemType toBeBuiltType) {
         return isHouseSpaceExceeded(playerBase, toBeBuiltType, 1);
     }
 
-    public boolean isHouseSpaceExceeded(PlayerBase playerBase, BaseItemType toBeBuiltType, int itemCountToAdd) {
-        return playerBase.getUsedHouseSpace() + itemCountToAdd * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetService.getPlanetConfig().getHouseSpace();
+    public boolean isHouseSpaceExceeded(PlayerBase playerBase, BaseItemType toBeBuiltType, int itemCount2Add) {
+        return playerBase.getUsedHouseSpace() + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetService.getPlanetConfig().getHouseSpace();
     }
 
     public PlayerBase getPlayerBase(UserContext userContext) {

@@ -5,10 +5,10 @@ import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItemModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.Camera;
@@ -26,7 +26,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -109,7 +108,7 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private StoryboardProviderEmulator storyboardProviderEmulator;
     @Inject
-    private InventoryService inventoryService;
+    private InventoryUiService inventoryUiService;
     @Inject
     private StoryboardService storyboardService;
     private DecimalPosition lastCanvasPosition;
@@ -365,14 +364,14 @@ public class WebGlEmulatorController implements Initializable {
         return itemCockpitPanel;
     }
 
-    public void onInventoryButtonClicked(ActionEvent actionEvent) {
+    public void onInventoryButtonClicked() {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Inventory Dialog");
             alert.setHeaderText("Inventory Items");
             alert.setContentText("Choose your option.");
 
-            for (InventoryItemModel inventoryItemModel : inventoryService.gatherInventoryItemModels(storyboardService.getUserContext())) {
+            for (InventoryItemModel inventoryItemModel : inventoryUiService.gatherInventoryItemModels(storyboardService.getUserContext())) {
                 alert.getButtonTypes().add(new ButtonType(inventoryItemModel.getInventoryItem().getName() + ": " + inventoryItemModel.getItemCount()));
             }
 

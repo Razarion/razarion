@@ -398,6 +398,8 @@ public interface ClientI18nConstants extends Messages {
     String create();
 
     // Inventory
+    String useItem();
+
     String workshop();
 
     String dealer();

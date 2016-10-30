@@ -75,4 +75,8 @@ public class InventoryItem {
         this.imageId = imageId;
         return this;
     }
+
+    public boolean hasBaseItemTypeId() {
+        return baseItemType != null;
+    }
 }

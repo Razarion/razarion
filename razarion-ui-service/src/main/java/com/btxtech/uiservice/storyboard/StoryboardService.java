@@ -108,12 +108,12 @@ public class StoryboardService {
         return baseItemService.getLimitation4ItemType(userContext, itemType);
     }
 
-    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType itemType) {
-        return baseItemService.isLevelLimitation4ItemTypeExceeded(itemType, userContext);
+    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType itemType, int itemCount2Add) {
+        return baseItemService.isLevelLimitation4ItemTypeExceeded(itemType, itemCount2Add, userContext);
     }
 
-    public boolean isHouseSpaceExceeded(BaseItemType itemType) {
-        return baseItemService.isHouseSpaceExceeded(userContext, itemType);
+    public boolean isHouseSpaceExceeded(BaseItemType itemType, int itemCount2Add) {
+        return baseItemService.isHouseSpaceExceeded(userContext, itemType, itemCount2Add);
     }
 
     public int getAccountBalance() {
