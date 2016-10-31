@@ -3,14 +3,17 @@ package com.btxtech.shared.dto;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 
+import java.util.List;
+
 /**
  * User: beat
  * Date: 01.05.13
  * Time: 13:00
  */
-public class StartPointConfig {
+public class BaseItemPlacerConfig {
     private DecimalPosition suggestedPosition;
     private int baseItemTypeId;
+    private int baseItemCount;
     private double enemyFreeRadius;
     private Polygon2D allowedArea;
 
@@ -18,8 +21,17 @@ public class StartPointConfig {
         return baseItemTypeId;
     }
 
-    public StartPointConfig setBaseItemTypeId(int baseItemTypeId) {
+    public BaseItemPlacerConfig setBaseItemTypeId(int baseItemTypeId) {
         this.baseItemTypeId = baseItemTypeId;
+        return this;
+    }
+
+    public int getBaseItemCount() {
+        return baseItemCount;
+    }
+
+    public BaseItemPlacerConfig setBaseItemCount(int baseItemCount) {
+        this.baseItemCount = baseItemCount;
         return this;
     }
 
@@ -27,7 +39,7 @@ public class StartPointConfig {
         return enemyFreeRadius;
     }
 
-    public StartPointConfig setEnemyFreeRadius(double enemyFreeRadius) {
+    public BaseItemPlacerConfig setEnemyFreeRadius(double enemyFreeRadius) {
         this.enemyFreeRadius = enemyFreeRadius;
         return this;
     }
@@ -36,7 +48,7 @@ public class StartPointConfig {
         return suggestedPosition;
     }
 
-    public StartPointConfig setSuggestedPosition(DecimalPosition suggestedPosition) {
+    public BaseItemPlacerConfig setSuggestedPosition(DecimalPosition suggestedPosition) {
         this.suggestedPosition = suggestedPosition;
         return this;
     }
@@ -45,7 +57,7 @@ public class StartPointConfig {
         return allowedArea;
     }
 
-    public StartPointConfig setAllowedArea(Polygon2D allowedArea) {
+    public BaseItemPlacerConfig setAllowedArea(Polygon2D allowedArea) {
         this.allowedArea = allowedArea;
         return this;
     }

@@ -18,10 +18,10 @@ import com.btxtech.uiservice.GroupSelectionFrame;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
-import com.btxtech.uiservice.renderer.task.startpoint.StartPointUiService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
@@ -56,7 +56,7 @@ public class TerrainMouseHandler {
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
-    private StartPointUiService startPointUiService;
+    private BaseItemPlacerService baseItemPlacerService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -82,6 +82,11 @@ public class TerrainMouseHandler {
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
             Vertex terrainPosition = terrainService.calculatePositionGroundMesh(worldPickRay);
             terrainMouseMoveEvent.fire(new TerrainMouseMoveEvent(worldPickRay, terrainPosition));
+
+            if (baseItemPlacerService.isActive()) {
+                baseItemPlacerService.onMouseMoveEvent(terrainPosition.toXY());
+                return;
+            }
 
             if (primaryButtonDown) {
                 GroupSelectionFrame groupSelectionFrame = cockpitMode.getGroupSelectionFrame();
@@ -116,9 +121,9 @@ public class TerrainMouseHandler {
             }
             terrainMouseDownEvent.fire(new TerrainMouseDownEvent(worldPickRay, terrainPosition, primaryButtonPressed, secondaryButtonPressed, middleButtonPressed, ctrlKey));
 
-            if (startPointUiService.isActive()) {
+            if (baseItemPlacerService.isActive()) {
                 if (primaryButtonPressed) {
-                    startPointUiService.onMouseDownEvent(terrainPosition);
+                    baseItemPlacerService.onMouseDownEvent(terrainPosition.toXY());
                 }
                 return;
             }

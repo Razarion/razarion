@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.datatypes;
+package com.btxtech.uiservice.inventory;
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 

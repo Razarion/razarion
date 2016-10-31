@@ -202,6 +202,15 @@ public class SyncItemContainerService {
         return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncPhysicalArea().overlap(position, radius));
     }
 
+    public boolean hasItemsInRange(Collection<DecimalPosition> positions, double radius) {
+        for (DecimalPosition position : positions) {
+            if(hasItemsInRange(position ,radius)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public SyncItem getSyncItem(int id) {
         SyncItem syncItem = items.get(id);
         if (syncItem != null) {

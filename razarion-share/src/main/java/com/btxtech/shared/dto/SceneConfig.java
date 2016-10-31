@@ -17,7 +17,7 @@ public class SceneConfig {
     private List<BotMoveCommandConfig> botMoveCommandConfigs;
     private List<BotHarvestCommandConfig> botHarvestCommandConfigs;
     private List<BotAttackCommandConfig> botAttackCommandConfigs;
-    private StartPointConfig startPointConfig;
+    private BaseItemPlacerConfig baseItemPlacerConfig;
     private Boolean wait4LevelUpDialog;
     private Boolean wait4QuestPassedDialog;
     private List<ResourceItemPosition> resourceItemTypePositions;
@@ -88,12 +88,12 @@ public class SceneConfig {
         return this;
     }
 
-    public StartPointConfig getStartPointConfig() {
-        return startPointConfig;
+    public BaseItemPlacerConfig getBaseItemPlacerConfig() {
+        return baseItemPlacerConfig;
     }
 
-    public SceneConfig setStartPointConfig(StartPointConfig startPointConfig) {
-        this.startPointConfig = startPointConfig;
+    public SceneConfig setBaseItemPlacerConfig(BaseItemPlacerConfig baseItemPlacerConfig) {
+        this.baseItemPlacerConfig = baseItemPlacerConfig;
         return this;
     }
 

@@ -79,4 +79,17 @@ public class InventoryItem {
     public boolean hasBaseItemTypeId() {
         return baseItemType != null;
     }
+
+    @Override
+    public String toString() {
+        return "InventoryItem{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", gold=" + gold +
+                ", baseItemType=" + baseItemType +
+                ", baseItemTypeCount=" + baseItemTypeCount +
+                ", itemFreeRange=" + itemFreeRange +
+                ", imageId=" + imageId +
+                '}';
+    }
 }

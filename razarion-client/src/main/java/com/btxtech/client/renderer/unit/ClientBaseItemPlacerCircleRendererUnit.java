@@ -9,7 +9,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.task.startpoint.AbstractStartPointCircleRendererUnit;
+import com.btxtech.uiservice.renderer.task.itemplacer.AbstractBaseItemPlacerCircleRendererUnit;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @ColorBufferRenderer
 @Dependent
-public class ClientStartPointCircleRendererUnit extends AbstractStartPointCircleRendererUnit {
+public class ClientBaseItemPlacerCircleRendererUnit extends AbstractBaseItemPlacerCircleRendererUnit {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

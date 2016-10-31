@@ -1,7 +1,7 @@
 package com.btxtech.client.dialog.inventory;
 
 import com.btxtech.client.clientI18n.ClientI18nHelper;
-import com.btxtech.shared.gameengine.datatypes.InventoryItemModel;
+import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.google.gwt.event.dom.client.ClickEvent;

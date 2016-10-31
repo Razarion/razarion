@@ -13,7 +13,7 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
-import com.btxtech.uiservice.renderer.task.startpoint.StartPointUiService;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.Dependent;
@@ -42,7 +42,7 @@ public class Scene {
     @Inject
     private BotService botService;
     @Inject
-    private StartPointUiService startPointUiService;
+    private BaseItemPlacerService baseItemPlacerService;
     @Inject
     private ActivityService activityService;
     @Inject
@@ -85,8 +85,8 @@ public class Scene {
         if (sceneConfig.getBotAttackCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotAttackCommandConfigs());
         }
-        if (sceneConfig.getStartPointConfig() != null) {
-            startPointUiService.activate(sceneConfig.getStartPointConfig());
+        if (sceneConfig.getBaseItemPlacerConfig() != null) {
+            baseItemPlacerService.activate(sceneConfig.getBaseItemPlacerConfig());
         }
         if (sceneConfig.getQuestConfig() != null) {
             questService.activateCondition(userContext, sceneConfig.getQuestConfig());
@@ -157,8 +157,8 @@ public class Scene {
         if (sceneConfig.getIntroText() != null) {
             storyCover.hide();
         }
-        if (sceneConfig.getStartPointConfig() != null) {
-            startPointUiService.deactivate();
+        if (sceneConfig.getBaseItemPlacerConfig() != null) {
+            baseItemPlacerService.deactivate();
         }
     }
 }

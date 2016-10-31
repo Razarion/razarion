@@ -211,7 +211,7 @@ public class SyncBuilder extends SyncBaseAbility {
         if (unlockService.isItemLocked(tmpToBeBuiltType, getSyncBaseItem().getBase())) {
             throw new IllegalArgumentException(this + " item is locked: " + builderCommand.getToBeBuilt());
         }
-        if (terrainService.overlap(builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType, null, null)) {
+        if (terrainService.overlap(builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType)) {
             throw new PositionTakenException(builderCommand.getPositionToBeBuilt(), builderCommand.getToBeBuilt());
         }
 

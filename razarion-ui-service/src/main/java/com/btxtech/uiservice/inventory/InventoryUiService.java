@@ -1,13 +1,14 @@
 package com.btxtech.uiservice.inventory;
 
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.InventoryItemModel;
 import com.btxtech.shared.gameengine.datatypes.ModalDialogManager;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -29,10 +30,14 @@ public class InventoryUiService {
     private ItemTypeService itemTypeService;
     @Inject
     private StoryboardService storyboardService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ModalDialogManager modalDialogManager;
+    @Inject
+    private BaseItemPlacerService baseItemPlacerService;
 
     public List<InventoryItemModel> gatherInventoryItemModels(UserContext userContext) {
         Map<Integer, InventoryItemModel> inventoryItemModels = new HashMap<>();
@@ -57,7 +62,11 @@ public class InventoryUiService {
                 } else if (storyboardService.isHouseSpaceExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
                     modalDialogManager.showUseInventoryHouseSpaceExceeded();
                 } else {
-                    // TODO place here: CockpitMode.getInstance().setInventoryItemPlacer(new InventoryItemPlacer(inventoryItem));
+                    BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig();
+                    baseItemPlacerConfig.setBaseItemTypeId(baseItemType.getId());
+                    baseItemPlacerConfig.setBaseItemCount(inventoryItem.getBaseItemTypeCount());
+                    baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getItemFreeRange());
+                    baseItemPlacerService.activate(baseItemPlacerConfig);
                 }
             } catch (Throwable e) {
                 exceptionHandler.handleException("InventoryUiService.useItem()", e);

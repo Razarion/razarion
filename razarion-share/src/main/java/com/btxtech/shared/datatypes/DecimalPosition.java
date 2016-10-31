@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -308,6 +309,18 @@ public class DecimalPosition {
         return (a.getX() - x) * (b.getY() - y) - (a.getY() - y) * (b.getX() - x);
     }
 
+    public boolean equalsDeltaZero() {
+        return MathHelper.compareWithPrecision(x, 0) && MathHelper.compareWithPrecision(y, 0);
+    }
+
+    public boolean equalsDelta(DecimalPosition other) {
+        return MathHelper.compareWithPrecision(x, other.x) && MathHelper.compareWithPrecision(y, other.y);
+    }
+
+    public boolean equalsDelta(DecimalPosition other, double delta) {
+        return MathHelper.compareWithPrecision(x, other.x, delta) && MathHelper.compareWithPrecision(y, other.y, delta);
+    }
+
     @Override
     public String toString() {
         return "x: " + x + " y: " + y;
@@ -408,18 +421,9 @@ public class DecimalPosition {
         return new DecimalPosition(x, y);
     }
 
-    public boolean equalsDeltaZero() {
-        return MathHelper.compareWithPrecision(x, 0) && MathHelper.compareWithPrecision(y, 0);
+    public static Collection<DecimalPosition> add(Collection<DecimalPosition> positions, DecimalPosition delta) {
+        return positions.stream().map(position -> position.add(delta)).collect(Collectors.toList());
     }
-
-    public boolean equalsDelta(DecimalPosition other) {
-        return MathHelper.compareWithPrecision(x, other.x) && MathHelper.compareWithPrecision(y, other.y);
-    }
-
-    public boolean equalsDelta(DecimalPosition other, double delta) {
-        return MathHelper.compareWithPrecision(x, other.x, delta) && MathHelper.compareWithPrecision(y, other.y, delta);
-    }
-
 
     @Override
     public boolean equals(Object o) {

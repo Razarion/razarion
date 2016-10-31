@@ -4,7 +4,7 @@ import com.btxtech.client.clientI18n.ClientI18nHelper;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.datatypes.InventoryItemModel;
+import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.google.gwt.user.client.ui.Composite;

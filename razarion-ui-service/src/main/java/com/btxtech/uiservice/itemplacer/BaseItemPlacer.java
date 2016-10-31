@@ -1,0 +1,112 @@
+package com.btxtech.uiservice.itemplacer;
+
+import com.btxtech.shared.datatypes.BaseItemPlacerChecker;
+import com.btxtech.shared.datatypes.Circle2D;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.BaseItemPlacerConfig;
+import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * User: beat
+ * Date: 02.05.2013
+ * Time: 18:02
+ */
+@Dependent
+public class BaseItemPlacer {
+    @Inject
+    private BaseItemPlacerChecker baseItemPlacerChecker;
+    @Inject
+    private ItemTypeService itemTypeService;
+    @Inject
+    private TerrainService terrainService;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
+    private DecimalPosition position;
+    private BaseItemType baseItemType;
+    private String errorText;
+    private List<Vertex> vertexes;
+
+    public BaseItemPlacer init(BaseItemPlacerConfig baseItemPlacerConfig) {
+        baseItemType = itemTypeService.getBaseItemType(baseItemPlacerConfig.getBaseItemTypeId());
+        baseItemPlacerChecker.init(baseItemType, baseItemPlacerConfig);
+        Circle2D circle2D = new Circle2D(new DecimalPosition(0, 0), baseItemPlacerChecker.getEnemyFreeRadius());
+        vertexes = circle2D.triangulation(20, 0);
+        if (baseItemPlacerConfig.getSuggestedPosition() != null) {
+            onMove(baseItemPlacerConfig.getSuggestedPosition());
+        } else {
+            DecimalPosition cameraCenter = projectionTransformation.calculateViewField(0).calculateCenter();
+            onMove(cameraCenter);
+        }
+        return this;
+    }
+
+    public void onMove(DecimalPosition position) {
+        baseItemPlacerChecker.check(position);
+        setupErrorText();
+        this.position = position;
+    }
+
+    public boolean isPositionValid() {
+        return baseItemPlacerChecker.isPositionValid();
+    }
+
+    public String getErrorText() {
+        return errorText;
+    }
+
+    public BaseItemType getBaseItemType() {
+        return baseItemType;
+    }
+
+    public List<Vertex> getVertexes() {
+        return vertexes;
+    }
+
+    public Collection<DecimalPosition> setupAbsolutePositions() {
+        return baseItemPlacerChecker.setupAbsolutePositions(position);
+    }
+
+    public List<ModelMatrices> provideCircleModelMatrices() {
+        Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), 0); // TODO get terrain z
+        ModelMatrices modelMatrices = new ModelMatrices();
+        modelMatrices.setModel(model).setNorm(model.normTransformation());
+        return Collections.singletonList(modelMatrices);
+    }
+
+    public List<ModelMatrices> provideItemModelMatrices() {
+        List<ModelMatrices> result = new ArrayList<>();
+        for (DecimalPosition position : setupAbsolutePositions()) {
+            Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), 0);// TODO get terrain z
+            ModelMatrices modelMatrices = new ModelMatrices();
+            modelMatrices.setModel(model).setNorm(model.normTransformation());
+            result.add(modelMatrices);
+        }
+        return result;
+    }
+
+    private void setupErrorText() {
+        // TODO
+//        if (!baseItemPlacerChecker.isEnemiesOk()) {
+//            errorText = ClientI18nHelper.CONSTANTS.enemyTooNear();
+//        } else if (!baseItemPlacerChecker.isItemsOk()) {
+//            errorText = ClientI18nHelper.CONSTANTS.notPlaceOver();
+//        } else if (!baseItemPlacerChecker.isTerrainOk()) {
+//            errorText = ClientI18nHelper.CONSTANTS.notPlaceHere();
+//        } else {
+//            errorText = null;
+//        }
+    }
+}

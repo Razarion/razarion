@@ -23,7 +23,7 @@ import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ScrollUiQuest;
-import com.btxtech.shared.dto.StartPointConfig;
+import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -59,6 +59,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -396,11 +397,11 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private void addUserSpawnScene(List<SceneConfig> sceneConfigs) {
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(true);
-        StartPointConfig startPointConfig = new StartPointConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(104, 80));
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(104, 80));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setWait4QuestPassedDialog(true).setStartPointConfig(startPointConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden")));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setWait4QuestPassedDialog(true).setBaseItemPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden")));
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {

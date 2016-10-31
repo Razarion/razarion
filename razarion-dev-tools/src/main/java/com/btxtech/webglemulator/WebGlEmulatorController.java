@@ -5,7 +5,9 @@ import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.datatypes.InventoryItemModel;
+import com.btxtech.shared.gameengine.InventoryService;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -19,7 +21,6 @@ import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -107,6 +108,8 @@ public class WebGlEmulatorController implements Initializable {
     private TerrainMouseHandler terrainMouseHandler;
     @Inject
     private StoryboardProviderEmulator storyboardProviderEmulator;
+    @Inject
+    private InventoryService inventoryService;
     @Inject
     private InventoryUiService inventoryUiService;
     @Inject
@@ -372,11 +375,13 @@ public class WebGlEmulatorController implements Initializable {
             alert.setContentText("Choose your option.");
 
             for (InventoryItemModel inventoryItemModel : inventoryUiService.gatherInventoryItemModels(storyboardService.getUserContext())) {
-                alert.getButtonTypes().add(new ButtonType(inventoryItemModel.getInventoryItem().getName() + ": " + inventoryItemModel.getItemCount()));
+                alert.getButtonTypes().add(new ButtonType(Integer.toString(inventoryItemModel.getInventoryItem().getId())));
             }
 
             Optional<ButtonType> result = alert.showAndWait();
-            System.out.println("pressed: " + result.get().getText());
+            InventoryItem inventoryItem = inventoryService.getInventoryItem(Integer.parseInt(result.get().getText()));
+            System.out.println("pressed: " + inventoryItem);
+            inventoryUiService.useItem(inventoryItem);
         });
     }
 }

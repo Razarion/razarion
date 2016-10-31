@@ -14,7 +14,6 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
-import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
@@ -144,7 +143,7 @@ public class TerrainService {
         return groundMesh;
     }
 
-    public boolean overlap(DecimalPosition position, BaseItemType baseItemType, TerrainType builderTerrainType, Integer builderMaxAdjoinDistance) {
+    public boolean overlap(DecimalPosition position, BaseItemType baseItemType) {
         // Check in terrain objects
         SingleHolder<Boolean> result = new SingleHolder<>(false);
         terrainObjectConfigPositions.iterate((terrainObjectConfig, terrainObjectPosition) -> {
@@ -161,6 +160,15 @@ public class TerrainService {
         // Check in slopes
         for (Slope slope : slopeMap.values()) {
             if (slope.isInSlope(position, baseItemType.getPhysicalAreaConfig().getRadius())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean overlap(Collection<DecimalPosition> positions, BaseItemType baseItemType) {
+        for (DecimalPosition position : positions) {
+            if (overlap(position, baseItemType)) {
                 return true;
             }
         }

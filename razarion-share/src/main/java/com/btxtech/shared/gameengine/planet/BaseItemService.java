@@ -114,9 +114,9 @@ public class BaseItemService {
         if (base.getCharacter().isHuman()) {
             checkItemLimit4ItemAdding(toBeBuilt, 1, base);
         }
+        // TODO check item free range etc (use: BaseItemPlacerChecker)
 
         position = collisionService.correctPosition(position, toBeBuilt);
-
         SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position);
         if (noSpawn) {
             syncBaseItem.setup(base, ItemLifecycle.ALIVE);
