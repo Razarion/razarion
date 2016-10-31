@@ -119,6 +119,14 @@ public class QuestService {
         triggerSyncItem(examinee, ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
     }
 
+    public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
+        UserContext examinee = actor.getBase().getUserContext();
+        if (examinee == null) {
+            return;
+        }
+        triggerSyncItem(examinee, ConditionTrigger.SYNC_ITEM_KILLED, target);
+    }
+
     public void onSyncBoxItemPicked(SyncBaseItem picker) {
         UserContext examinee = picker.getBase().getUserContext();
         if (examinee == null) {
@@ -167,7 +175,7 @@ public class QuestService {
         return abstractConditionProgress;
     }
 
-    protected void triggerValue(UserContext examinee, ConditionTrigger conditionTrigger, double value) {
+    private void triggerValue(UserContext examinee, ConditionTrigger conditionTrigger, double value) {
         ValueConditionTrigger valueConditionTrigger = (ValueConditionTrigger) findProgress(examinee, conditionTrigger);
         if (valueConditionTrigger == null) {
             return;

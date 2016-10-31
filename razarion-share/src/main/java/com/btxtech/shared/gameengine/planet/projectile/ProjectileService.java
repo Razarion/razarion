@@ -32,10 +32,12 @@ public class ProjectileService {
     private ActivityService activityService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
-    private MapList<BaseItemType, Projectile> projectiles = new MapList<>();
+    private final MapList<BaseItemType, Projectile> projectiles = new MapList<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent ignore) {
-        projectiles.clear();
+        synchronized (projectiles) {
+            projectiles.clear();
+        }
     }
 
     public void fireProjectile(long timeStamp, SyncBaseItem actor, SyncBaseItem target) {
@@ -49,23 +51,28 @@ public class ProjectileService {
             throw new UnsupportedOperationException();
         }
         Projectile projectile = new Projectile(timeStamp, actor, muzzle, target.getSyncPhysicalArea().getPosition());
-        projectiles.put(actor.getBaseItemType(), projectile);
+        synchronized (projectiles) {
+            projectiles.put(actor.getBaseItemType(), projectile);
+        }
 
         activityService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition().sub(muzzle), weaponType.getMuzzleFlashClipId(), timeStamp);
     }
 
     public void tick(long timeStamp) {
         Collection<Projectile> detonationProjectiles = new ArrayList<>();
-        projectiles.getAll().stream().filter(projectile -> projectile.isTargetReached(timeStamp)).forEach(projectile -> {
-            detonationProjectiles.add(projectile);
-            projectiles.remove(projectile.getActor().getBaseItemType(), projectile);
-        });
-
+        synchronized (projectiles) {
+            projectiles.getAll().stream().filter(projectile -> projectile.isTargetReached(timeStamp)).forEach(projectile -> {
+                detonationProjectiles.add(projectile);
+                projectiles.remove(projectile.getActor().getBaseItemType(), projectile);
+            });
+        }
         detonationProjectiles.forEach(projectile -> projectileDetonation(projectile, timeStamp));
     }
 
     public List<ModelMatrices> getProjectiles(BaseItemType baseItemType, long timeStamp) {
-        return projectiles.getSave(baseItemType).stream().map(projectile -> projectile.getInterpolatedModelMatrices(timeStamp)).collect(Collectors.toList());
+        synchronized (projectiles) {
+            return projectiles.getSave(baseItemType).stream().map(projectile -> projectile.getInterpolatedModelMatrices(timeStamp)).collect(Collectors.toList());
+        }
     }
 
     private void projectileDetonation(Projectile detonationProjectile, long timeStamp) {

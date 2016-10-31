@@ -177,6 +177,7 @@ public class ActivityService {
 
     public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor) {
         System.out.println("ActivityService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
+        questService.onSyncItemKilled(target, actor);
     }
 
     public void onSyncBaseItemRemoved(SyncBaseItem target) {

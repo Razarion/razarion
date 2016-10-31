@@ -87,7 +87,7 @@ public class ScenarioService implements QuestListener {
     @Inject
     private QuestService questService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 41;
+    private int number = 40;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -772,6 +772,12 @@ public class ScenarioService implements QuestListener {
             public void executeCommands(CommandService commandService) {
                 commandService.attack(getFirstCreatedSyncBaseItem(), getFirstBotItem(1), true);
             }
+
+            @Override
+            public QuestConfig setupQuest() {
+                return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)));
+            }
+
         });
         // Pick box
         // 41

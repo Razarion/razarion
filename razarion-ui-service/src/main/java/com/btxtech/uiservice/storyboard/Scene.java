@@ -79,14 +79,17 @@ public class Scene {
         if (sceneConfig.getBotMoveCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotMoveCommandConfigs());
         }
+        if (sceneConfig.getResourceItemTypePositions() != null) {
+            resourceService.createResources(sceneConfig.getResourceItemTypePositions());
+        }
         if (sceneConfig.getBotHarvestCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotHarvestCommandConfigs());
         }
         if (sceneConfig.getBotAttackCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotAttackCommandConfigs());
         }
-        if (sceneConfig.getBaseItemPlacerConfig() != null) {
-            baseItemPlacerService.activate(sceneConfig.getBaseItemPlacerConfig());
+        if (sceneConfig.getStartPointPlacerConfig() != null) {
+            baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig());
         }
         if (sceneConfig.getQuestConfig() != null) {
             questService.activateCondition(userContext, sceneConfig.getQuestConfig());
@@ -104,9 +107,6 @@ public class Scene {
             hasCompletionCallback = true;
             completionCallbackCount++;
             abstractModalDialogManager.setQuestPassedCallback(this::onComplete);
-        }
-        if (sceneConfig.getResourceItemTypePositions() != null) {
-            resourceService.createResources(sceneConfig.getResourceItemTypePositions());
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -157,7 +157,7 @@ public class Scene {
         if (sceneConfig.getIntroText() != null) {
             storyCover.hide();
         }
-        if (sceneConfig.getBaseItemPlacerConfig() != null) {
+        if (sceneConfig.getStartPointPlacerConfig() != null) {
             baseItemPlacerService.deactivate();
         }
     }
