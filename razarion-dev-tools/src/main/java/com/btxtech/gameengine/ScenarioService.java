@@ -1,13 +1,13 @@
 package com.btxtech.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillHumanCommandConfig;
 import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -90,7 +90,7 @@ public class ScenarioService implements QuestListener {
     @Inject
     private QuestService questService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 42;
+    private int number = 43;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -190,7 +190,7 @@ public class ScenarioService implements QuestListener {
         scenarioProvider.setupBotCommands(botCommandConfigs);
         botService.executeCommands(botCommandConfigs);
         QuestConfig questConfig = scenarioProvider.setupQuest();
-        if(questConfig != null) {
+        if (questConfig != null) {
             questService.activateCondition(userContext, questConfig);
         }
         scenarioProvider.executeCommands(commandService);
@@ -830,7 +830,35 @@ public class ScenarioService implements QuestListener {
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
                 BotKillOtherBotCommandConfig commandConfig = new BotKillOtherBotCommandConfig().setBotId(2).setTargetBotId(1).setAttackerBaseItemTypeId(ATTACKER_ITEM_TYPE.getId());
-                commandConfig.setDominanceFactor(2).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(0,0, 15,15).toPolygon()));
+                commandConfig.setDominanceFactor(2).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(0, 0, 15, 15).toPolygon()));
+                botCommandConfigs.add(commandConfig);
+            }
+        });
+        // BotKillOtherBotCommandConfig
+        // 43
+        scenes.add(new ScenarioProvider() {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItem(ATTACKER_ITEM_TYPE, new DecimalPosition(20, 20), null);
+                createSyncBaseItem(SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 25), null);
+                createSyncBaseItem(HARVESTER_ITEM_TYPE, new DecimalPosition(25, 20), null);
+                createSyncBaseItem(HARVESTER_ITEM_TYPE, new DecimalPosition(25, 25), null);
+            }
+
+            @Override
+            public void setupBots(Collection<BotConfig> botConfigs) {
+                // Attacker bot
+                List<BotEnragementStateConfig> attackerEnragementStates = new ArrayList<>();
+                List<BotItemConfig> attackerItems = new ArrayList<>();
+                attackerItems.add(new BotItemConfig().setBaseItemTypeId(ATTACKER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setNoSpawn(true).setNoRebuild(true));
+                attackerEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(attackerItems));
+                botConfigs.add(new BotConfig().setId(2).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
+            }
+
+            @Override
+            public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
+                BotKillHumanCommandConfig commandConfig = new BotKillHumanCommandConfig().setBotId(2).setAttackerBaseItemTypeId(ATTACKER_ITEM_TYPE.getId());
+                commandConfig.setDominanceFactor(2).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(0, 0, 15, 15).toPolygon()));
                 botCommandConfigs.add(commandConfig);
             }
         });

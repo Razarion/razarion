@@ -17,6 +17,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillBaseCommandConfig;
+import com.btxtech.shared.dto.BotKillHumanCommandConfig;
 import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -287,6 +289,8 @@ public class BotItemContainer {
             handleAttackCommand((BotAttackCommandConfig) botCommandConfig, base);
         } else if (botCommandConfig instanceof BotKillOtherBotCommandConfig) {
             handleKillOtherBotCommand((BotKillOtherBotCommandConfig) botCommandConfig, base);
+        } else if (botCommandConfig instanceof BotKillHumanCommandConfig) {
+            handleKillHumanCommand((BotKillHumanCommandConfig) botCommandConfig, base);
         } else {
             throw new IllegalArgumentException("Unknown bot command: " + botCommandConfig);
         }
@@ -336,13 +340,13 @@ public class BotItemContainer {
         }
     }
 
-    private void handleKillOtherBotCommand(BotKillOtherBotCommandConfig botKillOtherBotCommandConfig, PlayerBase base) {
-        PlayerBase targetBase = botService.getBotRunner(botKillOtherBotCommandConfig.getTargetBotId()).getBase();
+
+    private void handleKillBaseCommand(BotKillBaseCommandConfig botKillBaseCommandConfig, PlayerBase base, PlayerBase targetBase) {
         Collection<SyncBaseItem> targets = targetBase.getItems();
 
-        for (int i = 0; i < targets.size() * botKillOtherBotCommandConfig.getDominanceFactor(); i++) {
+        for (int i = 0; i < targets.size() * botKillBaseCommandConfig.getDominanceFactor(); i++) {
             BotItemConfig botItemConfig = new BotItemConfig();
-            botItemConfig.setBaseItemTypeId(botKillOtherBotCommandConfig.getAttackerBaseItemTypeId()).setNoRebuild(true).setCreateDirectly(true).setNoSpawn(true).setPlace(botKillOtherBotCommandConfig.getSpawnPoint());
+            botItemConfig.setBaseItemTypeId(botKillBaseCommandConfig.getAttackerBaseItemTypeId()).setNoRebuild(true).setCreateDirectly(true).setNoSpawn(true).setPlace(botKillBaseCommandConfig.getSpawnPoint());
             try {
                 createItem(botItemConfig, base);
             } catch (ItemLimitExceededException | HouseSpaceExceededException e) {
@@ -350,21 +354,31 @@ public class BotItemContainer {
             }
         }
 
-        List<BotSyncBaseItem> attacker = new ArrayList<>(getBotSyncBaseItem(botKillOtherBotCommandConfig.getAttackerBaseItemTypeId()));
-        if (attacker.size() < botKillOtherBotCommandConfig.getDominanceFactor() * targets.size()) {
-            throw new IllegalArgumentException("Can not execute BotKillOtherBotCommandConfig. Not enough BotSyncBaseItem found for baseItemTypeId: " + botKillOtherBotCommandConfig.getAttackerBaseItemTypeId() + " needed: " + (botKillOtherBotCommandConfig.getDominanceFactor() * targets.size()) + " available: " + attacker.size() + ". Command: " + botKillOtherBotCommandConfig);
+        List<BotSyncBaseItem> attacker = new ArrayList<>(getBotSyncBaseItem(botKillBaseCommandConfig.getAttackerBaseItemTypeId()));
+        if (attacker.size() < botKillBaseCommandConfig.getDominanceFactor() * targets.size()) {
+            throw new IllegalArgumentException("Can not execute BotKillOtherBotCommandConfig. Not enough BotSyncBaseItem found for baseItemTypeId: " + botKillBaseCommandConfig.getAttackerBaseItemTypeId() + " needed: " + (botKillBaseCommandConfig.getDominanceFactor() * targets.size()) + " available: " + attacker.size() + ". Command: " + botKillBaseCommandConfig);
         }
 
-        for (int i = 0; i < botKillOtherBotCommandConfig.getDominanceFactor(); i++) {
+        for (int i = 0; i < botKillBaseCommandConfig.getDominanceFactor(); i++) {
             Collection<BotSyncBaseItem> selectedAttacker = attacker.subList(i * targets.size(), (i + 1) * targets.size());
             Map<BotSyncBaseItem, SyncBaseItem> assignedAttacker = ShortestWaySorter.setupAttackerTarget(selectedAttacker, targets, BotSyncBaseItem::isAbleToAttack);
             if (assignedAttacker.isEmpty()) {
-                throw new IllegalArgumentException("Can not execute BotKillOtherBotCommandConfig. Can not assign attacker to target. Command: " + botKillOtherBotCommandConfig);
+                throw new IllegalArgumentException("Can not execute BotKillOtherBotCommandConfig. Can not assign attacker to target. Command: " + botKillBaseCommandConfig);
             }
             for (Map.Entry<BotSyncBaseItem, SyncBaseItem> entry : assignedAttacker.entrySet()) {
                 entry.getKey().attack(entry.getValue());
             }
         }
+    }
+
+    private void handleKillOtherBotCommand(BotKillOtherBotCommandConfig botKillOtherBotCommandConfig, PlayerBase base) {
+        PlayerBase target = botService.getBotRunner(botKillOtherBotCommandConfig.getTargetBotId()).getBase();
+        handleKillBaseCommand(botKillOtherBotCommandConfig, base, target);
+    }
+
+    private void handleKillHumanCommand(BotKillHumanCommandConfig botKillHumanCommandConfig, PlayerBase base) {
+        PlayerBase target = baseItemService.getFirstHumanBase();
+        handleKillBaseCommand(botKillHumanCommandConfig, base, target);
     }
 
     private Collection<BotSyncBaseItem> getBotSyncBaseItem(int baseItemTypeId) {

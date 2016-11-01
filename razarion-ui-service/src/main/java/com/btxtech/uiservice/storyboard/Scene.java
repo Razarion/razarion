@@ -91,6 +91,9 @@ public class Scene {
         if (sceneConfig.getBotKillOtherBotCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotKillOtherBotCommandConfigs());
         }
+        if (sceneConfig.getBotKillHumanCommandConfigs() != null) {
+            botService.executeCommands(sceneConfig.getBotKillHumanCommandConfigs());
+        }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig());
         }

@@ -67,6 +67,17 @@ public class BaseItemService {
         lastBaseItId = 0;
     }
 
+    public PlayerBase getFirstHumanBase() {
+        synchronized (bases) {
+            for (PlayerBase playerBase : bases.values()) {
+                if(playerBase.getCharacter().isHuman()) {
+                    return playerBase;
+                }
+            }
+        }
+        throw new IllegalStateException("No human base found");
+    }
+
     public PlayerBase createHumanBase(UserContext userContext) {
         return createBase(userContext.getName(), Character.HUMAN, userContext);
     }

@@ -17,6 +17,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillHumanCommandConfig;
 import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
@@ -117,7 +118,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -251,6 +253,31 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<String, String> localizedStrings = new HashMap<>();
         localizedStrings.put(I18nString.DEFAULT, text);
         return new I18nString(localizedStrings);
+    }
+
+    // Kill human base -----------------------------------------------------------------------------
+    private List<SceneConfig> kilHumanBase() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // User Spawn
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(243, 120));
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(buildupItemTypeCount));
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true));
+        // Setup killer bot
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(235, 170))).setNoSpawn(true).setNoRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        // Kill bot command
+        List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
+        botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50,50).toPolygon())));
+        // Camera
+        sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs).setBotKillHumanCommandConfigs(botKillHumanCommandConfigs));
+        return sceneConfigs;
     }
 
     // Kill enemy bot base -----------------------------------------------------------------------------
