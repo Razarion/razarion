@@ -86,7 +86,7 @@ public class ProjectileService {
             if (!baseItemService.isEnemy(detonationProjectile.getActor(), target)) {
                 continue;
             }
-            target.onAttacked(weaponType.getDamage(), detonationProjectile.getActor());
+            target.onAttacked(weaponType.getDamage(), detonationProjectile.getActor(), timeStamp);
         }
     }
 }

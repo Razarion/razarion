@@ -530,11 +530,11 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return getBase().isEnemy(playerBase);
     }
 
-    private void decreaseHealth(double damage, SyncBaseItem actor) {
+    private void decreaseHealth(double damage, SyncBaseItem actor, long timeStamp) {
         health -= damage;
         if (health <= 0) {
             health = 0;
-            baseItemService.killSyncItem(this, actor);
+            baseItemService.killSyncItem(this, actor, timeStamp);
         }
     }
 
@@ -665,9 +665,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return getBaseItemType().getDropBoxPossibility();
     }
 
-    public void onAttacked(double damage, SyncBaseItem actor) throws TargetHasNoPositionException {
+    public void onAttacked(double damage, SyncBaseItem actor, long timeStamp) throws TargetHasNoPositionException {
         activityService.onAttacked(this, actor, damage);
-        decreaseHealth(damage, actor);
+        decreaseHealth(damage, actor, timeStamp);
         if (PlanetService.MODE != PlanetMode.MASTER) {
             return;
         }

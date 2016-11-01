@@ -39,6 +39,7 @@ public class BaseItemType extends ItemType {
     private Integer unlockCrystals;
     private int spawnDurationMillis;
     private Integer spawnShape3DId;
+    private Integer explosionClipId;
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {
         return physicalAreaConfig;
@@ -221,6 +222,15 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setSpawnShape3DId(Integer spawnShape3DId) {
         this.spawnShape3DId = spawnShape3DId;
+        return this;
+    }
+
+    public Integer getExplosionClipId() {
+        return explosionClipId;
+    }
+
+    public BaseItemType setExplosionClipId(Integer explosionClipId) {
+        this.explosionClipId = explosionClipId;
         return this;
     }
 }

@@ -175,8 +175,15 @@ public class ActivityService {
         System.out.println("ActivityService.onSpawnSyncItem(): " + syncBaseItem);
     }
 
-    public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor) {
+    public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
         System.out.println("ActivityService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
+
+        if (target.getBaseItemType().getExplosionClipId() != null) {
+            clipService.ifPresent(effectService -> effectService.playClip(target.getSyncPhysicalArea().getPosition(), target.getBaseItemType().getExplosionClipId(), timeStamp));
+        } else {
+            logger.warning("No explosion ClipId configured for: " + target);
+        }
+
         questService.onSyncItemKilled(target, actor);
     }
 

@@ -133,8 +133,8 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    public void killSyncItem(SyncBaseItem target, SyncBaseItem actor) {
-        activityService.onKilledSyncBaseItem(target, actor);
+    public void killSyncItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
+        activityService.onKilledSyncBaseItem(target, actor, timeStamp);
         PlayerBase base = target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);

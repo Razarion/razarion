@@ -183,7 +183,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setI18Name(i18nHelper("Bulldozer Name"));
         baseItemType.setDescription(i18nHelper("Bulldozer Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        baseItemType.setBoxPickupRange(2);
+        baseItemType.setBoxPickupRange(2).setExplosionClipId(272485);
     }
 
     private void finalizeHarvester(BaseItemType baseItemType) {
@@ -192,7 +192,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setDescription(i18nHelper("Harvester Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
         baseItemType.setHarvesterType(new HarvesterType().setProgress(1).setRange(4).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
-        baseItemType.setBoxPickupRange(2);
+        baseItemType.setBoxPickupRange(2).setExplosionClipId(272485);
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
@@ -201,7 +201,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         attacker.setDescription(i18nHelper("Attacker Description"));
         attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
         attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)).setMuzzleFlashClipId(180836).setDetonationClipId(180842));
-        attacker.setBoxPickupRange(2);
+        attacker.setBoxPickupRange(2).setExplosionClipId(272485);
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {

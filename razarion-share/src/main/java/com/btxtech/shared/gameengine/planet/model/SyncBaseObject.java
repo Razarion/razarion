@@ -21,6 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
  * Date: 06.10.2010
  * Time: 12:08:57
  */
+@Deprecated
 public interface SyncBaseObject {
 
     PlayerBase getBase();

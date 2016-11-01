@@ -46,12 +46,12 @@ public abstract class RenderService {
         renderTasks.clear();
 
         addRenderTask(GroundRenderTask.class);
-        addRenderTask(SlopeRenderTask.class);
-        addRenderTask(TerrainObjectRenderTask.class);
+//        addRenderTask(SlopeRenderTask.class);
+//        addRenderTask(TerrainObjectRenderTask.class);
         addRenderTask(BaseItemRenderTask.class);
-        addRenderTask(ResourceItemRenderTask.class);
-        addRenderTask(BoxItemRenderTask.class);
-        addRenderTask(WaterRenderTask.class);
+//        addRenderTask(ResourceItemRenderTask.class);
+//        addRenderTask(BoxItemRenderTask.class);
+//        addRenderTask(WaterRenderTask.class);
         addRenderTask(ProjectileRenderTask.class);
         addRenderTask(ClipRenderTask.class);
         addRenderTask(BaseItemPlacerRenderTask.class);
