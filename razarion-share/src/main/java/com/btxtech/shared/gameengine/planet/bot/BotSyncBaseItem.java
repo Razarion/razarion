@@ -14,15 +14,13 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.datatypes.Region;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.CollisionService;
 import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -43,7 +41,7 @@ public class BotSyncBaseItem {
     @Inject
     private BaseItemService baseItemService;
     @Inject
-    private CollisionService collisionService;
+    private SyncItemContainerService syncItemContainerService;
     @Inject
     private CommandService commandService;
     private SyncBaseItem syncBaseItem;
@@ -130,9 +128,9 @@ public class BotSyncBaseItem {
         }
     }
 
-    public void move(Region region) {
+    public void move(PlaceConfig region) {
         try {
-            DecimalPosition position = collisionService.getFreeRandomPosition(syncBaseItem.getBaseItemType(), region, 0, false, false);
+            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), region);
             commandService.move(syncBaseItem, position);
             clearIdle();
         } catch (Exception e) {
@@ -176,7 +174,7 @@ public class BotSyncBaseItem {
     }
 
     public DecimalPosition getPosition() {
-        return syncBaseItem.getSyncItemArea().getPosition();
+        return syncBaseItem.getSyncPhysicalArea().getPosition().toXY();
     }
 
     private void setIdle() {

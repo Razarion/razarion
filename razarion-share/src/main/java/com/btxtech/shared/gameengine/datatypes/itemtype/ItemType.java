@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -35,8 +36,6 @@ public abstract class ItemType implements ObjectNameIdProvider {
     private SurfaceType adjoinSurfaceType;
     @Deprecated
     private BoundingBox boundingBox;
-    @Deprecated
-    private ItemTypeSpriteMap itemTypeSpriteMap;
     private Integer selectionSound;
     private Integer buildupSound;
     private Integer commandSound;
@@ -103,15 +102,6 @@ public abstract class ItemType implements ObjectNameIdProvider {
 
     public ItemType setAdjoinSurfaceType(SurfaceType adjoinSurfaceType) {
         this.adjoinSurfaceType = adjoinSurfaceType;
-        return this;
-    }
-
-    public ItemTypeSpriteMap getItemTypeSpriteMap() {
-        return itemTypeSpriteMap;
-    }
-
-    public ItemType setItemTypeSpriteMap(ItemTypeSpriteMap itemTypeSpriteMap) {
-        this.itemTypeSpriteMap = itemTypeSpriteMap;
         return this;
     }
 

@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
@@ -143,11 +144,11 @@ public class TerrainService {
         return groundMesh;
     }
 
-    public boolean overlap(DecimalPosition position, BaseItemType baseItemType) {
+    public boolean overlap(DecimalPosition position, double radius) {
         // Check in terrain objects
         SingleHolder<Boolean> result = new SingleHolder<>(false);
         terrainObjectConfigPositions.iterate((terrainObjectConfig, terrainObjectPosition) -> {
-            if (terrainObjectPosition.getPosition().getDistance(position) < terrainObjectConfig.getRadius() + baseItemType.getPhysicalAreaConfig().getRadius()) {
+            if (terrainObjectPosition.getPosition().getDistance(position) < terrainObjectConfig.getRadius() + radius) {
                 result.setO(true);
                 return true;
             } else {
@@ -159,7 +160,7 @@ public class TerrainService {
         }
         // Check in slopes
         for (Slope slope : slopeMap.values()) {
-            if (slope.isInSlope(position, baseItemType.getPhysicalAreaConfig().getRadius())) {
+            if (slope.isInSlope(position, radius)) {
                 return true;
             }
         }
@@ -168,7 +169,7 @@ public class TerrainService {
 
     public boolean overlap(Collection<DecimalPosition> positions, BaseItemType baseItemType) {
         for (DecimalPosition position : positions) {
-            if (overlap(position, baseItemType)) {
+            if (overlap(position, baseItemType.getPhysicalAreaConfig().getRadius())) {
                 return true;
             }
         }

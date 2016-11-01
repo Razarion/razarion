@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
-import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -140,7 +139,7 @@ public class BotRunner {
     }
 
     public boolean isInRealm(DecimalPosition position) {
-        return botConfig.getRealm().isInsideAbsolute(position);
+        return botConfig.getRealm().checkInside(position);
     }
 
     public void onBotItemKilled(SyncBaseItem syncBaseItem, PlayerBase actor) {

@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.Region;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -191,10 +191,10 @@ public class BaseItemService {
         return bases.containsKey(base.getBaseId());
     }
 
-    public Collection<SyncBaseItem> getEnemyItems(final PlayerBase playerBase, final Region region) {
+    public Collection<SyncBaseItem> getEnemyItems(final PlayerBase playerBase, final PlaceConfig region) {
         final Collection<SyncBaseItem> enemyItems = new ArrayList<>();
         syncItemContainerService.iterateOverItems(false, false, null, (ItemIteratorHandler<Void>) syncItem -> {
-            if (syncItem instanceof SyncBaseItem && ((SyncBaseItem) syncItem).isEnemy(playerBase) && (region == null || region.isInside(syncItem))) {
+            if (syncItem instanceof SyncBaseItem && ((SyncBaseItem) syncItem).isEnemy(playerBase) && (region == null || region.checkInside(syncItem))) {
                 enemyItems.add((SyncBaseItem) syncItem);
             }
             return null;

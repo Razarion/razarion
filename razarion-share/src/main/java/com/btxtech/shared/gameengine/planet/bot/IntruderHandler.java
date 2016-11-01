@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -41,14 +42,14 @@ public class IntruderHandler {
     private ExceptionHandler exceptionHandler;
     private Map<SyncBaseItem, BotSyncBaseItem> intruders = new HashMap<>();
     private BotEnragementState botEnragementState;
-    private Region region;
+    private PlaceConfig region;
 
-    public void init(BotEnragementState botEnragementState, Region region) {
+    public void init(BotEnragementState botEnragementState, PlaceConfig region) {
         this.botEnragementState = botEnragementState;
         this.region = region;
     }
 
-    public Region getRegion() {
+    public PlaceConfig getRegion() {
         return region;
     }
 
@@ -98,7 +99,7 @@ public class IntruderHandler {
     private void putAttackerToIntruder(BotSyncBaseItem attacker, SyncBaseItem intruder) {
         if (attacker != null) {
             try {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(); // TODO fix tutorials were attack is not expected -> make auto attack configurable
 //                AttackFormationItem attackFormationItem = planetServices.getCollisionService().getDestinationHint(attacker.getSyncBaseItem(),
 //                        attacker.getSyncBaseItem().getBaseItemType().getWeaponType().getRange(),
 //                        intruder.getSyncItemArea());

@@ -76,17 +76,20 @@ public class Scene {
         if (sceneConfig.getBotConfigs() != null) {
             botService.startBots(sceneConfig.getBotConfigs());
         }
-        if (sceneConfig.getBotMoveCommandConfigs() != null) {
-            botService.executeCommands(sceneConfig.getBotMoveCommandConfigs());
-        }
         if (sceneConfig.getResourceItemTypePositions() != null) {
             resourceService.createResources(sceneConfig.getResourceItemTypePositions());
+        }
+        if (sceneConfig.getBotMoveCommandConfigs() != null) {
+            botService.executeCommands(sceneConfig.getBotMoveCommandConfigs());
         }
         if (sceneConfig.getBotHarvestCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotHarvestCommandConfigs());
         }
         if (sceneConfig.getBotAttackCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotAttackCommandConfigs());
+        }
+        if (sceneConfig.getBotKillOtherBotCommandConfigs() != null) {
+            botService.executeCommands(sceneConfig.getBotKillOtherBotCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig());

@@ -1,11 +1,14 @@
 package com.btxtech.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
@@ -87,14 +90,14 @@ public class ScenarioService implements QuestListener {
     @Inject
     private QuestService questService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 40;
+    private int number = 42;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
     static {
         int itemId = 0;
         BaseItemType simpleMovable = new BaseItemType();
-        simpleMovable.setHealth(1000).setSpawnDurationMillis(1000);
+        simpleMovable.setHealth(100).setSpawnDurationMillis(1000);
         simpleMovable.setId(++itemId);
         simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         SIMPLE_MOVABLE_ITEM_TYPE = simpleMovable;
@@ -798,7 +801,39 @@ public class ScenarioService implements QuestListener {
                 return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
             }
         });
+        // BotKillOtherBotCommandConfig
+        // 42
+        scenes.add(new ScenarioProvider() {
+            @Override
+            public void setupBots(Collection<BotConfig> botConfigs) {
+                // Target bot
+                List<BotEnragementStateConfig> targetEnragementStates = new ArrayList<>();
+                List<BotItemConfig> targetItems = new ArrayList<>();
+                targetItems.add(new BotItemConfig().setBaseItemTypeId(HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(20, 20))).setNoSpawn(true).setNoRebuild(true));
+                targetItems.add(new BotItemConfig().setBaseItemTypeId(HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(20, 25))).setNoSpawn(true).setNoRebuild(true));
+                targetItems.add(new BotItemConfig().setBaseItemTypeId(HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(25, 20))).setNoSpawn(true).setNoRebuild(true));
+                targetItems.add(new BotItemConfig().setBaseItemTypeId(HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(25, 25))).setNoSpawn(true).setNoRebuild(true));
+                targetItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(30, 30))).setNoSpawn(true).setNoRebuild(true));
+                targetItems.add(new BotItemConfig().setBaseItemTypeId(SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(30, 35))).setNoSpawn(true).setNoRebuild(true));
+                targetItems.add(new BotItemConfig().setBaseItemTypeId(ATTACKER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(35, 30))).setNoSpawn(true).setNoRebuild(true));
+                targetItems.add(new BotItemConfig().setBaseItemTypeId(ATTACKER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(35, 35))).setNoSpawn(true).setNoRebuild(true));
+                targetEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(targetItems));
+                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(targetEnragementStates).setName("Kenny").setNpc(true));
+                // Attacker bot
+                List<BotEnragementStateConfig> attackerEnragementStates = new ArrayList<>();
+                List<BotItemConfig> attackerItems = new ArrayList<>();
+                attackerItems.add(new BotItemConfig().setBaseItemTypeId(ATTACKER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setNoSpawn(true).setNoRebuild(true));
+                attackerEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(attackerItems));
+                botConfigs.add(new BotConfig().setId(2).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
+            }
 
+            @Override
+            public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
+                BotKillOtherBotCommandConfig commandConfig = new BotKillOtherBotCommandConfig().setBotId(2).setTargetBotId(1).setAttackerBaseItemTypeId(ATTACKER_ITEM_TYPE.getId());
+                commandConfig.setDominanceFactor(2).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(0,0, 15,15).toPolygon()));
+                botCommandConfigs.add(commandConfig);
+            }
+        });
     }
 
     @Override

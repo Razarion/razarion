@@ -85,9 +85,8 @@ public class PlayerBase {
     }
 
     public Collection<SyncBaseItem> getItemsInPlace(PlaceConfig placeConfig) {
-        return items.stream().filter(item -> item.getSyncPhysicalArea().contains(placeConfig)).collect(Collectors.toCollection(ArrayList::new));
+        return items.stream().filter(placeConfig::checkInside).collect(Collectors.toCollection(ArrayList::new));
     }
-
 
     public int getUsedHouseSpace() {
         return usedHouseSpace;

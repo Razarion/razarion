@@ -47,14 +47,6 @@ public class CollisionService {
     // TODO @Deprecated
     // TODO Index getFreeRandomPosition(ItemType itemType, Rectangle region, int itemFreeRange, boolean botFree, boolean ignoreMovable);
 
-    public DecimalPosition getFreeRandomPosition(ItemType itemType, Region region, int itemFreeRange, boolean botFree, boolean ignoreMovable) {
-        throw new UnsupportedOperationException();
-    }
-
-    public DecimalPosition getFreeRandomPosition(ItemType itemType, Polygon2D region, int itemFreeRange, boolean botFree, boolean ignoreMovable) {
-        throw new UnsupportedOperationException();
-    }
-
     public boolean checkIfPathValid(Path path) {
         throw new UnsupportedOperationException();
     }

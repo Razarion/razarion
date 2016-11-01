@@ -39,9 +39,6 @@ public abstract class SyncItem {
     private SyncPhysicalArea syncPhysicalArea;
     @Deprecated
     private SyncItemArea syncItemArea;
-    // Sync states
-    @Deprecated
-    private boolean explode = false;
 
     public void init(int id, ItemType itemType, SyncPhysicalArea syncPhysicalArea) {
         this.id = id;
@@ -63,7 +60,6 @@ public abstract class SyncItem {
         syncItemArea.fillSyncItemInfo(syncItemInfo);
         syncItemInfo.setItemTypeId(itemType.getId());
         syncItemInfo.setAlive(isAlive());
-        syncItemInfo.setExplode(explode);
         return syncItemInfo;
     }
 
@@ -85,10 +81,6 @@ public abstract class SyncItem {
 
     public TerrainType getTerrainType() {
         return itemType.getTerrainType();
-    }
-
-    public void setExplode(boolean explode) {
-        this.explode = explode;
     }
 
     public SyncPhysicalArea getSyncPhysicalArea() {

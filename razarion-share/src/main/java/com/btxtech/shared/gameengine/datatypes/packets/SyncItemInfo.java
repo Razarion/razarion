@@ -53,7 +53,6 @@ public class SyncItemInfo extends Packet {
     private Integer targetContainer;
     private Integer containedIn;
     private DecimalPosition unloadPos;
-    private boolean explode;
     private Index targetPosition;
     private Double destinationAngel;
     private Long clientTimeStamp;
@@ -252,14 +251,6 @@ public class SyncItemInfo extends Packet {
         this.unloadPos = unloadPos;
     }
 
-    public boolean isExplode() {
-        return explode;
-    }
-
-    public void setExplode(boolean explode) {
-        this.explode = explode;
-    }
-
     public double getBuildup() {
         return buildup;
     }
@@ -332,7 +323,6 @@ public class SyncItemInfo extends Packet {
                 " pos:" + position +
                 " itemTypeId:" + itemTypeId +
                 " isAlive:" + isAlive +
-                " explode:" + explode +
                 base +
                 " pathToDestination:" + pathToDestination +
                 " angel:" + angel +

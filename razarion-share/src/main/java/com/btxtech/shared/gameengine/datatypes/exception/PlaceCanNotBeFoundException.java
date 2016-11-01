@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.datatypes.exception;
 
 
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.gameengine.datatypes.Region;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 
 /**
@@ -18,7 +18,7 @@ public class PlaceCanNotBeFoundException extends RuntimeException {
         super("Can not find free position. itemType: " + itemType + " region: " + region + " itemFreeRange: " + itemFreeRange);
     }
 
-    public PlaceCanNotBeFoundException(ItemType itemType, Region region, int itemFreeRange) {
-        super("Can not find free position. itemType: " + itemType + " region Id: " + region.getId() + " itemFreeRange: " + itemFreeRange);
+    public PlaceCanNotBeFoundException(double radius, PlaceConfig placeConfig) {
+        super("Can not find free position. radius: " + radius + " region Id: " + placeConfig);
     }
 }

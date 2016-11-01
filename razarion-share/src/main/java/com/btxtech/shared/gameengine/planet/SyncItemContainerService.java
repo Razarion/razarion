@@ -1,13 +1,16 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
+import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -16,6 +19,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -34,11 +39,14 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class SyncItemContainerService {
+    private static final int MAX_TRIES = 10000;
     private Logger logger = Logger.getLogger(SyncItemContainerService.class.getName());
     private int lastItemId = 0;
     private final HashMap<Integer, SyncItem> items = new HashMap<>();
     @Inject
     private Instance<SyncItem> instance;
+    @Inject
+    private TerrainService terrainService; // May combine terrain-service with sync-item-container-service
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         items.clear();
@@ -198,19 +206,6 @@ public class SyncItemContainerService {
         }
     }
 
-    public boolean hasItemsInRange(DecimalPosition position, double radius) {
-        return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncPhysicalArea().overlap(position, radius));
-    }
-
-    public boolean hasItemsInRange(Collection<DecimalPosition> positions, double radius) {
-        for (DecimalPosition position : positions) {
-            if(hasItemsInRange(position ,radius)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public SyncItem getSyncItem(int id) {
         SyncItem syncItem = items.get(id);
         if (syncItem != null) {
@@ -222,6 +217,19 @@ public class SyncItemContainerService {
 
     public SyncBaseItem getSyncBaseItems(int id) {
         return (SyncBaseItem) getSyncItem(id);
+    }
+
+    public boolean hasItemsInRange(DecimalPosition position, double radius) {
+        return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncPhysicalArea().overlap(position, radius));
+    }
+
+    public boolean hasItemsInRange(Collection<DecimalPosition> positions, double radius) {
+        for (DecimalPosition position : positions) {
+            if (hasItemsInRange(position, radius)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public SyncItem findItemAtPosition(DecimalPosition position) {
@@ -240,11 +248,11 @@ public class SyncItemContainerService {
             if (syncBaseItem.getItemType().getId() != baseItemTypeId) {
                 return null;
             }
-            if(!playerBase.isEnemy(syncBaseItem.getBase())) {
+            if (!playerBase.isEnemy(syncBaseItem.getBase())) {
                 return null;
             }
             System.out.println(syncBaseItem.getSyncPhysicalArea().getPosition());
-            if (syncBaseItem.getSyncPhysicalArea().contains(resourceSelection)) {
+            if (resourceSelection.checkInside(syncBaseItem)) {
                 result.add(syncBaseItem);
             }
             return null;
@@ -263,13 +271,38 @@ public class SyncItemContainerService {
         return result;
     }
 
+    public DecimalPosition getFreeRandomPosition(double radius, PlaceConfig placeConfig) {
+        Polygon2D polygon = placeConfig.getPolygon2D();
+        if (polygon == null) {
+            throw new IllegalArgumentException("To find a random place, a polygon must be set");
+        }
+
+        Rectangle2D aabb = polygon.toAabb();
+        Random random = new Random();
+        for (int i = 0; i < MAX_TRIES; i++) {
+            double width = random.nextDouble() * aabb.width();
+            double height = random.nextDouble() * aabb.height();
+            DecimalPosition possiblePosition = aabb.getStart().add(width, height);
+
+            if (terrainService.overlap(possiblePosition, radius)) {
+                continue;
+            }
+
+            if (hasItemsInRange(possiblePosition, radius)) {
+                continue;
+            }
+            return possiblePosition;
+        }
+        throw new PlaceCanNotBeFoundException(radius, placeConfig);
+    }
+
     public Collection<SyncResourceItem> findResourceItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {
         Collection<SyncResourceItem> result = new ArrayList<>();
         iterateOverResourceItems(false, null, null, syncResourceItem -> {
             if (syncResourceItem.getItemType().getId() != resourceItemTypeId) {
                 return null;
             }
-            if (syncResourceItem.getSyncPhysicalArea().contains(resourceSelection)) {
+            if (resourceSelection.checkInside(syncResourceItem)) {
                 result.add(syncResourceItem);
             }
             return null;

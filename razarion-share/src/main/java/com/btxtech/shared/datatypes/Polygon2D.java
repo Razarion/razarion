@@ -163,6 +163,13 @@ public class Polygon2D {
         throw new UnsupportedOperationException();
     }
 
+    public Rectangle2D toAabb() {
+        DecimalPosition[] array = corners.toArray(new DecimalPosition[corners.size()]);
+        DecimalPosition smallest = DecimalPosition.getSmallestAabb(array);
+        DecimalPosition biggest = DecimalPosition.getBiggestAabb(array);
+        return new Rectangle2D(smallest, biggest);
+    }
+
     @Override
     public String toString() {
         return "Polygon2D{" +

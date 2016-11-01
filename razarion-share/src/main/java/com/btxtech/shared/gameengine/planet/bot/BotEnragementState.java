@@ -4,6 +4,7 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.Region;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -37,12 +38,12 @@ public class BotEnragementState {
     private BotEnragementStateConfig currentBotEnragementStateConfig;
     private boolean isEnragementActive;
     private BotItemContainer botItemContainer;
-    private Region realm;
+    private PlaceConfig realm;
     private String botName;
     private Map<PlayerBase, Integer> killsPerBase = new HashMap<>();
     private Listener listener;
 
-    public void init(List<BotEnragementStateConfig> botEnragementStateConfigs, Region realm, String botName, Listener listener) {
+    public void init(List<BotEnragementStateConfig> botEnragementStateConfigs, PlaceConfig realm, String botName, Listener listener) {
         this.botEnragementStateConfigs = botEnragementStateConfigs;
         this.realm = realm;
         this.botName = botName;

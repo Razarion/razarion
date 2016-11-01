@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 
 import com.btxtech.shared.gameengine.datatypes.Region;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class BotConfig {
     private int id;
     private boolean npc;
     private int actionDelay;
-    private Region realm;
+    private PlaceConfig realm;
     private String name;
     private Long minInactiveMs;
     private Long maxInactiveMs;
@@ -37,7 +38,7 @@ public class BotConfig {
         return this;
     }
 
-    public BotConfig setRealm(Region realm) {
+    public BotConfig setRealm(PlaceConfig realm) {
         this.realm = realm;
         return this;
     }
@@ -84,7 +85,7 @@ public class BotConfig {
         return actionDelay;
     }
 
-    public Region getRealm() {
+    public PlaceConfig getRealm() {
         return realm;
     }
 

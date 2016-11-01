@@ -147,7 +147,7 @@ public class ItemTypePositionComparison extends AbstractSyncItemComparison /*imp
     }
 
     private boolean checkRegion(SyncBaseItem syncBaseItem) {
-        return placeConfig == null || syncBaseItem.getSyncPhysicalArea().contains(placeConfig);
+        return placeConfig == null || placeConfig.checkInside(syncBaseItem);
     }
 
     private boolean areItemsComplete() {

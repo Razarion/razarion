@@ -17,10 +17,10 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -29,7 +29,6 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.CollisionService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -42,6 +41,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,15 +54,15 @@ import java.util.logging.Logger;
 @Dependent
 public class BotItemContainer {
     private static final int KILL_ITERATION_MAXIMUM = 100;
-    private Logger logger = Logger.getLogger(BotItemContainer.class.getName());
+    // private Logger logger = Logger.getLogger(BotItemContainer.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private BaseItemService baseItemService;
     @Inject
-    private CollisionService collisionService;
-    @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private BotService botService;
     @Inject
     private Instance<BotSyncBaseItem> baseItemInstance;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -72,10 +72,10 @@ public class BotItemContainer {
     private Need need;
     private Logger log = Logger.getLogger(BotItemContainer.class.getName());
     private String botName;
-    private Region realm;
+    private PlaceConfig realm;
     private CurrentItemBuildup currentItemBuildup = new CurrentItemBuildup();
 
-    public void init(Collection<BotItemConfig> botItems, Region realm, String botName) {
+    public void init(Collection<BotItemConfig> botItems, PlaceConfig realm, String botName) {
         this.realm = realm;
         this.botName = botName;
         need = new Need(botItems);
@@ -218,9 +218,9 @@ public class BotItemContainer {
 
     private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt) {
         if (placeConfig == null) {
-            return collisionService.getFreeRandomPosition(toBeBuilt, realm, 0, false, true);
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getRadius(), realm);
         } else if (placeConfig.getPolygon2D() != null) {
-            return collisionService.getFreeRandomPosition(toBeBuilt, placeConfig.getPolygon2D(), 0, false, true);
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getRadius(), placeConfig);
         } else if (placeConfig.getPosition() != null) {
             return placeConfig.getPosition();
         } else {
@@ -247,7 +247,7 @@ public class BotItemContainer {
                 }
 
                 BotItemConfig botItemConfig = botSyncBaseItem.getBotItemConfig();
-                if (botItemConfig.isMoveRealmIfIdle() && botSyncBaseItem.canMove() && !realm.isInsideAbsolute(botSyncBaseItem.getPosition())) {
+                if (botItemConfig.isMoveRealmIfIdle() && botSyncBaseItem.canMove() && !realm.checkInside(botSyncBaseItem.getPosition())) {
                     botSyncBaseItem.move(realm);
                 } else if (botItemConfig.getIdleTtl() != null && botSyncBaseItem.getIdleTimeStamp() + botItemConfig.getIdleTtl() < System.currentTimeMillis()) {
                     botSyncBaseItem.kill();
@@ -285,6 +285,8 @@ public class BotItemContainer {
             handleHarvestCommand((BotHarvestCommandConfig) botCommandConfig);
         } else if (botCommandConfig instanceof BotAttackCommandConfig) {
             handleAttackCommand((BotAttackCommandConfig) botCommandConfig, base);
+        } else if (botCommandConfig instanceof BotKillOtherBotCommandConfig) {
+            handleKillOtherBotCommand((BotKillOtherBotCommandConfig) botCommandConfig, base);
         } else {
             throw new IllegalArgumentException("Unknown bot command: " + botCommandConfig);
         }
@@ -331,6 +333,37 @@ public class BotItemContainer {
         }
         for (Map.Entry<BotSyncBaseItem, SyncBaseItem> entry : assignedAttacker.entrySet()) {
             entry.getKey().attack(entry.getValue());
+        }
+    }
+
+    private void handleKillOtherBotCommand(BotKillOtherBotCommandConfig botKillOtherBotCommandConfig, PlayerBase base) {
+        PlayerBase targetBase = botService.getBotRunner(botKillOtherBotCommandConfig.getTargetBotId()).getBase();
+        Collection<SyncBaseItem> targets = targetBase.getItems();
+
+        for (int i = 0; i < targets.size() * botKillOtherBotCommandConfig.getDominanceFactor(); i++) {
+            BotItemConfig botItemConfig = new BotItemConfig();
+            botItemConfig.setBaseItemTypeId(botKillOtherBotCommandConfig.getAttackerBaseItemTypeId()).setNoRebuild(true).setCreateDirectly(true).setNoSpawn(true).setPlace(botKillOtherBotCommandConfig.getSpawnPoint());
+            try {
+                createItem(botItemConfig, base);
+            } catch (ItemLimitExceededException | HouseSpaceExceededException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        List<BotSyncBaseItem> attacker = new ArrayList<>(getBotSyncBaseItem(botKillOtherBotCommandConfig.getAttackerBaseItemTypeId()));
+        if (attacker.size() < botKillOtherBotCommandConfig.getDominanceFactor() * targets.size()) {
+            throw new IllegalArgumentException("Can not execute BotKillOtherBotCommandConfig. Not enough BotSyncBaseItem found for baseItemTypeId: " + botKillOtherBotCommandConfig.getAttackerBaseItemTypeId() + " needed: " + (botKillOtherBotCommandConfig.getDominanceFactor() * targets.size()) + " available: " + attacker.size() + ". Command: " + botKillOtherBotCommandConfig);
+        }
+
+        for (int i = 0; i < botKillOtherBotCommandConfig.getDominanceFactor(); i++) {
+            Collection<BotSyncBaseItem> selectedAttacker = attacker.subList(i * targets.size(), (i + 1) * targets.size());
+            Map<BotSyncBaseItem, SyncBaseItem> assignedAttacker = ShortestWaySorter.setupAttackerTarget(selectedAttacker, targets, BotSyncBaseItem::isAbleToAttack);
+            if (assignedAttacker.isEmpty()) {
+                throw new IllegalArgumentException("Can not execute BotKillOtherBotCommandConfig. Can not assign attacker to target. Command: " + botKillOtherBotCommandConfig);
+            }
+            for (Map.Entry<BotSyncBaseItem, SyncBaseItem> entry : assignedAttacker.entrySet()) {
+                entry.getKey().attack(entry.getValue());
+            }
         }
     }
 

@@ -15,6 +15,7 @@ package com.btxtech.shared.datatypes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: beat
@@ -115,13 +116,17 @@ public class Rectangle2D {
         return squaredCornerDistance <= Math.pow(radius, 2.0);
     }
 
-    public Collection<DecimalPosition> toCorners() {
-        Collection<DecimalPosition> corners = new ArrayList<>();
+    public List<DecimalPosition> toCorners() {
+        List<DecimalPosition> corners = new ArrayList<>();
         corners.add(start);
         corners.add(start.add(width(), 0));
         corners.add(end);
         corners.add(end.sub(width(), 0));
         return corners;
+    }
+
+    public Polygon2D toPolygon() {
+        return new Polygon2D(toCorners());
     }
 
     @Override

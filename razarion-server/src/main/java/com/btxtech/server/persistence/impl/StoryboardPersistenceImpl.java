@@ -17,6 +17,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.CameraConfig;
@@ -115,7 +116,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -249,6 +251,26 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<String, String> localizedStrings = new HashMap<>();
         localizedStrings.put(I18nString.DEFAULT, text);
         return new I18nString(localizedStrings);
+    }
+
+    // Kill enemy bot base -----------------------------------------------------------------------------
+    private List<SceneConfig> kilEnemyBotBase() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        addNpcBot(sceneConfigs);
+        // Setup killer bot
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(235, 170))).setNoSpawn(true).setNoRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        // Kill bot command
+        List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigss = new ArrayList<>();
+        botKillOtherBotCommandConfigss.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50,50).toPolygon())));
+        // Camera
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigss));
+        return sceneConfigs;
     }
 
     // Kill enemy harvester -----------------------------------------------------------------------------

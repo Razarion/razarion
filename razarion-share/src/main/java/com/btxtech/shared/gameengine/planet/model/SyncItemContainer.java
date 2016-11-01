@@ -221,7 +221,7 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     private boolean allowedUnload(DecimalPosition position, int containedItem) throws ItemDoesNotExistException {
-        return isInUnloadRange(position) && !terrainService.overlap(position, baseItemService.getItem(containedItem).getBaseItemType());
+        return isInUnloadRange(position) && !terrainService.overlap(position, baseItemService.getItem(containedItem).getBaseItemType().getPhysicalAreaConfig().getRadius());
     }
 
     private boolean isInUnloadRange(DecimalPosition unloadPos) {
