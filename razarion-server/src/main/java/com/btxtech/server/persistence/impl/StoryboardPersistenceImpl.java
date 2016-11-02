@@ -119,7 +119,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -256,6 +257,21 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     // Kill human base -----------------------------------------------------------------------------
+    private List<SceneConfig> buildBase() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // User Spawn
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100,100).toPolygon());
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        // Build factory Quest
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(buildupItemTypeCount));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+
+        return sceneConfigs;
+    }
+
+    // Kill human base -----------------------------------------------------------------------------
     private List<SceneConfig> kilHumanBase() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
@@ -274,7 +290,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         // Kill bot command
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
-        botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50,50).toPolygon())));
+        botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50, 50).toPolygon())));
         // Camera
         sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs).setBotKillHumanCommandConfigs(botKillHumanCommandConfigs));
         return sceneConfigs;
@@ -293,7 +309,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         // Kill bot command
         List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigss = new ArrayList<>();
-        botKillOtherBotCommandConfigss.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50,50).toPolygon())));
+        botKillOtherBotCommandConfigss.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50, 50).toPolygon())));
         // Camera
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigss));
@@ -329,7 +345,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> killItemTypeCount = new HashMap<>();
         killItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
         sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true).setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs).setResourceItemTypePositions(resourceItemTypePositions).setStartPointPlacerConfig(baseItemPlacerConfig));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setConditionConfig( new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(killItemTypeCount))).setTitle("Kill").setDescription("Kill 2")).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(killItemTypeCount))).setTitle("Kill").setDescription("Kill 2")).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 
