@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
@@ -105,8 +105,16 @@ public class SyncPhysicalArea {
         return getDistance(target) < range;
     }
 
+    public boolean isInRange(double range, DecimalPosition position, BaseItemType baseItemType) {
+        return getDistance(position, baseItemType.getPhysicalAreaConfig().getRadius()) < range;
+    }
+
     public double getDistance(SyncPhysicalArea syncPhysicalArea) {
-        return getXYPosition().getDistance(syncPhysicalArea.getXYPosition()) - radius - syncPhysicalArea.radius;
+        return getDistance(syncPhysicalArea.getXYPosition(), syncPhysicalArea.getRadius());
+    }
+
+    public double getDistance(DecimalPosition position, double radius) {
+        return getXYPosition().getDistance(position) - this.radius - radius;
     }
 
     public double getDistance(SyncItem other) {

@@ -203,7 +203,7 @@ public class Group {
 
     public boolean atLeastOneItemTypeAllowed2FinalizeBuild(SyncBaseItem tobeFinalized) {
         for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.hasSyncBuilder() && syncBaseItem.getSyncBuilder().getBuilderType().isAbleToBuild(tobeFinalized.getItemType().getId())) {
+            if (syncBaseItem.hasSyncBuilder() && syncBaseItem.getSyncBuilder().getBuilderType().checkAbleToBuild(tobeFinalized.getItemType().getId())) {
                 return true;
             }
         }

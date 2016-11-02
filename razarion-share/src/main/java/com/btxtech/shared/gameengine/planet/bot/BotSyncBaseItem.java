@@ -73,7 +73,7 @@ public class BotSyncBaseItem {
 
     public boolean isAbleToBuild(BaseItemType toBeBuilt) {
         return syncBaseItem.hasSyncFactory() && syncBaseItem.getSyncFactory().getFactoryType().isAbleToBuild(toBeBuilt.getId())
-                || syncBaseItem.hasSyncBuilder() && syncBaseItem.getSyncBuilder().getBuilderType().isAbleToBuild(toBeBuilt.getId());
+                || syncBaseItem.hasSyncBuilder() && syncBaseItem.getSyncBuilder().getBuilderType().checkAbleToBuild(toBeBuilt.getId());
     }
 
     public boolean isAbleToAttack(SyncBaseItem target) {

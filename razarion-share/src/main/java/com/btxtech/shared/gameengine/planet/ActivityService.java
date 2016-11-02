@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -20,6 +21,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -47,17 +49,17 @@ public class ActivityService {
     public void onInsufficientFundsException(InsufficientFundsException e) {
         // TODO connectionService.sendSyncInfo(syncItem);
         // TODO baseService.sendAccountBaseUpdate(syncItem);
-        e.printStackTrace();
+        logger.log(Level.SEVERE, "ActivityService.onInsufficientFundsException() ", e);
     }
 
     public void onPathCanNotBeFoundException(PathCanNotBeFoundException e) {
         // TODO connectionService.sendSyncInfo(syncItem);
-        e.printStackTrace();
+        logger.log(Level.SEVERE, "ActivityService.onPathCanNotBeFoundException() ", e);
     }
 
     public void onItemDoesNotExistException(ItemDoesNotExistException e) {
         // TODO connectionService.sendSyncInfo(syncItem);
-        e.printStackTrace();
+        logger.log(Level.SEVERE, "ActivityService.onItemDoesNotExistException() ", e);
     }
 
     public void onPositionTakenException(PositionTakenException e) {
@@ -106,12 +108,12 @@ public class ActivityService {
         System.out.println("ActivityService.onBaseRemoved(). base: " + playerBase);
     }
 
-    public void onSyncBaseItemCreatedBy(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
-        System.out.println("ActivityService.onSyncBaseItemCreatedBy(): " + createdBy + " " + syncBaseItem);
+    public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onStartBuildingSyncBaseItem(): " + createdBy + " " + syncBaseItem);
     }
 
     public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
-        System.out.println("ActivityService.onSynBuilderStopped(): " + syncBaseItem + " " + currentBuildup);
+        System.out.println("ActivityService.onSynBuilderStopped(): " + syncBaseItem + " currentBuildup: " + currentBuildup);
     }
 
     public void onSyncItemUnloaded(SyncBaseItem syncItem) {
@@ -125,10 +127,6 @@ public class ActivityService {
         // TODO connectionService.sendSyncInfo(syncItem);
     }
 
-    public void onSyncBuilderProgress(SyncBaseItem syncBaseItem) {
-        System.out.println("ActivityService.onSyncBuilderProgress(): " + syncBaseItem);
-    }
-
     public void onSyncBuilderStopped(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onSyncBuilderStopped(): " + syncBaseItem);
     }
@@ -139,6 +137,7 @@ public class ActivityService {
 
     public void onBuildup(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onBuildup(): " + syncBaseItem);
+        questService.onSyncItemBuilt(syncBaseItem);
     }
 
     public void onAttacked(SyncBaseItem target, SyncBaseItem actor, double damage) {
@@ -175,6 +174,11 @@ public class ActivityService {
         System.out.println("ActivityService.onSpawnSyncItem(): " + syncBaseItem);
     }
 
+    public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncBaseItem);
+        questService.onSyncItemBuilt(syncBaseItem);
+    }
+
     public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
         System.out.println("ActivityService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
 
@@ -189,11 +193,6 @@ public class ActivityService {
 
     public void onSyncBaseItemRemoved(SyncBaseItem target) {
         System.out.println("ActivityService.onSyncBaseItemRemoved(). target: " + target);
-    }
-
-    public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
-        System.out.println("ActivityService.onSpawnSyncItemFinished(): " + syncBaseItem);
-        questService.onSyncItemBuilt(syncBaseItem);
     }
 
     // TODO when to call?
@@ -229,5 +228,17 @@ public class ActivityService {
             modalDialogManager.showBoxPicked(boxContent);
         }
         questService.onSyncBoxItemPicked(picker);
+    }
+
+    public void onItemLimitExceededExceptionBuilder(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onItemLimitExceededExceptionBuilder(): " + syncBaseItem);
+    }
+
+    public void onHouseSpaceExceededExceptionBuilder(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onHouseSpaceExceededExceptionBuilder(): " + syncBaseItem);
+    }
+
+    public void onBuildingSyncItem(SyncBaseItem syncBaseItem, BaseItemType toBeBuilt) {
+        System.out.println("ActivityService.onBuildingSyncItem(): " + syncBaseItem + " toBeBuilt: " + toBeBuilt);
     }
 }

@@ -83,13 +83,11 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private Integer containedIn;
     private boolean isMoneyEarningOrConsuming = false;
     private PlayerBase killedBy;
-    private ItemLifecycle itemLifecycle;
     private double spawnProgress;
     private SyncBoxItem syncBoxItemToPick;
 
-    public void setup(PlayerBase base, ItemLifecycle itemLifecycle) throws NoSuchItemTypeException {
+    public void setup(PlayerBase base) throws NoSuchItemTypeException {
         this.base = base;
-        this.itemLifecycle = itemLifecycle;
 
         BaseItemType baseItemType = getBaseItemType();
         health = baseItemType.getHealth();
@@ -162,10 +160,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         } else {
             syncHouse = null;
         }
-    }
-
-    public ItemLifecycle getItemLifecycle() {
-        return itemLifecycle;
     }
 
     private void checkBase(PlayerBase syncBase) {
@@ -270,7 +264,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     public boolean isIdle() {
-        return isBuildup() && itemLifecycle == ItemLifecycle.ALIVE && !getSyncPhysicalArea().hasDestination() && !isAbilityActive() && syncBoxItemToPick == null;
+        return isBuildup() && !isSpawning() && !getSyncPhysicalArea().hasDestination() && !isAbilityActive() && syncBoxItemToPick == null;
     }
 
     private boolean isAbilityActive() {
@@ -282,11 +276,11 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     @Override
     public boolean tick(long timeStamp) throws ItemDoesNotExistException, NoSuchItemTypeException {
-        if (itemLifecycle == ItemLifecycle.SPAWN) {
+        if (isSpawning()) {
             spawnProgress += PlanetService.TICK_FACTOR / (getBaseItemType().getSpawnDurationMillis() / 1000.0);
             if (spawnProgress >= 1.0) {
                 spawnProgress = 1.0;
-                itemLifecycle = ItemLifecycle.ALIVE;
+                handleIfItemBecomesReady();
                 activityService.onSpawnSyncItemFinished(this);
             } else {
                 return true;
@@ -566,23 +560,35 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return Math.min(1.0, health / (double) getBaseItemType().getHealth());
     }
 
-    public void addBuildup(double buildup) {
-        setBuildup(this.buildup + buildup);
+    public void addBuildup(double deltaBuildup) {
+        double newBuildup = buildup + deltaBuildup;
+        if (buildup < 1.0 && newBuildup >= 1.0) {
+            setBuildup(newBuildup);
+            handleIfItemBecomesReady();
+        } else {
+            setBuildup(newBuildup);
+        }
     }
 
     public void setBuildup(double buildup) {
         if (buildup > 1.0) {
-            buildup = 1.0;
+            this.buildup = 1.0;
+        } else if (buildup < 0.0) {
+            this.buildup = 0.0;
+        } else {
+            this.buildup = buildup;
         }
-        if (this.buildup == buildup) {
+    }
+
+    public void handleIfItemBecomesReady() {
+        if (isSpawning() || !isBuildup()) {
             return;
         }
-        this.buildup = buildup;
         if (syncConsumer != null) {
-            syncConsumer.setConsuming(buildup >= 1.0);
+            syncConsumer.setConsuming(true);
         }
         if (syncGenerator != null) {
-            syncGenerator.setGenerating(buildup >= 1.0);
+            syncGenerator.setGenerating(true);
         }
         activityService.onBuildup(this);
     }
@@ -695,6 +701,16 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     public void setSpawnProgress(double spawnProgress) {
-        this.spawnProgress = spawnProgress;
+        if (spawnProgress > 1.0) {
+            this.spawnProgress = 1.0;
+        } else if (spawnProgress < 0.0) {
+            this.spawnProgress = 0.0;
+        } else {
+            this.spawnProgress = spawnProgress;
+        }
+    }
+
+    public boolean isSpawning() {
+        return spawnProgress < 1.0;
     }
 }

@@ -113,6 +113,14 @@ public class PlayerBase {
         this.resources += resources;
     }
 
+    public boolean withdrawalResource(double amount) {
+        if(amount > resources) {
+            return false;
+        }
+        resources -= amount;
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

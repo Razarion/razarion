@@ -33,6 +33,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -67,6 +68,8 @@ public class ScenarioService implements QuestListener {
     private static final BaseItemType SIMPLE_FIX_ITEM_TYPE;
     private static final BaseItemType HARVESTER_ITEM_TYPE;
     private static final BaseItemType ATTACKER_ITEM_TYPE;
+    private static final BaseItemType BUILDER_ITEM_TYPE;
+    private static final BaseItemType FACTORY_ITEM_TYPE;
     private static final ResourceItemType RESOURCE_ITEM_TYPE;
     private static final BoxItemType BOX_ITEM_TYPE;
     private static final InventoryItem INVENTORY_ITEM;
@@ -90,37 +93,50 @@ public class ScenarioService implements QuestListener {
     @Inject
     private QuestService questService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 43;
+    private int number = 44;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
     static {
         int itemId = 0;
         BaseItemType simpleMovable = new BaseItemType();
-        simpleMovable.setHealth(100).setSpawnDurationMillis(1000);
+        simpleMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Movable");;
         simpleMovable.setId(++itemId);
         simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         SIMPLE_MOVABLE_ITEM_TYPE = simpleMovable;
 
         BaseItemType simpleFix = new BaseItemType();
-        simpleFix.setHealth(100).setSpawnDurationMillis(1000);
+        simpleFix.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Fix");
         simpleFix.setId(++itemId);
         simpleFix.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(2));
         SIMPLE_FIX_ITEM_TYPE = simpleFix;
 
         BaseItemType harvester = new BaseItemType();
-        harvester.setHealth(100).setSpawnDurationMillis(1000);
+        harvester.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Harvester");;
         harvester.setId(++itemId);
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
         HARVESTER_ITEM_TYPE = harvester;
 
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5);
+        attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(10).setName("Attacker");;
         attacker.setId(++itemId);
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         attacker.setWeaponType(new WeaponType().setMuzzlePosition(new Vertex(2, 0, 1)).setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1));
         ATTACKER_ITEM_TYPE = attacker;
+
+        BaseItemType factory = new BaseItemType();
+        factory.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(10).setName("Factory");;
+        factory.setId(++itemId);
+        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        FACTORY_ITEM_TYPE = factory;
+
+        BaseItemType builder = new BaseItemType();
+        builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(10).setName("Builder");
+        builder.setId(++itemId);
+        builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        builder.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuild(Collections.singletonList(FACTORY_ITEM_TYPE.getId())));
+        BUILDER_ITEM_TYPE = builder;
 
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000).setId(++itemId);
@@ -204,7 +220,7 @@ public class ScenarioService implements QuestListener {
         gameEngineConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
         gameEngineConfig.setTerrainObjectConfigs(setupTerrainObjectConfigs());
         gameEngineConfig.setLevelConfigs(setupLevels());
-        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE));
+        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE, BUILDER_ITEM_TYPE, FACTORY_ITEM_TYPE));
         gameEngineConfig.setResourceItemTypes(Collections.singletonList(RESOURCE_ITEM_TYPE));
         gameEngineConfig.setBoxItemTypes(Collections.singletonList(BOX_ITEM_TYPE));
         gameEngineConfig.setInventoryItems(Collections.singletonList(INVENTORY_ITEM));
@@ -248,6 +264,8 @@ public class ScenarioService implements QuestListener {
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(BUILDER_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(FACTORY_ITEM_TYPE.getId(), 1000);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         return planetConfig;
     }
@@ -259,6 +277,8 @@ public class ScenarioService implements QuestListener {
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(BUILDER_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(FACTORY_ITEM_TYPE.getId(), 1000);
         levels.add(new LevelConfig().setLevelId(LEVEL_1_ID).setNumber(0).setItemTypeLimitation(itemTypeLimitation).setXp2LevelUp(10));
         return levels;
     }
@@ -860,6 +880,19 @@ public class ScenarioService implements QuestListener {
                 BotKillHumanCommandConfig commandConfig = new BotKillHumanCommandConfig().setBotId(2).setAttackerBaseItemTypeId(ATTACKER_ITEM_TYPE.getId());
                 commandConfig.setDominanceFactor(2).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(0, 0, 15, 15).toPolygon()));
                 botCommandConfigs.add(commandConfig);
+            }
+        });
+        // BotKillOtherBotCommandConfig
+        // 44
+        scenes.add(new ScenarioProvider() {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItem(BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+            }
+
+            @Override
+            public void executeCommands(CommandService commandService) {
+                commandService.build(getFirstCreatedSyncBaseItem(), new DecimalPosition(20, 0), FACTORY_ITEM_TYPE);
             }
         });
     }

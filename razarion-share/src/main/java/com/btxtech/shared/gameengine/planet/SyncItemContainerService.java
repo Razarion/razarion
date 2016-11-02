@@ -10,7 +10,6 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -284,16 +283,21 @@ public class SyncItemContainerService {
             double height = random.nextDouble() * aabb.height();
             DecimalPosition possiblePosition = aabb.getStart().add(width, height);
 
-            if (terrainService.overlap(possiblePosition, radius)) {
-                continue;
-            }
-
-            if (hasItemsInRange(possiblePosition, radius)) {
+            if (!isFree(possiblePosition, radius)) {
                 continue;
             }
             return possiblePosition;
         }
         throw new PlaceCanNotBeFoundException(radius, placeConfig);
+    }
+
+    public boolean isFree(DecimalPosition position, double radius) {
+        return !terrainService.overlap(position, radius) && !hasItemsInRange(position, radius);
+    }
+
+    public boolean isFree(DecimalPosition position, BaseItemType baseItemType) {
+        double radius = baseItemType.getPhysicalAreaConfig().getRadius();
+        return isFree(position, radius);
     }
 
     public Collection<SyncResourceItem> findResourceItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {

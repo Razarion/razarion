@@ -8,9 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -20,7 +18,6 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -77,12 +74,26 @@ public class BaseItemUiService {
         return itemTypeService.getBaseItemTypes();
     }
 
-    public List<ModelMatrices> provideSpawnModelMatrices(BaseItemType baseItemType) {
-        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.SPAWN).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(syncBaseItem -> syncBaseItem.createModelMatrices().setProgress(syncBaseItem.getSpawnProgress())).collect(Collectors.toCollection(ArrayList::new));
-    }
+    public List<ModelMatrices> provideModelMatrices(BaseItemType baseItemType, boolean spawning) {
+        List<ModelMatrices> modelMatrices = new ArrayList<>();
+        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (spawning) {
+                if (!syncBaseItem.isSpawning()) {
+                    return null;
+                }
+            } else {
+                if (syncBaseItem.isSpawning()) {
+                    return null;
+                }
+            }
+            if (!syncBaseItem.getBaseItemType().equals(baseItemType)) {
+                return null;
+            }
+            modelMatrices.add(syncBaseItem.createModelMatrices().setProgress(syncBaseItem.getSpawnProgress()));
 
-    public List<ModelMatrices> provideAliveModelMatrices(BaseItemType baseItemType) {
-        return baseItemService.getItemLifecycleBaseItems(ItemLifecycle.ALIVE).stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().equals(baseItemType)).map(SyncItem::createModelMatrices).collect(Collectors.toCollection(ArrayList::new));
+            return null;
+        });
+        return modelMatrices;
     }
 
     public List<ModelMatrices> provideHarvestAnimationModelMatrices(BaseItemType baseItemType) {

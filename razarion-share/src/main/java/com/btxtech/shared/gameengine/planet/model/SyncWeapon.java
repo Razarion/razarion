@@ -45,7 +45,7 @@ public class SyncWeapon extends SyncBaseAbility {
     @Inject
     private SyncItemContainerService syncItemContainerService;
     private WeaponType weaponType;
-    private Integer target;
+    private SyncBaseItem target;
     private boolean followTarget;
     private double reloadProgress;
     private DecimalPosition targetPosition; // Not Synchronized
@@ -74,9 +74,12 @@ public class SyncWeapon extends SyncBaseAbility {
 
     private boolean tickAttack(long timeStamp) {
         try {
-            SyncBaseItem targetItem = syncItemContainerService.getSyncBaseItems(target);
+            if (target.isAlive()) {
+                stop();
+                return false;
+            }
 
-            if (!isInRange(targetItem)) {
+            if (!isInRange(target)) {
                 if (!followTarget) {
                     throw new IllegalStateException("SyncWeapon out of range but not allowed to follow target");
                 }
@@ -84,13 +87,13 @@ public class SyncWeapon extends SyncBaseAbility {
                     throw new IllegalStateException("SyncWeapon out of range from Target and getSyncPhysicalArea can not move");
                 }
                 if (!getSyncPhysicalMovable().hasDestination()) {
-                     throw new IllegalStateException("SyncWeapon out of range from Target and SyncPhysicalMovable does not have a destination");
+                    throw new IllegalStateException("SyncWeapon out of range from Target and SyncPhysicalMovable does not have a destination");
                 }
 
                 // Check if target has moved away
                 if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
-                    if (!targetPosition.equals(targetItem.getSyncPhysicalArea().getXYPosition())) {
-                        targetPosition = targetItem.getSyncPhysicalArea().getXYPosition();
+                    if (!targetPosition.equals(target.getSyncPhysicalArea().getXYPosition())) {
+                        targetPosition = target.getSyncPhysicalArea().getXYPosition();
                         throw new UnsupportedOperationException();
 //                            recalculateAndSetNewPath(weaponType.getRange(), targetItem);
 //                            activityService.onNewPathRecalculation(getSyncBaseItem());
@@ -105,12 +108,8 @@ public class SyncWeapon extends SyncBaseAbility {
                 getSyncPhysicalMovable().stop();
             }
 
-            doAttack(timeStamp, targetItem);
+            doAttack(timeStamp, target);
             return true;
-        } catch (ItemDoesNotExistException ignore) {
-            // It has may be killed
-            stop();
-            return returnFalseIfReloaded();
         } catch (TargetHasNoPositionException e) {
             // Target may moved to a container
             stop();
@@ -136,14 +135,14 @@ public class SyncWeapon extends SyncBaseAbility {
 
     @Override
     public void synchronize(SyncItemInfo syncItemInfo) {
-        target = syncItemInfo.getTarget();
+        // target = syncItemInfo.getTarget();
         followTarget = syncItemInfo.isFollowTarget();
         reloadProgress = syncItemInfo.getReloadProgress();
     }
 
     @Override
     public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
-        syncItemInfo.setTarget(target);
+        // syncItemInfo.setTarget(target);
         syncItemInfo.setFollowTarget(followTarget);
         syncItemInfo.setReloadProgress(reloadProgress);
     }
@@ -167,7 +166,7 @@ public class SyncWeapon extends SyncBaseAbility {
             throw new IllegalArgumentException(this + " Weapon not allowed to attack item type: " + target);
         }
 
-        this.target = attackCommand.getTarget();
+        this.target = target;
         followTarget = attackCommand.isFollowTarget();
         getSyncPhysicalMovable().setDestination(attackCommand.getPathToDestination());
         targetPosition = attackCommand.getPathToDestination().getDestination();
@@ -196,10 +195,6 @@ public class SyncWeapon extends SyncBaseAbility {
 
     public boolean isInRange(SyncBaseItem target) throws TargetHasNoPositionException {
         return getSyncBaseItem().getSyncPhysicalArea().isInRange(weaponType.getRange(), target);
-    }
-
-    public Integer getTarget() {
-        return target;
     }
 
     public WeaponType getWeaponType() {

@@ -7,7 +7,7 @@ package com.btxtech.shared.gameengine.datatypes;
 public enum Character {
     HUMAN(false),
     BOT(true),
-    BOT_NCP(true),;
+    BOT_NCP(true);
 
     private boolean bot;
 

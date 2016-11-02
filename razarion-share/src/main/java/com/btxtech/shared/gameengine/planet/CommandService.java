@@ -5,13 +5,12 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
-import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -54,21 +53,21 @@ public class CommandService { // Is part of the Base service
         moveCommand.setId(syncBaseItem.getId());
         moveCommand.setTimeStamp();
         moveCommand.setPathToDestination(pathingService.setupPathToDestination(syncBaseItem, destination));
-        try {
-            executeCommand(moveCommand);
-        } catch (PathCanNotBeFoundException e) {
-            logger.warning("PathCanNotBeFoundException: " + e.getMessage());
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
+        executeCommand(moveCommand);
+    }
+
+    public void build(SyncBaseItem builder, DecimalPosition positionToBeBuild, BaseItemType itemTypeToBuild) {
+        BuilderCommand builderCommand = new BuilderCommand();
+        builderCommand.setId(builder.getId());
+        builderCommand.setTimeStamp();
+        builderCommand.setToBeBuiltId(itemTypeToBuild.getId());
+        builderCommand.setPositionToBeBuilt(positionToBeBuild);
+        Path path = pathingService.setupPathToDestination(builder, builder.getBaseItemType().getBuilderType().getRange(), positionToBeBuild, itemTypeToBuild.getPhysicalAreaConfig().getRadius());
+        if (moveIfPathTargetUnreachable(builder, path)) {
+            return;
         }
-    }
-
-    public void build(SyncBaseItem builder, DecimalPosition position, BaseItemType itemTypeToBuild) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void build(SyncBaseItem syncItem, Index positionToBeBuild, BaseItemType toBeBuilt, Index destinationHint, double destinationAngel) {
-        throw new UnsupportedOperationException();
+        builderCommand.setPathToDestination(path);
+        executeCommand(builderCommand);
     }
 
     public void finalizeBuild(Collection<SyncBaseItem> syncBaseItems, SyncBaseItem building) {
@@ -93,7 +92,7 @@ public class CommandService { // Is part of the Base service
 
     public void harvest(SyncBaseItem harvester, SyncResourceItem resource) {
         HarvestCommand harvestCommand = new HarvestCommand();
-        Path path = pathingService.setupPathToDestination(harvester, resource, harvester.getBaseItemType().getHarvesterType().getRange());
+        Path path = pathingService.setupPathToDestination(harvester, harvester.getBaseItemType().getHarvesterType().getRange(), resource);
         if (moveIfPathTargetUnreachable(harvester, path)) {
             return;
         }
@@ -101,12 +100,7 @@ public class CommandService { // Is part of the Base service
         harvestCommand.setId(harvester.getId());
         harvestCommand.setTimeStamp();
         harvestCommand.setTarget(resource.getId());
-
-        try {
-            executeCommand(harvestCommand);
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
-        }
+        executeCommand(harvestCommand);
     }
 
     public void attack(Collection<SyncBaseItem> syncBaseItems, SyncBaseItem target) {
@@ -119,7 +113,7 @@ public class CommandService { // Is part of the Base service
         Path path;
         AttackCommand attackCommand = new AttackCommand();
         if (followTarget) {
-            path = pathingService.setupPathToDestination(syncBaseItem, target, syncBaseItem.getBaseItemType().getWeaponType().getRange());
+            path = pathingService.setupPathToDestination(syncBaseItem, syncBaseItem.getBaseItemType().getWeaponType().getRange(), target);
             if (moveIfPathTargetUnreachable(syncBaseItem, path)) {
                 return;
             }
@@ -129,12 +123,7 @@ public class CommandService { // Is part of the Base service
         attackCommand.setTimeStamp();
         attackCommand.setTarget(target.getId());
         attackCommand.setFollowTarget(followTarget);
-
-        try {
-            executeCommand(attackCommand);
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
-        }
+        executeCommand(attackCommand);
     }
 
     public void pickupBox(Collection<SyncBaseItem> syncBaseItems, SyncBoxItem box) {
@@ -145,7 +134,7 @@ public class CommandService { // Is part of the Base service
 
     public void pickupBox(SyncBaseItem picker, SyncBoxItem box) {
         PickupBoxCommand pickupBoxCommand = new PickupBoxCommand();
-        Path path = pathingService.setupPathToDestination(picker, box, picker.getBaseItemType().getBoxPickupRange());
+        Path path = pathingService.setupPathToDestination(picker, picker.getBaseItemType().getBoxPickupRange(), box);
         if (moveIfPathTargetUnreachable(picker, path)) {
             return;
         }
@@ -153,12 +142,7 @@ public class CommandService { // Is part of the Base service
         pickupBoxCommand.setId(picker.getId());
         pickupBoxCommand.setTimeStamp();
         pickupBoxCommand.setSynBoxItemId(box.getId());
-
-        try {
-            executeCommand(pickupBoxCommand);
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
-        }
+        executeCommand(pickupBoxCommand);
     }
 
     public void defend(SyncBaseItem attacker, SyncBaseItem target) {
@@ -173,15 +157,13 @@ public class CommandService { // Is part of the Base service
         throw new UnsupportedOperationException();
     }
 
-    private void executeCommand(BaseCommand baseCommand) throws ItemDoesNotExistException, NotYourBaseException {
-        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItems(baseCommand.getId());
+    private void executeCommand(BaseCommand baseCommand) {
         try {
+            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItems(baseCommand.getId());
             syncBaseItem.stop();
             syncBaseItem.executeCommand(baseCommand);
-            baseItemService.addToQueue(syncBaseItem);
+            baseItemService.addToActiveItemQueue(syncBaseItem);
             activityService.onCommandSent(syncBaseItem, baseCommand);
-        } catch (PathCanNotBeFoundException e) {
-            activityService.onPathCanNotBeFoundException(e);
         } catch (ItemDoesNotExistException e) {
             activityService.onItemDoesNotExistException(e);
         } catch (InsufficientFundsException e) {

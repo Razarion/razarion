@@ -12,7 +12,9 @@ import javax.inject.Singleton;
 @Singleton
 public class UnlockService {
     public boolean isItemLocked(BaseItemType baseItemType, PlayerBase playerBase) {
-        throw new UnsupportedOperationException();
+        return baseItemType.unlockNeeded()
+                && !playerBase.getCharacter().isBot()
+                && playerBase.getUserContext().containsUnlockedItemTypeId(baseItemType.getId());
     }
 
     // TODO boolean isQuestLocked(QuestInfo questInfo, PlayerBase simpleBase);

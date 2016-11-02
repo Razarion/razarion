@@ -2,7 +2,9 @@ package com.btxtech.shared.datatypes;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -15,6 +17,9 @@ public class UserContext {
     private int crystals;
     private List<Integer> inventoryItemIds = new ArrayList<>();
     private List<Integer> inventoryArtifactIds = new ArrayList<>();
+    private Set<Integer> unlockedItemTypes = new HashSet<Integer>();
+    private Set<Integer> unlockedQuests = new HashSet<Integer>();
+    private Set<Integer> unlockedPlanets = new HashSet<Integer>();
 
     public String getName() {
         return name;
@@ -71,6 +76,37 @@ public class UserContext {
 
     public UserContext setCrystals(int crystals) {
         this.crystals = crystals;
+        return this;
+    }
+
+    public Set<Integer> getUnlockedItemTypes() {
+        return unlockedItemTypes;
+    }
+
+    public UserContext setUnlockedItemTypes(Set<Integer> unlockedItemTypes) {
+        this.unlockedItemTypes = unlockedItemTypes;
+        return this;
+    }
+
+    public boolean containsUnlockedItemTypeId(int itemTypeId) {
+        return unlockedItemTypes.contains(itemTypeId);
+    }
+
+    public Set<Integer> getUnlockedQuests() {
+        return unlockedQuests;
+    }
+
+    public UserContext setUnlockedQuests(Set<Integer> unlockedQuests) {
+        this.unlockedQuests = unlockedQuests;
+        return this;
+    }
+
+    public Set<Integer> getUnlockedPlanets() {
+        return unlockedPlanets;
+    }
+
+    public UserContext setUnlockedPlanets(Set<Integer> unlockedPlanets) {
+        this.unlockedPlanets = unlockedPlanets;
         return this;
     }
 }

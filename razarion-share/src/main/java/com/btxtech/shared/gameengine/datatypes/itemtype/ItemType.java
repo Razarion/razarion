@@ -13,14 +13,11 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 
 /**
  * User: beat
@@ -166,6 +163,6 @@ public abstract class ItemType implements ObjectNameIdProvider {
 
     @Override
     public String toString() {
-        return "ItemType: " + name;
+        return "ItemType id: " + id + " name: " + name;
     }
 }

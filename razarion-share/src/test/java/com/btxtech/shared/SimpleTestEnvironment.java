@@ -1,16 +1,11 @@
 package com.btxtech.shared;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
-import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -43,12 +38,12 @@ public class SimpleTestEnvironment {
         }
     }
 
-    public SyncBaseItem createSimpleSyncBaseItem(PlayerBase playerBase) {
-        SyncBaseItem syncBaseItem = new SyncBaseItem();
-        syncBaseItem.init(1, SIMPLE_MOVABLE_ITEM_TYPE, new SyncPhysicalMovable(syncBaseItem, new PhysicalAreaConfig().setAngularVelocity(Math.toDegrees(30)).setSpeed(80.0).setMinTurnSpeed(10.0).setAcceleration(100.0).setRadius(20), new Vertex(0, 0, 0), new Vertex(0, 0, 1), 0.0, new DecimalPosition(0, 0)));
-        syncBaseItem.setup(playerBase, ItemLifecycle.ALIVE);
-        return syncBaseItem;
-    }
+//    public SyncBaseItem createSimpleSyncBaseItem(PlayerBase playerBase) {
+//        SyncBaseItem syncBaseItem = new SyncBaseItem();
+//        syncBaseItem.init(1, SIMPLE_MOVABLE_ITEM_TYPE, new SyncPhysicalMovable(syncBaseItem, new PhysicalAreaConfig().setAngularVelocity(Math.toDegrees(30)).setSpeed(80.0).setMinTurnSpeed(10.0).setAcceleration(100.0).setRadius(20), new Vertex(0, 0, 0), new Vertex(0, 0, 1), 0.0, new DecimalPosition(0, 0)));
+//        syncBaseItem.setup(playerBase, ItemLifecycle.ALIVE);
+//        return syncBaseItem;
+//    }
 
     public PlayerBase createHumanPlayerBase(UserContext userContext) {
         return new PlayerBase(1, userContext.getName(), Character.HUMAN, userContext);

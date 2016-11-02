@@ -14,11 +14,9 @@ import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededExcep
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
-import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.model.ItemLifecycle;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -32,7 +30,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -70,7 +67,7 @@ public class BaseItemService {
     public PlayerBase getFirstHumanBase() {
         synchronized (bases) {
             for (PlayerBase playerBase : bases.values()) {
-                if(playerBase.getCharacter().isHuman()) {
+                if (playerBase.getCharacter().isHuman()) {
                     return playerBase;
                 }
             }
@@ -104,16 +101,30 @@ public class BaseItemService {
         throw new UnsupportedOperationException();
     }
 
-    public SyncItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, Vertex position, PlayerBase base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
-        // TODO
-        throw new UnsupportedOperationException();
+    public SyncItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
+
+        syncBaseItem.setSpawnProgress(1.0);
+        activityService.onBuildingSyncItem(syncBaseItem, toBeBuilt);
+
+        return syncBaseItem;
     }
 
     public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
-        return spawnSyncBaseItem(toBeBuilt, terrainService.calculatePositionGroundMesh(position), base, noSpawn);
+        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
+        syncBaseItem.setBuildup(1.0);
+
+        if (noSpawn) {
+            syncBaseItem.setSpawnProgress(1.0);
+            syncBaseItem.handleIfItemBecomesReady();
+        } else {
+            activityService.onSpawnSyncItem(syncBaseItem);
+        }
+
+        return syncBaseItem;
     }
 
-    public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, Vertex position, PlayerBase base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
+    private SyncBaseItem createSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position2d, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
         if (!isAlive(base)) {
             throw new BaseDoesNotExistException(base);
         }
@@ -125,21 +136,14 @@ public class BaseItemService {
         if (base.getCharacter().isHuman()) {
             checkItemLimit4ItemAdding(toBeBuilt, 1, base);
         }
+
         // TODO check item free range etc (use: BaseItemPlacerChecker)
 
-        position = collisionService.correctPosition(position, toBeBuilt);
+        Vertex position = collisionService.correctPosition(terrainService.calculatePositionGroundMesh(position2d), toBeBuilt);
         SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position);
-        if (noSpawn) {
-            syncBaseItem.setup(base, ItemLifecycle.ALIVE);
-        } else {
-            syncBaseItem.setup(base, ItemLifecycle.SPAWN);
-        }
-        syncBaseItem.setSpawnProgress(0);
-        syncBaseItem.setBuildup(1.0);
+        syncBaseItem.setup(base);
         base.addItem(syncBaseItem);
-
-        addToQueue(syncBaseItem);
-        activityService.onSpawnSyncItem(syncBaseItem);
+        addToActiveItemQueue(syncBaseItem);
 
         return syncBaseItem;
     }
@@ -172,7 +176,7 @@ public class BaseItemService {
 
     public void checkItemLimit4ItemAdding(BaseItemType newItemType, int itemCount2Add, PlayerBase simpleBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         if (isLevelLimitation4ItemTypeExceeded(newItemType, itemCount2Add, simpleBase)) {
-            throw new ItemLimitExceededException();
+            throw new ItemLimitExceededException(newItemType, itemCount2Add, simpleBase);
         }
         if (isHouseSpaceExceeded(simpleBase, newItemType)) {
             throw new HouseSpaceExceededException();
@@ -231,16 +235,6 @@ public class BaseItemService {
         PlayerBase playerBase1 = syncBaseItem1.getBase();
         PlayerBase playerBase2 = syncBaseItem2.getBase();
         return playerBase1.isEnemy(playerBase2);
-    }
-
-    public Collection<SyncBaseItem> getItemLifecycleBaseItems(ItemLifecycle itemLifecycle) {
-        Collection<SyncBaseItem> total = new ArrayList<>();
-        synchronized (bases) {
-            for (PlayerBase base : bases.values()) {
-                total.addAll(base.getItems().stream().filter(syncBaseItem -> syncBaseItem.getItemLifecycle() == itemLifecycle).collect(Collectors.toList()));
-            }
-        }
-        return total;
     }
 
     public boolean hasEnemyForSpawn(DecimalPosition position, double itemFreeRadius) {
@@ -313,11 +307,11 @@ public class BaseItemService {
                 SyncBaseItem activeItem = iterator.next();
                 if (!activeItem.isAlive()) {
                     iterator.remove();
-                    break;
+                    continue;
                 }
                 if (activeItem.isIdle()) {
                     iterator.remove();
-                    break;
+                    continue;
                 }
                 try {
                     if (!activeItem.tick(timeStamp)) {
@@ -336,10 +330,6 @@ public class BaseItemService {
                     activeItem.stop();
                     activityService.onPositionTakenException(e);
                     iterator.remove();
-                } catch (PathCanNotBeFoundException e) {
-                    activeItem.stop();
-                    activityService.onPathCanNotBeFoundException(e);
-                    iterator.remove();
                 } catch (PlaceCanNotBeFoundException e) {
                     activeItem.stop();
                     activityService.onPlaceCanNotBeFoundException(e);
@@ -353,7 +343,7 @@ public class BaseItemService {
         }
     }
 
-    public void addToQueue(SyncBaseItem activeItem) {
+    public void addToActiveItemQueue(SyncBaseItem activeItem) {
         synchronized (activeItemQueue) {
             if (!activeItems.contains(activeItem) && !activeItemQueue.contains(activeItem)) {
                 activeItemQueue.add(activeItem);
@@ -399,10 +389,6 @@ public class BaseItemService {
     // TODO boolean isSyncItemOverlapping(SyncItem syncItem, Index positionToCheck, Double angelToCheck, Collection<SyncItem> exceptionThem);
 
     // TODO boolean isUnmovableSyncItemOverlapping(BoundingBox boundingBox, Index positionToCheck);
-
-    public void checkBuildingsInRect(BaseItemType toBeBuiltType, Vertex toBeBuildPosition) {
-        throw new UnsupportedOperationException();
-    }
 
     public Collection<SyncBaseItem> getBaseItemsInRadius(DecimalPosition position, int radius, PlayerBase playerBase, Collection<BaseItemType> baseItemTypeFilter) {
         throw new UnsupportedOperationException();

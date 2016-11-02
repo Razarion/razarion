@@ -13,7 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * User: beat
@@ -21,48 +21,39 @@ import java.util.Collection;
  * Time: 23:53:27
  */
 public class BuilderType {
-    private int range;
+    private double range;
     private double progress;
-    private Collection<Integer> ableToBuild;
-    private ItemClipPosition buildupClip;
+    private List<Integer> ableToBuild;
 
-    /**
-     * Used by GWT
-     */
-    public BuilderType() {
-    }
-
-    public BuilderType(int range, double progress, Collection<Integer> ableToBuild, ItemClipPosition buildupClip) {
-        this.range = range;
-        this.progress = progress;
-        this.ableToBuild = ableToBuild;
-        this.buildupClip = buildupClip;
-    }
-
-    public int getRange() {
+    public double getRange() {
         return range;
+    }
+
+    public BuilderType setRange(double range) {
+        this.range = range;
+        return this;
     }
 
     public double getProgress() {
         return progress;
     }
 
-    public boolean isAbleToBuild(int itemTypeId) {
-        return ableToBuild.contains(itemTypeId);
+    public BuilderType setProgress(double progress) {
+        this.progress = progress;
+        return this;
     }
 
-    public Collection<Integer> getAbleToBuild() {
+    public List<Integer> getAbleToBuild() {
         return ableToBuild;
     }
 
-    public ItemClipPosition getBuildupClip() {
-        return buildupClip;
+    public BuilderType setAbleToBuild(List<Integer> ableToBuild) {
+        this.ableToBuild = ableToBuild;
+        return this;
     }
 
-    public void changeTo(BuilderType builderType) {
-        range = builderType.range;
-        progress = builderType.progress;
-        ableToBuild = builderType.ableToBuild;
-        buildupClip = builderType.buildupClip;
+    public boolean checkAbleToBuild(int itemTypeId) {
+        return ableToBuild.contains(itemTypeId);
     }
+
 }

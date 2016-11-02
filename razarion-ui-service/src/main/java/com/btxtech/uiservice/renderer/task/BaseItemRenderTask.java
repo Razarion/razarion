@@ -49,7 +49,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void spawn(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getSpawnShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideSpawnModelMatrices(baseItemType));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, true));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getSpawnShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
@@ -74,7 +74,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void alive(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, false));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
