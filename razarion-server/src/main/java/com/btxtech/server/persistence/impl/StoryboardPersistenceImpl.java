@@ -44,6 +44,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
@@ -188,6 +189,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setI18Name(i18nHelper("Bulldozer Name"));
         baseItemType.setDescription(i18nHelper("Bulldozer Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
+        baseItemType.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_HARVESTER)));
         baseItemType.setBoxPickupRange(2).setExplosionClipId(272485);
     }
 
@@ -228,6 +230,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         itemTypeLimitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
+        itemTypeLimitation.put(BASE_ITEM_TYPE_HARVESTER, 5);
         levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(itemTypeLimitation));
         levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(10).setItemTypeLimitation(itemTypeLimitation));
         return levelConfigs;
@@ -244,6 +247,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         itemTypeLimitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
+        itemTypeLimitation.put(BASE_ITEM_TYPE_HARVESTER, 5);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setWaterLevel(-0.7);
@@ -261,7 +265,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100,100).toPolygon());
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);

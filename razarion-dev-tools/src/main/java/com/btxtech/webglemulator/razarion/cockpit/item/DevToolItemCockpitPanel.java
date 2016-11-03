@@ -39,7 +39,8 @@ public class DevToolItemCockpitPanel implements ItemCockpitPanel {
 
     @Override
     public void setBuildupItemPanel(BuildupItemPanel buildupItemPanel) {
-
+        DevToolBuildupItemPanel devToolBuildupItemPanel = (DevToolBuildupItemPanel) buildupItemPanel;
+        webGlEmulatorController.getItemCockpitPanel().getChildren().add(devToolBuildupItemPanel.getHBox());
     }
 
     @Override
