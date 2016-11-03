@@ -1,14 +1,19 @@
 package com.btxtech.uiservice.storyboard;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
@@ -54,10 +59,18 @@ public class Scene {
     private LevelService levelService;
     @Inject
     private ResourceService resourceService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject
     private BoxService boxService;
+    @Inject
+    private BaseItemService baseItemService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ExceptionHandler exceptionHandler;
+    @Inject
+    private ItemTypeService itemTypeService;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -95,7 +108,16 @@ public class Scene {
             botService.executeCommands(sceneConfig.getBotKillHumanCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
-            baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig());
+            baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), decimalPositions -> {
+                PlayerBase playerBase = baseItemService.createHumanBase(storyboardService.getUserContext());
+                try {
+                    for (DecimalPosition position : decimalPositions) {
+                        baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId()), position, playerBase, false);
+                    }
+                } catch (Exception e) {
+                    exceptionHandler.handleException(e);
+                }
+            });
         }
         if (sceneConfig.getQuestConfig() != null) {
             questService.activateCondition(userContext, sceneConfig.getQuestConfig());

@@ -2,15 +2,13 @@ package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
-import com.btxtech.uiservice.storyboard.StoryboardService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -22,16 +20,11 @@ public class BaseItemPlacerService {
     private Instance<BaseItemPlacer> instance;
     @Inject
     private BaseItemPlacerRenderTask baseItemPlacerRenderTask;
-    @Inject
-    private BaseItemService baseItemService;
-    @Inject
-    private StoryboardService storyboardService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private ExceptionHandler exceptionHandler;
     private BaseItemPlacer baseItemPlacer;
+    private Consumer<Collection<DecimalPosition>> executionCallback;
 
-    public void activate(BaseItemPlacerConfig baseItemPlacerConfig) {
+    public void activate(BaseItemPlacerConfig baseItemPlacerConfig, Consumer<Collection<DecimalPosition>> executionCallback) {
+        this.executionCallback = executionCallback;
 //    TODO    if (baseItemPlacerConfig.getSuggestedPosition() != null) {
 //    TODO        terrainScrollHandler.moveToMiddle(startPointInfo.getSuggestedPosition());
 //    TODO    }
@@ -60,15 +53,8 @@ public class BaseItemPlacerService {
         }
         baseItemPlacer.onMove(terrainPosition);
         if (baseItemPlacer.isPositionValid()) {
-            PlayerBase playerBase = baseItemService.createHumanBase(storyboardService.getUserContext());
-            try {
-                for (DecimalPosition position : baseItemPlacer.setupAbsolutePositions()) {
-                    baseItemService.spawnSyncBaseItem(baseItemPlacer.getBaseItemType(), position, playerBase, false);
-                }
-                deactivate();
-            } catch (Exception e) {
-                exceptionHandler.handleException(e);
-            }
+            executionCallback.accept(baseItemPlacer.setupAbsolutePositions());
+            deactivate();
         }
     }
 

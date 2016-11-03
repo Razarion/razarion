@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.inventory;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.InventoryService;
@@ -7,6 +8,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.ModalDialogManager;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
@@ -38,6 +40,8 @@ public class InventoryUiService {
     private ModalDialogManager modalDialogManager;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
+    @Inject
+    private BaseItemService baseItemService;
 
     public List<InventoryItemModel> gatherInventoryItemModels(UserContext userContext) {
         Map<Integer, InventoryItemModel> inventoryItemModels = new HashMap<>();
@@ -66,7 +70,15 @@ public class InventoryUiService {
                     baseItemPlacerConfig.setBaseItemTypeId(baseItemType.getId());
                     baseItemPlacerConfig.setBaseItemCount(inventoryItem.getBaseItemTypeCount());
                     baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getItemFreeRange());
-                    baseItemPlacerService.activate(baseItemPlacerConfig);
+                    baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
+                        try {
+                            for (DecimalPosition position : decimalPositions) {
+                                baseItemService.spawnSyncBaseItem(baseItemType, position, baseItemService.getPlayerBase(storyboardService.getUserContext()), false);
+                            }
+                        } catch (Exception e) {
+                            exceptionHandler.handleException(e);
+                        }
+                    });
                 }
             } catch (Throwable e) {
                 exceptionHandler.handleException("InventoryUiService.useItem()", e);
