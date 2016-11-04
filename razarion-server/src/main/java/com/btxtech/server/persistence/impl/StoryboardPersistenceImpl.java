@@ -79,6 +79,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private static final int BASE_ITEM_TYPE_BULLDOZER = 180807;
     private static final int BASE_ITEM_TYPE_HARVESTER = 180830;
     private static final int BASE_ITEM_TYPE_ATTACKER = 180832;
+    private static final int BASE_ITEM_TYPE_FACTORY = 272490;
     private static final int RESOURCE_ITEM_TYPE = 180829;
     private static final int BOX_ITEM_TYPE = 272481;
     private static final int INVENTORY_ITEM = 1;
@@ -172,6 +173,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         finalizeBulldozer(findBaseItem(BASE_ITEM_TYPE_BULLDOZER, baseItemTypes));
         finalizeHarvester(findBaseItem(BASE_ITEM_TYPE_HARVESTER, baseItemTypes));
         finalizeAttacker(findBaseItem(BASE_ITEM_TYPE_ATTACKER, baseItemTypes));
+        finalizeFactory(findBaseItem(BASE_ITEM_TYPE_FACTORY, baseItemTypes));
         return baseItemTypes;
     }
 
@@ -189,7 +191,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setI18Name(i18nHelper("Bulldozer Name"));
         baseItemType.setDescription(i18nHelper("Bulldozer Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        baseItemType.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_HARVESTER)));
+        baseItemType.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)));
         baseItemType.setBoxPickupRange(2).setExplosionClipId(272485);
     }
 
@@ -209,6 +211,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
         attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzlePosition(new Vertex(2.9, 0, 0.85)).setMuzzleFlashClipId(180836).setDetonationClipId(180842));
         attacker.setBoxPickupRange(2).setExplosionClipId(272485);
+    }
+
+    private void finalizeFactory(BaseItemType factory) {
+        factory.setTerrainType(TerrainType.LAND);
+        factory.setI18Name(i18nHelper("Factory Name"));
+        factory.setDescription(i18nHelper("Factory Description"));
+        factory.setExplosionClipId(272485).setBuildup(30);
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -231,6 +240,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         itemTypeLimitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
         itemTypeLimitation.put(BASE_ITEM_TYPE_HARVESTER, 5);
+        itemTypeLimitation.put(BASE_ITEM_TYPE_FACTORY, 1);
         levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(itemTypeLimitation));
         levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(10).setItemTypeLimitation(itemTypeLimitation));
         return levelConfigs;
@@ -248,6 +258,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         itemTypeLimitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
         itemTypeLimitation.put(BASE_ITEM_TYPE_HARVESTER, 5);
+        itemTypeLimitation.put(BASE_ITEM_TYPE_FACTORY, 1);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setWaterLevel(-0.7);

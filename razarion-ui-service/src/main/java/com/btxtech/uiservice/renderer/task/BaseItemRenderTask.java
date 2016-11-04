@@ -42,6 +42,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
 
     private void setupBaseItemType(BaseItemType baseItemType, boolean fillBuffer) {
         spawn(baseItemType, fillBuffer);
+        build(baseItemType, fillBuffer);
         alive(baseItemType, fillBuffer);
         harvest(baseItemType, fillBuffer);
     }
@@ -49,8 +50,33 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void spawn(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getSpawnShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, true));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, true, false));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getSpawnShape3DId());
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+                    compositeRenderer.init(vertexContainer);
+                    compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    if (fillBuffer) {
+                        compositeRenderer.fillBuffers();
+                    }
+                }
+            }
+            add(modelRenderer);
+        } else {
+            logger.warning("BaseItemRenderTask: no spawnShape3DId for BaseItemType: " + baseItemType);
+        }
+    }
+
+    private void build(BaseItemType baseItemType, boolean fillBuffer) {
+        if (baseItemType.getShape3DId() != null) {
+            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, false, true));
+            Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                     CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
@@ -74,7 +100,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void alive(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, false));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, false, false));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {

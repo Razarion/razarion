@@ -74,7 +74,7 @@ public class BaseItemUiService {
         return itemTypeService.getBaseItemTypes();
     }
 
-    public List<ModelMatrices> provideModelMatrices(BaseItemType baseItemType, boolean spawning) {
+    public List<ModelMatrices> provideModelMatrices(BaseItemType baseItemType, boolean spawning, boolean beBuilt) {
         List<ModelMatrices> modelMatrices = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             if (spawning) {
@@ -83,6 +83,15 @@ public class BaseItemUiService {
                 }
             } else {
                 if (syncBaseItem.isSpawning()) {
+                    return null;
+                }
+            }
+            if(beBuilt) {
+                if (syncBaseItem.isBuildup()) {
+                    return null;
+                }
+            } else {
+                if (!syncBaseItem.isBuildup()) {
                     return null;
                 }
             }
