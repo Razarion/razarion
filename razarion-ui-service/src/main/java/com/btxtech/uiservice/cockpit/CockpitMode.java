@@ -177,11 +177,6 @@ public class CockpitMode {
 //    }
 //
 
-    public void setToBeBuildPlacer(BaseItemType itemType, Group builders, DecimalPosition position) {
-//        this.toBeBuildPlacerListener = toBeBuildPlacerListener;
-        throw new UnsupportedOperationException();
-    }
-
 //    public void onEscape() {
 //        CockpitMode.getInstance().setToBeBuildPlacer(null);
 //        if (hasInventoryItemPlacer()) {

@@ -214,7 +214,7 @@ public class SyncItemContainerService {
         }
     }
 
-    public SyncBaseItem getSyncBaseItems(int id) {
+    public SyncBaseItem getSyncBaseItem(int id) {
         return (SyncBaseItem) getSyncItem(id);
     }
 

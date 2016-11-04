@@ -118,6 +118,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
             double buildFactor = setupBuildFactor();
             if (getSyncBaseItem().getBase().withdrawalResource(buildFactor * (double) toBeBuiltType.getPrice())) {
+                System.out.println(System.currentTimeMillis() + " buildFactor: " + buildFactor + " " + currentBuildup.getBuildup());
                 currentBuildup.addBuildup(buildFactor);
                 if (currentBuildup.isBuildup()) {
                     stop();
@@ -167,7 +168,7 @@ public class SyncBuilder extends SyncBaseAbility {
         }
         Integer currentBuildupId = syncItemInfo.getCurrentBuildup();
         if (currentBuildupId != null) {
-            currentBuildup = (SyncBaseItem) baseItemService.getItem(currentBuildupId);
+            currentBuildup = syncItemContainerService.getSyncBaseItem(currentBuildupId);
         } else {
             currentBuildup = null;
         }
@@ -202,7 +203,7 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     public synchronized void executeCommand(BuilderFinalizeCommand builderFinalizeCommand) throws NoSuchItemTypeException, ItemDoesNotExistException {
-        SyncBaseItem syncBaseItem = (SyncBaseItem) baseItemService.getItem(builderFinalizeCommand.getToBeBuilt());
+        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(builderFinalizeCommand.getToBeBuilt());
         if (!builderType.checkAbleToBuild(syncBaseItem.getItemType().getId())) {
             throw new IllegalArgumentException(this + " can not build: " + builderFinalizeCommand.getToBeBuilt());
         }

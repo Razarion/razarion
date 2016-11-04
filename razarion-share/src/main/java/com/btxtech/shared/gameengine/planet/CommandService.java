@@ -159,7 +159,7 @@ public class CommandService { // Is part of the Base service
 
     private void executeCommand(BaseCommand baseCommand) {
         try {
-            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItems(baseCommand.getId());
+            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(baseCommand.getId());
             syncBaseItem.stop();
             syncBaseItem.executeCommand(baseCommand);
             baseItemService.addToActiveItemQueue(syncBaseItem);

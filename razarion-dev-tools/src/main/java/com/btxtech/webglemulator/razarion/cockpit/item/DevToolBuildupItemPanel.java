@@ -23,7 +23,7 @@ public class DevToolBuildupItemPanel extends BuildupItemPanel {
     protected void setBuildupItem(List<BuildupItem> buildupItems) {
         for (BuildupItem buildupItem : buildupItems) {
             Button button = new Button(buildupItem.getItemType().getName());
-            button.setOnMouseClicked(event -> buildupItem.onBuild(null)); // TODO position
+            button.setOnMouseClicked(event -> buildupItem.onBuild());
             hBox.getChildren().add(button);
         }
     }

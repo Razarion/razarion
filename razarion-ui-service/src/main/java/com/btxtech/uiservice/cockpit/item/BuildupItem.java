@@ -1,9 +1,6 @@
 package com.btxtech.uiservice.cockpit.item;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-
-import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -11,14 +8,13 @@ import java.util.function.Consumer;
  */
 public class BuildupItem {
     private final BaseItemType itemType;
-    private final Consumer<DecimalPosition> callback;
+    private final Runnable callback;
 
     /**
-     *
      * @param itemType to be build type
      * @param callback where to place the ToBeBuildPlacer
      */
-    public BuildupItem(BaseItemType itemType, Consumer<DecimalPosition> callback) {
+    public BuildupItem(BaseItemType itemType, Runnable callback) {
 
         this.itemType = itemType;
         this.callback = callback;
@@ -32,7 +28,7 @@ public class BuildupItem {
         return itemType;
     }
 
-    public void onBuild(DecimalPosition position) {
-        callback.accept(position);
+    public void onBuild() {
+        callback.run();
     }
 }

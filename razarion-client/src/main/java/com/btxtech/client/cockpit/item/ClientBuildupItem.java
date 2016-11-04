@@ -118,7 +118,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
 
     @EventHandler("buildItemTd")
     public void onClick(final ClickEvent event) {
-        buildupItem.onBuild(null); // TODO position should not be null
+        buildupItem.onBuild();
     }
 
     private void discoverEnableState() {

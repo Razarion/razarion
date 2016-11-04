@@ -1,13 +1,14 @@
 package com.btxtech.uiservice.cockpit.item;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Group;
+import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.uiservice.cockpit.CockpitMode;
+import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 
 import javax.inject.Inject;
@@ -16,7 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -24,13 +24,13 @@ import java.util.function.Consumer;
  */
 public abstract class BuildupItemPanel {
     @Inject
-    private CockpitMode cockpitMode;
-    @Inject
     private StoryboardService storyboardService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private CommandService commandService;
+    @Inject
+    private BaseItemPlacerService baseItemPlacerService;
     private Group selectedGroup;
     private Map<Integer, BuildupItem> buildupItems = new HashMap<>();
 
@@ -71,7 +71,10 @@ public abstract class BuildupItemPanel {
                 continue;
             }
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
-            buildupItems.add(setupBuildupBlock(itemType, position -> cockpitMode.setToBeBuildPlacer(itemType, constructionVehicles, position)));
+            BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemTypeId);
+            buildupItems.add(setupBuildupBlock(itemType, () -> baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
+                commandService.build(constructionVehicles.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
+            })));
         }
         setBuildupItem(buildupItems);
     }
@@ -85,12 +88,12 @@ public abstract class BuildupItemPanel {
                 continue;
             }
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
-            buildupItems.add(setupBuildupBlock(itemType, position -> commandService.fabricate(factories.getItems(), itemType)));
+            buildupItems.add(setupBuildupBlock(itemType, () -> commandService.fabricate(factories.getItems(), itemType)));
         }
         setBuildupItem(buildupItems);
     }
 
-    private BuildupItem setupBuildupBlock(BaseItemType itemType, Consumer<DecimalPosition> callback) {
+    private BuildupItem setupBuildupBlock(BaseItemType itemType, Runnable callback) {
         BuildupItem buildupItem = new BuildupItem(itemType, callback);
         this.buildupItems.put(itemType.getId(), buildupItem);
         return buildupItem;

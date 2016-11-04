@@ -7,6 +7,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -25,12 +28,12 @@ public class ClientItemCockpitPanel extends Composite implements ItemCockpitPane
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private SimplePanel buildupItemPanel;
+    private Div buildupItemPanel;
 
     @Override
     public void cleanPanels() {
         infoPanel.clear();
-        buildupItemPanel.clear();
+        DOMUtil.removeAllChildren(buildupItemPanel);
         getElement().getStyle().setZIndex(ZIndexConstants.ITEM_COCKPIT);
     }
 
@@ -41,7 +44,7 @@ public class ClientItemCockpitPanel extends Composite implements ItemCockpitPane
 
     @Override
     public void setBuildupItemPanel(BuildupItemPanel buildupItemPanel) {
-        this.buildupItemPanel.setWidget((IsWidget) buildupItemPanel);
+        this.buildupItemPanel.appendChild(((IsElement) buildupItemPanel).getElement());
     }
 
     @Override
