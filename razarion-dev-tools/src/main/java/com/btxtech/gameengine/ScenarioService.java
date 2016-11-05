@@ -128,7 +128,7 @@ public class ScenarioService implements QuestListener {
         BaseItemType factory = new BaseItemType();
         factory.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(10).setName("Factory");;
         factory.setId(++itemId);
-        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(5));
         FACTORY_ITEM_TYPE = factory;
 
         BaseItemType builder = new BaseItemType();
