@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -46,6 +47,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
         build(baseItemType, fillBuffer);
         alive(baseItemType, fillBuffer);
         harvest(baseItemType, fillBuffer);
+        buildBeam(baseItemType, fillBuffer);
     }
 
     private void spawn(BaseItemType baseItemType, boolean fillBuffer) {
@@ -156,4 +158,36 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
         }
     }
 
+    private void buildBeam(BaseItemType baseItemType, boolean fillBuffer) {
+        if (baseItemType.getBuilderType() != null) {
+            BuilderType builderType = baseItemType.getBuilderType();
+            if(builderType.getAnimationShape3dId() == null) {
+                logger.warning("BaseItemRenderTask: no AnimationShape3dId for build beam in BaseItemType: " + baseItemType);
+                return;
+            }
+            if(builderType.getAnimationOrigin() == null) {
+                logger.warning("BaseItemRenderTask: no AnimationOrigin for build beam in BaseItemType: " + baseItemType);
+                return;
+            }
+
+            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideBuildAnimationModelMatrices(baseItemType));
+            Shape3D shape3D = shape3DUiService.getShape3D(builderType.getAnimationShape3dId());
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+                    compositeRenderer.init(vertexContainer);
+                    compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    if (fillBuffer) {
+                        compositeRenderer.fillBuffers();
+                    }
+                }
+            }
+            add(modelRenderer);
+        }
+    }
 }

@@ -59,6 +59,7 @@ public class SyncBuilder extends SyncBaseAbility {
     private SyncBaseItem currentBuildup;
     private DecimalPosition toBeBuildPosition;
     private BaseItemType toBeBuiltType;
+    private boolean building;
 
     public void init(BuilderType builderType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -71,6 +72,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
     public synchronized boolean tick() {
         if (!isInRange()) {
+            building = false;
             if (!getSyncPhysicalArea().canMove()) {
                 throw new IllegalStateException("SyncBuilder out of range from build position and getSyncPhysicalArea can not move");
             }
@@ -85,6 +87,7 @@ public class SyncBuilder extends SyncBaseAbility {
         }
 
         if (currentBuildup == null) {
+            building = false;
             if (toBeBuiltType == null || toBeBuildPosition == null) {
                 throw new IllegalArgumentException("Invalid attributes |" + toBeBuiltType + "|" + toBeBuildPosition);
             }
@@ -116,9 +119,9 @@ public class SyncBuilder extends SyncBaseAbility {
                 return false;
             }
 
+            building = true;
             double buildFactor = setupBuildFactor();
             if (getSyncBaseItem().getBase().withdrawalResource(buildFactor * (double) toBeBuiltType.getPrice())) {
-                System.out.println(System.currentTimeMillis() + " buildFactor: " + buildFactor + " " + currentBuildup.getBuildup());
                 currentBuildup.addBuildup(buildFactor);
                 if (currentBuildup.isBuildup()) {
                     stop();
@@ -156,6 +159,7 @@ public class SyncBuilder extends SyncBaseAbility {
         currentBuildup = null;
         toBeBuiltType = null;
         toBeBuildPosition = null;
+        building = false;
     }
 
     @Override
@@ -216,5 +220,13 @@ public class SyncBuilder extends SyncBaseAbility {
 
     public BuilderType getBuilderType() {
         return builderType;
+    }
+
+    public boolean isBuilding() {
+        return building;
+    }
+
+    public SyncBaseItem getCurrentBuildup() {
+        return currentBuildup;
     }
 }

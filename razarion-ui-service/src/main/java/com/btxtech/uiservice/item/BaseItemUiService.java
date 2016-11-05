@@ -125,4 +125,18 @@ public class BaseItemUiService {
         }
         return modelMatrices;
     }
+
+    public List<ModelMatrices> provideBuildAnimationModelMatrices(BaseItemType baseItemType) {
+        Collection<SyncBaseItem> builders = syncItemContainerService.getSyncBaseItems4BaseItemType(baseItemType);
+        List<ModelMatrices> modelMatrices = new ArrayList<>();
+        for (SyncBaseItem builder : builders) {
+            if (!builder.getSyncBuilder().isBuilding()) {
+                continue;
+            }
+            Vertex origin = builder.getSyncPhysicalArea().createModelMatrices().getModel().multiply(baseItemType.getBuilderType().getAnimationOrigin(), 1.0);
+            Vertex direction = builder.getSyncBuilder().getCurrentBuildup().getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
+            modelMatrices.add(ModelMatrices.createFromPositionAndDirection(origin, direction));
+        }
+        return modelMatrices;
+    }
 }

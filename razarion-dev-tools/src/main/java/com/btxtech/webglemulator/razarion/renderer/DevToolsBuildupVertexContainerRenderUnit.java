@@ -63,10 +63,8 @@ public class DevToolsBuildupVertexContainerRenderUnit extends AbstractBuildupVer
     @Override
     protected void draw(ModelMatrices modelMatrices, double progressZ) {
         this.modelMatrices = modelMatrices;
-        System.out.println("progressZ (" + System.identityHashCode(this) + "): " + progressZ);
         tmpMaxZ = Double.MIN_VALUE;
         webGlEmulator.drawArrays(webGlProgramEmulator);
-        System.out.println("tmpMaxZ: " + tmpMaxZ);
     }
 
 }

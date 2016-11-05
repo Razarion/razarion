@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import com.btxtech.shared.datatypes.Vertex;
+
 import java.util.List;
 
 /**
@@ -24,6 +26,8 @@ public class BuilderType {
     private double range;
     private double progress;
     private List<Integer> ableToBuild;
+    private Vertex animationOrigin;
+    private Integer animationShape3dId;
 
     public double getRange() {
         return range;
@@ -56,4 +60,21 @@ public class BuilderType {
         return ableToBuild.contains(itemTypeId);
     }
 
+    public Vertex getAnimationOrigin() {
+        return animationOrigin;
+    }
+
+    public BuilderType setAnimationOrigin(Vertex animationOrigin) {
+        this.animationOrigin = animationOrigin;
+        return this;
+    }
+
+    public Integer getAnimationShape3dId() {
+        return animationShape3dId;
+    }
+
+    public BuilderType setAnimationShape3dId(Integer animationShape3dId) {
+        this.animationShape3dId = animationShape3dId;
+        return this;
+    }
 }
