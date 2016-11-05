@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.clip.ClipServiceImpl;
-import com.btxtech.uiservice.renderer.AbstractLoopUpVertexContainerRenderUnit;
+import com.btxtech.uiservice.renderer.AbstractLookUpVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -42,17 +42,17 @@ public class ClipRenderTask extends AbstractRenderTask<ClipConfig> {
 
     private void setupClip(ClipConfig clipConfig, boolean fillBuffer) {
         if (clipConfig.getShape3DId() != null) {
-            ModelRenderer<ClipConfig, CommonRenderComposite<AbstractLoopUpVertexContainerRenderUnit, VertexContainer>, AbstractLoopUpVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            ModelRenderer<ClipConfig, CommonRenderComposite<AbstractLookUpVertexContainerRenderUnit, VertexContainer>, AbstractLookUpVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
             modelRenderer.init(clipConfig, timeStamp -> clipService.provideModelMatrices(clipConfig, timeStamp));
             Shape3D shape3D = shape3DUiService.getShape3D(clipConfig.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                     if (vertexContainer.hasLookUpTextureId()) {
-                        CommonRenderComposite<AbstractLoopUpVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+                        CommonRenderComposite<AbstractLookUpVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                         compositeRenderer.init(vertexContainer);
-                        compositeRenderer.setRenderUnit(AbstractLoopUpVertexContainerRenderUnit.class);
-                        // TODO compositeRenderer.setDepthBufferRenderUnit(AbstractLoopUpVertexContainerRenderUnit.class);
-                        // TODO compositeRenderer.setNormRenderUnit(AbstractLoopUpVertexContainerRenderUnit.class);
+                        compositeRenderer.setRenderUnit(AbstractLookUpVertexContainerRenderUnit.class);
+                        // TODO compositeRenderer.setDepthBufferRenderUnit(AbstractLookUpVertexContainerRenderUnit.class);
+                        // TODO compositeRenderer.setNormRenderUnit(AbstractLookUpVertexContainerRenderUnit.class);
                         compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                         modelRenderer.add(RenderUnitControl.SEMI_TRANSPARENT, compositeRenderer);
                         if (fillBuffer) {

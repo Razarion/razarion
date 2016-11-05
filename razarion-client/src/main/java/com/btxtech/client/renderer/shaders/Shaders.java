@@ -65,6 +65,12 @@ public interface Shaders extends ClientBundle {
     @Source("LoopUpVertexContainer.frag")
     TextResource lookUpVertexContainerFragmentShader();
 
+    @Source("BuildupVertexContainer.vert")
+    TextResource buildupVertexContainerVertexShader();
+
+    @Source("BuildupVertexContainer.frag")
+    TextResource buildupVertexContainerFragmentShader();
+
     @Source("VertexContainerDeptBuffer.vert")
     TextResource vertexContainerDeptBufferVertexShader();
 

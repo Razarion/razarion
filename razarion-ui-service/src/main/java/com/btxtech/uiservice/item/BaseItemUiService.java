@@ -75,7 +75,7 @@ public class BaseItemUiService {
     }
 
     public List<ModelMatrices> provideModelMatrices(BaseItemType baseItemType, boolean spawning, boolean beBuilt) {
-        List<ModelMatrices> modelMatrices = new ArrayList<>();
+        List<ModelMatrices> modelMatricesList = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             if (spawning) {
                 if (!syncBaseItem.isSpawning()) {
@@ -86,7 +86,7 @@ public class BaseItemUiService {
                     return null;
                 }
             }
-            if(beBuilt) {
+            if (beBuilt) {
                 if (syncBaseItem.isBuildup()) {
                     return null;
                 }
@@ -98,11 +98,17 @@ public class BaseItemUiService {
             if (!syncBaseItem.getBaseItemType().equals(baseItemType)) {
                 return null;
             }
-            modelMatrices.add(syncBaseItem.createModelMatrices().setProgress(syncBaseItem.getSpawnProgress()));
+            ModelMatrices modelMatrices = syncBaseItem.createModelMatrices();
+            if (spawning) {
+                modelMatrices.setProgress(syncBaseItem.getSpawnProgress());
+            } else if (beBuilt) {
+                modelMatrices.setProgress(syncBaseItem.getBuildup());
+            }
+            modelMatricesList.add(modelMatrices);
 
             return null;
         });
-        return modelMatrices;
+        return modelMatricesList;
     }
 
     public List<ModelMatrices> provideHarvestAnimationModelMatrices(BaseItemType baseItemType) {

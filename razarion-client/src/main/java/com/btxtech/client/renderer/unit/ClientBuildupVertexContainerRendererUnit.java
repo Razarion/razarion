@@ -5,11 +5,13 @@ import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.renderer.AbstractLookUpVertexContainerRenderUnit;
+import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -25,7 +27,7 @@ import javax.inject.Inject;
  */
 @ColorBufferRenderer
 @Dependent
-public class ClientLookUpVertexContainerRendererUnit extends AbstractLookUpVertexContainerRenderUnit {
+public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVertexContainerRenderUnit {
     // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
@@ -38,15 +40,18 @@ public class ClientLookUpVertexContainerRendererUnit extends AbstractLookUpVerte
     @Inject
     private BaseItemUiService baseItemUiService;
     private VertexShaderAttribute positions;
+    private VertexShaderAttribute norms;
     private ShaderTextureCoordinateAttribute textureCoordinateAttribute;
     private WebGlUniformTexture texture;
-    private WebGlUniformTexture textureGradient;
+    private Color ambient;
+    private Color diffuse;
 
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.lookUpVertexContainerVertexShader(), Shaders.INSTANCE.lookUpVertexContainerFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.buildupVertexContainerVertexShader(), Shaders.INSTANCE.buildupVertexContainerFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        norms = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         textureCoordinateAttribute = webGlFacade.createShaderTextureCoordinateAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
         webGlFacade.enableReceiveShadow();
     }
@@ -58,29 +63,42 @@ public class ClientLookUpVertexContainerRendererUnit extends AbstractLookUpVerte
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
         texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
-        textureGradient = webGlFacade.createWebGLTexture(vertexContainer.getLookUpTextureId(), "uLookUpSampler");
         positions.fillBuffer(vertexContainer.getVertices());
+        norms.fillBuffer(vertexContainer.getNorms());
         textureCoordinateAttribute.fillBuffer(vertexContainer.getTextureCoordinates());
+
+        ambient = vertexContainer.getAmbient();
+        diffuse = vertexContainer.getDiffuse();
     }
 
     @Override
-    protected void prepareDraw() {
+    protected void prepareDraw(Matrix4 buildupMatrix) {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_NORM_MATRIX, camera.createNormMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
 
+        webGlFacade.uniform3fNoAlpha("uLightingAmbient", ambient);
+        webGlFacade.uniform3f("uLightingDirection", visualUiService.getShape3DLightDirection());
+        webGlFacade.uniform3fNoAlpha("uLightingDiffuse", diffuse);
+        webGlFacade.uniformMatrix4fv("buildupMatrix", buildupMatrix);
+        // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
+        // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
+
+        webGlFacade.activateReceiveShadow();
+
         texture.activate();
-        textureGradient.activate();
         positions.activate();
+        norms.activate();
         textureCoordinateAttribute.activate();
     }
 
     @Override
-    protected void draw(ModelMatrices modelMatrices) {
+    protected void draw(ModelMatrices modelMatrices, double progressZ) {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniform1f("progress", modelMatrices.getProgress());
-
+        webGlFacade.uniformMatrix4fv("uNMMatrix", modelMatrices.getNorm());
+        webGlFacade.uniform1f("progressZ", progressZ);
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

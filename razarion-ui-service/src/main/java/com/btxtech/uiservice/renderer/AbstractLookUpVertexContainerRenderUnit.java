@@ -8,7 +8,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 29.07.2016.
  */
-public abstract class AbstractLoopUpVertexContainerRenderUnit extends AbstractRenderUnit<VertexContainer> {
+public abstract class AbstractLookUpVertexContainerRenderUnit extends AbstractRenderUnit<VertexContainer> {
     private Logger logger = Logger.getLogger(AbstractVertexContainerRenderUnit.class.getName());
 
     protected abstract void internalFillBuffers(VertexContainer vertexContainer);

@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.AbstractLookUpVertexContainerRenderUnit;
+import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
@@ -25,7 +25,7 @@ import javax.inject.Inject;
  */
 @ColorBufferRenderer
 @DepthBufferRenderer
-public class DevToolsLookUpVertexContainerRenderUnit extends AbstractLookUpVertexContainerRenderUnit implements VertexShader {
+public class DevToolsBuildupVertexContainerRenderUnit extends AbstractBuildupVertexContainerRenderUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -34,6 +34,8 @@ public class DevToolsLookUpVertexContainerRenderUnit extends AbstractLookUpVerte
     private WebGlEmulator webGlEmulator;
     private WebGlProgramEmulator webGlProgramEmulator;
     private ModelMatrices modelMatrices;
+    private Matrix4 buildupMatrix;
+    private double tmpMaxZ;
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
@@ -48,19 +50,23 @@ public class DevToolsLookUpVertexContainerRenderUnit extends AbstractLookUpVerte
 
     @Override
     public Vertex4 runShader(Vertex vertex) {
+        tmpMaxZ = Math.max(tmpMaxZ, buildupMatrix.multiply(vertex, 1.0).getZ());
         Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix().multiply(modelMatrices.getModel()));
         return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
     }
 
     @Override
-    protected void prepareDraw() {
-        // Ignore
+    protected void prepareDraw(Matrix4 buildupMatrix) {
+        this.buildupMatrix = buildupMatrix;
     }
 
     @Override
-    protected void draw(ModelMatrices modelMatrices) {
+    protected void draw(ModelMatrices modelMatrices, double progressZ) {
         this.modelMatrices = modelMatrices;
+        System.out.println("progressZ (" + System.identityHashCode(this) + "): " + progressZ);
+        tmpMaxZ = Double.MIN_VALUE;
         webGlEmulator.drawArrays(webGlProgramEmulator);
+        System.out.println("tmpMaxZ: " + tmpMaxZ);
     }
 
 }
