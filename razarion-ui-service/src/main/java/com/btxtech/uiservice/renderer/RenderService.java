@@ -1,17 +1,14 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
-import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ClipRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
-import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
-import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
-import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
-import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -32,6 +29,8 @@ public abstract class RenderService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private Instance<AbstractRenderTask> instance;
+    @Inject
+    private PerfmonService perfmonService;
     private List<AbstractRenderTask> renderTasks = new ArrayList<>();
     private boolean showNorm;
 
@@ -65,22 +64,29 @@ public abstract class RenderService {
     }
 
     public void render() {
-        long timeStamp = System.currentTimeMillis();
-        renderTasks.forEach(renderTask -> renderTask.prepareRender(timeStamp));
-        prepareDepthBufferRendering();
-        renderTasks.forEach(AbstractRenderTask::drawDepthBuffer);
-        prepareMainRendering();
+        try {
+            perfmonService.onEntered(PerfmonEnum.RENDERER);
+            long timeStamp = System.currentTimeMillis();
+            renderTasks.forEach(renderTask -> renderTask.prepareRender(timeStamp));
+            prepareDepthBufferRendering();
+            renderTasks.forEach(AbstractRenderTask::drawDepthBuffer);
+            prepareMainRendering();
 
-        for (RenderUnitControl renderUnitControl : RenderUnitControl.getRenderUnitControls()) {
-            prepare(renderUnitControl);
-            renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(renderUnitControl));
-        }
-        prepare(RenderUnitControl.NORMAL);
+            for (RenderUnitControl renderUnitControl : RenderUnitControl.getRenderUnitControls()) {
+                prepare(renderUnitControl);
+                renderTasks.forEach(abstractRenderTask -> abstractRenderTask.draw(renderUnitControl));
+            }
+            prepare(RenderUnitControl.NORMAL);
 
-        if (showNorm) {
-            // depthTest(false);
-            renderTasks.forEach(AbstractRenderTask::drawNorm);
-            // depthTest(true);
+            if (showNorm) {
+                // depthTest(false);
+                renderTasks.forEach(AbstractRenderTask::drawNorm);
+                // depthTest(true);
+            }
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        } finally {
+            perfmonService.onLeft(PerfmonEnum.RENDERER);
         }
     }
 

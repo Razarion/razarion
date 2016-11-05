@@ -3,9 +3,12 @@ package com.btxtech.gameengine;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.shared.system.perfmon.StatisticEntry;
 import com.btxtech.webglemulator.razarion.DevToolFutureControl;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,6 +22,7 @@ import javafx.scene.layout.Pane;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
+import java.util.Collection;
 import java.util.ResourceBundle;
 
 /**
@@ -55,6 +59,8 @@ public class GameEngineMonitorController implements Initializable {
     private DevToolsSimpleExecutorServiceImpl devToolsSimpleExecutorService;
     @Inject
     private PlanetService planetService;
+    @Inject
+    private PerfmonService perfmonService;
     private int delay = PlanetService.TICK_TIME_MILLI_SECONDS;
     // private List<Collection<Unit>> backups = new ArrayList<>();
     private SyncItemSidePaneController hoverSyncItemSidePaneController;
@@ -249,5 +255,14 @@ public class GameEngineMonitorController implements Initializable {
                 hoverSyncItemSidePaneController = null;
             });
         }
+    }
+
+    public void onPerfmonButtonClicked() {
+        Collection<StatisticEntry> statisticEntries = perfmonService.analyse();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        for (StatisticEntry statisticEntry : statisticEntries) {
+            System.out.println(statisticEntry.toInfoString());
+        }
+        System.out.println("---------------------------------------------------------------------------------------------------------");
     }
 }

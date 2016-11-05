@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class GameCanvas {
     private WebGLRenderingContext ctx3d;
-    private double lastTimestamp = 0;
     // @Inject does not work
     private Logger logger = Logger.getLogger(GameCanvas.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -122,11 +121,7 @@ public class GameCanvas {
             @Override
             public void execute(double timestamp) {
                 try {
-                    if (lastTimestamp != 0) {
-                        WebGlUtil.checkLastWebGlError("clear", ctx3d);
-                        renderService.render();
-                    }
-                    lastTimestamp = timestamp;
+                    renderService.render();
                 } catch (Throwable t) {
                     logger.log(Level.SEVERE, "AnimationScheduler execute failed", t);
                 }

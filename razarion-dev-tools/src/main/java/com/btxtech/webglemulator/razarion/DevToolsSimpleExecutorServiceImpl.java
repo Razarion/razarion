@@ -27,7 +27,7 @@ public class DevToolsSimpleExecutorServiceImpl implements SimpleExecutorService 
     public SimpleScheduledFuture schedule(long delayMilliS, Runnable runnable, Type type) {
         DevToolsSimpleScheduledFutureImpl scheduledFuture = devToolsSimpleScheduledFutures.get();
         futures.put(type, scheduledFuture);
-        scheduledFuture.init(scheduler, delayMilliS, false, runnable, futureControls.get(type));
+        scheduledFuture.init(scheduler, delayMilliS, false, type.getPerfmonEnum(), runnable, futureControls.get(type));
         scheduledFuture.start();
         return scheduledFuture;
     }
@@ -36,7 +36,7 @@ public class DevToolsSimpleExecutorServiceImpl implements SimpleExecutorService 
     public SimpleScheduledFuture scheduleAtFixedRate(long delayMilliS, boolean start, Runnable runnable, Type type) {
         DevToolsSimpleScheduledFutureImpl scheduledFuture = devToolsSimpleScheduledFutures.get();
         futures.put(type, scheduledFuture);
-        scheduledFuture.init(scheduler, delayMilliS, true, runnable, futureControls.get(type));
+        scheduledFuture.init(scheduler, delayMilliS, true, type.getPerfmonEnum(), runnable, futureControls.get(type));
         if (start) {
             scheduledFuture.start();
         }

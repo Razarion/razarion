@@ -2,8 +2,11 @@ package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleScheduledFuture;
+import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.shared.system.perfmon.PerfmonEnum;
 
 import javax.inject.Inject;
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -15,18 +18,22 @@ import java.util.concurrent.TimeUnit;
 public class DevToolsSimpleScheduledFutureImpl implements SimpleScheduledFuture, Runnable {
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private PerfmonService perfmonService;
     private ScheduledFuture scheduledFuture;
     private ScheduledExecutorService scheduler;
     private long delayMilliS;
     private boolean repeating;
+    private Optional<PerfmonEnum> perfmonEnum;
     private Runnable runnable;
     private DevToolFutureControl devToolFutureControl;
 
-    public void init(ScheduledExecutorService scheduler, long delayMilliS, boolean repeating, Runnable runnable, DevToolFutureControl devToolFutureControl) {
+    public void init(ScheduledExecutorService scheduler, long delayMilliS, boolean repeating, PerfmonEnum perfmonEnum, Runnable runnable, DevToolFutureControl devToolFutureControl) {
         this.scheduler = scheduler;
         this.delayMilliS = delayMilliS;
         this.repeating = repeating;
         this.runnable = runnable;
+        this.perfmonEnum = Optional.ofNullable(perfmonEnum);
         setDevToolFutureControl(devToolFutureControl);
     }
 
@@ -57,12 +64,15 @@ public class DevToolsSimpleScheduledFutureImpl implements SimpleScheduledFuture,
             if (!repeating) {
                 scheduledFuture = null;
             }
+            perfmonEnum.ifPresent(perfmonService::onEntered);
             runnable.run();
             if (devToolFutureControl != null) {
                 devToolFutureControl.onAfterRun();
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
+        } finally {
+            perfmonEnum.ifPresent(perfmonService::onLeft);
         }
     }
 

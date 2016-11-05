@@ -7,9 +7,11 @@ import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.shared.system.perfmon.StatisticEntry;
 import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
@@ -21,6 +23,7 @@ import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -45,6 +48,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -114,6 +118,8 @@ public class WebGlEmulatorController implements Initializable {
     private InventoryUiService inventoryUiService;
     @Inject
     private StoryboardService storyboardService;
+    @Inject
+    private PerfmonService perfmonService;
     private DecimalPosition lastCanvasPosition;
 
     @Override
@@ -383,5 +389,14 @@ public class WebGlEmulatorController implements Initializable {
             System.out.println("pressed: " + inventoryItem);
             inventoryUiService.useItem(inventoryItem);
         });
+    }
+
+    public void onPerfomButtonClicked() {
+        Collection<StatisticEntry> statisticEntries = perfmonService.analyse();
+        System.out.println("---------------------------------------------------------------------------------------------------------");
+        for (StatisticEntry statisticEntry : statisticEntries) {
+            System.out.println(statisticEntry.toInfoString());
+        }
+        System.out.println("---------------------------------------------------------------------------------------------------------");
     }
 }
