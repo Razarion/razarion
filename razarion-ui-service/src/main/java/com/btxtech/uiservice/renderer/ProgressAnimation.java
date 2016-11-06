@@ -16,14 +16,16 @@ import java.util.List;
 public class ProgressAnimation {
     private ModelMatrixAnimation modelMatrixAnimation;
     private List<ProgressAnimationSamples> progressAnimationSamples;
+    private long totalTime;
 
     public ProgressAnimation(ModelMatrixAnimation modelMatrixAnimation) {
         this.modelMatrixAnimation = modelMatrixAnimation;
         progressAnimationSamples = new ArrayList<>();
         long beginTimeStamp = modelMatrixAnimation.firstTimeStamp();
         long endTimeStamp = modelMatrixAnimation.lastTimeStamp();
+        totalTime = endTimeStamp - beginTimeStamp;
         for (TimeValueSample timeValueSample : modelMatrixAnimation.getTimeValueSamples()) {
-            double progress = (double) (timeValueSample.getTimeStamp() - beginTimeStamp) / (double) (endTimeStamp - beginTimeStamp);
+            double progress = (double) (timeValueSample.getTimeStamp() - beginTimeStamp) / (double) totalTime;
             progressAnimationSamples.add(new ProgressAnimationSamples(progress, timeValueSample.getValue()));
         }
     }
@@ -35,6 +37,10 @@ public class ProgressAnimation {
 
     public AnimationTrigger getAnimationTrigger() {
         return modelMatrixAnimation.getAnimationTrigger();
+    }
+
+    public long getTotalTime() {
+        return totalTime;
     }
 
     private double calculateValue(double progress) {

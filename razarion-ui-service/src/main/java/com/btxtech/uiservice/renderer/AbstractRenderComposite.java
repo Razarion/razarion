@@ -91,8 +91,8 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
                         progressAnimation.dispatch(shapeTransformTRS, modelMatrix.getProgress());
                         break;
                     case CONTINUES:
-                        throw new UnsupportedOperationException();
-                        // break;
+                        progressAnimation.dispatch(shapeTransformTRS, setupContinuesAnimationProgress(progressAnimation));
+                        break;
                     default:
                         throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
                 }
@@ -104,6 +104,13 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
                 return modelMatrix.multiply(matrix, matrix.normTransformation());
             }
         }
+    }
+
+    private double setupContinuesAnimationProgress(ProgressAnimation progressAnimation) {
+        int millis = (int) (System.currentTimeMillis() % progressAnimation.getTotalTime());
+        double progress =  (double) millis / (double) progressAnimation.getTotalTime();
+        System.out.println(progress);
+        return progress;
     }
 
     public void prepareDraw() {
