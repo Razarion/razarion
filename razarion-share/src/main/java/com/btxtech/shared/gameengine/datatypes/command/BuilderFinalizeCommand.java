@@ -13,36 +13,26 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
-import com.btxtech.shared.datatypes.Index;
-
 /**
  * User: beat
  * Date: Sep 12, 2010
  * Time: 1:04:16 PM
  */
 public class BuilderFinalizeCommand extends PathToDestinationCommand {
-    private int toBeBuilt;
-    private Index destinationHint;
+    private int buildingId;
 
-    public int getToBeBuilt() {
-        return toBeBuilt;
+    public int getBuildingId() {
+        return buildingId;
     }
 
-    public void setToBeBuilt(int toBeBuilt) {
-        this.toBeBuilt = toBeBuilt;
-    }
-
-    public Index getDestinationHint() {
-        return destinationHint;
-    }
-
-    public void setDestinationHint(Index destinationHint) {
-        this.destinationHint = destinationHint;
+    public void setBuildingId(int buildingId) {
+        this.buildingId = buildingId;
     }
 
     @Override
     public String toString() {
-        return super.toString() + " toBeBuilt: " + toBeBuilt;
+        return "BuilderFinalizeCommand{" +
+                "buildingId=" + buildingId +
+                '}';
     }
-
 }

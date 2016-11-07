@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
+import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
@@ -70,8 +71,23 @@ public class CommandService { // Is part of the Base service
         executeCommand(builderCommand);
     }
 
-    public void finalizeBuild(Collection<SyncBaseItem> syncBaseItems, SyncBaseItem building) {
-        throw new UnsupportedOperationException();
+    public void finalizeBuild(SyncBaseItem builder, SyncBaseItem building) {
+        BuilderFinalizeCommand builderFinalizeCommand = new BuilderFinalizeCommand();
+        builderFinalizeCommand.setId(builder.getId());
+        builderFinalizeCommand.setTimeStamp();
+        builderFinalizeCommand.setBuildingId(building.getId());
+        Path path = pathingService.setupPathToDestination(builder, building.getSyncPhysicalArea().getXYPosition());
+        if (moveIfPathTargetUnreachable(builder, path)) {
+            return;
+        }
+        builderFinalizeCommand.setPathToDestination(path);
+        executeCommand(builderFinalizeCommand);
+    }
+
+    public void finalizeBuild(Collection<SyncBaseItem> builders, SyncBaseItem building) {
+        for (SyncBaseItem builder : builders) {
+            finalizeBuild(builder, building);
+        }
     }
 
     public void fabricate(Collection<SyncBaseItem> factories, BaseItemType itemTypeToBuild) {

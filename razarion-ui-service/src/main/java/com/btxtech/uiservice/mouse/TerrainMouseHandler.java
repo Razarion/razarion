@@ -140,7 +140,11 @@ public class TerrainMouseHandler {
                         selectionHandler.setTargetSelected(syncItem);
                     } else if (syncItem instanceof SyncBaseItem) {
                         SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                        if (!storyboardService.isMyOwnProperty(syncBaseItem)) {
+                        if (storyboardService.isMyOwnProperty(syncBaseItem)) {
+                            if (!syncBaseItem.isBuildup() && selectionHandler.atLeastOneItemTypeAllowed2FinalizeBuild(syncBaseItem)) {
+                                commandService.finalizeBuild(selectionHandler.getAllowed2FinalizeBuild(syncBaseItem), syncBaseItem);
+                            }
+                        } else {
                             selectionHandler.setTargetSelected(syncBaseItem);
                         }
                     } else if (syncItem instanceof SyncBoxItem) {

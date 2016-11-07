@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
+import com.btxtech.shared.utils.MathHelper;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -26,9 +27,12 @@ import java.util.List;
  */
 public class ExtendedGraphicsContext {
     private static final Color BASE_ITEM_TYPE_COLOR = new Color(0, 0, 1, 1);
+    private static final Color BASE_ITEM_TYPE_LINE_COLOR = new Color(0, 0.3, 0, 1);
+    private static final Color BASE_ITEM_TYPE_HEADING_COLOR = new Color(1, 0.3, 0, 1);
     private static final Color RESOURCE_ITEM_TYPE_COLOR = new Color(0.8, 0.8, 0, 1);
     private static final Color BOX_ITEM_TYPE_COLOR = new Color(1, 0.0, 1, 1);
     private static final Color TERRAIN_OBSTACLE_COLOR = new Color(0, 0, 0, 0.5);
+    private static final double SYNC_ITEM_DISPLAY_FRONT_ANGEL = MathHelper.gradToRad(60);
 
     private GraphicsContext gc;
 
@@ -156,9 +160,61 @@ public class ExtendedGraphicsContext {
         } else {
             throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
         }
-        gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
+        if (syncItem.getSyncPhysicalArea().canTurn()) {
+            fillPolygon(syncItem);
+            gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
+            gc.setLineWidth(0.1);
+            strokePolygon(syncItem);
+            gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
+            gc.setLineWidth(0.5);
+            createHeadingLine(syncItem);
+        } else {
+            gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
+        }
+
         // DecimalPosition direction = DecimalPosition.createVector(syncItem.getAngle(), syncItem.getRadius()).add(position);
         // gc.strokeLine(position.startX(), position.startY(), direction.startX(), direction.startY());
+    }
+
+    private void fillPolygon(SyncItem syncItem) {
+        DecimalPosition middle = syncItem.getSyncPhysicalArea().getXYPosition();
+        double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+        double angel2 = syncItem.getSyncPhysicalArea().getAngle() + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+        double angel3 = angel1 + MathHelper.HALF_RADIANT;
+        double angel4 = angel2 + MathHelper.HALF_RADIANT;
+
+        DecimalPosition point1 = middle.getPointWithDistance(angel1, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point2 = middle.getPointWithDistance(angel2, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point3 = middle.getPointWithDistance(angel3, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point4 = middle.getPointWithDistance(angel4, syncItem.getSyncPhysicalArea().getRadius());
+
+        gc.fillPolygon(new double[]{point1.getX(), point2.getX(), point3.getX(), point4.getX()}, new double[]{point1.getY(), point2.getY(), point3.getY(), point4.getY()}, 4);
+    }
+
+    private void strokePolygon(SyncItem syncItem) {
+        double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+        double angel2 = syncItem.getSyncPhysicalArea().getAngle() + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+        double angel3 = angel1 + MathHelper.HALF_RADIANT;
+        double angel4 = angel2 + MathHelper.HALF_RADIANT;
+
+        DecimalPosition middle = syncItem.getSyncPhysicalArea().getXYPosition();
+        DecimalPosition point1 = middle.getPointWithDistance(angel1, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point2 = middle.getPointWithDistance(angel2, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point3 = middle.getPointWithDistance(angel3, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point4 = middle.getPointWithDistance(angel4, syncItem.getSyncPhysicalArea().getRadius());
+
+        gc.strokePolygon(new double[]{point1.getX(), point2.getX(), point3.getX(), point4.getX()}, new double[]{point1.getY(), point2.getY(), point3.getY(), point4.getY()}, 4);
+    }
+
+    private void createHeadingLine(SyncItem syncItem) {
+        double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+        double angel2 = syncItem.getSyncPhysicalArea().getAngle() + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+
+        DecimalPosition middle = syncItem.getSyncPhysicalArea().getXYPosition();
+        DecimalPosition point1 = middle.getPointWithDistance(angel1, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point2 = middle.getPointWithDistance(angel2, syncItem.getSyncPhysicalArea().getRadius());
+
+        gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
     }
 
     public void drawObstacle(Obstacle obstacle) {

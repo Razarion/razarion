@@ -76,6 +76,17 @@ public class SelectionHandler {
         return selectedGroup == null || selectedGroup.atLeastOneItemTypeAllowed2FinalizeBuild(tobeFinalized);
     }
 
+    public Collection<SyncBaseItem> getAllowed2FinalizeBuild(SyncBaseItem ableToBuild) {
+        if(selectedGroup == null) {
+            throw new IllegalStateException("selectedGroup == null");
+        }
+        Collection<SyncBaseItem> builders = selectedGroup.getBuilders(ableToBuild.getBaseItemType());
+        if(builders.isEmpty()) {
+            throw new IllegalStateException("builders.isEmpty()");
+        }
+        return builders;
+    }
+
     public void setTargetSelected(SyncItem target) {
         if (selectedGroup != null) {
             if (selectedGroup.canAttack() && target instanceof SyncBaseItem) {

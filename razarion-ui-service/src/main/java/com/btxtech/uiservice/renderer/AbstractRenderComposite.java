@@ -109,7 +109,6 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
     private double setupContinuesAnimationProgress(ProgressAnimation progressAnimation) {
         int millis = (int) (System.currentTimeMillis() % progressAnimation.getTotalTime());
         double progress =  (double) millis / (double) progressAnimation.getTotalTime();
-        System.out.println(progress);
         return progress;
     }
 

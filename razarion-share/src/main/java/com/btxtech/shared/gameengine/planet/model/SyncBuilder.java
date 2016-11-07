@@ -99,6 +99,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 currentBuildup = (SyncBaseItem) baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, getSyncBaseItem().getBase(), getSyncBaseItem());
                 activityService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
                 toBeBuildPosition = null;
+                toBeBuiltType = null;
                 return true;
             } catch (ItemLimitExceededException e) {
                 stop();
@@ -121,7 +122,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
             building = true;
             double buildFactor = setupBuildFactor();
-            if (getSyncBaseItem().getBase().withdrawalResource(buildFactor * (double) toBeBuiltType.getPrice())) {
+            if (getSyncBaseItem().getBase().withdrawalResource(buildFactor * (double) currentBuildup.getBaseItemType().getPrice())) {
                 currentBuildup.addBuildup(buildFactor);
                 if (currentBuildup.isBuildup()) {
                     stop();
@@ -207,15 +208,14 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     public synchronized void executeCommand(BuilderFinalizeCommand builderFinalizeCommand) throws NoSuchItemTypeException, ItemDoesNotExistException {
-        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(builderFinalizeCommand.getToBeBuilt());
+        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(builderFinalizeCommand.getBuildingId());
         if (!builderType.checkAbleToBuild(syncBaseItem.getItemType().getId())) {
-            throw new IllegalArgumentException(this + " can not build: " + builderFinalizeCommand.getToBeBuilt());
+            throw new IllegalArgumentException(this + " can not build: " + builderFinalizeCommand.getBuildingId());
         }
 
         currentBuildup = syncBaseItem;
         toBeBuiltType = syncBaseItem.getBaseItemType();
-        // TODO toBeBuildPosition = syncBaseItem.getSyncItemArea().toIndex();
-        setPathToDestinationIfSyncMovable(builderFinalizeCommand.getPathToDestination());
+        getSyncPhysicalMovable().setDestination(builderFinalizeCommand.getPathToDestination());
     }
 
     public BuilderType getBuilderType() {

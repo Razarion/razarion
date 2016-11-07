@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * Time: 14:39:38
  */
 // See: com.btxtech.shared.gameengine.planet.pathing.Unit (before 16.09.2016, git ref: 2c78588f58aa2863f5c49a5a4d44662467c8be1e)
-public class SyncPhysicalMovable extends SyncPhysicalDirection {
+public class SyncPhysicalMovable extends SyncPhysicalTurner {
     private final static int LOOK_AHEAD_TICKS = 20;
     private double lookAheadDistance;
     private double acceleration; // Pixel per square second

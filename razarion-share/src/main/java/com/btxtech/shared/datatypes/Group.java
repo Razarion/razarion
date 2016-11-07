@@ -16,6 +16,7 @@ package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
@@ -164,6 +165,10 @@ public class Group {
 
     public Collection<SyncBaseItem> getMovables() {
         return syncBaseItems.stream().filter(syncBaseItem -> syncBaseItem.getSyncPhysicalArea().canMove()).collect(Collectors.toList());
+    }
+
+    public Collection<SyncBaseItem> getBuilders(BaseItemType ableToBuild) {
+        return syncBaseItems.stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().getBuilderType() != null && syncBaseItem.getBaseItemType().getBuilderType().checkAbleToBuild(ableToBuild.getId())).collect(Collectors.toList());
     }
 
     public int count() {

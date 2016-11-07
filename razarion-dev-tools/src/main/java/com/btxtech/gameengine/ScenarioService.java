@@ -43,6 +43,7 @@ import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
@@ -93,7 +94,7 @@ public class ScenarioService implements QuestListener {
     @Inject
     private QuestService questService;
     private List<ScenarioProvider> scenes = new ArrayList<>();
-    private int number = 44;
+    private int number = 45;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture backgroundWorker;
 
@@ -128,7 +129,7 @@ public class ScenarioService implements QuestListener {
         BaseItemType factory = new BaseItemType();
         factory.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(10).setName("Factory");;
         factory.setId(++itemId);
-        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(5));
+        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5));
         FACTORY_ITEM_TYPE = factory;
 
         BaseItemType builder = new BaseItemType();
@@ -882,7 +883,7 @@ public class ScenarioService implements QuestListener {
                 botCommandConfigs.add(commandConfig);
             }
         });
-        // BotKillOtherBotCommandConfig
+        // Build
         // 44
         scenes.add(new ScenarioProvider() {
             @Override
@@ -893,6 +894,21 @@ public class ScenarioService implements QuestListener {
             @Override
             public void executeCommands(CommandService commandService) {
                 commandService.build(getFirstCreatedSyncBaseItem(), new DecimalPosition(20, 0), FACTORY_ITEM_TYPE);
+            }
+        });
+        // FinalizeBuild
+        // 45
+        scenes.add(new ScenarioProvider() {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItem(BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                SyncBaseItem factory = createSyncBaseItem(FACTORY_ITEM_TYPE, new DecimalPosition(0, 20), null);
+                factory.setBuildup(0.5);
+            }
+
+            @Override
+            public void executeCommands(CommandService commandService) {
+                commandService.finalizeBuild(getFirstCreatedSyncBaseItem(), getSecondCreatedSyncBaseItem());
             }
         });
     }

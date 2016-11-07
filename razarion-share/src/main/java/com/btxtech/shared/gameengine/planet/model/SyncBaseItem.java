@@ -408,7 +408,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
     }
 
-    public SyncPhysicalDirection getSyncMovable() {
+    public SyncPhysicalTurner getSyncMovable() {
         throw new UnsupportedOperationException();
 
         // if (syncMovable == null) {

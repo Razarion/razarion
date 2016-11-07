@@ -79,13 +79,14 @@ public class ScenarioProvider {
         createSyncItems();
     }
 
-    protected void createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, DecimalPosition destination) {
+    protected SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, DecimalPosition destination) {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, playerBase, true);
             if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
                 ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setDestination(destination);
             }
             createdSyncBaseItems.add(syncBaseItem);
+            return syncBaseItem;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -132,6 +133,10 @@ public class ScenarioProvider {
 
     protected SyncBaseItem getFirstCreatedSyncBaseItem() {
         return getCreatedSyncBaseItems(0);
+    }
+
+    protected SyncBaseItem getSecondCreatedSyncBaseItem() {
+        return getCreatedSyncBaseItems(1);
     }
 
     protected SyncBoxItem getCreatedSyncBoxItems(int index) {
