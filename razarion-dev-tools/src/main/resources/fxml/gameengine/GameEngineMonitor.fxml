@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="902.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.gameengine.GameEngineMonitorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1186.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.gameengine.GameEngineMonitorController">
     <center>
         <SplitPane dividerPositions="0.1" orientation="HORIZONTAL" prefHeight="200.0" prefWidth="160.0">
             <items>
@@ -64,7 +64,7 @@
                                 <Button mnemonicParsing="false" onAction="#onPrevScenario" text="Prev" />
                                 <Button mnemonicParsing="false" onAction="#onRestartScenario" text="Restart" />
                                 <Button mnemonicParsing="false" onAction="#onNextScenario" text="Next" />
-                                <TextField fx:id="scenarioField" editable="false" prefColumnCount="5" />
+                                <TextField fx:id="scenarioField" editable="false" prefColumnCount="5" prefHeight="25.0" prefWidth="372.0" />
                             </children>
                         </HBox>
                         <TextField fx:id="mouseField" alignment="TOP_RIGHT" editable="false" prefColumnCount="8" />

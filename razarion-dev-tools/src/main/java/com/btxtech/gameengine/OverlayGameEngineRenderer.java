@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.projectile.Projectile;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;

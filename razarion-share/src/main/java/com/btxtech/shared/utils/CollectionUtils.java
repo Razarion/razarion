@@ -12,12 +12,20 @@ import java.util.List;
  */
 public class CollectionUtils {
 
+    public static <T> T safeListAccess(List<T> list, int index) {
+        return list.get(getCorrectedIndex(index, list));
+    }
+
     public static int getCorrectedIndex(int index, int listSize) {
         int correctedIndex = index % listSize;
         if (correctedIndex < 0) {
             correctedIndex += listSize;
         }
         return correctedIndex;
+    }
+
+    public static int getCorrectedIndex(int index, List list) {
+        return getCorrectedIndex(index, list.size());
     }
 
     public static double[][] to2dArray(List<List<Double>> list) {

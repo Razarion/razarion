@@ -1,5 +1,6 @@
 package com.btxtech.gameengine;
 
+import com.btxtech.gameengine.scenarios.ScenarioService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -8,7 +9,6 @@ import com.btxtech.shared.system.perfmon.StatisticEntry;
 import com.btxtech.webglemulator.razarion.DevToolFutureControl;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -128,22 +128,22 @@ public class GameEngineMonitorController implements Initializable {
     }
 
     public void onNextScenario() {
-        scenarioService.initNext();
-        scenarioField.setText(Integer.toString(scenarioService.getNumber()));
+        scenarioService.startNextScenario();
+        scenarioField.setText(scenarioService.getCurrentName());
         // backups.clear();
         onRun();
     }
 
     public void onRestartScenario() {
-        scenarioService.initCurrent();
-        scenarioField.setText(Integer.toString(scenarioService.getNumber()));
+        scenarioService.restartCurrentScenario();
+        scenarioField.setText(scenarioService.getCurrentName());
         // backups.clear();
         onRun();
     }
 
     public void onPrevScenario() {
-        scenarioService.initPrevious();
-        scenarioField.setText(Integer.toString(scenarioService.getNumber()));
+        scenarioService.startPreviousScenario();
+        scenarioField.setText(scenarioService.getCurrentName());
         // backups.clear();
         onRun();
     }

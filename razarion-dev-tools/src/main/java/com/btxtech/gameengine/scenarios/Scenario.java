@@ -1,4 +1,4 @@
-package com.btxtech.gameengine;
+package com.btxtech.gameengine.scenarios;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
@@ -31,7 +31,8 @@ import java.util.List;
  * Created by Beat
  * 19.09.2016.
  */
-public class ScenarioProvider {
+public class Scenario {
+    private String name;
     private BaseItemService baseItemService;
     private ResourceService resourceService;
     private BoxService boxService;
@@ -40,6 +41,15 @@ public class ScenarioProvider {
     private List<SyncBaseItem> createdSyncBaseItems = new ArrayList<>();
     private List<SyncBoxItem> createdSyncBoxItems = new ArrayList<>();
     private BotService botService;
+    private ScenarioSuite scenarioSuite;
+
+    public Scenario(String name) {
+        this.name = name;
+    }
+
+    public void setScenarioSuite(ScenarioSuite scenarioSuite) {
+        this.scenarioSuite = scenarioSuite;
+    }
 
     // Override in subclasses
     protected void createSyncItems() {
@@ -69,6 +79,16 @@ public class ScenarioProvider {
     // Override in subclasses
     public QuestConfig setupQuest() {
         return null;
+    }
+
+    // Override in subclasses
+    public void stop() {
+
+    }
+
+    // Override in subclasses
+    public boolean isStart() {
+        return false;
     }
 
     public void setupSyncItems(BaseItemService baseItemService, PlayerBase playerBase, ResourceService resourceService, BoxService boxService) {
@@ -146,4 +166,10 @@ public class ScenarioProvider {
     protected SyncBoxItem getFirstCreatedSyncBoxItem() {
         return getCreatedSyncBoxItems(0);
     }
+
+    @Override
+    public String toString() {
+        return scenarioSuite.getName() + "->" + name;
+    }
+
 }

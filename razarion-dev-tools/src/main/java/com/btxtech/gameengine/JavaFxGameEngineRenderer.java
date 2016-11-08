@@ -7,7 +7,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import javafx.scene.canvas.Canvas;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Created by Beat
