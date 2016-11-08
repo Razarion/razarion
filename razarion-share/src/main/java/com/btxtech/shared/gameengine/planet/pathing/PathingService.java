@@ -45,7 +45,7 @@ public class PathingService {
                 return null;
             }
 
-            ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setupForTick(syncItemContainerService);
+            syncBaseItem.getSyncPhysicalMovable().setupForTick(syncItemContainerService);
 
             return null;
         });

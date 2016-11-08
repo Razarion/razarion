@@ -195,9 +195,10 @@ public class ScenarioService implements QuestListener {
         Scenario start = null;
         for (ScenarioSuite scenarioSuite : scenarioSuites) {
             Scenario tmp = scenarioSuite.findStart();
-            if (tmp != null && start != null) {
-                System.err.println("More then one start Scenarion found: " + tmp);
-            } else {
+            if (tmp != null) {
+                if (start != null) {
+                    System.err.println("More then one start Scenarion found: " + tmp);
+                }
                 start = tmp;
             }
         }

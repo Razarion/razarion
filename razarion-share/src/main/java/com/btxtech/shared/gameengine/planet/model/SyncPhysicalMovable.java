@@ -121,11 +121,11 @@ public class SyncPhysicalMovable extends SyncPhysicalTurner {
 
     private DecimalPosition forwardLooking(SyncItemContainerService syncItemContainerService, DecimalPosition desiredVelocity) {
         ClearanceHole clearanceHole = new ClearanceHole(this);
-        syncItemContainerService.iterateOverBaseItems(false, false, (SyncBaseItem) getSyncItem(), null, otherSyncPhysicalMovable -> {
-            SyncPhysicalArea other = otherSyncPhysicalMovable.getSyncPhysicalArea();
+        syncItemContainerService.iterateOverItems(false, false, (SyncBaseItem) getSyncItem(), null, otherSyncItem -> {
+            SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
             SyncPhysicalMovable otherMovable = null;
             if (other.canMove()) {
-                otherMovable = (SyncPhysicalMovable) otherSyncPhysicalMovable.getSyncPhysicalArea();
+                otherMovable = (SyncPhysicalMovable) otherSyncItem.getSyncPhysicalArea();
             }
 
             // Check if other is too far away
