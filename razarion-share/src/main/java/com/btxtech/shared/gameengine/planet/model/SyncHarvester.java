@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
-import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
@@ -40,7 +39,7 @@ public class SyncHarvester extends SyncBaseAbility {
     @Inject
     private BaseItemService baseItemService;
     private HarvesterType harvesterType;
-    private Integer target;
+    private SyncResourceItem resource;
     private boolean harvesting;
 
     public void init(HarvesterType harvesterType, SyncBaseItem syncBaseItem) {
@@ -49,7 +48,7 @@ public class SyncHarvester extends SyncBaseAbility {
     }
 
     public boolean isActive() {
-        return target != null;
+        return resource != null;
     }
 
     public boolean isHarvesting() {
@@ -57,53 +56,45 @@ public class SyncHarvester extends SyncBaseAbility {
     }
 
     public boolean tick() {
-        try {
-            SyncResourceItem resource = resourceService.getSyncResourceItem(target);
-            if (!isInRange(resource)) {
-                harvesting = false;
-                if (!getSyncPhysicalMovable().hasDestination()) {
-                    throw new IllegalStateException("Harvester out of range from Resource and SyncPhysicalMovable does not have a position");
-                }
-                return true;
-            }
-            if (getSyncPhysicalMovable().hasDestination()) {
-                getSyncPhysicalMovable().stop();
-            }
-            harvesting = true;
-
-            double harvestedResources = resource.harvest(PlanetService.TICK_FACTOR * harvesterType.getProgress());
-            getSyncBaseItem().getBase().addResource(harvestedResources);
-            activityService.onResourcesHarvested(getSyncBaseItem(), harvestedResources, resource);
-            return true;
-        } catch (ItemDoesNotExistException ignore) {
-            // Target may be empty
-            stop();
-            return false;
-        } catch (TargetHasNoPositionException e) {
-            // Target moved to a container
+        if (!resource.isAlive()) {
             stop();
             return false;
         }
+        if (!isInRange(resource)) {
+            harvesting = false;
+            if (!getSyncPhysicalMovable().hasDestination()) {
+                throw new IllegalStateException("Harvester out of range from Resource and SyncPhysicalMovable does not have a position");
+            }
+            return true;
+        }
+        if (getSyncPhysicalMovable().hasDestination()) {
+            getSyncPhysicalMovable().stop();
+        }
+        harvesting = true;
+
+        double harvestedResources = resource.harvest(PlanetService.TICK_FACTOR * harvesterType.getProgress());
+        getSyncBaseItem().getBase().addResource(harvestedResources);
+        activityService.onResourcesHarvested(getSyncBaseItem(), harvestedResources, resource);
+        return true;
     }
 
     public void stop() {
         harvesting = false;
-        target = null;
+        resource = null;
     }
 
     @Override
     public void synchronize(SyncItemInfo syncItemInfo) {
-        target = syncItemInfo.getTarget();
+        // resource = syncItemInfo.getTarget();
     }
 
     @Override
     public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
-        syncItemInfo.setTarget(target);
+        // syncItemInfo.setTarget(resource);
     }
 
     public void executeCommand(HarvestCommand harvestCommand) {
-        SyncResourceItem resource = resourceService.getSyncResourceItem(harvestCommand.getTarget());
-        this.target = resource.getId();
+        resource = resourceService.getSyncResourceItem(harvestCommand.getTarget());
         if (!isInRange(resource)) {
             getSyncPhysicalMovable().setDestination(harvestCommand.getPathToDestination());
         }
@@ -113,11 +104,7 @@ public class SyncHarvester extends SyncBaseAbility {
         return getSyncPhysicalArea().isInRange(harvesterType.getRange(), target);
     }
 
-    public Integer getTarget() {
-        return target;
-    }
-
-    public void setTarget(Integer target) {
-        this.target = target;
+    public SyncResourceItem getResource() {
+        return resource;
     }
 }

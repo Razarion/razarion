@@ -119,8 +119,7 @@ public class BaseItemUiService {
                 continue;
             }
             Vertex origin = harvester.getSyncPhysicalArea().createModelMatrices().getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
-            SyncResourceItem syncResourceItem = resourceService.getSyncResourceItem(harvester.getSyncHarvester().getTarget());
-            Vertex direction = syncResourceItem.getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
+            Vertex direction = harvester.getSyncHarvester().getResource().getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
             modelMatrices.add(ModelMatrices.createFromPositionAndDirection(origin, direction));
         }
         return modelMatrices;

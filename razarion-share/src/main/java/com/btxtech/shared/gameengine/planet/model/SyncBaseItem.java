@@ -408,13 +408,22 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
     }
 
-    public SyncPhysicalTurner getSyncMovable() {
-        throw new UnsupportedOperationException();
 
-        // if (syncMovable == null) {
-        //     throw new IllegalStateException(this + " has no SyncMovable");
-        // }
-        // return syncMovable;
+    public SyncItem getTarget() {
+        if (syncWeapon != null && syncWeapon.isActive()) {
+            return syncWeapon.getTarget();
+        }
+
+        if (syncBuilder != null && syncBuilder.isActive()) {
+            return syncBuilder.getCurrentBuildup();
+        }
+
+        if (syncHarvester != null && syncHarvester.isActive()) {
+            return syncHarvester.getResource();
+        }
+        // TODO Move to container
+
+        return null;
     }
 
     public boolean hasSyncHarvester() {
@@ -644,23 +653,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         boxService.onSyncBoxItemPicked(syncBoxItemToPick, this);
         stop();
         return false;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(super.toString());
-        if (hasSyncHarvester()) {
-            builder.append(" target: ");
-            builder.append(getSyncHarvester().getTarget());
-        }
-        if (containedIn != null) {
-            builder.append(" containedIn: ");
-            builder.append(containedIn);
-        }
-        builder.append(" ");
-        builder.append(base);
-        return builder.toString();
     }
 
     public boolean isMoneyEarningOrConsuming() {

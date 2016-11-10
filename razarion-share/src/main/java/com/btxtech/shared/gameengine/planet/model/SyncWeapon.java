@@ -200,4 +200,8 @@ public class SyncWeapon extends SyncBaseAbility {
     public WeaponType getWeaponType() {
         return weaponType;
     }
+
+    public SyncBaseItem getTarget() {
+        return target;
+    }
 }
