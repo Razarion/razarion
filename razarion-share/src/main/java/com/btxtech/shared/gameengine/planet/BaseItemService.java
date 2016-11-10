@@ -60,6 +60,8 @@ public class BaseItemService {
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+        activeItems.clear();
+        activeItemQueue.clear();
         bases.clear();
         lastBaseItId = 0;
     }
