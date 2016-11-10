@@ -2,7 +2,6 @@ package com.btxtech.gameengine.scenarios;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
-import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -19,12 +18,12 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,6 +38,7 @@ public class Scenario {
     private PlayerBase playerBase;
     private int slopeId = 1;
     private List<SyncBaseItem> createdSyncBaseItems = new ArrayList<>();
+    private List<SyncResourceItem> createdSyncResourceItems = new ArrayList<>();
     private List<SyncBoxItem> createdSyncBoxItems = new ArrayList<>();
     private BotService botService;
     private ScenarioSuite scenarioSuite;
@@ -114,7 +114,7 @@ public class Scenario {
 
     protected void createSyncResourceItem(ResourceItemType resourceItemType, DecimalPosition position) {
         try {
-            resourceService.createResources(Collections.singletonList(new ResourceItemPosition().setResourceItemTypeId(resourceItemType.getId()).setPosition(position)));
+            createdSyncResourceItems.add(resourceService.createResources(resourceItemType.getId(), position, 0));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -147,24 +147,32 @@ public class Scenario {
         return new TerrainSlopePosition().setId(slopeId++).setSlopeId(slopeSkeletonId).setPolygon(Arrays.asList(new DecimalPosition(x, y), new DecimalPosition(x + width, y), new DecimalPosition(x + width, y + height), new DecimalPosition(x, y + height)));
     }
 
-    protected SyncBaseItem getCreatedSyncBaseItems(int index) {
+    protected SyncBaseItem getCreatedSyncBaseItem(int index) {
         return createdSyncBaseItems.get(index);
     }
 
     protected SyncBaseItem getFirstCreatedSyncBaseItem() {
-        return getCreatedSyncBaseItems(0);
+        return getCreatedSyncBaseItem(0);
     }
 
     protected SyncBaseItem getSecondCreatedSyncBaseItem() {
-        return getCreatedSyncBaseItems(1);
+        return getCreatedSyncBaseItem(1);
     }
 
-    protected SyncBoxItem getCreatedSyncBoxItems(int index) {
+    protected SyncBoxItem getCreatedSyncBoxItem(int index) {
         return createdSyncBoxItems.get(index);
     }
 
     protected SyncBoxItem getFirstCreatedSyncBoxItem() {
-        return getCreatedSyncBoxItems(0);
+        return getCreatedSyncBoxItem(0);
+    }
+
+    protected SyncResourceItem getCreatedSyncResourceItem(int index) {
+        return createdSyncResourceItems.get(index);
+    }
+
+    protected SyncResourceItem getFirstCreatedSyncResourceItem() {
+        return getCreatedSyncResourceItem(0);
     }
 
     @Override

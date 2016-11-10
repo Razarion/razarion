@@ -1,6 +1,7 @@
 package com.btxtech.gameengine.scenarios;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.CommandService;
 
 /**
  * Created by Beat
@@ -21,5 +22,24 @@ public class ResourcesScenarioSuite extends ScenarioSuite {
                 createSyncResourceItem(ScenarioService.RESOURCE_ITEM_TYPE, new DecimalPosition(10, 0));
             }
         });
+
+        addScenario(new Scenario("Harvest command") {
+            @Override
+            public void createSyncItems() {
+                createSyncBaseItem(ScenarioService.HARVESTER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncResourceItem(ScenarioService.RESOURCE_ITEM_TYPE, new DecimalPosition(0, 20));
+            }
+
+            @Override
+            public void executeCommands(CommandService commandService) {
+                commandService.harvest(getFirstCreatedSyncBaseItem(), getFirstCreatedSyncResourceItem());
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
+            }
+        });
+
     }
 }

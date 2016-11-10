@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -56,15 +57,20 @@ public class ResourceService {
 
     public void createResources(Collection<ResourceItemPosition> resourceItemPositions) {
         for (ResourceItemPosition resourceItemPosition : resourceItemPositions) {
-            ResourceItemType resourceItem = itemTypeService.getResourceItemType(resourceItemPosition.getResourceItemTypeId());
-            Vertex position = terrainService.calculatePositionGroundMesh(resourceItemPosition.getPosition());
-            SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItem, position, resourceItemPosition.getRotationZ());
-            syncResourceItem.setup(resourceItem.getAmount());
-            synchronized (resources) {
-                resources.put(syncResourceItem.getId(), syncResourceItem);
-            }
-            activityService.onResourceCreated(syncResourceItem);
+            createResources(resourceItemPosition.getResourceItemTypeId(), resourceItemPosition.getPosition(), resourceItemPosition.getRotationZ());
         }
+    }
+
+    public SyncResourceItem createResources(int resourceItemTypeId, DecimalPosition position, double rotationZ) {
+        ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resourceItemTypeId);
+        Vertex vertex = terrainService.calculatePositionGroundMesh(position);
+        SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItemType, vertex, rotationZ);
+        syncResourceItem.setup(resourceItemType.getAmount());
+        synchronized (resources) {
+            resources.put(syncResourceItem.getId(), syncResourceItem);
+        }
+        activityService.onResourceCreated(syncResourceItem);
+        return syncResourceItem;
     }
 
     public void resourceExhausted(SyncResourceItem syncResourceItem) {
