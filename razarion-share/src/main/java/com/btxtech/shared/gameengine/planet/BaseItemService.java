@@ -96,12 +96,15 @@ public class BaseItemService {
         }
     }
 
-    public SyncItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, Vertex position, PlayerBase base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
-        // TODO
-        throw new UnsupportedOperationException();
+    public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
+        syncBaseItem.setSpawnProgress(1.0);
+        syncBaseItem.setBuildup(1.0);
+        activityService.onFactorySyncItem(syncBaseItem, toBeBuilt);
+        return syncBaseItem;
     }
 
-    public SyncItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncBaseItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
 
         syncBaseItem.setSpawnProgress(1.0);
@@ -137,7 +140,7 @@ public class BaseItemService {
             checkItemLimit4ItemAdding(toBeBuilt, 1, base);
         }
 
-        // TODO check item free range etc (use: BaseItemPlacerChecker)
+        // TODO check item free range etc (use: BaseItemPlacerChecker) but not for factory
 
         Vertex position = terrainService.calculatePositionGroundMesh(position2d);
         SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position);

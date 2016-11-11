@@ -22,33 +22,28 @@ import java.util.Collection;
  */
 public class FactoryType {
     private double progress;
-    private Collection<Integer> ableToBuild;
-
-    /**
-     * Used by GWT
-     */
-    public FactoryType() {
-    }
-
-    public FactoryType(double progress, Collection<Integer> ableToBuild) {
-        this.progress = progress;
-        this.ableToBuild = ableToBuild;
-    }
+    private Collection<Integer> ableToBuildId;
 
     public double getProgress() {
         return progress;
     }
 
+    public FactoryType setProgress(double progress) {
+        this.progress = progress;
+        return this;
+    }
+
+    public Collection<Integer> getAbleToBuildId() {
+        return ableToBuildId;
+    }
+
+    public FactoryType setAbleToBuildId(Collection<Integer> ableToBuildId) {
+        this.ableToBuildId = ableToBuildId;
+        return this;
+    }
+
     public boolean isAbleToBuild(int itemTypeId) {
-        return ableToBuild.contains(itemTypeId);
+        return ableToBuildId.contains(itemTypeId);
     }
 
-    public Collection<Integer> getAbleToBuild() {
-        return ableToBuild;
-    }
-
-    public void changeTo(FactoryType factoryType) {
-        progress = factoryType.progress;
-        ableToBuild = factoryType.ableToBuild;
-    }
 }

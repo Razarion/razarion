@@ -96,7 +96,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 return false;
             }
             try {
-                currentBuildup = (SyncBaseItem) baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, getSyncBaseItem().getBase(), getSyncBaseItem());
+                currentBuildup = (SyncBaseItem) baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, getSyncBaseItem().getBase());
                 activityService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
                 toBeBuildPosition = null;
                 toBeBuiltType = null;
@@ -130,6 +130,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 }
                 return true;
             } else {
+                activityService.onBuilderNoMoney(getSyncBaseItem());
                 return true;
             }
         }

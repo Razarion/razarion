@@ -347,11 +347,7 @@ public class BotItemContainer {
         for (int i = 0; i < targets.size() * botKillBaseCommandConfig.getDominanceFactor(); i++) {
             BotItemConfig botItemConfig = new BotItemConfig();
             botItemConfig.setBaseItemTypeId(botKillBaseCommandConfig.getAttackerBaseItemTypeId()).setNoRebuild(true).setCreateDirectly(true).setNoSpawn(true).setPlace(botKillBaseCommandConfig.getSpawnPoint());
-            try {
-                createItem(botItemConfig, base);
-            } catch (ItemLimitExceededException | HouseSpaceExceededException e) {
-                throw new RuntimeException(e);
-            }
+            createItem(botItemConfig, base);
         }
 
         List<BotSyncBaseItem> attacker = new ArrayList<>(getBotSyncBaseItem(botKillBaseCommandConfig.getAttackerBaseItemTypeId()));

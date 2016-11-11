@@ -230,6 +230,10 @@ public class ActivityService {
         questService.onSyncBoxItemPicked(picker);
     }
 
+    public void onBuilderNoMoney(SyncBaseItem syncBaseItem) {
+        System.out.println("ActivityService.onBuilderNoMoney(): ");
+    }
+
     public void onItemLimitExceededExceptionBuilder(SyncBaseItem syncBaseItem) {
         System.out.println("ActivityService.onItemLimitExceededExceptionBuilder(): " + syncBaseItem);
     }
@@ -240,5 +244,21 @@ public class ActivityService {
 
     public void onBuildingSyncItem(SyncBaseItem syncBaseItem, BaseItemType toBeBuilt) {
         System.out.println("ActivityService.onBuildingSyncItem(): " + syncBaseItem + " toBeBuilt: " + toBeBuilt);
+    }
+
+    public void onFactoryLevelLimitation4ItemTypeExceeded() {
+        System.out.println("ActivityService.onFactoryLevelLimitation4ItemTypeExceeded(): ");
+    }
+
+    public void onFactoryHouseSpaceExceeded() {
+        System.out.println("ActivityService.onFactoryHouseSpaceExceeded(): ");
+    }
+
+    public void onFactoryNoMoney() {
+        System.out.println("ActivityService.onFactoryNoMoney(): ");
+    }
+
+    public void onFactorySyncItem(SyncBaseItem syncBaseItem, BaseItemType toBeBuilt) {
+        System.out.println("ActivityService.onFactorySyncItem(): ");
     }
 }

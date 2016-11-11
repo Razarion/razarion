@@ -102,9 +102,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (baseItemType.getFactoryType() != null) {
             syncFactory = instance.select(SyncFactory.class).get();
             syncFactory.init(baseItemType.getFactoryType(), this);
-            if (PlanetService.MODE == PlanetMode.MASTER) {
-                syncFactory.calculateRallyPoint();
-            }
             isMoneyEarningOrConsuming = true;
         } else {
             syncFactory = null;
@@ -422,7 +419,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return syncHarvester.getResource();
         }
 
-        if(syncBoxItemToPick != null) {
+        if (syncBoxItemToPick != null) {
             return syncBoxItemToPick;
         }
         // TODO Move to container

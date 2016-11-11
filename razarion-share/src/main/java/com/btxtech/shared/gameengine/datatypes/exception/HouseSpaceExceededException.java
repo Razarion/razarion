@@ -20,5 +20,5 @@ package com.btxtech.shared.gameengine.datatypes.exception;
  * <p/>
  * The space of the houses has been exceeded
  */
-public class HouseSpaceExceededException extends Exception {
+public class HouseSpaceExceededException extends RuntimeException {
 }

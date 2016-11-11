@@ -23,7 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
  * <p>
  * The item limit defined in the level has been exceeded
  */
-public class ItemLimitExceededException extends Exception {
+public class ItemLimitExceededException extends RuntimeException {
 
     public ItemLimitExceededException() {
     }

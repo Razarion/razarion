@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -106,7 +107,7 @@ public class ScenarioService implements QuestListener {
         ATTACKER_ITEM_TYPE = attacker;
 
         BaseItemType factory = new BaseItemType();
-        factory.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(10).setName("Factory");
+        factory.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(3).setName("Factory");
 
         factory.setId(++itemId);
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5));
@@ -118,6 +119,9 @@ public class ScenarioService implements QuestListener {
         builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         builder.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuild(Collections.singletonList(FACTORY_ITEM_TYPE.getId())));
         BUILDER_ITEM_TYPE = builder;
+
+        // Finalize factory
+        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Collections.singletonList(BUILDER_ITEM_TYPE.getId())));
 
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000).setId(++itemId);
@@ -321,6 +325,7 @@ public class ScenarioService implements QuestListener {
         addScenarioSuite(new AttackScenarioSuite());
         addScenarioSuite(new PickBoxScenarioSuite());
         addScenarioSuite(new BuildScenarioSuite());
+        addScenarioSuite(new FabricateScenarioSuite());
     }
 
     @Override

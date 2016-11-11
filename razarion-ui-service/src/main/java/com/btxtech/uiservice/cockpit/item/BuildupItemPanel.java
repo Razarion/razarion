@@ -81,7 +81,7 @@ public abstract class BuildupItemPanel {
 
     private void setupBuildupItemsFactory(final Group factories) throws NoSuchItemTypeException {
         clear();
-        Collection<Integer> itemTypeIds = factories.getFirst().getBaseItemType().getFactoryType().getAbleToBuild();
+        Collection<Integer> itemTypeIds = factories.getFirst().getBaseItemType().getFactoryType().getAbleToBuildId();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
             if (storyboardService.getMyLimitation4ItemType(itemTypeId) == 0) {

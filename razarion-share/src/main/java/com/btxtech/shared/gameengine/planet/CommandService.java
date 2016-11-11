@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
+import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
@@ -97,7 +98,11 @@ public class CommandService { // Is part of the Base service
     }
 
     public void fabricate(SyncBaseItem factory, BaseItemType itemTypeToBuild) {
-        throw new UnsupportedOperationException();
+        FactoryCommand factoryCommand = new FactoryCommand();
+        factoryCommand.setId(factory.getId());
+        factoryCommand.setTimeStamp();
+        factoryCommand.setToBeBuiltId(itemTypeToBuild.getId());
+        executeCommand(factoryCommand);
     }
 
     public void harvest(Collection<SyncBaseItem> syncBaseItems, SyncResourceItem resource) {

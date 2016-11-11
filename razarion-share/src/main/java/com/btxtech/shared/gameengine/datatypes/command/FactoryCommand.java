@@ -19,19 +19,19 @@ package com.btxtech.shared.gameengine.datatypes.command;
  * Time: 1:04:16 PM
  */
 public class FactoryCommand extends BaseCommand {
-    private int toBeBuilt;
+    private int toBeBuiltId;
 
-    public int getToBeBuilt() {
-        return toBeBuilt;
+    public int getToBeBuiltId() {
+        return toBeBuiltId;
     }
 
-    public void setToBeBuilt(int toBeBuilt) {
-        this.toBeBuilt = toBeBuilt;
+    public void setToBeBuiltId(int toBeBuiltId) {
+        this.toBeBuiltId = toBeBuiltId;
     }
 
     @Override
     public String toString() {
-        return super.toString() + " toBeBuilt: " + toBeBuilt;
+        return super.toString() + " toBeBuiltId: " + toBeBuiltId;
     }
 
 }
