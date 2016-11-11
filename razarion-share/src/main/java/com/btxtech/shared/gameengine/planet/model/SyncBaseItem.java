@@ -421,6 +421,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (syncHarvester != null && syncHarvester.isActive()) {
             return syncHarvester.getResource();
         }
+
+        if(syncBoxItemToPick != null) {
+            return syncBoxItemToPick;
+        }
         // TODO Move to container
 
         return null;
