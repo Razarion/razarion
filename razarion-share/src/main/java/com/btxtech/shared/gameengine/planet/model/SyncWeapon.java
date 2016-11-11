@@ -74,7 +74,7 @@ public class SyncWeapon extends SyncBaseAbility {
 
     private boolean tickAttack(long timeStamp) {
         try {
-            if (target.isAlive()) {
+            if (!target.isAlive()) {
                 stop();
                 return false;
             }
