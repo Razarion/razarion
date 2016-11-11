@@ -62,7 +62,7 @@ public abstract class BuildupItemPanel {
         }
     }
 
-    private void setupBuildupItemsCV(final Group constructionVehicles) throws NoSuchItemTypeException {
+    private void setupBuildupItemsCV(Group constructionVehicles) throws NoSuchItemTypeException {
         clear();
         Collection<Integer> itemTypeIds = constructionVehicles.getFirst().getBaseItemType().getBuilderType().getAbleToBuild();
         List<BuildupItem> buildupItems = new ArrayList<>();
@@ -79,7 +79,7 @@ public abstract class BuildupItemPanel {
         setBuildupItem(buildupItems);
     }
 
-    private void setupBuildupItemsFactory(final Group factories) throws NoSuchItemTypeException {
+    private void setupBuildupItemsFactory(Group factories) throws NoSuchItemTypeException {
         clear();
         Collection<Integer> itemTypeIds = factories.getFirst().getBaseItemType().getFactoryType().getAbleToBuildId();
         List<BuildupItem> buildupItems = new ArrayList<>();

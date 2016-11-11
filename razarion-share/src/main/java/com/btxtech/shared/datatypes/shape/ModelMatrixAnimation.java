@@ -1,7 +1,5 @@
 package com.btxtech.shared.datatypes.shape;
 
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemState;
-
 import java.util.List;
 
 /**

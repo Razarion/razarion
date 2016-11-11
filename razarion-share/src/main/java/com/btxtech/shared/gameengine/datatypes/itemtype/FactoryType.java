@@ -13,7 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * User: beat
@@ -22,7 +22,7 @@ import java.util.Collection;
  */
 public class FactoryType {
     private double progress;
-    private Collection<Integer> ableToBuildId;
+    private List<Integer> ableToBuildId;
 
     public double getProgress() {
         return progress;
@@ -33,11 +33,11 @@ public class FactoryType {
         return this;
     }
 
-    public Collection<Integer> getAbleToBuildId() {
+    public List<Integer> getAbleToBuildId() {
         return ableToBuildId;
     }
 
-    public FactoryType setAbleToBuildId(Collection<Integer> ableToBuildId) {
+    public FactoryType setAbleToBuildId(List<Integer> ableToBuildId) {
         this.ableToBuildId = ableToBuildId;
         return this;
     }

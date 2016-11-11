@@ -45,6 +45,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
@@ -201,7 +202,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         baseItemType.setDescription(i18nHelper("Harvester Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
         baseItemType.setHarvesterType(new HarvesterType().setProgress(1).setRange(4).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
-        baseItemType.setBoxPickupRange(2).setExplosionClipId(272485);
+        baseItemType.setBoxPickupRange(2).setExplosionClipId(272485).setBuildup(2);
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
@@ -217,7 +218,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         factory.setTerrainType(TerrainType.LAND);
         factory.setI18Name(i18nHelper("Factory Name"));
         factory.setDescription(i18nHelper("Factory Description"));
-        factory.setExplosionClipId(272485).setBuildup(30);
+        factory.setExplosionClipId(272485).setBuildup(2);
+        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER)));
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -271,18 +273,22 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         return new I18nString(localizedStrings);
     }
 
-    // Kill human base -----------------------------------------------------------------------------
+    // Build base -----------------------------------------------------------------------------
     private List<SceneConfig> buildBase() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100,100).toPolygon());
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
-        buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(buildupItemTypeCount));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
-
+        // Build Harvester Quest
+        buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
+        conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(buildupItemTypeCount));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue eine Harvester in deiner Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 
