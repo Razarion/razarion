@@ -28,7 +28,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BaseService;
-import com.btxtech.shared.gameengine.planet.CollisionService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 
 import javax.inject.Inject;
@@ -50,8 +49,6 @@ public class SyncFactory extends SyncBaseAbility {
     private BaseItemService baseItemService;
     @Inject
     private ItemTypeService itemTypeService;
-    @Inject
-    private CollisionService collisionService;
     @Inject
     private UnlockService unlockService;
     private FactoryType factoryType;

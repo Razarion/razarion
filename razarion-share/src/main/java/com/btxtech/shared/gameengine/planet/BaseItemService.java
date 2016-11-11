@@ -43,8 +43,6 @@ public class BaseItemService {
     @Inject
     private ActivityService activityService;
     @Inject
-    private CollisionService collisionService;
-    @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
@@ -141,7 +139,7 @@ public class BaseItemService {
 
         // TODO check item free range etc (use: BaseItemPlacerChecker)
 
-        Vertex position = collisionService.correctPosition(terrainService.calculatePositionGroundMesh(position2d), toBeBuilt);
+        Vertex position = terrainService.calculatePositionGroundMesh(position2d);
         SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position);
         syncBaseItem.setup(base);
         base.addItem(syncBaseItem);
