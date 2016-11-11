@@ -35,11 +35,6 @@ public class ResourcesScenarioSuite extends ScenarioSuite {
             public void executeCommands(CommandService commandService) {
                 commandService.harvest(getFirstCreatedSyncBaseItem(), getFirstCreatedSyncResourceItem());
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
 
     }
