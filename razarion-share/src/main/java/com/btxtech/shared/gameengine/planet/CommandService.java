@@ -76,7 +76,7 @@ public class CommandService { // Is part of the Base service
         builderFinalizeCommand.setId(builder.getId());
         builderFinalizeCommand.setTimeStamp();
         builderFinalizeCommand.setBuildingId(building.getId());
-        Path path = pathingService.setupPathToDestination(builder, building.getSyncPhysicalArea().getXYPosition());
+        Path path = pathingService.setupPathToDestination(builder, builder.getBaseItemType().getBuilderType().getRange(), building);
         if (moveIfPathTargetUnreachable(builder, path)) {
             return;
         }

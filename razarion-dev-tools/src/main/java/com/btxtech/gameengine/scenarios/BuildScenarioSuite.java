@@ -15,7 +15,7 @@ public class BuildScenarioSuite extends ScenarioSuite {
 
     @Override
     protected void setupScenarios() {
-        addScenario(new Scenario("Build") {
+        addScenario(new Scenario("Build west") {
             @Override
             protected void createSyncItems() {
                 createSyncBaseItem(ScenarioService.BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), null);
@@ -24,6 +24,17 @@ public class BuildScenarioSuite extends ScenarioSuite {
             @Override
             public void executeCommands(CommandService commandService) {
                 commandService.build(getFirstCreatedSyncBaseItem(), new DecimalPosition(20, 0), ScenarioService.FACTORY_ITEM_TYPE);
+            }
+        });
+        addScenario(new Scenario("Build north") {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItem(ScenarioService.BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+            }
+
+            @Override
+            public void executeCommands(CommandService commandService) {
+                commandService.build(getFirstCreatedSyncBaseItem(), new DecimalPosition(0, 20), ScenarioService.FACTORY_ITEM_TYPE);
             }
         });
         addScenario(new Scenario("Finalize build") {
