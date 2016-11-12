@@ -110,7 +110,7 @@ public class IntruderHandler {
 //                    log.warning("Bot is unable to find position to attack item. Bot attacker: " + attacker.getSyncBaseItem() + " Target: " + intruder);
 //                }
             } catch (Exception e) {
-                exceptionHandler.handleException(e);
+//                exceptionHandler.handleException(e);
             }
         }
     }

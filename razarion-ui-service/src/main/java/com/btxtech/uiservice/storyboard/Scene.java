@@ -143,8 +143,6 @@ public class Scene {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questVisualizer.showSideBar(sceneConfig.getScrollUiQuest());
-            hasCompletionCallback = true;
-            completionCallbackCount++;
             terrainScrollHandler.setPositionListener(sceneConfig.getScrollUiQuest().getScrollTargetRectangle(), () -> {
                 abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
                 levelService.increaseXp(userContext, sceneConfig.getScrollUiQuest().getXp());

@@ -116,14 +116,14 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -561,7 +561,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
         // div
         CameraConfig cameraConfig = new CameraConfig().setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setScrollUiQuest(scrollUiQuest));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true));
     }
 
     private void addPickBoxTask(List<SceneConfig> sceneConfigs) {
