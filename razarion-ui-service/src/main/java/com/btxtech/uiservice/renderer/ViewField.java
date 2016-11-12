@@ -141,14 +141,19 @@ public class ViewField {
      * @return Axis-aligned minimum bounding box
      */
     public ViewField calculateAabb() {
+        Rectangle2D rect = calculateAabbRectangle();
+        ViewField viewField = new ViewField(z);
+        viewField.setBottomLeft(rect.getStart());
+        viewField.setBottomRight(new DecimalPosition(rect.endX(), rect.startY()));
+        viewField.setTopRight(rect.getEnd());
+        viewField.setTopLeft(new DecimalPosition(rect.startX(), rect.endY()));
+        return viewField;
+    }
+
+    public Rectangle2D calculateAabbRectangle() {
         DecimalPosition newBottomLeft = GeometricUtil.calculateMinimalPosition(bottomLeft, bottomRight, topRight, topLeft);
         DecimalPosition newTopRight = GeometricUtil.calculateMaximalPosition(bottomLeft, bottomRight, topRight, topLeft);
-        ViewField viewField = new ViewField(z);
-        viewField.setBottomLeft(newBottomLeft);
-        viewField.setBottomRight(new DecimalPosition(newTopRight.getX(), newBottomLeft.getY()));
-        viewField.setTopRight(newTopRight);
-        viewField.setTopLeft(new DecimalPosition(newBottomLeft.getX(), newTopRight.getY()));
-        return viewField;
+        return new Rectangle2D(newBottomLeft, newTopRight);
     }
 
     public boolean isInside(Rectangle2D rectangle2D) {

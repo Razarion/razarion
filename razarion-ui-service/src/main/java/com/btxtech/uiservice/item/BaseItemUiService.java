@@ -9,8 +9,6 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.inject.Inject;
@@ -37,38 +35,12 @@ public class BaseItemUiService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private ResourceService resourceService;
-    private ImageDescriptor imageDescriptor = ImageDescriptor.UNIT_TEXTURE_O1;
-    @Deprecated
-    private double specularIntensity = 0.1;
-    @Deprecated
-    private double specularHardness = 10;
 
     @Deprecated
     public VertexContainer getItemTypeVertexContainer(int id) {
         throw new UnsupportedOperationException();
         // return vertexContainers.get(id);
     }
-
-    public ImageDescriptor getImageDescriptor() {
-        return imageDescriptor;
-    }
-
-    public double getSpecularIntensity() {
-        return specularIntensity;
-    }
-
-    public void setSpecularIntensity(double specularIntensity) {
-        this.specularIntensity = specularIntensity;
-    }
-
-    public double getSpecularHardness() {
-        return specularHardness;
-    }
-
-    public void setSpecularHardness(double specularHardness) {
-        this.specularHardness = specularHardness;
-    }
-
 
     public Collection<BaseItemType> getBaseItemTypes() {
         return itemTypeService.getBaseItemTypes();

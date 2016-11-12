@@ -8,6 +8,7 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -31,7 +32,7 @@ public class TerrainScrollHandler {
 
     private static final int SCROLL_AUTO_MOUSE_DETECTION_WIDTH = 40;
     private static final int SCROLL_TIMER_DELAY = 150; // Browser is not able to go faster due to the AnimationScheduler
-    private static final int SCROLL_AUTO_DISTANCE = 6;
+    private static final double SCROLL_AUTO_DISTANCE = 6;
     // private Logger logger = Logger.getLogger(TerrainScrollHandler.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -54,6 +55,8 @@ public class TerrainScrollHandler {
     private SimpleScheduledFuture moveHandler;
     private Rectangle2D destination2Scroll;
     private Runnable destination2ScrollCallback;
+    private ViewField currentViewField;
+    private Rectangle2D currentAabb;
 
     @PostConstruct
     public void init() {
@@ -159,14 +162,14 @@ public class TerrainScrollHandler {
     }
 
     private void autoScroll() {
-        int scrollX = 0;
+        double scrollX = 0;
         if (scrollDirectionX == ScrollDirection.LEFT) {
             scrollX = -SCROLL_AUTO_DISTANCE;
         } else if (scrollDirectionX == ScrollDirection.RIGHT) {
             scrollX = SCROLL_AUTO_DISTANCE;
         }
 
-        int scrollY = 0;
+        double scrollY = 0;
         if (scrollDirectionY == ScrollDirection.TOP) {
             scrollY = SCROLL_AUTO_DISTANCE;
         } else if (scrollDirectionY == ScrollDirection.BOTTOM) {
@@ -174,7 +177,7 @@ public class TerrainScrollHandler {
         }
 
         // TODO check if camera is in valid playground filed. Also check in CollisionService.correctPosition()
-        camera.setTranslateDeltaXY(scrollX, scrollY);
+        setCameraPosition(camera.getTranslateX() + scrollX, camera.getTranslateY() + scrollY);
 
         if (destination2Scroll != null && destination2ScrollCallback != null) {
             if (projectionTransformation.calculateViewField(0).isInside(destination2Scroll)) {
@@ -189,8 +192,7 @@ public class TerrainScrollHandler {
         if (cameraConfig.getSpeed() != null) {
             setScrollDisabled(true);
             if (cameraConfig.getFromPosition() != null) {
-                camera.setTranslateX(cameraConfig.getFromPosition().getX());
-                camera.setTranslateY(cameraConfig.getFromPosition().getY());
+                setCameraPosition(cameraConfig.getFromPosition().getX(), cameraConfig.getFromPosition().getY());
             }
             if (cameraConfig.getToPosition() != null) {
                 if (moveHandler != null) {
@@ -201,26 +203,30 @@ public class TerrainScrollHandler {
                     DecimalPosition cameraPosition = new DecimalPosition(camera.getTranslateX(), camera.getTranslateY());
                     double distance = cameraConfig.getSpeed() * ((double) SCROLL_TIMER_DELAY / 1000.0);
                     if (cameraPosition.getDistance(cameraConfig.getToPosition()) < distance) {
-                        camera.setTranslateX(cameraConfig.getToPosition().getX());
-                        camera.setTranslateY(cameraConfig.getToPosition().getY());
+                        setCameraPosition(cameraConfig.getToPosition().getX(), cameraConfig.getToPosition().getY());
                         setScrollDisabled(cameraConfig.isCameraLocked());
                         moveHandler.cancel();
                         moveHandler = null;
                         completionCallback.ifPresent(Runnable::run);
                     } else {
                         DecimalPosition newCameraPosition = cameraPosition.getPointWithDistance(distance, cameraConfig.getToPosition(), false);
-                        camera.setTranslateX(newCameraPosition.getX());
-                        camera.setTranslateY(newCameraPosition.getY());
+                        setCameraPosition(newCameraPosition.getX(), newCameraPosition.getY());
                     }
                 }, SimpleExecutorService.Type.UNSPECIFIED);
             }
         } else {
             setScrollDisabled(cameraConfig.isCameraLocked());
             if (cameraConfig.getToPosition() != null) {
-                camera.setTranslateX(cameraConfig.getToPosition().getX());
-                camera.setTranslateY(cameraConfig.getToPosition().getY());
+                setCameraPosition(cameraConfig.getToPosition().getX(), cameraConfig.getToPosition().getY());
             }
         }
+    }
+
+    private void setCameraPosition(double xPosition, double yPosition) {
+        camera.setTranslateX(xPosition);
+        camera.setTranslateY(yPosition);
+        currentViewField = projectionTransformation.calculateViewField(0);
+        currentAabb = currentViewField.calculateAabbRectangle();
     }
 
     public void setPositionListener(Rectangle2D destination2Scroll, Runnable completionCallback) {
