@@ -16,7 +16,6 @@ package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
@@ -87,7 +86,7 @@ public class Group {
 
     public boolean canAttack() {
         for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.hasSyncWeapon()) {
+            if (syncBaseItem.getSyncWeapon() != null) {
                 return true;
             }
         }
@@ -96,7 +95,7 @@ public class Group {
 
     public boolean canCollect() {
         for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.hasSyncHarvester()) {
+            if (syncBaseItem.getSyncHarvester() != null) {
                 return true;
             }
         }
@@ -114,7 +113,7 @@ public class Group {
 
     public boolean canFinalizeBuild() {
         for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.hasSyncBuilder()) {
+            if (syncBaseItem.getSyncBuilder() != null) {
                 return true;
             }
         }
@@ -123,7 +122,7 @@ public class Group {
 
     public boolean onlyFactories() {
         for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            if (!syncBaseItem.hasSyncFactory()) {
+            if (syncBaseItem.getSyncFactory() == null) {
                 return false;
             }
         }
@@ -132,7 +131,7 @@ public class Group {
 
     public boolean onlyConstructionVehicle() {
         for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            if (!syncBaseItem.hasSyncBuilder()) {
+            if (syncBaseItem.getSyncBuilder() == null) {
                 return false;
             }
         }
@@ -199,7 +198,7 @@ public class Group {
 
     public boolean atLeastOneItemTypeAllowed2Attack(SyncBaseItem syncBaseItem) {
         for (SyncBaseItem selectedSyncBaseItem : syncBaseItems) {
-            if (selectedSyncBaseItem.hasSyncWeapon() && !selectedSyncBaseItem.getSyncWeapon().isItemTypeDisallowed(syncBaseItem)) {
+            if (selectedSyncBaseItem.getSyncWeapon() != null && !selectedSyncBaseItem.getSyncWeapon().isItemTypeDisallowed(syncBaseItem)) {
                 return true;
             }
         }
@@ -208,7 +207,7 @@ public class Group {
 
     public boolean atLeastOneItemTypeAllowed2FinalizeBuild(SyncBaseItem tobeFinalized) {
         for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.hasSyncBuilder() && syncBaseItem.getSyncBuilder().getBuilderType().checkAbleToBuild(tobeFinalized.getItemType().getId())) {
+            if (syncBaseItem.getSyncBuilder() != null && syncBaseItem.getSyncBuilder().getBuilderType().checkAbleToBuild(tobeFinalized.getItemType().getId())) {
                 return true;
             }
         }

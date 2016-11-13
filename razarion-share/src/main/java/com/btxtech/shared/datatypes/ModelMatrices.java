@@ -1,7 +1,5 @@
 package com.btxtech.shared.datatypes;
 
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-
 /**
  * Created by Beat
  * 15.05.2016.
@@ -52,6 +50,10 @@ public class ModelMatrices {
             modelMatrices.setNorm(this.norm);
         }
         return modelMatrices;
+    }
+
+    public ModelMatrices copy(double progress) {
+        return new ModelMatrices().setModel(model).setNorm(norm).setProgress(progress);
     }
 
     public static ModelMatrices createFromPosition(Vertex position) {

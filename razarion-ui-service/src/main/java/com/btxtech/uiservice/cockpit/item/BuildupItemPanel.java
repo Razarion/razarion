@@ -40,12 +40,12 @@ public abstract class BuildupItemPanel {
 
     public void display(SyncBaseItem syncBaseItem) {
         selectedGroup = null;
-        if (syncBaseItem.hasSyncBuilder()) {
+        if (syncBaseItem.getSyncBuilder() != null) {
             Group group = new Group();
             group.addItem(syncBaseItem);
             selectedGroup = group;
             setupBuildupItemsCV(group);
-        } else if (syncBaseItem.hasSyncFactory()) {
+        } else if (syncBaseItem.getSyncFactory() != null) {
             Group group = new Group();
             group.addItem(syncBaseItem);
             selectedGroup = group;

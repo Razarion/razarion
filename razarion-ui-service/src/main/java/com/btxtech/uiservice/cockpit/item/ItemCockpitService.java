@@ -84,7 +84,7 @@ public class ItemCockpitService {
 //    TODO        specialFunctionPanel.setWidget(new SpecialFunctionPanel(syncBaseItem));
 //    TODO        specialFunctionPanel.setVisible(true);
 //    TODO    }
-        if (syncBaseItem.hasSyncFactory() || syncBaseItem.hasSyncBuilder()) {
+        if (syncBaseItem.getSyncFactory() != null || syncBaseItem.getSyncBuilder() != null) {
             buildupItemPanel = instance.select(BuildupItemPanel.class).get();
             buildupItemPanel.display(syncBaseItem);
             itemCockpitPanel.setBuildupItemPanel(buildupItemPanel);

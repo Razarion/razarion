@@ -31,6 +31,7 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     private List<ModelMatrices> modelMatrices;
     private Function<Long, List<ModelMatrices>> modelMatricesSupplier;
     private T model;
+    private boolean hasSomethingToDraw;
 
     public void init(T model, Function<Long, List<ModelMatrices>> modelMatricesProvider) {
         this.model = model;
@@ -56,20 +57,31 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     public void setupModelMatrices(long timeStamp) {
         if (modelMatricesSupplier != null) {
             modelMatrices = modelMatricesSupplier.apply(timeStamp);
+            hasSomethingToDraw = modelMatrices != null && !modelMatrices.isEmpty();
         } else {
             modelMatrices = null;
+            hasSomethingToDraw = true;
         }
     }
 
     public void draw(RenderUnitControl renderUnitControl) {
+        if(!hasSomethingToDraw) {
+            return;
+        }
         abstractRenderComposites.getSave(renderUnitControl).forEach(abstractRenderComposite -> abstractRenderComposite.draw(modelMatrices));
     }
 
     public void drawDepthBuffer() {
+        if(!hasSomethingToDraw) {
+            return;
+        }
         abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawDepthBuffer(modelMatrices));
     }
 
     public void drawNorm() {
+        if(!hasSomethingToDraw) {
+            return;
+        }
         abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawNorm(modelMatrices));
     }
 

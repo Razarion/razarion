@@ -31,7 +31,6 @@ public class BaseItemType extends ItemType {
     private BuilderType builderType;
     private GeneratorType generatorType;
     private ConsumerType consumerType;
-    private SpecialType specialType;
     private ItemContainerType itemContainerType;
     private HouseType houseType;
     private double dropBoxPossibility;
@@ -137,15 +136,6 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setConsumerType(ConsumerType consumerType) {
         this.consumerType = consumerType;
-        return this;
-    }
-
-    public SpecialType getSpecialType() {
-        return specialType;
-    }
-
-    public BaseItemType setSpecialType(SpecialType specialType) {
-        this.specialType = specialType;
         return this;
     }
 

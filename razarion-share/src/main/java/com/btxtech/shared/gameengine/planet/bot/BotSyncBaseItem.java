@@ -72,16 +72,16 @@ public class BotSyncBaseItem {
     }
 
     public boolean isAbleToBuild(BaseItemType toBeBuilt) {
-        return syncBaseItem.hasSyncFactory() && syncBaseItem.getSyncFactory().getFactoryType().isAbleToBuild(toBeBuilt.getId())
-                || syncBaseItem.hasSyncBuilder() && syncBaseItem.getSyncBuilder().getBuilderType().checkAbleToBuild(toBeBuilt.getId());
+        return syncBaseItem.getSyncFactory() != null && syncBaseItem.getSyncFactory().getFactoryType().isAbleToBuild(toBeBuilt.getId())
+                || syncBaseItem.getSyncBuilder() != null && syncBaseItem.getSyncBuilder().getBuilderType().checkAbleToBuild(toBeBuilt.getId());
     }
 
     public boolean isAbleToAttack(SyncBaseItem target) {
-        return syncBaseItem.hasSyncWeapon() && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target);
+        return syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target);
     }
 
     public boolean isAbleToHarvest() {
-        return syncBaseItem.hasSyncHarvester() && syncBaseItem.getSyncPhysicalArea().canMove();
+        return syncBaseItem.getSyncHarvester() != null && syncBaseItem.getSyncPhysicalArea().canMove();
     }
 
     public boolean canMove() {

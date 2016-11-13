@@ -13,6 +13,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -46,6 +48,7 @@ public class PlanetService implements Runnable {
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
     private long tickCount;
+    private Collection<PlanetTickListener> tickListeners = new ArrayList<>();
 
     @PostConstruct
     public void postConstruct() {
@@ -74,6 +77,7 @@ public class PlanetService implements Runnable {
             baseItemService.tick(timeStamp);
             boxService.tick();
             projectileService.tick(timeStamp);
+            notifyTickListeners();
             tickCount++;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -99,4 +103,19 @@ public class PlanetService implements Runnable {
     public void stop() {
         scheduledFuture.cancel();
     }
+
+    public void addTickListener(PlanetTickListener planetTickListener) {
+        tickListeners.add(planetTickListener);
+    }
+
+    public void removeTickListener(PlanetTickListener planetTickListener) {
+        tickListeners.remove(planetTickListener);
+    }
+
+    private void notifyTickListeners() {
+        for (PlanetTickListener tickListener : tickListeners) {
+            tickListener.onTick();
+        }
+    }
+
 }

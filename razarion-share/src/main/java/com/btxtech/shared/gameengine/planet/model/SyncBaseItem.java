@@ -77,7 +77,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private SyncHarvester syncHarvester;
     private SyncGenerator syncGenerator;
     private SyncConsumer syncConsumer;
-    private SyncSpecial syncSpecial;
     private SyncItemContainer syncItemContainer;
     private SyncHouse syncHouse;
     private Integer containedIn;
@@ -135,13 +134,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             syncConsumer.init(baseItemType.getConsumerType(), this);
         } else {
             syncConsumer = null;
-        }
-
-        if (baseItemType.getSpecialType() != null) {
-            syncSpecial = instance.select(SyncSpecial.class).get();
-            syncSpecial.init(baseItemType.getSpecialType(), this);
-        } else {
-            syncSpecial = null;
         }
 
         if (baseItemType.getItemContainerType() != null) {
@@ -288,7 +280,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return pickSyncBoxItem();
         }
 
-        if (hasSyncConsumer() && !getSyncConsumer().isOperating()) {
+        if (syncConsumer != null && !getSyncConsumer().isOperating()) {
             return false;
         }
 
@@ -427,102 +419,35 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return null;
     }
 
-    public boolean hasSyncHarvester() {
-        return syncHarvester != null;
-    }
-
     public SyncHarvester getSyncHarvester() {
-        if (syncHarvester == null) {
-            throw new IllegalStateException(this + " has no SyncHarvester");
-        }
         return syncHarvester;
     }
 
     public SyncFactory getSyncFactory() {
-        if (syncFactory == null) {
-            throw new IllegalStateException(this + " has no SyncFactory");
-        }
         return syncFactory;
     }
 
-    public boolean hasSyncFactory() {
-        return syncFactory != null;
-    }
-
-    public boolean hasSyncWeapon() {
-        return syncWeapon != null;
-    }
-
     public SyncWeapon getSyncWeapon() {
-        if (syncWeapon == null) {
-            throw new IllegalStateException(this + " has no syncWeapon");
-        }
         return syncWeapon;
     }
 
-    public boolean hasSyncBuilder() {
-        return syncBuilder != null;
-    }
-
     public SyncBuilder getSyncBuilder() {
-        if (syncBuilder == null) {
-            throw new IllegalStateException(this + " has no SyncBuilder");
-        }
         return syncBuilder;
     }
 
-    public boolean hasSyncGenerator() {
-        return syncGenerator != null;
-    }
-
     public SyncGenerator getSyncGenerator() {
-        if (syncGenerator == null) {
-            throw new IllegalStateException(this + " has no SyncGenerator");
-        }
         return syncGenerator;
     }
 
-    public boolean hasSyncConsumer() {
-        return syncConsumer != null;
-    }
-
     public SyncConsumer getSyncConsumer() {
-        if (syncConsumer == null) {
-            throw new IllegalStateException(this + " has no SyncConsumer");
-        }
         return syncConsumer;
     }
 
-    public boolean hasSyncSpecial() {
-        return syncSpecial != null;
-    }
-
-    public SyncSpecial getSyncSpecial() {
-        if (syncConsumer == null) {
-            throw new IllegalStateException(this + " has no SyncSpecial");
-        }
-        return syncSpecial;
-    }
-
-    public boolean hasSyncItemContainer() {
-        return syncItemContainer != null;
-    }
-
     public SyncItemContainer getSyncItemContainer() {
-        if (syncItemContainer == null) {
-            throw new IllegalStateException(this + " has no SyncItemContainer");
-        }
         return syncItemContainer;
     }
 
-    public boolean hasSyncHouse() {
-        return syncHouse != null;
-    }
-
     public SyncHouse getSyncHouse() {
-        if (syncHouse == null) {
-            throw new IllegalStateException(this + " has no SyncHouse");
-        }
         return syncHouse;
     }
 
@@ -673,7 +598,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (!isAlive()) {
             return;
         }
-        if (!hasSyncWeapon()) {
+        if (syncWeapon == null) {
             return;
         }
         if (!isIdle()) {

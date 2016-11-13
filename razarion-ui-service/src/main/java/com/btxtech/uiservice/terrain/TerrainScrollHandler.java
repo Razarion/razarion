@@ -234,7 +234,11 @@ public class TerrainScrollHandler {
         this.destination2ScrollCallback = completionCallback;
     }
 
-//    public static Index calculateSafeDelta(int deltaX, int deltaY, TerrainSettings terrainSettings, Rectangle viewRect) {
+    public Rectangle2D getCurrentAabb() {
+        return currentAabb;
+    }
+
+    //    public static Index calculateSafeDelta(int deltaX, int deltaY, TerrainSettings terrainSettings, Rectangle viewRect) {
 //        if (terrainSettings == null) {
 //            return new Index(0, 0);
 //        }

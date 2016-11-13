@@ -53,7 +53,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void spawn(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getSpawnShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, true, false));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideSpawningModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getSpawnShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
@@ -78,7 +78,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void build(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractBuildupVertexContainerRenderUnit, VertexContainer>, AbstractBuildupVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, false, true));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideBuildupModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
@@ -103,7 +103,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void alive(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideModelMatrices(baseItemType, false, false));
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
@@ -128,11 +128,11 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void harvest(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getHarvesterType() != null) {
             HarvesterType harvesterType = baseItemType.getHarvesterType();
-            if(harvesterType.getAnimationShape3dId() == null) {
+            if (harvesterType.getAnimationShape3dId() == null) {
                 logger.warning("BaseItemRenderTask: no AnimationShape3dId for harvester BaseItemType: " + baseItemType);
                 return;
             }
-            if(harvesterType.getAnimationOrigin() == null) {
+            if (harvesterType.getAnimationOrigin() == null) {
                 logger.warning("BaseItemRenderTask: no AnimationOrigin for harvester BaseItemType: " + baseItemType);
                 return;
             }
@@ -161,11 +161,11 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private void buildBeam(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getBuilderType() != null) {
             BuilderType builderType = baseItemType.getBuilderType();
-            if(builderType.getAnimationShape3dId() == null) {
+            if (builderType.getAnimationShape3dId() == null) {
                 logger.warning("BaseItemRenderTask: no AnimationShape3dId for build beam in BaseItemType: " + baseItemType);
                 return;
             }
-            if(builderType.getAnimationOrigin() == null) {
+            if (builderType.getAnimationOrigin() == null) {
                 logger.warning("BaseItemRenderTask: no AnimationOrigin for build beam in BaseItemType: " + baseItemType);
                 return;
             }

@@ -202,7 +202,7 @@ public class BotItemContainer {
             if (botSyncBuilder == null) {
                 return;
             }
-            if (botSyncBuilder.getSyncBaseItem().hasSyncFactory()) {
+            if (botSyncBuilder.getSyncBaseItem().getSyncFactory() != null) {
                 // botSyncBuilder is factory unit
                 botSyncBuilder.buildUnit(toBeBuilt);
             } else {
