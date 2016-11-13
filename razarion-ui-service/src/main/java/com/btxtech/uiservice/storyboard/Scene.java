@@ -122,8 +122,6 @@ public class Scene {
         if (sceneConfig.getQuestConfig() != null) {
             questService.activateCondition(userContext, sceneConfig.getQuestConfig());
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
-        } else {
-            questVisualizer.showSideBar(null);
         }
         setupCameraConfig(sceneConfig.getCameraConfig());
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
@@ -185,6 +183,12 @@ public class Scene {
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             baseItemPlacerService.deactivate();
+        }
+        if (sceneConfig.getQuestConfig() != null) {
+            questVisualizer.showSideBar(null);
+        }
+        if (sceneConfig.getScrollUiQuest() != null) {
+            questVisualizer.showSideBar(null);
         }
     }
 }

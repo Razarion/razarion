@@ -63,7 +63,7 @@ public class BotRunner {
     private class BotTicker implements Runnable {
         @Override
         public void run() {
-            System.out.println("--------BotTicker.run()--------");
+            // System.out.println("--------BotTicker.run()--------");
             try {
                 synchronized (syncObject) {
                     if (botEnragementState == null || intruderHandler == null) {
