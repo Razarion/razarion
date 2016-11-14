@@ -53,8 +53,8 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
     protected void draw(Slope slope, GroundSkeletonConfig groundSkeletonConfig) {
         webGlFacade.useProgram();
         // Projection uniform
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.createDepthProjectionTransformation());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, shadowUiService.createDepthViewTransformation());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.getDepthProjectionTransformation());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, shadowUiService.getDepthViewTransformation());
 
         vertices.activate();
 

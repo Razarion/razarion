@@ -85,9 +85,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     @Override
     public void draw(ModelMatrices modelMatrices) {
         webGlFacade.useProgram();
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.createNormMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.getNormMatrix());
 
         webGlFacade.setLightUniforms(null, terrainTypeService.getGroundSkeletonConfig().getLightConfig());
         webGlFacade.uniform1f("uTopBmDepth", terrainTypeService.getGroundSkeletonConfig().getTopBmDepth());

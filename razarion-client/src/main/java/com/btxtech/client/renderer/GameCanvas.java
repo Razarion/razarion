@@ -49,7 +49,6 @@ public class GameCanvas {
         this.canvas = canvas;
 
         initCanvas();
-        resizeCanvas();
 
         Window.addResizeHandler(event -> resizeCanvas());
 
@@ -117,6 +116,7 @@ public class GameCanvas {
 
     public void startRenderLoop() {
         // Start render tick
+        resizeCanvas();
         AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
             @Override
             public void execute(double timestamp) {

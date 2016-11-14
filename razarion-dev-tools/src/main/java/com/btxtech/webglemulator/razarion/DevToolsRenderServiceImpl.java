@@ -46,14 +46,14 @@ public class DevToolsRenderServiceImpl extends RenderService {
     private VertexShader terrainShader = new VertexShader() {
         @Override
         public Vertex4 runShader(Vertex vertex) {
-            Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix());
+            Matrix4 matrix4 = projectionTransformation.getMatrix().multiply(camera.getMatrix());
             return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
         }
     };
     private VertexShader terrainShaderShadow = new VertexShader() {
         @Override
         public Vertex4 runShader(Vertex vertex) {
-            Matrix4 matrix4 = shadowUiService.createDepthProjectionTransformation().multiply(shadowUiService.createDepthViewTransformation());
+            Matrix4 matrix4 = shadowUiService.getDepthProjectionTransformation().multiply(shadowUiService.getDepthViewTransformation());
             return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
         }
     };

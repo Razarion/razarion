@@ -47,8 +47,8 @@ public class ClientSelectionFrameRenderUnit extends AbstractSelectionFrameRender
     protected void draw() {
         webGlFacade.useProgram();
 
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
 
         positions.activate();
         webGlFacade.uniform4f(WebGlFacade.U_COLOR, Colors.SELECTION_FRAME);

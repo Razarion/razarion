@@ -23,7 +23,6 @@ import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -146,16 +145,16 @@ public class WebGlEmulatorController implements Initializable {
             System.out.println("X rot: " + cameraXRotationSlider.getValue());
             System.out.println("Z rot: " + cameraZRotationSlider.getValue());
             System.out.println("Camera direction: " + camera.getDirection());
-            System.out.println("zNear: " + projectionTransformation.calculateZNear());
-            System.out.println("zFar: " + projectionTransformation.calculateZFar());
+            System.out.println("zNear: " + projectionTransformation.getZNear());
+            System.out.println("zFar: " + projectionTransformation.getZFar());
         });
         cameraZRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
             System.out.println("X rot: " + cameraXRotationSlider.getValue());
             System.out.println("Z rot: " + cameraZRotationSlider.getValue());
             System.out.println("Camera direction: " + camera.getDirection());
-            System.out.println("zNear: " + projectionTransformation.calculateZNear());
-            System.out.println("zFar: " + projectionTransformation.calculateZFar());
+            System.out.println("zNear: " + projectionTransformation.getZNear());
+            System.out.println("zFar: " + projectionTransformation.getZFar());
         });
         shadowXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             visualUiService.getVisualConfig().setShadowRotationX(Math.toRadians(shadowXRotationSlider.getValue()));
@@ -224,7 +223,7 @@ public class WebGlEmulatorController implements Initializable {
         System.out.println("---------------------Test Case-----------------------");
         System.out.println(camera);
         System.out.println(projectionTransformation);
-        System.out.println(InstanceStringGenerator.generate(projectionTransformation.createMatrix()));
+        System.out.println(InstanceStringGenerator.generate(projectionTransformation.getMatrix()));
         System.out.println("-----------------------------------------------------");
     }
 

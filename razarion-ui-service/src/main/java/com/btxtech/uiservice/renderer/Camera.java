@@ -4,36 +4,26 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 25.04.2015.
  */
-@Singleton
+@ApplicationScoped
 public class Camera {
+    private Logger logger = Logger.getLogger(Camera.class.getName());
     @Inject
-    private Event<CameraMovedEvent> cameraMovedEvent;
+    private ProjectionTransformation projectionTransformation;
     private double translateX;
     private double translateY;
-    private double translateZ;
-    private double rotateX;
+    private double translateZ = 80;
+    private double rotateX= Math.toRadians(35);
     private double rotateZ;
-
-    private Logger logger = Logger.getLogger(Camera.class.getName());
-
-    @PostConstruct
-    public void init() {
-        translateX = 1000;
-        translateY = 500;
-        translateZ = 80;
-        rotateX = Math.toRadians(35);
-        rotateZ = Math.toRadians(0);
-    }
+    private Matrix4 matrix4;
+    private Matrix4 normMatrix4;
 
     public double getTranslateX() {
         return translateX;
@@ -41,7 +31,7 @@ public class Camera {
 
     public void setTranslateX(double translateX) {
         this.translateX = translateX;
-        fireChanged();
+        setupMatrices();
     }
 
     public double getTranslateY() {
@@ -50,13 +40,13 @@ public class Camera {
 
     public void setTranslateY(double translateY) {
         this.translateY = translateY;
-        fireChanged();
+        setupMatrices();
     }
 
-    public void setTranslateDeltaXY(int deltaX, int deltaY) {
-        translateX += deltaX;
-        translateY += deltaY;
-        fireChanged();
+    public void setTranslateXY(double x, double y) {
+        translateX = x;
+        translateY = y;
+        setupMatrices();
     }
 
     public double getTranslateZ() {
@@ -65,7 +55,7 @@ public class Camera {
 
     public void setTranslateZ(double translateZ) {
         this.translateZ = translateZ;
-        fireChanged();
+        setupMatrices();
     }
 
     public double getRotateX() {
@@ -74,24 +64,24 @@ public class Camera {
 
     public void setRotateX(double rotateX) {
         this.rotateX = rotateX;
-        fireChanged();
+        setupMatrices();
     }
 
     public void setRotateZ(double rotateZ) {
         this.rotateZ = rotateZ;
-        fireChanged();
+        setupMatrices();
     }
 
     public double getRotateZ() {
         return rotateZ;
     }
 
-    public Matrix4 createMatrix() {
-        return createNormMatrix().multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
+    public Matrix4 getMatrix() {
+        return matrix4;
     }
 
-    public Matrix4 createNormMatrix() {
-        return Matrix4.createXRotation(-rotateX).multiply(Matrix4.createZRotation(-rotateZ));
+    public Matrix4 getNormMatrix() {
+        return normMatrix4;
     }
 
     public Vertex getPosition() {
@@ -108,7 +98,7 @@ public class Camera {
         translateZ = 1000;
         rotateX = Math.toRadians(0);
         rotateZ = Math.toRadians(0);
-        fireChanged();
+        setupMatrices();
     }
 
     public void setFront() {
@@ -117,7 +107,7 @@ public class Camera {
         translateZ = -10;
         rotateX = Math.toRadians(90);
         rotateZ = Math.toRadians(0);
-        fireChanged();
+        setupMatrices();
     }
 
     public void setGame() {
@@ -128,16 +118,18 @@ public class Camera {
         translateZ = -720;
         rotateX = Math.toRadians(0);
         rotateZ = Math.toRadians(0);
-        fireChanged();
+        setupMatrices();
     }
 
-    private void fireChanged() {
-        // cameraMovedEvent.fire(new CameraMovedEvent());
+    private void setupMatrices() {
+        matrix4 = Matrix4.createXRotation(-rotateX).multiply(Matrix4.createZRotation(-rotateZ)).multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
+        normMatrix4 = matrix4.normTransformation();
+        projectionTransformation.setupMatrices();
     }
 
     public Ray3d toWorld(Ray3d pickRay) {
-        Vertex start = createMatrix().invert().multiply(pickRay.getStart(), 1);
-        Vertex direction = createNormMatrix().invert().multiply(pickRay.getDirection(), 1);
+        Vertex start = getMatrix().invert().multiply(pickRay.getStart(), 1);
+        Vertex direction = getNormMatrix().invert().multiply(pickRay.getDirection(), 1);
         return new Ray3d(start, direction);
     }
 

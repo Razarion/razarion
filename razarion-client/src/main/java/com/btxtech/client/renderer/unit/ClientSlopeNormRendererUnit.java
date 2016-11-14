@@ -62,8 +62,8 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     @Override
     protected void draw(Slope slope, GroundSkeletonConfig groundSkeletonConfig) {
         webGlFacade.useProgram();
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, Matrix4.createIdentity());
 
         vertices.activate();

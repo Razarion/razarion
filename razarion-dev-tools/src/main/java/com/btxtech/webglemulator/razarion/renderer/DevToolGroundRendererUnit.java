@@ -48,7 +48,7 @@ public class DevToolGroundRendererUnit extends AbstractGroundRendererUnit implem
 
     @Override
     public Vertex4 runShader(Vertex vertex) {
-        Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix());
+        Matrix4 matrix4 = projectionTransformation.getMatrix().multiply(camera.getMatrix());
         return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
     }
 

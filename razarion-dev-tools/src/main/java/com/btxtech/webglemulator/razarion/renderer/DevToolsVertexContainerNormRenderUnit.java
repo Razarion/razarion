@@ -46,7 +46,7 @@ public class DevToolsVertexContainerNormRenderUnit extends AbstractVertexContain
 
     @Override
     public Vertex4 runShader(Vertex vertex) {
-        Matrix4 matrix4 = projectionTransformation.createMatrix().multiply(camera.createMatrix().multiply(modelMatrices.getModel()));
+        Matrix4 matrix4 = projectionTransformation.getMatrix().multiply(camera.getMatrix().multiply(modelMatrices.getModel()));
         return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
     }
 

@@ -72,9 +72,9 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
         webGlFacade.setLightUniforms(null, visualUiService.getVisualConfig().getWaterLightConfig());
 
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.createNormMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.getNormMatrix());
         webGlFacade.uniform1f("uTransparency", visualUiService.getVisualConfig().getWaterTransparency());
         webGlFacade.uniform1f("uBmDepth", visualUiService.getVisualConfig().getWaterBmDepth());
         webGlFacade.uniform1f("animation", terrainUiService.getWaterAnimation());

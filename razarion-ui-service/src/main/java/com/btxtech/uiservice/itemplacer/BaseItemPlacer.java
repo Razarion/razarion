@@ -10,7 +10,7 @@ import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -33,7 +33,7 @@ public class BaseItemPlacer {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private ProjectionTransformation projectionTransformation;
+    private TerrainScrollHandler terrainScrollHandler;
     private DecimalPosition position;
     private BaseItemType baseItemType;
     private String errorText;
@@ -47,7 +47,7 @@ public class BaseItemPlacer {
         if (baseItemPlacerConfig.getSuggestedPosition() != null) {
             onMove(baseItemPlacerConfig.getSuggestedPosition());
         } else {
-            DecimalPosition cameraCenter = projectionTransformation.calculateViewField(0).calculateCenter();
+            DecimalPosition cameraCenter = terrainScrollHandler.getCurrentViewField().calculateCenter();
             onMove(cameraCenter);
         }
         return this;

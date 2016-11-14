@@ -72,8 +72,8 @@ public class TerrainEditorCursorUnitRenderer extends AbstractWebGlUnitRenderer {
         getCtx3d().disable(WebGLRenderingContext.BLEND);
         getCtx3d().enable(WebGLRenderingContext.DEPTH_TEST);
 
-        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
-        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.getMatrix());
         uniformMatrix4fv(U_MODEL_MATRIX, terrainEditor.getCursorModelMatrix());
 
         vertices.activate();

@@ -1,13 +1,12 @@
 package com.btxtech.webglemulator;
 
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.CameraMovedEvent;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.Initializable;
@@ -17,7 +16,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -61,8 +59,8 @@ public class WebGlEmulatorSceneController implements Initializable {
         if (canvas == null) {
             return;
         }
-        System.out.println("zNear: " + projectionTransformation.calculateZNear());
-        System.out.println("zFar: " + projectionTransformation.calculateZFar());
+        System.out.println("zNear: " + projectionTransformation.getZNear());
+        System.out.println("zFar: " + projectionTransformation.getZFar());
 
         double canvasWidth = canvas.getWidth();
         double canvasHeight = canvas.getHeight();
@@ -108,13 +106,6 @@ public class WebGlEmulatorSceneController implements Initializable {
             e.printStackTrace();
         }
         gc.restore();
-    }
-
-    public void onCameraMovedEvent(@Observes CameraMovedEvent cameraMovedEvent) {
-        if (canvas == null) {
-            return;
-        }
-        update();
     }
 
     private void drawTerrain(ExtendedGraphicsContext egc) {

@@ -58,8 +58,8 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     public void draw(ModelMatrices modelMatrices) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.createDepthProjectionTransformation());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, shadowUiService.createDepthViewTransformation());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.getDepthProjectionTransformation());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, shadowUiService.getDepthViewTransformation());
 
         vertices.activate();
 

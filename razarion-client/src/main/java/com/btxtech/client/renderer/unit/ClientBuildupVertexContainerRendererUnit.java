@@ -75,9 +75,9 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     protected void prepareDraw(Matrix4 buildupMatrix) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.createMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_NORM_MATRIX, camera.createNormMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_NORM_MATRIX, camera.getNormMatrix());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
 
         webGlFacade.uniform3fNoAlpha("uLightingAmbient", ambient);
         webGlFacade.uniform3f("uLightingDirection", visualUiService.getShape3DLightDirection());

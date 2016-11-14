@@ -223,8 +223,11 @@ public class TerrainScrollHandler {
     }
 
     private void setCameraPosition(double xPosition, double yPosition) {
-        camera.setTranslateX(xPosition);
-        camera.setTranslateY(yPosition);
+        camera.setTranslateXY(xPosition, yPosition);
+        updateViewField();
+    }
+
+    public void updateViewField() {
         currentViewField = projectionTransformation.calculateViewField(0);
         currentAabb = currentViewField.calculateAabbRectangle();
     }
@@ -232,6 +235,10 @@ public class TerrainScrollHandler {
     public void setPositionListener(Rectangle2D destination2Scroll, Runnable completionCallback) {
         this.destination2Scroll = destination2Scroll;
         this.destination2ScrollCallback = completionCallback;
+    }
+
+    public ViewField getCurrentViewField() {
+        return currentViewField;
     }
 
     public Rectangle2D getCurrentAabb() {

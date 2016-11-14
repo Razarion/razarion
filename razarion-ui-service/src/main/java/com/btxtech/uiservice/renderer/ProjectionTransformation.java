@@ -1,36 +1,39 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
  * Created by Beat
  * 26.09.2015.
- * <p/>
+ * <p>
  * http://www.songho.ca/opengl/gl_projectionmatrix.html
  */
-@Singleton
+@ApplicationScoped
 public class ProjectionTransformation {
     private static final int Z_NEAR_FALLBACK = 10;
     private static final int Z_FAR_FALLBACK = 5000000;
     // private Logger logger = Logger.getLogger(ProjectionTransformation.class.getName());
-    private double fovY;
-    private double aspectRatio;
     @Inject
     private Camera camera;
     @Inject
     private TerrainUiService terrainUiService;
-
-    public ProjectionTransformation() {
-        setFovY(Math.toRadians(45));
-    }
+    @Inject
+    private ShadowUiService shadowUiService;
+    private double fovY = Math.toRadians(45);
+    private double aspectRatio = 4.0 / 3.0;
+    private Matrix4 matrix;
+    private double zNear;
+    private double zFar;
 
     public double getFovY() {
         return fovY;
@@ -38,6 +41,7 @@ public class ProjectionTransformation {
 
     public void setFovY(double fovY) {
         this.fovY = fovY;
+        setupMatrices();
     }
 
     public double getAspectRatio() {
@@ -46,71 +50,60 @@ public class ProjectionTransformation {
 
     public void setAspectRatio(double aspectRatio) {
         this.aspectRatio = aspectRatio;
+        setupMatrices();
     }
 
-    public Matrix4 createMatrix() {
-        return makePerspectiveFrustum(fovY, aspectRatio, calculateZNear(), calculateZFar());
+    public Matrix4 getMatrix() {
+        return matrix;
     }
 
-    public double calculateZFar() {
+    public double getZFar() {
+        return zFar;
+    }
+
+    public double getZNear() {
+        return zNear;
+    }
+
+    public void setupMatrices() {
+        matrix = makePerspectiveFrustum(fovY, aspectRatio, getZNear(), getZFar());
+        calculateZFar();
+        calculateZNear();
+        shadowUiService.setupMatrices();
+    }
+
+    private void calculateZFar() {
         Vertex cameraPosition = camera.getPosition();
         Vertex zFarPosition = calculateViewField(terrainUiService.getLowestPointInView()).calculateLongestLegZ(cameraPosition);
         if (zFarPosition == null) {
-            return Z_FAR_FALLBACK;
+            zFar = Z_FAR_FALLBACK;
+            return;
         }
 
         Vertex cameraDirection = camera.getDirection();
-        return cameraDirection.projection(zFarPosition.sub(cameraPosition));
+        zFar = cameraDirection.projection(zFarPosition.sub(cameraPosition));
     }
 
-    public double calculateZNear() {
+    private void calculateZNear() {
         Vertex cameraPosition = camera.getPosition();
         Vertex zNearPosition = calculateViewField(terrainUiService.getHighestPointInView()).calculateShortestLegZ(cameraPosition);
         if (zNearPosition == null) {
-            return Z_NEAR_FALLBACK;
+            zNear = Z_NEAR_FALLBACK;
+            return;
         }
 
         Vertex cameraDirection = camera.getDirection();
         double zNear = cameraDirection.projection(zNearPosition.sub(cameraPosition));
         if (zNear < Z_NEAR_FALLBACK) {
-            return Z_NEAR_FALLBACK;
+            this.zNear = Z_NEAR_FALLBACK;
         } else {
-            return zNear;
+            this.zNear = zNear;
         }
     }
 
     /**
-     * Calculates the perspective frustum projection matrix
-     *
-     * @param fovY        field of view y in radians
-     * @param aspectRatio aspect ratio width / height
-     * @param zNear       z near
-     * @param zFar        z far
-     * @return perspective frustum projection matrix
-     */
-    public static Matrix4 makePerspectiveFrustum(double fovY, double aspectRatio, double zNear, double zFar) {
-        double top = zNear * Math.tan(fovY / 2.0);
-        double right = top * aspectRatio;
-
-        return makeBalancedPerspectiveFrustum(right, top, zNear, zFar);
-    }
-
-    public static Matrix4 makeBalancedPerspectiveFrustum(double right, double top, double zNear, double zFar) {
-        double x = zNear / right;
-        double y = zNear / top;
-        double a = -(zFar + zNear) / (zFar - zNear);
-        double b = -2 * zFar * zNear / (zFar - zNear);
-
-        return new Matrix4(new double[][]{
-                {x, 0, 0, 0},
-                {0, y, 0, 0},
-                {0, 0, a, b},
-                {0, 0, -1, 0}});
-    }
-
-    /**
      * Calculates a polygon representing the view field for the given z.
-     * <p/>
+     * <p>
      *
      * @param z ground level
      * @return camera View field view
@@ -161,7 +154,7 @@ public class ProjectionTransformation {
      * @param clip clip coordinates (-1 to 1)
      */
     public Ray3d createPickRay(DecimalPosition clip) {
-        double zNear = calculateZNear();
+        double zNear = getZNear();
         double top = zNear * Math.tan(fovY / 2.0);
         double y = top * clip.getY();
         double x = clip.getX() * top * aspectRatio;
@@ -179,5 +172,34 @@ public class ProjectionTransformation {
                 "fovY=" + Math.toDegrees(fovY) +
                 ", aspectRatio=" + aspectRatio +
                 '}';
+    }
+
+    /**
+     * Calculates the perspective frustum projection matrix
+     *
+     * @param fovY        field of view y in radians
+     * @param aspectRatio aspect ratio width / height
+     * @param zNear       z near
+     * @param zFar        z far
+     * @return perspective frustum projection matrix
+     */
+    public static Matrix4 makePerspectiveFrustum(double fovY, double aspectRatio, double zNear, double zFar) {
+        double top = zNear * Math.tan(fovY / 2.0);
+        double right = top * aspectRatio;
+
+        return makeBalancedPerspectiveFrustum(right, top, zNear, zFar);
+    }
+
+    public static Matrix4 makeBalancedPerspectiveFrustum(double right, double top, double zNear, double zFar) {
+        double x = zNear / right;
+        double y = zNear / top;
+        double a = -(zFar + zNear) / (zFar - zNear);
+        double b = -2 * zFar * zNear / (zFar - zNear);
+
+        return new Matrix4(new double[][]{
+                {x, 0, 0, 0},
+                {0, y, 0, 0},
+                {0, 0, a, b},
+                {0, 0, -1, 0}});
     }
 }

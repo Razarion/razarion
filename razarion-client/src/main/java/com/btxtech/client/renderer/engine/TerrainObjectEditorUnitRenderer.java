@@ -68,8 +68,8 @@ public class TerrainObjectEditorUnitRenderer extends AbstractWebGlUnitRenderer {
     public void draw(ModelMatrices modelMatrices) {
         useProgram();
 
-        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
-        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.getMatrix());
         uniformMatrix4fv(U_MODEL_MATRIX, modelPosition);
 
         uniform1i(U_CURSOR_TYPE, cursoType);

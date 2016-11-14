@@ -261,7 +261,7 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
         if (shadowWebGlTextureId == null) {
             throw new IllegalStateException("Shadow must be enabled before");
         }
-        uniformMatrix4fv("uShadowMatrix", shadowUiService.createShadowLookupTransformation());
+        uniformMatrix4fv("uShadowMatrix", shadowUiService.getShadowLookupTransformation());
         uniform1f("uShadowAlpha", (float) shadowUiService.getShadowAlpha());
         uniform1i("uShadowTexture", shadowWebGlTextureId.getUniformValue());
         gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());

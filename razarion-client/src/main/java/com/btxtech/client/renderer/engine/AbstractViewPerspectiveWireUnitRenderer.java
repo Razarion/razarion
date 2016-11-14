@@ -63,8 +63,8 @@ public abstract class AbstractViewPerspectiveWireUnitRenderer extends AbstractWe
     public void draw(ModelMatrices modelMatrices) {
         useProgram();
 
-        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
-        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.getMatrix());
 
         vertices.activate();
         barycentric.activate();

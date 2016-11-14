@@ -2,14 +2,12 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
-import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -70,8 +68,8 @@ public class ItemWireUnitRenderer extends AbstractWebGlUnitRenderer {
     protected void prepareDraw() {
         useProgram();
 
-        uniformMatrix4fv(U_VIEW_MATRIX, camera.createMatrix());
-        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.createMatrix());
+        uniformMatrix4fv(U_VIEW_MATRIX, camera.getMatrix());
+        uniformMatrix4fv(U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
 
         positions.activate();
         barycentrics.activate();
