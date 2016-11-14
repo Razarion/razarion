@@ -40,7 +40,7 @@ public class ShadowUiService {
     private Matrix4 depthViewTransformation;
 
     public void onVisualConfig(@Observes VisualConfig visualConfig) {
-        lightDirection = Matrix4.createZRotation(visualConfig.getShadowRotationZ()).multiply(Matrix4.createXRotation(visualConfig.getShadowRotationX())).multiply(new Vertex(0, 0, -1), 1.0);
+        setupLightDirection(visualConfig);
     }
 
     public double getShadowAlpha() {
@@ -69,6 +69,7 @@ public class ShadowUiService {
         // - lightDirection
         // - terrainUiService.getHighestPointInView()
         // - visualUiService.getVisualConfig().getShadowRotationX + Y
+        setupLightDirection(visualUiService.getVisualConfig());
         setupDepthProjectionTransformation();
         createDepthViewTransformation();
         shadowLookupTransformation = TEXTURE_COORDINATE_TRANSFORMATION.multiply(depthProjectionTransformation.multiply(depthViewTransformation));
@@ -178,6 +179,10 @@ public class ShadowUiService {
         Vertex lightPosition = bottomLeftVertex.add(topRightVertex.sub(bottomLeftVertex).normalize(distance / 2.0));
 
         depthViewTransformation = Matrix4.createXRotation(-visualUiService.getVisualConfig().getShadowRotationX()).multiply(Matrix4.createZRotation(-visualUiService.getVisualConfig().getShadowRotationZ())).multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
+    }
+
+    private void setupLightDirection(VisualConfig visualConfig) {
+        lightDirection = Matrix4.createZRotation(visualConfig.getShadowRotationZ()).multiply(Matrix4.createXRotation(visualConfig.getShadowRotationX())).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
     public ViewField calculateViewField() {

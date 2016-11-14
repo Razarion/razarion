@@ -138,37 +138,20 @@ public class WebGlEmulatorController implements Initializable {
 
         fovSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             projectionTransformation.setFovY(Math.toRadians(fovSlider.getValue()));
-            System.out.println("Camera direction: " + camera.getDirection());
         });
         cameraXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             camera.setRotateX(Math.toRadians(cameraXRotationSlider.getValue()));
-            System.out.println("X rot: " + cameraXRotationSlider.getValue());
-            System.out.println("Z rot: " + cameraZRotationSlider.getValue());
-            System.out.println("Camera direction: " + camera.getDirection());
-            System.out.println("zNear: " + projectionTransformation.getZNear());
-            System.out.println("zFar: " + projectionTransformation.getZFar());
         });
         cameraZRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
-            System.out.println("X rot: " + cameraXRotationSlider.getValue());
-            System.out.println("Z rot: " + cameraZRotationSlider.getValue());
-            System.out.println("Camera direction: " + camera.getDirection());
-            System.out.println("zNear: " + projectionTransformation.getZNear());
-            System.out.println("zFar: " + projectionTransformation.getZFar());
         });
         shadowXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             visualUiService.getVisualConfig().setShadowRotationX(Math.toRadians(shadowXRotationSlider.getValue()));
-            System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
-            System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
-            System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
-            shadowUiService.calculateViewField();
+            shadowUiService.setupMatrices();
         });
         shadowZRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             visualUiService.getVisualConfig().setShadowRotationZ(Math.toRadians(shadowZRotationSlider.getValue()));
-            System.out.println("Shadow X rot: " + shadowXRotationSlider.getValue());
-            System.out.println("Shadow Y rot: " + shadowZRotationSlider.getValue());
-            System.out.println("Shadow direction: " + shadowUiService.getLightDirection());
-            shadowUiService.calculateViewField();
+            shadowUiService.setupMatrices();
         });
 
         showRenderTimeCheckBox.setSelected(razarionEmulator.isShowRenderTime());

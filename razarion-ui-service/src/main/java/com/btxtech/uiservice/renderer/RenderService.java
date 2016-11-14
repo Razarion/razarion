@@ -8,9 +8,12 @@ import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ClipRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
+import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
+import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
+import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -47,12 +50,12 @@ public abstract class RenderService {
         renderTasks.clear();
 
         addRenderTask(GroundRenderTask.class);
-//        addRenderTask(SlopeRenderTask.class);
-//        addRenderTask(TerrainObjectRenderTask.class);
+        addRenderTask(SlopeRenderTask.class);
+        addRenderTask(TerrainObjectRenderTask.class);
         addRenderTask(BaseItemRenderTask.class);
         addRenderTask(ResourceItemRenderTask.class);
         addRenderTask(BoxItemRenderTask.class);
-//        addRenderTask(WaterRenderTask.class);
+        addRenderTask(WaterRenderTask.class);
         addRenderTask(ProjectileRenderTask.class);
         addRenderTask(ClipRenderTask.class);
         addRenderTask(BaseItemPlacerRenderTask.class);
