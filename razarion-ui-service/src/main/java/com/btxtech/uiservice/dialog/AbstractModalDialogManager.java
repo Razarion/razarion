@@ -42,8 +42,9 @@ public abstract class AbstractModalDialogManager implements ModalDialogManager, 
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
         showQuestPassed(questDescriptionConfig, ignore -> {
             if (questPassedCallback != null) {
-                questPassedCallback.run();
+                Runnable tmpQuestPassedCallback = questPassedCallback;
                 questPassedCallback = null;
+                tmpQuestPassedCallback.run();
             }
         });
     }
@@ -57,8 +58,9 @@ public abstract class AbstractModalDialogManager implements ModalDialogManager, 
     public void onLevelPassed(UserContext userContext, LevelConfig oldLevel, LevelConfig newLevel) {
         showLevelUp(userContext, aVoid -> {
             if (levelUpCallback != null) {
-                levelUpCallback.run();
+                Runnable tmpLevelUpCallback = levelUpCallback;
                 levelUpCallback = null;
+                tmpLevelUpCallback.run();
             }
         });
     }
