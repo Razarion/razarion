@@ -34,7 +34,7 @@ public class QuestServiceTest {
 //        conditionConfig.setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED);
 //        Map<Integer, Integer> baseItemTypeCount = new HashMap<>();
 //        baseItemTypeCount.put(SimpleTestEnvironment.SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1);
-//        conditionConfig.setComparisonConfig(new ComparisonConfig().setBaseItemTypeCount(baseItemTypeCount));
+//        conditionConfig.setComparisonConfig(new ComparisonConfig().setTypeCount(baseItemTypeCount));
 //
 //        conditionService.activateCondition(userContext, conditionConfig, conditionPassedListenerMock);
 //

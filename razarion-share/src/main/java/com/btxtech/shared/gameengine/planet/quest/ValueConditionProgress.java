@@ -6,13 +6,13 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
  * Created by Beat
  * 28.10.2016.
  */
-public class ValueConditionTrigger extends AbstractConditionProgress {
-    public ValueConditionTrigger(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
+public class ValueConditionProgress extends AbstractConditionProgress {
+    public ValueConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
         super(conditionTrigger, abstractComparison);
     }
 
     public void onTriggerValue(double value) {
-        ((CountComparison) getAbstractComparison()).onValue(value);
+        ((BaseItemCountComparison) getAbstractComparison()).onValue(value);
         if (getAbstractComparison().isFulfilled()) {
             setFulfilled();
         }

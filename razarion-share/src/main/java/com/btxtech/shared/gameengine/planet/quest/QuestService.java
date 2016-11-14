@@ -16,15 +16,16 @@ package com.btxtech.shared.gameengine.planet.quest;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -57,7 +58,7 @@ public class QuestService {
     public void activateCondition(UserContext examinee, QuestConfig questConfig) {
         AbstractComparison abstractComparison = null;
         if (questConfig.getConditionConfig().getConditionTrigger().isComparisonNeeded()) {
-            abstractComparison = createAbstractComparison(examinee, questConfig.getConditionConfig().getComparisonConfig());
+            abstractComparison = createAbstractComparison(examinee, questConfig.getConditionConfig());
 //            if (abstractComparison instanceof AbstractUpdatingComparison) {
 //                ((AbstractUpdatingComparison) abstractComparison).setGlobalServices(getGlobalServices());
 //            }
@@ -132,7 +133,18 @@ public class QuestService {
         if (examinee == null) {
             return;
         }
-        triggerValue(examinee, ConditionTrigger.BOX_PICKED, 1.0);
+        triggerValue(examinee, ConditionTrigger.BOX_PICKED, 1.0); // Uses the code from BaseItem. Make own one.
+    }
+
+    public void onInventoryItemPlaced(UserContext examinee, InventoryItem inventoryItem) {
+        InventoryItemConditionProgress inventoryItemConditionProgress = (InventoryItemConditionProgress) findProgress(examinee, ConditionTrigger.INVENTORY_ITEM_PLACED);
+        if (inventoryItemConditionProgress == null) {
+            return;
+        }
+        inventoryItemConditionProgress.onInventoryItem(inventoryItem);
+        if (inventoryItemConditionProgress.isFulfilled()) {
+            conditionPassed(inventoryItemConditionProgress);
+        }
     }
 
     public void addQuestListener(QuestListener questListener) {
@@ -143,21 +155,45 @@ public class QuestService {
         questListeners.remove(questListener);
     }
 
-    private AbstractComparison createAbstractComparison(UserContext examinee, ComparisonConfig comparisonConfig) {
-        if (comparisonConfig.getCount() != null) {
-            CountComparison countComparison = instance.select(CountComparison.class).get();
-            countComparison.init(comparisonConfig.getCount());
-            return countComparison;
-        } else if (comparisonConfig.getPlaceConfig() != null) {
-            ItemTypePositionComparison itemTypePositionComparison = instance.select(ItemTypePositionComparison.class).get();
-            itemTypePositionComparison.init(convertItemCount(comparisonConfig.getBaseItemTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), examinee);
-            return itemTypePositionComparison;
-        } else if (comparisonConfig.getBaseItemTypeCount() != null) {
-            SyncItemTypeComparison syncItemTypeComparison = instance.select(SyncItemTypeComparison.class).get();
-            syncItemTypeComparison.init(convertItemCount(comparisonConfig.getBaseItemTypeCount()));
-            return syncItemTypeComparison;
-        } else {
-            throw new UnsupportedOperationException();
+    private AbstractComparison createAbstractComparison(UserContext examinee, ConditionConfig conditionConfig) {
+        ComparisonConfig comparisonConfig = conditionConfig.getComparisonConfig();
+        switch (conditionConfig.getConditionTrigger().getType()) {
+            case BASE_ITEM: {
+                if (comparisonConfig.getCount() != null) {
+                    BaseItemCountComparison baseItemCountComparison = instance.select(BaseItemCountComparison.class).get();
+                    baseItemCountComparison.init(comparisonConfig.getCount());
+                    return baseItemCountComparison;
+                } else if (comparisonConfig.getPlaceConfig() != null) {
+                    BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
+                    baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), examinee);
+                    return baseItemPositionComparison;
+                } else if (comparisonConfig.getTypeCount() != null) {
+                    BaseItemTypeComparison syncItemTypeComparison = instance.select(BaseItemTypeComparison.class).get();
+                    syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()));
+                    return syncItemTypeComparison;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            }
+            case BOX_PICKED:
+                if (comparisonConfig.getCount() != null) {
+                    // Make own count comparison class for box
+                    BaseItemCountComparison baseItemCountComparison = instance.select(BaseItemCountComparison.class).get();
+                    baseItemCountComparison.init(comparisonConfig.getCount());
+                    return baseItemCountComparison;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            case INVENTORY_ITEM:
+                if (comparisonConfig.getCount() != null) {
+                    InventoryItemCountComparison inventoryItemCountComparison = instance.select(InventoryItemCountComparison.class).get();
+                    inventoryItemCountComparison.init(comparisonConfig.getCount());
+                    return inventoryItemCountComparison;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            default:
+                throw new UnsupportedOperationException("Don't known: " + conditionConfig.getConditionTrigger().getType());
         }
     }
 
@@ -176,13 +212,13 @@ public class QuestService {
     }
 
     private void triggerValue(UserContext examinee, ConditionTrigger conditionTrigger, double value) {
-        ValueConditionTrigger valueConditionTrigger = (ValueConditionTrigger) findProgress(examinee, conditionTrigger);
-        if (valueConditionTrigger == null) {
+        ValueConditionProgress valueConditionProgress = (ValueConditionProgress) findProgress(examinee, conditionTrigger);
+        if (valueConditionProgress == null) {
             return;
         }
-        valueConditionTrigger.onTriggerValue(value);
-        if (valueConditionTrigger.isFulfilled()) {
-            conditionPassed(valueConditionTrigger);
+        valueConditionProgress.onTriggerValue(value);
+        if (valueConditionProgress.isFulfilled()) {
+            conditionPassed(valueConditionProgress);
         }
     }
 

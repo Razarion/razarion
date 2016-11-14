@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.planet.quest;
 
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
@@ -23,7 +24,7 @@ import javax.enterprise.context.Dependent;
  * Time: 16:31:29
  */
 @Dependent
-public class CountComparison extends AbstractSyncItemComparison {
+public class InventoryItemCountComparison extends AbstractInventoryItemComparison {
     private double count;
     private double countTotal;
 
@@ -33,7 +34,7 @@ public class CountComparison extends AbstractSyncItemComparison {
     }
 
     @Override
-    protected void privateOnSyncBaseItem(SyncBaseItem syncBaseItem) {
+    protected void privateOnInventoryItem(InventoryItem inventoryItem) {
         count -= 1.0;
         onProgressChanged();
     }

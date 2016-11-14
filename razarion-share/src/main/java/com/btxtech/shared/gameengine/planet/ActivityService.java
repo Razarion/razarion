@@ -1,7 +1,9 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.ModalDialogManager;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
@@ -260,5 +262,10 @@ public class ActivityService {
 
     public void onFactorySyncItem(SyncBaseItem syncBaseItem, BaseItemType toBeBuilt) {
         System.out.println("ActivityService.onFactorySyncItem(): ");
+    }
+
+    public void onInventoryItemPlaced(UserContext userContext, InventoryItem inventoryItem) {
+        System.out.println("ActivityService.onInventoryItemPlaced(): ");
+        questService.onInventoryItemPlaced(userContext, inventoryItem);
     }
 }

@@ -13,22 +13,22 @@
 
 package com.btxtech.shared.gameengine.planet.quest;
 
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 /**
  * User: beat
  * Date: 27.12.2010
  * Time: 18:58:14
  */
-public class BaseItemConditionProgress extends AbstractConditionProgress {
+public class InventoryItemConditionProgress extends AbstractConditionProgress {
 
-    public BaseItemConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
+    public InventoryItemConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
         super(conditionTrigger, abstractComparison);
     }
 
-    public void onItem(SyncBaseItem syncBaseItem) {
-        ((AbstractBaseItemComparison) getAbstractComparison()).onSyncBaseItem(syncBaseItem);
+    public void onInventoryItem(InventoryItem inventoryItem) {
+        ((AbstractInventoryItemComparison) getAbstractComparison()).onInventoryItem(inventoryItem);
         if (getAbstractComparison().isFulfilled()) {
             setFulfilled();
         }

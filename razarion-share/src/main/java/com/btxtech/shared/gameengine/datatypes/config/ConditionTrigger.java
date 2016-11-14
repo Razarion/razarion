@@ -16,8 +16,9 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.gameengine.planet.quest.AbstractComparison;
 import com.btxtech.shared.gameengine.planet.quest.AbstractConditionProgress;
-import com.btxtech.shared.gameengine.planet.quest.ValueConditionTrigger;
 import com.btxtech.shared.gameengine.planet.quest.BaseItemConditionProgress;
+import com.btxtech.shared.gameengine.planet.quest.InventoryItemConditionProgress;
+import com.btxtech.shared.gameengine.planet.quest.ValueConditionProgress;
 
 /**
  * User: beat
@@ -25,34 +26,34 @@ import com.btxtech.shared.gameengine.planet.quest.BaseItemConditionProgress;
  * Time: 20:30:23
  */
 public enum ConditionTrigger {
-    SYNC_ITEM_KILLED(true) {
+    SYNC_ITEM_KILLED(Type.BASE_ITEM, true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new BaseItemConditionProgress(this, abstractComparison);
         }
     },
-//    MONEY_INCREASED(true) {
+    //    MONEY_INCREASED(true) {
 //        @Override
 //        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-//            return new ValueConditionTrigger(this, abstractComparison);
+//            return new ValueConditionProgress(this, abstractComparison);
 //        }
 //    },
-    SYNC_ITEM_CREATED(true) {
+    SYNC_ITEM_CREATED(Type.BASE_ITEM, true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new BaseItemConditionProgress(this, abstractComparison);
         }
     },
-//    XP_INCREASED(true) {
+    //    XP_INCREASED(true) {
 //        @Override
 //        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-//            return new ValueConditionTrigger(this, abstractComparison);
+//            return new ValueConditionProgress(this, abstractComparison);
 //        }
 //    },
 //    BASE_KILLED(true) {
 //        @Override
 //        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-//            return new ValueConditionTrigger(this, abstractComparison);
+//            return new ValueConditionProgress(this, abstractComparison);
 //        }
 //    },
 //    TUTORIAL(false) {
@@ -61,16 +62,16 @@ public enum ConditionTrigger {
 //            return new SimpleConditionTrigger(this);
 //        }
 //    },
-    SYNC_ITEM_POSITION(true) {
+    SYNC_ITEM_POSITION(Type.BASE_ITEM, true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new BaseItemConditionProgress(this, abstractComparison);
         }
     },
-//    CRYSTALS_INCREASED(true) {
+    //    CRYSTALS_INCREASED(true) {
 //        @Override
 //        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-//            return new ValueConditionTrigger(this, abstractComparison);
+//            return new ValueConditionProgress(this, abstractComparison);
 //        }
 //    },
 //    ARTIFACT_ITEM_ADDED(true) {
@@ -79,20 +80,38 @@ public enum ConditionTrigger {
 //            return new ArtifactItemIdConditionTrigger(this, abstractComparison);
 //        }
 //    },
-    BOX_PICKED(true) {
+    BOX_PICKED(Type.BOX_PICKED, true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-            return new ValueConditionTrigger(this, abstractComparison);
+            return new ValueConditionProgress(this, abstractComparison);
+        }
+    },
+    INVENTORY_ITEM_PLACED(Type.INVENTORY_ITEM, true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new InventoryItemConditionProgress(this, abstractComparison);
         }
     };
 
+    public enum Type {
+        BASE_ITEM,
+        INVENTORY_ITEM,
+        BOX_PICKED
+    }
+
+    private Type type;
     private boolean comparisonNeeded;
 
-    ConditionTrigger(boolean comparisonNeeded) {
+    ConditionTrigger(Type type, boolean comparisonNeeded) {
+        this.type = type;
         this.comparisonNeeded = comparisonNeeded;
     }
 
     public abstract AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison);
+
+    public Type getType() {
+        return type;
+    }
 
     public boolean isComparisonNeeded() {
         return comparisonNeeded;

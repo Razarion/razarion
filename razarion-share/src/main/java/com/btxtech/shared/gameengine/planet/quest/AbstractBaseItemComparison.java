@@ -19,7 +19,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 /**
  * User: beat Date: 12.01.2011 Time: 12:05:40
  */
-public abstract class AbstractSyncItemComparison extends AbstractUpdatingComparison {
+public abstract class AbstractBaseItemComparison extends AbstractUpdatingComparison {
     private AbstractConditionProgress abstractConditionTrigger;
 
     protected abstract void privateOnSyncBaseItem(SyncBaseItem syncBaseItem);

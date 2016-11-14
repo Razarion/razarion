@@ -83,6 +83,7 @@ public class Scene {
     }
 
     public void run() {
+        setupCameraConfig(sceneConfig.getCameraConfig());
         if (sceneConfig.getIntroText() != null) {
             storyCover.show(sceneConfig.getIntroText());
         }
@@ -123,7 +124,6 @@ public class Scene {
             questService.activateCondition(userContext, sceneConfig.getQuestConfig());
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
         }
-        setupCameraConfig(sceneConfig.getCameraConfig());
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
             hasCompletionCallback = true;
             completionCallbackCount++;

@@ -24,7 +24,7 @@ import java.util.Map;
  * User: beat Date: 18.07.2010 Time: 21:06:41
  */
 @Dependent
-public class SyncItemTypeComparison extends AbstractSyncItemComparison {
+public class BaseItemTypeComparison extends AbstractBaseItemComparison {
     private Map<BaseItemType, Integer> remaining;
     private Map<BaseItemType, Integer> total;
 

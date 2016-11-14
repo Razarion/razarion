@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.ModalDialogManager;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.ActivityService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
@@ -42,6 +43,8 @@ public class InventoryUiService {
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
     private BaseItemService baseItemService;
+    @Inject
+    private ActivityService activityService;
 
     public List<InventoryItemModel> gatherInventoryItemModels(UserContext userContext) {
         Map<Integer, InventoryItemModel> inventoryItemModels = new HashMap<>();
@@ -75,6 +78,7 @@ public class InventoryUiService {
                             for (DecimalPosition position : decimalPositions) {
                                 baseItemService.spawnSyncBaseItem(baseItemType, position, baseItemService.getPlayerBase(storyboardService.getUserContext()), false);
                             }
+                            activityService.onInventoryItemPlaced(storyboardService.getUserContext(), inventoryItem);
                         } catch (Exception e) {
                             exceptionHandler.handleException(e);
                         }

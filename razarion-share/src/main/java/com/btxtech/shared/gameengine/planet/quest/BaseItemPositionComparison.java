@@ -32,7 +32,7 @@ import java.util.Map;
  * User: beat Date: 18.07.2010 Time: 21:06:41
  */
 @Dependent
-public class ItemTypePositionComparison extends AbstractSyncItemComparison /*implements TimeAware*/ {
+public class BaseItemPositionComparison extends AbstractBaseItemComparison /*implements TimeAware*/ {
     @Inject
     private BaseItemService baseItemService;
     private Map<BaseItemType, Integer> itemTypes;
