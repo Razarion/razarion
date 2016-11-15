@@ -16,11 +16,6 @@ public class FabricateScenarioSuite extends ScenarioSuite {
     protected void setupScenarios() {
         addScenario(new Scenario("Fabricate") {
             @Override
-            public boolean isStart() {
-                return true;
-            }
-
-            @Override
             protected void createSyncItems() {
                 createSyncBaseItem(ScenarioService.FACTORY_ITEM_TYPE, new DecimalPosition(0, 0), null);
             }

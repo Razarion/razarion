@@ -19,6 +19,7 @@ public class SceneConfig {
     private List<BotAttackCommandConfig> botAttackCommandConfigs;
     private List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs;
     private List<BotKillHumanCommandConfig> botKillHumanCommandConfigs;
+    private List<BotRemoveOwnItemCommandConfig> botRemoveOwnItemCommandConfigs;
     private BaseItemPlacerConfig startPointPlacerConfig;
     private Boolean wait4LevelUpDialog;
     private Boolean wait4QuestPassedDialog;
@@ -105,6 +106,15 @@ public class SceneConfig {
 
     public SceneConfig setBotKillHumanCommandConfigs(List<BotKillHumanCommandConfig> botKillHumanCommandConfigs) {
         this.botKillHumanCommandConfigs = botKillHumanCommandConfigs;
+        return this;
+    }
+
+    public List<BotRemoveOwnItemCommandConfig> getBotRemoveOwnItemCommandConfigs() {
+        return botRemoveOwnItemCommandConfigs;
+    }
+
+    public SceneConfig setBotRemoveOwnItemCommandConfigs(List<BotRemoveOwnItemCommandConfig> botRemoveOwnItemCommandConfigs) {
+        this.botRemoveOwnItemCommandConfigs = botRemoveOwnItemCommandConfigs;
         return this;
     }
 

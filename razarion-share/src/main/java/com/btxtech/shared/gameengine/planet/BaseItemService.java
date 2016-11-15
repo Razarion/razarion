@@ -165,6 +165,7 @@ public class BaseItemService {
     }
 
     public void removeSyncItem(SyncBaseItem target) {
+        target.clearHealth();
         activityService.onSyncBaseItemRemoved(target);
         PlayerBase base = target.getBase();
         base.removeItem(target);

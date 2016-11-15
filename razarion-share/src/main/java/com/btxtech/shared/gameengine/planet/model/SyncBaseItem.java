@@ -475,6 +475,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
     }
 
+    public void clearHealth() {
+        health = 0;
+    }
+
     public boolean isBuildup() {
         return buildup >= 1.0;
     }

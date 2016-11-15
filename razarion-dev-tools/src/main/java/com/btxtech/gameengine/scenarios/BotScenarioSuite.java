@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotKillHumanCommandConfig;
 import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
+import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -118,6 +119,29 @@ public class BotScenarioSuite extends ScenarioSuite {
                 BotKillHumanCommandConfig commandConfig = new BotKillHumanCommandConfig().setBotId(2).setAttackerBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId());
                 commandConfig.setDominanceFactor(2).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(0, 0, 15, 15).toPolygon()));
                 botCommandConfigs.add(commandConfig);
+            }
+        });
+        addScenario(new Scenario("Remove Own Item Command Configs") {
+
+            @Override
+            public void setupBots(Collection<BotConfig> botConfigs) {
+                // Attacker bot
+                List<BotEnragementStateConfig> attackerEnragementStates = new ArrayList<>();
+                List<BotItemConfig> botItemConfigs = new ArrayList<>();
+                botItemConfigs.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId()).setCount(10).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(new Rectangle2D(0,0, 20,20).toPolygon())).setNoSpawn(true).setNoRebuild(true));
+                botItemConfigs.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()).setCount(5).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(new Rectangle2D(0,30, 20,20).toPolygon())).setNoSpawn(true).setNoRebuild(true));
+                attackerEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItemConfigs));
+                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
+            }
+
+            @Override
+            public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
+                botCommandConfigs.add(new BotRemoveOwnItemCommandConfig().setBotId(1).setBaseItemType2RemoveId(ScenarioService.ATTACKER_ITEM_TYPE.getId()));
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
         });
     }

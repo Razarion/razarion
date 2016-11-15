@@ -403,7 +403,7 @@ public class DecimalPosition {
         double y = Double.MAX_VALUE;
         for (DecimalPosition decimalPosition : decimalPositions) {
             x = Math.min(decimalPosition.getX(), x);
-            y = Math.min(decimalPosition.getX(), y);
+            y = Math.min(decimalPosition.getY(), y);
         }
         return new DecimalPosition(x, y);
     }
@@ -416,7 +416,7 @@ public class DecimalPosition {
         double y = Double.MIN_VALUE;
         for (DecimalPosition decimalPosition : decimalPositions) {
             x = Math.max(decimalPosition.getX(), x);
-            y = Math.max(decimalPosition.getX(), y);
+            y = Math.max(decimalPosition.getY(), y);
         }
         return new DecimalPosition(x, y);
     }

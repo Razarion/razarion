@@ -21,6 +21,7 @@ import com.btxtech.shared.dto.BotKillBaseCommandConfig;
 import com.btxtech.shared.dto.BotKillHumanCommandConfig;
 import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
+import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -291,6 +292,8 @@ public class BotItemContainer {
             handleKillOtherBotCommand((BotKillOtherBotCommandConfig) botCommandConfig, base);
         } else if (botCommandConfig instanceof BotKillHumanCommandConfig) {
             handleKillHumanCommand((BotKillHumanCommandConfig) botCommandConfig, base);
+        } else if (botCommandConfig instanceof BotRemoveOwnItemCommandConfig) {
+            handleBotRemoveItemCommand((BotRemoveOwnItemCommandConfig) botCommandConfig, base);
         } else {
             throw new IllegalArgumentException("Unknown bot command: " + botCommandConfig);
         }
@@ -375,6 +378,18 @@ public class BotItemContainer {
     private void handleKillHumanCommand(BotKillHumanCommandConfig botKillHumanCommandConfig, PlayerBase base) {
         PlayerBase target = baseItemService.getFirstHumanBase();
         handleKillBaseCommand(botKillHumanCommandConfig, base, target);
+    }
+
+    private void handleBotRemoveItemCommand(BotRemoveOwnItemCommandConfig botCommandConfig, PlayerBase base) {
+        updateState();
+
+        synchronized (botItems) {
+            for (SyncBaseItem syncBaseItem : botItems.keySet()) {
+                if (syncBaseItem.getBaseItemType().getId() == botCommandConfig.getBaseItemType2RemoveId()) {
+                    baseItemService.removeSyncItem(syncBaseItem);
+                }
+            }
+        }
     }
 
     private Collection<BotSyncBaseItem> getBotSyncBaseItem(int baseItemTypeId) {
