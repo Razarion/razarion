@@ -1,9 +1,13 @@
 package com.btxtech.shared.system.perfmon;
 
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,9 +21,32 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class PerfmonService {
+    private static final long DUMP_DELAY = 10000;
     private Logger log = Logger.getLogger(PerfmonService.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private SimpleExecutorService simpleExecutorService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
     private Collection<SampleEntry> sampleEntries = new ArrayList<>();
+
+    @PostConstruct
+    public void postConstruct() {
+        simpleExecutorService.scheduleAtFixedRate(DUMP_DELAY, true, () -> {
+            try {
+                Collection<StatisticEntry> statisticEntries = analyse();
+                log.severe("---------------------------------------------------------------------------------------------------------");
+                for (StatisticEntry statisticEntry : statisticEntries) {
+                    log.severe(statisticEntry.toInfoString());
+                }
+                log.severe("---------------------------------------------------------------------------------------------------------");
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
+        }, SimpleExecutorService.Type.UNSPECIFIED);
+    }
 
     public void onEntered(PerfmonEnum perfmonEnum) {
         if (enterTimes.containsKey(perfmonEnum)) {
