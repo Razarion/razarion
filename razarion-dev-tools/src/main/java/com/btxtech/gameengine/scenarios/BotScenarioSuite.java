@@ -40,7 +40,7 @@ public class BotScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setDecimalPosition(new DecimalPosition(0, 20)).setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()));
+                botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setTargetPosition(new DecimalPosition(0, 20)).setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()));
             }
         });
         // 39

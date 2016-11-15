@@ -461,6 +461,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addPickBoxTask(sceneConfigs);
         addBoxSpawnTask(sceneConfigs);
         addAttackTask(sceneConfigs);
+        addEnemyKillTask(sceneConfigs);
+        addNpcEscapeTask(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -542,7 +544,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(204, 52)).setSpeed(50.0).setCameraLocked(false);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
-        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setDecimalPosition(new DecimalPosition(204, 100)));
+        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetPosition(new DecimalPosition(204, 100)));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
     }
 
@@ -606,6 +608,23 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         attackItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
         QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Zerstöre die Abbaufahrzeuge").setDescription("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(attackItemTypeCount)));
         sceneConfigs.add(new SceneConfig().setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
+    }
+
+    private void addEnemyKillTask(List<SceneConfig> sceneConfigs) {
+        // Kill bot command
+        List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigss = new ArrayList<>();
+        botKillOtherBotCommandConfigss.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50, 50).toPolygon())));
+        // Kill human command
+        List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
+        botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50, 50).toPolygon())));
+
+        sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigss).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(2000));
+    }
+
+    private void addNpcEscapeTask(List<SceneConfig> sceneConfigs) {
+        List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
+        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetPosition(new DecimalPosition(400, 100)));
+        sceneConfigs.add(new SceneConfig().setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries. Ich flüchte zum nächsten Rebellen PLanet.").setDuration(2000));
     }
 
 }

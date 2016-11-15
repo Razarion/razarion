@@ -304,7 +304,7 @@ public class BotItemContainer {
         if (mover.isEmpty()) {
             throw new IllegalArgumentException("Can not execute BotMoveCommandConfig. No BotSyncBaseItem found for baseItemTypeId: " + botMoveCommandConfig.getBaseItemTypeId() + ". Command: " + botMoveCommandConfig);
         }
-        CollectionUtils.getFirst(mover).move(botMoveCommandConfig.getDecimalPosition());
+        CollectionUtils.getFirst(mover).move(botMoveCommandConfig.getTargetPosition());
     }
 
     private void handleHarvestCommand(BotHarvestCommandConfig botHarvestCommandConfig) {

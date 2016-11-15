@@ -8,7 +8,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  */
 public class BotMoveCommandConfig extends AbstractBotCommandConfig<BotMoveCommandConfig> {
     private int baseItemTypeId;
-    private DecimalPosition decimalPosition;
+    private DecimalPosition targetPosition;
 
     public int getBaseItemTypeId() {
         return baseItemTypeId;
@@ -19,12 +19,12 @@ public class BotMoveCommandConfig extends AbstractBotCommandConfig<BotMoveComman
         return this;
     }
 
-    public DecimalPosition getDecimalPosition() {
-        return decimalPosition;
+    public DecimalPosition getTargetPosition() {
+        return targetPosition;
     }
 
-    public BotMoveCommandConfig setDecimalPosition(DecimalPosition decimalPosition) {
-        this.decimalPosition = decimalPosition;
+    public BotMoveCommandConfig setTargetPosition(DecimalPosition targetPosition) {
+        this.targetPosition = targetPosition;
         return this;
     }
 }
