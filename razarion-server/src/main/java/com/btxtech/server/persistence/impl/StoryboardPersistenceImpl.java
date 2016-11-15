@@ -460,6 +460,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addFindEnemyBase(sceneConfigs);
         addPickBoxTask(sceneConfigs);
         addBoxSpawnTask(sceneConfigs);
+        addAttackTask(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -597,6 +598,14 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.INVENTORY_ITEM_PLACED).setComparisonConfig(new ComparisonConfig().setCount(1));
         BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig = new BotRemoveOwnItemCommandConfig().setBotId(ENEMY_BOT).setBaseItemType2RemoveId(BASE_ITEM_TYPE_ATTACKER);
         sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotRemoveOwnItemCommandConfigs(Collections.singletonList(botRemoveOwnItemCommandConfig)));
+    }
+
+    private void addAttackTask(List<SceneConfig> sceneConfigs) {
+        // Attack quest
+        Map<Integer, Integer> attackItemTypeCount = new HashMap<>();
+        attackItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
+        QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Zerstöre die Abbaufahrzeuge").setDescription("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(attackItemTypeCount)));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
     }
 
 }
