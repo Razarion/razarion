@@ -576,7 +576,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
         // div
         CameraConfig cameraConfig = new CameraConfig().setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true));
+        List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
+        botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(ENEMY_BOT).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(244, 187))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
+        botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(ENEMY_BOT).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(264, 182))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
     }
 
     private void addPickBoxTask(List<SceneConfig> sceneConfigs) {
