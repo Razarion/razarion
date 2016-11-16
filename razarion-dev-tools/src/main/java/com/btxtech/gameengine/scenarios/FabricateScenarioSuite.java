@@ -1,7 +1,14 @@
 package com.btxtech.gameengine.scenarios;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.CommandService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -22,7 +29,20 @@ public class FabricateScenarioSuite extends ScenarioSuite {
 
             @Override
             public void executeCommands(CommandService commandService) {
-                commandService.fabricate(getFirstCreatedSyncBaseItem(), ScenarioService.BUILDER_ITEM_TYPE);
+                commandService.fabricate(getFirstCreatedSyncBaseItem(), ScenarioService.HARVESTER_ITEM_TYPE);
+            }
+
+            @Override
+            public QuestConfig setupQuest() {
+                Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+                buildupItemTypeCount.put(ScenarioService.HARVESTER_ITEM_TYPE.getId(), 1);
+                ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+                return new QuestConfig().setConditionConfig(conditionConfig);
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
         });
     }

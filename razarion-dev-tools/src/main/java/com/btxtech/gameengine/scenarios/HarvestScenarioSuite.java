@@ -43,11 +43,6 @@ public class HarvestScenarioSuite extends ScenarioSuite {
             public QuestConfig setupQuest() {
                 return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100)));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
 
     }

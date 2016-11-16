@@ -121,7 +121,7 @@ public class ScenarioService implements QuestListener {
         BUILDER_ITEM_TYPE = builder;
 
         // Finalize factory
-        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Collections.singletonList(BUILDER_ITEM_TYPE.getId())));
+        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BUILDER_ITEM_TYPE.getId(), HARVESTER_ITEM_TYPE.getId())));
 
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000).setId(++itemId);

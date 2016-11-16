@@ -263,6 +263,7 @@ public class ActivityService {
 
     public void onFactorySyncItem(SyncBaseItem syncBaseItem, BaseItemType toBeBuilt) {
         System.out.println("ActivityService.onFactorySyncItem(): ");
+        questService.onSyncItemBuilt(syncBaseItem);
     }
 
     public void onInventoryItemPlaced(UserContext userContext, InventoryItem inventoryItem) {

@@ -117,7 +117,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
@@ -125,7 +125,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(harvest());
+        // storyboardConfig.setSceneConfigs(harvest());
         // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         return storyboardConfig;
     }
@@ -486,6 +486,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addBuildFactoryTask(sceneConfigs);
         addFactorizeHarvesterTask(sceneConfigs);
         addHarvestTask(sceneConfigs);
+        addHarvestExplanationTask(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -677,8 +678,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private void addHarvestTask(List<SceneConfig> sceneConfigs) {
         // Harvet quest
-//        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-//        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+    }
+
+    private void addHarvestExplanationTask(List<SceneConfig> sceneConfigs) {
+        // Harvet quest
+        sceneConfigs.add(new SceneConfig().setIntroText("Du brauchst viel Razarion um eine Armee zu bauen").setDuration(3000));
     }
 
 }
