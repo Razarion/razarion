@@ -41,6 +41,7 @@
             <Button mnemonicParsing="false" onAction="#getJsonButtonClicked" text="Get JSON" />
             <Separator orientation="VERTICAL" />
             <Button mnemonicParsing="false" onAction="#onInventoryButtonClicked" text="Inventory" />
+            <Label fx:id="resourceLabel" prefHeight="17.0" prefWidth="59.0" text="Label" />
             </items>
         </ToolBar>
     </top>

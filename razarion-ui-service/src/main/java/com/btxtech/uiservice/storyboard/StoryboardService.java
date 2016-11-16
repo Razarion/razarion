@@ -6,9 +6,11 @@ import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.gameengine.GameEngine;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.cockpit.CockpitService;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -34,6 +36,8 @@ public class StoryboardService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private BaseItemService baseItemService;
+    @Inject
+    private CockpitService cockpitService;
     private StoryboardConfig storyboardConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -44,6 +48,7 @@ public class StoryboardService {
         gameEngine.initialise(storyboardConfig.getGameEngineConfig());
         visualUiService.initialise(storyboardConfig.getVisualConfig());
         this.userContext = storyboardConfig.getUserContext();
+        cockpitService.init();
     }
 
     public void start() {
@@ -116,7 +121,7 @@ public class StoryboardService {
         return baseItemService.isHouseSpaceExceeded(userContext, itemType, itemCount2Add);
     }
 
-    public int getAccountBalance() {
-        return baseItemService.getAccountBalance(userContext);
+    public int getResources() {
+        return baseItemService.getResources(userContext);
     }
 }

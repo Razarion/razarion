@@ -85,6 +85,8 @@ public class WebGlEmulatorController implements Initializable {
     private CheckBox showRenderTimeCheckBox;
     @FXML
     private Pane itemCockpitPanel;
+    @FXML
+    private Label resourceLabel;
     @Inject
     private Instance<RenderService> renderServiceInstance;
     @Inject
@@ -380,5 +382,9 @@ public class WebGlEmulatorController implements Initializable {
             System.out.println(statisticEntry.toInfoString());
         }
         System.out.println("---------------------------------------------------------------------------------------------------------");
+    }
+
+    public void displayResource(int resource) {
+        resourceLabel.setText("Res: " + resource);
     }
 }

@@ -291,7 +291,7 @@ public class BaseItemService {
         return getItemCount(playerBase, itemTypeService.getBaseItemType(baseItemTypeId));
     }
 
-    public int getAccountBalance(UserContext userContext) {
+    public int getResources(UserContext userContext) {
         PlayerBase playerBase = getPlayerBase(userContext);
         if (playerBase != null) {
             return (int) playerBase.getResources();

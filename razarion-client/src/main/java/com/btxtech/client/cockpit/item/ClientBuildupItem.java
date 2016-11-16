@@ -132,7 +132,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
             enableState = EnableState.DISABLED_HOUSE_SPACE_EXCEEDED;
             return;
         }
-        if (buildupItem.getItemType().getPrice() > storyboardService.getAccountBalance()) {
+        if (buildupItem.getItemType().getPrice() > storyboardService.getResources()) {
             enableState = EnableState.DISABLED_MONEY;
             return;
         }
