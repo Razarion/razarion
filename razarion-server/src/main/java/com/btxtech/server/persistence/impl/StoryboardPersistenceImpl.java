@@ -463,6 +463,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addAttackTask(sceneConfigs);
         addEnemyKillTask(sceneConfigs);
         addNpcEscapeTask(sceneConfigs);
+        addBuildFactoryTask(sceneConfigs);
+        addFactorizeHarvesterTask(sceneConfigs);
+        addHarvestTask(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -506,11 +509,17 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private void addResources(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
+        // Outpost
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(235, 199)).setRotationZ(Math.toRadians(0)));
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(254, 200)).setRotationZ(Math.toRadians(80)));
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(244, 187)).setRotationZ(Math.toRadians(160)));
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(264, 182)).setRotationZ(Math.toRadians(240)));
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(276, 211)).setRotationZ(Math.toRadians(320)));
+        // Player base place
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(64, 219)).setRotationZ(Math.toRadians(0)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(77, 220)).setRotationZ(Math.toRadians(80)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(94, 225)).setRotationZ(Math.toRadians(160)));
+
         sceneConfig.setResourceItemTypePositions(resourceItemTypePositions);
         sceneConfigs.add(sceneConfig);
     }
@@ -618,13 +627,38 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
         botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50, 50).toPolygon())));
 
-        sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigss).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(2000));
+        sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs)/*.setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigss)*/.setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000));
     }
 
     private void addNpcEscapeTask(List<SceneConfig> sceneConfigs) {
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetPosition(new DecimalPosition(400, 100)));
-        sceneConfigs.add(new SceneConfig().setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries. Ich flüchte zum nächsten Rebellen PLanet.").setDuration(2000));
+        sceneConfigs.add(new SceneConfig().setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries. Ich flüchte zum nächsten Rebellen PLanet.").setDuration(4000));
+    }
+
+    private void addBuildFactoryTask(List<SceneConfig> sceneConfigs) {
+        // User Spawn
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
+        // Build factory Quest
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+    }
+
+    private void addFactorizeHarvesterTask(List<SceneConfig> sceneConfigs) {
+        // Build Harvester Quest
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+    }
+
+    private void addHarvestTask(List<SceneConfig> sceneConfigs) {
+        // Harvet quest
+//        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+//        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
     }
 
 }
