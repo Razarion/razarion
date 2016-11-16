@@ -23,9 +23,9 @@ import javax.enterprise.context.Dependent;
  * Time: 16:31:29
  */
 @Dependent
-public class BaseItemCountComparison extends AbstractBaseItemComparison {
-    private int count;
-    private int countTotal;
+public class CountComparison extends AbstractBaseItemComparison {
+    private double count;
+    private double countTotal;
 
     public void init(int count) {
         this.count = count;
@@ -34,19 +34,27 @@ public class BaseItemCountComparison extends AbstractBaseItemComparison {
 
     @Override
     protected void privateOnSyncBaseItem(SyncBaseItem syncBaseItem) {
-        count--;
+        count -= 1.0;
+        onProgressChanged();
+    }
+
+    public void onValue(double value) {
+        count -= value;
         onProgressChanged();
     }
 
     @Override
     public boolean isFulfilled() {
-        return count <= 0;
+        return count <= 0.0;
     }
 
     public double getCount() {
         return count;
     }
 
+    public void setCount(double count) {
+        this.count = count;
+    }
 //
 //    @Override
 //    public void fillGenericComparisonValues(GenericComparisonValueContainer genericComparisonValueContainer) {

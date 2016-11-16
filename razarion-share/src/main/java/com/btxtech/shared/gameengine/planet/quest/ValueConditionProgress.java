@@ -12,7 +12,7 @@ public class ValueConditionProgress extends AbstractConditionProgress {
     }
 
     public void onTriggerValue(double value) {
-        ((BaseItemCountComparison) getAbstractComparison()).onValue(value);
+        ((CountComparison) getAbstractComparison()).onValue(value);
         if (getAbstractComparison().isFulfilled()) {
             setFulfilled();
         }

@@ -209,6 +209,7 @@ public class ActivityService {
     }
 
     public void onResourcesHarvested(SyncBaseItem syncBaseItem, double harvestedResources, SyncResourceItem resource) {
+        questService.onHarvested(syncBaseItem, harvestedResources);
         // System.out.println("ActivityService.onResourcesHarvested(). Harvester: " + syncBaseItem + ". Amount: " + harvestedResources + ". SyncResourceItem: " + resource);
     }
 

@@ -133,7 +133,7 @@ public class QuestService {
         if (examinee == null) {
             return;
         }
-        triggerValue(examinee, ConditionTrigger.BOX_PICKED, 1.0); // Uses the code from BaseItem. Make own one.
+        triggerValue(examinee, ConditionTrigger.BOX_PICKED, 1.0);
     }
 
     public void onInventoryItemPlaced(UserContext examinee, InventoryItem inventoryItem) {
@@ -145,6 +145,14 @@ public class QuestService {
         if (inventoryItemConditionProgress.isFulfilled()) {
             conditionPassed(inventoryItemConditionProgress);
         }
+    }
+
+    public void onHarvested(SyncBaseItem harvester, double amount) {
+        UserContext examinee = harvester.getBase().getUserContext();
+        if (examinee == null) {
+            return;
+        }
+        triggerValue(examinee, ConditionTrigger.HARVEST, amount);
     }
 
     public void addQuestListener(QuestListener questListener) {
@@ -176,11 +184,11 @@ public class QuestService {
                 }
             }
             case BOX_PICKED:
+            case HARVEST:
                 if (comparisonConfig.getCount() != null) {
-                    // Make own count comparison class for box
-                    BaseItemCountComparison baseItemCountComparison = instance.select(BaseItemCountComparison.class).get();
-                    baseItemCountComparison.init(comparisonConfig.getCount());
-                    return baseItemCountComparison;
+                    CountComparison countComparison = instance.select(CountComparison.class).get();
+                    countComparison.init(comparisonConfig.getCount());
+                    return countComparison;
                 } else {
                     throw new UnsupportedOperationException();
                 }

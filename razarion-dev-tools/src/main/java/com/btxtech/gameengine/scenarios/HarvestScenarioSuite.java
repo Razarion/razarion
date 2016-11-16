@@ -1,6 +1,9 @@
 package com.btxtech.gameengine.scenarios;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.CommandService;
 
@@ -8,9 +11,9 @@ import com.btxtech.shared.gameengine.planet.CommandService;
  * Created by Beat
  * 07.11.2016.
  */
-public class ResourcesScenarioSuite extends ScenarioSuite {
-    public ResourcesScenarioSuite() {
-        super("Resource");
+public class HarvestScenarioSuite extends ScenarioSuite {
+    public HarvestScenarioSuite() {
+        super("Harvest");
     }
 
     @Override
@@ -34,6 +37,16 @@ public class ResourcesScenarioSuite extends ScenarioSuite {
             @Override
             public void executeCommands(CommandService commandService) {
                 commandService.harvest(getFirstCreatedSyncBaseItem(), getFirstCreatedSyncResourceItem());
+            }
+
+            @Override
+            public QuestConfig setupQuest() {
+                return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100)));
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
         });
 

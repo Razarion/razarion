@@ -32,12 +32,12 @@ public enum ConditionTrigger {
             return new BaseItemConditionProgress(this, abstractComparison);
         }
     },
-    //    MONEY_INCREASED(true) {
-//        @Override
-//        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-//            return new ValueConditionProgress(this, abstractComparison);
-//        }
-//    },
+    HARVEST(Type.HARVEST, true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new ValueConditionProgress(this, abstractComparison);
+        }
+    },
     SYNC_ITEM_CREATED(Type.BASE_ITEM, true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
@@ -96,7 +96,8 @@ public enum ConditionTrigger {
     public enum Type {
         BASE_ITEM,
         INVENTORY_ITEM,
-        BOX_PICKED
+        BOX_PICKED,
+        HARVEST
     }
 
     private Type type;

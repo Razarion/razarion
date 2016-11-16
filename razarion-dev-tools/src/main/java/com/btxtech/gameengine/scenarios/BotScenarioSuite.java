@@ -138,11 +138,6 @@ public class BotScenarioSuite extends ScenarioSuite {
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
                 botCommandConfigs.add(new BotRemoveOwnItemCommandConfig().setBotId(1).setBaseItemType2RemoveId(ScenarioService.ATTACKER_ITEM_TYPE.getId()));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
     }
 }
