@@ -37,6 +37,14 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Inject
     @DataField
     private Span resourceLabel;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Span xpLabel;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Span levelLabel;
 
     @PostConstruct
     public void init() {
@@ -61,5 +69,15 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Override
     public void displayResources(int resources) {
         resourceLabel.setTextContent(Integer.toString(resources));
+    }
+
+    @Override
+    public void displayXps(int xp) {
+        xpLabel.setTextContent(Integer.toString(xp));
+    }
+
+    @Override
+    public void displayLevel(int levelNumber) {
+        levelLabel.setTextContent(Integer.toString(levelNumber));
     }
 }

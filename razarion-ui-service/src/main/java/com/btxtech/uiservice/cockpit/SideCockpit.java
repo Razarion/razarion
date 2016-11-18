@@ -8,4 +8,8 @@ public interface SideCockpit {
     void show();
 
     void displayResources(int resources);
+
+    void displayXps(int xp);
+
+    void displayLevel(int levelNumber);
 }

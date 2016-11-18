@@ -1,5 +1,7 @@
 package com.btxtech.uiservice.cockpit;
 
+import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.PlanetTickListener;
 import com.btxtech.uiservice.storyboard.StoryboardService;
@@ -20,6 +22,8 @@ public class CockpitService implements PlanetTickListener {
     @Inject
     private StoryboardService storyboardService;
     @Inject
+    private LevelService levelService;
+    @Inject
     private Instance<SideCockpit> sideCockpitInstance;
     private SideCockpit sideCockpit;
 
@@ -37,5 +41,8 @@ public class CockpitService implements PlanetTickListener {
     @Override
     public void onTick() {
         sideCockpit.displayResources(storyboardService.getResources());
+        UserContext userContext = storyboardService.getUserContext();
+        sideCockpit.displayXps(userContext.getXp());
+        sideCockpit.displayLevel(levelService.getLevel(userContext.getLevelId()).getNumber());
     }
 }

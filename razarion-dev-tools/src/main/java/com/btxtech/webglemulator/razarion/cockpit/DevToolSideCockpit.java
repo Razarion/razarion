@@ -27,6 +27,19 @@ public class DevToolSideCockpit implements SideCockpit {
         Platform.runLater(() -> {
             webGlEmulatorController.displayResource(resources);
         });
+    }
 
+    @Override
+    public void displayXps(int xp) {
+        Platform.runLater(() -> {
+            webGlEmulatorController.displayXp(xp);
+        });
+    }
+
+    @Override
+    public void displayLevel(int levelNumber) {
+        Platform.runLater(() -> {
+            webGlEmulatorController.displayLevel(levelNumber);
+        });
     }
 }

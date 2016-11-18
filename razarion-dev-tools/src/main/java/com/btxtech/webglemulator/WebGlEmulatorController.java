@@ -87,6 +87,10 @@ public class WebGlEmulatorController implements Initializable {
     private Pane itemCockpitPanel;
     @FXML
     private Label resourceLabel;
+    @FXML
+    private Label xpLabel;
+    @FXML
+    private Label levelLabel;
     @Inject
     private Instance<RenderService> renderServiceInstance;
     @Inject
@@ -386,5 +390,13 @@ public class WebGlEmulatorController implements Initializable {
 
     public void displayResource(int resource) {
         resourceLabel.setText("Res: " + resource);
+    }
+
+    public void displayXp(int xp) {
+        xpLabel.setText("XP: " + xp);
+    }
+
+    public void displayLevel(int levelNumber) {
+        levelLabel.setText("Level: " + levelNumber);
     }
 }

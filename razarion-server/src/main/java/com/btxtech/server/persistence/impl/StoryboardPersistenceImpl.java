@@ -241,13 +241,25 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private List<LevelConfig> setupLevelConfigs() {
         List<LevelConfig> levelConfigs = new ArrayList<>();
-        Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
-        itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        itemTypeLimitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
-        itemTypeLimitation.put(BASE_ITEM_TYPE_HARVESTER, 5);
-        itemTypeLimitation.put(BASE_ITEM_TYPE_FACTORY, 100);
-        levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(itemTypeLimitation));
-        levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(10).setItemTypeLimitation(itemTypeLimitation));
+        Map<Integer, Integer> level1Limitation = new HashMap<>();
+        level1Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(level1Limitation));
+        Map<Integer, Integer> level2Limitation = new HashMap<>();
+        level2Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        level2Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
+        levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(13).setItemTypeLimitation(level2Limitation));
+        Map<Integer, Integer> level3Limitation = new HashMap<>();
+        level3Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        level3Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
+        level3Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
+        level3Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
+        levelConfigs.add(new LevelConfig().setLevelId(3).setNumber(3).setXp2LevelUp(30).setItemTypeLimitation(level3Limitation));
+        Map<Integer, Integer> level4Limitation = new HashMap<>();
+        level4Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        level4Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
+        level4Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
+        level4Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
+        levelConfigs.add(new LevelConfig().setLevelId(4).setNumber(4).setXp2LevelUp(50).setItemTypeLimitation(level4Limitation));
         return levelConfigs;
     }
 
@@ -467,6 +479,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     // Tutorial -----------------------------------------------------------------------------
     private List<SceneConfig> setupTutorial() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // Level 1
         addResources(sceneConfigs);
         addNpcBot(sceneConfigs);
         addEnemyBot(sceneConfigs);
@@ -476,17 +489,20 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addBotMoveScene(sceneConfigs);
         addScrollToOwnScene(sceneConfigs);
         addUserMoveScene(sceneConfigs);
+        // Level 2
         addNpcHarvestAttack(sceneConfigs);
         addFindEnemyBase(sceneConfigs);
         addPickBoxTask(sceneConfigs);
         addBoxSpawnTask(sceneConfigs);
         addAttackTask(sceneConfigs);
+        // Level 3
         addEnemyKillTask(sceneConfigs);
         addNpcEscapeTask(sceneConfigs);
         addBuildFactoryTask(sceneConfigs);
         addFactorizeHarvesterTask(sceneConfigs);
         addHarvestTask(sceneConfigs);
         addHarvestExplanationTask(sceneConfigs);
+        // Level 4
         return sceneConfigs;
     }
 
@@ -606,7 +622,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private void addFindEnemyBase(List<SceneConfig> sceneConfigs) {
         // Scroll Quest
-        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
+        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setXp(1).setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
         // div
         CameraConfig cameraConfig = new CameraConfig().setCameraLocked(false);
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
@@ -629,15 +645,15 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // Use inventory item quest
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.INVENTORY_ITEM_PLACED).setComparisonConfig(new ComparisonConfig().setCount(1));
         BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig = new BotRemoveOwnItemCommandConfig().setBotId(ENEMY_BOT).setBaseItemType2RemoveId(BASE_ITEM_TYPE_ATTACKER);
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotRemoveOwnItemCommandConfigs(Collections.singletonList(botRemoveOwnItemCommandConfig)));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setXp(1).setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotRemoveOwnItemCommandConfigs(Collections.singletonList(botRemoveOwnItemCommandConfig)));
     }
 
     private void addAttackTask(List<SceneConfig> sceneConfigs) {
         // Attack quest
         Map<Integer, Integer> attackItemTypeCount = new HashMap<>();
         attackItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
-        QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Zerstöre die Abbaufahrzeuge").setDescription("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(attackItemTypeCount)));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
+        QuestConfig questConfig = new QuestConfig().setXp(10).setTitle("Zerstöre die Abbaufahrzeuge").setDescription("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(attackItemTypeCount)));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(questConfig).setWait4LevelUpDialog(true));
     }
 
     private void addEnemyKillTask(List<SceneConfig> sceneConfigs) {
@@ -665,7 +681,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
     private void addFactorizeHarvesterTask(List<SceneConfig> sceneConfigs) {
@@ -673,13 +689,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
     private void addHarvestTask(List<SceneConfig> sceneConfigs) {
         // Harvet quest
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
     private void addHarvestExplanationTask(List<SceneConfig> sceneConfigs) {

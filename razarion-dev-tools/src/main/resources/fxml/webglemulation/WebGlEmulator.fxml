@@ -42,6 +42,8 @@
             <Separator orientation="VERTICAL" />
             <Button mnemonicParsing="false" onAction="#onInventoryButtonClicked" text="Inventory" />
             <Label fx:id="resourceLabel" prefHeight="17.0" prefWidth="59.0" text="Label" />
+            <Label prefHeight="17.0" prefWidth="54.0" text="Label" fx:id="xpLabel" />
+            <Label fx:id="levelLabel" prefHeight="17.0" prefWidth="60.0" text="Label" />
             </items>
         </ToolBar>
     </top>
