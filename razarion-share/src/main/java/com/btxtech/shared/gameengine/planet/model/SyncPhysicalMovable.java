@@ -33,12 +33,13 @@ import java.util.ArrayList;
  * Time: 14:39:38
  */
 // See: com.btxtech.shared.gameengine.planet.pathing.Unit (before 16.09.2016, git ref: 2c78588f58aa2863f5c49a5a4d44662467c8be1e)
-public class SyncPhysicalMovable extends SyncPhysicalTurner {
+public class SyncPhysicalMovable extends SyncPhysicalArea {
     private final static int LOOK_AHEAD_TICKS = 20;
     private double lookAheadDistance;
     private double acceleration; // Pixel per square second
     private double maxSpeed; // Pixel per second
     private double minTurnSpeed; // Min speed if wrong angle pixel per second
+    private double angleVelocity;
     private DecimalPosition destination;
     private DecimalPosition velocity;
     private DecimalPosition lastDestination;
@@ -48,6 +49,7 @@ public class SyncPhysicalMovable extends SyncPhysicalTurner {
         super(syncItem, physicalAreaConfig, position, norm, angle);
         this.velocity = velocity;
         maxSpeed = physicalAreaConfig.getSpeed();
+        angleVelocity = physicalAreaConfig.getAngularVelocity();
         acceleration = physicalAreaConfig.getAcceleration();
         minTurnSpeed = physicalAreaConfig.getMinTurnSpeed();
         lookAheadDistance = LOOK_AHEAD_TICKS * maxSpeed * PlanetService.TICK_FACTOR;
@@ -64,8 +66,8 @@ public class SyncPhysicalMovable extends SyncPhysicalTurner {
             double deltaAngle = MathHelper.negateAngel(desiredVelocity.angle() - getAngle());
             // Fix angle
             double angleSpeedFactor = 1.0;
-            if (Math.abs(deltaAngle) > getAngleVelocity() * PlanetService.TICK_FACTOR) {
-                double possibleAngle = MathHelper.negateAngel(getAngle() + Math.signum(deltaAngle) * getAngleVelocity() * PlanetService.TICK_FACTOR);
+            if (Math.abs(deltaAngle) > angleVelocity * PlanetService.TICK_FACTOR) {
+                double possibleAngle = MathHelper.negateAngel(getAngle() + Math.signum(deltaAngle) * angleVelocity * PlanetService.TICK_FACTOR);
                 setAngle(possibleAngle);
                 DecimalPosition desiredVelocityNorm = desiredVelocity.normalize();
                 DecimalPosition fixedAngleVelocityNorm = DecimalPosition.createVector(possibleAngle, 1.0);
@@ -93,7 +95,7 @@ public class SyncPhysicalMovable extends SyncPhysicalTurner {
             }
             // Check if destination too near to turn
             deltaAngle = MathHelper.negateAngel(desiredVelocity.angle() - getAngle());
-            double turnSteps = Math.abs(deltaAngle) / (getAngleVelocity() * PlanetService.TICK_FACTOR);
+            double turnSteps = Math.abs(deltaAngle) / (angleVelocity * PlanetService.TICK_FACTOR);
             double distance = turnSteps * speed * PlanetService.TICK_FACTOR;
             if (distance > getXYPosition().getDistance(destination)) {
                 speed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
