@@ -112,6 +112,7 @@ public class Scene {
             botService.executeCommands(sceneConfig.getBotRemoveOwnItemCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
+            baseItemService.surrenderBase(storyboardService.getUserContext());
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), decimalPositions -> {
                 PlayerBase playerBase = baseItemService.createHumanBase(storyboardService.getUserContext());
                 try {

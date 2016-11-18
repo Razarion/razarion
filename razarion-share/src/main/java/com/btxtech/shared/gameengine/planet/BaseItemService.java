@@ -21,6 +21,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -93,6 +94,16 @@ public class BaseItemService {
             bases.put(lastBaseItId, playerBase);
             activityService.onBaseCreated(playerBase);
             return playerBase;
+        }
+    }
+
+    public void surrenderBase(UserContext userContext) {
+        PlayerBase playerBase = getPlayerBase(userContext);
+        if (playerBase != null) {
+            activityService.onSurrenderBase(playerBase);
+            while (!playerBase.getItems().isEmpty()) {
+                removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
+            }
         }
     }
 

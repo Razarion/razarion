@@ -270,4 +270,8 @@ public class ActivityService {
         System.out.println("ActivityService.onInventoryItemPlaced(): ");
         questService.onInventoryItemPlaced(userContext, inventoryItem);
     }
+
+    public void onSurrenderBase(PlayerBase playerBase) {
+        System.out.println("ActivityService.onSurrenderBase(): " + playerBase);
+    }
 }
