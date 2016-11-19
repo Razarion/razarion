@@ -27,45 +27,45 @@ public class MathHelper {
     private final static char[] CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
     /**
-     * @param angel input
-     * @return an angel between 0 and 2 * PI (inclusive)
+     * @param angle input
+     * @return an angle between 0 and 2 * PI (inclusive)
      */
-    static public double normaliseAngel(double angel) {
-        if (angel >= ONE_RADIANT) {
-            return angel - ONE_RADIANT;
-        } else if (angel < 0) {
-            return angel + ONE_RADIANT;
+    static public double normaliseAngle(double angle) {
+        if (angle >= ONE_RADIANT) {
+            return angle - ONE_RADIANT;
+        } else if (angle < 0) {
+            return angle + ONE_RADIANT;
         } else {
-            return angel;
+            return angle;
         }
     }
 
     /**
-     * @param angel input
-     * @return if the angel is bigger then PI make it negative
+     * @param angle input
+     * @return if the angle is bigger then PI make it negative
      */
-    static public double negateAngel(double angel) {
-        angel = normaliseAngel(angel);
-        if (angel > Math.PI) {
-            angel = angel - ONE_RADIANT;
+    static public double negateAngle(double angle) {
+        angle = normaliseAngle(angle);
+        if (angle > Math.PI) {
+            angle = angle - ONE_RADIANT;
         }
-        return angel;
+        return angle;
     }
 
-    public static double closerToAngel(double origin, double angel1, double angel2) {
-        origin = normaliseAngel(origin);
-        double originNegated = negateAngel(origin);
-        double tmpAngel1 = normaliseAngel(angel1);
-        double tmpAngel2 = normaliseAngel(angel2);
-        double tmpAngelNegated1 = negateAngel(angel1);
-        double tmpAngelNegated2 = negateAngel(angel2);
+    public static double closerToAngle(double origin, double angle1, double angle2) {
+        origin = normaliseAngle(origin);
+        double originNegated = negateAngle(origin);
+        double tmpAngle1 = normaliseAngle(angle1);
+        double tmpAngle2 = normaliseAngle(angle2);
+        double tmpAngleNegated1 = negateAngle(angle1);
+        double tmpAngleNegated2 = negateAngle(angle2);
 
-        double delta1 = Math.min(Math.abs(originNegated - tmpAngelNegated1), Math.abs(origin - tmpAngel1));
-        double delta2 = Math.min(Math.abs(originNegated - tmpAngelNegated2), Math.abs(origin - tmpAngel2));
+        double delta1 = Math.min(Math.abs(originNegated - tmpAngleNegated1), Math.abs(origin - tmpAngle1));
+        double delta2 = Math.min(Math.abs(originNegated - tmpAngleNegated2), Math.abs(origin - tmpAngle2));
         if (delta1 < delta2) {
-            return angel1;
+            return angle1;
         } else {
-            return angel2;
+            return angle2;
         }
     }
 
@@ -81,68 +81,68 @@ public class MathHelper {
         return (int) Math.round(SQRT_OF_2 * length);
     }
 
-    public static boolean isInSection(double angel, double startAngel, double deltaAngel) {
-        if (Double.isNaN(angel) || Double.isInfinite(angel)) {
-            throw new IllegalArgumentException("angel is invalid: " + angel);
+    public static boolean isInSection(double angle, double startAngle, double deltaAngle) {
+        if (Double.isNaN(angle) || Double.isInfinite(angle)) {
+            throw new IllegalArgumentException("angle is invalid: " + angle);
         }
-        if (Double.isNaN(startAngel) || Double.isInfinite(startAngel)) {
-            throw new IllegalArgumentException("startAngel is invalid: " + startAngel);
+        if (Double.isNaN(startAngle) || Double.isInfinite(startAngle)) {
+            throw new IllegalArgumentException("startAngle is invalid: " + startAngle);
         }
-        if (Double.isNaN(deltaAngel) || Double.isInfinite(deltaAngel)) {
-            throw new IllegalArgumentException("deltaAngel is invalid: " + startAngel);
+        if (Double.isNaN(deltaAngle) || Double.isInfinite(deltaAngle)) {
+            throw new IllegalArgumentException("deltaAngle is invalid: " + startAngle);
         }
 
         try {
-            angel = normaliseAngel(angel);
-            startAngel = normaliseAngel(startAngel);
+            angle = normaliseAngle(angle);
+            startAngle = normaliseAngle(startAngle);
 
-            if (deltaAngel >= 0) {
-                angel = MathHelper.normaliseAngel(angel - startAngel);
-                return (angel >= 0 || Math.abs(angel) <= PRECISION) && (angel <= deltaAngel || Math.abs(angel - deltaAngel) <= PRECISION);
+            if (deltaAngle >= 0) {
+                angle = MathHelper.normaliseAngle(angle - startAngle);
+                return (angle >= 0 || Math.abs(angle) <= PRECISION) && (angle <= deltaAngle || Math.abs(angle - deltaAngle) <= PRECISION);
             } else {
-                startAngel = startAngel + deltaAngel;
-                return isInSection(angel, startAngel, -deltaAngel);
+                startAngle = startAngle + deltaAngle;
+                return isInSection(angle, startAngle, -deltaAngle);
             }
         } catch (Throwable throwable) {
-            System.out.println("angel: " + MathHelper.radToGrad(angel) + " startAngel: " + MathHelper.radToGrad(startAngel) + " deltaAngel: " + MathHelper.radToGrad(deltaAngel));
+            System.out.println("angle: " + MathHelper.radToGrad(angle) + " startAngle: " + MathHelper.radToGrad(startAngle) + " deltaAngle: " + MathHelper.radToGrad(deltaAngle));
             throw new RuntimeException(throwable);
         }
     }
 
     /**
-     * Returns the angel from addItems to end
+     * Returns the angle from addItems to end
      *
-     * @param startAngel   addItems angel
-     * @param endAngel     end angel
+     * @param startAngle   addItems angle
+     * @param endAngle     end angle
      * @param counterClock if true the counter clockwise
-     * @return resulting angel
+     * @return resulting angle
      */
-    public static double getAngel(double startAngel, double endAngel, boolean counterClock) {
-        startAngel = normaliseAngel(startAngel);
-        endAngel = normaliseAngel(endAngel);
+    public static double getAngle(double startAngle, double endAngle, boolean counterClock) {
+        startAngle = normaliseAngle(startAngle);
+        endAngle = normaliseAngle(endAngle);
         if (counterClock) {
-            return normaliseAngel(endAngel - startAngel);
+            return normaliseAngle(endAngle - startAngle);
         } else {
-            return normaliseAngel(startAngel - endAngel);
+            return normaliseAngle(startAngle - endAngle);
         }
     }
 
     /**
-     * Returns the shortest angel from startAngel to endAngel.
-     * The shortest angel is taken regardless if clock ore counter-clock wise
+     * Returns the shortest angle from startAngle to endAngle.
+     * The shortest angle is taken regardless if clock ore counter-clock wise
      *
-     * @param startAngel addItems angel
-     * @param endAngel   end angel
-     * @return resulting angel
+     * @param startAngle addItems angle
+     * @param endAngle   end angle
+     * @return resulting angle
      */
-    public static double getAngel(double startAngel, double endAngel) {
-        startAngel = normaliseAngel(startAngel);
-        endAngel = normaliseAngel(endAngel);
-        return Math.abs(Math.min(getAngel(startAngel, endAngel, true), getAngel(startAngel, endAngel, false)));
+    public static double getAngle(double startAngle, double endAngle) {
+        startAngle = normaliseAngle(startAngle);
+        endAngle = normaliseAngle(endAngle);
+        return Math.abs(Math.min(getAngle(startAngle, endAngle, true), getAngle(startAngle, endAngle, false)));
     }
 
-    public static boolean isCounterClock(double startAngel, double endAngel) {
-        return getAngel(startAngel, endAngel, true) < getAngel(startAngel, endAngel, false);
+    public static boolean isCounterClock(double startAngle, double endAngle) {
+        return MathHelper.getAngle(startAngle, endAngle, true) < getAngle(startAngle, endAngle, false);
     }
 
 

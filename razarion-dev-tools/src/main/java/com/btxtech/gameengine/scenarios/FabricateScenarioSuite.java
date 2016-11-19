@@ -39,11 +39,6 @@ public class FabricateScenarioSuite extends ScenarioSuite {
                 ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
                 return new QuestConfig().setConditionConfig(conditionConfig);
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
     }
 }

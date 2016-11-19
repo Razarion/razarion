@@ -129,10 +129,6 @@ public class SyncPhysicalArea {
         return false;
     }
 
-    public boolean canTurn() {
-        return false;
-    }
-
     public void stop() {
 
     }

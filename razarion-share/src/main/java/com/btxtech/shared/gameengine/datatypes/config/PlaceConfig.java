@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 public class PlaceConfig {
     private Polygon2D polygon2D;
     private DecimalPosition position;
+    private Double radius;
 
     public Polygon2D getPolygon2D() {
         return polygon2D;
@@ -30,6 +31,15 @@ public class PlaceConfig {
         return this;
     }
 
+    public Double getRadius() {
+        return radius;
+    }
+
+    public PlaceConfig setRadius(Double radius) {
+        this.radius = radius;
+        return this;
+    }
+
     /**
      * If PlaceConfig contains a polygon, only the position is checked.
      * NO CHECK FOR THE RADIUS IS PERFORMED
@@ -39,7 +49,11 @@ public class PlaceConfig {
      */
     public boolean checkInside(SyncItem syncItem) {
         if (position != null) {
-            return syncItem.getSyncPhysicalArea().overlap(position);
+            if (radius != null) {
+                return syncItem.getSyncPhysicalArea().overlap(position, radius);
+            } else {
+                return syncItem.getSyncPhysicalArea().overlap(position);
+            }
         } else if (polygon2D != null) {
             return polygon2D.isInside(syncItem.getSyncPhysicalArea().getPosition().toXY());
         } else {

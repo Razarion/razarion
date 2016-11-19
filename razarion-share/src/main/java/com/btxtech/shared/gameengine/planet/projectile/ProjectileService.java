@@ -42,10 +42,10 @@ public class ProjectileService {
 
     public void fireProjectile(long timeStamp, SyncBaseItem actor, SyncBaseItem target) {
         WeaponType weaponType = actor.getSyncWeapon().getWeaponType();
-        if (weaponType.getMuzzlePosition() == null) {
-            throw new IllegalArgumentException("No MuzzlePosition configured for BaseItemType: " + actor);
-        }
-        Vertex muzzle = actor.createModelMatrices().getModel().multiply(weaponType.getMuzzlePosition(), 1.0);
+
+        actor.getSyncWeapon().createModelMatrices();
+
+        Vertex muzzle = actor.createModelMatrices().getModel().multiply(actor.getSyncWeapon().createModelMatrices().getModel()).multiply(weaponType.getTurretType().getMuzzlePosition(), 1.0);
         if (weaponType.getProjectileSpeed() == null) {
             // projectileDetonation(projectileGroup);
             throw new UnsupportedOperationException();

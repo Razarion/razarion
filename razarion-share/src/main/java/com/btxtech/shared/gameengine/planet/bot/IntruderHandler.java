@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -55,7 +54,7 @@ public class IntruderHandler {
 
     public void handleIntruders(PlayerBase playerBase) {
         removeDeadAttackers();
-        Collection<SyncBaseItem> items = baseItemService.getEnemyItems(playerBase, region);
+        Collection<SyncBaseItem> items = baseItemService.findEnemyItems(playerBase, region);
         Map<SyncBaseItem, BotSyncBaseItem> oldIntruders = intruders;
         intruders = new HashMap<>();
         Collection<SyncBaseItem> newIntruders = new ArrayList<>();

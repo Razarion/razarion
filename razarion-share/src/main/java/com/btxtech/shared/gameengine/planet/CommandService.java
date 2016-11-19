@@ -23,7 +23,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -31,7 +30,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class CommandService { // Is part of the Base service
-    private Logger logger = Logger.getLogger(CommandService.class.getName());
+    // private Logger logger = Logger.getLogger(CommandService.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -167,7 +166,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void defend(SyncBaseItem attacker, SyncBaseItem target) {
-        throw new UnsupportedOperationException();
+        attack(attacker, target, false);
     }
 
     public void loadContainer(SyncBaseItem container, Collection<SyncBaseItem> syncBaseItems) {

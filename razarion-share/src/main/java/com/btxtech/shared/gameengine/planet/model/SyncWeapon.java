@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
@@ -26,6 +27,7 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
@@ -44,17 +46,22 @@ public class SyncWeapon extends SyncBaseAbility {
     private ProjectileService projectileService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private Instance<SyncTurret> syncTurretInstance;
     private WeaponType weaponType;
     private SyncBaseItem target;
     private boolean followTarget;
     private double reloadProgress;
     private DecimalPosition targetPosition; // Not Synchronized
     private long targetPositionLastCheck; // Not Synchronized
+    private SyncTurret syncTurret;
 
     public void init(WeaponType weaponType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
         this.weaponType = weaponType;
         reloadProgress = weaponType.getReloadTime();
+        syncTurret = syncTurretInstance.get();
+        syncTurret.init(getSyncBaseItem(), weaponType.getTurretType());
     }
 
     public boolean isActive() {
@@ -77,6 +84,10 @@ public class SyncWeapon extends SyncBaseAbility {
             if (!target.isAlive()) {
                 stop();
                 return false;
+            }
+
+            if (syncTurret != null) {
+                syncTurret.tick(target.getSyncPhysicalArea().getXYPosition());
             }
 
             if (!isInRange(target)) {
@@ -104,8 +115,12 @@ public class SyncWeapon extends SyncBaseAbility {
                 return true;
             }
 
-            if (getSyncPhysicalMovable().hasDestination()) {
+            if (followTarget && getSyncPhysicalMovable().hasDestination()) {
                 getSyncPhysicalMovable().stop();
+            }
+
+            if (syncTurret != null && !syncTurret.isOnTarget(target.getSyncPhysicalArea().getXYPosition())) {
+                return true;
             }
 
             doAttack(timeStamp, target);
@@ -168,8 +183,10 @@ public class SyncWeapon extends SyncBaseAbility {
 
         this.target = target;
         followTarget = attackCommand.isFollowTarget();
-        getSyncPhysicalMovable().setDestination(attackCommand.getPathToDestination());
-        targetPosition = attackCommand.getPathToDestination().getDestination();
+        if (followTarget) {
+            getSyncPhysicalMovable().setDestination(attackCommand.getPathToDestination());
+        }
+        targetPosition = target.getSyncPhysicalArea().getXYPosition();
         targetPositionLastCheck = System.currentTimeMillis();
     }
 
@@ -203,5 +220,10 @@ public class SyncWeapon extends SyncBaseAbility {
 
     public SyncBaseItem getTarget() {
         return target;
+    }
+
+    public ModelMatrices createModelMatrices() {
+        ModelMatrices turret = syncTurret.createModelMatrices();
+        return getSyncBaseItem().createModelMatrices().multiply(turret.getModel(), turret.getNorm());
     }
 }

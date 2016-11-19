@@ -67,4 +67,9 @@ public class ModelMatrices {
         Matrix4 model = Matrix4.createTranslation(position).multiply(Matrix4.createZRotation(zRotation).multiply(Matrix4.createYRotation(yRotation)));
         return new ModelMatrices().setModel(model).setNorm(model.normTransformation());
     }
+
+    public static ModelMatrices createFromPositionAndDirection(Vertex position, double zRotation) {
+        Matrix4 model = Matrix4.createTranslation(position).multiply(Matrix4.createZRotation(zRotation));
+        return new ModelMatrices().setModel(model).setNorm(model.normTransformation());
+    }
 }

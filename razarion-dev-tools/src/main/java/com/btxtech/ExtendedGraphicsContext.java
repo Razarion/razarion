@@ -3,6 +3,7 @@ package com.btxtech;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -28,6 +29,7 @@ import java.util.List;
 public class ExtendedGraphicsContext {
     private static final Color BASE_ITEM_TYPE_COLOR = new Color(0, 0, 1, 1);
     private static final Color BASE_ITEM_TYPE_LINE_COLOR = new Color(0, 0.3, 0, 1);
+    private static final Color BASE_ITEM_TYPE_WEAPON_COLOR = new Color(1, 1, 0, 1);
     private static final Color BASE_ITEM_TYPE_HEADING_COLOR = new Color(1, 0.3, 0, 1);
     private static final Color RESOURCE_ITEM_TYPE_COLOR = new Color(0.8, 0.8, 0, 1);
     private static final Color BOX_ITEM_TYPE_COLOR = new Color(1, 0.0, 1, 1);
@@ -160,7 +162,7 @@ public class ExtendedGraphicsContext {
         } else {
             throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
         }
-        if (syncItem.getSyncPhysicalArea().canTurn()) {
+        if (syncItem.getSyncPhysicalArea().canMove()) {
             fillPolygon(syncItem);
             gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
             gc.setLineWidth(0.1);
@@ -172,8 +174,17 @@ public class ExtendedGraphicsContext {
             gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
         }
 
-        // DecimalPosition direction = DecimalPosition.createVector(syncItem.getAngle(), syncItem.getRadius()).add(position);
-        // gc.strokeLine(position.startX(), position.startY(), direction.startX(), direction.startY());
+        if (syncItem instanceof SyncBaseItem) {
+            SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
+            if (syncBaseItem.getSyncWeapon() != null) {
+                ModelMatrices modelMatrices = syncBaseItem.getSyncWeapon().createModelMatrices();
+                DecimalPosition canonStart = modelMatrices.getModel().multiply(Vertex.ZERO, 1.0).toXY();
+                DecimalPosition canonEnd = modelMatrices.getModel().multiply(syncBaseItem.getSyncWeapon().getWeaponType().getTurretType().getMuzzlePosition(), 1.0).toXY();
+                gc.setStroke(BASE_ITEM_TYPE_WEAPON_COLOR);
+                gc.setLineWidth(0.5);
+                gc.strokeLine(canonStart.getX(), canonStart.getY(), canonEnd.getX(), canonEnd.getY());
+            }
+        }
     }
 
     private void fillPolygon(SyncItem syncItem) {

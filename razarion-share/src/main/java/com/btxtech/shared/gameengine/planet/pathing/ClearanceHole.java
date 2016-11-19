@@ -87,27 +87,27 @@ public class ClearanceHole {
         }
 
         public boolean overlaps(AngleSegment segment) {
-            double deltaMiddle = MathHelper.getAngel(middle, segment.middle);
+            double deltaMiddle = MathHelper.getAngle(middle, segment.middle);
             return deltaMiddle - half - segment.half < 0;
         }
 
         public AngleSegment combines(AngleSegment segment) {
             double side1 = Math.min(middle - half, segment.middle - segment.half);
             double side2 = Math.max(middle + half, segment.middle + segment.half);
-            double newHalf = MathHelper.getAngel(side2, side1) / 2.0;
-            return new AngleSegment(MathHelper.negateAngel(side1 + newHalf), newHalf);
+            double newHalf = MathHelper.getAngle(side2, side1) / 2.0;
+            return new AngleSegment(MathHelper.negateAngle(side1 + newHalf), newHalf);
         }
 
         public boolean isInside(double angle) {
-            double delta = MathHelper.getAngel(middle, angle);
+            double delta = MathHelper.getAngle(middle, angle);
             return delta < half;
         }
 
         public double getNearestSide(double angle) {
-            double angle1 = MathHelper.negateAngel(middle + half);
-            double angle2 = MathHelper.negateAngel(middle - half);
+            double angle1 = MathHelper.negateAngle(middle + half);
+            double angle2 = MathHelper.negateAngle(middle - half);
 
-            if (MathHelper.getAngel(angle, angle1) < MathHelper.getAngel(angle, angle2)) {
+            if (MathHelper.getAngle(angle, angle1) < MathHelper.getAngle(angle, angle2)) {
                 return angle1;
             } else {
                 return angle2;

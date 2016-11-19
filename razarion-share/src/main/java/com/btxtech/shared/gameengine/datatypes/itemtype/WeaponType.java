@@ -32,10 +32,10 @@ public class WeaponType {
     private Collection<Integer> disallowedItemTypes;
     private Map<Integer, Double> itemTypeFactors;
     private Double projectileSpeed; // Pixel per second
-    private Vertex muzzlePosition;
     private Integer projectileShape3DId;
     private Integer muzzleFlashClipId;
     private Integer detonationClipId;
+    private TurretType turretType;
 
     public double getRange() {
         return range;
@@ -104,15 +104,6 @@ public class WeaponType {
         return this;
     }
 
-    public Vertex getMuzzlePosition() {
-        return muzzlePosition;
-    }
-
-    public WeaponType setMuzzlePosition(Vertex muzzlePosition) {
-        this.muzzlePosition = muzzlePosition;
-        return this;
-    }
-
     public Integer getProjectileShape3DId() {
         return projectileShape3DId;
     }
@@ -137,6 +128,15 @@ public class WeaponType {
 
     public WeaponType setDetonationClipId(Integer detonationClipId) {
         this.detonationClipId = detonationClipId;
+        return this;
+    }
+
+    public TurretType getTurretType() {
+        return turretType;
+    }
+
+    public WeaponType setTurretType(TurretType turretType) {
+        this.turretType = turretType;
         return this;
     }
 }

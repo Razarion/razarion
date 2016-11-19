@@ -203,7 +203,7 @@ public class Index {
     public double getAngle(Index start, Index end) {
         double startAngle = getAngleToNorth(start);
         double endAngle = getAngleToNorth(end);
-        return MathHelper.normaliseAngel(endAngle - startAngle);
+        return MathHelper.normaliseAngle(endAngle - startAngle);
     }
 
     public Index getPointFromAngleRound(double angle, int radius) {

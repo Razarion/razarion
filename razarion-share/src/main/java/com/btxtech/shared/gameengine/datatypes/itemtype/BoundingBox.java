@@ -75,10 +75,10 @@ public class BoundingBox {
     }
 
     public double getAllowedAngel(double angel) {
-        angel = MathHelper.normaliseAngel(angel);
+        angel = MathHelper.normaliseAngle(angel);
         double angel1 = angels[0];
         for (double angel2 : angels) {
-            double result = MathHelper.closerToAngel(angel, angel1, angel2);
+            double result = MathHelper.closerToAngle(angel, angel1, angel2);
             if (angel2 == result) {
                 angel1 = angel2;
             }
@@ -87,15 +87,15 @@ public class BoundingBox {
     }
 
     public double getAllowedAngel(double angel, double exceptThatAngel) {
-        angel = MathHelper.normaliseAngel(angel);
-        exceptThatAngel = MathHelper.normaliseAngel(exceptThatAngel);
+        angel = MathHelper.normaliseAngle(angel);
+        exceptThatAngel = MathHelper.normaliseAngle(exceptThatAngel);
         if (MathHelper.compareWithPrecision(angel, exceptThatAngel)) {
             for (int i = 0; i < angels.length; i++) {
                 double allowedAngel = angels[i];
                 if (MathHelper.compareWithPrecision(allowedAngel, exceptThatAngel)) {
                     double prevAngel = angels[i == 0 ? angels.length - 1 : i - 1];
                     double nextAngel = angels[i == angels.length - 1 ? 0 : i + 1];
-                    if (MathHelper.getAngel(angel, prevAngel) < MathHelper.getAngel(angel, nextAngel)) {
+                    if (MathHelper.getAngle(angel, prevAngel) < MathHelper.getAngle(angel, nextAngel)) {
                         return prevAngel;
                     } else {
                         return nextAngel;

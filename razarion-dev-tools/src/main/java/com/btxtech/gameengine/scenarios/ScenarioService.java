@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
@@ -50,6 +51,7 @@ public class ScenarioService implements QuestListener {
     static final BaseItemType SIMPLE_FIX_ITEM_TYPE;
     static final BaseItemType HARVESTER_ITEM_TYPE;
     static final BaseItemType ATTACKER_ITEM_TYPE;
+    static final BaseItemType TOWER_ITEM_TYPE;
     static final BaseItemType BUILDER_ITEM_TYPE;
     static final BaseItemType FACTORY_ITEM_TYPE;
     static final ResourceItemType RESOURCE_ITEM_TYPE;
@@ -100,15 +102,13 @@ public class ScenarioService implements QuestListener {
 
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(10).setName("Attacker");
-
         attacker.setId(++itemId);
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
-        attacker.setWeaponType(new WeaponType().setMuzzlePosition(new Vertex(2, 0, 1)).setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1));
+        attacker.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1)); // TODO set turret
         ATTACKER_ITEM_TYPE = attacker;
 
         BaseItemType factory = new BaseItemType();
         factory.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(3).setName("Factory");
-
         factory.setId(++itemId);
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5));
         FACTORY_ITEM_TYPE = factory;
@@ -119,6 +119,13 @@ public class ScenarioService implements QuestListener {
         builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         builder.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuild(Collections.singletonList(FACTORY_ITEM_TYPE.getId())));
         BUILDER_ITEM_TYPE = builder;
+
+        BaseItemType tower = new BaseItemType();
+        tower.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Tower");
+        tower.setId(++itemId);
+        tower.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(3));
+        tower.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTorrentCenter(new Vertex(2, 0, 0)).setMuzzlePosition(new Vertex(2, 0, 1)).setAngleVelocity(Math.toRadians(60))));
+        TOWER_ITEM_TYPE = tower;
 
         // Finalize factory
         factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BUILDER_ITEM_TYPE.getId(), HARVESTER_ITEM_TYPE.getId())));
@@ -245,7 +252,7 @@ public class ScenarioService implements QuestListener {
         gameEngineConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
         gameEngineConfig.setTerrainObjectConfigs(setupTerrainObjectConfigs());
         gameEngineConfig.setLevelConfigs(setupLevels());
-        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE, BUILDER_ITEM_TYPE, FACTORY_ITEM_TYPE));
+        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE, BUILDER_ITEM_TYPE, TOWER_ITEM_TYPE, FACTORY_ITEM_TYPE));
         gameEngineConfig.setResourceItemTypes(Collections.singletonList(RESOURCE_ITEM_TYPE));
         gameEngineConfig.setBoxItemTypes(Collections.singletonList(BOX_ITEM_TYPE));
         gameEngineConfig.setInventoryItems(Collections.singletonList(INVENTORY_ITEM));
@@ -289,6 +296,7 @@ public class ScenarioService implements QuestListener {
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(TOWER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(BUILDER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(FACTORY_ITEM_TYPE.getId(), 1000);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
@@ -302,6 +310,7 @@ public class ScenarioService implements QuestListener {
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(TOWER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(BUILDER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(FACTORY_ITEM_TYPE.getId(), 1000);
         levels.add(new LevelConfig().setLevelId(LEVEL_1_ID).setNumber(0).setItemTypeLimitation(itemTypeLimitation).setXp2LevelUp(10));

@@ -294,7 +294,7 @@ public class DecimalPosition {
 //        return Math.acos(start.dotProduct(end) / (start.magnitude() * end.magnitude()));
         double startAngle = getAngle(start);
         double endAngle = getAngle(end);
-        return MathHelper.normaliseAngel(endAngle - startAngle);
+        return MathHelper.normaliseAngle(endAngle - startAngle);
     }
 
     /**

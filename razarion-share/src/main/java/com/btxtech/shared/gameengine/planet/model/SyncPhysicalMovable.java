@@ -63,11 +63,11 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
             desiredVelocity = forwardLooking(syncItemContainerService, desiredVelocity).normalize(maxSpeed);
             double desiredAngle = desiredVelocity.angle();
-            double deltaAngle = MathHelper.negateAngel(desiredVelocity.angle() - getAngle());
+            double deltaAngle = MathHelper.negateAngle(desiredVelocity.angle() - getAngle());
             // Fix angle
             double angleSpeedFactor = 1.0;
             if (Math.abs(deltaAngle) > angleVelocity * PlanetService.TICK_FACTOR) {
-                double possibleAngle = MathHelper.negateAngel(getAngle() + Math.signum(deltaAngle) * angleVelocity * PlanetService.TICK_FACTOR);
+                double possibleAngle = MathHelper.negateAngle(getAngle() + Math.signum(deltaAngle) * angleVelocity * PlanetService.TICK_FACTOR);
                 setAngle(possibleAngle);
                 DecimalPosition desiredVelocityNorm = desiredVelocity.normalize();
                 DecimalPosition fixedAngleVelocityNorm = DecimalPosition.createVector(possibleAngle, 1.0);
@@ -94,7 +94,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 speed = possibleSpeed;
             }
             // Check if destination too near to turn
-            deltaAngle = MathHelper.negateAngel(desiredVelocity.angle() - getAngle());
+            deltaAngle = MathHelper.negateAngle(desiredVelocity.angle() - getAngle());
             double turnSteps = Math.abs(deltaAngle) / (angleVelocity * PlanetService.TICK_FACTOR);
             double distance = turnSteps * speed * PlanetService.TICK_FACTOR;
             if (distance > getXYPosition().getDistance(destination)) {
