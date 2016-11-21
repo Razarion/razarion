@@ -231,4 +231,10 @@ public class SyncWeapon extends SyncBaseAbility {
         ModelMatrices turret = syncTurret.createModelMatrices();
         return getSyncBaseItem().createModelMatrices().multiply(turret.getModel(), turret.getNorm());
     }
+
+    public ModelMatrices createProjectileModelMatrices() {
+        ModelMatrices turret = syncTurret.createProjectileModelMatrices();
+        return getSyncBaseItem().createModelMatrices().multiply(turret.getModel(), turret.getNorm());
+    }
+
 }

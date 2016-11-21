@@ -48,7 +48,7 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     @Override
     public void setValue(VertexContainer vertexContainer) {
         this.vertexContainer = vertexContainer;
-        materialName.setText(vertexContainer.getMaterialName());
+        materialName.setText(vertexContainer.getMaterialName() + "(" + vertexContainer.getMaterialId() + ")");
         imageItemWidget.setImageId(vertexContainer.getTextureId(), imageId -> {
             newImageId = imageId;
             if (vertexContainer.getMaterialId() != null) {

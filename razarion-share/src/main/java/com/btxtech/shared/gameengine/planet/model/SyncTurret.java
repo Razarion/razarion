@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
@@ -43,6 +44,11 @@ public class SyncTurret {
     }
 
     public ModelMatrices createModelMatrices() {
+        Matrix4 rotMatrix = Matrix4.createZRotation(angle);
+        return new ModelMatrices().setModel(rotMatrix).setNorm(rotMatrix);
+    }
+
+    public ModelMatrices createProjectileModelMatrices() {
         return ModelMatrices.createFromPositionAndDirection(turretType.getTorrentCenter(), angle);
     }
 

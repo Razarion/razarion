@@ -116,7 +116,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
-        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(4).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
@@ -217,7 +217,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
         attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842)); // TODO set turret
+        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionClipId(272485);
     }
 
@@ -304,7 +304,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private List<SceneConfig> setupTower() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // Tower bot
         // Setup killer bot
@@ -312,9 +312,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_TOWER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 246))).setNoSpawn(true).setNoRebuild(true));
+        // botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 246))).setNoSpawn(true).setNoRebuild(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
-        // Use inventory item quest
+
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setBotConfigs(botConfigs).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
