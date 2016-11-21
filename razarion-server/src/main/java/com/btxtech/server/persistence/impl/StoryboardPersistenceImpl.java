@@ -116,13 +116,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
-        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(4).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
@@ -535,6 +535,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addHarvestTask(sceneConfigs);
         addHarvestExplanationTask(sceneConfigs);
         // Level 4
+        addBuildViperTask(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -570,6 +571,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(330, 144))).setNoSpawn(true));
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(340, 165))).setNoSpawn(true));
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(305, 175))).setNoSpawn(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_TOWER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(175, 270))).setNoSpawn(true).setNoRebuild(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Razar Industries").setNpc(false));
         sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs));
@@ -725,14 +727,21 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addHarvestTask(List<SceneConfig> sceneConfigs) {
-        // Harvet quest
+        // Harvest quest
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100));
         sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
     private void addHarvestExplanationTask(List<SceneConfig> sceneConfigs) {
-        // Harvet quest
+        // Harvest explanation
         sceneConfigs.add(new SceneConfig().setIntroText("Du brauchst viel Razarion um eine Armee zu bauen").setDuration(3000));
     }
 
+    private void addBuildViperTask(List<SceneConfig> sceneConfigs) {
+        // Build viper
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER, 1);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+    }
 }
