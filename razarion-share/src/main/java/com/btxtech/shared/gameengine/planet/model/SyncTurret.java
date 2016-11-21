@@ -43,7 +43,7 @@ public class SyncTurret {
     }
 
     public ModelMatrices createModelMatrices() {
-        return ModelMatrices.createFromPositionAndDirection(turretType.getMuzzlePosition(), angle);
+        return ModelMatrices.createFromPositionAndDirection(turretType.getTorrentCenter(), angle);
     }
 
     public boolean isOnTarget(DecimalPosition target) {

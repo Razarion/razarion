@@ -25,6 +25,28 @@ public class Shape3DUtils {
         throw new IllegalArgumentException("No Element3D in Shape3D found for: " + id);
     }
 
+    public static Element3D getElement4MaterialId(Shape3D shape3D, String materialId) {
+        if (shape3D.getElement3Ds() != null) {
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    if (vertexContainer.getMaterialId().equals(materialId)) {
+                        return element3D;
+                    }
+                }
+            }
+        }
+        throw new IllegalArgumentException("MaterialId '" + materialId + "' not found in Shape3D: " + shape3D);
+    }
+
+    public static VertexContainer getVertexContainer4MaterialId(Shape3D shape3D, String materialId) {
+        for (VertexContainer vertexContainer : getElement4MaterialId(shape3D, materialId).getVertexContainers()) {
+            if (vertexContainer.getMaterialId().equals(materialId)) {
+                return vertexContainer;
+            }
+        }
+        throw new IllegalArgumentException("MaterialId '" + materialId + "' not found in Shape3D: " + shape3D);
+    }
+
     public static List<VertexContainer> getAllVertexContainers(Shape3D shape3D) {
         List<VertexContainer> vertexContainers = new ArrayList<>();
         if (shape3D.getElement3Ds() != null) {
@@ -94,7 +116,7 @@ public class Shape3DUtils {
     }
 
     public static void saveAnimationTriggers(Shape3D source, Shape3D target) {
-        if(source.getModelMatrixAnimations() == null) {
+        if (source.getModelMatrixAnimations() == null) {
             return;
         }
         Map<String, AnimationTrigger> sourceAnimationTriggers = new HashMap<>();

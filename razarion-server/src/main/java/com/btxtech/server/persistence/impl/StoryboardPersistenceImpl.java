@@ -49,6 +49,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import org.xml.sax.SAXException;
 
@@ -82,6 +83,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private static final int BASE_ITEM_TYPE_HARVESTER = 180830;
     private static final int BASE_ITEM_TYPE_ATTACKER = 180832;
     private static final int BASE_ITEM_TYPE_FACTORY = 272490;
+    private static final int BASE_ITEM_TYPE_TOWER = 272495;
     private static final int RESOURCE_ITEM_TYPE = 180829;
     private static final int BOX_ITEM_TYPE = 272481;
     private static final int INVENTORY_ITEM = 1;
@@ -117,9 +119,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
@@ -178,6 +181,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         finalizeHarvester(findBaseItem(BASE_ITEM_TYPE_HARVESTER, baseItemTypes));
         finalizeAttacker(findBaseItem(BASE_ITEM_TYPE_ATTACKER, baseItemTypes));
         finalizeFactory(findBaseItem(BASE_ITEM_TYPE_FACTORY, baseItemTypes));
+        finalizeTower(findBaseItem(BASE_ITEM_TYPE_TOWER, baseItemTypes));
         return baseItemTypes;
     }
 
@@ -223,6 +227,14 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         factory.setDescription(i18nHelper("Factory Description"));
         factory.setExplosionClipId(272485).setBuildup(2);
         factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER)));
+    }
+
+    private void finalizeTower(BaseItemType tower) {
+        tower.setTerrainType(TerrainType.LAND);
+        tower.setI18Name(i18nHelper("Tower"));
+        tower.setDescription(i18nHelper("Verteidigungsturm"));
+        tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
+        tower.setBoxPickupRange(2).setExplosionClipId(272485);
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
@@ -286,6 +298,25 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<String, String> localizedStrings = new HashMap<>();
         localizedStrings.put(I18nString.DEFAULT, text);
         return new I18nString(localizedStrings);
+    }
+
+    // Tower -----------------------------------------------------------------------------
+    private List<SceneConfig> setupTower() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // User Spawn
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
+        // Tower bot
+        // Setup killer bot
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_TOWER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 246))).setNoSpawn(true).setNoRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        // Use inventory item quest
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setBotConfigs(botConfigs).setWait4QuestPassedDialog(true));
+        return sceneConfigs;
     }
 
     // User InventoryItem -----------------------------------------------------------------------------

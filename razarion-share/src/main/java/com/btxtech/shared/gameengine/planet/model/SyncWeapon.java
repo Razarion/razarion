@@ -92,7 +92,8 @@ public class SyncWeapon extends SyncBaseAbility {
 
             if (!isInRange(target)) {
                 if (!followTarget) {
-                    throw new IllegalStateException("SyncWeapon out of range but not allowed to follow target");
+                    stop();
+                    return false;
                 }
                 if (!getSyncPhysicalArea().canMove()) {
                     throw new IllegalStateException("SyncWeapon out of range from Target and getSyncPhysicalArea can not move");
@@ -222,7 +223,11 @@ public class SyncWeapon extends SyncBaseAbility {
         return target;
     }
 
-    public ModelMatrices createModelMatrices() {
+    public SyncTurret getSyncTurret() {
+        return syncTurret;
+    }
+
+    public ModelMatrices createTurretModelMatrices() {
         ModelMatrices turret = syncTurret.createModelMatrices();
         return getSyncBaseItem().createModelMatrices().multiply(turret.getModel(), turret.getNorm());
     }

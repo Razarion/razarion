@@ -50,6 +50,7 @@ public class BaseItemUiService implements PlanetTickListener {
     private MapList<BaseItemType, ModelMatrices> aliveModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
+    private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
 
     @PostConstruct
     public void postConstruct() {
@@ -86,6 +87,10 @@ public class BaseItemUiService implements PlanetTickListener {
         return builderModelMatrices.get(baseItemType);
     }
 
+    public List<ModelMatrices> provideTurretModelMatrices(BaseItemType baseItemType) {
+        return weaponTurretModelMatrices.get(baseItemType);
+    }
+
     @Override
     public void onTick() {
         spawningModelMatrices.clear();
@@ -93,6 +98,7 @@ public class BaseItemUiService implements PlanetTickListener {
         aliveModelMatrices.clear();
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
+        weaponTurretModelMatrices.clear();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
             if (!terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncPhysicalArea.getXYPosition(), syncPhysicalArea.getRadius())) {
@@ -111,6 +117,9 @@ public class BaseItemUiService implements PlanetTickListener {
             // Alive
             if (!syncBaseItem.isSpawning() && syncBaseItem.isBuildup()) {
                 aliveModelMatrices.put(baseItemType, modelMatrices);
+                if(syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncWeapon().getSyncTurret() != null) {
+                    weaponTurretModelMatrices.put(baseItemType, syncBaseItem.getSyncWeapon().createTurretModelMatrices());
+                }
             }
             // Harvesting
             SyncHarvester harvester = syncBaseItem.getSyncHarvester();
@@ -126,6 +135,7 @@ public class BaseItemUiService implements PlanetTickListener {
                 Vertex direction = builder.getCurrentBuildup().getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
                 builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndDirection(origin, direction));
             }
+            // Turret
             return null;
         });
     }

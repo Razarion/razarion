@@ -177,7 +177,7 @@ public class ExtendedGraphicsContext {
         if (syncItem instanceof SyncBaseItem) {
             SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
             if (syncBaseItem.getSyncWeapon() != null) {
-                ModelMatrices modelMatrices = syncBaseItem.getSyncWeapon().createModelMatrices();
+                ModelMatrices modelMatrices = syncBaseItem.getSyncWeapon().createTurretModelMatrices();
                 DecimalPosition canonStart = modelMatrices.getModel().multiply(Vertex.ZERO, 1.0).toXY();
                 DecimalPosition canonEnd = modelMatrices.getModel().multiply(syncBaseItem.getSyncWeapon().getWeaponType().getTurretType().getMuzzlePosition(), 1.0).toXY();
                 gc.setStroke(BASE_ITEM_TYPE_WEAPON_COLOR);

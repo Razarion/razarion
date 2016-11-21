@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
+import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
@@ -48,6 +49,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
         alive(baseItemType, fillBuffer);
         harvest(baseItemType, fillBuffer);
         buildBeam(baseItemType, fillBuffer);
+        weaponTurret(baseItemType, fillBuffer);
     }
 
     private void spawn(BaseItemType baseItemType, boolean fillBuffer) {
@@ -102,11 +104,18 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
 
     private void alive(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getShape3DId() != null) {
+            String turretMaterialId = null;
+            if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
+                turretMaterialId = baseItemType.getWeaponType().getTurretType().getShape3dMaterialId();
+            }
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideAliveModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    if (turretMaterialId != null && turretMaterialId.equals(vertexContainer.getMaterialId())) {
+                        continue;
+                    }
                     CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
                     compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
@@ -189,5 +198,37 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             }
             add(modelRenderer);
         }
+    }
+
+    private void weaponTurret(BaseItemType baseItemType, boolean fillBuffer) {
+        if (baseItemType.getWeaponType() == null) {
+            return;
+        }
+        if (baseItemType.getWeaponType().getTurretType() == null) {
+            logger.warning("BaseItemRenderTask: no Turret for WeaponType in BaseItemType: " + baseItemType);
+            return;
+        }
+        String shape3dMaterialId = baseItemType.getWeaponType().getTurretType().getShape3dMaterialId();
+        if (shape3dMaterialId == null) {
+            logger.warning("BaseItemRenderTask: no TurretMaterialId WeaponType beam in BaseItemType: " + baseItemType);
+            return;
+        }
+
+        ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideTurretModelMatrices(baseItemType));
+        Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
+        VertexContainer vertexContainer = Shape3DUtils.getVertexContainer4MaterialId(shape3D, shape3dMaterialId);
+        CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+        compositeRenderer.init(vertexContainer);
+        compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+        compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
+        compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+        compositeRenderer.setupAnimation(shape3D, Shape3DUtils.getElement4MaterialId(shape3D, shape3dMaterialId), vertexContainer.getShapeTransform());
+        modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+        if (fillBuffer) {
+            compositeRenderer.fillBuffers();
+        }
+
+        add(modelRenderer);
     }
 }

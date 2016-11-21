@@ -43,9 +43,9 @@ public class ProjectileService {
     public void fireProjectile(long timeStamp, SyncBaseItem actor, SyncBaseItem target) {
         WeaponType weaponType = actor.getSyncWeapon().getWeaponType();
 
-        actor.getSyncWeapon().createModelMatrices();
+        actor.getSyncWeapon().createTurretModelMatrices();
 
-        Vertex muzzle = actor.createModelMatrices().getModel().multiply(actor.getSyncWeapon().createModelMatrices().getModel()).multiply(weaponType.getTurretType().getMuzzlePosition(), 1.0);
+        Vertex muzzle = actor.getSyncWeapon().createTurretModelMatrices().getModel().multiply(weaponType.getTurretType().getMuzzlePosition(), 1.0);
         if (weaponType.getProjectileSpeed() == null) {
             // projectileDetonation(projectileGroup);
             throw new UnsupportedOperationException();

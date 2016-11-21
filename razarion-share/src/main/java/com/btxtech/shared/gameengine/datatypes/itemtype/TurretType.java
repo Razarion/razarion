@@ -10,6 +10,7 @@ public class TurretType {
     private double angleVelocity;
     private Vertex torrentCenter;
     private Vertex muzzlePosition;
+    private String shape3dMaterialId;
 
     public double getAngleVelocity() {
         return angleVelocity;
@@ -35,6 +36,15 @@ public class TurretType {
 
     public TurretType setMuzzlePosition(Vertex muzzlePosition) {
         this.muzzlePosition = muzzlePosition;
+        return this;
+    }
+
+    public String getShape3dMaterialId() {
+        return shape3dMaterialId;
+    }
+
+    public TurretType setShape3dMaterialId(String shape3dMaterialId) {
+        this.shape3dMaterialId = shape3dMaterialId;
         return this;
     }
 }
