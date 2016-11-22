@@ -15,9 +15,9 @@
     <name>Razarion Client</name>
 
     <properties>
-        <errai.version>4.0.0.Beta2</errai.version>
+        <errai.version>4.0.0.Beta4</errai.version>
         <javaee.version>1.0.2.Final</javaee.version>
-        <gwt.pulgin.version>2.8.0-rc1</gwt.pulgin.version>
+        <gwt.pulgin.version>2.8.0</gwt.pulgin.version>
     </properties>
 
     <dependencyManagement>

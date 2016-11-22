@@ -58,7 +58,7 @@ public class BotService {
         }
     }
 
-    public void killBot(int botId) {
+    private void killBot(int botId) {
         BotRunner botRunner = getBotRunner(botId);
         botRunner.kill();
         synchronized (botRunners) {
@@ -107,7 +107,7 @@ public class BotService {
         throw new IllegalArgumentException("No bot runner for id: " + botId);
     }
 
-    public BotRunner getBotRunner(PlayerBase playerBase) {
+    private BotRunner getBotRunner(PlayerBase playerBase) {
         synchronized (botRunners) {
             for (BotRunner botRunner : botRunners) {
                 if (playerBase.equals(botRunner.getBase())) {
