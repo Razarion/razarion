@@ -93,7 +93,7 @@ public class BotItemContainer {
         handleIdleItems();
     }
 
-    public void killAllItems(PlayerBase playerBase) {
+    void killAllItems(PlayerBase playerBase) {
         try {
             internalKillAllItems(playerBase);
         } catch (Exception e) {
@@ -101,7 +101,7 @@ public class BotItemContainer {
         }
     }
 
-    public void internalKillAllItems(PlayerBase playerBase) {
+    private void internalKillAllItems(PlayerBase playerBase) {
         for (int i = 0; i < KILL_ITERATION_MAXIMUM; i++) {
             if (playerBase != null) {
                 updateState();
@@ -120,7 +120,7 @@ public class BotItemContainer {
         throw new IllegalStateException("internalKillAllItems has been called for more than " + KILL_ITERATION_MAXIMUM + " times.");
     }
 
-    public Collection<BotSyncBaseItem> getAllIdleAttackers() {
+    Collection<BotSyncBaseItem> getAllIdleAttackers() {
         Collection<BotSyncBaseItem> idleAttackers = new ArrayList<>();
         synchronized (botItems) {
             for (BotSyncBaseItem botSyncBaseItem : botItems.values()) {
@@ -137,12 +137,12 @@ public class BotItemContainer {
      *
      * @return true if fulfilled
      */
-    public boolean isFulfilledUseInTestOnly() {
+    boolean isFulfilledUseInTestOnly() {
         updateState();
         return need.getEffectiveItemNeed().isEmpty();
     }
 
-    public boolean itemBelongsToMe(SyncBaseItem syncBaseItem) {
+    boolean itemBelongsToMe(SyncBaseItem syncBaseItem) {
         synchronized (botItems) {
             return botItems.containsKey(syncBaseItem);
         }
@@ -293,7 +293,7 @@ public class BotItemContainer {
         } else if (botCommandConfig instanceof BotKillHumanCommandConfig) {
             handleKillHumanCommand((BotKillHumanCommandConfig) botCommandConfig, base);
         } else if (botCommandConfig instanceof BotRemoveOwnItemCommandConfig) {
-            handleBotRemoveItemCommand((BotRemoveOwnItemCommandConfig) botCommandConfig, base);
+            handleBotRemoveItemCommand((BotRemoveOwnItemCommandConfig) botCommandConfig);
         } else {
             throw new IllegalArgumentException("Unknown bot command: " + botCommandConfig);
         }
@@ -380,7 +380,7 @@ public class BotItemContainer {
         handleKillBaseCommand(botKillHumanCommandConfig, base, target);
     }
 
-    private void handleBotRemoveItemCommand(BotRemoveOwnItemCommandConfig botCommandConfig, PlayerBase base) {
+    private void handleBotRemoveItemCommand(BotRemoveOwnItemCommandConfig botCommandConfig) {
         updateState();
 
         synchronized (botItems) {

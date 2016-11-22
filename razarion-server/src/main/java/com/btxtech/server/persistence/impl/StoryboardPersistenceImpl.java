@@ -23,6 +23,7 @@ import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.CameraConfig;
+import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
@@ -77,8 +78,9 @@ import java.util.Map;
 @Singleton
 public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private static final int NPC_BOT_OUTPOST = 1;
-    private static final int NPC_BOT_INSTRUCTOR = 2;
-    private static final int ENEMY_BOT = 3;
+    private static final int NPC_BOT_OUTPOST_2 = 2;
+    private static final int NPC_BOT_INSTRUCTOR = 3;
+    private static final int ENEMY_BOT = 4;
     private static final int BASE_ITEM_TYPE_BULLDOZER = 180807;
     private static final int BASE_ITEM_TYPE_HARVESTER = 180830;
     private static final int BASE_ITEM_TYPE_ATTACKER = 180832;
@@ -226,7 +228,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         factory.setI18Name(i18nHelper("Factory Name"));
         factory.setDescription(i18nHelper("Factory Description"));
         factory.setExplosionClipId(272485).setBuildup(2);
-        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER)));
+        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER, BASE_ITEM_TYPE_ATTACKER)));
     }
 
     private void finalizeTower(BaseItemType tower) {
@@ -536,6 +538,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addHarvestExplanationTask(sceneConfigs);
         // Level 4
         addBuildViperTask(sceneConfigs);
+        addNpcAttackTowerCommand(sceneConfigs);
+        addNpcTooWeakCommand(sceneConfigs);
+        addBuildViperTask2(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -697,7 +702,6 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // Kill human command
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
         botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50, 50).toPolygon())));
-
         sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs)/*.setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigss)*/.setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000));
     }
 
@@ -708,6 +712,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addBuildFactoryTask(List<SceneConfig> sceneConfigs) {
+        // Bot NPC_BOT_OUTPOST_2
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(130, 270))).setNoSpawn(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(NPC_BOT_OUTPOST_2).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Roger").setNpc(true));
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
@@ -715,7 +726,11 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        // Kill NPC_BOT_INSTRUCTOR
+        List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
+        killBotCommandConfigs.add(new KillBotCommandConfig().setBotId(NPC_BOT_INSTRUCTOR));
+
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs));
     }
 
     private void addFactorizeHarvesterTask(List<SceneConfig> sceneConfigs) {
@@ -723,7 +738,11 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        // Kill NPC_BOT_OUTPOST
+        List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
+        killBotCommandConfigs.add(new KillBotCommandConfig().setBotId(NPC_BOT_OUTPOST));
+
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs));
     }
 
     private void addHarvestTask(List<SceneConfig> sceneConfigs) {
@@ -743,5 +762,25 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
         sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+    }
+
+    private void addNpcAttackTowerCommand(List<SceneConfig> sceneConfigs) {
+        // Attack command
+        List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
+        botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(NPC_BOT_OUTPOST_2).setTargetItemTypeId(BASE_ITEM_TYPE_TOWER).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(175, 270))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER));
+        sceneConfigs.add(new SceneConfig().setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(3000).setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(175, 190))));
+    }
+
+    private void addNpcTooWeakCommand(List<SceneConfig> sceneConfigs) {
+        // Attack command
+        sceneConfigs.add(new SceneConfig().setIntroText("Der Turm ist zu stark, wir brauchen eine grössere Armee").setDuration(2000).setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(175, 190))));
+    }
+
+    private void addBuildViperTask2(List<SceneConfig> sceneConfigs) {
+        // Build viper
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER,2);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 }
