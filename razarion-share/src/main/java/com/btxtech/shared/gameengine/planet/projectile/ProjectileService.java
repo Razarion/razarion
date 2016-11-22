@@ -78,7 +78,7 @@ public class ProjectileService {
         activityService.onProjectileDetonation(detonationProjectile.getActor(), detonationProjectile.getTarget(), weaponType.getDetonationClipId(), timeStamp);
         Collection<SyncBaseItem> possibleTargets = syncItemContainerService.findBaseItemInRect(Rectangle2D.generateRectangleFromMiddlePoint(detonationProjectile.getTarget().toXY(), weaponType.getRange(), weaponType.getRange()));
         for (SyncBaseItem target : possibleTargets) {
-            if (!target.getSyncPhysicalArea().overlap(detonationProjectile.getTarget().toXY(), weaponType.getRange())) {
+            if (!target.getSyncPhysicalArea().overlap(detonationProjectile.getTarget().toXY(), weaponType.getDetonationRadius())) {
                 continue;
             }
             if (!baseItemService.isEnemy(detonationProjectile.getActor(), target)) {

@@ -104,7 +104,7 @@ public class BotRunner {
         }
     }
 
-    public BotConfig getBotConfig() {
+    BotConfig getBotConfig() {
         return botConfig;
     }
 
@@ -121,11 +121,11 @@ public class BotRunner {
         }
     }
 
-    protected BotEnragementState.Listener getEnragementStateListener() {
+    private BotEnragementState.Listener getEnragementStateListener() {
         return null;
     }
 
-    public void kill() {
+    void kill() {
         killTimer();
         killBot();
     }
@@ -142,11 +142,11 @@ public class BotRunner {
         return base;
     }
 
-    public boolean isInRealm(DecimalPosition position) {
+    boolean isInRealm(DecimalPosition position) {
         return botConfig.getRealm().checkInside(position);
     }
 
-    public void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {
+    void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {
         if (botEnragementState != null) {
             // Timer bot is may inactive
             botEnragementState.enrageOnKill(syncBaseItem, actor);
@@ -189,7 +189,7 @@ public class BotRunner {
         botTickerFuture = simpleExecutorService.scheduleAtFixedRate(botConfig.getActionDelay(), true, botTicker, SimpleExecutorService.Type.UNSPECIFIED);
     }
 
-    protected void runBotTimer() {
+    private void runBotTimer() {
         try {
             switch (intervalState) {
                 case INACTIVE:

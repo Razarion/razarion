@@ -111,7 +111,7 @@ public class BotEnragementState {
         return bases;
     }
 
-    public void enrageOnKill(SyncBaseItem botBaseItem, PlayerBase actor) {
+    void enrageOnKill(SyncBaseItem botBaseItem, PlayerBase actor) {
         if (botItemContainer.itemBelongsToMe(botBaseItem)) {
             throw new IllegalArgumentException("SyncBaseItem does not belong to bot: " + this + " botBaseItem:" + botBaseItem + " actor: " + actor);
         }
