@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
+import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -10,11 +11,9 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +30,7 @@ public class BotService {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
-    private final Map<BotConfig, BotRunner> botRunners = new HashMap<>();
+    private final Collection<BotRunner> botRunners = new ArrayList<>();
 
     public void startBots(Collection<BotConfig> botConfigs) {
         for (BotConfig botConfig : botConfigs) {
@@ -46,7 +45,7 @@ public class BotService {
     private void startBot(BotConfig botConfig) {
         BotRunner botRunner = botRunnerInstance.get();
         synchronized (botRunners) {
-            botRunners.put(botConfig, botRunner);
+            botRunners.add(botRunner);
         }
         botRunner.start(botConfig);
     }
@@ -54,51 +53,26 @@ public class BotService {
     public void killAllBots() {
         // Kill all bots
         synchronized (botRunners) {
-            for (BotRunner botRunner : botRunners.values()) {
-                botRunner.kill();
-            }
+            botRunners.forEach(BotRunner::kill);
+            botRunners.clear();
         }
-        botRunners.clear();
     }
 
     public void killBot(int botId) {
+        BotRunner botRunner = getBotRunner(botId);
+        botRunner.kill();
         synchronized (botRunners) {
-            for (Iterator<Map.Entry<BotConfig, BotRunner>> iterator = botRunners.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry<BotConfig, BotRunner> entry = iterator.next();
-                if (entry.getKey().getId() == botId) {
-                    entry.getValue().kill();
-                    iterator.remove();
-                    break;
-                }
-            }
+            botRunners.remove(botRunner);
         }
     }
 
-    public BotRunner getBotRunner(BotConfig botConfig) {
-        return botRunners.get(botConfig);
-    }
-
-    public BotRunner getBotRunner(int botId) {
-        for (Map.Entry<BotConfig, BotRunner> entry : botRunners.entrySet()) {
-            if (entry.getKey().getId() == botId) {
-                return entry.getValue();
-            }
-        }
-        throw new IllegalArgumentException("No bot runner for id: " + botId);
-    }
-
-    // TODO must be called from outside
-    public void onBotItemKilled(SyncBaseItem syncBaseItem, PlayerBase actor) {
-        synchronized (botRunners) {
-            for (BotRunner botRunner : botRunners.values()) {
-                botRunner.onBotItemKilled(syncBaseItem, actor);
-            }
-        }
+    public void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {
+        getBotRunner(syncBaseItem.getBase()).enrageOnKill(syncBaseItem, actor);
     }
 
     public boolean isInRealm(DecimalPosition position) {
         synchronized (botRunners) {
-            for (BotRunner botRunner : botRunners.values()) {
+            for (BotRunner botRunner : botRunners) {
                 if (botRunner.isInRealm(position)) {
                     return true;
                 }
@@ -109,12 +83,38 @@ public class BotService {
 
     public void executeCommands(List<? extends AbstractBotCommandConfig> botCommandConfigs) {
         for (AbstractBotCommandConfig botCommandConfig : botCommandConfigs) {
-            BotRunner botRunner = getBotRunner(botCommandConfig.getBotId());
             try {
-                botRunner.executeCommand(botCommandConfig);
+                BotRunner botRunner = getBotRunner(botCommandConfig.getBotId());
+                if (botCommandConfig instanceof KillBotCommandConfig) {
+                    killBot(botCommandConfig.getBotId());
+                } else {
+                    botRunner.executeCommand(botCommandConfig);
+                }
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }
         }
+    }
+
+    public BotRunner getBotRunner(int botId) {
+        synchronized (botRunners) {
+            for (BotRunner botRunner : botRunners) {
+                if (botRunner.getBotConfig().getId() == botId) {
+                    return botRunner;
+                }
+            }
+        }
+        throw new IllegalArgumentException("No bot runner for id: " + botId);
+    }
+
+    public BotRunner getBotRunner(PlayerBase playerBase) {
+        synchronized (botRunners) {
+            for (BotRunner botRunner : botRunners) {
+                if (playerBase.equals(botRunner.getBase())) {
+                    return botRunner;
+                }
+            }
+        }
+        throw new IllegalArgumentException("No bot runner for playerBase: " + playerBase);
     }
 }

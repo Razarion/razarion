@@ -80,11 +80,6 @@ public class AttackScenarioSuite extends ScenarioSuite {
             public QuestConfig setupQuest() {
                 return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
     }
 }

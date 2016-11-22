@@ -23,7 +23,7 @@ import java.util.Collection;
  * 05.07.2016.
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
-// Better name: something with game-control, client control
+// Better name: something with game-control, client control (See: ActivityService)
 public class StoryboardService {
     // private Logger logger = Logger.getLogger(StoryboardService.class.getName());
     @Inject

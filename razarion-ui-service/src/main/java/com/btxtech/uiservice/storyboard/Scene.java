@@ -111,6 +111,9 @@ public class Scene {
         if (sceneConfig.getBotRemoveOwnItemCommandConfigs() != null) {
             botService.executeCommands(sceneConfig.getBotRemoveOwnItemCommandConfigs());
         }
+        if (sceneConfig.getKillBotCommandConfigs() != null) {
+            botService.executeCommands(sceneConfig.getKillBotCommandConfigs());
+        }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             baseItemService.surrenderBase(storyboardService.getUserContext());
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), decimalPositions -> {

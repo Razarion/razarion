@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundExcept
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -31,12 +32,14 @@ import java.util.logging.Logger;
  * 25.07.2016.
  */
 @ApplicationScoped
-public class ActivityService {
+public class ActivityService { // Rename to game control or so (See StoryboardService)
     private Logger logger = Logger.getLogger(ActivityService.class.getName());
     @Inject
     private PlanetService planetService;
     @Inject
     private QuestService questService;
+    @Inject
+    private BotService botService;
     private Optional<ClipService> clipService = Optional.empty();
     private ModalDialogManager modalDialogManager;
 
@@ -191,6 +194,10 @@ public class ActivityService {
         }
 
         questService.onSyncItemKilled(target, actor);
+
+        if (target.getBase().getCharacter().isBot()) {
+            botService.enrageOnKill(target, actor.getBase());
+        }
     }
 
     public void onSyncBaseItemRemoved(SyncBaseItem target) {

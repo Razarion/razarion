@@ -1,9 +1,7 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
-import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -113,25 +111,25 @@ public class BotEnragementState {
         return bases;
     }
 
-    public void onBotItemKilled(SyncBaseItem botBaseItem, PlayerBase actor) {
+    public void enrageOnKill(SyncBaseItem botBaseItem, PlayerBase actor) {
         if (botItemContainer.itemBelongsToMe(botBaseItem)) {
-            if (isEnragementActive) {
-                Integer kills = killsPerBase.get(actor);
-                if (kills == null) {
-                    kills = 0;
-                }
-                kills = kills + 1;
-                killsPerBase.put(actor, kills);
-                if (kills >= currentBotEnragementStateConfig.getEnrageUpKills()) {
-                    BotEnragementStateConfig nextState = botEnragementStateConfigs.get(botEnragementStateConfigs.indexOf(currentBotEnragementStateConfig) + 1);
-                    activateEnragementState(nextState, botBaseItem.getBase());
-                    if (listener != null) {
-                        listener.onEnrageUp(botName, nextState, actor);
-                    }
-                }
-                // TODO remove the killed bot item from the botItemContainer here instead of iterating over and removing the death items
-                // TODO keep in mind: this method is only called if the actor is not null -> solve
+            throw new IllegalArgumentException("SyncBaseItem does not belong to bot: " + this + " botBaseItem:" + botBaseItem + " actor: " + actor);
+        }
+        if (isEnragementActive) {
+            Integer kills = killsPerBase.get(actor);
+            if (kills == null) {
+                kills = 0;
             }
+            kills = kills + 1;
+            killsPerBase.put(actor, kills);
+            if (kills >= currentBotEnragementStateConfig.getEnrageUpKills()) {
+                BotEnragementStateConfig nextState = botEnragementStateConfigs.get(botEnragementStateConfigs.indexOf(currentBotEnragementStateConfig) + 1);
+                activateEnragementState(nextState, botBaseItem.getBase());
+                if (listener != null) {
+                    listener.onEnrageUp(botName, nextState, actor);
+                }
+            }
+            // TODO remove the killed bot item from the botItemContainer here instead of iterating over and removing the death items
         }
     }
 

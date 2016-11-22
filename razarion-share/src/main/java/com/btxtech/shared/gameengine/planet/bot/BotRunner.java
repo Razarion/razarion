@@ -104,6 +104,10 @@ public class BotRunner {
         }
     }
 
+    public BotConfig getBotConfig() {
+        return botConfig;
+    }
+
     private void killBotThread() {
         if (botTickerFuture != null) {
             botTickerFuture.cancel();
@@ -142,10 +146,10 @@ public class BotRunner {
         return botConfig.getRealm().checkInside(position);
     }
 
-    public void onBotItemKilled(SyncBaseItem syncBaseItem, PlayerBase actor) {
+    public void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {
         if (botEnragementState != null) {
             // Timer bot is may inactive
-            botEnragementState.onBotItemKilled(syncBaseItem, actor);
+            botEnragementState.enrageOnKill(syncBaseItem, actor);
         }
     }
 
