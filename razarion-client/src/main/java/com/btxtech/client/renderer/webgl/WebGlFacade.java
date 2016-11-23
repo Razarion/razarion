@@ -164,6 +164,10 @@ public class WebGlFacade {
         return createWebGLTexture(imageId, samplerUniformName, null, null);
     }
 
+    public WebGlUniformTexture createEmptyWebGLTexture(String samplerUniformName) {
+        return new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
+    }
+
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale) {
         WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, null);
         webGlUniformTexture.setWebGLTexture(setupTexture(imageId));
@@ -176,7 +180,7 @@ public class WebGlFacade {
         return webGlUniformTexture;
     }
 
-    protected TextureIdHandler.WebGlTextureId createWebGlTextureId() {
+    private TextureIdHandler.WebGlTextureId createWebGlTextureId() {
         return textureIdHandler.create();
     }
 

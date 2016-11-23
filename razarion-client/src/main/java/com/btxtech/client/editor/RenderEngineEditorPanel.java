@@ -1,5 +1,6 @@
 package com.btxtech.client.editor;
 
+import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
@@ -11,7 +12,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -38,8 +38,7 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     @Inject
     private ProjectionTransformation normalProjectionTransformation;
     @Inject
-    @AutoBound
-    private DataBinder<Camera> cameraDataBinder;
+    private MonitorRenderTask monitorRenderTask;
     @Inject
     @DataField
     private CheckBox showMonitor;
@@ -73,31 +72,24 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     @DataField("dumpPositionButton")
     private Button dumpPositionButton;
     @Inject
-    @Bound
     @DataField
     private DoubleBox translateX;
     @Inject
-    @Bound
     @DataField
     private DoubleBox translateY;
     @Inject
-    @Bound
     @DataField
     private DoubleBox translateZ;
     @Inject
-    @Bound(property = "rotateX", converter = GradToRadConverter.class)
     @DataField
     private DoubleBox rotateXSlider;
     @Inject
-    @Bound(property = "rotateX", converter = GradToRadConverter.class)
     @DataField
     private DoubleBox rotateXBox;
     @Inject
-    @Bound(property = "rotateZ", converter = GradToRadConverter.class)
     @DataField
     private DoubleBox rotateZSlider;
     @Inject
-    @Bound(property = "rotateZ", converter = GradToRadConverter.class)
     @DataField
     private DoubleBox rotateZBox;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -113,12 +105,10 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
 
     @PostConstruct
     public void init() {
-        // TODO showMonitor.setValue(renderService.isShowMonitor());
-        // TODO showDeepMap.setValue(renderService.isShowDeep());
+        showMonitor.setValue(monitorRenderTask.isShown());
+        showDeepMap.setValue(monitorRenderTask.isShowDeep());
         // TODO wireMode.setValue(renderService.isWire());
         showNorm.setValue(renderService.isShowNorm());
-        cameraDataBinder.setModel(camera);
-        cameraDataBinder.addPropertyChangeHandler(event -> displayLightDirectionLabel());
         displayLightDirectionLabel();
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
         openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
@@ -128,12 +118,16 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
 
     @EventHandler("showMonitor")
     public void showMonitorChanged(ChangeEvent e) {
-        // TODO renderService.setShowMonitor(showMonitor.getValue());
+        if (showMonitor.getValue()) {
+            monitorRenderTask.showMonitor();
+        } else {
+            monitorRenderTask.hideMonitor();
+        }
     }
 
     @EventHandler("showDeepMap")
     public void showDeepMapChanged(ChangeEvent e) {
-        // TODO renderService.setShowDeep(showDeepMap.getValue());
+        monitorRenderTask.setShowDeep(showDeepMap.getValue());
     }
 
     @EventHandler("wireMode")

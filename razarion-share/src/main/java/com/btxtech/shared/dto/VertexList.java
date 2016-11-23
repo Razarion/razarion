@@ -1,7 +1,5 @@
 package com.btxtech.shared.dto;
 
-// import com.btxtech.client.ImageDescriptor;
-
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Matrix4;

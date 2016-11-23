@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditor;
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.editor.renderer.ShadowMonitorRendererUnit;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.uiservice.renderer.AbstractRenderComposite;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
@@ -58,12 +59,8 @@ public class ClientRenderServiceImpl extends RenderService {
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
-    private boolean showMonitor = false;
-    private boolean showDeep = false;
     private boolean showSlopeEditor = false;
     private boolean showObjectEditor = false;
-    private AbstractRenderComposite monitor;
-    private AbstractRenderComposite terrainNorm;
     @Deprecated
     private Collection<AbstractRenderComposite> terrainObjectNorms;
     private int framesCount = 0;
@@ -84,7 +81,6 @@ public class ClientRenderServiceImpl extends RenderService {
             terrainEditorRenderers.add(terrainEditorRenderer);
         }
         setupTerrainObjectRenderer();
-        monitor = createAndAddRenderSwitch(MonitorUnitRenderer.class, null, null, 0);
         terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorUnitRenderer.class).get();
         terrainEditorCursorRenderer.fillBuffers();
         terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorUnitRenderer.class).get();
@@ -236,9 +232,6 @@ public class ClientRenderServiceImpl extends RenderService {
         gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
         gameCanvas.getCtx3d().depthMask(false);
         for (AbstractRenderComposite abstractRenderComposite : renderQueue) {
-            if (!showMonitor && abstractRenderComposite == monitor) {
-                continue;
-            }
 //            if (!showNorm && (abstractRenderComposite == terrainNorm || terrainObjectNorms.contains(abstractRenderComposite))) {
 //                continue;
 //            }
@@ -323,22 +316,6 @@ public class ClientRenderServiceImpl extends RenderService {
 
     public WebGLTexture getDepthTexture() {
         return depthTexture;
-    }
-
-    public boolean isShowMonitor() {
-        return showMonitor;
-    }
-
-    public void setShowMonitor(boolean showMonitor) {
-        this.showMonitor = showMonitor;
-    }
-
-    public boolean isShowDeep() {
-        return showDeep;
-    }
-
-    public void setShowDeep(boolean showDeep) {
-        this.showDeep = showDeep;
     }
 
     public void setShowSlopeEditor(boolean showSlopeEditor) {

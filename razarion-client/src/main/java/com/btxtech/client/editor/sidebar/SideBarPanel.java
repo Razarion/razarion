@@ -51,7 +51,7 @@ public class SideBarPanel extends Composite {
         getElement().getStyle().setZIndex(ZIndexConstants.EDITOR_SIDE_BAR);
     }
 
-    public void setContent(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
+    void setContent(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
         if(leftSideBarContent != null) {
             leftSideBarContent.onClose();
         }
@@ -64,11 +64,11 @@ public class SideBarPanel extends Composite {
         return (LeftSideBarContent) content.getWidget();
     }
 
-    public Button getSaveButton() {
+    Button getSaveButton() {
         return saveButton;
     }
 
-    public Button getDeleteButton() {
+    Button getDeleteButton() {
         return deleteButton;
     }
 

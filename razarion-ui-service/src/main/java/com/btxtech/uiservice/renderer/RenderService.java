@@ -65,7 +65,19 @@ public abstract class RenderService {
     }
 
     private void addRenderTask(Class<? extends AbstractRenderTask> clazz) {
-        renderTasks.add(instance.select(clazz).get());
+        addRenderTask(instance.select(clazz).get());
+    }
+
+    public void addRenderTask(AbstractRenderTask abstractRenderTask) {
+        renderTasks.add(abstractRenderTask);
+    }
+
+    public void removeRenderTask(AbstractRenderTask abstractRenderTask) {
+        renderTasks.remove(abstractRenderTask);
+    }
+
+    public boolean containsRenderTask(AbstractRenderTask abstractRenderTask) {
+        return renderTasks.contains(abstractRenderTask);
     }
 
     public void render() {
