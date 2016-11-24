@@ -18,5 +18,5 @@ void main(void) {
 
     vVertexNormal = normalize((uNVMatrix * uNMMatrix * vec4(aVertexNormal, 0.0)).xyz);
     vTextureCoord = aTextureCoord;
-    vShadowCoord = uShadowMatrix * vec4(aVertexPosition, 1.0);
+    vShadowCoord = uShadowMatrix * uMMatrix * vec4(aVertexPosition, 1.0);
 }

@@ -257,17 +257,6 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
         shadowWebGlTextureId = createWebGlTextureId();
     }
 
-    protected void activateShadow() {
-        if (shadowWebGlTextureId == null) {
-            throw new IllegalStateException("Shadow must be enabled before");
-        }
-        uniformMatrix4fv("uShadowMatrix", shadowUiService.getShadowLookupTransformation());
-        uniform1f("uShadowAlpha", (float) shadowUiService.getShadowAlpha());
-        uniform1i("uShadowTexture", shadowWebGlTextureId.getUniformValue());
-        gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
-    }
-
     protected void drawArrays(int mode, int count) {
         getCtx3d().drawArrays(mode, 0, count);
         WebGlUtil.checkLastWebGlError("drawArrays", getCtx3d());
