@@ -43,13 +43,6 @@ public class DevToolsRenderServiceImpl extends RenderService {
     private WebGlEmulatorShadowController shadowController;
     @Inject
     private Instance<Object> instance;
-    private VertexShader terrainShader = new VertexShader() {
-        @Override
-        public Vertex4 runShader(Vertex vertex) {
-            Matrix4 matrix4 = projectionTransformation.getMatrix().multiply(camera.getMatrix());
-            return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
-        }
-    };
     private VertexShader terrainShaderShadow = new VertexShader() {
         @Override
         public Vertex4 runShader(Vertex vertex) {

@@ -87,7 +87,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     CommonRenderComposite<AbstractBuildupVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
                     compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
-                    // TODO compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
                     // TODO compositeRenderer.setNormRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);

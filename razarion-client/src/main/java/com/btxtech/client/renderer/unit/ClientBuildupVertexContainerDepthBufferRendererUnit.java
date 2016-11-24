@@ -5,9 +5,12 @@ import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
+import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import elemental.html.WebGLRenderingContext;
@@ -18,14 +21,18 @@ import javax.inject.Inject;
 
 /**
  * Created by Beat
- * 19.12.2015.
+ * 03.08.2016.
  */
 @DepthBufferRenderer
 @Dependent
-public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertexContainerRenderUnit {
-    // private Logger logger = Logger.getLogger(ClientVertexContainerDepthBufferRendererUnit.class.getName());
+public class ClientBuildupVertexContainerDepthBufferRendererUnit extends AbstractBuildupVertexContainerRenderUnit {
+    // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
+    @Inject
+    private VisualUiService visualUiService;
+    @Inject
+    private BaseItemUiService baseItemUiService;
     @Inject
     private ShadowUiService shadowUiService;
     private VertexShaderAttribute positions;
@@ -35,14 +42,13 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.vertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.vertexContainerDeptBufferFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.buildupVertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.buildupVertexContainerDeptBufferFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         textureCoordinate = webGlFacade.createShaderTextureCoordinateAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
     }
 
     @Override
     public void setupImages() {
-
     }
 
     @Override
@@ -53,11 +59,13 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
     }
 
     @Override
-    protected void prepareDraw() {
+    protected void prepareDraw(Matrix4 buildupMatrix) {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.getDepthProjectionTransformation());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, shadowUiService.getDepthViewTransformation());
+
+        webGlFacade.uniformMatrix4fv("buildupMatrix", buildupMatrix);
 
         positions.activate();
         textureCoordinate.activate();
@@ -65,8 +73,11 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
     }
 
     @Override
-    protected void draw(ModelMatrices modelMatrices) {
+    protected void draw(ModelMatrices modelMatrices, double progressZ) {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
+        webGlFacade.uniform1f("progressZ", progressZ);
+
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
+
 }

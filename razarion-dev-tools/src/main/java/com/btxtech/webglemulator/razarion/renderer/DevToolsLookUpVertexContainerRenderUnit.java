@@ -24,7 +24,6 @@ import javax.inject.Inject;
  * 26.07.2016.
  */
 @ColorBufferRenderer
-@DepthBufferRenderer
 public class DevToolsLookUpVertexContainerRenderUnit extends AbstractLookUpVertexContainerRenderUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;

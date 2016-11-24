@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
+import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
@@ -24,7 +25,7 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
     @ColorBufferRenderer
     private Instance<AbstractSlopeRendererUnit> rendererInstance;
     @Inject
-    @ColorBufferRenderer
+    @DepthBufferRenderer
     private Instance<AbstractSlopeRendererUnit> depthBufferRendererInstance;
     @Inject
     @NormRenderer

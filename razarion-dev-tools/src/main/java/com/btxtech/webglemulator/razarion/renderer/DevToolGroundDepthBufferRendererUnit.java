@@ -1,16 +1,14 @@
 package com.btxtech.webglemulator.razarion.renderer;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
@@ -24,12 +22,10 @@ import javax.inject.Inject;
  * Created by Beat
  * 07.08.2016.
  */
-@ColorBufferRenderer
-public class DevToolGroundRendererUnit extends AbstractGroundRendererUnit implements VertexShader {
+@DepthBufferRenderer
+public class DevToolGroundDepthBufferRendererUnit extends AbstractGroundRendererUnit implements VertexShader {
     @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
-    private Camera camera;
+    private ShadowUiService shadowUiService;
     @Inject
     private WebGlEmulator webGlEmulator;
     private WebGlProgramEmulator webGlProgramEmulator;
@@ -47,7 +43,7 @@ public class DevToolGroundRendererUnit extends AbstractGroundRendererUnit implem
 
     @Override
     public Vertex4 runShader(Vertex vertex) {
-        Matrix4 matrix4 = projectionTransformation.getMatrix().multiply(camera.getMatrix());
+        Matrix4 matrix4 = shadowUiService.getDepthProjectionTransformation().multiply(shadowUiService.getDepthViewTransformation());
         return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
     }
 

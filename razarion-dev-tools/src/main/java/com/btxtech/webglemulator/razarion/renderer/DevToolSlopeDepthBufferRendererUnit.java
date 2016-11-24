@@ -11,6 +11,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
@@ -24,14 +25,12 @@ import javax.inject.Inject;
  * Created by Beat
  * 07.08.2016.
  */
-@ColorBufferRenderer
-public class DevToolSlopeRendererUnit extends AbstractSlopeRendererUnit implements VertexShader {
-    @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
-    private Camera camera;
+@DepthBufferRenderer
+public class DevToolSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUnit implements VertexShader {
     @Inject
     private WebGlEmulator webGlEmulator;
+    @Inject
+    private ShadowUiService shadowUiService;
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
@@ -52,7 +51,7 @@ public class DevToolSlopeRendererUnit extends AbstractSlopeRendererUnit implemen
 
     @Override
     public Vertex4 runShader(Vertex vertex) {
-        Matrix4 matrix4 = projectionTransformation.getMatrix().multiply(camera.getMatrix());
+        Matrix4 matrix4 = shadowUiService.getDepthProjectionTransformation().multiply(shadowUiService.getDepthViewTransformation());
         return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
     }
 }
