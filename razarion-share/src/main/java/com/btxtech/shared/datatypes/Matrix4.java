@@ -159,7 +159,11 @@ public class Matrix4 {
      * @return matrix for norm transformation
      */
     public Matrix4 normTransformation() {
-        return invert().transpose();
+        if (zero()) {
+            return this;
+        } else {
+            return invert().transpose();
+        }
     }
 
     public static Matrix4 createIdentity() {

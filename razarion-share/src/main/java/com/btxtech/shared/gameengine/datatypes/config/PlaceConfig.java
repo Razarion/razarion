@@ -55,7 +55,7 @@ public class PlaceConfig {
                 return syncItem.getSyncPhysicalArea().overlap(position);
             }
         } else if (polygon2D != null) {
-            return polygon2D.isInside(syncItem.getSyncPhysicalArea().getPosition().toXY());
+            return polygon2D.isInside(syncItem.getSyncPhysicalArea().getPosition2d());
         } else {
             throw new IllegalStateException("Invalid PlaceConfig");
         }

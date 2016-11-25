@@ -39,7 +39,7 @@ public class CockpitService implements PlanetTickListener {
     }
 
     @Override
-    public void onTick() {
+    public void onPostTick() {
         sideCockpit.displayResources(storyboardService.getResources());
         UserContext userContext = storyboardService.getUserContext();
         sideCockpit.displayXps(userContext.getXp());

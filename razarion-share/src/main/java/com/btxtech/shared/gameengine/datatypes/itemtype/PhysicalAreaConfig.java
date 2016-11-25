@@ -56,12 +56,8 @@ public class PhysicalAreaConfig {
         return this;
     }
 
-    public boolean fulfilledDirectional() {
-        return angularVelocity != null;
-    }
-
     public boolean fulfilledMovable() {
-        return fulfilledDirectional() && speed != null && acceleration != null && minTurnSpeed != null;
+        return angularVelocity != null && speed != null && acceleration != null && minTurnSpeed != null;
     }
 
 }

@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -55,10 +54,9 @@ public class BoxService {
         }
     }
 
-    public SyncBoxItem dropBox(int boxItemTypeId, DecimalPosition position, double zRotation) {
+    public SyncBoxItem dropBox(int boxItemTypeId, DecimalPosition position2d, double zRotation) {
         BoxItemType boxItemType = itemTypeService.getBoxItemType(boxItemTypeId);
-        Vertex vertex = terrainService.calculatePositionGroundMesh(position);
-        SyncBoxItem syncBoxItem = syncItemContainerService.createSyncBoxItem(boxItemType, vertex, zRotation);
+        SyncBoxItem syncBoxItem = syncItemContainerService.createSyncBoxItem(boxItemType, position2d, zRotation);
         synchronized (boxes) {
             boxes.put(syncBoxItem.getId(), syncBoxItem);
         }
@@ -77,9 +75,7 @@ public class BoxService {
         }
 
         BoxContent boxContent = new BoxContent();
-        box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> {
-            addBoxContentToUser(boxItemTypePossibility, picker.getBase().getUserContext(), boxContent);
-        });
+        box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> addBoxContentToUser(boxItemTypePossibility, picker.getBase().getUserContext(), boxContent));
 
         activityService.onBoxPicket(box, picker, boxContent);
     }
@@ -120,7 +116,7 @@ public class BoxService {
                 if (!syncBoxItem.getItemType().equals(boxItemType)) {
                     continue;
                 }
-                modelMatrices.add(syncBoxItem.createModelMatrices());
+                modelMatrices.add(syncBoxItem.getModelMatrices());
             }
         }
         return modelMatrices;

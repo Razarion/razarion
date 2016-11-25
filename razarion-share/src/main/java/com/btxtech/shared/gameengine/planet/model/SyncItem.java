@@ -30,6 +30,8 @@ import javax.inject.Inject;
  * Time: 14:17:17
  */
 public abstract class SyncItem {
+    public static final String SYNC_PHYSICAL_AREA = "SYNC_PHYSICAL_AREA";
+    public static final String SYNC_PHYSICAL_MOVABLE = "SYNC_PHYSICAL_MOVABLE";
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -94,8 +96,8 @@ public abstract class SyncItem {
         throw new IllegalStateException("SyncItem does not have a SyncPhysicalMovable: " + this);
     }
 
-    public ModelMatrices createModelMatrices() {
-        return syncPhysicalArea.createModelMatrices();
+    public ModelMatrices getModelMatrices() {
+        return syncPhysicalArea.getModelMatrices();
     }
 
     @Override

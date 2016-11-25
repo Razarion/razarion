@@ -81,7 +81,6 @@ public class ClientLookUpVertexContainerRendererUnit extends AbstractLookUpVerte
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
         webGlFacade.uniform1f("progress", modelMatrices.getProgress());
 
-
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 

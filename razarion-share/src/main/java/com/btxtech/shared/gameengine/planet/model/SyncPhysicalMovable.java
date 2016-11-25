@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -25,6 +24,8 @@ import com.btxtech.shared.gameengine.planet.pathing.Contact;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.utils.MathHelper;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Named;
 import java.util.ArrayList;
 
 /**
@@ -33,7 +34,10 @@ import java.util.ArrayList;
  * Time: 14:39:38
  */
 // See: com.btxtech.shared.gameengine.planet.pathing.Unit (before 16.09.2016, git ref: 2c78588f58aa2863f5c49a5a4d44662467c8be1e)
+@Dependent
+@Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
 public class SyncPhysicalMovable extends SyncPhysicalArea {
+    public static final String NAMED = SyncPhysicalArea.class.getName();
     private final static int LOOK_AHEAD_TICKS = 20;
     private double lookAheadDistance;
     private double acceleration; // Pixel per square second
@@ -45,8 +49,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private DecimalPosition lastDestination;
     private double range;
 
-    public SyncPhysicalMovable(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, Vertex position, Vertex norm, double angle, DecimalPosition velocity) {
-        super(syncItem, physicalAreaConfig, position, norm, angle);
+    public void init(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, DecimalPosition position2d, double angle, DecimalPosition velocity) {
+        super.init(syncItem, physicalAreaConfig.getRadius(), position2d, angle);
         this.velocity = velocity;
         maxSpeed = physicalAreaConfig.getSpeed();
         angleVelocity = physicalAreaConfig.getAngularVelocity();
@@ -57,7 +61,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setupForTick(SyncItemContainerService syncItemContainerService) {
         if (destination != null) {
-            DecimalPosition desiredVelocity = destination.sub(getXYPosition()).normalize(maxSpeed);
+            DecimalPosition desiredVelocity = destination.sub(getPosition2d()).normalize(maxSpeed);
             if (velocity == null) {
                 velocity = DecimalPosition.createVector(getAngle(), 0.001);
             }
@@ -80,7 +84,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             double possibleSpeed = Math.max(minTurnSpeed, angleSpeedFactor * maxSpeed);
             double speed;
             double breakingDistance = (originalSpeed * originalSpeed) / (2.0 * acceleration) + range;
-            if (breakingDistance > getXYPosition().getDistance(destination)) {
+            if (breakingDistance > getPosition2d().getDistance(destination)) {
                 // Breaking distance
                 speed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
                 speed = Math.max(maxSpeed * PlanetService.TICK_FACTOR, speed);
@@ -97,7 +101,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             deltaAngle = MathHelper.negateAngle(desiredVelocity.angle() - getAngle());
             double turnSteps = Math.abs(deltaAngle) / (angleVelocity * PlanetService.TICK_FACTOR);
             double distance = turnSteps * speed * PlanetService.TICK_FACTOR;
-            if (distance > getXYPosition().getDistance(destination)) {
+            if (distance > getPosition2d().getDistance(destination)) {
                 speed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
             }
 
@@ -125,7 +129,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         ClearanceHole clearanceHole = new ClearanceHole(this);
         SyncItem target = ((SyncBaseItem) getSyncItem()).getTarget();
         syncItemContainerService.iterateOverItems(false, false, null, getSyncItem(), otherSyncItem -> {
-            if(target != null && target.equals(otherSyncItem)) {
+            if (target != null && target.equals(otherSyncItem)) {
                 return null;
             }
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
@@ -148,9 +152,9 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 }
 
                 // Other moves to destination in same direction
-                DecimalPosition relativeDestination = destination.sub(getXYPosition()).normalize();
+                DecimalPosition relativeDestination = destination.sub(getPosition2d()).normalize();
 
-                DecimalPosition relativeDestinationOther = otherMovable.destination.sub(otherMovable.getXYPosition()).normalize();
+                DecimalPosition relativeDestinationOther = otherMovable.destination.sub(otherMovable.getPosition2d()).normalize();
                 double deltaAngle = Math.acos(relativeDestination.dotProduct(relativeDestinationOther));
                 if (deltaAngle < Math.PI / 2.0) {
                     return null;
@@ -158,7 +162,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
 
             //Check if destination is nearer than other
-            if (getXYPosition().getDistance(destination) < getXYPosition().getDistance(other.getXYPosition())) {
+            if (getPosition2d().getDistance(destination) < getPosition2d().getDistance(other.getPosition2d())) {
                 return null;
             }
 
@@ -180,7 +184,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public boolean checkDestinationReached(SyncItemContainerService syncItemContainerService) {
         // 1) Position reached directly
-        if (getXYPosition().getDistance(destination) < getRadius() + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
+        if (getPosition2d().getDistance(destination) < getRadius() + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
             return true;
         }
         // 2) None moving neighbor reached destination
@@ -233,12 +237,12 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         if (distance >= 0) {
             return null;
         }
-        DecimalPosition norm = getXYPosition().sub(other.getXYPosition()).normalize(1.0);
+        DecimalPosition norm = getPosition2d().sub(other.getPosition2d()).normalize(1.0);
         return new Contact(this, other, norm);
     }
 
     public DecimalPosition getDesiredPosition() {
-        DecimalPosition desiredPosition = getXYPosition();
+        DecimalPosition desiredPosition = getPosition2d();
         if (velocity != null) {
             desiredPosition = desiredPosition.add(velocity.multiply(PlanetService.TICK_FACTOR));
         }
@@ -246,7 +250,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void implementPosition() {
-        setXYPosition(getDesiredPosition());
+        setPosition2d(getDesiredPosition());
     }
 
     // ---------------- OLD ---------------------------------

@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -61,10 +60,9 @@ public class ResourceService {
         }
     }
 
-    public SyncResourceItem createResources(int resourceItemTypeId, DecimalPosition position, double rotationZ) {
+    public SyncResourceItem createResources(int resourceItemTypeId, DecimalPosition position2d, double rotationZ) {
         ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resourceItemTypeId);
-        Vertex vertex = terrainService.calculatePositionGroundMesh(position);
-        SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItemType, vertex, rotationZ);
+        SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItemType, position2d, rotationZ);
         syncResourceItem.setup(resourceItemType.getAmount());
         synchronized (resources) {
             resources.put(syncResourceItem.getId(), syncResourceItem);
@@ -95,7 +93,7 @@ public class ResourceService {
                 if (!syncResourceItem.getItemType().equals(resourceItemType)) {
                     continue;
                 }
-                modelMatrices.add(syncResourceItem.createModelMatrices());
+                modelMatrices.add(syncResourceItem.getModelMatrices());
             }
         }
         return modelMatrices;

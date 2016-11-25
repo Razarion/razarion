@@ -183,7 +183,7 @@ public class GameEngineMonitorController implements Initializable {
 //        System.out.println("        PathingService pathingService = new PathingService();");
 //        for (Unit unit : pathingService.getUnits()) {
 //            String unitParams = unit.getId() + ", " + unit.isCanMove() + ", " + unit.getRadius() + ", "
-//                    + InstanceStringGenerator.generate(unit.getPosition()) + ", " + InstanceStringGenerator.generate(unit.getVelocity()) + ", "
+//                    + InstanceStringGenerator.generate(unit.getPosition3d()) + ", " + InstanceStringGenerator.generate(unit.getVelocity()) + ", "
 //                    + InstanceStringGenerator.generate(unit.getDestination()) + ", " + InstanceStringGenerator.generate(unit.getDestination());
 //            System.out.println("        pathingService.createUnit(" + unitParams + ");");
 //        }

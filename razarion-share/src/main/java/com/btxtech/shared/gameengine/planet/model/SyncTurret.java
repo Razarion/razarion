@@ -43,23 +43,22 @@ public class SyncTurret {
         }
     }
 
-    public ModelMatrices createModelMatrices() {
-        Matrix4 rotMatrix = Matrix4.createZRotation(angle);
-        return new ModelMatrices().setModel(rotMatrix).setNorm(rotMatrix);
+    ModelMatrices createModelMatrices() {
+        return ModelMatrices.createFromPositionAndZRotation(turretType.getTorrentCenter(), angle);
     }
 
-    public ModelMatrices createProjectileModelMatrices() {
-        return ModelMatrices.createFromPositionAndDirection(turretType.getTorrentCenter(), angle);
+    ModelMatrices createModelMatrices4Shape3D() {
+        return new ModelMatrices(Matrix4.createZRotation(angle));
     }
 
-    public boolean isOnTarget(DecimalPosition target) {
+    boolean isOnTarget(DecimalPosition target) {
         double absoluteTargetAngle = calculateAbsoluteTargetAngle(target);
         double absoluteTorrentAngle = calculateAbsoluteTorrentAngle();
         return MathHelper.compareWithPrecision(MathHelper.getAngle(absoluteTargetAngle, absoluteTorrentAngle), 0.0, MAX_DELTA_ANGLE);
     }
 
     private double calculateAbsoluteTargetAngle(DecimalPosition target) {
-        ModelMatrices modelMatrices = syncBaseItem.getSyncPhysicalArea().createModelMatrices();
+        ModelMatrices modelMatrices = syncBaseItem.getSyncPhysicalArea().getModelMatrices();
         Vertex absolutePosition = modelMatrices.getModel().multiply(turretType.getTorrentCenter(), 1.0);
         return MathHelper.normaliseAngle(absolutePosition.toXY().getAngle(target));
     }

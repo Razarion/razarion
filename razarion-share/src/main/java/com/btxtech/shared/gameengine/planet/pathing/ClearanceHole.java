@@ -21,7 +21,7 @@ public class ClearanceHole {
     }
 
     public void addOther(SyncPhysicalArea other) {
-        DecimalPosition distanceVector = other.getXYPosition().sub(syncPhysicalMovable.getXYPosition());
+        DecimalPosition distanceVector = other.getPosition2d().sub(syncPhysicalMovable.getPosition2d());
         double distance = distanceVector.magnitude();
         double radius = syncPhysicalMovable.getRadius() + other.getRadius();
         double halfBlockingAngle;

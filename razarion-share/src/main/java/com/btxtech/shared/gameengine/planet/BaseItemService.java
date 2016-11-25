@@ -155,9 +155,7 @@ public class BaseItemService {
         }
 
         // TODO check item free range etc (use: BaseItemPlacerChecker) but not for factory
-
-        Vertex position = terrainService.calculatePositionGroundMesh(position2d);
-        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position);
+        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position2d);
         syncBaseItem.setup(base);
         base.addItem(syncBaseItem);
         addToActiveItemQueue(syncBaseItem);
@@ -236,7 +234,7 @@ public class BaseItemService {
     }
 
     private SyncBaseItem findNearestEnemy(SyncBaseItem guardingItem) {
-        Collection<SyncBaseItem> enemyItems = findEnemyItems(guardingItem.getBase(), new PlaceConfig().setPosition(guardingItem.getSyncPhysicalArea().getXYPosition()).setRadius(guardingItem.getBaseItemType().getWeaponType().getRange() + guardingItem.getSyncPhysicalArea().getRadius()));
+        Collection<SyncBaseItem> enemyItems = findEnemyItems(guardingItem.getBase(), new PlaceConfig().setPosition(guardingItem.getSyncPhysicalArea().getPosition2d()).setRadius(guardingItem.getBaseItemType().getWeaponType().getRange() + guardingItem.getSyncPhysicalArea().getRadius()));
         double distance = Double.MAX_VALUE;
         SyncBaseItem nearest = null;
         for (SyncBaseItem enemyItem : enemyItems) {

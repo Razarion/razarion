@@ -130,14 +130,22 @@ public class WebGlEmulatorController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         centerPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> {
-            canvas.setWidth(width.doubleValue());
-            projectionTransformation.setAspectRatio(getAspectRatio());
-            aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
+            try {
+                canvas.setWidth(width.doubleValue());
+                projectionTransformation.setAspectRatio(getAspectRatio());
+                aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
+            } catch (IllegalArgumentException e) {
+                // Catch ugly initialization bug
+            }
         });
         centerPanel.heightProperty().addListener((observableValue, oldSceneWidth, height) -> {
-            canvas.setHeight(height.doubleValue());
-            projectionTransformation.setAspectRatio(getAspectRatio());
-            aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
+            try {
+                canvas.setHeight(height.doubleValue());
+                projectionTransformation.setAspectRatio(getAspectRatio());
+                aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
+            } catch (NullPointerException e) {
+                // Catch ugly initialization bug
+            }
         });
         canvas.setFocusTraversable(true);
         canvas.addEventFilter(MouseEvent.ANY, mouseEvent -> canvas.requestFocus());

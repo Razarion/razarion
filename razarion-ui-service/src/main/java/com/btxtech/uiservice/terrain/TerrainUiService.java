@@ -13,7 +13,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
 import javax.enterprise.event.Observes;
@@ -52,7 +51,7 @@ public class TerrainUiService {
             for (TerrainObjectPosition objectPosition : entry.getValue()) {
                 int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
                 Matrix4 model = objectPosition.createModelMatrix(z);
-                terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices().setModel(model).setNorm(model.normTransformation()));
+                terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices(model));
             }
         }
     }

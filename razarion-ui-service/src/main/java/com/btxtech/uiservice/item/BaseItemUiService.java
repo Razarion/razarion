@@ -92,7 +92,7 @@ public class BaseItemUiService implements PlanetTickListener {
     }
 
     @Override
-    public void onTick() {
+    public void onPostTick() {
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
         aliveModelMatrices.clear();
@@ -101,16 +101,16 @@ public class BaseItemUiService implements PlanetTickListener {
         weaponTurretModelMatrices.clear();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
-            if (!terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncPhysicalArea.getXYPosition(), syncPhysicalArea.getRadius())) {
+            if (!terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius())) {
                 return null;
             }
             BaseItemType baseItemType = syncBaseItem.getBaseItemType();
-            ModelMatrices modelMatrices = syncPhysicalArea.createModelMatrices();
+            ModelMatrices modelMatrices = syncPhysicalArea.getModelMatrices();
             // Spawning
             if (syncBaseItem.isSpawning() && syncBaseItem.isBuildup()) {
                 spawningModelMatrices.put(baseItemType, modelMatrices.copy(syncBaseItem.getSpawnProgress()));
             }
-            // Spawning
+            // Buildup
             if (!syncBaseItem.isSpawning() && !syncBaseItem.isBuildup()) {
                 buildupModelMatrices.put(baseItemType, modelMatrices.copy(syncBaseItem.getBuildup()));
             }
@@ -118,22 +118,22 @@ public class BaseItemUiService implements PlanetTickListener {
             if (!syncBaseItem.isSpawning() && syncBaseItem.isBuildup()) {
                 aliveModelMatrices.put(baseItemType, modelMatrices);
                 if(syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncWeapon().getSyncTurret() != null) {
-                    weaponTurretModelMatrices.put(baseItemType, syncBaseItem.getSyncWeapon().createTurretModelMatrices());
+                    weaponTurretModelMatrices.put(baseItemType, syncBaseItem.getSyncWeapon().createTurretModelMatrices4Shape3D());
                 }
             }
             // Harvesting
             SyncHarvester harvester = syncBaseItem.getSyncHarvester();
             if (harvester != null && harvester.isHarvesting()) {
                 Vertex origin = modelMatrices.getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
-                Vertex direction = harvester.getResource().getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
-                harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndDirection(origin, direction));
+                Vertex direction = harvester.getResource().getSyncPhysicalArea().getPosition3d().sub(origin).normalize(1.0);
+                harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction));
             }
             // Building
             SyncBuilder builder = syncBaseItem.getSyncBuilder();
             if (builder != null && builder.isBuilding()) {
                 Vertex origin = modelMatrices.getModel().multiply(baseItemType.getBuilderType().getAnimationOrigin(), 1.0);
-                Vertex direction = builder.getCurrentBuildup().getSyncPhysicalArea().getPosition().sub(origin).normalize(1.0);
-                builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndDirection(origin, direction));
+                Vertex direction = builder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d().sub(origin).normalize(1.0);
+                builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction));
             }
             // Turret
             return null;

@@ -38,9 +38,9 @@ public class PlayingClip {
         }
         double progress = 1.0 - (double) delta / (double) clipConfig.getDurationMillis();
         if (direction != null) {
-            return ModelMatrices.createFromPositionAndDirection(position, direction).setProgress(progress);
+            return ModelMatrices.createFromPositionAndZRotation(position, direction, progress);
         } else {
-            return ModelMatrices.createFromPosition(position).setProgress(progress);
+            return ModelMatrices.createFromPosition(position, progress);
         }
     }
 }

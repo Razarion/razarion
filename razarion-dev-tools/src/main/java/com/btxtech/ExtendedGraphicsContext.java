@@ -152,7 +152,7 @@ public class ExtendedGraphicsContext {
 
     public void drawUnit(SyncItem syncItem) {
         SyncPhysicalArea syncPhysicalArea = syncItem.getSyncPhysicalArea();
-        DecimalPosition position = syncPhysicalArea.getXYPosition();
+        DecimalPosition position = syncPhysicalArea.getPosition2d();
         if (syncItem instanceof SyncBaseItem) {
             gc.setFill(BASE_ITEM_TYPE_COLOR);
         } else if (syncItem instanceof SyncResourceItem) {
@@ -188,7 +188,7 @@ public class ExtendedGraphicsContext {
     }
 
     private void fillPolygon(SyncItem syncItem) {
-        DecimalPosition middle = syncItem.getSyncPhysicalArea().getXYPosition();
+        DecimalPosition middle = syncItem.getSyncPhysicalArea().getPosition2d();
         double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel2 = syncItem.getSyncPhysicalArea().getAngle() + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel3 = angel1 + MathHelper.HALF_RADIANT;
@@ -208,7 +208,7 @@ public class ExtendedGraphicsContext {
         double angel3 = angel1 + MathHelper.HALF_RADIANT;
         double angel4 = angel2 + MathHelper.HALF_RADIANT;
 
-        DecimalPosition middle = syncItem.getSyncPhysicalArea().getXYPosition();
+        DecimalPosition middle = syncItem.getSyncPhysicalArea().getPosition2d();
         DecimalPosition point1 = middle.getPointWithDistance(angel1, syncItem.getSyncPhysicalArea().getRadius());
         DecimalPosition point2 = middle.getPointWithDistance(angel2, syncItem.getSyncPhysicalArea().getRadius());
         DecimalPosition point3 = middle.getPointWithDistance(angel3, syncItem.getSyncPhysicalArea().getRadius());
@@ -221,7 +221,7 @@ public class ExtendedGraphicsContext {
         double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel2 = syncItem.getSyncPhysicalArea().getAngle() + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
 
-        DecimalPosition middle = syncItem.getSyncPhysicalArea().getXYPosition();
+        DecimalPosition middle = syncItem.getSyncPhysicalArea().getPosition2d();
         DecimalPosition point1 = middle.getPointWithDistance(angel1, syncItem.getSyncPhysicalArea().getRadius());
         DecimalPosition point2 = middle.getPointWithDistance(angel2, syncItem.getSyncPhysicalArea().getRadius());
 

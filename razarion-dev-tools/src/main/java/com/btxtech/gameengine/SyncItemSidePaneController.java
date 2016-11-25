@@ -21,7 +21,7 @@ public class SyncItemSidePaneController {
     public void init(SyncItem syncItem) {
         this.syncItem = syncItem;
         idLabel.setText(Long.toString(syncItem.getId()));
-        positionLabel.setText(vectorAsString(syncItem.getSyncPhysicalArea().getXYPosition()));
+        positionLabel.setText(vectorAsString(syncItem.getSyncPhysicalArea().getPosition2d()));
         if (syncItem.getSyncPhysicalArea().canMove()) {
             velocityLabel.setText(vectorAsString(((SyncPhysicalMovable) syncItem.getSyncPhysicalArea()).getVelocity()));
         } else {

@@ -174,7 +174,7 @@ public class BotSyncBaseItem {
     }
 
     public DecimalPosition getPosition() {
-        return syncBaseItem.getSyncPhysicalArea().getPosition().toXY();
+        return syncBaseItem.getSyncPhysicalArea().getPosition2d();
     }
 
     private void setIdle() {

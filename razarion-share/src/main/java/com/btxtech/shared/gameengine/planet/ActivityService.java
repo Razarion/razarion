@@ -188,7 +188,7 @@ public class ActivityService { // Rename to game control or so (See StoryboardSe
         System.out.println("ActivityService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
 
         if (target.getBaseItemType().getExplosionClipId() != null) {
-            clipService.ifPresent(effectService -> effectService.playClip(target.getSyncPhysicalArea().getPosition(), target.getBaseItemType().getExplosionClipId(), timeStamp));
+            clipService.ifPresent(effectService -> effectService.playClip(target.getSyncPhysicalArea().getPosition3d(), target.getBaseItemType().getExplosionClipId(), timeStamp));
         } else {
             logger.warning("No explosion ClipId configured for: " + target);
         }

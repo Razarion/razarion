@@ -28,7 +28,7 @@ public class AttackScenarioSuite extends ScenarioSuite {
 
     @Override
     protected void setupScenarios() {
-        addScenario(new Scenario("Tank vs harvester") {
+        addScenario(new Scenario("Attacker vs harvester") {
             @Override
             protected void createSyncItems() {
                 createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), null);

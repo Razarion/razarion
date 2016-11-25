@@ -89,7 +89,7 @@ public class SyncFactory extends SyncBaseAbility {
                 activityService.onFactoryHouseSpaceExceeded();
                 return true;
             }
-            SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, getSyncBaseItem().getSyncPhysicalArea().getXYPosition(), getSyncBaseItem().getBase());
+            SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, getSyncBaseItem().getSyncPhysicalArea().getPosition2d(), getSyncBaseItem().getBase());
             stop();
             commandService.move(createItem, rallyPoint);
             return false;
@@ -142,6 +142,6 @@ public class SyncFactory extends SyncBaseAbility {
         for (int baseItemTypeId : factoryType.getAbleToBuildId()) {
             maxRadius = Math.max(maxRadius, itemTypeService.getBaseItemType(baseItemTypeId).getPhysicalAreaConfig().getRadius());
         }
-        rallyPoint = getSyncBaseItem().getSyncPhysicalArea().getXYPosition().sub(0, getSyncBaseItem().getSyncPhysicalArea().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE + maxRadius);
+        rallyPoint = getSyncBaseItem().getSyncPhysicalArea().getPosition2d().sub(0, getSyncBaseItem().getSyncPhysicalArea().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE + maxRadius);
     }
 }

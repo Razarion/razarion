@@ -13,8 +13,8 @@ public abstract class Obstacle {
 
     public Contact hasContact(SyncPhysicalMovable item) {
         // There is no check if the unit is inside the restricted area
-        DecimalPosition pointOnLine = project(item.getXYPosition());
-        DecimalPosition sub = item.getXYPosition().sub(pointOnLine);
+        DecimalPosition pointOnLine = project(item.getPosition2d());
+        DecimalPosition sub = item.getPosition2d().sub(pointOnLine);
         if (sub.magnitude() >= item.getRadius()) {
             return null;
         }
@@ -23,7 +23,7 @@ public abstract class Obstacle {
 
     public double getDistance(SyncPhysicalMovable item) {
         // There is no check if the unit is inside the restricted area
-        DecimalPosition pointOnLine = project(item.getXYPosition());
-        return pointOnLine.getDistance(item.getXYPosition()) - item.getRadius();
+        DecimalPosition pointOnLine = project(item.getPosition2d());
+        return pointOnLine.getDistance(item.getPosition2d()) - item.getRadius();
     }
 }

@@ -31,7 +31,7 @@ public class PathingService {
     }
 
     public Path setupPathToDestination(SyncBaseItem syncBaseItem, double range, SyncItem target) {
-        return setupPathToDestination(syncBaseItem, range, target.getSyncPhysicalArea().getXYPosition(), target.getSyncPhysicalArea().getRadius());
+        return setupPathToDestination(syncBaseItem, range, target.getSyncPhysicalArea().getPosition2d(), target.getSyncPhysicalArea().getRadius());
     }
 
     public Path setupPathToDestination(SyncBaseItem syncBaseItem, double range, DecimalPosition targetPosition, double targetRadius) {
@@ -65,6 +65,16 @@ public class PathingService {
             if (syncPhysicalMovable.hasDestination() && syncPhysicalMovable.checkDestinationReached(syncItemContainerService)) {
                 syncPhysicalMovable.stop();
             }
+            return null;
+        });
+
+        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+                return null;
+            }
+
+            syncBaseItem.getSyncPhysicalMovable().setupPosition3d();
+
             return null;
         });
     }
@@ -177,12 +187,12 @@ public class PathingService {
                     penetration = MAXIMUM_CORRECTION;
                 }
                 if (item2.canMove()) {
-                    DecimalPosition pushAway = item1.getXYPosition().sub(item2.getXYPosition()).normalize(penetration / 2.0);
-                    item1.addToXYPosition(pushAway);
-                    item2.addToXYPosition(pushAway.multiply(-1.0));
+                    DecimalPosition pushAway = item1.getPosition2d().sub(item2.getPosition2d()).normalize(penetration / 2.0);
+                    item1.addToPosition2d(pushAway);
+                    item2.addToPosition2d(pushAway.multiply(-1.0));
                 } else {
-                    DecimalPosition pushAway = item1.getXYPosition().sub(item2.getXYPosition()).normalize(penetration);
-                    item1.addToXYPosition(pushAway);
+                    DecimalPosition pushAway = item1.getPosition2d().sub(item2.getPosition2d()).normalize(penetration);
+                    item1.addToPosition2d(pushAway);
                 }
             }
         }
@@ -196,8 +206,8 @@ public class PathingService {
 
             for (Obstacle obstacle : terrainService.getObstacles()) {
                 // There is no check if the unit is inside the restricted area
-                DecimalPosition projection = obstacle.project(syncPhysicalMovable.getXYPosition());
-                double distance = projection.getDistance(syncPhysicalMovable.getXYPosition()) - syncPhysicalMovable.getRadius();
+                DecimalPosition projection = obstacle.project(syncPhysicalMovable.getPosition2d());
+                double distance = projection.getDistance(syncPhysicalMovable.getPosition2d()) - syncPhysicalMovable.getRadius();
                 if (distance >= -PENETRATION_TOLERANCE) {
                     continue;
                 }
@@ -206,8 +216,8 @@ public class PathingService {
                 if (penetration > MAXIMUM_CORRECTION) {
                     penetration = MAXIMUM_CORRECTION;
                 }
-                DecimalPosition pushAway = syncPhysicalMovable.getXYPosition().sub(projection).normalize(penetration);
-                syncPhysicalMovable.addToXYPosition(pushAway);
+                DecimalPosition pushAway = syncPhysicalMovable.getPosition2d().sub(projection).normalize(penetration);
+                syncPhysicalMovable.addToPosition2d(pushAway);
             }
 
             return null;
@@ -221,7 +231,7 @@ public class PathingService {
         if (item2.canMove()) {
             distance = item1.getDesiredPosition().getDistance(((SyncPhysicalMovable) item2).getDesiredPosition()) - item1.getRadius() - item2.getRadius();
         } else {
-            distance = item1.getDesiredPosition().getDistance(item2.getXYPosition()) - item1.getRadius() - item2.getRadius();
+            distance = item1.getDesiredPosition().getDistance(item2.getPosition2d()) - item1.getRadius() - item2.getRadius();
         }
         if (distance > 0) {
             return 0;

@@ -104,7 +104,7 @@ public class ScenarioService implements QuestListener {
         attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(5).setBuildup(10).setName("Attacker");
         attacker.setId(++itemId);
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
-        attacker.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1)); // TODO set turret
+        attacker.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTorrentCenter(new Vertex(1, 0, 0)).setMuzzlePosition(new Vertex(1, 0, 1)).setAngleVelocity(Math.toRadians(120))));
         ATTACKER_ITEM_TYPE = attacker;
 
         BaseItemType factory = new BaseItemType();

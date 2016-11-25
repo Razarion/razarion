@@ -87,7 +87,7 @@ public class SyncWeapon extends SyncBaseAbility {
             }
 
             if (syncTurret != null) {
-                syncTurret.tick(target.getSyncPhysicalArea().getXYPosition());
+                syncTurret.tick(target.getSyncPhysicalArea().getPosition2d());
             }
 
             if (!isInRange(target)) {
@@ -104,8 +104,8 @@ public class SyncWeapon extends SyncBaseAbility {
 
                 // Check if target has moved away
                 if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
-                    if (!targetPosition.equals(target.getSyncPhysicalArea().getXYPosition())) {
-                        targetPosition = target.getSyncPhysicalArea().getXYPosition();
+                    if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition2d())) {
+                        targetPosition = target.getSyncPhysicalArea().getPosition2d();
                         throw new UnsupportedOperationException();
 //                            recalculateAndSetNewPath(weaponType.getRange(), targetItem);
 //                            activityService.onNewPathRecalculation(getSyncBaseItem());
@@ -120,7 +120,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 getSyncPhysicalMovable().stop();
             }
 
-            if (syncTurret != null && !syncTurret.isOnTarget(target.getSyncPhysicalArea().getXYPosition())) {
+            if (syncTurret != null && !syncTurret.isOnTarget(target.getSyncPhysicalArea().getPosition2d())) {
                 return true;
             }
 
@@ -187,7 +187,7 @@ public class SyncWeapon extends SyncBaseAbility {
         if (followTarget) {
             getSyncPhysicalMovable().setDestination(attackCommand.getPathToDestination());
         }
-        targetPosition = target.getSyncPhysicalArea().getXYPosition();
+        targetPosition = target.getSyncPhysicalArea().getPosition2d();
         targetPositionLastCheck = System.currentTimeMillis();
     }
 
@@ -204,14 +204,14 @@ public class SyncWeapon extends SyncBaseAbility {
 
     }
 
-    public boolean isAttackAllowed(SyncItem target) {
+    boolean isAttackAllowed(SyncItem target) {
         return target instanceof SyncBaseItem
                 && getSyncPhysicalArea().hasPosition()
                 && target.getSyncPhysicalArea().hasPosition()
                 && !isItemTypeDisallowed((SyncBaseItem) target);
     }
 
-    public boolean isInRange(SyncBaseItem target) throws TargetHasNoPositionException {
+    boolean isInRange(SyncBaseItem target) throws TargetHasNoPositionException {
         return getSyncBaseItem().getSyncPhysicalArea().isInRange(weaponType.getRange(), target);
     }
 
@@ -228,13 +228,10 @@ public class SyncWeapon extends SyncBaseAbility {
     }
 
     public ModelMatrices createTurretModelMatrices() {
-        ModelMatrices turret = syncTurret.createModelMatrices();
-        return getSyncBaseItem().createModelMatrices().multiply(turret.getModel(), turret.getNorm());
+        return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createModelMatrices());
     }
 
-    public ModelMatrices createProjectileModelMatrices() {
-        ModelMatrices turret = syncTurret.createProjectileModelMatrices();
-        return getSyncBaseItem().createModelMatrices().multiply(turret.getModel(), turret.getNorm());
+    public ModelMatrices createTurretModelMatrices4Shape3D() {
+        return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createModelMatrices4Shape3D());
     }
-
 }

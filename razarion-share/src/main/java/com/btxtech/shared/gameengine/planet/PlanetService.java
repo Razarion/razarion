@@ -88,7 +88,7 @@ public class PlanetService implements Runnable {
         return tickCount;
     }
 
-    public PlanetConfig getPlanetConfig() {
+    PlanetConfig getPlanetConfig() {
         return planetConfig;
     }
 
@@ -114,7 +114,7 @@ public class PlanetService implements Runnable {
 
     private void notifyTickListeners() {
         for (PlanetTickListener tickListener : tickListeners) {
-            tickListener.onTick();
+            tickListener.onPostTick();
         }
     }
 

@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -23,10 +24,10 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.function.Function;
@@ -43,17 +44,19 @@ public class SyncItemContainerService {
     private int lastItemId = 0;
     private final HashMap<Integer, SyncItem> items = new HashMap<>();
     @Inject
-    private Instance<SyncItem> instance;
+    private Instance<SyncItem> syncItemInstance;
+    @Inject
+    @Named(SyncItem.SYNC_PHYSICAL_AREA)
+    private Instance<SyncPhysicalArea> syncPhysicalAreaInstance;
+    @Inject
+    @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
+    private Instance<SyncPhysicalMovable> syncPhysicalMovableInstance;
     @Inject
     private TerrainService terrainService; // May combine terrain-service with sync-item-container-service
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         items.clear();
         lastItemId = 0;
-    }
-
-    public Collection<SyncItem> getSyncItems() {
-        return Collections.unmodifiableCollection(items.values());
     }
 
     public <T> T iterateOverItems(boolean includeNoPosition, boolean includeDead, T defaultReturn, ItemIteratorHandler<T> itemIteratorHandler) {
@@ -96,7 +99,7 @@ public class SyncItemContainerService {
      *
      * @param itemIteratorHandler syncItem : Function<SyncBaseItem, T> returns null if the iteration shall continue T if the iteration shall stop
      */
-    public <T> T iterateOverBaseItems(boolean includeNoPosition, boolean includeDead, SyncBaseItem ignoreMe, T defaultReturn, Function<SyncBaseItem, T> itemIteratorHandler) {
+    private <T> T iterateOverBaseItems(boolean includeNoPosition, boolean includeDead, SyncBaseItem ignoreMe, T defaultReturn, Function<SyncBaseItem, T> itemIteratorHandler) {
         synchronized (items) {
             for (SyncItem syncItem : items.values()) {
                 if (ignoreMe != null && ignoreMe.equals(syncItem)) {
@@ -128,7 +131,7 @@ public class SyncItemContainerService {
      *
      * @param itemIteratorHandler syncItem : Function<SyncResourceItem, T> returns null if the iteration shall continue T if the iteration shall stop
      */
-    public <T> T iterateOverResourceItems(boolean includeDead, SyncBaseItem ignoreMe, T defaultReturn, Function<SyncResourceItem, T> itemIteratorHandler) {
+    private <T> T iterateOverResourceItems(boolean includeDead, SyncBaseItem ignoreMe, T defaultReturn, Function<SyncResourceItem, T> itemIteratorHandler) {
         synchronized (items) {
             for (SyncItem syncItem : items.values()) {
                 if (ignoreMe != null && ignoreMe.equals(syncItem)) {
@@ -152,51 +155,52 @@ public class SyncItemContainerService {
         return defaultReturn;
     }
 
-    public SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, Vertex position) {
-        SyncBaseItem syncBaseItem = instance.select(SyncBaseItem.class).get();
-        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position);
-        synchronized (items) {
-            syncBaseItem.init(lastItemId, baseItemType, syncPhysicalArea);
-            items.put(lastItemId, syncBaseItem);
-            lastItemId++;
-        }
+    public SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position2d) {
+        SyncBaseItem syncBaseItem = syncItemInstance.select(SyncBaseItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d);
+        initAndAdd(baseItemType, syncBaseItem, syncPhysicalArea);
         return syncBaseItem;
     }
 
-    public SyncResourceItem createSyncResourceItem(ResourceItemType resourceItemType, Vertex position, double zRotation) {
-        SyncResourceItem syncResourceItem = instance.select(SyncResourceItem.class).get();
-        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea(syncResourceItem, resourceItemType.getRadius(), position, Vertex.Z_NORM, zRotation);
-        synchronized (items) {
-            syncResourceItem.init(lastItemId, resourceItemType, syncPhysicalArea);
-            items.put(lastItemId, syncResourceItem);
-            lastItemId++;
-        }
+    SyncResourceItem createSyncResourceItem(ResourceItemType resourceItemType, DecimalPosition position2d, double zRotation) {
+        SyncResourceItem syncResourceItem = syncItemInstance.select(SyncResourceItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
+        syncPhysicalArea.init(syncResourceItem, resourceItemType.getRadius(), position2d, zRotation);
+        initAndAdd(resourceItemType, syncResourceItem, syncPhysicalArea);
         return syncResourceItem;
     }
 
-    public SyncBoxItem createSyncBoxItem(BoxItemType boxItemType, Vertex position, double zRotation) {
-        SyncBoxItem syncBoxItem = instance.select(SyncBoxItem.class).get();
-        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea(syncBoxItem, boxItemType.getRadius(), position, Vertex.Z_NORM, zRotation);
-        synchronized (items) {
-            syncBoxItem.init(lastItemId, boxItemType, syncPhysicalArea);
-            items.put(lastItemId, syncBoxItem);
-            lastItemId++;
-        }
+    SyncBoxItem createSyncBoxItem(BoxItemType boxItemType, DecimalPosition position2d, double zRotation) {
+        SyncBoxItem syncBoxItem = syncItemInstance.select(SyncBoxItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
+        syncPhysicalArea.init(syncBoxItem, boxItemType.getRadius(), position2d, zRotation);
+        initAndAdd(boxItemType, syncBoxItem, syncPhysicalArea);
         return syncBoxItem;
     }
 
-    private SyncPhysicalArea createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, Vertex position) {
+    private void initAndAdd(ItemType itemType, SyncItem syncItem, SyncPhysicalArea syncPhysicalArea) {
+        synchronized (items) {
+            syncItem.init(lastItemId, itemType, syncPhysicalArea);
+            items.put(lastItemId, syncItem);
+            lastItemId++;
+        }
+        syncItem.getSyncPhysicalArea().setupPosition3d();
+    }
+
+    private SyncPhysicalArea createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, DecimalPosition position2d) {
         PhysicalAreaConfig physicalAreaConfig = baseItemType.getPhysicalAreaConfig();
         if (physicalAreaConfig.fulfilledMovable()) {
-            return new SyncPhysicalMovable(syncBaseItem, physicalAreaConfig, position, Vertex.Z_NORM, 0, null);
-        } else if (physicalAreaConfig.fulfilledDirectional()) {
-            throw new UnsupportedOperationException();
+            SyncPhysicalMovable syncPhysicalMovable = syncPhysicalMovableInstance.get();
+            syncPhysicalMovable.init(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position2d, 0, null);
+            return syncPhysicalMovable;
         } else {
-            return new SyncPhysicalArea(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position, Vertex.Z_NORM, 0);
+            SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
+            syncPhysicalArea.init(syncBaseItem, physicalAreaConfig.getRadius(), position2d, 0);
+            return syncPhysicalArea;
         }
     }
 
-    public void destroySyncItem(SyncItem syncItem) {
+    void destroySyncItem(SyncItem syncItem) {
         synchronized (items) {
             SyncItem removed = items.remove(syncItem.getId());
             if (removed == null) {
@@ -205,7 +209,7 @@ public class SyncItemContainerService {
         }
     }
 
-    public SyncItem getSyncItem(int id) {
+    private SyncItem getSyncItem(int id) {
         SyncItem syncItem = items.get(id);
         if (syncItem != null) {
             return syncItem;
@@ -218,7 +222,7 @@ public class SyncItemContainerService {
         return (SyncBaseItem) getSyncItem(id);
     }
 
-    public boolean hasItemsInRange(DecimalPosition position, double radius) {
+    private boolean hasItemsInRange(DecimalPosition position, double radius) {
         return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncPhysicalArea().overlap(position, radius));
     }
 
@@ -290,7 +294,7 @@ public class SyncItemContainerService {
         throw new PlaceCanNotBeFoundException(radius, placeConfig);
     }
 
-    public boolean isFree(DecimalPosition position, double radius) {
+    private boolean isFree(DecimalPosition position, double radius) {
         return !terrainService.overlap(position, radius) && !hasItemsInRange(position, radius);
     }
 

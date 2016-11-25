@@ -43,17 +43,17 @@ public class ProjectileService {
     public void fireProjectile(long timeStamp, SyncBaseItem actor, SyncBaseItem target) {
         WeaponType weaponType = actor.getSyncWeapon().getWeaponType();
 
-        Vertex muzzle = actor.getSyncWeapon().createProjectileModelMatrices().getModel().multiply(weaponType.getTurretType().getMuzzlePosition(), 1.0);
+        Vertex muzzle = actor.getSyncWeapon().createTurretModelMatrices().getModel().multiply(weaponType.getTurretType().getMuzzlePosition(), 1.0);
         if (weaponType.getProjectileSpeed() == null) {
             // projectileDetonation(projectileGroup);
             throw new UnsupportedOperationException();
         }
-        Projectile projectile = new Projectile(timeStamp, actor, muzzle, target.getSyncPhysicalArea().getPosition());
+        Projectile projectile = new Projectile(timeStamp, actor, muzzle, target.getSyncPhysicalArea().getPosition3d());
         synchronized (projectiles) {
             projectiles.put(actor.getBaseItemType(), projectile);
         }
 
-        activityService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition().sub(muzzle), weaponType.getMuzzleFlashClipId(), timeStamp);
+        activityService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition3d().sub(muzzle), weaponType.getMuzzleFlashClipId(), timeStamp);
     }
 
     public void tick(long timeStamp) {

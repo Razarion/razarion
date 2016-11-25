@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -9,8 +10,12 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.utils.MathHelper;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -18,27 +23,46 @@ import java.util.Collection;
  * Created by Beat
  * 26.07.2016.
  */
+@Dependent
+@Named(SyncItem.SYNC_PHYSICAL_AREA)
 public class SyncPhysicalArea {
+    public static final String NAMED = SyncPhysicalArea.class.getName();
+    @Inject
+    private TerrainService terrainService;
     private SyncItem syncItem;
-    private Vertex position;
+    private DecimalPosition position2d;
     private double angle;
+    private Vertex position3d;
     private Vertex norm;
     private double radius;
+    private ModelMatrices modelMatrices;
 
-    public SyncPhysicalArea(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, Vertex position, Vertex norm, double angle) {
-        this.syncItem = syncItem;
-        this.angle = angle;
-        this.radius = physicalAreaConfig.getRadius();
-        this.position = position;
-        this.norm = norm;
-    }
-
-    public SyncPhysicalArea(SyncItem syncItem, double radius, Vertex position, Vertex norm, double angle) {
+    public void init(SyncItem syncItem, double radius, DecimalPosition position2d, double angle) {
         this.syncItem = syncItem;
         this.radius = radius;
-        this.position = position;
+        setPosition2d(position2d);
         this.angle = angle;
-        this.norm = norm;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public DecimalPosition getPosition2d() {
+        return position2d;
+    }
+
+    public boolean hasPosition() {
+        return position2d != null;
+    }
+
+    void setPosition2d(DecimalPosition position2d) {
+        this.position2d = position2d;
+        position3d = null;
+    }
+
+    public void addToPosition2d(DecimalPosition deltaXY) {
+        setPosition2d(position2d.add(deltaXY));
     }
 
     public double getAngle() {
@@ -49,72 +73,76 @@ public class SyncPhysicalArea {
         this.angle = angle;
     }
 
-    public ModelMatrices createModelMatrices() {
-        Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
-        double yRotation = direction.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
-        Matrix4 rotation = Matrix4.createZRotation(angle).multiply(Matrix4.createYRotation(-yRotation));
-        Matrix4 matrix = Matrix4.createTranslation(getPosition().getX(), getPosition().getY(), getPosition().getZ()).multiply(rotation);
-        return new ModelMatrices().setModel(matrix).setNorm(matrix.normTransformation());
+    public void setupPosition3d() {
+        if(position3d != null && norm != null) {
+            return;
+        }
+        InterpolatedTerrainTriangle interpolatedTerrainTriangle = terrainService.getInterpolatedTerrainTriangle(position2d);
+        position3d = new Vertex(position2d, interpolatedTerrainTriangle.getHeight());
+        norm = interpolatedTerrainTriangle.getNorm();
+        modelMatrices = null;
+//        Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
+//        double yRotation = direction.unsignedAngle(interpolatedTerrainTriangle.getNorm()) - MathHelper.QUARTER_RADIANT;
+//        Matrix4 rotation = Matrix4.createZRotation(unit.getAngle()).multiply(Matrix4.createYRotation(-yRotation));
+//        Matrix4 translation = Matrix4.createTranslation(unit.getPosition().getX(), unit.getPosition().getY(), interpolatedTerrainTriangle.getHeight()).multiply(rotation);
+//        itemMatrices.add(new ModelMatrices(translation, rotation));
     }
 
-    public Vertex getPosition() {
-        return position;
+    public Vertex getPosition3d() {
+        if(position3d == null) {
+            throw new IllegalStateException("Position3d is not set");
+        }
+        return position3d;
     }
 
-    public DecimalPosition getXYPosition() {
-        return position.toXY();
+    public Vertex getNorm() {
+        if(norm == null) {
+            throw new IllegalStateException("Norm is not set");
+        }
+        return norm;
+    }
+
+    public ModelMatrices getModelMatrices() {
+        if(modelMatrices == null) {
+            Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
+            double yRotation = direction.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
+            Matrix4 rotation = Matrix4.createZRotation(angle).multiply(Matrix4.createYRotation(-yRotation));
+            Matrix4 matrix = Matrix4.createTranslation(getPosition3d()).multiply(rotation);
+            return new ModelMatrices(matrix);
+        }
+        return modelMatrices;
     }
 
     public boolean hasDestination() {
         return false;
     }
 
-    public void addToXYPosition(DecimalPosition deltaXY) {
-        position = position.add(deltaXY.getX(), deltaXY.getY(), 0);
-    }
-
-    public void setXYPosition(DecimalPosition xyPosition) {
-        position = new Vertex(xyPosition.getX(), xyPosition.getY(), position.getZ());
-    }
-
-    public Vertex getNorm() {
-        return norm;
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public boolean hasPosition() {
-        return position != null;
-    }
-
     public boolean overlap(DecimalPosition position) {
-        return this.position.toXY().getDistance(position) < radius;
+        return position2d.getDistance(position) < radius;
     }
 
     public boolean overlap(DecimalPosition position, double radius) {
-        return this.position.toXY().getDistance(position) < this.radius + radius;
+        return position2d.getDistance(position) < this.radius + radius;
     }
 
     public boolean overlap(Rectangle2D rectangle) {
-        return rectangle.adjoinsCircleExclusive(position.toXY(), radius);
+        return rectangle.adjoinsCircleExclusive(position2d, radius);
     }
 
-    public boolean isInRange(double range, SyncItem target) {
+    boolean isInRange(double range, SyncItem target) {
         return getDistance(target) < range;
     }
 
-    public boolean isInRange(double range, DecimalPosition position, BaseItemType baseItemType) {
+    boolean isInRange(double range, DecimalPosition position, BaseItemType baseItemType) {
         return getDistance(position, baseItemType.getPhysicalAreaConfig().getRadius()) < range;
     }
 
     public double getDistance(SyncPhysicalArea syncPhysicalArea) {
-        return getDistance(syncPhysicalArea.getXYPosition(), syncPhysicalArea.getRadius());
+        return getDistance(syncPhysicalArea.position2d, syncPhysicalArea.getRadius());
     }
 
     public double getDistance(DecimalPosition position, double radius) {
-        return getXYPosition().getDistance(position) - this.radius - radius;
+        return position2d.getDistance(position) - this.radius - radius;
     }
 
     public double getDistance(SyncItem other) {
@@ -133,7 +161,7 @@ public class SyncPhysicalArea {
 
     }
 
-    protected Collection<SyncPhysicalArea> getNeighbors(SyncItemContainerService syncItemContainerService) {
+    private Collection<SyncPhysicalArea> getNeighbors(SyncItemContainerService syncItemContainerService) {
         java.util.Collection<SyncPhysicalArea> neighbors = new ArrayList<>();
 
         syncItemContainerService.iterateOverItems(false, false, getSyncItem(), null, syncItem -> {
@@ -147,20 +175,20 @@ public class SyncPhysicalArea {
         return neighbors;
     }
 
-    protected boolean isDirectNeighborInDestination(SyncItemContainerService syncItemContainerService, DecimalPosition destination) {
+    boolean isDirectNeighborInDestination(SyncItemContainerService syncItemContainerService, DecimalPosition destination) {
         for (SyncPhysicalArea neighbor : getNeighbors(syncItemContainerService)) {
             if (neighbor.canMove() && neighbor.hasDestination()) {
                 continue;
             }
 
-            if (neighbor.getXYPosition().getDistance(destination) < neighbor.getRadius() + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
+            if (neighbor.position2d.getDistance(destination) < neighbor.getRadius() + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
                 return true;
             }
         }
         return false;
     }
 
-    protected boolean isIndirectNeighborInDestination(SyncItemContainerService syncItemContainerService, Collection<SyncPhysicalArea> expandedUnits, DecimalPosition destination) {
+    boolean isIndirectNeighborInDestination(SyncItemContainerService syncItemContainerService, Collection<SyncPhysicalArea> expandedUnits, DecimalPosition destination) {
         Collection<SyncPhysicalArea> neighbors = getNeighbors(syncItemContainerService);
         for (SyncPhysicalArea neighbor : neighbors) {
             if (neighbor.isDirectNeighborInDestination(syncItemContainerService, destination)) {
@@ -186,7 +214,7 @@ public class SyncPhysicalArea {
     @Override
     public String toString() {
         return "SyncPhysicalArea{" +
-                "position=" + position +
+                "position3d=" + position3d +
                 ", norm=" + norm +
                 ", radius=" + radius +
                 '}';

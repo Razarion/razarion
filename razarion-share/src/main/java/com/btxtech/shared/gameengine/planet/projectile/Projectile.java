@@ -40,7 +40,7 @@ public class Projectile {
             distance = totalDistance;
         }
         Vertex position = muzzle.interpolate(distance, target);
-        return ModelMatrices.createFromPositionAndDirection(position, target.sub(muzzle));
+        return ModelMatrices.createFromPositionAndZRotation(position, target.sub(muzzle));
     }
 
     public Vertex getTarget() {

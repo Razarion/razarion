@@ -77,8 +77,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         }
 
         if (progressAnimations == null) {
-            Matrix4 matrix = shapeTransform.setupMatrix();
-            return modelMatrix.multiply(matrix, matrix.normTransformation());
+            return modelMatrix.multiply(shapeTransform.setupMatrix());
         } else {
             ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
             for (ProgressAnimation progressAnimation : progressAnimations) {
@@ -97,19 +96,13 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
                         throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
                 }
             }
-            Matrix4 matrix = shapeTransformTRS.setupMatrix();
-            if (matrix.zero()) {
-                return modelMatrix.multiply(matrix, matrix);
-            } else {
-                return modelMatrix.multiply(matrix, matrix.normTransformation());
-            }
+            return modelMatrix.multiply(shapeTransformTRS.setupMatrix());
         }
     }
 
     private double setupContinuesAnimationProgress(ProgressAnimation progressAnimation) {
         int millis = (int) (System.currentTimeMillis() % progressAnimation.getTotalTime());
-        double progress =  (double) millis / (double) progressAnimation.getTotalTime();
-        return progress;
+        return (double) millis / (double) progressAnimation.getTotalTime();
     }
 
     public void prepareDraw() {

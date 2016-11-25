@@ -53,7 +53,7 @@ public class BaseItemPlacer {
         return this;
     }
 
-    public void onMove(DecimalPosition position) {
+    void onMove(DecimalPosition position) {
         baseItemPlacerChecker.check(position);
         setupErrorText();
         this.position = position;
@@ -75,24 +75,20 @@ public class BaseItemPlacer {
         return vertexes;
     }
 
-    public Collection<DecimalPosition> setupAbsolutePositions() {
+    Collection<DecimalPosition> setupAbsolutePositions() {
         return baseItemPlacerChecker.setupAbsolutePositions(position);
     }
 
     public List<ModelMatrices> provideCircleModelMatrices() {
         Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), 0); // TODO get terrain z
-        ModelMatrices modelMatrices = new ModelMatrices();
-        modelMatrices.setModel(model).setNorm(model.normTransformation());
-        return Collections.singletonList(modelMatrices);
+        return Collections.singletonList(new ModelMatrices(model));
     }
 
     public List<ModelMatrices> provideItemModelMatrices() {
         List<ModelMatrices> result = new ArrayList<>();
         for (DecimalPosition position : setupAbsolutePositions()) {
             Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), 0);// TODO get terrain z
-            ModelMatrices modelMatrices = new ModelMatrices();
-            modelMatrices.setModel(model).setNorm(model.normTransformation());
-            result.add(modelMatrices);
+            result.add(new ModelMatrices(model));
         }
         return result;
     }

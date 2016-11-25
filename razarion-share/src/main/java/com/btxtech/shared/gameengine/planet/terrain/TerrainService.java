@@ -213,11 +213,6 @@ public class TerrainService {
         return new Vertex(zeroLevel, height);
     }
 
-    public Vertex calculatePositionGroundMesh(DecimalPosition position) {
-        double height = getInterpolatedTerrainTriangle(position).getHeight();
-        return new Vertex(position, height);
-    }
-
     // -------------------------------------------------
     // TODO TerrainSettings getTerrainSettings();
 
