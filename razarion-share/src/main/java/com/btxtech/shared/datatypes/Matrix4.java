@@ -80,7 +80,7 @@ public class Matrix4 {
         return numberAt(0, row) * vertex.getX() + numberAt(1, row) * vertex.getY() + numberAt(2, row) * vertex.getZ() + numberAt(3, row) * w;
     }
 
-    public Matrix4 invert() {
+    public Matrix4 invertOrNull() {
         double[] m = field2Array(numbers);
         double[] r = new double[ROWS * COLUMNS];
 
@@ -106,13 +106,22 @@ public class Matrix4 {
 
         double det = m[0] * r[0] + m[1] * r[4] + m[2] * r[8] + m[3] * r[12];
         if (det == 0.0) {
-            throw new IllegalArgumentException("det == 0.0 Unable to build inverse matrix");
+            return null;
         }
         for (int i = 0; i < 16; i++) {
             r[i] /= det;
         }
 
         return new Matrix4(array2Field(r));
+    }
+
+    public Matrix4 invert() {
+        Matrix4 inverse = invertOrNull();
+        if (inverse != null) {
+            return inverse;
+        } else {
+            throw new IllegalArgumentException("det == 0.0 Unable to build inverse matrix");
+        }
     }
 
     public Matrix4 transpose() {
@@ -159,10 +168,11 @@ public class Matrix4 {
      * @return matrix for norm transformation
      */
     public Matrix4 normTransformation() {
-        if (zero()) {
-            return this;
-        } else {
+        Matrix4 inverse = invertOrNull();
+        if (inverse != null) {
             return invert().transpose();
+        } else {
+            return this;
         }
     }
 
