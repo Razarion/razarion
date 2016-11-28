@@ -9,6 +9,7 @@ import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
+import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
@@ -34,6 +35,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Button perfmonButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -87,6 +92,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @DataField
     private Button clipButton;
     private ModalDialogPanel<Void> modalDialogPanel;
+
+    @EventHandler("perfmonButton")
+    private void onperfmonButtonClicked(ClickEvent event) {
+        modalDialogManager.show("Perfmon", ClientModalDialogManagerImpl.Type.STACK_ABLE, PerfmonDialog.class, null, null);
+    }
 
     @EventHandler("renderEngineButton")
     private void onRenderEngineButtonClicked(ClickEvent event) {

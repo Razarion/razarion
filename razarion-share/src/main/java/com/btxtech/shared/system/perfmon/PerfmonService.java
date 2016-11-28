@@ -22,6 +22,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class PerfmonService {
+    public static final int COUNT = 300;
     private static final long DUMP_DELAY = 1000;
     private Logger log = Logger.getLogger(PerfmonService.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -41,6 +42,9 @@ public class PerfmonService {
                 Collection<StatisticEntry> statisticEntries = analyse();
                 for (StatisticEntry statisticEntry : statisticEntries) {
                     this.statisticEntries.put(statisticEntry.getPerfmonEnum(), statisticEntry);
+                    if(this.statisticEntries.get(statisticEntry.getPerfmonEnum()).size() >= COUNT) {
+                        this.statisticEntries.get(statisticEntry.getPerfmonEnum()).remove(COUNT - 1);
+                    }
                 }
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);

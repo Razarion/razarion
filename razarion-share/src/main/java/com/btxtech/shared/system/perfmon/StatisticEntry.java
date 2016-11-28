@@ -22,6 +22,14 @@ public class StatisticEntry {
         return perfmonEnum;
     }
 
+    public double getFrequency() {
+        return frequency;
+    }
+
+    public double getAvgDuration() {
+        return avgDuration;
+    }
+
     public void analyze(SampleEntry sample) {
         samples++;
         totalDuration += sample.getDuration();
