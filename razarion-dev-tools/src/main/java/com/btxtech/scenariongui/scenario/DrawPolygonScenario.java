@@ -1,6 +1,7 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.scenariongui.InstanceStringGenerator;
@@ -14,19 +15,19 @@ import java.util.List;
  * 19.03.2016.
  */
 public class DrawPolygonScenario extends Scenario {
-    List<List<Index>> polygons = new ArrayList<>();
+    private List<List<DecimalPosition>> polygons = new ArrayList<>();
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-        for (List<Index> polygon : polygons) {
-            context.strokeCurveIndex(polygon, 1.0, Color.RED, true);
+        for (List<DecimalPosition> polygon : polygons) {
+            context.strokeCurveDecimalPosition(polygon, 1.0, Color.RED, true);
         }
 
     }
 
     @Override
-    public boolean onMouseDown(Index position) {
-        List<Index> corners;
+    public boolean onMouseDown(DecimalPosition position) {
+        List<DecimalPosition> corners;
         if (polygons.isEmpty()) {
             corners = new ArrayList<>();
             polygons.add(corners);
@@ -40,14 +41,14 @@ public class DrawPolygonScenario extends Scenario {
     @Override
     public void onGenerate() {
         System.out.println("------------------------------------------------------------");
-        for (List<Index> polygon : polygons) {
-            System.out.println(InstanceStringGenerator.generateIndexList(polygon));
+        for (List<DecimalPosition> polygon : polygons) {
+            System.out.println(InstanceStringGenerator.generateDecimalPositionList(polygon));
         }
     }
 
     @Override
     public void onCmd1() {
         System.out.println("Start new Polygon");
-        polygons.add(new ArrayList<Index>());
+        polygons.add(new ArrayList<DecimalPosition>());
     }
 }

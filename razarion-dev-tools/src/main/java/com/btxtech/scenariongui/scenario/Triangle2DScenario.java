@@ -2,7 +2,6 @@ package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import javafx.scene.paint.Color;
@@ -24,7 +23,7 @@ public class Triangle2DScenario extends Scenario {
     }
 
     @Override
-    public boolean onMouseMove(Index position) {
+    public boolean onMouseMove(DecimalPosition position) {
         if (triangle2d != null) {
             Vertex interpolation = triangle2d.interpolate(new DecimalPosition(position));
             System.out.println(interpolation);
@@ -34,7 +33,7 @@ public class Triangle2DScenario extends Scenario {
     }
 
     @Override
-    public boolean onMouseDown(Index position) {
+    public boolean onMouseDown(DecimalPosition position) {
         if (corners.size() < 3) {
             corners.add(new DecimalPosition(position));
         }

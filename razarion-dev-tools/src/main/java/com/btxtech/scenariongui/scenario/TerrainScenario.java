@@ -1,7 +1,7 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 
 /**
  * Created by Beat
@@ -38,7 +38,7 @@ public class TerrainScenario extends Scenario {
     }
 
     @Override
-    public boolean onMouseDown(Index position) {
+    public boolean onMouseDown(DecimalPosition position) {
         // terrainUiService.getInterpolatedTerrainTriangle(new DecimalPosition(position));
         return false;
     }

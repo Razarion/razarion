@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -165,7 +164,7 @@ public class SyncItemContainerService {
     SyncResourceItem createSyncResourceItem(ResourceItemType resourceItemType, DecimalPosition position2d, double zRotation) {
         SyncResourceItem syncResourceItem = syncItemInstance.select(SyncResourceItem.class).get();
         SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
-        syncPhysicalArea.init(syncResourceItem, resourceItemType.getRadius(), position2d, zRotation);
+        syncPhysicalArea.init(syncResourceItem, resourceItemType.getRadius(), resourceItemType.isFixVerticalNorm(), position2d, zRotation);
         initAndAdd(resourceItemType, syncResourceItem, syncPhysicalArea);
         return syncResourceItem;
     }
@@ -173,7 +172,7 @@ public class SyncItemContainerService {
     SyncBoxItem createSyncBoxItem(BoxItemType boxItemType, DecimalPosition position2d, double zRotation) {
         SyncBoxItem syncBoxItem = syncItemInstance.select(SyncBoxItem.class).get();
         SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
-        syncPhysicalArea.init(syncBoxItem, boxItemType.getRadius(), position2d, zRotation);
+        syncPhysicalArea.init(syncBoxItem, boxItemType.getRadius(), boxItemType.isFixVerticalNorm(), position2d, zRotation);
         initAndAdd(boxItemType, syncBoxItem, syncPhysicalArea);
         return syncBoxItem;
     }
@@ -195,7 +194,7 @@ public class SyncItemContainerService {
             return syncPhysicalMovable;
         } else {
             SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
-            syncPhysicalArea.init(syncBaseItem, physicalAreaConfig.getRadius(), position2d, 0);
+            syncPhysicalArea.init(syncBaseItem, physicalAreaConfig.getRadius(), physicalAreaConfig.isFixVerticalNorm(), position2d, 0);
             return syncPhysicalArea;
         }
     }

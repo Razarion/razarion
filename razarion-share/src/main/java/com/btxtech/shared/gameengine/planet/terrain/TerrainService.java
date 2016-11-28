@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -16,7 +17,6 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.DoubleStream;
 
 /**
  * Created by Beat
@@ -187,6 +188,69 @@ public class TerrainService {
 //        } else {
 //            logger.severe("Position not on ground");
 //        }
+    }
+
+    public double getHighestZInRegion(DecimalPosition center, double radius) {
+        DoubleStream.Builder doubleStreamBuilder = DoubleStream.builder();
+
+
+        double startX = Math.floor((center.getX() - radius) / (double) MESH_NODE_EDGE_LENGTH) * (double) MESH_NODE_EDGE_LENGTH;
+        double startY = Math.floor((center.getY() - radius) / (double) MESH_NODE_EDGE_LENGTH) * (double) MESH_NODE_EDGE_LENGTH;
+        double endX = Math.ceil((center.getX() + radius) / (double) MESH_NODE_EDGE_LENGTH) * (double) MESH_NODE_EDGE_LENGTH;
+        double endY = Math.ceil((center.getY() + radius) / (double) MESH_NODE_EDGE_LENGTH) * (double) MESH_NODE_EDGE_LENGTH;
+
+        for (double x = startX; x < endX; x += (double) MESH_NODE_EDGE_LENGTH) {
+            for (double y = startY; y < endY; y += (double) MESH_NODE_EDGE_LENGTH) {
+                Rectangle2D rect = new Rectangle2D(x, y, (double) MESH_NODE_EDGE_LENGTH, (double) MESH_NODE_EDGE_LENGTH);
+                if(rect.contains(center)) {
+                    doubleStreamBuilder.add(faceMaxZ(x, y));
+                } else {
+                    DecimalPosition projection = rect.getNearestPoint(center);
+                    if (projection.getDistance(center) <= radius) {
+                        doubleStreamBuilder.add(faceMaxZ(x, y));
+                    }
+                }
+            }
+        }
+
+        return doubleStreamBuilder.build().max().orElseThrow(IllegalStateException::new);
+
+
+//        double startX = Math.floor((center.getX() - radius) / (double) MESH_NODE_EDGE_LENGTH) * (double) MESH_NODE_EDGE_LENGTH;
+//        double startY = Math.floor((center.getY() - radius) / (double) MESH_NODE_EDGE_LENGTH) * (double) MESH_NODE_EDGE_LENGTH;
+//        double endX = Math.ceil((center.getX() + radius) / (double) MESH_NODE_EDGE_LENGTH) * (double) MESH_NODE_EDGE_LENGTH;
+//        double endY = Math.ceil((center.getY() + radius) / (double) MESH_NODE_EDGE_LENGTH) * (double) MESH_NODE_EDGE_LENGTH;
+//
+//        int countX = (int) ((endX - startX) / (double) MESH_NODE_EDGE_LENGTH);
+//        int countY = (int) ((endY - startY) / (double) MESH_NODE_EDGE_LENGTH);
+//
+//        double maxZ = Double.MIN_VALUE;
+//
+//        for (double x = startX; x < endX; x += (double) MESH_NODE_EDGE_LENGTH) {
+//            for (double y = startY; y < endY; y += (double) MESH_NODE_EDGE_LENGTH) {
+//                if (countX < 2 || countY < 2) {
+//                    maxZ = Math.max(faceMaxZ(x, y), maxZ);
+//                } else {
+//                    double correctedX = x;
+//                    if (startX + (endX - startX) / 2.0 > x) {
+//                        correctedX += (double) MESH_NODE_EDGE_LENGTH;
+//                    }
+//                    double correctedY = y;
+//                    if (startY + (endY - startY) / 2.0 > y) {
+//                        correctedY += (double) MESH_NODE_EDGE_LENGTH;
+//                    }
+//                    double distance = center.getDistance(new DecimalPosition(correctedX, correctedY));
+//                    if (distance <= radius) {
+//                        maxZ = Math.max(faceMaxZ(x, y), maxZ);
+//                    }
+//                }
+//            }
+//        }
+//        return maxZ;
+    }
+
+    private double faceMaxZ(double x, double y) {
+        return groundMesh.faceMaxZ(new DecimalPosition(x, y));
     }
 
     public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {

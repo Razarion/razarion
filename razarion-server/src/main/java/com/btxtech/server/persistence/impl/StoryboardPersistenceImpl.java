@@ -118,10 +118,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
-        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(4).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
@@ -129,7 +129,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(harvest());
         // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         return storyboardConfig;
@@ -228,6 +228,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         factory.setI18Name(i18nHelper("Factory Name"));
         factory.setDescription(i18nHelper("Factory Description"));
         factory.setExplosionClipId(272485).setBuildup(2);
+        factory.getPhysicalAreaConfig().setFixVerticalNorm(true);
         factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER, BASE_ITEM_TYPE_ATTACKER)));
     }
 
@@ -235,6 +236,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         tower.setTerrainType(TerrainType.LAND);
         tower.setI18Name(i18nHelper("Tower"));
         tower.setDescription(i18nHelper("Verteidigungsturm"));
+        tower.getPhysicalAreaConfig().setFixVerticalNorm(true);
         tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
         tower.setExplosionClipId(272485);
     }
@@ -272,7 +274,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         level4Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         level4Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
         level4Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
-        level4Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
+        level4Limitation.put(BASE_ITEM_TYPE_FACTORY, 100);
         levelConfigs.add(new LevelConfig().setLevelId(4).setNumber(4).setXp2LevelUp(50).setItemTypeLimitation(level4Limitation));
         return levelConfigs;
     }

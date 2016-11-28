@@ -8,9 +8,12 @@ import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.VertexList;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.DoubleStream;
 
 /**
  * Created by Beat
@@ -218,6 +221,33 @@ public class GroundMesh {
 
         return interpolatedTerrainTriangle;
     }
+
+
+    public double faceMaxZ(DecimalPosition absoluteXY) {
+        Index bottomLeftIndex = absoluteToBottomLeftIndex(absoluteXY);
+        VertexData vertexDataBL = getVertexData(bottomLeftIndex);
+        VertexData vertexDataBR = getVertexData(bottomLeftIndex.add(1, 0));
+        VertexData vertexDataTR = getVertexData(bottomLeftIndex.add(1, 1));
+        VertexData vertexDataTL = getVertexData(bottomLeftIndex.add(0, 1));
+
+        DoubleStream.Builder doubleStreamBuilder = DoubleStream.builder();
+
+        if(vertexDataBL != null) {
+            doubleStreamBuilder.add(vertexDataBL.getVertex().getZ());
+        }
+        if(vertexDataBR != null) {
+            doubleStreamBuilder.add(vertexDataBR.getVertex().getZ());
+        }
+        if(vertexDataTR != null) {
+            doubleStreamBuilder.add(vertexDataTR.getVertex().getZ());
+        }
+        if(vertexDataTL != null) {
+            doubleStreamBuilder.add(vertexDataTL.getVertex().getZ());
+        }
+
+        return doubleStreamBuilder.build().max().orElseThrow(IllegalStateException::new);
+    }
+
 
     private Index absoluteToBottomLeftIndex(DecimalPosition absoluteXY) {
         if (edgeLength == 0) {

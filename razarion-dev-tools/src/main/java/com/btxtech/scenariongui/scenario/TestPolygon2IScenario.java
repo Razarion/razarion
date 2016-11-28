@@ -1,8 +1,8 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Polygon2I;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import javafx.scene.paint.Color;
 
 import java.util.Arrays;
@@ -12,32 +12,32 @@ import java.util.Arrays;
  * 19.03.2016.
  */
 public class TestPolygon2IScenario extends Scenario {
-    private Polygon2I polygon1 = new Polygon2I(Arrays.asList(new Index(-107, 239), new Index(-207, 203), new Index(-124, 120), new Index(-262, 10), new Index(-252, -110), new Index(-65, -128), new Index(-39, -238), new Index(187, -244), new Index(275, -10), new Index(261, 136), new Index(86, -17), new Index(90, 199), new Index(61, 315)));
-    private Polygon2I polygon2 = new Polygon2I(Arrays.asList(new Index(72, 44), new Index(42, 88), new Index(-10, 96), new Index(-42, 69), new Index(-71, 40), new Index(-73, -9), new Index(-58, -61), new Index(6, -63), new Index(41, -88), new Index(43, -36)));
-    private Polygon2I movedPolygon2;
-    private Polygon2I remaining;
+    private Polygon2D polygon1 = new Polygon2D(Arrays.asList(new DecimalPosition(-107, 239), new DecimalPosition(-207, 203), new DecimalPosition(-124, 120), new DecimalPosition(-262, 10), new DecimalPosition(-252, -110), new DecimalPosition(-65, -128), new DecimalPosition(-39, -238), new DecimalPosition(187, -244), new DecimalPosition(275, -10), new DecimalPosition(261, 136), new DecimalPosition(86, -17), new DecimalPosition(90, 199), new DecimalPosition(61, 315)));
+    private Polygon2D polygon2 = new Polygon2D(Arrays.asList(new DecimalPosition(72, 44), new DecimalPosition(42, 88), new DecimalPosition(-10, 96), new DecimalPosition(-42, 69), new DecimalPosition(-71, 40), new DecimalPosition(-73, -9), new DecimalPosition(-58, -61), new DecimalPosition(6, -63), new DecimalPosition(41, -88), new DecimalPosition(43, -36)));
+    private Polygon2D movedPolygon2;
+    private Polygon2D remaining;
 
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-        context.strokeCurveIndex(polygon1.getCorners(), 1.0, Color.GREEN, true);
+        context.strokeCurveDecimalPosition(polygon1.getCorners(), 1.0, Color.GREEN, true);
         if (movedPolygon2 != null) {
-            context.strokeCurveIndex(movedPolygon2.getCorners(), 1.0, Color.BLUE, true);
+            context.strokeCurveDecimalPosition(movedPolygon2.getCorners(), 1.0, Color.BLUE, true);
         }
         if (remaining != null) {
-            context.strokeCurveIndex(remaining.getCorners(), 1.0, Color.RED, true);
+            context.strokeCurveDecimalPosition(remaining.getCorners(), 1.0, Color.RED, true);
         }
 
     }
 
     @Override
-    public boolean onMouseMove(Index position) {
+    public boolean onMouseMove(DecimalPosition position) {
         movedPolygon2 = polygon2.translate(position);
         return true;
     }
 
     @Override
-    public boolean onMouseDown(Index position) {
+    public boolean onMouseDown(DecimalPosition position) {
         if (movedPolygon2 != null) {
             remaining = polygon1.remove(movedPolygon2);
         }

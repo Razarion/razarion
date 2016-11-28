@@ -39,6 +39,20 @@ public class InstanceStringGenerator {
         return builder.toString();
     }
 
+    public static String generateDecimalPositionList(List<DecimalPosition> indexList) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("List<Index> positions = Arrays.asList(");
+        for (int i = 0; i < indexList.size(); i++) {
+            DecimalPosition decimalPosition = indexList.get(i);
+            builder.append(generate(decimalPosition));
+            if (i < indexList.size() - 1) {
+                builder.append(", ");
+            }
+        }
+        builder.append(");");
+        return builder.toString();
+    }
+
     public static String generate(DecimalPosition decimalPosition) {
         if (decimalPosition != null) {
             return "new DecimalPosition(" + decimalPosition.getX() + ", " + decimalPosition.getY() + ")";

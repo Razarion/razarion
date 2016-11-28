@@ -6,6 +6,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
  */
 public class PhysicalAreaConfig {
     private double radius;
+    private boolean fixVerticalNorm;
     private Double angularVelocity; //Grad per second
     private Double speed;
     private Double acceleration;
@@ -17,6 +18,15 @@ public class PhysicalAreaConfig {
 
     public PhysicalAreaConfig setRadius(double radius) {
         this.radius = radius;
+        return this;
+    }
+
+    public boolean isFixVerticalNorm() {
+        return fixVerticalNorm;
+    }
+
+    public PhysicalAreaConfig setFixVerticalNorm(boolean fixVerticalNorm) {
+        this.fixVerticalNorm = fixVerticalNorm;
         return this;
     }
 

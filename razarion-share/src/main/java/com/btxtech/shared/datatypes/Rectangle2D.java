@@ -116,6 +116,48 @@ public class Rectangle2D {
         return squaredCornerDistance <= Math.pow(radius, 2.0);
     }
 
+    /**
+     * Returns true if the given position is in the rectangle
+     *
+     * @param position to check
+     * @return true if adjoins or contains position
+     */
+    public boolean contains(DecimalPosition position) {
+        return position.getX() >= start.getX() && position.getY() >= start.getY() && position.getX() <= end.getX() && position.getY() <= end.getY();
+    }
+
+    /**
+     * Returns the nearest point on the rectangle. Endpoints are inclusive
+     *
+     * @param point input
+     * @return result (exclusive)
+     */
+    public DecimalPosition getNearestPoint(DecimalPosition point) {
+        // 4 Corners
+        if (point.getX() <= start.getX() && point.getY() <= start.getY()) {
+            return start;
+        } else if (point.getX() >= end.getX() && point.getY() >= end.getY()) {
+            return end;
+        } else if (point.getX() <= start.getX() && point.getY() >= end.getY()) {
+            return new DecimalPosition(start.getX(), end.getY());
+        } else if (point.getX() >= end.getX() && point.getY() <= start.getY()) {
+            return new DecimalPosition(end.getX(), start.getY());
+        }
+
+        // Do projection
+        if (point.getX() <= start.getX()) {
+            return new DecimalPosition(start.getX(), point.getY());
+        } else if (point.getX() >= end.getX()) {
+            return new DecimalPosition(end.getX(), point.getY());
+        } else if (point.getY() <= start.getY()) {
+            return new DecimalPosition(point.getX(), start.getY());
+        } else if (point.getY() >= end.getY()) {
+            return new DecimalPosition(point.getX(), end.getY());
+        }
+
+        throw new IllegalArgumentException("The point is inside the rectangle");
+    }
+
     public List<DecimalPosition> toCorners() {
         List<DecimalPosition> corners = new ArrayList<>();
         corners.add(start);

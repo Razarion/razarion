@@ -1,7 +1,7 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.DecimalPosition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Bresenhams Test", new FillCircleScenario());
         register("Polygon2D Test", new TestPolygon2DScenario());
         register("Triangle2D", new Triangle2DScenario());
         register("Terrain", new TerrainScenario());
@@ -52,11 +53,11 @@ public abstract class Scenario {
 
     abstract public void render(ExtendedGraphicsContext extendedGraphicsContext);
 
-    public boolean onMouseDown(Index position) {
+    public boolean onMouseDown(DecimalPosition position) {
         return false;
     }
 
-    public boolean onMouseMove(Index position) {
+    public boolean onMouseMove(DecimalPosition position) {
         return false;
     }
 

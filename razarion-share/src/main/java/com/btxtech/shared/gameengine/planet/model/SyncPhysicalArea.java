@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -26,7 +25,6 @@ import java.util.Collection;
 @Dependent
 @Named(SyncItem.SYNC_PHYSICAL_AREA)
 public class SyncPhysicalArea {
-    public static final String NAMED = SyncPhysicalArea.class.getName();
     @Inject
     private TerrainService terrainService;
     private SyncItem syncItem;
@@ -35,11 +33,13 @@ public class SyncPhysicalArea {
     private Vertex position3d;
     private Vertex norm;
     private double radius;
+    private boolean fixVerticalNorm;
     private ModelMatrices modelMatrices;
 
-    public void init(SyncItem syncItem, double radius, DecimalPosition position2d, double angle) {
+    public void init(SyncItem syncItem, double radius, boolean fixVerticalNorm, DecimalPosition position2d, double angle) {
         this.syncItem = syncItem;
         this.radius = radius;
+        this.fixVerticalNorm = fixVerticalNorm;
         setPosition2d(position2d);
         this.angle = angle;
     }
@@ -74,36 +74,36 @@ public class SyncPhysicalArea {
     }
 
     public void setupPosition3d() {
-        if(position3d != null && norm != null) {
+        if (position3d != null && norm != null) {
             return;
         }
-        InterpolatedTerrainTriangle interpolatedTerrainTriangle = terrainService.getInterpolatedTerrainTriangle(position2d);
-        position3d = new Vertex(position2d, interpolatedTerrainTriangle.getHeight());
-        norm = interpolatedTerrainTriangle.getNorm();
+        if(fixVerticalNorm) {
+            position3d = new Vertex(position2d, terrainService.getHighestZInRegion(position2d, radius));
+            norm = Vertex.Z_NORM;
+        } else {
+            InterpolatedTerrainTriangle interpolatedTerrainTriangle = terrainService.getInterpolatedTerrainTriangle(position2d);
+            position3d = new Vertex(position2d, interpolatedTerrainTriangle.getHeight());
+            norm = interpolatedTerrainTriangle.getNorm();
+        }
         modelMatrices = null;
-//        Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
-//        double yRotation = direction.unsignedAngle(interpolatedTerrainTriangle.getNorm()) - MathHelper.QUARTER_RADIANT;
-//        Matrix4 rotation = Matrix4.createZRotation(unit.getAngle()).multiply(Matrix4.createYRotation(-yRotation));
-//        Matrix4 translation = Matrix4.createTranslation(unit.getPosition().getX(), unit.getPosition().getY(), interpolatedTerrainTriangle.getHeight()).multiply(rotation);
-//        itemMatrices.add(new ModelMatrices(translation, rotation));
     }
 
     public Vertex getPosition3d() {
-        if(position3d == null) {
+        if (position3d == null) {
             throw new IllegalStateException("Position3d is not set");
         }
         return position3d;
     }
 
     public Vertex getNorm() {
-        if(norm == null) {
+        if (norm == null) {
             throw new IllegalStateException("Norm is not set");
         }
         return norm;
     }
 
     public ModelMatrices getModelMatrices() {
-        if(modelMatrices == null) {
+        if (modelMatrices == null) {
             Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
             double yRotation = direction.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
             Matrix4 rotation = Matrix4.createZRotation(angle).multiply(Matrix4.createYRotation(-yRotation));

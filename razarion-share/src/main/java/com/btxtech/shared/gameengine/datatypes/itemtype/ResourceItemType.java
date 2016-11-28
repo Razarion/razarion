@@ -16,6 +16,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 public class ResourceItemType extends ItemType {
     private double radius;
+    private boolean fixVerticalNorm;
     private int amount;
 
     public double getRadius() {
@@ -24,6 +25,15 @@ public class ResourceItemType extends ItemType {
 
     public ResourceItemType setRadius(double radius) {
         this.radius = radius;
+        return this;
+    }
+
+    public boolean isFixVerticalNorm() {
+        return fixVerticalNorm;
+    }
+
+    public ResourceItemType setFixVerticalNorm(boolean fixVerticalNorm) {
+        this.fixVerticalNorm = fixVerticalNorm;
         return this;
     }
 

@@ -1,7 +1,7 @@
 package com.btxtech.scenariongui;
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.scenariongui.scenario.Scenario;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -85,8 +85,8 @@ public class ScenarioGuiController implements Initializable {
     }
 
     public void onMouseMoved(Event event) {
-        Index position = scenarioRenderer.convertMouseToModel(event).toIndex();
-        mouseLabel.setText(String.format("%d:%d", position.getX(), position.getY()));
+        DecimalPosition position = scenarioRenderer.convertMouseToModel(event);
+        mouseLabel.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
         boolean redraw = scenarioRenderer.getScenario().onMouseMove(position);
         if (redraw) {
             scenarioRenderer.render();
@@ -94,7 +94,8 @@ public class ScenarioGuiController implements Initializable {
     }
 
     public void onMousePressed(Event event) {
-        Index position = scenarioRenderer.convertMouseToModel(event).toIndex();
+        DecimalPosition position = scenarioRenderer.convertMouseToModel(event);
+        System.out.println("Mouse pressed at: " + InstanceStringGenerator.generate(position));
         boolean redraw = scenarioRenderer.getScenario().onMouseDown(position);
         if (redraw) {
             scenarioRenderer.render();

@@ -19,10 +19,20 @@ import java.util.List;
 public class BoxItemType extends ItemType {
     private int ttl;
     private double radius;
+    private boolean fixVerticalNorm;
     private List<BoxItemTypePossibility> boxItemTypePossibilities;
 
     public double getRadius() {
         return radius;
+    }
+
+    public boolean isFixVerticalNorm() {
+        return fixVerticalNorm;
+    }
+
+    public BoxItemType setFixVerticalNorm(boolean fixVerticalNorm) {
+        this.fixVerticalNorm = fixVerticalNorm;
+        return this;
     }
 
     public int getTtl() {
