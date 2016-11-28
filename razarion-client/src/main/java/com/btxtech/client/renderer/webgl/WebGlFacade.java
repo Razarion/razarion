@@ -43,6 +43,7 @@ public class WebGlFacade {
     public static final String A_GROUND_SPLATTING = "aGroundSplatting";
     // Uniform common
     public static final String U_COLOR = "uColor";
+    public static final String U_TEXTURE = "uTexture";
     // Uniform model matrix
     public static final String U_PERSPECTIVE_MATRIX = "uPMatrix";
     public static final String U_VIEW_MATRIX = "uVMatrix";

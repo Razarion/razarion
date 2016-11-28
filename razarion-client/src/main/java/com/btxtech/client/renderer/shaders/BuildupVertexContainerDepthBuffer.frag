@@ -3,11 +3,11 @@ precision mediump float;
 varying vec2 vTextureCoord;
 varying float buildupZ;
 
-uniform sampler2D uSampler;
+uniform sampler2D uTexture;
 uniform float progressZ;
 
 void main(void) {
-    vec4 textureColor = texture2D(uSampler, vTextureCoord.st);
+    vec4 textureColor = texture2D(uTexture, vTextureCoord.st);
     if(buildupZ > progressZ) {
         discard;
     } else if(textureColor.a < 0.5) {
