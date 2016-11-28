@@ -1,6 +1,7 @@
 package com.btxtech.shared.system.perfmon;
 
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class PerfmonService {
-    private static final long DUMP_DELAY = 10000;
+    private static final long DUMP_DELAY = 1000;
     private Logger log = Logger.getLogger(PerfmonService.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -31,17 +32,16 @@ public class PerfmonService {
     private ExceptionHandler exceptionHandler;
     private Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
     private Collection<SampleEntry> sampleEntries = new ArrayList<>();
+    private MapList<PerfmonEnum, StatisticEntry> statisticEntries = new MapList<>();
 
     @PostConstruct
     public void postConstruct() {
         simpleExecutorService.scheduleAtFixedRate(DUMP_DELAY, true, () -> {
             try {
                 Collection<StatisticEntry> statisticEntries = analyse();
-                log.severe("---------------------------------------------------------------------------------------------------------");
                 for (StatisticEntry statisticEntry : statisticEntries) {
-                    log.severe(statisticEntry.toInfoString());
+                    this.statisticEntries.put(statisticEntry.getPerfmonEnum(), statisticEntry);
                 }
-                log.severe("---------------------------------------------------------------------------------------------------------");
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }
@@ -64,7 +64,11 @@ public class PerfmonService {
         sampleEntries.add(new SampleEntry(perfmonEnum, startTime));
     }
 
-    public Collection<StatisticEntry> analyse() {
+    public MapList<PerfmonEnum, StatisticEntry> getStatisticEntries() {
+        return statisticEntries;
+    }
+
+    private Collection<StatisticEntry> analyse() {
         MapCollection<PerfmonEnum, SampleEntry> orderedMap = new MapCollection<>();
         Collection<SampleEntry> tmpSampleEntries = sampleEntries;
         sampleEntries = new ArrayList<>();

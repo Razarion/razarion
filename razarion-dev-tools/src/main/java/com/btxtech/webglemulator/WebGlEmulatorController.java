@@ -3,11 +3,13 @@ package com.btxtech.webglemulator;
 import com.btxtech.persistence.StoryboardProviderEmulator;
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.StatisticEntry;
 import com.btxtech.uiservice.VisualUiService;
@@ -47,7 +49,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -388,10 +391,14 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onPerfomButtonClicked() {
-        Collection<StatisticEntry> statisticEntries = perfmonService.analyse();
+        MapList<PerfmonEnum, StatisticEntry> statisticEntries = perfmonService.getStatisticEntries();
         System.out.println("---------------------------------------------------------------------------------------------------------");
-        for (StatisticEntry statisticEntry : statisticEntries) {
-            System.out.println(statisticEntry.toInfoString());
+
+        for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
+            System.out.println(entry.getKey());
+            for (StatisticEntry statisticEntry : entry.getValue()) {
+                System.out.println(statisticEntry.toInfoString());
+            }
         }
         System.out.println("---------------------------------------------------------------------------------------------------------");
     }

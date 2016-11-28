@@ -18,6 +18,10 @@ public class StatisticEntry {
         this.perfmonEnum = perfmonEnum;
     }
 
+    public PerfmonEnum getPerfmonEnum() {
+        return perfmonEnum;
+    }
+
     public void analyze(SampleEntry sample) {
         samples++;
         totalDuration += sample.getDuration();

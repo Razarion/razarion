@@ -2,8 +2,10 @@ package com.btxtech.gameengine;
 
 import com.btxtech.gameengine.scenarios.ScenarioService;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.StatisticEntry;
 import com.btxtech.webglemulator.razarion.DevToolFutureControl;
@@ -23,6 +25,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -258,10 +262,14 @@ public class GameEngineMonitorController implements Initializable {
     }
 
     public void onPerfmonButtonClicked() {
-        Collection<StatisticEntry> statisticEntries = perfmonService.analyse();
+        MapList<PerfmonEnum, StatisticEntry> statisticEntries = perfmonService.getStatisticEntries();
         System.out.println("---------------------------------------------------------------------------------------------------------");
-        for (StatisticEntry statisticEntry : statisticEntries) {
-            System.out.println(statisticEntry.toInfoString());
+
+        for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
+            System.out.println(entry.getKey());
+            for (StatisticEntry statisticEntry : entry.getValue()) {
+                System.out.println(statisticEntry.toInfoString());
+            }
         }
         System.out.println("---------------------------------------------------------------------------------------------------------");
     }
