@@ -95,6 +95,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("perfmonButton")
     private void onperfmonButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         modalDialogManager.show("Perfmon", ClientModalDialogManagerImpl.Type.STACK_ABLE, PerfmonDialog.class, null, null);
     }
 
@@ -149,6 +150,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("imageButton")
     private void onImageButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
         modalDialogManager.show("Items", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, null, null);
     }
 
