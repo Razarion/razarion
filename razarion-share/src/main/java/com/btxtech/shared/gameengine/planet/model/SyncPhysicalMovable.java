@@ -250,7 +250,9 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void implementPosition() {
-        setPosition2d(getDesiredPosition());
+        if (velocity != null) {
+            setPosition2d(getDesiredPosition());
+        }
     }
 
     // ---------------- OLD ---------------------------------

@@ -67,7 +67,11 @@ public class BotService {
     }
 
     public void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {
-        getBotRunner(syncBaseItem.getBase()).enrageOnKill(syncBaseItem, actor);
+        try {
+            getBotRunner(syncBaseItem.getBase()).enrageOnKill(syncBaseItem, actor);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     public boolean isInRealm(DecimalPosition position) {

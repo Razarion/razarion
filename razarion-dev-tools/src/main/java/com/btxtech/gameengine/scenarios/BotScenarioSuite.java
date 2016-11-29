@@ -157,11 +157,6 @@ public class BotScenarioSuite extends ScenarioSuite {
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
                 botCommandConfigs.add(new KillBotCommandConfig().setBotId(1));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
     }
 }

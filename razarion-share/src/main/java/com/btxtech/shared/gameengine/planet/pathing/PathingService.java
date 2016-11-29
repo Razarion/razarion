@@ -40,40 +40,24 @@ public class PathingService {
     }
 
     public void tick() {
+        preparation();
+
+        Collection<Contact> contacts = findContacts();
+        solveVelocity(contacts);
+        implementPosition();
+        solvePosition();
+        checkDestination();
+
+        finalization();
+    }
+
+    private void preparation() {
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
                 return null;
             }
 
             syncBaseItem.getSyncPhysicalMovable().setupForTick(syncItemContainerService);
-
-            return null;
-        });
-
-        Collection<Contact> contacts = findContacts();
-        for (int i = 0; i < 10; i++) {
-            solveVelocityContacts(contacts);
-        }
-        implementPosition();
-        while (!solvePositionContacts()) ;
-
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
-                return null;
-            }
-            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
-            if (syncPhysicalMovable.hasDestination() && syncPhysicalMovable.checkDestinationReached(syncItemContainerService)) {
-                syncPhysicalMovable.stop();
-            }
-            return null;
-        });
-
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
-                return null;
-            }
-
-            syncBaseItem.getSyncPhysicalMovable().setupPosition3d();
 
             return null;
         });
@@ -126,6 +110,12 @@ public class PathingService {
         });
     }
 
+    private void solveVelocity(Collection<Contact> contacts) {
+        for (int i = 0; i < 10; i++) {
+            solveVelocityContacts(contacts);
+        }
+    }
+
     private void solveVelocityContacts(Collection<Contact> contacts) {
         for (Contact contact : contacts) {
             SyncPhysicalMovable item1 = contact.getItem1();
@@ -159,6 +149,10 @@ public class PathingService {
                 }
             }
         }
+    }
+
+    private void solvePosition() {
+        while (!solvePositionContacts()) ;
     }
 
     private boolean solvePositionContacts() {
@@ -246,6 +240,32 @@ public class PathingService {
                 return null;
             }
             ((SyncPhysicalMovable) syncPhysicalArea).implementPosition();
+            return null;
+        });
+    }
+
+
+    private void checkDestination() {
+        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+                return null;
+            }
+            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
+            if (syncPhysicalMovable.hasDestination() && syncPhysicalMovable.checkDestinationReached(syncItemContainerService)) {
+                syncPhysicalMovable.stop();
+            }
+            return null;
+        });
+    }
+
+    private void finalization() {
+        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+                return null;
+            }
+
+            syncBaseItem.getSyncPhysicalMovable().setupPosition3d();
+
             return null;
         });
     }
