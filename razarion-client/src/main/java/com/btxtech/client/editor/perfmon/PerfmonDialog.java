@@ -2,6 +2,7 @@ package com.btxtech.client.editor.perfmon;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -78,7 +79,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
                     frequencyBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
                     frequencyBar.getAnimatedHeight().getBaseVal().setValue(heightValue);
                     SVGTitleElement tooltip = Browser.getDocument().createSVGTitleElement();
-                    tooltip.setTextContent("[blue] Frequency:" + statisticEntry.getFrequency() + "hz");
+                    tooltip.setTextContent("[blue] Frequency: " + DisplayUtils.handleDouble2(statisticEntry.getFrequency()) + "hz");
                     frequencyBar.appendChild(tooltip);
                 } else {
                     frequencyBar.getY().getBaseVal().setValue(y + HEIGHT / 2);
@@ -95,7 +96,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
                     durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
                     durationBar.getAnimatedHeight().getBaseVal().setValue(heightValue);
                     SVGTitleElement tooltip = Browser.getDocument().createSVGTitleElement();
-                    tooltip.setTextContent("[red] avg Duration:" + statisticEntry.getAvgDuration() + "s");
+                    tooltip.setTextContent("[red] avg Duration: " + DisplayUtils.handleDouble4(statisticEntry.getAvgDuration()) + "s");
                     durationBar.appendChild(tooltip);
                 } else {
                     durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2);

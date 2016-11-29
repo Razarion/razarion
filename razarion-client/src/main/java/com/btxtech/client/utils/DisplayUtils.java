@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public class DisplayUtils {
     public static final NumberFormat NUMBER_FORMATTER_X_XX = NumberFormat.getFormat("#.##");
+    public static final NumberFormat NUMBER_FORMATTER_X_XXXX = NumberFormat.getFormat("#.####");
     public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss");
 
     public static String formatVertex(Vertex vertex) {
@@ -51,6 +52,22 @@ public class DisplayUtils {
     public static String handleInteger(Integer value) {
         if (value != null) {
             return Integer.toString(value);
+        } else {
+            return "-";
+        }
+    }
+
+    public static String handleDouble2(Double value) {
+        if (value != null) {
+            return NUMBER_FORMATTER_X_XX.format(value);
+        } else {
+            return "-";
+        }
+    }
+
+    public static String handleDouble4(Double value) {
+        if (value != null) {
+            return NUMBER_FORMATTER_X_XXXX.format(value);
         } else {
             return "-";
         }

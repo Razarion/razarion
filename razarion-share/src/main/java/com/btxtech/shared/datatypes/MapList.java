@@ -15,11 +15,7 @@ public class MapList<T, U> {
     private final Map<T, List<U>> map = new HashMap<>();
 
     public void put(T key, U value) {
-        List<U> collection = map.get(key);
-        if (collection == null) {
-            collection = new ArrayList<>();
-            map.put(key, collection);
-        }
+        List<U> collection = map.computeIfAbsent(key, k -> new ArrayList<>());
         collection.add(value);
     }
 
