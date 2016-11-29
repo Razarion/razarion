@@ -96,7 +96,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
                     durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
                     durationBar.getAnimatedHeight().getBaseVal().setValue(heightValue);
                     SVGTitleElement tooltip = Browser.getDocument().createSVGTitleElement();
-                    tooltip.setTextContent("[red] avg Duration: " + DisplayUtils.handleDouble4(statisticEntry.getAvgDuration()) + "s");
+                    tooltip.setTextContent("[red] avg Duration: " + DisplayUtils.handleDouble3(statisticEntry.getAvgDuration()) + "s");
                     durationBar.appendChild(tooltip);
                 } else {
                     durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2);
