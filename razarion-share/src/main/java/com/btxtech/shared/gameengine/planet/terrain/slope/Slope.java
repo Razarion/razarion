@@ -283,6 +283,10 @@ public class Slope {
         return mesh.getInterpolatedVertexData(absoluteXY);
     }
 
+    public boolean isInSlope(DecimalPosition position) {
+        return outerPolygon.isInside(position);
+    }
+
     public boolean isInSlope(DecimalPosition position, double radius) {
         // TODO This is not enough. Radius is ignored. Also check the innerPolygon and the water
         return outerPolygon.isInside(position);

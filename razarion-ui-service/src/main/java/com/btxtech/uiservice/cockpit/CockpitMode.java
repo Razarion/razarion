@@ -82,7 +82,7 @@ public class CockpitMode {
 
     public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
         switch (selectionEvent.getType()) {
-            case CLEAR:
+            case OWN:
                 setMode(null);
                 if (selectionEvent.getSelectedGroup().canMove()) {
                     isMovePossible = true;
@@ -95,7 +95,7 @@ public class CockpitMode {
                 isCollectPossible = selectionEvent.getSelectedGroup().canCollect();
                 isFinalizeBuildPossible = selectionEvent.getSelectedGroup().canFinalizeBuild();
                 break;
-            case TARGET:
+            case CLEAR:
                 clearPossibilities();
                 break;
         }

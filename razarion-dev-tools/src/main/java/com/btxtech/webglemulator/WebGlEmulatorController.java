@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.StatisticEntry;
+import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -128,6 +129,8 @@ public class WebGlEmulatorController implements Initializable {
     private StoryboardService storyboardService;
     @Inject
     private PerfmonService perfmonService;
+    @Inject
+    private SelectionHandler selectionHandler;
     private DecimalPosition lastCanvasPosition;
 
     @Override
@@ -304,6 +307,9 @@ public class WebGlEmulatorController implements Initializable {
         }
         if (event.getCode() == KeyCode.DOWN) {
             terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.BOTTOM);
+        }
+        if (event.getCode() == KeyCode.ESCAPE) {
+            selectionHandler.clearSelection();
         }
     }
 

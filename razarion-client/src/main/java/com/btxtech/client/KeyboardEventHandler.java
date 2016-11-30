@@ -1,6 +1,7 @@
 package com.btxtech.client;
 
 
+import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import elemental.client.Browser;
@@ -28,6 +29,8 @@ public class KeyboardEventHandler {
     private javax.enterprise.event.Event<TerrainKeyUpEvent> terrainKeyUpEventEvent;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private SelectionHandler selectionHandler;
     private Set<Integer> keysDown = new HashSet<>();
 
     public void init() {
@@ -62,6 +65,7 @@ public class KeyboardEventHandler {
                             break;
                         }
                         case KeyCodes.KEY_ESCAPE: {
+                            selectionHandler.clearSelection();
                             // TODO  CockpitMode.getInstance().onEscape();
                             break;
                         }

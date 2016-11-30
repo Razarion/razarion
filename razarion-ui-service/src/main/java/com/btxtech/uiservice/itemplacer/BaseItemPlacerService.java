@@ -25,6 +25,10 @@ public class BaseItemPlacerService {
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, Consumer<Collection<DecimalPosition>> executionCallback) {
         this.executionCallback = executionCallback;
+
+
+
+
 //    TODO    if (baseItemPlacerConfig.getSuggestedPosition() != null) {
 //    TODO        terrainScrollHandler.moveToMiddle(startPointInfo.getSuggestedPosition());
 //    TODO    }

@@ -17,7 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
@@ -33,7 +33,7 @@ import javax.inject.Inject;
 @Dependent
 public class SyncHarvester extends SyncBaseAbility {
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private ResourceService resourceService;
     @Inject
@@ -74,7 +74,7 @@ public class SyncHarvester extends SyncBaseAbility {
 
         double harvestedResources = resource.harvest(PlanetService.TICK_FACTOR * harvesterType.getProgress());
         getSyncBaseItem().getBase().addResource(harvestedResources);
-        activityService.onResourcesHarvested(getSyncBaseItem(), harvestedResources, resource);
+        gameLogicService.onResourcesHarvested(getSyncBaseItem(), harvestedResources, resource);
         return true;
     }
 

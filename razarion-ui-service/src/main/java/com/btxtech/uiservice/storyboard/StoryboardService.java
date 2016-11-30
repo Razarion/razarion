@@ -4,9 +4,9 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.gameengine.GameEngine;
+import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.VisualUiService;
@@ -23,7 +23,7 @@ import java.util.Collection;
  * 05.07.2016.
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
-// Better name: something with game-control, client control (See: ActivityService)
+// Better name: something with game-control, client control (See: GameLogicService)
 public class StoryboardService {
     // private Logger logger = Logger.getLogger(StoryboardService.class.getName());
     @Inject
@@ -63,7 +63,10 @@ public class StoryboardService {
 
     public boolean isMyOwnProperty(SyncBaseItem syncBaseItem) {
         return syncBaseItem.getBase().getUserContext() != null && syncBaseItem.getBase().getUserContext().equals(userContext);
+    }
 
+    public boolean isEnemy(SyncBaseItem syncBaseItem) {
+        return Character.HUMAN.isEnemy(syncBaseItem.getBase().getCharacter());
     }
 
     private void runScene() {

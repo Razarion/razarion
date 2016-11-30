@@ -45,6 +45,8 @@ public class TerrainMouseHandler {
     @Inject
     private TerrainService terrainService;
     @Inject
+    private CursorService cursorService;
+    @Inject
     @Deprecated
     private Event<TerrainMouseMoveEvent> terrainMouseMoveEvent;
     @Inject
@@ -96,6 +98,9 @@ public class TerrainMouseHandler {
                 } else {
                     logger.warning("TerrainMouseHandler.onMouseMove(): groupSelectionFrame != null");
                 }
+            } else {
+                SyncItem syncItem = syncItemContainerService.findItemAtPosition(terrainPosition.toXY());
+                cursorService.handleMouseMove(syncItem, terrainPosition.toXY());
             }
         } catch (NoInterpolatedTerrainTriangleException e) {
             logger.warning(e.getMessage());

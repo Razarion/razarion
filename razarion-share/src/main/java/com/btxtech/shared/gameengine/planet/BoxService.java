@@ -37,7 +37,7 @@ public class BoxService {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private InventoryService inventoryService;
     private final Map<Integer, SyncBoxItem> boxes = new HashMap<>();
@@ -61,7 +61,7 @@ public class BoxService {
             boxes.put(syncBoxItem.getId(), syncBoxItem);
         }
         syncBoxItem.setup();
-        activityService.onBoxCreated(syncBoxItem);
+        gameLogicService.onBoxCreated(syncBoxItem);
         return syncBoxItem;
     }
 
@@ -77,7 +77,7 @@ public class BoxService {
         BoxContent boxContent = new BoxContent();
         box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> addBoxContentToUser(boxItemTypePossibility, picker.getBase().getUserContext(), boxContent));
 
-        activityService.onBoxPicket(box, picker, boxContent);
+        gameLogicService.onBoxPicket(box, picker, boxContent);
     }
 
     private void addBoxContentToUser(BoxItemTypePossibility boxItemTypePossibility, UserContext userContext, BoxContent boxContent) {
@@ -85,7 +85,7 @@ public class BoxService {
             InventoryItem inventoryItem = inventoryService.getInventoryItem(boxItemTypePossibility.getInventoryItemId());
             userContext.addInventoryItem(inventoryItem.getId());
             boxContent.addInventoryItem(inventoryItem);
-//            activityService.onInventoryItemFromBox(userContext, syncBoxItem, boxItemTypePossibility);
+//            gameLogicService.onInventoryItemFromBox(userContext, syncBoxItem, boxItemTypePossibility);
 //        } else if (boxItemTypePossibility.getDbInventoryArtifact() != null) {
 //            userContext.addInventoryArtifact(boxItemTypePossibility.getDbInventoryArtifact().getId());
 //            serverConditionService.onArtifactItemAdded(userContext, true, boxItemTypePossibility.getDbInventoryArtifact().getId());

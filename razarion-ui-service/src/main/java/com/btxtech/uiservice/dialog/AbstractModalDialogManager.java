@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.ModalDialogManager;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
@@ -24,7 +24,7 @@ public abstract class AbstractModalDialogManager implements ModalDialogManager, 
     @Inject
     private LevelService levelService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     private Runnable levelUpCallback;
     private Runnable questPassedCallback;
 
@@ -36,7 +36,7 @@ public abstract class AbstractModalDialogManager implements ModalDialogManager, 
     public void init() {
         questService.addQuestListener(this);
         levelService.addLevelServiceListener(this);
-        activityService.setModalDialogManager(this);
+        gameLogicService.setModalDialogManager(this);
     }
 
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {

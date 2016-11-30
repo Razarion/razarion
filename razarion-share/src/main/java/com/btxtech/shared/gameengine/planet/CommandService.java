@@ -37,7 +37,7 @@ public class CommandService { // Is part of the Base service
     @Inject
     private PathingService pathingService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -183,11 +183,11 @@ public class CommandService { // Is part of the Base service
             syncBaseItem.stop();
             syncBaseItem.executeCommand(baseCommand);
             baseItemService.addToActiveItemQueue(syncBaseItem);
-            activityService.onCommandSent(syncBaseItem, baseCommand);
+            gameLogicService.onCommandSent(syncBaseItem, baseCommand);
         } catch (ItemDoesNotExistException e) {
-            activityService.onItemDoesNotExistException(e);
+            gameLogicService.onItemDoesNotExistException(e);
         } catch (InsufficientFundsException e) {
-            activityService.onInsufficientFundsException(e);
+            gameLogicService.onInsufficientFundsException(e);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

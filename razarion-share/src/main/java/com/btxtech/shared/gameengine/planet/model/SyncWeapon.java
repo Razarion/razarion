@@ -20,7 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -39,7 +39,7 @@ import javax.inject.Inject;
 public class SyncWeapon extends SyncBaseAbility {
     private static final long CHECK_DELTA = 1000;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -108,7 +108,7 @@ public class SyncWeapon extends SyncBaseAbility {
                         targetPosition = target.getSyncPhysicalArea().getPosition2d();
                         throw new UnsupportedOperationException();
 //                            recalculateAndSetNewPath(weaponType.getRange(), targetItem);
-//                            activityService.onNewPathRecalculation(getSyncBaseItem());
+//                            gameLogicService.onNewPathRecalculation(getSyncBaseItem());
 //                            return getSyncBaseItem().getSyncMovable().tickMove(overlappingHandler);
                     }
                     targetPositionLastCheck = System.currentTimeMillis();

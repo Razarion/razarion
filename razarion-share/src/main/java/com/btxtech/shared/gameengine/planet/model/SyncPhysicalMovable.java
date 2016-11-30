@@ -268,7 +268,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 //    @Inject
 //    private CollisionService collisionService;
 //    @Inject
-//    private ActivityService activityService;
+//    private GameLogicService activityService;
 //    @Inject
 //    private BoxService boxService;
 //    private PhysicalMovableConfig physicalMovableConfig;

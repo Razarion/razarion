@@ -145,6 +145,29 @@ public class TerrainService {
         return groundMesh;
     }
 
+    public boolean overlap(DecimalPosition position) {
+        // Check in terrain objects
+        SingleHolder<Boolean> result = new SingleHolder<>(false);
+        terrainObjectConfigPositions.iterate((terrainObjectConfig, terrainObjectPosition) -> {
+            if (terrainObjectPosition.getPosition().getDistance(position) < terrainObjectConfig.getRadius()) {
+                result.setO(true);
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if (result.getO()) {
+            return true;
+        }
+        // Check in slopes
+        for (Slope slope : slopeMap.values()) {
+            if (slope.isInSlope(position)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean overlap(DecimalPosition position, double radius) {
         // Check in terrain objects
         SingleHolder<Boolean> result = new SingleHolder<>(false);

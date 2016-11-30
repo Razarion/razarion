@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.Character;
@@ -41,7 +40,7 @@ public class BaseItemService {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -95,7 +94,7 @@ public class BaseItemService {
             }
             PlayerBase playerBase = new PlayerBase(lastBaseItId, name, character, userContext);
             bases.put(lastBaseItId, playerBase);
-            activityService.onBaseCreated(playerBase);
+            gameLogicService.onBaseCreated(playerBase);
             return playerBase;
         }
     }
@@ -103,7 +102,7 @@ public class BaseItemService {
     public void surrenderBase(UserContext userContext) {
         PlayerBase playerBase = getPlayerBase(userContext);
         if (playerBase != null) {
-            activityService.onSurrenderBase(playerBase);
+            gameLogicService.onSurrenderBase(playerBase);
             while (!playerBase.getItems().isEmpty()) {
                 removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
             }
@@ -114,7 +113,7 @@ public class BaseItemService {
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
         syncBaseItem.setSpawnProgress(1.0);
         syncBaseItem.setBuildup(1.0);
-        activityService.onFactorySyncItem(syncBaseItem, toBeBuilt);
+        gameLogicService.onFactorySyncItem(syncBaseItem, toBeBuilt);
         return syncBaseItem;
     }
 
@@ -122,7 +121,7 @@ public class BaseItemService {
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
 
         syncBaseItem.setSpawnProgress(1.0);
-        activityService.onBuildingSyncItem(syncBaseItem, toBeBuilt);
+        gameLogicService.onBuildingSyncItem(syncBaseItem, toBeBuilt);
 
         return syncBaseItem;
     }
@@ -135,7 +134,7 @@ public class BaseItemService {
             syncBaseItem.setSpawnProgress(1.0);
             syncBaseItem.handleIfItemBecomesReady();
         } else {
-            activityService.onSpawnSyncItem(syncBaseItem);
+            gameLogicService.onSpawnSyncItem(syncBaseItem);
         }
 
         return syncBaseItem;
@@ -164,12 +163,12 @@ public class BaseItemService {
     }
 
     public void killSyncItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
-        activityService.onKilledSyncBaseItem(target, actor, timeStamp);
+        gameLogicService.onKilledSyncBaseItem(target, actor, timeStamp);
         PlayerBase base = target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);
         if (base.getItemCount() == 0) {
-            activityService.onBaseKilled(base, actor);
+            gameLogicService.onBaseKilled(base, actor);
             synchronized (bases) {
                 bases.remove(base.getBaseId());
             }
@@ -178,12 +177,12 @@ public class BaseItemService {
 
     public void removeSyncItem(SyncBaseItem target) {
         target.clearHealth();
-        activityService.onSyncBaseItemRemoved(target);
+        gameLogicService.onSyncBaseItemRemoved(target);
         PlayerBase base = target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);
         if (base.getItemCount() == 0) {
-            activityService.onBaseRemoved(base);
+            gameLogicService.onBaseRemoved(base);
             synchronized (bases) {
                 bases.remove(base.getBaseId());
             }

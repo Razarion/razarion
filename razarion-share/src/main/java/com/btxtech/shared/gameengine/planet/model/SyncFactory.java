@@ -22,7 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -38,7 +38,7 @@ import javax.inject.Inject;
 public class SyncFactory extends SyncBaseAbility {
     // private Logger log = Logger.getLogger(SyncFactory.class.getName());
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -74,19 +74,19 @@ public class SyncFactory extends SyncBaseAbility {
             }
 
             if (!getSyncBaseItem().getBase().withdrawalResource(buildFactor * (double) toBeBuiltType.getPrice())) {
-                activityService.onFactoryNoMoney();
+                gameLogicService.onFactoryNoMoney();
                 return true;
             }
             buildup += buildFactor;
-            activityService.onSyncFactoryProgress(getSyncBaseItem());
+            gameLogicService.onSyncFactoryProgress(getSyncBaseItem());
         }
         if (buildup >= 1.0) {
             if (baseItemService.isLevelLimitation4ItemTypeExceeded(toBeBuiltType, 1, getSyncBaseItem().getBase())) {
-                activityService.onFactoryLevelLimitation4ItemTypeExceeded();
+                gameLogicService.onFactoryLevelLimitation4ItemTypeExceeded();
                 return true;
             }
             if (baseItemService.isHouseSpaceExceeded(getSyncBaseItem().getBase(), toBeBuiltType, 1)) {
-                activityService.onFactoryHouseSpaceExceeded();
+                gameLogicService.onFactoryHouseSpaceExceeded();
                 return true;
             }
             SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, getSyncBaseItem().getSyncPhysicalArea().getPosition2d(), getSyncBaseItem().getBase());
@@ -120,7 +120,7 @@ public class SyncFactory extends SyncBaseAbility {
     public void stop() {
         buildup = 0;
         toBeBuiltType = null;
-        activityService.onSyncFactoryStopped(getSyncBaseItem());
+        gameLogicService.onSyncFactoryStopped(getSyncBaseItem());
     }
 
     public void executeCommand(FactoryCommand factoryCommand) throws InsufficientFundsException, NoSuchItemTypeException {

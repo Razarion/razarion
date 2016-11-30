@@ -77,11 +77,11 @@ public class SelectionHandler {
     }
 
     public Collection<SyncBaseItem> getAllowed2FinalizeBuild(SyncBaseItem ableToBuild) {
-        if(selectedGroup == null) {
+        if (selectedGroup == null) {
             throw new IllegalStateException("selectedGroup == null");
         }
         Collection<SyncBaseItem> builders = selectedGroup.getBuilders(ableToBuild.getBaseItemType());
-        if(builders.isEmpty()) {
+        if (builders.isEmpty()) {
             throw new IllegalStateException("builders.isEmpty()");
         }
         return builders;
@@ -155,16 +155,11 @@ public class SelectionHandler {
     public void clearSelection() {
         selectedTargetSyncItem = null;
         selectedGroup = null;
-
-//   TODO     for (SelectionListener listener : new ArrayList<SelectionListener>(listeners)) {
-//            listener.onSelectionCleared();
-//        }
-//   TODO      CursorHandler.getInstance().onSelectionCleared();
+        selectionEventEventTrigger.fire(new SelectionEvent());
     }
 
     private void onTargetSelectionItemChanged(SyncItem target) {
         selectionEventEventTrigger.fire(new SelectionEvent(target));
-        // TODO CursorHandler.getInstance().onSelectionCleared();
     }
 
     @Deprecated

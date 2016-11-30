@@ -16,10 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.ActivityService;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
 import javax.enterprise.context.Dependent;

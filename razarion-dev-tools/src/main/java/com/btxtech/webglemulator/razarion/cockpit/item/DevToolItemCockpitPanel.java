@@ -3,6 +3,7 @@ package com.btxtech.webglemulator.razarion.cockpit.item;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitPanel;
 import com.btxtech.webglemulator.WebGlEmulatorController;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.Background;
@@ -29,7 +30,9 @@ public class DevToolItemCockpitPanel implements ItemCockpitPanel {
 
     @Override
     public void cleanPanels() {
-        webGlEmulatorController.getItemCockpitPanel().getChildren().clear();
+        Platform.runLater(() -> {
+            webGlEmulatorController.getItemCockpitPanel().getChildren().clear();
+        });
     }
 
     @Override

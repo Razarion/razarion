@@ -28,6 +28,10 @@ public class SelectionEvent {
         this.targetSelection = targetSelection;
     }
 
+    public SelectionEvent() {
+        type = Type.CLEAR;
+    }
+
     public Type getType() {
         return type;
     }

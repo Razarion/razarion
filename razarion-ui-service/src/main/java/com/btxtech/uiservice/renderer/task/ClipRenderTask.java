@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.clip.ClipServiceImpl;
+import com.btxtech.uiservice.clip.ClipService;
 import com.btxtech.uiservice.renderer.AbstractLookUpVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public class ClipRenderTask extends AbstractRenderTask<ClipConfig> {
     private Logger logger = Logger.getLogger(ClipRenderTask.class.getName());
     @Inject
-    private ClipServiceImpl clipService;
+    private ClipService clipService;
     @Inject
     private Shape3DUiService shape3DUiService;
 

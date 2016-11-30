@@ -7,7 +7,7 @@ import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
@@ -49,7 +49,7 @@ public class Scene {
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private QuestService questService;
     @SuppressWarnings("CdiInjectionPointsInspection")

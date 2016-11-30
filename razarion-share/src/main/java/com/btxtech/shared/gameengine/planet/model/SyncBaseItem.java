@@ -37,7 +37,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionExce
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
@@ -65,7 +65,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     @Inject
     private CommandService commandService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private BoxService boxService;
     private PlayerBase base;
@@ -270,7 +270,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             if (spawnProgress >= 1.0) {
                 spawnProgress = 1.0;
                 handleIfItemBecomesReady();
-                activityService.onSpawnSyncItemFinished(this);
+                gameLogicService.onSpawnSyncItemFinished(this);
             } else {
                 return true;
             }
@@ -469,7 +469,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public void increaseHealth(double progress) {
         health += progress;
-        activityService.onHealthIncreased(this);
+        gameLogicService.onHealthIncreased(this);
         if (health >= getBaseItemType().getHealth()) {
             health = getBaseItemType().getHealth();
         }
@@ -529,7 +529,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (syncGenerator != null) {
             syncGenerator.setGenerating(true);
         }
-        activityService.onBuildup(this);
+        gameLogicService.onBuildup(this);
     }
 
     public BaseItemType getBaseItemType() {
@@ -594,7 +594,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     public void onAttacked(double damage, SyncBaseItem actor, long timeStamp) throws TargetHasNoPositionException {
-        activityService.onAttacked(this, actor, damage);
+        gameLogicService.onAttacked(this, actor, damage);
         decreaseHealth(damage, actor, timeStamp);
         if (PlanetService.MODE != PlanetMode.MASTER) {
             return;

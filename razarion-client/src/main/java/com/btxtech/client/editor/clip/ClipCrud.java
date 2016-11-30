@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.rest.ClipProvider;
-import com.btxtech.uiservice.clip.ClipServiceImpl;
+import com.btxtech.uiservice.clip.ClipService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -31,7 +31,7 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
     @Inject
     private Caller<ClipProvider> caller;
     @Inject
-    private ClipServiceImpl clipService;
+    private ClipService clipService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject

@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -29,7 +29,7 @@ public class ProjectileService {
     @Inject
     private BaseItemService baseItemService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     private final MapList<BaseItemType, Projectile> projectiles = new MapList<>();
@@ -53,7 +53,7 @@ public class ProjectileService {
             projectiles.put(actor.getBaseItemType(), projectile);
         }
 
-        activityService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition3d().sub(muzzle), weaponType.getMuzzleFlashClipId(), timeStamp);
+        gameLogicService.onProjectileFired(actor, muzzle, target.getSyncPhysicalArea().getPosition3d().sub(muzzle), weaponType.getMuzzleFlashClipId(), timeStamp);
     }
 
     public void tick(long timeStamp) {
@@ -75,7 +75,7 @@ public class ProjectileService {
 
     private void projectileDetonation(Projectile detonationProjectile, long timeStamp) {
         WeaponType weaponType = detonationProjectile.getActor().getSyncWeapon().getWeaponType();
-        activityService.onProjectileDetonation(detonationProjectile.getActor(), detonationProjectile.getTarget(), weaponType.getDetonationClipId(), timeStamp);
+        gameLogicService.onProjectileDetonation(detonationProjectile.getActor(), detonationProjectile.getTarget(), weaponType.getDetonationClipId(), timeStamp);
         Collection<SyncBaseItem> possibleTargets = syncItemContainerService.findBaseItemInRect(Rectangle2D.generateRectangleFromMiddlePoint(detonationProjectile.getTarget().toXY(), weaponType.getRange(), weaponType.getRange()));
         for (SyncBaseItem target : possibleTargets) {
             if (!target.getSyncPhysicalArea().overlap(detonationProjectile.getTarget().toXY(), weaponType.getDetonationRadius())) {

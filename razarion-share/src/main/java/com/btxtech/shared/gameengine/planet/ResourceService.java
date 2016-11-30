@@ -45,7 +45,7 @@ public class ResourceService {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
@@ -67,12 +67,12 @@ public class ResourceService {
         synchronized (resources) {
             resources.put(syncResourceItem.getId(), syncResourceItem);
         }
-        activityService.onResourceCreated(syncResourceItem);
+        gameLogicService.onResourceCreated(syncResourceItem);
         return syncResourceItem;
     }
 
     public void resourceExhausted(SyncResourceItem syncResourceItem) {
-        activityService.onResourceExhausted(syncResourceItem);
+        gameLogicService.onResourceExhausted(syncResourceItem);
         synchronized (resources) {
             resources.remove(syncResourceItem.getId());
         }

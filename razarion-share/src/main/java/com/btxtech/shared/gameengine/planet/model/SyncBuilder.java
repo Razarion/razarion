@@ -27,7 +27,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -46,7 +46,7 @@ public class SyncBuilder extends SyncBaseAbility {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -97,17 +97,17 @@ public class SyncBuilder extends SyncBaseAbility {
             }
             try {
                 currentBuildup = (SyncBaseItem) baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, getSyncBaseItem().getBase());
-                activityService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
+                gameLogicService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
                 toBeBuildPosition = null;
                 toBeBuiltType = null;
                 return true;
             } catch (ItemLimitExceededException e) {
                 stop();
-                activityService.onItemLimitExceededExceptionBuilder(getSyncBaseItem());
+                gameLogicService.onItemLimitExceededExceptionBuilder(getSyncBaseItem());
                 return false;
             } catch (HouseSpaceExceededException e) {
                 stop();
-                activityService.onHouseSpaceExceededExceptionBuilder(getSyncBaseItem());
+                gameLogicService.onHouseSpaceExceededExceptionBuilder(getSyncBaseItem());
                 return false;
             }
         } else {
@@ -130,7 +130,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 }
                 return true;
             } else {
-                activityService.onBuilderNoMoney(getSyncBaseItem());
+                gameLogicService.onBuilderNoMoney(getSyncBaseItem());
                 return true;
             }
         }
@@ -156,7 +156,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
     public synchronized void stop() {
         if (currentBuildup != null) {
-            activityService.onSynBuilderStopped(getSyncBaseItem(), currentBuildup);
+            gameLogicService.onSynBuilderStopped(getSyncBaseItem(), currentBuildup);
         }
         currentBuildup = null;
         toBeBuiltType = null;

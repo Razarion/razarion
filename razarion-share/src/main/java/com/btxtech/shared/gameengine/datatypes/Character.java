@@ -22,4 +22,9 @@ public enum Character {
     public boolean isHuman() {
         return !bot;
     }
+
+    public boolean isEnemy(Character other) {
+        return !(this == Character.BOT && other == Character.BOT) && !(this != Character.BOT && other != Character.BOT);
+
+    }
 }

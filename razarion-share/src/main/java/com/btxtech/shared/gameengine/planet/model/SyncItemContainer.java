@@ -22,7 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.ActivityService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -50,7 +50,7 @@ public class SyncItemContainer extends SyncBaseAbility {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private ActivityService activityService;
+    private GameLogicService gameLogicService;
     private ItemContainerType itemContainerType;
     private List<Integer> containedItems = new ArrayList<>();
     private DecimalPosition unloadPos;
@@ -81,7 +81,7 @@ public class SyncItemContainer extends SyncBaseAbility {
         isOnOperationSurfaceThrow();
         containedItems.add(syncBaseItem.getId());
         syncBaseItem.setContained(getSyncBaseItem().getId());
-        activityService.onSyncItemLoaded(getSyncBaseItem(), syncBaseItem);
+        gameLogicService.onSyncItemLoaded(getSyncBaseItem(), syncBaseItem);
     }
 
     public void executeCommand(UnloadContainerCommand unloadContainerCommand) throws WrongOperationSurfaceException {
@@ -118,7 +118,7 @@ public class SyncItemContainer extends SyncBaseAbility {
                 iterator.remove();
             }
         }
-        activityService.onSyncItemUnloaded(getSyncBaseItem());
+        gameLogicService.onSyncItemUnloaded(getSyncBaseItem());
     }
 
     public void stop() {
