@@ -1,13 +1,17 @@
 package com.btxtech.client;
 
+import com.btxtech.client.clientI18n.ClientI18nConstants;
 import com.btxtech.client.system.boot.ClientRunner;
 import com.btxtech.client.system.boot.StartupProgressListener;
 import com.btxtech.client.system.boot.StartupSeq;
 import com.btxtech.client.system.boot.StartupTaskEnum;
 import com.btxtech.client.system.boot.StartupTaskInfo;
 import com.btxtech.client.system.boot.task.AbstractStartupTask;
+import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.LocaleInfo;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
@@ -42,6 +46,9 @@ public class Client {
 
     @PostConstruct
     public void init() {
+        I18nHelper.setLanguage(I18nString.convert(LocaleInfo.getCurrentLocale().getLocaleName()));
+        I18nHelper.setConstants(GWT.create(ClientI18nConstants.class));
+
         clientRunner.addStartupProgressListener(new StartupProgressListener() {
             @Override
             public void onStart(StartupSeq startupSeq) {

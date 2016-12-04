@@ -96,11 +96,11 @@ public class BaseItemPlacer {
     private void setupErrorText() {
         // TODO
 //        if (!baseItemPlacerChecker.isEnemiesOk()) {
-//            errorText = ClientI18nHelper.CONSTANTS.enemyTooNear();
+//            errorText = ClientI18nHelper.getConstants().enemyTooNear();
 //        } else if (!baseItemPlacerChecker.isItemsOk()) {
-//            errorText = ClientI18nHelper.CONSTANTS.notPlaceOver();
+//            errorText = ClientI18nHelper.getConstants().notPlaceOver();
 //        } else if (!baseItemPlacerChecker.isTerrainOk()) {
-//            errorText = ClientI18nHelper.CONSTANTS.notPlaceHere();
+//            errorText = ClientI18nHelper.getConstants().notPlaceHere();
 //        } else {
 //            errorText = null;
 //        }

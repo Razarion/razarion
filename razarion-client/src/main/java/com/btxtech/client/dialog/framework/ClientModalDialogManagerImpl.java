@@ -1,6 +1,6 @@
 package com.btxtech.client.dialog.framework;
 
-import com.btxtech.client.clientI18n.ClientI18nHelper;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.client.cockpit.BoxContentDialog;
 import com.btxtech.client.cockpit.level.LevelUpDialog;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
@@ -60,12 +60,12 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
 
     @Override
     public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
-        show(ClientI18nHelper.CONSTANTS.useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, ClientI18nHelper.CONSTANTS.useItemLimit(ClientI18nHelper.getLocalizedString(baseItemType.getI18Name())), null);
+        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemLimit(I18nHelper.getLocalizedString(baseItemType.getI18Name())), null);
     }
 
     @Override
     public void showUseInventoryHouseSpaceExceeded() {
-        show(ClientI18nHelper.CONSTANTS.useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, ClientI18nHelper.CONSTANTS.useItemHouseSpace(), null);
+        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemHouseSpace(), null);
     }
 
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {

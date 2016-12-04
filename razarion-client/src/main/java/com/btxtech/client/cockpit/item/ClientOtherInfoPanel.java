@@ -1,6 +1,6 @@
 package com.btxtech.client.cockpit.item;
 
-import com.btxtech.client.clientI18n.ClientI18nHelper;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -65,8 +65,8 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
     @Override
     public void init(SyncItem target) {
         // TODO image = ImageHandler.getItemTypeImage(syncItem.getItemType(), 50, 50);
-        itemTypeName.setText(ClientI18nHelper.getLocalizedString(target.getItemType().getI18Name()));
-        itemTypeDescr.setHTML(ClientI18nHelper.getLocalizedString(target.getItemType().getDescription()));
+        itemTypeName.setText(I18nHelper.getLocalizedString(target.getItemType().getI18Name()));
+        itemTypeDescr.setHTML(I18nHelper.getLocalizedString(target.getItemType().getDescription()));
         friendImage.setVisible(false);
         enemyImage.setVisible(false);
         // TODO inviteGuildButton.setVisible(false);
@@ -77,15 +77,15 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
             baseName.setText(syncBaseItem.getBase().getName());
             switch (syncBaseItem.getBase().getCharacter()) {
                 case HUMAN:
-                    type.setText(ClientI18nHelper.CONSTANTS.playerFriend());
+                    type.setText(I18nHelper.getConstants().playerFriend());
                     enemyImage.setVisible(false);
                     break;
                 case BOT:
-                    type.setText(ClientI18nHelper.CONSTANTS.botEnemy());
+                    type.setText(I18nHelper.getConstants().botEnemy());
                     enemyImage.setVisible(true);
                     break;
                 case BOT_NCP:
-                    type.setText(ClientI18nHelper.CONSTANTS.botNpc());
+                    type.setText(I18nHelper.getConstants().botNpc());
                     enemyImage.setVisible(false);
                     break;
                 default:

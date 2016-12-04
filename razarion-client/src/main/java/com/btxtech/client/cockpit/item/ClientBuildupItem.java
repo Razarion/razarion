@@ -1,6 +1,6 @@
 package com.btxtech.client.cockpit.item;
 
-import com.btxtech.client.clientI18n.ClientI18nHelper;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
 import com.btxtech.uiservice.storyboard.StoryboardService;
@@ -52,31 +52,31 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
         ENABLE(true) {
             @Override
             String lookup(String itemName) {
-                return ClientI18nHelper.CONSTANTS.tooltipBuild(itemName);
+                return I18nHelper.getConstants().tooltipBuild(itemName);
             }
         },
         DISABLED_LEVEL(false) {
             @Override
             String lookup(String itemName) {
-                return ClientI18nHelper.CONSTANTS.tooltipNoBuildLevel(itemName);
+                return I18nHelper.getConstants().tooltipNoBuildLevel(itemName);
             }
         },
         DISABLED_LEVEL_EXCEEDED(false) {
             @Override
             String lookup(String itemName) {
-                return ClientI18nHelper.CONSTANTS.tooltipNoBuildLimit(itemName);
+                return I18nHelper.getConstants().tooltipNoBuildLimit(itemName);
             }
         },
         DISABLED_HOUSE_SPACE_EXCEEDED(false) {
             @Override
             String lookup(String itemName) {
-                return ClientI18nHelper.CONSTANTS.tooltipNoBuildHouseSpace(itemName);
+                return I18nHelper.getConstants().tooltipNoBuildHouseSpace(itemName);
             }
         },
         DISABLED_MONEY(false) {
             @Override
             String lookup(String itemName) {
-                return ClientI18nHelper.CONSTANTS.tooltipNoBuildMoney(itemName);
+                return I18nHelper.getConstants().tooltipNoBuildMoney(itemName);
             }
         };
 
@@ -91,7 +91,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
         }
 
         public String getToolTip(BaseItemType itemType) {
-            return lookup(ClientI18nHelper.getLocalizedString(itemType.getI18Name()));
+            return lookup(I18nHelper.getLocalizedString(itemType.getI18Name()));
         }
 
         abstract String lookup(String itemName);

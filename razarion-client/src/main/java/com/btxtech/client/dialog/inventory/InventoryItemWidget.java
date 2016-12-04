@@ -1,6 +1,6 @@
 package com.btxtech.client.dialog.inventory;
 
-import com.btxtech.client.clientI18n.ClientI18nHelper;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -56,7 +56,7 @@ public class InventoryItemWidget implements TakesValue<InventoryItemModel>, IsEl
         this.inventoryItemModel = inventoryItemModel;
         inventoryItemName.setText(inventoryItemModel.getInventoryItem().getName());
         inventoryItemImage.setUrl(RestUrl.getImageServiceUrlSafe(inventoryItemModel.getInventoryItem().getImageId()));
-        inventoryItemCount.setText(ClientI18nHelper.CONSTANTS.youOwn(inventoryItemModel.getItemCount()));
+        inventoryItemCount.setText(I18nHelper.getConstants().youOwn(inventoryItemModel.getItemCount()));
     }
 
     @Override

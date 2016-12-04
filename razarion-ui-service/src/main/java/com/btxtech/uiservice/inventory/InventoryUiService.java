@@ -92,7 +92,7 @@ public class InventoryUiService {
 //            if (ClientBase.getInstance().isDepositResourceAllowed(inventoryItem.getGoldAmount())) {
 //                Connection.getInstance().useInventoryItem(inventoryItem.getInventoryItemId(), null);
 //            } else {
-//                modalDialogManager.showMessageDialog(ClientI18nHelper.CONSTANTS.useItem(), ClientI18nHelper.CONSTANTS.useItemMoney()), DialogManager.Type.STACK_ABLE);
+//                modalDialogManager.showMessageDialog(ClientI18nHelper.getConstants().useItem(), ClientI18nHelper.getConstants().useItemMoney()), DialogManager.Type.STACK_ABLE);
 //            }
         }
     }
