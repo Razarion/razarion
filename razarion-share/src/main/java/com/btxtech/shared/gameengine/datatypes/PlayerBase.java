@@ -82,8 +82,21 @@ public class PlayerBase {
         return Collections.unmodifiableCollection(items);
     }
 
-    public Collection<SyncBaseItem> getItemsInPlace(PlaceConfig placeConfig) {
+    public Collection<SyncBaseItem> findItemsInPlace(PlaceConfig placeConfig) {
         return items.stream().filter(placeConfig::checkInside).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public Collection<SyncBaseItem> findItemsOfType(int baseItemType) {
+        return items.stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().getId() == baseItemType).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public SyncBaseItem findSyncBaseItemOfType(int baseItemTypeId) {
+        for (SyncBaseItem item : items) {
+            if (item.getBaseItemType().getId() == baseItemTypeId) {
+                return item;
+            }
+        }
+        throw new IllegalArgumentException("No SyncBaseItem found for type: " + baseItemTypeId + " in base: " + this);
     }
 
     public int getUsedHouseSpace() {
@@ -112,7 +125,7 @@ public class PlayerBase {
     }
 
     public boolean withdrawalResource(double amount) {
-        if(amount > resources) {
+        if (amount > resources) {
             return false;
         }
         resources -= amount;

@@ -33,4 +33,9 @@ public class ClientQuestVisualizerImpl implements QuestVisualizer {
             }
         }
     }
+
+    @Override
+    public void setShowInGameVisualisation(boolean showInGameVisualisation) {
+        // TODO
+    }
 }

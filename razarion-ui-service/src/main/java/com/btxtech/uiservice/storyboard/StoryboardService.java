@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.gameengine.GameEngine;
 import com.btxtech.shared.gameengine.datatypes.Character;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -90,18 +91,8 @@ public class StoryboardService {
         }
     }
 
-    public Collection<SyncBaseItem> getMyItemsInRegion(Rectangle2D rectangle) {
-        Collection<SyncBaseItem> result = new ArrayList<>();
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            if (!isMyOwnProperty(syncBaseItem)) {
-                return null;
-            }
-            if (syncBaseItem.getSyncPhysicalArea().overlap(rectangle)) {
-                result.add(syncBaseItem);
-            }
-            return null;
-        });
-        return result;
+    public PlayerBase getMyBase() {
+        return baseItemService.getPlayerBase(userContext);
     }
 
     public int getMyLimitation4ItemType(Integer itemTypeId) {
@@ -126,5 +117,9 @@ public class StoryboardService {
 
     public int getResources() {
         return baseItemService.getResources(userContext);
+    }
+
+    public StoryboardConfig getStoryboardConfig() {
+        return storyboardConfig;
     }
 }

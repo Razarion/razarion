@@ -78,6 +78,7 @@ public class GameLogicService { // Rename to game control or so (See StoryboardS
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
         // TODO connectionService.sendSyncInfo(syncItem);
         System.out.println("GameLogicService.onCommandSent() " + syncItem + " " + baseCommand);
+        gameLogicDelegate.ifPresent(delegate -> delegate.onCommandSent(syncItem, baseCommand));
     }
 
     public void onInvalidPath(BaseCommand baseCommand) {
@@ -268,5 +269,9 @@ public class GameLogicService { // Rename to game control or so (See StoryboardS
 
     public void onSurrenderBase(PlayerBase playerBase) {
         System.out.println("GameLogicService.onSurrenderBase(): " + playerBase);
+    }
+
+    public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
+        gameLogicDelegate.ifPresent(delegate -> delegate.onSyncBaseItemIdle(syncBaseItem));
     }
 }

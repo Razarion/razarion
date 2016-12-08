@@ -23,6 +23,8 @@ import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.CameraConfig;
+import com.btxtech.shared.dto.GameTipConfig;
+import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -120,8 +122,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
+        storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
@@ -133,6 +137,20 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(harvest());
         // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         return storyboardConfig;
+    }
+
+    private GameTipVisualConfig defaultGameTipVisualConfig() {
+        GameTipVisualConfig gameTipVisualConfig = new GameTipVisualConfig();
+        gameTipVisualConfig.setCornerMoveDuration(1500);
+        gameTipVisualConfig.setCornerMoveDistance(15);
+        gameTipVisualConfig.setCornerLength(1);
+        gameTipVisualConfig.setSelectCornerColor(new Color(0, 1, 0));
+        gameTipVisualConfig.setAttackCommandCornerColor(new Color(1, 0, 0));
+        gameTipVisualConfig.setBuildCommandCornerColor(new Color(1, 1, 0));
+        gameTipVisualConfig.setHarvestCommandCornerColor(new Color(0, 0, 1));
+        gameTipVisualConfig.setMoveCommandCornerColor(new Color(0, 1, 0));
+        gameTipVisualConfig.setToBeFinalizedCornerColor(new Color(1, 1, 0));
+        return gameTipVisualConfig;
     }
 
     private List<ResourceItemType> finalizeResourceItemTypes(List<ResourceItemType> resourceItemTypes) {
@@ -302,6 +320,32 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<String, String> localizedStrings = new HashMap<>();
         localizedStrings.put(I18nString.DEFAULT, text);
         return new I18nString(localizedStrings);
+    }
+
+    // Move and tip  -----------------------------------------------------------------------------
+    private List<SceneConfig> setupMove() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // User Spawn
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(104, 80));
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(1).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden")));
+        // Move quest
+        Map<Integer, Integer> itemTypeCount = new HashMap<>();
+        itemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        ComparisonConfig comparisonConfig = new ComparisonConfig().setTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(160, 70), new DecimalPosition(300, 70), new DecimalPosition(300, 200), new DecimalPosition(160, 200))))).setAddExisting(true);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(comparisonConfig);
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.MOVE);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
+        gameTipConfig.setTerrainPositionHint(new DecimalPosition(200, 100));
+
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setWait4LevelUpDialog(true));
+
+        return sceneConfigs;
     }
 
     // Tower -----------------------------------------------------------------------------
@@ -647,7 +691,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         itemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ComparisonConfig comparisonConfig = new ComparisonConfig().setTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(160, 70), new DecimalPosition(300, 70), new DecimalPosition(300, 200), new DecimalPosition(160, 200))))).setAddExisting(true);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(comparisonConfig);
-        sceneConfigs.add(new SceneConfig().setCameraConfig(new CameraConfig().setCameraLocked(false)).setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setWait4LevelUpDialog(true));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.MOVE);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
+        gameTipConfig.setTerrainPositionHint(new DecimalPosition(200, 100));
+
+        sceneConfigs.add(new SceneConfig().setCameraConfig(new CameraConfig().setCameraLocked(false)).setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true));
     }
 
     private void addNpcHarvestAttack(List<SceneConfig> sceneConfigs) {
@@ -782,7 +832,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private void addBuildViperTask2(List<SceneConfig> sceneConfigs) {
         // Build viper
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
-        buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER,2);
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER, 2);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
         sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }

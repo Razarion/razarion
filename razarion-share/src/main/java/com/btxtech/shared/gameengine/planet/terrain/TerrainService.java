@@ -225,7 +225,7 @@ public class TerrainService {
         for (double x = startX; x < endX; x += (double) MESH_NODE_EDGE_LENGTH) {
             for (double y = startY; y < endY; y += (double) MESH_NODE_EDGE_LENGTH) {
                 Rectangle2D rect = new Rectangle2D(x, y, (double) MESH_NODE_EDGE_LENGTH, (double) MESH_NODE_EDGE_LENGTH);
-                if(rect.contains(center)) {
+                if (rect.contains(center)) {
                     doubleStreamBuilder.add(faceMaxZ(x, y));
                 } else {
                     DecimalPosition projection = rect.getNearestPoint(center);
@@ -292,6 +292,10 @@ public class TerrainService {
         // TODO water
 
         throw new NoInterpolatedTerrainTriangleException(absoluteXY);
+    }
+
+    public Vertex getPosition3d(DecimalPosition absoluteXY) {
+        return new Vertex(absoluteXY, getInterpolatedTerrainTriangle(absoluteXY).getHeight());
     }
 
     public Vertex calculatePositionGroundMesh(Ray3d worldPickRay) {

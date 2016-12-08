@@ -8,4 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
  */
 public interface QuestVisualizer {
     void showSideBar(QuestDescriptionConfig descriptionConfig);
+
+    void setShowInGameVisualisation(boolean showInGameVisualisation);
 }

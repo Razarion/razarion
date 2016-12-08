@@ -11,6 +11,10 @@ import java.util.Arrays;
 public class Matrix4 {
     public static final int ROWS = 4;
     public static final int COLUMNS = 4;
+    public static final Matrix4 IDENTITY = createIdentity();
+    public static final Matrix4 ROT_90_Z = createZRotation(MathHelper.QUARTER_RADIANT);
+    public static final Matrix4 ROT_180_Z = createZRotation(MathHelper.HALF_RADIANT);
+    public static final Matrix4 ROT_270_Z = createZRotation(MathHelper.THREE_QUARTER_RADIANT);
     private double[][] numbers;
 
     /**

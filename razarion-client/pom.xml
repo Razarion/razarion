@@ -15,6 +15,7 @@
     <name>Razarion Client</name>
 
     <properties>
+        <!-- errai 4.0.0.Beta6 is not working -->
         <errai.version>4.0.0.Beta4</errai.version>
         <javaee.version>1.0.2.Final</javaee.version>
         <gwt.pulgin.version>2.8.0</gwt.pulgin.version>

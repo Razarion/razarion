@@ -7,6 +7,7 @@ import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -22,6 +23,7 @@ public class BaseItemPlacerService {
     private BaseItemPlacerRenderTask baseItemPlacerRenderTask;
     private BaseItemPlacer baseItemPlacer;
     private Consumer<Collection<DecimalPosition>> executionCallback;
+    private Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, Consumer<Collection<DecimalPosition>> executionCallback) {
         this.executionCallback = executionCallback;
@@ -38,6 +40,8 @@ public class BaseItemPlacerService {
         baseItemPlacerRenderTask.activate(baseItemPlacer);
         // TODO RadarPanel.getInstance().setLevelRadarMode(RadarMode.MAP_AND_UNITS);
         // TODO ClientDeadEndProtection.getInstance().stop();
+
+        listeners.forEach(baseItemPlacerListener -> baseItemPlacerListener.onStateChanged(baseItemPlacer));
     }
 
     public void deactivate() {
@@ -45,6 +49,7 @@ public class BaseItemPlacerService {
         baseItemPlacerRenderTask.deactivate();
         // TODO RadarPanel.getInstance().setLevelRadarMode(ClientPlanetServices.getInstance().getPlanetInfo().getRadarMode());
         // TODO ClientDeadEndProtection.getInstance().start();
+        listeners.forEach(baseItemPlacerListener -> baseItemPlacerListener.onStateChanged(null));
     }
 
     public boolean isActive() {
@@ -68,6 +73,19 @@ public class BaseItemPlacerService {
         }
         baseItemPlacer.onMove(terrainPosition);
     }
+
+    public BaseItemPlacer getBaseItemPlacer() {
+        return baseItemPlacer;
+    }
+
+    public void addListener(BaseItemPlacerListener baseItemPlacerListener) {
+        listeners.add(baseItemPlacerListener);
+    }
+
+    public void removeListener(BaseItemPlacerListener baseItemPlacerListener) {
+        listeners.remove(baseItemPlacerListener);
+    }
+
 
     //   TODO public void onBaseLost(BaseLostPacket baseLostPacket) {
 //   TODO     if (isActive()) {

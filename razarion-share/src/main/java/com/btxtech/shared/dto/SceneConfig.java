@@ -28,6 +28,7 @@ public class SceneConfig {
     private Integer duration;
     private ScrollUiQuest scrollUiQuest;
     private List<BoxItemPosition> boxItemPositions;
+    private GameTipConfig gameTipConfig;
 
     public String getIntroText() {
         return introText;
@@ -188,6 +189,15 @@ public class SceneConfig {
 
     public SceneConfig setBoxItemPositions(List<BoxItemPosition> boxItemPositions) {
         this.boxItemPositions = boxItemPositions;
+        return this;
+    }
+
+    public GameTipConfig getGameTipConfig() {
+        return gameTipConfig;
+    }
+
+    public SceneConfig setGameTipConfig(GameTipConfig gameTipConfig) {
+        this.gameTipConfig = gameTipConfig;
         return this;
     }
 }

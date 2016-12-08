@@ -90,7 +90,7 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
 
         Collection<SyncBaseItem> items;
         if (placeConfig != null) {
-            items = playerBase.getItemsInPlace(placeConfig);
+            items = playerBase.findItemsInPlace(placeConfig);
         } else {
             items = playerBase.getItems();
         }

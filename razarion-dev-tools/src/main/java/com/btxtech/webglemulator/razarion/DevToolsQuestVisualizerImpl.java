@@ -13,4 +13,9 @@ public class DevToolsQuestVisualizerImpl implements QuestVisualizer {
     public void showSideBar(QuestDescriptionConfig descriptionConfig) {
         System.out.println("++++ DevToolsQuestVisualizerImpl.showSideBar(): " + descriptionConfig);
     }
+
+    @Override
+    public void setShowInGameVisualisation(boolean showInGameVisualisation) {
+        // TODO
+    }
 }

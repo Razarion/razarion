@@ -13,6 +13,7 @@ import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
+import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
 import javax.enterprise.event.Event;
@@ -60,6 +61,7 @@ public abstract class RenderService {
         addRenderTask(ClipRenderTask.class);
         addRenderTask(BaseItemPlacerRenderTask.class);
         addRenderTask(SelectionFrameRenderTask.class);
+        addRenderTask(TipRenderTask.class);
 
         fillBuffers();
     }

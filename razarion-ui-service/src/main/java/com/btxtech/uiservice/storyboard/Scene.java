@@ -7,9 +7,9 @@ import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -20,6 +20,7 @@ import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.tip.GameTipService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -71,6 +72,8 @@ public class Scene {
     private ExceptionHandler exceptionHandler;
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private GameTipService gameTipService;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -156,6 +159,9 @@ public class Scene {
         if (sceneConfig.getBoxItemPositions() != null) {
             boxService.dropBoxes(sceneConfig.getBoxItemPositions());
         }
+        if (sceneConfig.getGameTipConfig() != null) {
+            gameTipService.start(sceneConfig.getGameTipConfig());
+        }
 
         if (!hasCompletionCallback) {
             storyboardService.onSceneCompleted();
@@ -196,6 +202,9 @@ public class Scene {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questVisualizer.showSideBar(null);
+        }
+        if (sceneConfig.getGameTipConfig() != null) {
+            gameTipService.stop();
         }
     }
 }

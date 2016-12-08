@@ -15,6 +15,7 @@ public class StoryboardConfig {
     private GameEngineConfig gameEngineConfig;
     private VisualConfig visualConfig;
     private UserContext userContext;
+    private GameTipVisualConfig gameTipVisualConfig;
 
     public List<SceneConfig> getSceneConfigs() {
         return sceneConfigs;
@@ -49,6 +50,15 @@ public class StoryboardConfig {
 
     public StoryboardConfig setUserContext(UserContext userContext) {
         this.userContext = userContext;
+        return this;
+    }
+
+    public GameTipVisualConfig getGameTipVisualConfig() {
+        return gameTipVisualConfig;
+    }
+
+    public StoryboardConfig setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
+        this.gameTipVisualConfig = gameTipVisualConfig;
         return this;
     }
 }

@@ -2,12 +2,13 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.GameLogicDelegate;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.clip.ClipService;
+import com.btxtech.uiservice.tip.GameTipService;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -26,6 +27,8 @@ public class GameLogicUiService implements GameLogicDelegate {
     private ClipService clipService;
     @Inject
     private SelectionHandler selectionHandler;
+    @Inject
+    private GameTipService gameTipService;
 
     public void onVisualConfig(@Observes VisualConfig visualConfig) {
         gameLogicService.setGameLogicDelegate(this);
@@ -62,5 +65,15 @@ public class GameLogicUiService implements GameLogicDelegate {
     @Override
     public void onSyncBaseItemRemoved(SyncBaseItem target) {
         selectionHandler.itemKilled(target);
+    }
+
+    @Override
+    public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
+        gameTipService.onCommandSent(syncItem, baseCommand);
+    }
+
+    @Override
+    public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
+        gameTipService.onSyncBaseItemIdle(syncBaseItem);
     }
 }

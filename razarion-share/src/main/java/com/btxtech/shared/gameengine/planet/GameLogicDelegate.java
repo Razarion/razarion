@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 /**
@@ -15,4 +16,8 @@ public interface GameLogicDelegate {
     void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp);
 
     void onSyncBaseItemRemoved(SyncBaseItem target);
+
+    void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand);
+
+    void onSyncBaseItemIdle(SyncBaseItem syncBaseItem);
 }

@@ -336,11 +336,14 @@ public class BaseItemService {
                 SyncBaseItem activeItem = iterator.next();
                 if (!activeItem.isAlive()) {
                     iterator.remove();
+                    gameLogicService.onSyncBaseItemIdle(activeItem);
                     continue;
                 }
                 if (activeItem.isIdle()) {
                     iterator.remove();
-                    addGuardingBaseItem(activeItem);
+                    if (!addGuardingBaseItem(activeItem)) {
+                        gameLogicService.onSyncBaseItemIdle(activeItem);
+                    }
                     continue;
                 }
                 try {
@@ -348,7 +351,9 @@ public class BaseItemService {
                         try {
                             activeItem.stop();
                             iterator.remove();
-                            addGuardingBaseItem(activeItem);
+                            if (!addGuardingBaseItem(activeItem)) {
+                                gameLogicService.onSyncBaseItemIdle(activeItem);
+                            }
                         } catch (Throwable t) {
                             exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
                         }
@@ -357,16 +362,12 @@ public class BaseItemService {
                     activeItem.stop();
                     exceptionHandler.handleException(t);
                     iterator.remove();
+                    gameLogicService.onSyncBaseItemIdle(activeItem);
                 }
             }
         }
         synchronized (guardingItems) {
-            for (Iterator<SyncBaseItem> iterator = guardingItems.iterator(); iterator.hasNext(); ) {
-                SyncBaseItem guardingItem = iterator.next();
-                if (handleGuardingItemHasEnemiesInRange(guardingItem)) {
-                    iterator.remove();
-                }
-            }
+            guardingItems.removeIf(this::handleGuardingItemHasEnemiesInRange);
         }
     }
 
@@ -378,26 +379,26 @@ public class BaseItemService {
         }
     }
 
-    private void addGuardingBaseItem(SyncBaseItem syncBaseItem) {
+    private boolean addGuardingBaseItem(SyncBaseItem syncBaseItem) {
         try {
             if (PlanetService.MODE != PlanetMode.MASTER) {
-                return;
+                return false;
             }
 
             if (syncBaseItem.getSyncWeapon() == null || !syncBaseItem.isAlive()) {
-                return;
+                return false;
             }
 
             if (!syncBaseItem.isAlive()) {
-                return;
+                return false;
             }
 
             if (syncBaseItem.getSyncConsumer() != null && !syncBaseItem.getSyncConsumer().isOperating()) {
-                return;
+                return false;
             }
 
             if (handleGuardingItemHasEnemiesInRange(syncBaseItem)) {
-                return;
+                return true;
             }
 
             synchronized (guardingItems) {
@@ -406,6 +407,7 @@ public class BaseItemService {
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }
+        return false;
     }
 
     private boolean handleGuardingItemHasEnemiesInRange(SyncBaseItem guardingItem) {

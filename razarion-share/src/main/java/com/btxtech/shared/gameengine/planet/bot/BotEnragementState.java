@@ -95,12 +95,7 @@ public class BotEnragementState {
             }
         }
         Set<PlayerBase> intruderBases = getAllBases(allIntruders);
-        for (Iterator<PlayerBase> iterator = killsPerBase.keySet().iterator(); iterator.hasNext(); ) {
-            PlayerBase oldIntruder = iterator.next();
-            if (!intruderBases.contains(oldIntruder)) {
-                iterator.remove();
-            }
-        }
+        killsPerBase.keySet().removeIf(oldIntruder -> !intruderBases.contains(oldIntruder));
     }
 
     private Set<PlayerBase> getAllBases(Collection<SyncBaseItem> allIntruders) {
