@@ -6,10 +6,13 @@ import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.gameengine.GameEngine;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.quest.QuestListener;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 
@@ -25,7 +28,7 @@ import java.util.Collection;
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
 // Better name: something with game-control, client control (See: GameLogicService)
-public class StoryboardService {
+public class StoryboardService implements QuestListener {
     // private Logger logger = Logger.getLogger(StoryboardService.class.getName());
     @Inject
     private GameEngine gameEngine;
@@ -39,6 +42,8 @@ public class StoryboardService {
     private BaseItemService baseItemService;
     @Inject
     private CockpitService cockpitService;
+    @Inject
+    private QuestService questService;
     private StoryboardConfig storyboardConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -50,6 +55,7 @@ public class StoryboardService {
         visualUiService.initialise(storyboardConfig.getVisualConfig());
         this.userContext = storyboardConfig.getUserContext();
         cockpitService.init();
+        questService.addQuestListener(this);
     }
 
     public void start() {
@@ -121,5 +127,12 @@ public class StoryboardService {
 
     public StoryboardConfig getStoryboardConfig() {
         return storyboardConfig;
+    }
+
+    @Override
+    public void onQuestPassed(UserContext examinee, QuestConfig questConfig) {
+        if(currentScene != null) {
+            currentScene.onQuestPassed();
+        }
     }
 }

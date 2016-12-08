@@ -207,4 +207,16 @@ public class Scene {
             gameTipService.stop();
         }
     }
+
+    void onQuestPassed() {
+        if (sceneConfig.getQuestConfig() != null) {
+            questVisualizer.showSideBar(null);
+        }
+        if (sceneConfig.getScrollUiQuest() != null) {
+            questVisualizer.showSideBar(null);
+        }
+        if (sceneConfig.getGameTipConfig() != null) {
+            gameTipService.stop();
+        }
+    }
 }

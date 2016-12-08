@@ -144,10 +144,12 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameTipVisualConfig.setCornerMoveDuration(1500);
         gameTipVisualConfig.setCornerMoveDistance(15);
         gameTipVisualConfig.setCornerLength(1);
+        gameTipVisualConfig.setDefaultCommandShape3DId(272501);
         gameTipVisualConfig.setSelectCornerColor(new Color(0, 1, 0));
         gameTipVisualConfig.setSelectShape3DId(272499);
         gameTipVisualConfig.setAttackCommandCornerColor(new Color(1, 0, 0));
         gameTipVisualConfig.setBuildCommandCornerColor(new Color(1, 1, 0));
+        gameTipVisualConfig.setBuildCommandShape3DId(272501);
         gameTipVisualConfig.setHarvestCommandCornerColor(new Color(0, 0, 1));
         gameTipVisualConfig.setMoveCommandCornerColor(new Color(0, 1, 0));
         gameTipVisualConfig.setToBeFinalizedCornerColor(new Color(1, 1, 0));
