@@ -15,8 +15,8 @@ public class GameTipVisualConfig {
     private Integer defaultCommandShape3DId;
     private Color moveCommandCornerColor;
     private Color toBeFinalizedCornerColor;
-    private Integer buildCommandShape3DId;
-    private Color buildCommandCornerColor;
+    private Integer baseItemPlacerShape3DId;
+    private Color baseItemPlacerCornerColor;
     private Color harvestCommandCornerColor;
     private Color attackCommandCornerColor;
 
@@ -92,21 +92,21 @@ public class GameTipVisualConfig {
         return this;
     }
 
-    public Integer getBuildCommandShape3DId() {
-        return buildCommandShape3DId;
+    public Integer getBaseItemPlacerShape3DId() {
+        return baseItemPlacerShape3DId;
     }
 
-    public GameTipVisualConfig setBuildCommandShape3DId(Integer buildCommandShape3DId) {
-        this.buildCommandShape3DId = buildCommandShape3DId;
+    public GameTipVisualConfig setBaseItemPlacerShape3DId(Integer baseItemPlacerShape3DId) {
+        this.baseItemPlacerShape3DId = baseItemPlacerShape3DId;
         return this;
     }
 
-    public Color getBuildCommandCornerColor() {
-        return buildCommandCornerColor;
+    public Color getBaseItemPlacerCornerColor() {
+        return baseItemPlacerCornerColor;
     }
 
-    public GameTipVisualConfig setBuildCommandCornerColor(Color buildCommandCornerColor) {
-        this.buildCommandCornerColor = buildCommandCornerColor;
+    public GameTipVisualConfig setBaseItemPlacerCornerColor(Color baseItemPlacerCornerColor) {
+        this.baseItemPlacerCornerColor = baseItemPlacerCornerColor;
         return this;
     }
 

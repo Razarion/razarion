@@ -92,6 +92,12 @@ public class GameTipService {
         }
     }
 
+    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+        if (tipTaskContainer != null && storyboardService.isMyOwnProperty(syncBaseItem)) {
+            tipTaskContainer.onSpawnSyncItem(syncBaseItem);
+        }
+    }
+
     public void onTaskFailed() {
         try {
             cleanupVisualization();

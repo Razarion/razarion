@@ -73,6 +73,11 @@ public abstract class AbstractTipTask {
 
     }
 
+    // Override ins subclasses
+    protected void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+
+    }
+
     protected void onFailed() {
         cleanup();
         gameTipService.onTaskFailed();
@@ -151,5 +156,4 @@ public abstract class AbstractTipTask {
     Collection<SyncBaseItem> findItemsOfType(int baseItemTypeId) {
         return storyboardService.getMyBase().findItemsOfType(baseItemTypeId);
     }
-
 }

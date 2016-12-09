@@ -45,6 +45,10 @@ public class TipTaskFactory {
                 createAttack(tipTaskContainer, gameTipConfig);
                 break;
             }
+            case START_PLACER: {
+                createStartPlacer(tipTaskContainer, gameTipConfig);
+                break;
+            }
             default:
                 throw new IllegalArgumentException("TipTaskFactory: unknown tip: " + gameTipConfig.getTip());
         }
@@ -53,20 +57,20 @@ public class TipTaskFactory {
 
     private void createBuiltFactory(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.add(createToBeBuildPlacerTipTask(gameTipConfig.getToBeBuiltId()));
-        tipTaskContainer.add(createSendBuildCommandTipTask(gameTipConfig.getToBeBuiltId(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.add(createToBeBuildPlacerTipTask(gameTipConfig.getToBeCreatedId()));
+        tipTaskContainer.add(createSendBuildCommandTipTask(gameTipConfig.getToBeCreatedId(), gameTipConfig.getTerrainPositionHint()));
         tipTaskContainer.addFallback(createIdleItemTipTask(gameTipConfig.getActor()));
         tipTaskContainer.addFallback(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.addFallback(createToBeBuildPlacerTipTask(gameTipConfig.getToBeBuiltId()));
-        tipTaskContainer.addFallback(createSendBuildCommandTipTask(gameTipConfig.getToBeBuiltId(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.addFallback(createToBeBuildPlacerTipTask(gameTipConfig.getToBeCreatedId()));
+        tipTaskContainer.addFallback(createSendBuildCommandTipTask(gameTipConfig.getToBeCreatedId(), gameTipConfig.getTerrainPositionHint()));
     }
 
     private void createFactorizeUnit(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.add(createSendFactorizeCommandTipTask(gameTipConfig.getToBeBuiltId()));
+        tipTaskContainer.add(createSendFactorizeCommandTipTask(gameTipConfig.getToBeCreatedId()));
         tipTaskContainer.addFallback(createIdleItemTipTask(gameTipConfig.getActor()));
         tipTaskContainer.addFallback(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.addFallback(createSendFactorizeCommandTipTask(gameTipConfig.getToBeBuiltId()));
+        tipTaskContainer.addFallback(createSendFactorizeCommandTipTask(gameTipConfig.getToBeCreatedId()));
     }
 
     private void createHarvest(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
@@ -91,6 +95,10 @@ public class TipTaskFactory {
         tipTaskContainer.addFallback(createIdleItemTipTask(gameTipConfig.getActor()));
         tipTaskContainer.addFallback(createSelectTipTask(gameTipConfig.getActor()));
         tipTaskContainer.addFallback(createSendAttackCommandTipTask(null, gameTipConfig.getPlaceConfig()));
+    }
+
+    private void createStartPlacer(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
+        tipTaskContainer.add(createSpawnPlacerTipTask(gameTipConfig.getToBeCreatedId(), gameTipConfig.getTerrainPositionHint()));
     }
 
     private SelectTipTask createSelectTipTask(int itemTypeId) {
@@ -140,4 +148,12 @@ public class TipTaskFactory {
         sendAttackCommandTipTask.init(targetItemTypeId, placeConfig);
         return sendAttackCommandTipTask;
     }
+
+    private SpawnPlacerTipTask createSpawnPlacerTipTask(int spawnItemTypeId, DecimalPosition positionHint) {
+        SpawnPlacerTipTask spawnPlacerTipTask = tipTaskInstance.select(SpawnPlacerTipTask.class).get();
+        spawnPlacerTipTask.init(spawnItemTypeId, positionHint);
+        return spawnPlacerTipTask;
+    }
+
+
 }

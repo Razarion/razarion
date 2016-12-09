@@ -76,4 +76,9 @@ public class GameLogicUiService implements GameLogicDelegate {
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
         gameTipService.onSyncBaseItemIdle(syncBaseItem);
     }
+
+    @Override
+    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+        gameTipService.onSpawnSyncItem(syncBaseItem);
+    }
 }

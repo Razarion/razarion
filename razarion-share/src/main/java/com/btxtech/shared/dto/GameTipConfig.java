@@ -3,10 +3,6 @@ package com.btxtech.shared.dto;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * User: beat
  * Date: 22.08.12
@@ -18,7 +14,8 @@ public class GameTipConfig {
         FABRICATE,
         HARVEST,
         MOVE,
-        ATTACK
+        ATTACK,
+        START_PLACER
         // SCROLL,
         // WATCH_QUEST,
         // LOAD_CONTAINER,
@@ -28,7 +25,7 @@ public class GameTipConfig {
     private Tip tip;
     private int actor;
     private int target;
-    private int toBeBuiltId;
+    private int toBeCreatedId;
     private int resourceId;
     private DecimalPosition terrainPositionHint;
     private PlaceConfig placeConfig;
@@ -60,12 +57,12 @@ public class GameTipConfig {
         return this;
     }
 
-    public int getToBeBuiltId() {
-        return toBeBuiltId;
+    public int getToBeCreatedId() {
+        return toBeCreatedId;
     }
 
-    public GameTipConfig setToBeBuiltId(int toBeBuiltId) {
-        this.toBeBuiltId = toBeBuiltId;
+    public GameTipConfig setToBeCreatedId(int toBeCreatedId) {
+        this.toBeCreatedId = toBeCreatedId;
         return this;
     }
 

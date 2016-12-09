@@ -170,6 +170,7 @@ public class GameLogicService { // Rename to game control or so (See StoryboardS
 
     public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
         System.out.println("GameLogicService.onSpawnSyncItem(): " + syncBaseItem);
+        gameLogicDelegate.ifPresent(delegate -> delegate.onSpawnSyncItem(syncBaseItem));
     }
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {

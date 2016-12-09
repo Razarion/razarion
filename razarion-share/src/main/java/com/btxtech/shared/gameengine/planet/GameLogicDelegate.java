@@ -20,4 +20,6 @@ public interface GameLogicDelegate {
     void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand);
 
     void onSyncBaseItemIdle(SyncBaseItem syncBaseItem);
+
+    void onSpawnSyncItem(SyncBaseItem syncBaseItem);
 }

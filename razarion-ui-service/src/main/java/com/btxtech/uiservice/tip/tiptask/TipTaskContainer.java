@@ -101,4 +101,11 @@ public class TipTaskContainer {
             getCurrentTask().onSyncBaseItemIdle(syncBaseItem);
         }
     }
+
+    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+        if (hasTip()) {
+            getCurrentTask().onSpawnSyncItem(syncBaseItem);
+        }
+    }
+
 }
