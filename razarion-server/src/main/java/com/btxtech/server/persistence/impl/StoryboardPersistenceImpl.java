@@ -581,6 +581,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // Level 3
         addEnemyKillTask(sceneConfigs);
         addNpcEscapeTask(sceneConfigs);
+        addUserSpawnScene2(sceneConfigs); // TODO Tip
         addBuildFactoryTask(sceneConfigs);
         addFactorizeHarvesterTask(sceneConfigs);
         addHarvestTask(sceneConfigs);
@@ -677,7 +678,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(204, 52)).setSpeed(50.0).setCameraLocked(false);
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(204, 52)).setSpeed(50.0).setCameraLocked(true);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetPosition(new DecimalPosition(204, 100)));
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
@@ -773,7 +774,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         sceneConfigs.add(new SceneConfig().setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries. Ich flüchte zum nächsten Rebellen PLanet.").setDuration(4000));
     }
 
-    private void addBuildFactoryTask(List<SceneConfig> sceneConfigs) {
+    private void addUserSpawnScene2(List<SceneConfig> sceneConfigs) {
         // Bot NPC_BOT_OUTPOST_2
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -783,7 +784,18 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botConfigs.add(new BotConfig().setId(NPC_BOT_OUTPOST_2).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Roger").setNpc(true));
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+
+        // Kill NPC_BOT_INSTRUCTOR
+        List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
+        killBotCommandConfigs.add(new KillBotCommandConfig().setBotId(NPC_BOT_INSTRUCTOR));
+        // Build factory Quest
+        sceneConfigs.add(new SceneConfig().setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Basis").setDescription("Platziere deinen Bulldozer und baue Basis auf um Razarion Industries zu besiegen.").setPassedMessage("Ist dieser Dialg notwendig`?").setConditionConfig(conditionConfig).setXp(0)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs));
+    }
+
+    private void addBuildFactoryTask(List<SceneConfig> sceneConfigs) {
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);
@@ -794,11 +806,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
         gameTipConfig.setTarget(BASE_ITEM_TYPE_FACTORY);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(54, 260));
-        // Kill NPC_BOT_INSTRUCTOR
-        List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
-        killBotCommandConfigs.add(new KillBotCommandConfig().setBotId(NPC_BOT_INSTRUCTOR));
 
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Baue eine Fabrik mit deinem Bulldozer").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
     private void addFactorizeHarvesterTask(List<SceneConfig> sceneConfigs) {
@@ -884,7 +893,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER);
         gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(175, 270)));
 
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
 }
