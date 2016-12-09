@@ -124,7 +124,7 @@ button:disabled {
     /* bottom: 0; */
     /* right: 0; */
     /* width: 200px; */
-    height: 400px;
+    height: 450px;
     background-color: rgba(0, 0, 0, 0.5);
     border: 9px solid transparent;
     border-image-source: url('images/Border.png');

@@ -14,7 +14,6 @@
 package com.btxtech.shared.datatypes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -158,12 +157,28 @@ public class Rectangle2D {
         throw new IllegalArgumentException("The point is inside the rectangle");
     }
 
+    public DecimalPosition cornerBottomLeft() {
+        return start;
+    }
+
+    public DecimalPosition cornerBottomRight() {
+        return start.add(width(), 0);
+    }
+
+    public DecimalPosition cornerTopRight() {
+        return end;
+    }
+
+    public DecimalPosition cornerTopLeft() {
+        return start.add(0, height());
+    }
+
     public List<DecimalPosition> toCorners() {
         List<DecimalPosition> corners = new ArrayList<>();
-        corners.add(start);
-        corners.add(start.add(width(), 0));
-        corners.add(end);
-        corners.add(end.sub(width(), 0));
+        corners.add(cornerBottomLeft());
+        corners.add(cornerBottomRight());
+        corners.add(cornerTopRight());
+        corners.add(cornerTopLeft());
         return corners;
     }
 

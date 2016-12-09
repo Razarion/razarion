@@ -5,6 +5,7 @@ import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.clip.ClipCrudeSidebar;
 import com.btxtech.client.editor.ground.GroundSidebar;
+import com.btxtech.client.editor.helper.HelperSideBar;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
@@ -55,6 +56,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button terrainButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Button helperButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -116,6 +121,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("terrainButton")
     private void onTerrainButtonClicked(ClickEvent event) {
+    }
+
+    @EventHandler("helperButton")
+    private void helperButtonClicked(ClickEvent event) {
+        openEditor(HelperSideBar.class);
     }
 
     @EventHandler("slopeButton")
