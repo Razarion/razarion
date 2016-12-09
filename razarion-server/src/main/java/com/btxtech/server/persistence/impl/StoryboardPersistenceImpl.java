@@ -752,7 +752,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.ATTACK);
         gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER);
-        gameTipConfig.setPlaceConfig(new PlaceConfig().setPolygon2D(new Rectangle2D(220, 180, 30, 30).toPolygon()));
+        gameTipConfig.setPlaceConfig(new PlaceConfig().setPolygon2D(new Rectangle2D(223, 174, 35, 35).toPolygon()));
 
         sceneConfigs.add(new SceneConfig().setQuestConfig(questConfig).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true));
     }

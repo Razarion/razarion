@@ -244,10 +244,10 @@ public class SyncItemContainerService {
         });
     }
 
-    public Collection<SyncBaseItem> findEnemyBaseItemWithPlace(int baseItemTypeId, PlayerBase playerBase, PlaceConfig placeConfig) {
+    public Collection<SyncBaseItem> findEnemyBaseItemWithPlace(Integer baseItemTypeId, PlayerBase playerBase, PlaceConfig placeConfig) {
         Collection<SyncBaseItem> result = new ArrayList<>();
         iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            if (syncBaseItem.getItemType().getId() != baseItemTypeId) {
+            if (baseItemTypeId != null && syncBaseItem.getItemType().getId() != baseItemTypeId) {
                 return null;
             }
             if (!playerBase.isEnemy(syncBaseItem.getBase())) {

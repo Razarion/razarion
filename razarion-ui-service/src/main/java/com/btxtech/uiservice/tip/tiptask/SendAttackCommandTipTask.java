@@ -22,11 +22,11 @@ import java.util.Collection;
 public class SendAttackCommandTipTask extends AbstractTipTask {
     @Inject
     private SyncItemContainerService syncItemContainerService;
-    private int actorItemTypeId;
+    private Integer targetItemTypeId;
     private PlaceConfig placeConfig;
 
-    public void init(int actorItemTypeId, PlaceConfig placeConfig) {
-        this.actorItemTypeId = actorItemTypeId;
+    public void init(Integer targetItemTypeId, PlaceConfig placeConfig) {
+        this.targetItemTypeId = targetItemTypeId;
         this.placeConfig = placeConfig;
         activateFailOnSelectionCleared();
     }
@@ -52,9 +52,9 @@ public class SendAttackCommandTipTask extends AbstractTipTask {
     }
 
     public InGameTipVisualization createInGameTip() {
-        Collection<SyncBaseItem> targets = syncItemContainerService.findEnemyBaseItemWithPlace(actorItemTypeId, getPlayerBase(), placeConfig);
+        Collection<SyncBaseItem> targets = syncItemContainerService.findEnemyBaseItemWithPlace(null, getPlayerBase(), placeConfig);
         if (targets.isEmpty()) {
-            throw new IllegalArgumentException("Can not create visualization. No target available to attack. actorItemTypeId: " + actorItemTypeId + " placeConfig: " + placeConfig);
+            throw new IllegalArgumentException("Can not create visualization. No target available to attack. targetItemTypeId: " + targetItemTypeId + " placeConfig: " + placeConfig);
         }
         return new InGameItemTipVisualization(CollectionUtils.getFirst(targets), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getAttackCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId());
     }

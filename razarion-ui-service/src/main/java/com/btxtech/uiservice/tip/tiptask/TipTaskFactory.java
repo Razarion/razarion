@@ -87,10 +87,10 @@ public class TipTaskFactory {
 
     private void createAttack(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.add(createSendAttackCommandTipTask(gameTipConfig.getActor(), gameTipConfig.getPlaceConfig()));
+        tipTaskContainer.add(createSendAttackCommandTipTask(null, gameTipConfig.getPlaceConfig()));
         tipTaskContainer.addFallback(createIdleItemTipTask(gameTipConfig.getActor()));
         tipTaskContainer.addFallback(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.addFallback(createSendAttackCommandTipTask(gameTipConfig.getActor(), gameTipConfig.getPlaceConfig()));
+        tipTaskContainer.addFallback(createSendAttackCommandTipTask(null, gameTipConfig.getPlaceConfig()));
     }
 
     private SelectTipTask createSelectTipTask(int itemTypeId) {
@@ -135,9 +135,9 @@ public class TipTaskFactory {
         return sendHarvestCommandTipTask;
     }
 
-    private SendAttackCommandTipTask createSendAttackCommandTipTask(int actorItemTypeId, PlaceConfig placeConfig) {
+    private SendAttackCommandTipTask createSendAttackCommandTipTask(Integer targetItemTypeId, PlaceConfig placeConfig) {
         SendAttackCommandTipTask sendAttackCommandTipTask = tipTaskInstance.select(SendAttackCommandTipTask.class).get();
-        sendAttackCommandTipTask.init(actorItemTypeId, placeConfig);
+        sendAttackCommandTipTask.init(targetItemTypeId, placeConfig);
         return sendAttackCommandTipTask;
     }
 }
