@@ -18,11 +18,11 @@ public class GameTipConfig {
         FABRICATE,
         HARVEST,
         MOVE,
-        ATTACK,
-        SCROLL,
-        WATCH_QUEST,
-        LOAD_CONTAINER,
-        UNLOAD_CONTAINER;
+        ATTACK
+        // SCROLL,
+        // WATCH_QUEST,
+        // LOAD_CONTAINER,
+        // UNLOAD_CONTAINER;
     }
 
     private Tip tip;

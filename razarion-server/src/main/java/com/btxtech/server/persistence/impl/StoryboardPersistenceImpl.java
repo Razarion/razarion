@@ -568,15 +568,15 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addEnemyBot(sceneConfigs);
         addScrollOverTerrain(sceneConfigs);
         addBotSpawnScene(sceneConfigs);
-        addUserSpawnScene(sceneConfigs);
+        addUserSpawnScene(sceneConfigs); // TODO Tip
         addBotMoveScene(sceneConfigs);
         addScrollToOwnScene(sceneConfigs);
         addUserMoveScene(sceneConfigs);
         // Level 2
         addNpcHarvestAttack(sceneConfigs);
-        addFindEnemyBase(sceneConfigs);
-        addPickBoxTask(sceneConfigs);
-        addBoxSpawnTask(sceneConfigs);
+        addFindEnemyBase(sceneConfigs); // TODO Tip
+        addPickBoxTask(sceneConfigs); // TODO Tip
+        addBoxSpawnTask(sceneConfigs); // TODO Tip
         addAttackTask(sceneConfigs);
         // Level 3
         addEnemyKillTask(sceneConfigs);
@@ -732,13 +732,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(BOX_ITEM_TYPE).setPosition(new DecimalPosition(110, 80)));
         // Pick box quest
         QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
-
         sceneConfigs.add(new SceneConfig().setBoxItemPositions(boxItemPositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
     }
 
     private void addBoxSpawnTask(List<SceneConfig> sceneConfigs) {
         // Use inventory item quest
-        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.INVENTORY_ITEM_PLACED).setComparisonConfig(new ComparisonConfig().setCount(1));
+        // ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.INVENTORY_ITEM_PLACED).setComparisonConfig(new ComparisonConfig().setCount(1));
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1));
         BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig = new BotRemoveOwnItemCommandConfig().setBotId(ENEMY_BOT).setBaseItemType2RemoveId(BASE_ITEM_TYPE_ATTACKER);
         sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setXp(1).setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotRemoveOwnItemCommandConfigs(Collections.singletonList(botRemoveOwnItemCommandConfig)));
     }
@@ -748,7 +748,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> attackItemTypeCount = new HashMap<>();
         attackItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
         QuestConfig questConfig = new QuestConfig().setXp(10).setTitle("Zerstöre die Abbaufahrzeuge").setDescription("Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(attackItemTypeCount)));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(questConfig).setWait4LevelUpDialog(true));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.ATTACK);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER);
+        gameTipConfig.setPlaceConfig(new PlaceConfig().setPolygon2D(new Rectangle2D(220, 180, 30, 30).toPolygon()));
+
+        sceneConfigs.add(new SceneConfig().setQuestConfig(questConfig).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true));
     }
 
     private void addEnemyKillTask(List<SceneConfig> sceneConfigs) {
@@ -782,11 +788,17 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.BUILD);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
+        gameTipConfig.setTarget(BASE_ITEM_TYPE_FACTORY);
+        gameTipConfig.setTerrainPositionHint(new DecimalPosition(54, 260));
         // Kill NPC_BOT_INSTRUCTOR
         List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
         killBotCommandConfigs.add(new KillBotCommandConfig().setBotId(NPC_BOT_INSTRUCTOR));
 
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs));
     }
 
     private void addFactorizeHarvesterTask(List<SceneConfig> sceneConfigs) {
@@ -797,14 +809,25 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // Kill NPC_BOT_OUTPOST
         List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
         killBotCommandConfigs.add(new KillBotCommandConfig().setBotId(NPC_BOT_OUTPOST));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY);
+        gameTipConfig.setToBeBuiltId(BASE_ITEM_TYPE_HARVESTER);
 
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs));
     }
 
     private void addHarvestTask(List<SceneConfig> sceneConfigs) {
         // Harvest quest
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.HARVEST);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_HARVESTER);
+        gameTipConfig.setResourceId(RESOURCE_ITEM_TYPE);
+        gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(64, 219)));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
     private void addHarvestExplanationTask(List<SceneConfig> sceneConfigs) {
@@ -817,7 +840,12 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY);
+        gameTipConfig.setToBeBuiltId(BASE_ITEM_TYPE_ATTACKER);
+
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
     private void addNpcAttackTowerCommand(List<SceneConfig> sceneConfigs) {
@@ -837,13 +865,25 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER, 2);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY);
+        gameTipConfig.setToBeBuiltId(BASE_ITEM_TYPE_ATTACKER);
+
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
     private void addKillTower(List<SceneConfig> sceneConfigs) {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_TOWER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.ATTACK);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER);
+        gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(175, 270)));
+
         sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
