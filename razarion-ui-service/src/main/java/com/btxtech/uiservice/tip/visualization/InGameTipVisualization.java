@@ -35,29 +35,18 @@ public abstract class InGameTipVisualization {
 
     List<ModelMatrices> createCornerModelMatrices(Vertex position, long timeStamp) {
         double distance = moveDistance - moveDistance * (double) (timeStamp % duration) / (double) duration;
+        Matrix4 positionMatrix = Matrix4.createTranslation(position);
         Matrix4 animationMatrix = Matrix4.createTranslation(distance, -distance, 0);
-        Matrix4 matrix1 = Matrix4.createTranslation(position).multiply(animationMatrix);
-        Matrix4 matrix2 = Matrix4.createTranslation(position).multiply(Matrix4.ROT_90_Z.multiply(animationMatrix));
-        Matrix4 matrix3 = Matrix4.createTranslation(position).multiply(Matrix4.ROT_180_Z.multiply(animationMatrix));
-        Matrix4 matrix4 = Matrix4.createTranslation(position).multiply(Matrix4.ROT_270_Z.multiply(animationMatrix));
-
-        //Matrix4 matrix2 = Matrix4.createTranslation(position).multiply(Matrix4.createTranslation(distance, -distance, 0)).multiply(Matrix4.ROT_90_Z);
-        // Matrix4 matrix3 = matrix1.multiply(Matrix4.ROT_180_Z);
-        // Matrix4 matrix4 = matrix1.multiply(Matrix4.ROT_270_Z);
-        //  Matrix4 matrixItem = Matrix4.createTranslation(position);
+        Matrix4 matrix1 = positionMatrix.multiply(animationMatrix);
+        Matrix4 matrix2 = positionMatrix.multiply(Matrix4.ROT_90_Z.multiply(animationMatrix));
+        Matrix4 matrix3 = positionMatrix.multiply(Matrix4.ROT_180_Z.multiply(animationMatrix));
+        Matrix4 matrix4 = positionMatrix.multiply(Matrix4.ROT_270_Z.multiply(animationMatrix));
 
         List<ModelMatrices> result = new ArrayList<>();
         result.add(new ModelMatrices(matrix1));
         result.add(new ModelMatrices(matrix2));
         result.add(new ModelMatrices(matrix3));
         result.add(new ModelMatrices(matrix4));
-
-
-//        result = new ArrayList<>();
-//        result.add(new ModelMatrices(matrixItem));
-//        result.add(new ModelMatrices(Matrix4.createTranslation(10, -10, 0)));
-//        result.add(new ModelMatrices(Matrix4.createTranslation(-10, 10, 0)));
-//        result.add(new ModelMatrices(Matrix4.createTranslation(-10, -10, 0)));
 
         return result;
 
