@@ -150,7 +150,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameTipVisualConfig.setAttackCommandCornerColor(new Color(1, 0, 0));
         gameTipVisualConfig.setBaseItemPlacerCornerColor(new Color(1, 1, 0));
         gameTipVisualConfig.setBaseItemPlacerShape3DId(272499);
-        gameTipVisualConfig.setHarvestCommandCornerColor(new Color(0, 0, 1));
+        gameTipVisualConfig.setGrabCommandCornerColor(new Color(0, 0, 1));
         gameTipVisualConfig.setMoveCommandCornerColor(new Color(0, 1, 0));
         gameTipVisualConfig.setToBeFinalizedCornerColor(new Color(1, 1, 0));
         return gameTipVisualConfig;
@@ -568,20 +568,20 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addEnemyBot(sceneConfigs);
         addScrollOverTerrain(sceneConfigs);
         addBotSpawnScene(sceneConfigs);
-        addUserSpawnScene(sceneConfigs); // TODO Tip
+        addUserSpawnScene(sceneConfigs);
         addBotMoveScene(sceneConfigs);
         addScrollToOwnScene(sceneConfigs);
         addUserMoveScene(sceneConfigs);
         // Level 2
         addNpcHarvestAttack(sceneConfigs);
         addFindEnemyBase(sceneConfigs); // TODO Tip
-        addPickBoxTask(sceneConfigs); // TODO Tip
+        addPickBoxTask(sceneConfigs);
         addBoxSpawnTask(sceneConfigs); // TODO Tip
         addAttackTask(sceneConfigs);
         // Level 3
         addEnemyKillTask(sceneConfigs);
         addNpcEscapeTask(sceneConfigs);
-        addUserSpawnScene2(sceneConfigs); // TODO Tip
+        addUserSpawnScene2(sceneConfigs);
         addBuildFactoryTask(sceneConfigs);
         addFactorizeHarvesterTask(sceneConfigs);
         addHarvestTask(sceneConfigs);
@@ -677,7 +677,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.START_PLACER);
-        gameTipConfig.setToBeCreatedId(BASE_ITEM_TYPE_BULLDOZER);
+        gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_BULLDOZER);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(128, 80));
 
         sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setCameraConfig(cameraConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden")));
@@ -739,7 +739,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(BOX_ITEM_TYPE).setPosition(new DecimalPosition(110, 80)));
         // Pick box quest
         QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
-        sceneConfigs.add(new SceneConfig().setBoxItemPositions(boxItemPositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.PICK_BOX);
+        gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
+        gameTipConfig.setToGrabItemTypeId(BOX_ITEM_TYPE);
+
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setBoxItemPositions(boxItemPositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
     }
 
     private void addBoxSpawnTask(List<SceneConfig> sceneConfigs) {
@@ -796,7 +802,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.START_PLACER);
-        gameTipConfig.setToBeCreatedId(BASE_ITEM_TYPE_BULLDOZER);
+        gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_BULLDOZER);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(60, 250));
 
         // Kill NPC_BOT_INSTRUCTOR
@@ -833,7 +839,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY);
-        gameTipConfig.setToBeCreatedId(BASE_ITEM_TYPE_HARVESTER);
+        gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_HARVESTER);
 
         sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs));
     }
@@ -845,7 +851,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.HARVEST);
         gameTipConfig.setActor(BASE_ITEM_TYPE_HARVESTER);
-        gameTipConfig.setResourceId(RESOURCE_ITEM_TYPE);
+        gameTipConfig.setToGrabItemTypeId(RESOURCE_ITEM_TYPE);
         gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(64, 219)));
         sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
@@ -863,7 +869,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY);
-        gameTipConfig.setToBeCreatedId(BASE_ITEM_TYPE_ATTACKER);
+        gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_ATTACKER);
 
         sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
@@ -889,7 +895,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY);
-        gameTipConfig.setToBeCreatedId(BASE_ITEM_TYPE_ATTACKER);
+        gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_ATTACKER);
 
         sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }

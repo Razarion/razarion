@@ -15,7 +15,8 @@ public class GameTipConfig {
         HARVEST,
         MOVE,
         ATTACK,
-        START_PLACER
+        START_PLACER,
+        PICK_BOX
         // SCROLL,
         // WATCH_QUEST,
         // LOAD_CONTAINER,
@@ -25,8 +26,8 @@ public class GameTipConfig {
     private Tip tip;
     private int actor;
     private int target;
-    private int toBeCreatedId;
-    private int resourceId;
+    private int toCreatedItemTypeId;
+    private int toGrabItemTypeId;
     private DecimalPosition terrainPositionHint;
     private PlaceConfig placeConfig;
 
@@ -57,12 +58,12 @@ public class GameTipConfig {
         return this;
     }
 
-    public int getToBeCreatedId() {
-        return toBeCreatedId;
+    public int getToCreatedItemTypeId() {
+        return toCreatedItemTypeId;
     }
 
-    public GameTipConfig setToBeCreatedId(int toBeCreatedId) {
-        this.toBeCreatedId = toBeCreatedId;
+    public GameTipConfig setToCreatedItemTypeId(int toCreatedItemTypeId) {
+        this.toCreatedItemTypeId = toCreatedItemTypeId;
         return this;
     }
 
@@ -75,12 +76,12 @@ public class GameTipConfig {
         return this;
     }
 
-    public int getResourceId() {
-        return resourceId;
+    public int getToGrabItemTypeId() {
+        return toGrabItemTypeId;
     }
 
-    public GameTipConfig setResourceId(int resourceId) {
-        this.resourceId = resourceId;
+    public GameTipConfig setToGrabItemTypeId(int toGrabItemTypeId) {
+        this.toGrabItemTypeId = toGrabItemTypeId;
         return this;
     }
 

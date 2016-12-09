@@ -130,22 +130,40 @@ public class SyncItemContainerService {
      *
      * @param itemIteratorHandler syncItem : Function<SyncResourceItem, T> returns null if the iteration shall continue T if the iteration shall stop
      */
-    private <T> T iterateOverResourceItems(boolean includeDead, SyncBaseItem ignoreMe, T defaultReturn, Function<SyncResourceItem, T> itemIteratorHandler) {
+    private <T> T iterateOverResourceItems(T defaultReturn, Function<SyncResourceItem, T> itemIteratorHandler) {
         synchronized (items) {
             for (SyncItem syncItem : items.values()) {
-                if (ignoreMe != null && ignoreMe.equals(syncItem)) {
-                    continue;
-                }
-
                 if (!(syncItem instanceof SyncResourceItem)) {
                     continue;
                 }
 
                 SyncResourceItem resourceItem = (SyncResourceItem) syncItem;
-                if (!includeDead && !resourceItem.isAlive()) {
+                if (!resourceItem.isAlive()) {
                     continue;
                 }
                 T result = itemIteratorHandler.apply(resourceItem);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return defaultReturn;
+    }
+
+    /**
+     * Calls function for every sync box item
+     *
+     * @param itemIteratorHandler syncItem : Function<SyncBoxItem, T> returns null if the iteration shall continue T if the iteration shall stop
+     */
+    private <T> T iterateOverBoxItems(T defaultReturn, Function<SyncBoxItem, T> itemIteratorHandler) {
+        synchronized (items) {
+            for (SyncItem syncItem : items.values()) {
+                if (!(syncItem instanceof SyncBoxItem)) {
+                    continue;
+                }
+
+                SyncBoxItem syncBoxItem = (SyncBoxItem) syncItem;
+                T result = itemIteratorHandler.apply(syncBoxItem);
                 if (result != null) {
                     return result;
                 }
@@ -304,7 +322,7 @@ public class SyncItemContainerService {
 
     public Collection<SyncResourceItem> findResourceItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {
         Collection<SyncResourceItem> result = new ArrayList<>();
-        iterateOverResourceItems(false, null, null, syncResourceItem -> {
+        iterateOverResourceItems(null, syncResourceItem -> {
             if (syncResourceItem.getItemType().getId() != resourceItemTypeId) {
                 return null;
             }
@@ -316,6 +334,20 @@ public class SyncItemContainerService {
         return result;
     }
 
+    public Collection<SyncBoxItem> findBoxItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {
+        Collection<SyncBoxItem> result = new ArrayList<>();
+        iterateOverBoxItems(null, syncBoxItem -> {
+            if (syncBoxItem.getItemType().getId() != resourceItemTypeId) {
+                return null;
+            }
+            if (resourceSelection != null && !resourceSelection.checkInside(syncBoxItem)) {
+                return null;
+            }
+            result.add(syncBoxItem);
+            return null;
+        });
+        return result;
+    }
 
     public Collection<SyncBaseItem> getSyncBaseItems4BaseItemType(BaseItemType baseItemType) {
         Collection<SyncBaseItem> result = new ArrayList<>();

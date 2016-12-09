@@ -17,7 +17,7 @@ public class GameTipVisualConfig {
     private Color toBeFinalizedCornerColor;
     private Integer baseItemPlacerShape3DId;
     private Color baseItemPlacerCornerColor;
-    private Color harvestCommandCornerColor;
+    private Color grabCommandCornerColor;
     private Color attackCommandCornerColor;
 
     public double getCornerLength() {
@@ -110,12 +110,12 @@ public class GameTipVisualConfig {
         return this;
     }
 
-    public Color getHarvestCommandCornerColor() {
-        return harvestCommandCornerColor;
+    public Color getGrabCommandCornerColor() {
+        return grabCommandCornerColor;
     }
 
-    public GameTipVisualConfig setHarvestCommandCornerColor(Color harvestCommandCornerColor) {
-        this.harvestCommandCornerColor = harvestCommandCornerColor;
+    public GameTipVisualConfig setGrabCommandCornerColor(Color grabCommandCornerColor) {
+        this.grabCommandCornerColor = grabCommandCornerColor;
         return this;
     }
 

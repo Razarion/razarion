@@ -49,6 +49,10 @@ public class TipTaskFactory {
                 createStartPlacer(tipTaskContainer, gameTipConfig);
                 break;
             }
+            case PICK_BOX: {
+                createPickBox(tipTaskContainer, gameTipConfig);
+                break;
+            }
             default:
                 throw new IllegalArgumentException("TipTaskFactory: unknown tip: " + gameTipConfig.getTip());
         }
@@ -57,28 +61,28 @@ public class TipTaskFactory {
 
     private void createBuiltFactory(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.add(createToBeBuildPlacerTipTask(gameTipConfig.getToBeCreatedId()));
-        tipTaskContainer.add(createSendBuildCommandTipTask(gameTipConfig.getToBeCreatedId(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.add(createToBeBuildPlacerTipTask(gameTipConfig.getToCreatedItemTypeId()));
+        tipTaskContainer.add(createSendBuildCommandTipTask(gameTipConfig.getToCreatedItemTypeId(), gameTipConfig.getTerrainPositionHint()));
         tipTaskContainer.addFallback(createIdleItemTipTask(gameTipConfig.getActor()));
         tipTaskContainer.addFallback(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.addFallback(createToBeBuildPlacerTipTask(gameTipConfig.getToBeCreatedId()));
-        tipTaskContainer.addFallback(createSendBuildCommandTipTask(gameTipConfig.getToBeCreatedId(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.addFallback(createToBeBuildPlacerTipTask(gameTipConfig.getToCreatedItemTypeId()));
+        tipTaskContainer.addFallback(createSendBuildCommandTipTask(gameTipConfig.getToCreatedItemTypeId(), gameTipConfig.getTerrainPositionHint()));
     }
 
     private void createFactorizeUnit(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.add(createSendFactorizeCommandTipTask(gameTipConfig.getToBeCreatedId()));
+        tipTaskContainer.add(createSendFactorizeCommandTipTask(gameTipConfig.getToCreatedItemTypeId()));
         tipTaskContainer.addFallback(createIdleItemTipTask(gameTipConfig.getActor()));
         tipTaskContainer.addFallback(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.addFallback(createSendFactorizeCommandTipTask(gameTipConfig.getToBeCreatedId()));
+        tipTaskContainer.addFallback(createSendFactorizeCommandTipTask(gameTipConfig.getToCreatedItemTypeId()));
     }
 
     private void createHarvest(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.add(createSendHarvestCommandTipTask(gameTipConfig.getResourceId(), gameTipConfig.getPlaceConfig()));
+        tipTaskContainer.add(createSendHarvestCommandTipTask(gameTipConfig.getToGrabItemTypeId(), gameTipConfig.getPlaceConfig()));
         tipTaskContainer.addFallback(createIdleItemTipTask(gameTipConfig.getActor()));
         tipTaskContainer.addFallback(createSelectTipTask(gameTipConfig.getActor()));
-        tipTaskContainer.addFallback(createSendHarvestCommandTipTask(gameTipConfig.getResourceId(), gameTipConfig.getPlaceConfig()));
+        tipTaskContainer.addFallback(createSendHarvestCommandTipTask(gameTipConfig.getToGrabItemTypeId(), gameTipConfig.getPlaceConfig()));
     }
 
     private void createMove(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
@@ -98,7 +102,15 @@ public class TipTaskFactory {
     }
 
     private void createStartPlacer(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
-        tipTaskContainer.add(createSpawnPlacerTipTask(gameTipConfig.getToBeCreatedId(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.add(createSpawnPlacerTipTask(gameTipConfig.getToCreatedItemTypeId(), gameTipConfig.getTerrainPositionHint()));
+    }
+
+    private void createPickBox(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
+        tipTaskContainer.add(createSelectTipTask(gameTipConfig.getActor()));
+        tipTaskContainer.add(createSendPickupBoxCommandTipTask(gameTipConfig.getToGrabItemTypeId()));
+        tipTaskContainer.addFallback(createIdleItemTipTask(gameTipConfig.getActor()));
+        tipTaskContainer.addFallback(createSelectTipTask(gameTipConfig.getActor()));
+        tipTaskContainer.addFallback(createSendPickupBoxCommandTipTask(gameTipConfig.getToGrabItemTypeId()));
     }
 
     private SelectTipTask createSelectTipTask(int itemTypeId) {
@@ -155,5 +167,9 @@ public class TipTaskFactory {
         return spawnPlacerTipTask;
     }
 
-
+    private AbstractTipTask createSendPickupBoxCommandTipTask(int boxItemTypeId) {
+        SendPickupBoxCommandTipTask sendPickupBoxCommandTipTask = tipTaskInstance.select(SendPickupBoxCommandTipTask.class).get();
+        sendPickupBoxCommandTipTask.init(boxItemTypeId);
+        return sendPickupBoxCommandTipTask;
+    }
 }
