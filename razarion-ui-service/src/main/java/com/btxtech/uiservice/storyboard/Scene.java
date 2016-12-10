@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
@@ -19,7 +20,9 @@ import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
+import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.terrain.TerrainScrollListener;
 import com.btxtech.uiservice.tip.GameTipService;
 
 import javax.enterprise.context.Dependent;
@@ -33,7 +36,7 @@ import java.util.logging.Logger;
  */
 @Dependent
 // Better name: something with game-control
-public class Scene {
+public class Scene implements TerrainScrollListener {
     private Logger logger = Logger.getLogger(Scene.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -78,6 +81,7 @@ public class Scene {
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
     private boolean hasCompletionCallback;
+    private boolean scrollBouncePrevention = true;
 
     public void init(UserContext userContext, SceneConfig sceneConfig) {
         this.userContext = userContext;
@@ -150,11 +154,9 @@ public class Scene {
             simpleExecutorService.schedule(sceneConfig.getDuration(), this::onComplete, SimpleExecutorService.Type.UNSPECIFIED);
         }
         if (sceneConfig.getScrollUiQuest() != null) {
+            scrollBouncePrevention = false;
             questVisualizer.showSideBar(sceneConfig.getScrollUiQuest());
-            terrainScrollHandler.setPositionListener(sceneConfig.getScrollUiQuest().getScrollTargetRectangle(), () -> {
-                abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
-                levelService.increaseXp(userContext, sceneConfig.getScrollUiQuest().getXp());
-            });
+            terrainScrollHandler.addTerrainScrollListener(this);
         }
         if (sceneConfig.getBoxItemPositions() != null) {
             boxService.dropBoxes(sceneConfig.getBoxItemPositions());
@@ -180,7 +182,16 @@ public class Scene {
         terrainScrollHandler.executeCameraConfig(cameraConfig, Optional.of(this::onComplete));
     }
 
-    public void onComplete() {
+    @Override
+    public void onScroll(ViewField viewField, Rectangle2D currentAabb) {
+        if (!scrollBouncePrevention && viewField.isInside(sceneConfig.getScrollUiQuest().getScrollTargetRectangle())) {
+            scrollBouncePrevention = true;
+            abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
+            levelService.increaseXp(userContext, sceneConfig.getScrollUiQuest().getXp());
+        }
+    }
+
+    private void onComplete() {
         if (completionCallbackCount == 0) {
             logger.severe("completionCallbackCount is already zero");
         }
@@ -206,13 +217,14 @@ public class Scene {
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.stop();
         }
+        if (sceneConfig.getScrollUiQuest() != null) {
+            terrainScrollHandler.removeTerrainScrollListener(this);
+            questVisualizer.showSideBar(null);
+        }
     }
 
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
-            questVisualizer.showSideBar(null);
-        }
-        if (sceneConfig.getScrollUiQuest() != null) {
             questVisualizer.showSideBar(null);
         }
         if (sceneConfig.getGameTipConfig() != null) {

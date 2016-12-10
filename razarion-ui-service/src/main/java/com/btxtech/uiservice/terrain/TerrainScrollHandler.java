@@ -13,6 +13,8 @@ import com.btxtech.uiservice.renderer.ViewField;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -53,10 +55,9 @@ public class TerrainScrollHandler {
     private boolean scrollDisabled;
     private SimpleScheduledFuture simpleScheduledFuture;
     private SimpleScheduledFuture moveHandler;
-    private Rectangle2D destination2Scroll;
-    private Runnable destination2ScrollCallback;
     private ViewField currentViewField;
     private Rectangle2D currentAabb;
+    private Collection<TerrainScrollListener> terrainScrollListeners = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -179,12 +180,8 @@ public class TerrainScrollHandler {
         // TODO check if camera is in valid playground filed. Also check in CollisionService.correctPosition()
         setCameraPosition(camera.getTranslateX() + scrollX, camera.getTranslateY() + scrollY);
 
-        if (destination2Scroll != null && destination2ScrollCallback != null) {
-            if (projectionTransformation.calculateViewField(0).isInside(destination2Scroll)) {
-                destination2Scroll = null;
-                destination2ScrollCallback.run();
-                destination2ScrollCallback = null;
-            }
+        for (TerrainScrollListener terrainScrollListener : terrainScrollListeners) {
+            terrainScrollListener.onScroll(currentViewField, currentAabb);
         }
     }
 
@@ -232,9 +229,12 @@ public class TerrainScrollHandler {
         currentAabb = currentViewField.calculateAabbRectangle();
     }
 
-    public void setPositionListener(Rectangle2D destination2Scroll, Runnable completionCallback) {
-        this.destination2Scroll = destination2Scroll;
-        this.destination2ScrollCallback = completionCallback;
+    public void addTerrainScrollListener(TerrainScrollListener terrainScrollListener) {
+        terrainScrollListeners.add(terrainScrollListener);
+    }
+
+    public void removeTerrainScrollListener(TerrainScrollListener terrainScrollListener) {
+        terrainScrollListeners.remove(terrainScrollListener);
     }
 
     public ViewField getCurrentViewField() {
