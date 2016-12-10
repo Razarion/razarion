@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.storyboard;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
@@ -183,7 +182,7 @@ public class Scene implements TerrainScrollListener {
     }
 
     @Override
-    public void onScroll(ViewField viewField, Rectangle2D currentAabb) {
+    public void onScroll(ViewField viewField) {
         if (!scrollBouncePrevention && viewField.isInside(sceneConfig.getScrollUiQuest().getScrollTargetRectangle())) {
             scrollBouncePrevention = true;
             abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());

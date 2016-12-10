@@ -57,6 +57,6 @@ public class SendHarvestCommandTipTask extends AbstractTipTask {
         if (syncResourceItems.isEmpty()) {
             throw new IllegalArgumentException("Can not create game tip. No resource available to mark: " + resourceSelection);
         }
-        return new InGameItemTipVisualization(CollectionUtils.getFirst(syncResourceItems), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId());
+        return new InGameItemTipVisualization(CollectionUtils.getFirst(syncResourceItems), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

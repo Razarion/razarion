@@ -44,7 +44,7 @@ public class SpawnPlacerTipTask extends AbstractTipTask {
 
     @Override
     public InGameTipVisualization createInGameTip() {
-        return new InGamePositionTipVisualization(terrainService.getPosition3d(positionHint), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getBaseItemPlacerCornerColor(), getGameTipVisualConfig().getBaseItemPlacerShape3DId());
+        return new InGamePositionTipVisualization(terrainService.getPosition3d(positionHint), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getBaseItemPlacerCornerColor(), getGameTipVisualConfig().getBaseItemPlacerShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 
     @Override

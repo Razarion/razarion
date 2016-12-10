@@ -35,7 +35,8 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
     public void activate(InGameTipVisualization inGameTipVisualization) {
         this.inGameTipVisualization = inGameTipVisualization;
         setupCorners();
-        setupImage();
+        setupShape3D();
+        setupOutOfViewShape3D();
         active = true;
     }
 
@@ -43,6 +44,11 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
         active = false;
         clear();
         this.inGameTipVisualization = null;
+    }
+
+    @Override
+    protected void preRender(long timeStamp) {
+        inGameTipVisualization.preRender();
     }
 
     private void setupCorners() {
@@ -56,7 +62,7 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
         compositeRenderer.fillBuffers();
     }
 
-    private void setupImage() {
+    private void setupShape3D() {
         if (inGameTipVisualization.getShape3DId() == null) {
             logger.warning("TipRenderTask: no shape3DId for InGameTipVisualization: " + inGameTipVisualization);
             return;
@@ -79,5 +85,31 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
         }
         add(modelRenderer);
     }
+
+
+    private void setupOutOfViewShape3D() {
+        if (inGameTipVisualization.getOutOfViewShape3DId() == null) {
+            logger.warning("TipRenderTask: no getOutOfViewShape3DId for InGameTipVisualization: " + inGameTipVisualization);
+            return;
+        }
+
+        ModelRenderer<InGameTipVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        modelRenderer.init(inGameTipVisualization, timeStamp -> inGameTipVisualization.provideOutOfViewShape3DModelMatrices());
+
+        Shape3D shape3D = shape3DUiService.getShape3D(inGameTipVisualization.getOutOfViewShape3DId());
+        for (Element3D element3D : shape3D.getElement3Ds()) {
+            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();
+                renderComposite.init(vertexContainer);
+                renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
+                renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
+                modelRenderer.add(RenderUnitControl.TERRAIN_TIP_IMAGE, renderComposite);
+                renderComposite.fillBuffers();
+            }
+        }
+        add(modelRenderer);
+    }
+
 
 }

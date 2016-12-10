@@ -48,6 +48,6 @@ public class SendMoveCommandTipTask extends AbstractTipTask {
 
     @Override
     public InGameTipVisualization createInGameTip() {
-        return new InGamePositionTipVisualization(terrainService.getPosition3d(position), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getMoveCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId());
+        return new InGamePositionTipVisualization(terrainService.getPosition3d(position), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getMoveCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

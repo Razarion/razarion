@@ -181,7 +181,7 @@ public class TerrainScrollHandler {
         setCameraPosition(camera.getTranslateX() + scrollX, camera.getTranslateY() + scrollY);
 
         for (TerrainScrollListener terrainScrollListener : terrainScrollListeners) {
-            terrainScrollListener.onScroll(currentViewField, currentAabb);
+            terrainScrollListener.onScroll(currentViewField);
         }
     }
 

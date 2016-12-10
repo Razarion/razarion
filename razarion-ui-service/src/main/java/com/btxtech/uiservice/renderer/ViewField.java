@@ -161,6 +161,11 @@ public class ViewField {
         return viewPolygon.isInside(rectangle2D.toCorners());
     }
 
+    public boolean isInside(DecimalPosition decimalPosition) {
+        Polygon2D viewPolygon = new Polygon2D(toList());
+        return viewPolygon.isInside(decimalPosition);
+    }
+
     public DecimalPosition calculateCenter() {
         if (hasNullPosition()) {
             throw new IllegalStateException("Can not calculate center if a position is null");

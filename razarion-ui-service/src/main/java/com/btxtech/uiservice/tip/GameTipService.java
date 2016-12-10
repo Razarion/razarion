@@ -8,6 +8,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
 import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
 import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
 import com.btxtech.uiservice.tip.tiptask.TipTaskFactory;
@@ -24,7 +25,6 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class GameTipService {
-    public static final long TERRAIN_HINT_DURATION_MILLIS = 1000;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -36,6 +36,8 @@ public class GameTipService {
     private PlanetService planetService;
     @Inject
     private StoryboardService storyboardService;
+    @Inject
+    private TerrainScrollHandler terrainScrollHandler;
     private TipTaskContainer tipTaskContainer;
     private InGameTipVisualization inGameTipVisualization;
 
@@ -128,6 +130,8 @@ public class GameTipService {
     private void startVisualization(AbstractTipTask currentTipTask) {
         inGameTipVisualization = currentTipTask.createInGameTip();
         if (inGameTipVisualization != null) {
+            terrainScrollHandler.addTerrainScrollListener(inGameTipVisualization);
+            inGameTipVisualization.onScroll(terrainScrollHandler.getCurrentViewField());
             tipRenderTask.activate(inGameTipVisualization);
         }
     }
@@ -135,6 +139,7 @@ public class GameTipService {
     private void cleanupVisualization() {
         if (inGameTipVisualization != null) {
             tipRenderTask.deactivate(inGameTipVisualization);
+            terrainScrollHandler.removeTerrainScrollListener(inGameTipVisualization);
             inGameTipVisualization = null;
         }
     }

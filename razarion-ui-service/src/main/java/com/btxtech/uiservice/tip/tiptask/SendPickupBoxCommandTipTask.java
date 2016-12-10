@@ -49,7 +49,7 @@ public class SendPickupBoxCommandTipTask extends AbstractTipTask {
         if (syncBoxItems.isEmpty()) {
             throw new IllegalArgumentException("Can not create game tip. No box available to mark: " + boxItemTypeId);
         }
-        return new InGameItemTipVisualization(CollectionUtils.getFirst(syncBoxItems), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId());
+        return new InGameItemTipVisualization(CollectionUtils.getFirst(syncBoxItems), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 
     @Override

@@ -11,6 +11,7 @@ public class GameTipVisualConfig {
     private double cornerMoveDistance;
     private int cornerMoveDuration;
     private Integer selectShape3DId;
+    private Integer outOfViewShape3DId;
     private Color selectCornerColor;
     private Integer defaultCommandShape3DId;
     private Color moveCommandCornerColor;
@@ -53,6 +54,15 @@ public class GameTipVisualConfig {
 
     public GameTipVisualConfig setSelectShape3DId(Integer selectShape3DId) {
         this.selectShape3DId = selectShape3DId;
+        return this;
+    }
+
+    public Integer getOutOfViewShape3DId() {
+        return outOfViewShape3DId;
+    }
+
+    public GameTipVisualConfig setOutOfViewShape3DId(Integer outOfViewShape3DId) {
+        this.outOfViewShape3DId = outOfViewShape3DId;
         return this;
     }
 

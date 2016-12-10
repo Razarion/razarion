@@ -32,6 +32,11 @@ public abstract class AbstractRenderTask<T> {
         this.modelRenderers.add(modelRenderer);
     }
 
+    // Override in subclasses
+    protected void preRender(long timeStamp) {
+
+    }
+
     public void removeAll(T model) {
         for (Iterator<ModelRenderer> iterator = modelRenderers.iterator(); iterator.hasNext(); ) {
             ModelRenderer modelRenderer = iterator.next();
@@ -62,6 +67,7 @@ public abstract class AbstractRenderTask<T> {
     public void prepareRender(long timeStamp) {
         active = isActive();
         if (active) {
+            preRender(timeStamp);
             modelRenderers.forEach(modelRenderer -> modelRenderer.setupModelMatrices(timeStamp));
         }
     }

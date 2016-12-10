@@ -147,6 +147,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameTipVisualConfig.setDefaultCommandShape3DId(272501);
         gameTipVisualConfig.setSelectCornerColor(new Color(0, 1, 0));
         gameTipVisualConfig.setSelectShape3DId(272499);
+        gameTipVisualConfig.setOutOfViewShape3DId(272503);
         gameTipVisualConfig.setAttackCommandCornerColor(new Color(1, 0, 0));
         gameTipVisualConfig.setBaseItemPlacerCornerColor(new Color(1, 1, 0));
         gameTipVisualConfig.setBaseItemPlacerShape3DId(272499);
