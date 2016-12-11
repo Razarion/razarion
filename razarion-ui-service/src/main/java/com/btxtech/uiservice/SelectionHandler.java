@@ -122,24 +122,29 @@ public class SelectionHandler {
     }
 
     public void selectRectangle(Rectangle2D rectangle) {
-        Collection<SyncBaseItem> selectedItems = syncItemContainerService.findBaseItemInRect(rectangle);
+        Collection<SyncItem> selectedItems = syncItemContainerService.findItemsInRect(rectangle);
         if (selectedItems.isEmpty()) {
             clearSelection();
         } else {
-            SyncBaseItem enemy = null;
+            SyncItem other = null;
             Collection<SyncBaseItem> own = new ArrayList<>();
-            for (SyncBaseItem selectedItem : selectedItems) {
-                if (storyboardService.isMyOwnProperty(selectedItem)) {
-                    own.add(selectedItem);
+            for (SyncItem selectedItem : selectedItems) {
+                if (selectedItem instanceof SyncBaseItem) {
+                    SyncBaseItem syncBaseItem = (SyncBaseItem) selectedItem;
+                    if (storyboardService.isMyOwnProperty(syncBaseItem)) {
+                        own.add(syncBaseItem);
+                    } else {
+                        other = syncBaseItem;
+                    }
                 } else {
-                    enemy = selectedItem;
+                    other = selectedItem;
                 }
             }
 
             if (!own.isEmpty()) {
-                setItemGroupSelected(new Group(selectedItems));
-            } else if (enemy != null) {
-                onTargetSelectionItemChanged(enemy);
+                setItemGroupSelected(new Group(own));
+            } else if (other != null) {
+                onTargetSelectionItemChanged(other);
             } else {
                 logger.warning("SelectionHandler.selectRectangle() unknown state");
             }

@@ -262,6 +262,17 @@ public class SyncItemContainerService {
         });
     }
 
+    public Collection<SyncItem> findItemsInRect(Rectangle2D rectangle) {
+        Collection<SyncItem> result = new ArrayList<>();
+        iterateOverItems(false, false, null, syncItem -> {
+            if (syncItem.getSyncPhysicalArea().overlap(rectangle)) {
+                result.add(syncItem);
+            }
+            return null;
+        });
+        return result;
+    }
+
     public Collection<SyncBaseItem> findEnemyBaseItemWithPlace(Integer baseItemTypeId, PlayerBase playerBase, PlaceConfig placeConfig) {
         Collection<SyncBaseItem> result = new ArrayList<>();
         iterateOverBaseItems(false, false, null, syncBaseItem -> {

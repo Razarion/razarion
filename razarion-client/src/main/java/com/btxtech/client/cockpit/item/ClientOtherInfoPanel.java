@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit.item;
 
+import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -10,6 +11,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -32,7 +34,7 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Label type;
+    private Span type;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -64,7 +66,7 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
 
     @Override
     public void init(SyncItem target) {
-        // TODO image = ImageHandler.getItemTypeImage(syncItem.getItemType(), 50, 50);
+        image.setUrl(RestUrl.getImageServiceUrlSafe(target.getItemType().getThumbnail()));
         itemTypeName.setText(I18nHelper.getLocalizedString(target.getItemType().getI18Name()));
         itemTypeDescr.setHTML(I18nHelper.getLocalizedString(target.getItemType().getDescription()));
         friendImage.setVisible(false);
@@ -77,15 +79,18 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
             baseName.setText(syncBaseItem.getBase().getName());
             switch (syncBaseItem.getBase().getCharacter()) {
                 case HUMAN:
-                    type.setText(I18nHelper.getConstants().playerFriend());
+                    type.setTextContent(I18nHelper.getConstants().playerFriend());
+                    friendImage.setVisible(true);
                     enemyImage.setVisible(false);
                     break;
                 case BOT:
-                    type.setText(I18nHelper.getConstants().botEnemy());
+                    type.setTextContent(I18nHelper.getConstants().botEnemy());
+                    friendImage.setVisible(false);
                     enemyImage.setVisible(true);
                     break;
                 case BOT_NCP:
-                    type.setText(I18nHelper.getConstants().botNpc());
+                    type.setTextContent(I18nHelper.getConstants().botNpc());
+                    friendImage.setVisible(true);
                     enemyImage.setVisible(false);
                     break;
                 default:
@@ -93,10 +98,10 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
             }
         } else if (target instanceof SyncResourceItem) {
             baseName.setVisible(false);
-            type.setVisible(false);
+            type.getStyle().setProperty("display", "none");
         } else if (target instanceof SyncBoxItem) {
             baseName.setVisible(false);
-            type.setVisible(false);
+            type.getStyle().setProperty("display", "none");
         }
     }
 }
