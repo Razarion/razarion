@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TableCell;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -42,7 +43,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Label itemLimitLabel;
+    private Span itemLimitLabel;
     private BuildupItem buildupItem;
     private int itemCount;
     private int itemLimit;
@@ -142,7 +143,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     private void accomplishEnableState() {
         buildItemTd.setTitle(enableState.getToolTip((buildupItem.getItemType())));
         // TODO buildupItemButtonContent.setEnabled(enableState.isEnabled());
-        itemLimitLabel.setText(itemCount + "/" + itemLimit);
+        itemLimitLabel.setTextContent(itemCount + "/" + itemLimit);
         // TODO button.setEnabled(enableState.isEnabled());
     }
 

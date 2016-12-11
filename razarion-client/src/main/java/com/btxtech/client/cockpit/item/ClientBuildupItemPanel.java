@@ -30,11 +30,11 @@ public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElemen
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button scrollLeftButton;
+    private Button leftArrowButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button scrollRightButton;
+    private Button rightArrowButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -46,16 +46,15 @@ public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElemen
         return div;
     }
 
-    @EventHandler("scrollLeftButton")
-    private void scrollLeftButtonClick(ClickEvent event) {
+    @EventHandler("leftArrowButton")
+    private void leftArrowButtonClick(ClickEvent event) {
         throw new UnsupportedOperationException();
     }
 
-    @EventHandler("scrollRightButton")
-    private void scrollRightButtonClick(ClickEvent event) {
+    @EventHandler("rightArrowButton")
+    private void rightArrowButtonClick(ClickEvent event) {
         throw new UnsupportedOperationException();
     }
-
 
     @Override
     protected void clear() {

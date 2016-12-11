@@ -80,14 +80,14 @@ public class ItemCockpitService {
         OwnInfoPanel ownInfoPanel = instance.select(OwnInfoPanel.class).get();
         ownInfoPanel.init(syncBaseItem.getBaseItemType(), 1);
         itemCockpitPanel.setInfoPanel(ownInfoPanel);
-//    TODO    if (SpecialFunctionPanel.hasSpecialFuntion(syncBaseItem)) {
-//    TODO        specialFunctionPanel.setWidget(new SpecialFunctionPanel(syncBaseItem));
-//    TODO        specialFunctionPanel.setVisible(true);
-//    TODO    }
         if (syncBaseItem.getSyncFactory() != null || syncBaseItem.getSyncBuilder() != null) {
             buildupItemPanel = instance.select(BuildupItemPanel.class).get();
             buildupItemPanel.display(syncBaseItem);
-            itemCockpitPanel.setBuildupItemPanel(buildupItemPanel);
+            if (buildupItemPanel.isHasItemsToBuild()) {
+                itemCockpitPanel.setBuildupItemPanel(buildupItemPanel);
+            } else {
+                buildupItemPanel = null;
+            }
         }
     }
 
@@ -98,7 +98,11 @@ public class ItemCockpitService {
         if (baseItemType.getFactoryType() != null || baseItemType.getBuilderType() != null) {
             buildupItemPanel = instance.select(BuildupItemPanel.class).get();
             buildupItemPanel.display(group);
-            itemCockpitPanel.setBuildupItemPanel(buildupItemPanel);
+            if (buildupItemPanel.isHasItemsToBuild()) {
+                itemCockpitPanel.setBuildupItemPanel(buildupItemPanel);
+            } else {
+                buildupItemPanel = null;
+            }
         }
     }
 

@@ -33,6 +33,7 @@ button:disabled {
     right: 0;
     background-color: transparent;
 }
+
 /** -------------------------- COMMON ENDS -------------------------- */
 
 /** -------------------------- COCKPIT -------------------------- */
@@ -102,15 +103,92 @@ button:disabled {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 200px;
-    height: 400px;
     display: table;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.4);
     border: 9px solid transparent;
     border-image-source: url('images/Border.png');
     border-image-slice: 9;
     border-image-repeat: repeat;
 }
+
+.item-cockpit-row {
+    display: table-row;
+}
+
+.item-cockpit-cell {
+    display: table-cell;
+    background-image: url('images/BackgroundDialog.png');
+}
+
+.item-cockpit-hr {
+    border-top: 1px solid #989898;
+    border-bottom: 0;
+    margin: 1px 0 1px 0;
+}
+
+.item-cockpit-head-text {
+    color: #3289bd;
+    font-size: 80%;
+    font-weight: bold;
+}
+
+.item-cockpit-normal-text {
+    color: #d8d0d0;
+    font-size: 70%;
+}
+
+.item-cockpit-arrow-button {
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+}
+
+.item-cockpit-arrow-button:hover {
+    background: rgba(255, 0, 0, 0.3);
+}
+
+.item-cockpit-arrow-button:active {
+    background: rgb(154, 232, 233) none;
+}
+
+.item-cockpit-arrow-button:focus {
+    outline: none;
+}
+
+.item-cockpit-buildup-button {
+    position: relative;
+    padding: 2px;
+    cursor: pointer;
+    background: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+}
+
+.item-cockpit-buildup-button:hover {
+    background: rgb(255, 160, 156);
+}
+
+.item-cockpit-buildup-button:active {
+    background: rgb(144, 255, 255);
+}
+
+.item-cockpit-buildup-button:focus {
+    outline: none;
+}
+
+.item-cockpit-buildup-limit-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    font-size: 80%;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+}
+
 /** -------------------------- COCKPIT ENDS -------------------------- */
 
 /** -------------------------- DIALOG FRAMEWORK -------------------------- */
@@ -149,6 +227,7 @@ button:disabled {
 .inventory-dialog-item-table {
 
 }
+
 /** -------------------------- DIALOG INVENTORY ENDS -------------------------- */
 
 /** -------------------------- EDITOR -------------------------- */
@@ -310,8 +389,8 @@ button:disabled {
 }
 
 .hr-left-side-bar {
-	border-top: 1px solid #989898;
-	border-bottom: 0;
+    border-top: 1px solid #989898;
+    border-bottom: 0;
 }
 
 .crud-parent-selector {
@@ -326,5 +405,6 @@ button:disabled {
     height: 100%;
     display: table-row;
 }
+
 /** -------------------------- EDITOR ENDS-------------------------- */
 

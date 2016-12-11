@@ -33,6 +33,7 @@ public abstract class BuildupItemPanel {
     private BaseItemPlacerService baseItemPlacerService;
     private Group selectedGroup;
     private Map<Integer, BuildupItem> buildupItems = new HashMap<>();
+    private boolean hasItemsToBuild;
 
     protected abstract void clear();
 
@@ -64,12 +65,14 @@ public abstract class BuildupItemPanel {
 
     private void setupBuildupItemsCV(Group constructionVehicles) throws NoSuchItemTypeException {
         clear();
+        hasItemsToBuild = false;
         Collection<Integer> itemTypeIds = constructionVehicles.getFirst().getBaseItemType().getBuilderType().getAbleToBuild();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
             if (storyboardService.getMyLimitation4ItemType(itemTypeId) == 0) {
                 continue;
             }
+            hasItemsToBuild = true;
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
             BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemTypeId);
             buildupItems.add(setupBuildupBlock(itemType, () -> baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
@@ -81,12 +84,14 @@ public abstract class BuildupItemPanel {
 
     private void setupBuildupItemsFactory(Group factories) throws NoSuchItemTypeException {
         clear();
+        hasItemsToBuild = false;
         Collection<Integer> itemTypeIds = factories.getFirst().getBaseItemType().getFactoryType().getAbleToBuildId();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
             if (storyboardService.getMyLimitation4ItemType(itemTypeId) == 0) {
                 continue;
             }
+            hasItemsToBuild = true;
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
             buildupItems.add(setupBuildupBlock(itemType, () -> commandService.fabricate(factories.getItems(), itemType)));
         }
@@ -109,6 +114,9 @@ public abstract class BuildupItemPanel {
         display(selectedGroup);
     }
 
+    public boolean isHasItemsToBuild() {
+        return hasItemsToBuild;
+    }
 //    public Index getAbsoluteMiddleTopPosition(int buildupItemTypeId) {
 //        BuildupItem buildupItem = buildupItems.get(buildupItemTypeId);
 //        if (buildupItem == null) {
