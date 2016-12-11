@@ -37,6 +37,7 @@ public abstract class ItemType implements ObjectNameIdProvider {
     private Integer buildupSound;
     private Integer commandSound;
     private Integer shape3DId;
+    private Integer thumbnail;
 
     public int getId() {
         return id;
@@ -135,6 +136,15 @@ public abstract class ItemType implements ObjectNameIdProvider {
 
     public ItemType setShape3DId(Integer shape3DId) {
         this.shape3DId = shape3DId;
+        return this;
+    }
+
+    public Integer getThumbnail() {
+        return thumbnail;
+    }
+
+    public ItemType setThumbnail(Integer thumbnail) {
+        this.thumbnail = thumbnail;
         return this;
     }
 

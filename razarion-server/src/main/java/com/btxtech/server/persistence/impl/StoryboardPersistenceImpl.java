@@ -219,7 +219,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void finalizeBulldozer(BaseItemType baseItemType) {
-        baseItemType.setTerrainType(TerrainType.LAND);
+        baseItemType.setTerrainType(TerrainType.LAND).setThumbnail(272504);
         baseItemType.setI18Name(i18nHelper("Bulldozer Name"));
         baseItemType.setDescription(i18nHelper("Bulldozer Description"));
         baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
@@ -246,7 +246,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void finalizeFactory(BaseItemType factory) {
-        factory.setTerrainType(TerrainType.LAND);
+        factory.setTerrainType(TerrainType.LAND).setThumbnail(272505);
         factory.setI18Name(i18nHelper("Factory Name"));
         factory.setDescription(i18nHelper("Factory Description"));
         factory.setExplosionClipId(272485).setBuildup(2);

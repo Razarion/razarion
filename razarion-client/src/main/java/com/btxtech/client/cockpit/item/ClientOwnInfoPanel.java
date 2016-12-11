@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit.item;
 
+import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.cockpit.item.OwnInfoPanel;
@@ -37,7 +38,7 @@ public class ClientOwnInfoPanel extends Composite implements OwnInfoPanel {
 
     @Override
     public void init(BaseItemType baseItemType, int count) {
-        // TODO image = ImageHandler.getItemTypeImage(baseItemType, 50, 50);
+        image.setUrl(RestUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
         itemTypeName.setText(I18nHelper.getLocalizedString(baseItemType.getI18Name()));
         itemTypeDescr.setHTML(I18nHelper.getLocalizedString(baseItemType.getDescription()));
         if (count > 1) {
