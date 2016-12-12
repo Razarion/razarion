@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.inventory.InventoryDialog;
 import com.btxtech.client.editor.EditorMenuDialog;
 import com.btxtech.uiservice.cockpit.SideCockpit;
+import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -58,12 +59,12 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @EventHandler("inventoryButton")
     private void onInventoryButtonClick(ClickEvent event) {
-        modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null);
+        modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null, DialogButton.Button.CLOSE);
     }
 
     @EventHandler("editorButton")
     private void onEditorButtonClick(ClickEvent event) {
-        modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null);
+        modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null, DialogButton.Button.CLOSE);
     }
 
     @Override

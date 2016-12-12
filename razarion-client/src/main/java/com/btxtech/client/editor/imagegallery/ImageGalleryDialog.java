@@ -47,10 +47,9 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
 
     @Override
     public void customize(ModalDialogPanel<Void> modalDialogPanel) {
-        modalDialogPanel.showApplyButton(false);
-        modalDialogPanel.addFooterButton("Reload", () -> imageUiService.reload(this::onLoaded));
-        modalDialogPanel.addFooterButton("New", () -> ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.create(dataUrl, this::onLoaded)));
-        modalDialogPanel.addFooterButton("Save", () -> imageUiService.save(this::onLoaded));
+        modalDialogPanel.addNonClosableFooterButton("Reload", () -> imageUiService.reload(this::onLoaded));
+        modalDialogPanel.addNonClosableFooterButton("New", () -> ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.create(dataUrl, this::onLoaded)));
+        modalDialogPanel.addNonClosableFooterButton("Save", () -> imageUiService.save(this::onLoaded));
     }
 
     @Override

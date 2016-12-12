@@ -3,6 +3,7 @@ package com.btxtech.client.editor.widgets.shape3dwidget;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -46,11 +47,11 @@ public class Shape3DReferenceFiled extends Composite {
 
     @EventHandler("galleryButton")
     private void galleryButtonClicked(ClickEvent event) {
-        modalDialogManager.show("Shape 3D Gallery", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, Shape3DSelectionDialog.class, shape3DId, selectedId -> {
+        modalDialogManager.show("Shape 3D Gallery", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, Shape3DSelectionDialog.class, shape3DId, (button, selectedId) -> {
             shape3DId = selectedId;
             shape3DIdConsumer.accept(shape3DId);
             setupNameLabel(shape3DUiService.getShape3D(shape3DId));
-        });
+        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     private void setupNameLabel(Shape3D shape3D) {

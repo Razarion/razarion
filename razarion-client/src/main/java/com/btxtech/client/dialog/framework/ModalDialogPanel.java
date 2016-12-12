@@ -1,18 +1,14 @@
 package com.btxtech.client.dialog.framework;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
-import com.btxtech.client.utils.ControlUtils;
-import com.btxtech.client.utils.GwtUtils;
-import com.btxtech.uiservice.dialog.ApplyListener;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
+import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import org.jboss.errai.common.client.dom.Button;
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.dom.Window;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
@@ -33,50 +29,45 @@ public class ModalDialogPanel<T> extends Composite {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button cancelButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button applyButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
     private Label headerLabel;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private SimplePanel content;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private HTML buttonDiv;
+    private Div buttonDiv;
     private ModalDialogContent<T> modalDialogContent;
     private T applyValue;
-    private ApplyListener<T> applyListener;
+    private DialogButton.Listener<T> listener;
 
     @PostConstruct
     public void postConstruct() {
         getElement().getStyle().setZIndex(ZIndexConstants.DIALOG);
     }
 
-    public void init(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, ApplyListener<T> applyListener) {
-        this.applyListener = applyListener;
+    public void init(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, DialogButton.Button... dialogButtons) {
+        this.listener = listener;
         modalDialogContent = contentInstance.select(contentClass).get();
         modalDialogContent.init(t);
         headerLabel.setText(title);
         content.setWidget(modalDialogContent);
         modalDialogContent.customize(this);
+        setupFooterButton(dialogButtons);
     }
 
-    @EventHandler("cancelButton")
-    private void cancelButtonClick(ClickEvent event) {
-        modalDialogManager.close(this);
-    }
-
-    @EventHandler("applyButton")
-    private void applyButtonButtonClick(ClickEvent event) {
-        modalDialogManager.close(this);
-        if (applyListener != null) {
-            applyListener.onApply(applyValue);
+    private void setupFooterButton(DialogButton.Button[] dialogButtons) {
+        for (DialogButton.Button dialogButton : dialogButtons) {
+            Button button = (Button) Window.getDocument().createElement("button");
+            button.setTextContent(dialogButton.getText());
+            button.addEventListener("click", event -> {
+                modalDialogManager.close(ModalDialogPanel.this);
+                if (listener != null) {
+                    listener.onPressed(dialogButton, applyValue);
+                }
+            }, false);
+            buttonDiv.appendChild(button);
         }
     }
 
@@ -97,14 +88,15 @@ public class ModalDialogPanel<T> extends Composite {
     }
 
     public void showApplyButton(boolean show) {
-        applyButton.getElement().getStyle().setDisplay(show ? Style.Display.INLINE : Style.Display.NONE);
     }
 
-    public void showCancelButton(boolean show) {
-        cancelButton.getElement().getStyle().setDisplay(show ? Style.Display.INLINE : Style.Display.NONE);
-    }
-
-    public void addFooterButton(String text, Runnable callback) {
-        buttonDiv.getElement().appendChild(GwtUtils.castElementToElement(ControlUtils.createButton(text, "btn btn-default", callback)));
+    public void addNonClosableFooterButton(String text, Runnable callback) {
+        Button button = (Button) Window.getDocument().createElement("button");
+        button.setTextContent(text);
+        button.addEventListener("click", event -> {
+            if (callback != null) {
+                callback.run();
+            }
+        }, false);
     }
 }

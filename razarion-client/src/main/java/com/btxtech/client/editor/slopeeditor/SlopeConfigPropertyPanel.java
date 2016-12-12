@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
+import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -155,10 +156,12 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
         if (fractalFieldConfig == null) {
             fractalFieldConfig = slopeConfig.toFractalFiledConfig();
         }
-        modalDialogManager.show("Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, fractalFieldConfig1 -> {
-            SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
-            slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
-        });
+        modalDialogManager.show("Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
+            if(button == DialogButton.Button.APPLY) {
+                SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
+                slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
+            }
+        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     @EventHandler("zoomIn")

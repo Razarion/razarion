@@ -854,4 +854,8 @@ public interface I18nConstants {
     String trainingTipClickUnload();
 
     String trainingTipClickUnloadMode();
+
+    String apply();
+
+    String ok();
 }

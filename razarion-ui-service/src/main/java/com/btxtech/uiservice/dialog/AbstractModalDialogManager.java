@@ -28,9 +28,9 @@ public abstract class AbstractModalDialogManager implements ModalDialogManager, 
     private Runnable levelUpCallback;
     private Runnable questPassedCallback;
 
-    abstract protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, ApplyListener<QuestDescriptionConfig> applyListener);
+    abstract protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener);
 
-    abstract protected void showLevelUp(UserContext userContext, ApplyListener<Void> applyListener);
+    abstract protected void showLevelUp(UserContext userContext, Runnable closeListener);
 
     @PostConstruct
     public void init() {
@@ -40,7 +40,7 @@ public abstract class AbstractModalDialogManager implements ModalDialogManager, 
     }
 
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
-        showQuestPassed(questDescriptionConfig, ignore -> {
+        showQuestPassed(questDescriptionConfig, () -> {
             if (questPassedCallback != null) {
                 Runnable tmpQuestPassedCallback = questPassedCallback;
                 questPassedCallback = null;
@@ -56,7 +56,7 @@ public abstract class AbstractModalDialogManager implements ModalDialogManager, 
 
     @Override
     public void onLevelPassed(UserContext userContext, LevelConfig oldLevel, LevelConfig newLevel) {
-        showLevelUp(userContext, aVoid -> {
+        showLevelUp(userContext, () -> {
             if (levelUpCallback != null) {
                 Runnable tmpLevelUpCallback = levelUpCallback;
                 levelUpCallback = null;

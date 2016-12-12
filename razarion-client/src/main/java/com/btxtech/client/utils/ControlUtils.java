@@ -63,9 +63,8 @@ public class ControlUtils {
         fileReader.readAsText(file);
     }
 
-    public static ButtonElement createButton(String text, String className, Runnable runnable) {
+    public static ButtonElement createButton(String text, Runnable runnable) {
         ButtonElement button = Browser.getDocument().createButtonElement();
-        button.setClassName(className);
         button.setInnerHTML(text);
         button.addEventListener(Event.CLICK, evt -> runnable.run(), false);
         return button;

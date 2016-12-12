@@ -16,6 +16,7 @@ import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
+import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -99,9 +100,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private ModalDialogPanel<Void> modalDialogPanel;
 
     @EventHandler("perfmonButton")
-    private void onperfmonButtonClicked(ClickEvent event) {
+    private void onPerfmonButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
-        modalDialogManager.show("Perfmon", ClientModalDialogManagerImpl.Type.STACK_ABLE, PerfmonDialog.class, null, null);
+        modalDialogManager.show("Perfmon", ClientModalDialogManagerImpl.Type.STACK_ABLE, PerfmonDialog.class, null, null, DialogButton.Button.CLOSE);
     }
 
     @EventHandler("renderEngineButton")
@@ -161,7 +162,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("imageButton")
     private void onImageButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
-        modalDialogManager.show("Items", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, null, null);
+        modalDialogManager.show("Items", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, null, null, DialogButton.Button.CLOSE);
     }
 
     @EventHandler("shape3DButton")

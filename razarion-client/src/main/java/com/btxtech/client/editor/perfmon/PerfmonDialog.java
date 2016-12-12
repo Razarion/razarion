@@ -40,7 +40,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
 
     @Override
     public void customize(ModalDialogPanel<Void> modalDialogPanel) {
-        modalDialogPanel.addFooterButton("Refresh", this::drawBar);
+        modalDialogPanel.addNonClosableFooterButton("Refresh", this::drawBar);
     }
 
     @Override

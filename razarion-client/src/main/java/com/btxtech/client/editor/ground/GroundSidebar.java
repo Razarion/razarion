@@ -11,6 +11,7 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
+import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -186,20 +187,26 @@ public class GroundSidebar extends LeftSideBarContent {
     private void fractalSplattingButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
-        modalDialogManager.show("Splatting Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, fractalFieldConfig1 -> {
-            GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
-            groundConfig1.fromSplattingFractalFiledConfig(fractalFieldConfig);
-        });
+        modalDialogManager.show("Splatting Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
+            if(button == DialogButton.Button.APPLY) {
+                GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
+                groundConfig1.fromSplattingFractalFiledConfig(fractalFieldConfig);
+            }
+
+
+        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     @EventHandler("fractalHeight")
     private void fractalHeightButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toHeightFractalFiledConfig();
-        modalDialogManager.show("Height Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, fractalFieldConfig1 -> {
-            GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
-            groundConfig1.fromHeightFractalFiledConfig(fractalFieldConfig);
-        });
+        modalDialogManager.show("Height Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
+            if(button == DialogButton.Button.APPLY) {
+                GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
+                groundConfig1.fromHeightFractalFiledConfig(fractalFieldConfig);
+            }
+        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
 }

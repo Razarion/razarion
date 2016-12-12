@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
+import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -84,12 +85,14 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
 
     @EventHandler("galleryButton")
     private void galleryButtonClicked(ClickEvent event) {
-        modalDialogManager.show("Image Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageSelectorDialog.class, imageId, id1 -> {
-            imageUiService.removeListener(imageId, this::onLoaded);
-            imageId = id1;
-            imageUiService.requestImage(imageId, this);
-            imageItemWidgetListener.accept(id1);
-        });
+        modalDialogManager.show("Image Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageSelectorDialog.class, imageId, (button, id1) -> {
+            if (button == DialogButton.Button.APPLY) {
+                imageUiService.removeListener(imageId, this);
+                imageId = id1;
+                imageUiService.requestImage(imageId, this);
+                imageItemWidgetListener.accept(id1);
+            }
+        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     @Override
