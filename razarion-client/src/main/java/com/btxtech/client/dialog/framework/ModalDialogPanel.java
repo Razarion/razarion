@@ -33,10 +33,6 @@ public class ModalDialogPanel<T> extends Composite {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button closeCrossButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
     private Button cancelButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -69,11 +65,6 @@ public class ModalDialogPanel<T> extends Composite {
         headerLabel.setText(title);
         content.setWidget(modalDialogContent);
         modalDialogContent.customize(this);
-    }
-
-    @EventHandler("closeCrossButton")
-    private void closeCrossButtonClick(ClickEvent event) {
-        modalDialogManager.close(this);
     }
 
     @EventHandler("cancelButton")
