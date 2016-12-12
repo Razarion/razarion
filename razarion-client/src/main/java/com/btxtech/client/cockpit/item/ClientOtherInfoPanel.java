@@ -51,18 +51,6 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
     @Inject
     @DataField
     private Image enemyImage;
-//    @SuppressWarnings("CdiInjectionPointsInspection")
-//    @Inject
-//    @DataField
-//    private Label guildName;
-//    @SuppressWarnings("CdiInjectionPointsInspection")
-//    @Inject
-//    @DataField
-//    private Button inviteGuildButton;
-//    @SuppressWarnings("CdiInjectionPointsInspection")
-//    @Inject
-//    @DataField
-//    private Button requestMembership;
 
     @Override
     public void init(SyncItem target) {
@@ -71,9 +59,6 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
         itemTypeDescr.setHTML(I18nHelper.getLocalizedString(target.getItemType().getDescription()));
         friendImage.setVisible(false);
         enemyImage.setVisible(false);
-        // TODO inviteGuildButton.setVisible(false);
-        // TODO requestMembership.setVisible(false);
-        // TODO guildName.setVisible(false);
         if (target instanceof SyncBaseItem) {
             SyncBaseItem syncBaseItem = (SyncBaseItem) target;
             baseName.setText(syncBaseItem.getBase().getName());

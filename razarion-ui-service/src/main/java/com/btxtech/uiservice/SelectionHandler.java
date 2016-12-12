@@ -154,7 +154,7 @@ public class SelectionHandler {
 
     public void keepOnlyOwnOfType(BaseItemType baseItemType) {
         selectedGroup.keepOnlyOwnOfType(baseItemType);
-        fireOwnItemSelectionChanged(selectedGroup);
+        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup));
     }
 
     public void clearSelection() {

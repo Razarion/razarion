@@ -154,14 +154,17 @@ button:disabled {
 
 .item-cockpit-arrow-button:hover {
     background: rgba(255, 0, 0, 0.3);
+    border: none;
 }
 
 .item-cockpit-arrow-button:active {
     background: rgb(154, 232, 233) none;
+    border: none;
 }
 
 .item-cockpit-arrow-button:focus {
     outline: none;
+    border: none;
 }
 
 .item-cockpit-buildup-button {
@@ -176,14 +179,17 @@ button:disabled {
 
 .item-cockpit-buildup-button:hover {
     background: rgb(255, 160, 156);
+    border: none;
 }
 
 .item-cockpit-buildup-button:active {
     background: rgb(144, 255, 255);
+    border: none;
 }
 
 .item-cockpit-buildup-button:focus {
     outline: none;
+    border: none;
 }
 
 .item-cockpit-buildup-limit-label {

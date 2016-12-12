@@ -3,29 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="../../../../../../../../../razarion-server/src/main/webapp/razarion.css">
 </head>
 <body>
 
 <div id="own-multi-different-info-panel">
-    <table>
+    <table cellpadding="0" cellspacing="0" style="width: 100%">
         <tr>
             <td>
-                <button class="top-right-x-button" id="scrollLeftButton">Lings</button>
+                <button id="leftArrowButton" class='item-cockpit-arrow-button'>
+                    <img src="images/ItemCockpitLeftArrow.png">
+                </button>
             </td>
-            <td>
-                <table>
+            <td style="width: 100%">
+                <table style="width: 100%">
                     <tbody id="selectedItemTypePanel">
                     <tr>
                         <td id="selectedItemTd">
-                            <img id="image" src="" class="gallery-item-image">
-                            <div id="countLabel"></div>
+                            <table style="background-color: rgba(0, 0, 0, 0.5)" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <button id="selectButton" class='item-cockpit-buildup-button'>
+                                            <img src="" id="image" style="width: 40px; height: 40px">
+                                        </button>
+                                    </td>
+                                <tr>
+                                    <td>
+                                        <div id="countLabel" style="font-size: 12px; ">100</div>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </td>
             <td>
-                <button class="top-right-x-button" id="scrollRightButton">Rächts</button>
+                <button id="rightArrowButton" class='item-cockpit-arrow-button'>
+                    <img src="images/ItemCockpitRightArrow.png">
+                </button>
             </td>
         </tr>
     </table>
