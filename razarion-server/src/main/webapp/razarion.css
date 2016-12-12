@@ -27,13 +27,6 @@ button:disabled {
     border: 1px solid #5f7779;
 }
 
-.top-right-x-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: transparent;
-}
-
 /** -------------------------- COMMON ENDS -------------------------- */
 
 /** -------------------------- COCKPIT -------------------------- */
@@ -50,6 +43,7 @@ button:disabled {
     border-image-source: url('images/Border.png');
     border-image-slice: 9;
     border-image-repeat: repeat;
+    box-shadow: 3px 3px 15px 1px #000;
 }
 
 /** ----- Quest ----- */
@@ -71,12 +65,13 @@ button:disabled {
     right: 0;
     width: 200px;
     display: table;
-    animation: quest-sidebar-background-animation 1s ease-out 1;
+    animation: quest-sidebar-background-animation 2s ease-out 1;
     background-image: url('images/DialogBackground.png');
     border: 8px solid transparent;
     border-image-source: url('images/Border.png');
     border-image-slice: 8;
     border-image-repeat: repeat;
+    box-shadow: 3px 3px 15px 1px #000;
 }
 
 .quest-sidebar-container {
@@ -116,6 +111,7 @@ button:disabled {
     border-image-source: url('images/Border.png');
     border-image-slice: 8;
     border-image-repeat: repeat;
+    box-shadow: 3px 3px 15px 1px #000;
 }
 
 .item-cockpit-row {
@@ -213,32 +209,54 @@ button:disabled {
 /** -------------------------- DIALOG FRAMEWORK -------------------------- */
 .modal-dialog {
     position: absolute;
-    /* margin: auto; */
-    /* top: 0; */
-    /* left: 0; */
-    /* bottom: 0; */
-    /* right: 0; */
-    /* width: 200px; */
-    height: 400px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 9px solid transparent;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    min-height: 150px;
+    min-width: 300px;
+    display: table;
+    border: 8px solid transparent;
+    background-image: url('images/DialogBackground.png');
     border-image-source: url('images/Border.png');
-    border-image-slice: 9;
+    border-image-slice: 8;
     border-image-repeat: repeat;
+    box-shadow: 3px 3px 15px 1px #000;
 }
 
-.modal-dialog-header {
-    padding: 0 0 1em 0;
+.modal-dialog-row {
+    display: table-row;
 }
 
-.modal-dialog-footer {
-    position: absolute;
-    bottom: 0;
-    text-align: right;
+.modal-dialog-cell {
+    display: table-cell;
 }
 
 .modal-dialog-header-title {
-    color: #faff31;
+    color: #3289bd;
+    font-weight: bold;
+}
+
+.modal-dialog-x-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.modal-dialog-body {
+    display: table-cell;
+    color: #d8d0d0;
+    font-size: 80%;
+}
+
+.modal-dialog-footer {
+    text-align: center;
+    display: table-cell;
+}
+
+.modal-dialog-hr {
+    border-top: 1px solid #989898;
+    border-bottom: 0;
+    margin: 5px 0 5px 0;
 }
 
 /** -------------------------- DIALOG FRAMEWORK ENDS -------------------------- */
