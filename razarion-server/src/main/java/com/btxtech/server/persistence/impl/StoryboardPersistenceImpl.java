@@ -120,7 +120,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
-        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(4).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
@@ -133,7 +133,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(harvest());
         // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         return storyboardConfig;

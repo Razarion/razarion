@@ -53,18 +53,29 @@ button:disabled {
 }
 
 /** ----- Quest ----- */
+@keyframes quest-sidebar-background-animation {
+    0% {
+        background-color: red;
+        background-image: none
+    }
+    100% {
+        background-color: transparent;
+        background-image: url('images/DialogBackground.png');
+    }
+}
+
 .quest-sidebar {
     color: #FFF;
     position: absolute;
     top: 0;
     right: 0;
     width: 200px;
-    height: 400px;
     display: table;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 9px solid transparent;
+    animation: quest-sidebar-background-animation 1s ease-out 1;
+    background-image: url('images/DialogBackground.png');
+    border: 8px solid transparent;
     border-image-source: url('images/Border.png');
-    border-image-slice: 9;
+    border-image-slice: 8;
     border-image-repeat: repeat;
 }
 
@@ -93,10 +104,6 @@ button:disabled {
     height: 20px;
 }
 
-.modal-dialog-header {
-    padding: 0 0 1em 0;
-}
-
 /** ----- Item ----- */
 .item-cockpit {
     color: #FFF;
@@ -104,10 +111,10 @@ button:disabled {
     bottom: 0;
     left: 0;
     display: table;
-    background-color: rgba(0, 0, 0, 0.4);
-    border: 9px solid transparent;
+    border: 8px solid transparent;
+    background-image: url('images/DialogBackground.png');
     border-image-source: url('images/Border.png');
-    border-image-slice: 9;
+    border-image-slice: 8;
     border-image-repeat: repeat;
 }
 
@@ -117,7 +124,6 @@ button:disabled {
 
 .item-cockpit-cell {
     display: table-cell;
-    background-image: url('images/BackgroundDialog.png');
 }
 
 .item-cockpit-hr {
@@ -222,6 +228,7 @@ button:disabled {
 }
 
 .modal-dialog-header {
+    padding: 0 0 1em 0;
 }
 
 .modal-dialog-footer {
