@@ -42,18 +42,18 @@ button:disabled {
 /** -------------------------- COCKPIT -------------------------- */
 /** ----- Main ----- */
 .main-cockpit {
-    color: #FFF;
+    color: #d8d0d0;
     position: absolute;
     top: 0;
     left: 0;
     width: 100px;
-    height: 50px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 9px solid transparent;
+    background-image: url('images/DialogBackground.png');
+    border: 8px solid transparent;
     border-image-source: url('images/Border.png');
-    border-image-slice: 9;
+    border-image-slice: 8;
     border-image-repeat: repeat;
     box-shadow: 3px 3px 15px 1px #000;
+    font-size: 80%;
 }
 
 /** ----- Quest ----- */
@@ -69,7 +69,6 @@ button:disabled {
 }
 
 .quest-sidebar {
-    color: #FFF;
     position: absolute;
     top: 0;
     right: 0;
@@ -111,7 +110,6 @@ button:disabled {
 
 /** ----- Item ----- */
 .item-cockpit {
-    color: #FFF;
     position: absolute;
     bottom: 0;
     left: 0;
