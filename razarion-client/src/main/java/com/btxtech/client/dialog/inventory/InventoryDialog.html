@@ -8,13 +8,25 @@
 <body class="dummy-local-test">
 
 <div id="inventory-dialog">
-    <div data-field="crystalsLabel">XXX Cristalls: 123</div>
-    <div data-field="inventoryItemTable" class="inventory-dialog-item-table">
-        <div data-field="inventoryItem">
-            <div data-field="inventoryItemName"></div>
-            <img data-field="inventoryItemImage" src="">
-            <div data-field="inventoryItemCount"></div>
-            <button data-field="inventoryItemUseButton">inventoryItemUseButton</button>
+    <div class="inventory-dialog-crystal" data-field="crystalsLabel"></div>
+    <div data-field="inventoryItemTable" class="inventory-item-table">
+        <div data-field="inventoryItem" class="inventory-item">
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <div class="inventory-item-name" data-field="inventoryItemName"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img class="inventory-item-image" data-field="inventoryItemImage" src="">
+                    </td>
+                    <td>
+                        <div class="inventory-item-own" data-field="inventoryItemCount"></div>
+                        <button type="button" class="gwt-Button" data-field="inventoryItemUseButton">inventoryItemUseButton</button>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>

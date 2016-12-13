@@ -266,8 +266,37 @@ button:disabled {
 /** -------------------------- DIALOG FRAMEWORK ENDS -------------------------- */
 
 /** -------------------------- DIALOG INVENTORY  -------------------------- */
-.inventory-dialog-item-table {
+.inventory-item-table {
 
+}
+
+.inventory-dialog-crystal {
+    padding: 3px 10px 10px 0;
+    font-size: 90%;
+}
+
+.inventory-item {
+    width: 140px;
+    height: 80px;
+    border: 1px solid #3289bd;
+    border-radius: 3px;
+    background-color: rgba(12, 38, 47, 0.66);
+}
+
+.inventory-item-name {
+    color: #3289bd;
+    font-weight: bold;
+}
+
+.inventory-item-own {
+    font-size: 90%;
+}
+
+.inventory-item-image {
+    background-color: #fbffff;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000000;
 }
 
 /** -------------------------- DIALOG INVENTORY ENDS -------------------------- */
