@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.cockpit;
 
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -10,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.function.Function;
 
 /**
  * Created by Beat
@@ -26,6 +28,7 @@ public class CockpitService implements PlanetTickListener {
     @Inject
     private Instance<SideCockpit> sideCockpitInstance;
     private SideCockpit sideCockpit;
+    private Function<Integer, Rectangle> inventoryPositionProvider;
 
     @PostConstruct
     public void postConstruct() {
@@ -44,5 +47,24 @@ public class CockpitService implements PlanetTickListener {
         UserContext userContext = storyboardService.getUserContext();
         sideCockpit.displayXps(userContext.getXp());
         sideCockpit.displayLevel(levelService.getLevel(userContext.getLevelId()).getNumber());
+    }
+
+    public Rectangle getInventoryButtonLocation() {
+        return sideCockpit.getInventoryDialogButtonLocation();
+    }
+
+    public Rectangle getInventoryUseButtonLocation(int inventoryItemId) {
+        if (inventoryPositionProvider == null) {
+            throw new IllegalStateException("InventoryDialog is no shown");
+        }
+        return inventoryPositionProvider.apply(inventoryItemId);
+    }
+
+    public void onInventoryDialogOpened(Function<Integer, Rectangle> inventoryPositionProvider) {
+        this.inventoryPositionProvider = inventoryPositionProvider;
+    }
+
+    public void onInventoryDialogClosed() {
+        inventoryPositionProvider = null;
     }
 }

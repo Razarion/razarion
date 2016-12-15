@@ -3,8 +3,10 @@ package com.btxtech.client.cockpit;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.inventory.InventoryDialog;
 import com.btxtech.client.editor.EditorMenuDialog;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.SideCockpit;
 import com.btxtech.uiservice.dialog.DialogButton;
+import com.btxtech.uiservice.tip.GameTipService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -23,6 +25,8 @@ import javax.inject.Inject;
  */
 @Templated("ClientSideCockpit.html#cockpit")
 public class ClientSideCockpit extends Composite implements SideCockpit {
+    @Inject
+    private GameTipService gameTipService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -59,12 +63,12 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @EventHandler("inventoryButton")
     private void onInventoryButtonClick(ClickEvent event) {
-        modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null, DialogButton.Button.CLOSE);
+        modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null, () -> gameTipService.onInventoryDialogOpened(), DialogButton.Button.CLOSE);
     }
 
     @EventHandler("editorButton")
     private void onEditorButtonClick(ClickEvent event) {
-        modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null, DialogButton.Button.CLOSE);
+        modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
     @Override
@@ -80,5 +84,10 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Override
     public void displayLevel(int levelNumber) {
         levelLabel.setTextContent(Integer.toString(levelNumber));
+    }
+
+    @Override
+    public Rectangle getInventoryDialogButtonLocation() {
+        return new Rectangle(inventoryButton.getAbsoluteLeft(), inventoryButton.getAbsoluteTop(), inventoryButton.getOffsetWidth(), inventoryButton.getOffsetHeight());
     }
 }

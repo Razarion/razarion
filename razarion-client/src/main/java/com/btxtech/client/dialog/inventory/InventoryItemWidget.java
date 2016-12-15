@@ -1,8 +1,9 @@
 package com.btxtech.client.dialog.inventory;
 
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
-import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
@@ -71,11 +72,15 @@ public class InventoryItemWidget implements TakesValue<InventoryItemModel>, IsEl
 
     @EventHandler("inventoryItemUseButton")
     private void onInventoryItemUseButtonClicked(ClickEvent event) {
-        inventoryDialog.close();
         inventoryUiService.useItem(inventoryItemModel.getInventoryItem());
+        inventoryDialog.close();
     }
 
-    public void setInventoryDialog(InventoryDialog inventoryDialog) {
+    void setInventoryDialog(InventoryDialog inventoryDialog) {
         this.inventoryDialog = inventoryDialog;
+    }
+
+    Rectangle getInventoryUseButtonLocation() {
+        return new Rectangle(inventoryItemUseButton.getAbsoluteLeft(), inventoryItemUseButton.getAbsoluteTop(), inventoryItemUseButton.getOffsetWidth(), inventoryItemUseButton.getOffsetHeight());
     }
 }

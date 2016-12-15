@@ -3,6 +3,8 @@ package com.btxtech.uiservice.tip.tiptask;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacerListener;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.tip.visualization.InGamePositionTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
@@ -16,7 +18,7 @@ import javax.inject.Inject;
  * Time: 13:19
  */
 @Dependent
-public class SpawnPlacerTipTask extends AbstractTipTask {
+public class SpawnPlacerTipTask extends AbstractTipTask implements BaseItemPlacerListener {
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
@@ -31,6 +33,12 @@ public class SpawnPlacerTipTask extends AbstractTipTask {
 
     @Override
     public void internalStart() {
+        baseItemPlacerService.addListener(this);
+    }
+
+    @Override
+    public void internalCleanup() {
+        baseItemPlacerService.removeListener(this);
     }
 
     @Override
@@ -39,11 +47,7 @@ public class SpawnPlacerTipTask extends AbstractTipTask {
     }
 
     @Override
-    public void internalCleanup() {
-    }
-
-    @Override
-    public InGameTipVisualization createInGameTip() {
+    public InGameTipVisualization createInGameTipVisualization() {
         return new InGamePositionTipVisualization(terrainService.getPosition3d(positionHint), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getBaseItemPlacerCornerColor(), getGameTipVisualConfig().getBaseItemPlacerShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 
@@ -51,6 +55,13 @@ public class SpawnPlacerTipTask extends AbstractTipTask {
     protected void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
         if (syncBaseItem.getBaseItemType().getId() == spawnItemTypeId) {
             onSucceed();
+        }
+    }
+
+    @Override
+    public void onStateChanged(BaseItemPlacer baseItemPlacer) {
+        if(baseItemPlacer == null) {
+            onFailed();
         }
     }
 }

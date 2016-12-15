@@ -31,11 +31,6 @@ public class SendFactorizeCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    public InGameTipVisualization createInGameTip() {
-        return null;
-    }
-
-    @Override
     protected void onCommandSent(BaseCommand baseCommand) {
         if (baseCommand instanceof FactoryCommand && ((FactoryCommand) baseCommand).getToBeBuiltId() == itemTypeToFactorized) {
             onSucceed();

@@ -40,11 +40,6 @@ public class IdleItemTipTask extends AbstractTipTask {
         }
     }
 
-    @Override
-    public InGameTipVisualization createInGameTip() {
-        return null;
-    }
-
     private boolean areAllItemsTypeIdle() {
         for (SyncBaseItem syncBaseItem : findItemsOfType(actorItemTypeId)) {
             if (!syncBaseItem.isIdle()) {

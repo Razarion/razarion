@@ -4,6 +4,7 @@ package com.btxtech.uiservice.tip.tiptask;
 import com.btxtech.shared.datatypes.Group;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -16,6 +17,7 @@ import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.tip.GameTipService;
+import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
 import javax.inject.Inject;
@@ -50,7 +52,15 @@ public abstract class AbstractTipTask {
         this.gameTipService = gameTipService;
     }
 
-    public abstract InGameTipVisualization createInGameTip();
+    // Override ins subclasses
+    public InGameTipVisualization createInGameTipVisualization() {
+        return null;
+    }
+
+    // Override ins subclasses
+    public GuiTipVisualization createGuiTipVisualization() {
+        return null;
+    }
 
     public abstract boolean isFulfilled();
 
@@ -60,22 +70,30 @@ public abstract class AbstractTipTask {
 
     // Override ins subclasses
     protected void onOwnSelectionChanged(Group selectedGroup) {
-
     }
 
     // Override ins subclasses
     protected void onCommandSent(BaseCommand baseCommand) {
-
     }
 
     // Override ins subclasses
     protected void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-
     }
 
     // Override ins subclasses
     protected void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+    }
 
+    // Override ins subclasses
+    protected void onInventoryDialogOpened() {
+    }
+
+    // Override ins subclasses
+    protected void onInventoryDialogClosed() {
+    }
+
+    // Override ins subclasses
+    protected void onInventoryItemPlacerActivated(InventoryItem inventoryItem) {
     }
 
     protected void onFailed() {

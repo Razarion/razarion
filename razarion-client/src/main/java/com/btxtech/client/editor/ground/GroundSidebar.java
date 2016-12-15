@@ -188,13 +188,11 @@ public class GroundSidebar extends LeftSideBarContent {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
         modalDialogManager.show("Splatting Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
-            if(button == DialogButton.Button.APPLY) {
+            if (button == DialogButton.Button.APPLY) {
                 GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
                 groundConfig1.fromSplattingFractalFiledConfig(fractalFieldConfig);
             }
-
-
-        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
+        }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     @EventHandler("fractalHeight")
@@ -202,11 +200,11 @@ public class GroundSidebar extends LeftSideBarContent {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toHeightFractalFiledConfig();
         modalDialogManager.show("Height Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
-            if(button == DialogButton.Button.APPLY) {
+            if (button == DialogButton.Button.APPLY) {
                 GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
                 groundConfig1.fromHeightFractalFiledConfig(fractalFieldConfig);
             }
-        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
+        }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
 }

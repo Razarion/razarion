@@ -44,7 +44,7 @@ public class SendPickupBoxCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    public InGameTipVisualization createInGameTip() {
+    public InGameTipVisualization createInGameTipVisualization() {
         Collection<SyncBoxItem> syncBoxItems = syncItemContainerService.findBoxItemWithPlace(boxItemTypeId, null);
         if (syncBoxItems.isEmpty()) {
             throw new IllegalArgumentException("Can not create game tip. No box available to mark: " + boxItemTypeId);

@@ -87,9 +87,6 @@ public class ModalDialogPanel<T> extends Composite {
         modalDialogManager.close(this);
     }
 
-    public void showApplyButton(boolean show) {
-    }
-
     public void addNonClosableFooterButton(String text, Runnable callback) {
         Button button = (Button) Window.getDocument().createElement("button");
         button.setTextContent(text);
@@ -98,5 +95,6 @@ public class ModalDialogPanel<T> extends Composite {
                 callback.run();
             }
         }, false);
+        buttonDiv.appendChild(button);
     }
 }

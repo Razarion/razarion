@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.tip.GameTipService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -45,15 +46,13 @@ public class InventoryUiService {
     private BaseItemService baseItemService;
     @Inject
     private GameLogicService gameLogicService;
+    @Inject
+    private GameTipService gameTipService;
 
     public List<InventoryItemModel> gatherInventoryItemModels(UserContext userContext) {
         Map<Integer, InventoryItemModel> inventoryItemModels = new HashMap<>();
         for (Integer inventoryItemId : userContext.getInventoryItemIds()) {
-            InventoryItemModel model = inventoryItemModels.get(inventoryItemId);
-            if (model == null) {
-                model = new InventoryItemModel(inventoryService.getInventoryItem(inventoryItemId));
-                inventoryItemModels.put(inventoryItemId, model);
-            }
+            InventoryItemModel model = inventoryItemModels.computeIfAbsent(inventoryItemId, k -> new InventoryItemModel(inventoryService.getInventoryItem(inventoryItemId)));
             model.increaseItemCount();
         }
         return new ArrayList<>(inventoryItemModels.values());
@@ -83,6 +82,7 @@ public class InventoryUiService {
                             exceptionHandler.handleException(e);
                         }
                     });
+                    gameTipService.onInventoryItemPlacerActivated(inventoryItem);
                 }
             } catch (Throwable e) {
                 exceptionHandler.handleException("InventoryUiService.useItem()", e);

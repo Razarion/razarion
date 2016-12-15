@@ -9,7 +9,6 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
-import com.btxtech.uiservice.dialog.ApplyListener;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -41,43 +40,43 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
 
     @Override
     protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
-        show("Quest bestanden", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, (button, value) -> closeListener.run(), DialogButton.Button.CLOSE);
+        show("Quest bestanden", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, (button, value) -> closeListener.run(), null, DialogButton.Button.CLOSE);
     }
 
     @Override
     protected void showLevelUp(UserContext userContext, Runnable closeListener) {
-        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, null, (button, value) -> closeListener.run(), DialogButton.Button.CLOSE);
+        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, null, (button, value) -> closeListener.run(), null, DialogButton.Button.CLOSE);
     }
 
     @Override
     public void showBoxPicked(BoxContent boxContent) {
-        show("Box gesammelt", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null, DialogButton.Button.CLOSE);
+        show("Box gesammelt", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null, null, DialogButton.Button.CLOSE);
     }
 
     @Override
     public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
-        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemLimit(I18nHelper.getLocalizedString(baseItemType.getI18Name())), null, DialogButton.Button.CLOSE);
+        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemLimit(I18nHelper.getLocalizedString(baseItemType.getI18Name())), null, null, DialogButton.Button.CLOSE);
     }
 
     @Override
     public void showUseInventoryHouseSpaceExceeded() {
-        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemHouseSpace(), null, DialogButton.Button.CLOSE);
+        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemHouseSpace(), null, null, DialogButton.Button.CLOSE);
     }
 
-    public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, DialogButton.Button... dialogButtons) {
+    public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
         if (activeDialog == null) {
-            showDialog(title, contentClass, t, listener, dialogButtons);
+            showDialog(title, contentClass, t, listener, shownCallback, dialogButtons);
         } else {
             switch (type) {
                 case PROMPTLY:
                     close(activeDialog);
-                    showDialog(title, contentClass, t, listener, dialogButtons);
+                    showDialog(title, contentClass, t, listener, shownCallback, dialogButtons);
                     break;
                 case QUEUE_ABLE:
-                    dialogQueue.add(new DialogParameters(title, contentClass, t, listener, dialogButtons));
+                    dialogQueue.add(new DialogParameters(title, contentClass, t, listener, shownCallback, dialogButtons));
                     break;
                 case STACK_ABLE:
-                    showStackedDialog(title, contentClass, t, listener, dialogButtons);
+                    showStackedDialog(title, contentClass, t, listener, shownCallback, dialogButtons);
                     break;
                 case UNIMPORTANT:
                     break;
@@ -87,18 +86,24 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
         }
     }
 
-    private void showDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, DialogButton.Button... dialogButtons) {
+    private void showDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
         ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
         modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
         this.activeDialog = modalDialogPanel;
         RootPanel.get().add(activeDialog);
+        if (shownCallback != null) {
+            shownCallback.run();
+        }
     }
 
-    private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, DialogButton.Button... dialogButtons) {
+    private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
         ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
         modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
         stackedDialogs.add(modalDialogPanel);
         RootPanel.get().add(modalDialogPanel);
+        if (shownCallback != null) {
+            shownCallback.run();
+        }
     }
 
     public void close(ModalDialogPanel modalDialogPanel) {
@@ -119,18 +124,20 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
         private Class<? extends ModalDialogContent> contentClass;
         private Object object;
         private DialogButton.Listener<?> listener;
+        private Runnable shownCallback;
         private DialogButton.Button[] dialogButtons;
 
-        DialogParameters(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener<?> listener, DialogButton.Button... dialogButtons) {
+        DialogParameters(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener<?> listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
             this.title = title;
             this.contentClass = contentClass;
             this.object = object;
             this.listener = listener;
+            this.shownCallback = shownCallback;
             this.dialogButtons = dialogButtons;
         }
 
         void showDialog() {
-            ClientModalDialogManagerImpl.this.showDialog(title, contentClass, object, listener, dialogButtons);
+            ClientModalDialogManagerImpl.this.showDialog(title, contentClass, object, listener, shownCallback, dialogButtons);
         }
     }
 }

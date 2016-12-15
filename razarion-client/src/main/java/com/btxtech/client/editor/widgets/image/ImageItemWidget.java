@@ -92,7 +92,7 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
                 imageUiService.requestImage(imageId, this);
                 imageItemWidgetListener.accept(id1);
             }
-        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
+        }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     @Override

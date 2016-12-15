@@ -16,7 +16,8 @@ public class GameTipConfig {
         MOVE,
         ATTACK,
         START_PLACER,
-        PICK_BOX
+        PICK_BOX,
+        SPAN_INVENTORY_ITEM
         // SCROLL,
         // WATCH_QUEST,
         // LOAD_CONTAINER,
@@ -28,6 +29,7 @@ public class GameTipConfig {
     private int target;
     private int toCreatedItemTypeId;
     private int toGrabItemTypeId;
+    private int inventoryItemId;
     private DecimalPosition terrainPositionHint;
     private PlaceConfig placeConfig;
 
@@ -82,6 +84,15 @@ public class GameTipConfig {
 
     public GameTipConfig setToGrabItemTypeId(int toGrabItemTypeId) {
         this.toGrabItemTypeId = toGrabItemTypeId;
+        return this;
+    }
+
+    public int getInventoryItemId() {
+        return inventoryItemId;
+    }
+
+    public GameTipConfig setInventoryItemId(int inventoryItemId) {
+        this.inventoryItemId = inventoryItemId;
         return this;
     }
 

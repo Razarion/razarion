@@ -52,7 +52,7 @@ public class SendHarvestCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    public InGameTipVisualization createInGameTip() {
+    public InGameTipVisualization createInGameTipVisualization() {
         Collection<SyncResourceItem> syncResourceItems = syncItemContainerService.findResourceItemWithPlace(toCollectFormId, resourceSelection);
         if (syncResourceItems.isEmpty()) {
             throw new IllegalArgumentException("Can not create game tip. No resource available to mark: " + resourceSelection);

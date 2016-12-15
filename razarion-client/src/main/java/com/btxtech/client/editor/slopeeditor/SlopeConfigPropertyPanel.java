@@ -161,7 +161,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
                 SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
                 slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
             }
-        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
+        }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     @EventHandler("zoomIn")

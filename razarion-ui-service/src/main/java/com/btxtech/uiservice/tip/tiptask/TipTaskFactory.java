@@ -2,6 +2,7 @@ package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.GameTipConfig;
+import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.tip.GameTipService;
@@ -21,6 +22,8 @@ public class TipTaskFactory {
     private Instance<AbstractTipTask> tipTaskInstance;
     @Inject
     private StoryboardService storyboardService;
+    @Inject
+    private InventoryService inventoryService;
 
     public TipTaskContainer create(GameTipService gameTipService, GameTipConfig gameTipConfig) {
         TipTaskContainer tipTaskContainer = new TipTaskContainer(gameTipService);
@@ -51,6 +54,10 @@ public class TipTaskFactory {
             }
             case PICK_BOX: {
                 createPickBox(tipTaskContainer, gameTipConfig);
+                break;
+            }
+            case SPAN_INVENTORY_ITEM: {
+                createSpawnInventoryItem(tipTaskContainer, gameTipConfig);
                 break;
             }
             default:
@@ -113,6 +120,12 @@ public class TipTaskFactory {
         tipTaskContainer.addFallback(createSendPickupBoxCommandTipTask(gameTipConfig.getToGrabItemTypeId()));
     }
 
+    private void createSpawnInventoryItem(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
+        tipTaskContainer.add(tipTaskInstance.select(OpenInventoryTipTask.class).get());
+        tipTaskContainer.add(createUseInventoryItemTipTask(gameTipConfig.getInventoryItemId()));
+        tipTaskContainer.add(createSpawnPlacerTipTask(inventoryService.getInventoryItem(gameTipConfig.getInventoryItemId()).getBaseItemType(), gameTipConfig.getTerrainPositionHint()));
+    }
+
     private SelectTipTask createSelectTipTask(int itemTypeId) {
         SelectTipTask selectTipTask = tipTaskInstance.select(SelectTipTask.class).get();
         selectTipTask.init(itemTypeId);
@@ -171,5 +184,11 @@ public class TipTaskFactory {
         SendPickupBoxCommandTipTask sendPickupBoxCommandTipTask = tipTaskInstance.select(SendPickupBoxCommandTipTask.class).get();
         sendPickupBoxCommandTipTask.init(boxItemTypeId);
         return sendPickupBoxCommandTipTask;
+    }
+
+    private UseInventoryItemTipTask createUseInventoryItemTipTask(int inventoryItemId) {
+        UseInventoryItemTipTask useInventoryItemTipTask = tipTaskInstance.select(UseInventoryItemTipTask.class).get();
+        useInventoryItemTipTask.init(inventoryItemId);
+        return useInventoryItemTipTask;
     }
 }

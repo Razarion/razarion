@@ -37,6 +37,27 @@ button:disabled {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #3D4850), color-stop(4%, #313d45), color-stop(100%, #232B30)); /* webkit */
 }
 
+/** ----- Tip Animation ----- */
+@keyframes tip-horizontal-animation {
+    0% {
+        /* Corresponds to the MOVE_DISTANCE in com.btxtech.client.tip.HorizontalTip*/
+        left: 100px;
+    }
+    100% {
+        left: 0;
+    }
+}
+
+.tip-horizontal-animation-container {
+    position: absolute;
+}
+
+.tip-horizontal-animation-image {
+    position: absolute;
+    animation: tip-horizontal-animation 1s ease-out infinite;
+    visibility: hidden;
+}
+
 /** -------------------------- COMMON ENDS -------------------------- */
 
 /** -------------------------- COCKPIT -------------------------- */

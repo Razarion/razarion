@@ -51,7 +51,7 @@ public class Shape3DReferenceFiled extends Composite {
             shape3DId = selectedId;
             shape3DIdConsumer.accept(shape3DId);
             setupNameLabel(shape3DUiService.getShape3D(shape3DId));
-        }, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
+        }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     private void setupNameLabel(Shape3D shape3D) {

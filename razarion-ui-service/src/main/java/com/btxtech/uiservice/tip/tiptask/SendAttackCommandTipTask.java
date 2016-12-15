@@ -51,7 +51,7 @@ public class SendAttackCommandTipTask extends AbstractTipTask {
         }
     }
 
-    public InGameTipVisualization createInGameTip() {
+    public InGameTipVisualization createInGameTipVisualization() {
         Collection<SyncBaseItem> targets = syncItemContainerService.findEnemyBaseItemWithPlace(null, getPlayerBase(), placeConfig);
         if (targets.isEmpty()) {
             throw new IllegalArgumentException("Can not create visualization. No target available to attack. targetItemTypeId: " + targetItemTypeId + " placeConfig: " + placeConfig);

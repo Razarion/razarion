@@ -1,9 +1,9 @@
 package com.btxtech.webglemulator.razarion.cockpit;
 
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.SideCockpit;
 import com.btxtech.webglemulator.WebGlEmulatorController;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -41,5 +41,10 @@ public class DevToolSideCockpit implements SideCockpit {
         Platform.runLater(() -> {
             webGlEmulatorController.displayLevel(levelNumber);
         });
+    }
+
+    @Override
+    public Rectangle getInventoryDialogButtonLocation() {
+        return new Rectangle(10, 10, 100, 20);
     }
 }

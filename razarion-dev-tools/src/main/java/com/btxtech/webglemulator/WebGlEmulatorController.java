@@ -24,6 +24,7 @@ import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -131,6 +132,8 @@ public class WebGlEmulatorController implements Initializable {
     private PerfmonService perfmonService;
     @Inject
     private SelectionHandler selectionHandler;
+    @Inject
+    private GameTipService gameTipService;
     private DecimalPosition lastCanvasPosition;
 
     @Override
@@ -394,6 +397,7 @@ public class WebGlEmulatorController implements Initializable {
             System.out.println("pressed: " + inventoryItem);
             inventoryUiService.useItem(inventoryItem);
         });
+        gameTipService.onInventoryDialogOpened();
     }
 
     public void onPerfomButtonClicked() {

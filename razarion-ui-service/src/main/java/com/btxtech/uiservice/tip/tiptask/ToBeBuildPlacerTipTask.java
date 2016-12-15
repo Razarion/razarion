@@ -52,7 +52,7 @@ public class ToBeBuildPlacerTipTask extends AbstractTipTask implements BaseItemP
     }
 
     @Override
-    public InGameTipVisualization createInGameTip() {
+    public InGameTipVisualization createInGameTipVisualization() {
         return null;
     }
 

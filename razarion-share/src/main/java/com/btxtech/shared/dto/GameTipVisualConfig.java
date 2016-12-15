@@ -20,6 +20,7 @@ public class GameTipVisualConfig {
     private Color baseItemPlacerCornerColor;
     private Color grabCommandCornerColor;
     private Color attackCommandCornerColor;
+    private Integer leftArrowLeftMouseGuiImageId;
 
     public double getCornerLength() {
         return cornerLength;
@@ -135,6 +136,15 @@ public class GameTipVisualConfig {
 
     public GameTipVisualConfig setAttackCommandCornerColor(Color attackCommandCornerColor) {
         this.attackCommandCornerColor = attackCommandCornerColor;
+        return this;
+    }
+
+    public Integer getLeftArrowLeftMouseGuiImageId() {
+        return leftArrowLeftMouseGuiImageId;
+    }
+
+    public GameTipVisualConfig setLeftArrowLeftMouseGuiImageId(Integer leftArrowLeftMouseGuiImageId) {
+        this.leftArrowLeftMouseGuiImageId = leftArrowLeftMouseGuiImageId;
         return this;
     }
 }

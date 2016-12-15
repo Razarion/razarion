@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.SelectionEvent;
@@ -108,4 +109,21 @@ public class TipTaskContainer {
         }
     }
 
+    public void onInventoryDialogOpened() {
+        if (hasTip()) {
+            getCurrentTask().onInventoryDialogOpened();
+        }
+    }
+
+    public void onInventoryDialogClosed() {
+        if (hasTip()) {
+            getCurrentTask().onInventoryDialogClosed();
+        }
+    }
+
+    public void onInventoryItemPlacerActivated(InventoryItem inventoryItem) {
+        if (hasTip()) {
+            getCurrentTask().onInventoryItemPlacerActivated(inventoryItem);
+        }
+    }
 }

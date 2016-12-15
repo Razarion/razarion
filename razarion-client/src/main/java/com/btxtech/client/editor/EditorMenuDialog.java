@@ -102,7 +102,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("perfmonButton")
     private void onPerfmonButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
-        modalDialogManager.show("Perfmon", ClientModalDialogManagerImpl.Type.STACK_ABLE, PerfmonDialog.class, null, null, DialogButton.Button.CLOSE);
+        modalDialogManager.show("Perfmon", ClientModalDialogManagerImpl.Type.STACK_ABLE, PerfmonDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
     @EventHandler("renderEngineButton")
@@ -162,7 +162,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("imageButton")
     private void onImageButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
-        modalDialogManager.show("Items", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, null, null, DialogButton.Button.CLOSE);
+        modalDialogManager.show("Items", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
     @EventHandler("shape3DButton")

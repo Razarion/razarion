@@ -1,12 +1,14 @@
 package com.btxtech.client.dialog.inventory;
 
-import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.tip.GameTipService;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.dom.DOMUtil;
@@ -26,7 +28,11 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
     @Inject
     private StoryboardService storyboardService;
     @Inject
+    private GameTipService gameTipService;
+    @Inject
     private InventoryUiService inventoryUiService;
+    @Inject
+    private CockpitService cockpitService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -46,6 +52,14 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
         DOMUtil.removeAllElementChildren(inventoryItemTable.getElement()); // Remove placeholder table row from template.
         inventoryItemTable.addComponentCreationHandler(inventoryItemWidget -> inventoryItemWidget.setInventoryDialog(this));
         inventoryItemTable.setValue(inventoryUiService.gatherInventoryItemModels(userContext));
+        cockpitService.onInventoryDialogOpened(inventoryItemId -> {
+            for (InventoryItemModel inventoryItemModel : inventoryItemTable.getValue()) {
+                if (inventoryItemModel.getInventoryItem().getId() == (int) inventoryItemId) {
+                    return inventoryItemTable.getComponent(inventoryItemModel).orElseThrow(IllegalStateException::new).getInventoryUseButtonLocation();
+                }
+            }
+            throw new IllegalStateException("No inventory item id: " + inventoryItemId);
+        });
     }
 
     @Override
@@ -55,7 +69,8 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
 
     @Override
     public void onClose() {
-
+        gameTipService.onInventoryDialogClosed();
+        cockpitService.onInventoryDialogClosed();
     }
 
     public void close() {

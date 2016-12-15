@@ -46,7 +46,7 @@ public class SelectTipTask extends AbstractTipTask {
         }
     }
 
-    public InGameTipVisualization createInGameTip() {
+    public InGameTipVisualization createInGameTipVisualization() {
         return new InGameItemTipVisualization(getPlayerBase().findSyncBaseItemOfType(itemTypeId), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getSelectCornerColor(), getGameTipVisualConfig().getSelectShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

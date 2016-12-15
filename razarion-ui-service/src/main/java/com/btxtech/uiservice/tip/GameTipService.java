@@ -1,10 +1,12 @@
 package com.btxtech.uiservice.tip;
 
 import com.btxtech.shared.dto.GameTipConfig;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
 import com.btxtech.uiservice.storyboard.StoryboardService;
@@ -12,6 +14,8 @@ import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
 import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
 import com.btxtech.uiservice.tip.tiptask.TipTaskFactory;
+import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.GuiTipVisualizationService;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,6 +34,9 @@ public class GameTipService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private TipRenderTask tipRenderTask;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private GuiTipVisualizationService guiTipVisualizationService;
     @Inject
     private TipTaskFactory tipTaskFactory;
     @Inject
@@ -38,8 +45,11 @@ public class GameTipService {
     private StoryboardService storyboardService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private SimpleExecutorService simpleExecutorService;
     private TipTaskContainer tipTaskContainer;
     private InGameTipVisualization inGameTipVisualization;
+    private GuiTipVisualization guiTipVisualization;
 
     public void start(GameTipConfig gameTipConfig) {
         try {
@@ -100,6 +110,24 @@ public class GameTipService {
         }
     }
 
+    public void onInventoryDialogOpened() {
+        if (tipTaskContainer != null) {
+            tipTaskContainer.onInventoryDialogOpened();
+        }
+    }
+
+    public void onInventoryDialogClosed() {
+        if (tipTaskContainer != null) {
+            tipTaskContainer.onInventoryDialogClosed();
+        }
+    }
+
+    public void onInventoryItemPlacerActivated(InventoryItem inventoryItem) {
+        if (tipTaskContainer != null) {
+            tipTaskContainer.onInventoryItemPlacerActivated(inventoryItem);
+        }
+    }
+
     public void onTaskFailed() {
         try {
             cleanupVisualization();
@@ -128,11 +156,16 @@ public class GameTipService {
     }
 
     private void startVisualization(AbstractTipTask currentTipTask) {
-        inGameTipVisualization = currentTipTask.createInGameTip();
+        inGameTipVisualization = currentTipTask.createInGameTipVisualization();
         if (inGameTipVisualization != null) {
             terrainScrollHandler.addTerrainScrollListener(inGameTipVisualization);
             inGameTipVisualization.onScroll(terrainScrollHandler.getCurrentViewField());
             tipRenderTask.activate(inGameTipVisualization);
+        }
+        guiTipVisualization = currentTipTask.createGuiTipVisualization();
+        if (guiTipVisualization != null) {
+            guiTipVisualization.start(simpleExecutorService);
+            guiTipVisualizationService.activate(guiTipVisualization);
         }
     }
 
@@ -142,5 +175,11 @@ public class GameTipService {
             terrainScrollHandler.removeTerrainScrollListener(inGameTipVisualization);
             inGameTipVisualization = null;
         }
+        if (guiTipVisualization != null) {
+            guiTipVisualization.stop();
+            guiTipVisualizationService.deactivate();
+            guiTipVisualization = null;
+        }
+
     }
 }
