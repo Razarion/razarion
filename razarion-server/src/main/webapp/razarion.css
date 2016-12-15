@@ -38,9 +38,9 @@ button:disabled {
 }
 
 /** ----- Tip Animation ----- */
-@keyframes tip-horizontal-animation {
+@keyframes tip-west-animation {
     0% {
-        /* Corresponds to the MOVE_DISTANCE in com.btxtech.client.tip.HorizontalTip*/
+        /* Corresponds to the MOVE_DISTANCE in com.btxtech.client.tip.WestGuiTip*/
         left: 100px;
     }
     100% {
@@ -48,13 +48,29 @@ button:disabled {
     }
 }
 
-.tip-horizontal-animation-container {
+@keyframes tip-south-animation {
+    0% {
+        /* Corresponds to the MOVE_DISTANCE in com.btxtech.client.tip.SouthGuiTip*/
+        top: 0;
+    }
+    100% {
+        top: 100px;
+    }
+}
+
+.tip-animation-container {
     position: absolute;
 }
 
-.tip-horizontal-animation-image {
+.tip-west-animation-image {
     position: absolute;
-    animation: tip-horizontal-animation 1s ease-out infinite;
+    animation: tip-west-animation 1s ease-out infinite;
+    visibility: hidden;
+}
+
+.tip-south-animation-image {
+    position: absolute;
+    animation: tip-south-animation 1s ease-out infinite;
     visibility: hidden;
 }
 

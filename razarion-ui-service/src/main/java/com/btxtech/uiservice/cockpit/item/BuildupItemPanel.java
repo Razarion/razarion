@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.cockpit.item;
 
 import com.btxtech.shared.datatypes.Group;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
@@ -38,6 +39,8 @@ public abstract class BuildupItemPanel {
     protected abstract void clear();
 
     protected abstract void setBuildupItem(List<BuildupItem> buildupItems);
+
+    protected abstract Rectangle getBuildButtonLocation(BuildupItem buildupItem);
 
     public void display(SyncBaseItem syncBaseItem) {
         selectedGroup = null;
@@ -114,15 +117,15 @@ public abstract class BuildupItemPanel {
         display(selectedGroup);
     }
 
-    public boolean isHasItemsToBuild() {
+    boolean isHasItemsToBuild() {
         return hasItemsToBuild;
     }
-//    public Index getAbsoluteMiddleTopPosition(int buildupItemTypeId) {
-//        BuildupItem buildupItem = buildupItems.get(buildupItemTypeId);
-//        if (buildupItem == null) {
-//            throw new IllegalArgumentException("BuildupItemPanel.getAbsoluteMiddleTopPosition() buildupItemTypeId is not known: " + buildupItemTypeId);
-//        }
-//        return new Index(buildupItem.getAbsoluteLeft() + buildupItem.getOffsetWidth() / 2, buildupItem.getAbsoluteTop());
-//    }
 
+    Rectangle getBuildButtonLocation(int baseItemTypeId) {
+        BuildupItem buildupItem = buildupItems.get(baseItemTypeId);
+        if (buildupItem == null) {
+            throw new IllegalArgumentException("No BuildupItem for: " + baseItemTypeId);
+        }
+        return getBuildButtonLocation(buildupItem);
+    }
 }

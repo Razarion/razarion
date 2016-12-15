@@ -55,8 +55,8 @@ public class UseInventoryItemTipTask extends AbstractTipTask {
 
     @Override
     public GuiTipVisualization createGuiTipVisualization() {
-        if (getGameTipVisualConfig().getLeftArrowLeftMouseGuiImageId() != null) {
-            return new GuiTipVisualization(this::providePosition, getGameTipVisualConfig().getLeftArrowLeftMouseGuiImageId());
+        if (getGameTipVisualConfig().getWestLeftMouseGuiImageId() != null) {
+            return new GuiTipVisualization(this::providePosition, GuiTipVisualization.Direction.WEST, getGameTipVisualConfig().getWestLeftMouseGuiImageId());
         } else {
             logger.warning("No image defined for GameTipVisualConfig.leftArrowLeftMouseGuiImageId");
             return null;

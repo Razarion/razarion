@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit.item;
 
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -65,5 +66,10 @@ public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElemen
     protected void setBuildupItem(List<BuildupItem> buildupItems) {
         DOMUtil.removeAllElementChildren(buildItemTypePanel.getElement()); // Remove placeholder table row from template.
         buildItemTypePanel.setValue(buildupItems);
+    }
+
+    @Override
+    protected Rectangle getBuildButtonLocation(BuildupItem buildupItem) {
+        return buildItemTypePanel.getComponent(buildupItem).orElseThrow(IllegalStateException::new).getBuildButtonLocation();
     }
 }

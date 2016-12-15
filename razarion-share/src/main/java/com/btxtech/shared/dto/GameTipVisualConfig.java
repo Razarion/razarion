@@ -20,7 +20,8 @@ public class GameTipVisualConfig {
     private Color baseItemPlacerCornerColor;
     private Color grabCommandCornerColor;
     private Color attackCommandCornerColor;
-    private Integer leftArrowLeftMouseGuiImageId;
+    private Integer westLeftMouseGuiImageId;
+    private Integer southLeftMouseGuiImageId;
 
     public double getCornerLength() {
         return cornerLength;
@@ -139,12 +140,21 @@ public class GameTipVisualConfig {
         return this;
     }
 
-    public Integer getLeftArrowLeftMouseGuiImageId() {
-        return leftArrowLeftMouseGuiImageId;
+    public Integer getWestLeftMouseGuiImageId() {
+        return westLeftMouseGuiImageId;
     }
 
-    public GameTipVisualConfig setLeftArrowLeftMouseGuiImageId(Integer leftArrowLeftMouseGuiImageId) {
-        this.leftArrowLeftMouseGuiImageId = leftArrowLeftMouseGuiImageId;
+    public GameTipVisualConfig setWestLeftMouseGuiImageId(Integer westLeftMouseGuiImageId) {
+        this.westLeftMouseGuiImageId = westLeftMouseGuiImageId;
+        return this;
+    }
+
+    public Integer getSouthLeftMouseGuiImageId() {
+        return southLeftMouseGuiImageId;
+    }
+
+    public GameTipVisualConfig setSouthLeftMouseGuiImageId(Integer southLeftMouseGuiImageId) {
+        this.southLeftMouseGuiImageId = southLeftMouseGuiImageId;
         return this;
     }
 }

@@ -1,5 +1,6 @@
 package com.btxtech.webglemulator.razarion.cockpit.item;
 
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import javafx.scene.control.Button;
@@ -30,5 +31,10 @@ public class DevToolBuildupItemPanel extends BuildupItemPanel {
 
     public HBox getHBox() {
         return hBox;
+    }
+
+    @Override
+    protected Rectangle getBuildButtonLocation(BuildupItem buildupItem) {
+        return new Rectangle(100, 300, 50, 50);
     }
 }

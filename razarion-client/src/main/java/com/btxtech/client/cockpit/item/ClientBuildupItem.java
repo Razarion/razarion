@@ -1,9 +1,10 @@
 package com.btxtech.client.cockpit.item;
 
-import com.btxtech.shared.rest.RestUrl;
-import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
@@ -123,6 +124,10 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
         buildupItem.onBuild();
     }
 
+    Rectangle getBuildButtonLocation() {
+        return new Rectangle(image.getAbsoluteLeft(), image.getAbsoluteTop(), image.getOffsetWidth(), image.getOffsetHeight());
+    }
+
     private void discoverEnableState() {
         itemCount = storyboardService.getItemCount(buildupItem.getItemType().getId());
         itemLimit = storyboardService.getLimitation4ItemType(buildupItem.getItemType());
@@ -147,5 +152,4 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
         itemLimitLabel.setTextContent(itemCount + "/" + itemLimit);
         // TODO button.setEnabled(enableState.isEnabled());
     }
-
 }

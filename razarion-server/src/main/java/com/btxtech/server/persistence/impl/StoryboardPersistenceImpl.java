@@ -120,11 +120,11 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
         CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
-        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(4).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
+        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
@@ -135,7 +135,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(harvest());
-        storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -154,7 +154,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameTipVisualConfig.setGrabCommandCornerColor(new Color(0, 0, 1));
         gameTipVisualConfig.setMoveCommandCornerColor(new Color(0, 1, 0));
         gameTipVisualConfig.setToBeFinalizedCornerColor(new Color(1, 1, 0));
-        gameTipVisualConfig.setLeftArrowLeftMouseGuiImageId(272506);
+        gameTipVisualConfig.setWestLeftMouseGuiImageId(272506);
+        gameTipVisualConfig.setSouthLeftMouseGuiImageId(272507);
         return gameTipVisualConfig;
     }
 
@@ -398,19 +399,34 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     // Build base -----------------------------------------------------------------------------
     private List<SceneConfig> buildBase() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
-        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
+        Map<Integer, Integer> startTypeCount = new HashMap<>();
+        startTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(startTypeCount));
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true));
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+        // Tip
+        GameTipConfig buildGameTipConfig = new GameTipConfig();
+        buildGameTipConfig.setTip(GameTipConfig.Tip.BUILD);
+        buildGameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
+        buildGameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_FACTORY);
+        buildGameTipConfig.setTerrainPositionHint(new DecimalPosition(54, 260));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(buildGameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Platziere deinen Bulldozer und baue eine Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
         // Build Harvester Quest
         buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
         conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue eine Harvester in deiner Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
+        // Tip
+        GameTipConfig factoryGameTipConfig = new GameTipConfig();
+        factoryGameTipConfig.setTip(GameTipConfig.Tip.FABRICATE);
+        factoryGameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY);
+        factoryGameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_HARVESTER);
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(factoryGameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue eine Harvester in deiner Fabrik").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 
@@ -588,7 +604,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addNpcHarvestAttack(sceneConfigs);
         addFindEnemyBase(sceneConfigs); // TODO Tip
         addPickBoxTask(sceneConfigs);
-        addBoxSpawnTask(sceneConfigs); // TODO Tip
+        addBoxSpawnTask(sceneConfigs);
         addAttackTask(sceneConfigs);
         // Level 3
         addEnemyKillTask(sceneConfigs);
@@ -765,7 +781,12 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.INVENTORY_ITEM_PLACED).setComparisonConfig(new ComparisonConfig().setCount(1));
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1));
         BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig = new BotRemoveOwnItemCommandConfig().setBotId(ENEMY_BOT).setBaseItemType2RemoveId(BASE_ITEM_TYPE_ATTACKER);
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setXp(1).setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotRemoveOwnItemCommandConfigs(Collections.singletonList(botRemoveOwnItemCommandConfig)));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.SPAN_INVENTORY_ITEM);
+        gameTipConfig.setInventoryItemId(INVENTORY_ITEM);
+        gameTipConfig.setTerrainPositionHint(new DecimalPosition(232, 170));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setXp(1).setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotRemoveOwnItemCommandConfigs(Collections.singletonList(botRemoveOwnItemCommandConfig)));
     }
 
     private void addAttackTask(List<SceneConfig> sceneConfigs) {
@@ -833,7 +854,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.BUILD);
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
-        gameTipConfig.setTarget(BASE_ITEM_TYPE_FACTORY);
+        gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_FACTORY);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(54, 260));
 
         sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Baue eine Fabrik mit deinem Bulldozer").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));

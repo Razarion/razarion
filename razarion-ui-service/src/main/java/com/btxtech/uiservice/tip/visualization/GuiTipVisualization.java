@@ -12,19 +12,29 @@ import java.util.function.Supplier;
  * 13.12.2016.
  */
 public class GuiTipVisualization {
+    public enum Direction {
+        NORTH, EAST, SOUTH, WEST;
+    }
+
     private static final long DELAY_MILLIS = 500;
+    private Direction direction;
     private Supplier<Index> screenPositionProvider;
     private Integer imageId;
     private SimpleScheduledFuture simpleScheduledFuture;
     private Consumer<Index> positionConsumer;
 
-    public GuiTipVisualization(Supplier<Index> screenPositionProvider, Integer imageId) {
+    public GuiTipVisualization(Supplier<Index> screenPositionProvider, Direction direction, Integer imageId) {
         this.screenPositionProvider = screenPositionProvider;
+        this.direction = direction;
         this.imageId = imageId;
     }
 
     public void setPositionConsumer(Consumer<Index> positionConsumer) {
         this.positionConsumer = positionConsumer;
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     public Integer getImageId() {

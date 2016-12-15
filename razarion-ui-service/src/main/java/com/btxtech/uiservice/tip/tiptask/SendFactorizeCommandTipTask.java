@@ -1,8 +1,14 @@
 package com.btxtech.uiservice.tip.tiptask;
 
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
-import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
+import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
+import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+
+import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -10,6 +16,9 @@ import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
  * Time: 13:19
  */
 public class SendFactorizeCommandTipTask extends AbstractTipTask {
+    private Logger logger = Logger.getLogger(SendFactorizeCommandTipTask.class.getName());
+    @Inject
+    private ItemCockpitService itemCockpitService;
     private int itemTypeToFactorized;
 
     public void init(int itemTypeToFactorized) {
@@ -35,5 +44,20 @@ public class SendFactorizeCommandTipTask extends AbstractTipTask {
         if (baseCommand instanceof FactoryCommand && ((FactoryCommand) baseCommand).getToBeBuiltId() == itemTypeToFactorized) {
             onSucceed();
         }
+    }
+
+    @Override
+    public GuiTipVisualization createGuiTipVisualization() {
+        if (getGameTipVisualConfig().getSouthLeftMouseGuiImageId() != null) {
+            return new GuiTipVisualization(this::providePosition, GuiTipVisualization.Direction.SOUTH, getGameTipVisualConfig().getSouthLeftMouseGuiImageId());
+        } else {
+            logger.warning("No image defined for GameTipVisualConfig.downArrowLeftMouseGuiImageId");
+            return null;
+        }
+    }
+
+    private Index providePosition() {
+        Rectangle rectangle = itemCockpitService.getBuildButtonLocation(itemTypeToFactorized);
+        return new Index((rectangle.startX() + rectangle.endX()) / 2, rectangle.startY());
     }
 }

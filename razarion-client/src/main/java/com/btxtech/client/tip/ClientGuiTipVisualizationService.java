@@ -15,13 +15,27 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class ClientGuiTipVisualizationService implements GuiTipVisualizationService {
     @Inject
-    private Instance<HorizontalGuiTip> instance;
-    private HorizontalGuiTip current;
+    private Instance<AbstractGuiTip> instance;
+    private AbstractGuiTip current;
 
     @Override
     public void activate(GuiTipVisualization guiTipVisualization) {
         deactivate();
-        current = instance.get();
+        switch (guiTipVisualization.getDirection()) {
+            case NORTH:
+                throw new UnsupportedOperationException();
+            case EAST:
+                throw new UnsupportedOperationException();
+            case SOUTH:
+                current = instance.select(SouthGuiTip.class).get();
+                break;
+            case WEST:
+                current = instance.select(WestGuiTip.class).get();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown direction: " + guiTipVisualization.getDirection());
+        }
+
         current.init(guiTipVisualization);
         Window.getDocument().getBody().appendChild(current.getElement());
     }

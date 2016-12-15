@@ -2,6 +2,7 @@ package com.btxtech.uiservice.cockpit.item;
 
 
 import com.btxtech.shared.datatypes.Group;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -106,4 +107,10 @@ public class ItemCockpitService {
         }
     }
 
+    public Rectangle getBuildButtonLocation(int baseItemTypeId) {
+        if(buildupItemPanel == null) {
+            throw new IllegalStateException("No buildup item panel");
+        }
+        return buildupItemPanel.getBuildButtonLocation(baseItemTypeId);
+    }
 }

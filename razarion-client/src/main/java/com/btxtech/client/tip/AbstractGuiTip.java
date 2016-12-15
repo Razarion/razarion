@@ -11,18 +11,14 @@ import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Image;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 
 /**
  * Created by Beat
- * 14.12.2016.
+ * 15.12.2016.
  */
-@Templated("HorizontalGuiTip.html#tip")
-public class HorizontalGuiTip implements IsElement, ImageUiService.ImageListener {
-    // Corresponds to the MOVE_DISTANCE in razarion.css
-    private static final int MOVE_DISTANCE = 100;
+public abstract class AbstractGuiTip implements IsElement, ImageUiService.ImageListener {
     @Inject
     private ImageUiService imageUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -36,12 +32,18 @@ public class HorizontalGuiTip implements IsElement, ImageUiService.ImageListener
     private GuiTipVisualization guiTipVisualization;
     private ImageElement imageElement;
 
+    protected abstract void updatePosition(Index screenPosition);
+
+    protected abstract String getCssClassName();
+
     public void init(GuiTipVisualization guiTipVisualization) {
         this.guiTipVisualization = guiTipVisualization;
         imageUiService.requestImage(guiTipVisualization.getImageId(), this);
         image.setSrc(RestUrl.getImageServiceUrlSafe(guiTipVisualization.getImageId()));
         div.getStyle().setProperty("z-index", Integer.toString(ZIndexConstants.TIP));
+        image.setClassName(getCssClassName());
     }
+
 
     void cleanup() {
         imageUiService.removeListener(guiTipVisualization.getImageId(), this);
@@ -58,13 +60,15 @@ public class HorizontalGuiTip implements IsElement, ImageUiService.ImageListener
         guiTipVisualization.setPositionConsumer(this::updatePosition);
     }
 
-    private void updatePosition(Index screenPosition) {
-        div.getStyle().setProperty("left", screenPosition.getX() + "px");
-        div.getStyle().setProperty("top", screenPosition.getY() - imageElement.getHeight() / 2 + "px");
+    protected Div getDiv() {
+        return div;
+    }
 
-        div.getStyle().setProperty("width", (imageElement.getWidth() + MOVE_DISTANCE) + "px");
-        div.getStyle().setProperty("height", imageElement.getHeight() + "px");
+    protected ImageElement getImageElement() {
+        return imageElement;
+    }
 
-        image.getStyle().setProperty("visibility", "visible");
+    protected Image getImage() {
+        return image;
     }
 }
