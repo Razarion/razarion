@@ -163,6 +163,10 @@ public class TerrainScrollHandler {
     }
 
     private void autoScroll() {
+        if(scrollDirectionX == ScrollDirection.STOP && scrollDirectionY == ScrollDirection.STOP) {
+            return;
+        }
+
         double scrollX = 0;
         if (scrollDirectionX == ScrollDirection.LEFT) {
             scrollX = -SCROLL_AUTO_DISTANCE;

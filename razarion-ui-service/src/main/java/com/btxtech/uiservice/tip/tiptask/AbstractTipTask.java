@@ -17,7 +17,7 @@ import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.tip.GameTipService;
-import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
@@ -64,7 +64,7 @@ public abstract class AbstractTipTask {
     }
 
     // Override ins subclasses
-    public GuiTipVisualization createGuiTipVisualization() {
+    public AbstractGuiTipVisualization createGuiTipVisualization() {
         return null;
     }
 

@@ -2,9 +2,8 @@ package com.btxtech.client.tip;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.imageservice.ImageUiService;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.rest.RestUrl;
-import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.google.gwt.dom.client.ImageElement;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Div;
@@ -29,21 +28,17 @@ public abstract class AbstractGuiTip implements IsElement, ImageUiService.ImageL
     @Inject
     @DataField
     private Image image;
-    private GuiTipVisualization guiTipVisualization;
+    private AbstractGuiTipVisualization guiTipVisualization;
     private ImageElement imageElement;
 
-    protected abstract void updatePosition(Index screenPosition);
-
-    protected abstract String getCssClassName();
-
-    public void init(GuiTipVisualization guiTipVisualization) {
-        this.guiTipVisualization = guiTipVisualization;
-        imageUiService.requestImage(guiTipVisualization.getImageId(), this);
-        image.setSrc(RestUrl.getImageServiceUrlSafe(guiTipVisualization.getImageId()));
+    public void init(AbstractGuiTipVisualization guiPointingTipVisualization, String containerCss, String imageCss) {
+        this.guiTipVisualization = guiPointingTipVisualization;
+        imageUiService.requestImage(guiPointingTipVisualization.getImageId(), this);
+        image.setSrc(RestUrl.getImageServiceUrlSafe(guiPointingTipVisualization.getImageId()));
         div.getStyle().setProperty("z-index", Integer.toString(ZIndexConstants.TIP));
-        image.setClassName(getCssClassName());
+        div.setClassName(containerCss);
+        image.setClassName(imageCss);
     }
-
 
     void cleanup() {
         imageUiService.removeListener(guiTipVisualization.getImageId(), this);
@@ -57,14 +52,13 @@ public abstract class AbstractGuiTip implements IsElement, ImageUiService.ImageL
     @Override
     public void onLoaded(ImageElement imageElement) {
         this.imageElement = imageElement;
-        guiTipVisualization.setPositionConsumer(this::updatePosition);
     }
 
     protected Div getDiv() {
         return div;
     }
 
-    protected ImageElement getImageElement() {
+    ImageElement getImageElement() {
         return imageElement;
     }
 

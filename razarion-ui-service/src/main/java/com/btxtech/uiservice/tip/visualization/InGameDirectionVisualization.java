@@ -17,10 +17,12 @@ public class InGameDirectionVisualization implements TerrainScrollListener {
     private Integer shape3DId;
     private DecimalPosition terrainPositionHint;
     private ViewField viewField;
+    private boolean visible;
 
-    public InGameDirectionVisualization(Integer shape3DId, DecimalPosition terrainPositionHint ) {
+    public InGameDirectionVisualization(Integer shape3DId, DecimalPosition terrainPositionHint, boolean visible) {
         this.shape3DId = shape3DId;
         this.terrainPositionHint = terrainPositionHint;
+        this.visible = visible;
     }
 
     public Integer getShape3DId() {
@@ -28,14 +30,22 @@ public class InGameDirectionVisualization implements TerrainScrollListener {
     }
 
     public List<ModelMatrices> provideDModelMatrices() {
-        DecimalPosition center = viewField.calculateCenter();
-        double angle = center.getAngle(terrainPositionHint);
-        Matrix4 model = Matrix4.createTranslation(center.getX(), center.getY(), 0).multiply(Matrix4.createZRotation(angle));
-        return Collections.singletonList(new ModelMatrices(model));
+        if (visible) {
+            DecimalPosition center = viewField.calculateCenter();
+            double angle = center.getAngle(terrainPositionHint);
+            Matrix4 model = Matrix4.createTranslation(center.getX(), center.getY(), 0).multiply(Matrix4.createZRotation(angle));
+            return Collections.singletonList(new ModelMatrices(model));
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void onScroll(ViewField viewField) {
         this.viewField = viewField;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

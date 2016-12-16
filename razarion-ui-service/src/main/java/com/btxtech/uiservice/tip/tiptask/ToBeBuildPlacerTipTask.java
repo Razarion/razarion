@@ -8,7 +8,8 @@ import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerListener;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.GuiPointingTipVisualization;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -66,9 +67,9 @@ public class ToBeBuildPlacerTipTask extends AbstractTipTask implements BaseItemP
     }
 
     @Override
-    public GuiTipVisualization createGuiTipVisualization() {
+    public AbstractGuiTipVisualization createGuiTipVisualization() {
         if (getGameTipVisualConfig().getSouthLeftMouseGuiImageId() != null) {
-            return new GuiTipVisualization(this::providePosition, GuiTipVisualization.Direction.SOUTH, getGameTipVisualConfig().getSouthLeftMouseGuiImageId());
+            return new GuiPointingTipVisualization(this::providePosition, GuiPointingTipVisualization.Direction.SOUTH, getGameTipVisualConfig().getSouthLeftMouseGuiImageId());
         } else {
             logger.warning("No image defined for GameTipVisualConfig.downArrowLeftMouseGuiImageId");
             return null;

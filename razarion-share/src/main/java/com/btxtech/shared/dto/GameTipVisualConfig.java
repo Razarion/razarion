@@ -23,6 +23,7 @@ public class GameTipVisualConfig {
     private Integer westLeftMouseGuiImageId;
     private Integer southLeftMouseGuiImageId;
     private Integer directionShape3DId;
+    private Integer splashImageId;
 
     public double getCornerLength() {
         return cornerLength;
@@ -165,6 +166,15 @@ public class GameTipVisualConfig {
 
     public GameTipVisualConfig setDirectionShape3DId(Integer directionShape3DId) {
         this.directionShape3DId = directionShape3DId;
+        return this;
+    }
+
+    public Integer getSplashImageId() {
+        return splashImageId;
+    }
+
+    public GameTipVisualConfig setSplashImageId(Integer splashImageId) {
+        this.splashImageId = splashImageId;
         return this;
     }
 }

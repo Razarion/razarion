@@ -124,9 +124,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
@@ -157,6 +157,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameTipVisualConfig.setWestLeftMouseGuiImageId(272506);
         gameTipVisualConfig.setSouthLeftMouseGuiImageId(272507);
         gameTipVisualConfig.setDirectionShape3DId(272503);
+        gameTipVisualConfig.setSplashImageId(272508);
         return gameTipVisualConfig;
     }
 
@@ -607,7 +608,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         addUserMoveScene(sceneConfigs);
         // Level 2
         addNpcHarvestAttack(sceneConfigs);
-        addFindEnemyBase(sceneConfigs); // TODO Tip
+        addFindEnemyBase(sceneConfigs);
         addPickBoxTask(sceneConfigs);
         addBoxSpawnTask(sceneConfigs);
         addAttackTask(sceneConfigs);
@@ -763,7 +764,12 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(ENEMY_BOT).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(244, 187))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(ENEMY_BOT).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(264, 182))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.SCROLL);
+        gameTipConfig.setTerrainPositionHint(new DecimalPosition(305, 175));
+
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setCameraConfig(cameraConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
     }
 
     private void addPickBoxTask(List<SceneConfig> sceneConfigs) {

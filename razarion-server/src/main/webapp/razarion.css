@@ -74,6 +74,29 @@ button:disabled {
     visibility: hidden;
 }
 
+@keyframes splash-south-animation {
+    0% {
+        transform: scale(0.7);
+    }
+    50% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0.7);
+    }
+}
+
+.tip-splash-animation-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.tip-splash-animation-image {
+    animation: splash-south-animation 0.75s ease-out infinite;
+}
+
 /** -------------------------- COMMON ENDS -------------------------- */
 
 /** -------------------------- COCKPIT -------------------------- */

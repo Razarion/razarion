@@ -5,7 +5,8 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
-import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.GuiPointingTipVisualization;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;
@@ -47,9 +48,9 @@ public class SendFactorizeCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    public GuiTipVisualization createGuiTipVisualization() {
+    public AbstractGuiTipVisualization createGuiTipVisualization() {
         if (getGameTipVisualConfig().getSouthLeftMouseGuiImageId() != null) {
-            return new GuiTipVisualization(this::providePosition, GuiTipVisualization.Direction.SOUTH, getGameTipVisualConfig().getSouthLeftMouseGuiImageId());
+            return new GuiPointingTipVisualization(this::providePosition, GuiPointingTipVisualization.Direction.SOUTH, getGameTipVisualConfig().getSouthLeftMouseGuiImageId());
         } else {
             logger.warning("No image defined for GameTipVisualConfig.downArrowLeftMouseGuiImageId");
             return null;

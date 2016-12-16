@@ -14,7 +14,7 @@ import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
 import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
 import com.btxtech.uiservice.tip.tiptask.TipTaskFactory;
-import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.GuiTipVisualizationService;
 import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
@@ -52,7 +52,7 @@ public class GameTipService {
     private TipTaskContainer tipTaskContainer;
     private InGameTipVisualization inGameTipVisualization;
     private InGameDirectionVisualization inGameDirectionVisualization;
-    private GuiTipVisualization guiTipVisualization;
+    private AbstractGuiTipVisualization guiTipVisualization;
 
     public void start(GameTipConfig gameTipConfig) {
         try {

@@ -8,12 +8,12 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
  * 14.12.2016.
  */
 @Templated("GuiTip.html#tip")
-public class WestGuiTip extends AbstractGuiTip {
+public class WestGuiTip extends AbstractPointingGuiTip {
     // Corresponds to the MOVE_DISTANCE in razarion.css
     private static final int MOVE_DISTANCE = 100;
 
     @Override
-    protected String getCssClassName() {
+    protected String getImageCss() {
         return "tip-west-animation-image";
     }
 

@@ -3,7 +3,8 @@ package com.btxtech.uiservice.tip.tiptask;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.CockpitService;
-import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.GuiPointingTipVisualization;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -40,9 +41,9 @@ public class OpenInventoryTipTask extends AbstractTipTask {
     }
 
     @Override
-    public GuiTipVisualization createGuiTipVisualization() {
+    public AbstractGuiTipVisualization createGuiTipVisualization() {
         if (getGameTipVisualConfig().getWestLeftMouseGuiImageId() != null) {
-            return new GuiTipVisualization(this::providePosition, GuiTipVisualization.Direction.WEST, getGameTipVisualConfig().getWestLeftMouseGuiImageId());
+            return new GuiPointingTipVisualization(this::providePosition, GuiPointingTipVisualization.Direction.WEST, getGameTipVisualConfig().getWestLeftMouseGuiImageId());
         } else {
             logger.warning("No image defined for GameTipVisualConfig.leftArrowLeftMouseGuiImageId");
             return null;
