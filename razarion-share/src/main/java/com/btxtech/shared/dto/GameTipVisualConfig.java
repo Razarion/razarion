@@ -22,6 +22,7 @@ public class GameTipVisualConfig {
     private Color attackCommandCornerColor;
     private Integer westLeftMouseGuiImageId;
     private Integer southLeftMouseGuiImageId;
+    private Integer directionShape3DId;
 
     public double getCornerLength() {
         return cornerLength;
@@ -155,6 +156,15 @@ public class GameTipVisualConfig {
 
     public GameTipVisualConfig setSouthLeftMouseGuiImageId(Integer southLeftMouseGuiImageId) {
         this.southLeftMouseGuiImageId = southLeftMouseGuiImageId;
+        return this;
+    }
+
+    public Integer getDirectionShape3DId() {
+        return directionShape3DId;
+    }
+
+    public GameTipVisualConfig setDirectionShape3DId(Integer directionShape3DId) {
+        this.directionShape3DId = directionShape3DId;
         return this;
     }
 }

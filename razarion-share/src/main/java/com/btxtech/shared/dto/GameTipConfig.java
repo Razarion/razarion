@@ -17,8 +17,8 @@ public class GameTipConfig {
         ATTACK,
         START_PLACER,
         PICK_BOX,
-        SPAN_INVENTORY_ITEM
-        // SCROLL,
+        SPAN_INVENTORY_ITEM,
+        SCROLL
         // WATCH_QUEST,
         // LOAD_CONTAINER,
         // UNLOAD_CONTAINER;

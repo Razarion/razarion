@@ -124,9 +124,9 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
@@ -134,7 +134,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(harvest());
+        // storyboardConfig.setSceneConfigs(harvest()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         return storyboardConfig;
     }
@@ -156,6 +156,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameTipVisualConfig.setToBeFinalizedCornerColor(new Color(1, 1, 0));
         gameTipVisualConfig.setWestLeftMouseGuiImageId(272506);
         gameTipVisualConfig.setSouthLeftMouseGuiImageId(272507);
+        gameTipVisualConfig.setDirectionShape3DId(272503);
         return gameTipVisualConfig;
     }
 
@@ -547,8 +548,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     // Find Enemy Base -----------------------------------------------------------------------------
     private List<SceneConfig> findEnemyBase() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        List<BotConfig> botConfigs = new ArrayList<>();
         // Bot Attacker
+        List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> attackerEnragement = new ArrayList<>();
         List<BotItemConfig> attackerBotItems = new ArrayList<>();
         attackerBotItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(305, 175))).setNoSpawn(true));
@@ -556,9 +557,13 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragement).setName("Kenny").setNpc(false));
         // Scroll Quest
         ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
+        // Tip
+        GameTipConfig gameTipConfig = new GameTipConfig();
+        gameTipConfig.setTip(GameTipConfig.Tip.SCROLL);
+        gameTipConfig.setTerrainPositionHint(new DecimalPosition(305, 175));
         // div
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setScrollUiQuest(scrollUiQuest));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 

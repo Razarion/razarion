@@ -16,6 +16,7 @@ import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
 import com.btxtech.uiservice.tip.tiptask.TipTaskFactory;
 import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.GuiTipVisualizationService;
+import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -45,10 +46,12 @@ public class GameTipService {
     private StoryboardService storyboardService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
     private TipTaskContainer tipTaskContainer;
     private InGameTipVisualization inGameTipVisualization;
+    private InGameDirectionVisualization inGameDirectionVisualization;
     private GuiTipVisualization guiTipVisualization;
 
     public void start(GameTipConfig gameTipConfig) {
@@ -162,6 +165,12 @@ public class GameTipService {
             inGameTipVisualization.onScroll(terrainScrollHandler.getCurrentViewField());
             tipRenderTask.activate(inGameTipVisualization);
         }
+        inGameDirectionVisualization = currentTipTask.createInGameDirectionVisualization();
+        if (inGameDirectionVisualization != null) {
+            terrainScrollHandler.addTerrainScrollListener(inGameDirectionVisualization);
+            inGameDirectionVisualization.onScroll(terrainScrollHandler.getCurrentViewField());
+            tipRenderTask.activate(inGameDirectionVisualization);
+        }
         guiTipVisualization = currentTipTask.createGuiTipVisualization();
         if (guiTipVisualization != null) {
             guiTipVisualization.start(simpleExecutorService);
@@ -171,9 +180,14 @@ public class GameTipService {
 
     private void cleanupVisualization() {
         if (inGameTipVisualization != null) {
-            tipRenderTask.deactivate(inGameTipVisualization);
+            tipRenderTask.deactivate();
             terrainScrollHandler.removeTerrainScrollListener(inGameTipVisualization);
             inGameTipVisualization = null;
+        }
+        if (inGameDirectionVisualization != null) {
+            tipRenderTask.deactivate();
+            terrainScrollHandler.removeTerrainScrollListener(inGameDirectionVisualization);
+            inGameDirectionVisualization = null;
         }
         if (guiTipVisualization != null) {
             guiTipVisualization.stop();

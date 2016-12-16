@@ -185,6 +185,7 @@ public class Scene implements TerrainScrollListener {
     public void onScroll(ViewField viewField) {
         if (!scrollBouncePrevention && viewField.isInside(sceneConfig.getScrollUiQuest().getScrollTargetRectangle())) {
             scrollBouncePrevention = true;
+            onQuestPassed();
             abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
             levelService.increaseXp(userContext, sceneConfig.getScrollUiQuest().getXp());
         }
@@ -224,6 +225,9 @@ public class Scene implements TerrainScrollListener {
 
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
+            questVisualizer.showSideBar(null);
+        }
+        if (sceneConfig.getScrollUiQuest() != null) {
             questVisualizer.showSideBar(null);
         }
         if (sceneConfig.getGameTipConfig() != null) {

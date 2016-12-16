@@ -60,6 +60,10 @@ public class TipTaskFactory {
                 createSpawnInventoryItem(tipTaskContainer, gameTipConfig);
                 break;
             }
+            case SCROLL: {
+                createScrollTipTask(tipTaskContainer, gameTipConfig);
+                break;
+            }
             default:
                 throw new IllegalArgumentException("TipTaskFactory: unknown tip: " + gameTipConfig.getTip());
         }
@@ -124,6 +128,12 @@ public class TipTaskFactory {
         tipTaskContainer.add(tipTaskInstance.select(OpenInventoryTipTask.class).get());
         tipTaskContainer.add(createUseInventoryItemTipTask(gameTipConfig.getInventoryItemId()));
         tipTaskContainer.add(createSpawnPlacerTipTask(inventoryService.getInventoryItem(gameTipConfig.getInventoryItemId()).getBaseItemType(), gameTipConfig.getTerrainPositionHint()));
+    }
+
+    private void createScrollTipTask(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
+        ScrollTipTask scrollTipTask = tipTaskInstance.select(ScrollTipTask.class).get();
+        scrollTipTask.init(gameTipConfig.getTerrainPositionHint());
+        tipTaskContainer.add(scrollTipTask);
     }
 
     private SelectTipTask createSelectTipTask(int itemTypeId) {

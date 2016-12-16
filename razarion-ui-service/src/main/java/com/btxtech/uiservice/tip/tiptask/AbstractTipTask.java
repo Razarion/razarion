@@ -18,6 +18,7 @@ import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.visualization.GuiTipVisualization;
+import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
 import javax.inject.Inject;
@@ -54,6 +55,11 @@ public abstract class AbstractTipTask {
 
     // Override ins subclasses
     public InGameTipVisualization createInGameTipVisualization() {
+        return null;
+    }
+
+    // Override ins subclasses
+    public InGameDirectionVisualization createInGameDirectionVisualization() {
         return null;
     }
 
