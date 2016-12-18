@@ -62,6 +62,15 @@ public class ProgressAnimation {
             case SCALE:
                 dispatchScale(value, shapeTransform);
                 break;
+            case ROTATIONX:
+                shapeTransform.setRotateX(Math.toRadians(value));
+                break;
+            case ROTATIONY:
+                shapeTransform.setRotateY(Math.toRadians(value));
+                break;
+            case ROTATIONZ:
+                shapeTransform.setRotateZ(Math.toRadians(value));
+                break;
             default:
                 throw new IllegalArgumentException("Unknown TransformationModification: " + modelMatrixAnimation.getModification());
         }

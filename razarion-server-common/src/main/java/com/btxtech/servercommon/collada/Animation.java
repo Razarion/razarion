@@ -50,8 +50,11 @@ public class Animation extends NameIdColladaXml {
         ModelMatrixAnimation modelMatrixAnimation = new ModelMatrixAnimation();
         modelMatrixAnimation.setId(getId());
         modelMatrixAnimation.setElement3D(Shape3DUtils.getElement3D(channel.getTargetId(), shape3D));
-        modelMatrixAnimation.setModification(TransformationModification.valueOf(channel.getModification().toUpperCase()));
-        modelMatrixAnimation.setAxis(ModelMatrixAnimation.Axis.valueOf(channel.getAxis().toUpperCase()));
+        TransformationModification transformationModification = TransformationModification.valueOf(channel.getModification().toUpperCase());
+        modelMatrixAnimation.setModification(transformationModification);
+        if (transformationModification.axisNeeded()) {
+            modelMatrixAnimation.setAxis(ModelMatrixAnimation.Axis.valueOf(channel.getAxis().toUpperCase()));
+        }
 
         List<Double> floatArray = input.getFloatArray().getFloatArray();
         List<TimeValueSample> timeValueSamples = new ArrayList<>();

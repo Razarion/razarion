@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.75.0 commit date:2015-07-07, commit time:14:56, hash:c27589e</authoring_tool>
     </contributor>
-    <created>2016-07-31T01:31:05</created>
-    <modified>2016-07-31T01:31:05</modified>
+    <created>2016-12-18T22:41:55</created>
+    <modified>2016-12-18T22:41:55</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -197,6 +197,39 @@
         <polylist count="2">
           <input semantic="VERTEX" source="#Plane-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane-mesh-normals" offset="1"/>
+          <vcount>3 3 </vcount>
+          <p>1 0 3 0 2 0 0 0 1 0 2 0</p>
+        </polylist>
+      </mesh>
+    </geometry>
+    <geometry id="Plane_001-mesh" name="Plane.001">
+      <mesh>
+        <source id="Plane_001-mesh-positions">
+          <float_array id="Plane_001-mesh-positions-array" count="12">-1 -1 0 1 -1 0 -1 1 0 1 1 0</float_array>
+          <technique_common>
+            <accessor source="#Plane_001-mesh-positions-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Plane_001-mesh-normals">
+          <float_array id="Plane_001-mesh-normals-array" count="3">0 0 1</float_array>
+          <technique_common>
+            <accessor source="#Plane_001-mesh-normals-array" count="1" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Plane_001-mesh-vertices">
+          <input semantic="POSITION" source="#Plane_001-mesh-positions"/>
+        </vertices>
+        <polylist count="2">
+          <input semantic="VERTEX" source="#Plane_001-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Plane_001-mesh-normals" offset="1"/>
           <vcount>3 3 </vcount>
           <p>1 0 3 0 2 0 0 0 1 0 2 0</p>
         </polylist>
@@ -396,6 +429,102 @@
       </sampler>
       <channel source="#PlaneId_location_Z-sampler" target="PlaneId/location.Z"/>
     </animation>
+    <animation id="RotPlane_rotation_euler_X">
+      <source id="RotPlane_rotation_euler_X-input">
+        <float_array id="RotPlane_rotation_euler_X-input-array" count="2">0.04166662 10.41667</float_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_X-input-array" count="2" stride="1">
+            <param name="TIME" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="RotPlane_rotation_euler_X-output">
+        <float_array id="RotPlane_rotation_euler_X-output-array" count="2">0 90</float_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_X-output-array" count="2" stride="1">
+            <param name="ANGLE" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="RotPlane_rotation_euler_X-interpolation">
+        <Name_array id="RotPlane_rotation_euler_X-interpolation-array" count="2">LINEAR LINEAR</Name_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_X-interpolation-array" count="2" stride="1">
+            <param name="INTERPOLATION" type="name"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <sampler id="RotPlane_rotation_euler_X-sampler">
+        <input semantic="INPUT" source="#RotPlane_rotation_euler_X-input"/>
+        <input semantic="OUTPUT" source="#RotPlane_rotation_euler_X-output"/>
+        <input semantic="INTERPOLATION" source="#RotPlane_rotation_euler_X-interpolation"/>
+      </sampler>
+      <channel source="#RotPlane_rotation_euler_X-sampler" target="RotPlane/rotationX.ANGLE"/>
+    </animation>
+    <animation id="RotPlane_rotation_euler_Y">
+      <source id="RotPlane_rotation_euler_Y-input">
+        <float_array id="RotPlane_rotation_euler_Y-input-array" count="2">0.04166662 10.41667</float_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_Y-input-array" count="2" stride="1">
+            <param name="TIME" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="RotPlane_rotation_euler_Y-output">
+        <float_array id="RotPlane_rotation_euler_Y-output-array" count="2">0 270</float_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_Y-output-array" count="2" stride="1">
+            <param name="ANGLE" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="RotPlane_rotation_euler_Y-interpolation">
+        <Name_array id="RotPlane_rotation_euler_Y-interpolation-array" count="2">LINEAR LINEAR</Name_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_Y-interpolation-array" count="2" stride="1">
+            <param name="INTERPOLATION" type="name"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <sampler id="RotPlane_rotation_euler_Y-sampler">
+        <input semantic="INPUT" source="#RotPlane_rotation_euler_Y-input"/>
+        <input semantic="OUTPUT" source="#RotPlane_rotation_euler_Y-output"/>
+        <input semantic="INTERPOLATION" source="#RotPlane_rotation_euler_Y-interpolation"/>
+      </sampler>
+      <channel source="#RotPlane_rotation_euler_Y-sampler" target="RotPlane/rotationY.ANGLE"/>
+    </animation>
+    <animation id="RotPlane_rotation_euler_Z">
+      <source id="RotPlane_rotation_euler_Z-input">
+        <float_array id="RotPlane_rotation_euler_Z-input-array" count="2">0.04166662 10.41667</float_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_Z-input-array" count="2" stride="1">
+            <param name="TIME" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="RotPlane_rotation_euler_Z-output">
+        <float_array id="RotPlane_rotation_euler_Z-output-array" count="2">0 360</float_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_Z-output-array" count="2" stride="1">
+            <param name="ANGLE" type="float"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <source id="RotPlane_rotation_euler_Z-interpolation">
+        <Name_array id="RotPlane_rotation_euler_Z-interpolation-array" count="2">LINEAR LINEAR</Name_array>
+        <technique_common>
+          <accessor source="#RotPlane_rotation_euler_Z-interpolation-array" count="2" stride="1">
+            <param name="INTERPOLATION" type="name"/>
+          </accessor>
+        </technique_common>
+      </source>
+      <sampler id="RotPlane_rotation_euler_Z-sampler">
+        <input semantic="INPUT" source="#RotPlane_rotation_euler_Z-input"/>
+        <input semantic="OUTPUT" source="#RotPlane_rotation_euler_Z-output"/>
+        <input semantic="INTERPOLATION" source="#RotPlane_rotation_euler_Z-interpolation"/>
+      </sampler>
+      <channel source="#RotPlane_rotation_euler_Z-sampler" target="RotPlane/rotationZ.ANGLE"/>
+    </animation>
   </library_animations>
   <library_controllers/>
   <library_visual_scenes>
@@ -421,7 +550,7 @@
         <rotate sid="rotationZ">0 0 1 0</rotate>
         <rotate sid="rotationY">0 1 0 0</rotate>
         <rotate sid="rotationX">1 0 0 0</rotate>
-        <scale sid="scale">17.4 24.8 12.6</scale>
+        <scale sid="scale">1 1 1</scale>
         <instance_geometry url="#Cube-mesh" name="CubeId">
           <bind_material>
             <technique_common>
@@ -431,12 +560,20 @@
         </instance_geometry>
       </node>
       <node id="PlaneId" name="PlaneId" type="NODE">
-        <translate sid="location">0 15 -50</translate>
+        <translate sid="location">0 5 10</translate>
         <rotate sid="rotationZ">0 0 1 0</rotate>
         <rotate sid="rotationY">0 1 0 90</rotate>
         <rotate sid="rotationX">1 0 0 0</rotate>
         <scale sid="scale">2.5 1 1</scale>
         <instance_geometry url="#Plane-mesh" name="PlaneId"/>
+      </node>
+      <node id="RotPlane" name="RotPlane" type="NODE">
+        <translate sid="location">-10.75945 0 10.36652</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">1 1 1</scale>
+        <instance_geometry url="#Plane_001-mesh" name="RotPlane"/>
       </node>
     </visual_scene>
   </library_visual_scenes>

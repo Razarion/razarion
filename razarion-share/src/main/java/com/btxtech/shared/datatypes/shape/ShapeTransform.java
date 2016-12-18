@@ -56,10 +56,6 @@ public class ShapeTransform {
         return this;
     }
 
-    public Matrix4 getMatrix() {
-        return matrix;
-    }
-
     public ShapeTransform setTranslateX(double translateX) {
         this.translateX = translateX;
         return this;

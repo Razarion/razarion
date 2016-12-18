@@ -42,7 +42,7 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
         }
 
         maxZ = Double.MIN_VALUE;
-        buildupMatrix = vertexContainer.getShapeTransform().getMatrix();
+        buildupMatrix = vertexContainer.getShapeTransform().setupMatrix();
         for (Vertex vertex : vertexContainer.getVertices()) {
             maxZ = Math.max(buildupMatrix.multiply(vertex, 1.0).getZ(), maxZ);
         }

@@ -280,13 +280,15 @@ public class ColladaConverterTest {
         animationTriggers.put("CubeId_scale_Y", AnimationTrigger.ITEM_PROGRESS);
         animationTriggers.put("PlaneId_location_Y", AnimationTrigger.CONTINUES);
         animationTriggers.put("PlaneId_location_Z", AnimationTrigger.CONTINUES);
+        animationTriggers.put("RotPlane_rotation_euler_X", AnimationTrigger.SINGLE_RUN);
+        animationTriggers.put("RotPlane_rotation_euler_Y", AnimationTrigger.SINGLE_RUN);
 
         Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, null, animationTriggers));
-        Assert.assertEquals(6, shape3D.getModelMatrixAnimations().size());
-        Assert.assertEquals(2, shape3D.getElement3Ds().size());
+        Assert.assertEquals(9, shape3D.getModelMatrixAnimations().size());
+        Assert.assertEquals(3, shape3D.getElement3Ds().size());
 
+        // Scale
         Element3D cube = Shape3DUtils.getElement3D("CubeId", shape3D);
-
         ModelMatrixAnimation modelMatrixAnimation = getModelMatrixAnimation4Axis("CubeId_scale_X", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.X, modelMatrixAnimation.getAxis());
         Assert.assertEquals(TransformationModification.SCALE, modelMatrixAnimation.getModification());
@@ -308,8 +310,8 @@ public class ColladaConverterTest {
         Assert.assertNull(modelMatrixAnimation.getAnimationTrigger());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 1), createTvs(4166L, 20), createTvs(8333, 10));
 
+        // Location
         Element3D plane = Shape3DUtils.getElement3D("PlaneId", shape3D);
-
         modelMatrixAnimation = getModelMatrixAnimation4Axis("PlaneId_location_X", shape3D);
         Assert.assertEquals(ModelMatrixAnimation.Axis.X, modelMatrixAnimation.getAxis());
         Assert.assertEquals(TransformationModification.LOCATION, modelMatrixAnimation.getModification());
@@ -330,6 +332,32 @@ public class ColladaConverterTest {
         Assert.assertTrue(plane == modelMatrixAnimation.getElement3D());
         Assert.assertEquals(AnimationTrigger.CONTINUES, modelMatrixAnimation.getAnimationTrigger());
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 10), createTvs(4166, -50));
+
+        // Rotate X
+        Element3D rotPlane = Shape3DUtils.getElement3D("RotPlane", shape3D);
+        modelMatrixAnimation = getModelMatrixAnimation4Axis("RotPlane_rotation_euler_X", shape3D);
+        Assert.assertNull(modelMatrixAnimation.getAxis());
+        Assert.assertEquals(TransformationModification.ROTATIONX, modelMatrixAnimation.getModification());
+        Assert.assertTrue(rotPlane == modelMatrixAnimation.getElement3D());
+        Assert.assertEquals(AnimationTrigger.SINGLE_RUN, modelMatrixAnimation.getAnimationTrigger());
+        assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 0), createTvs(10416L, 90));
+
+        // Rotate Y
+        modelMatrixAnimation = getModelMatrixAnimation4Axis("RotPlane_rotation_euler_Y", shape3D);
+        Assert.assertNull(modelMatrixAnimation.getAxis());
+        Assert.assertEquals(TransformationModification.ROTATIONY, modelMatrixAnimation.getModification());
+        Assert.assertTrue(rotPlane == modelMatrixAnimation.getElement3D());
+        Assert.assertEquals(AnimationTrigger.SINGLE_RUN, modelMatrixAnimation.getAnimationTrigger());
+        assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 0), createTvs(10416L, 270));
+
+        // Rotate Z
+        modelMatrixAnimation = getModelMatrixAnimation4Axis("RotPlane_rotation_euler_Z", shape3D);
+        Assert.assertNull(modelMatrixAnimation.getAxis());
+        Assert.assertEquals(TransformationModification.ROTATIONZ, modelMatrixAnimation.getModification());
+        Assert.assertTrue(rotPlane == modelMatrixAnimation.getElement3D());
+        Assert.assertNull( modelMatrixAnimation.getAnimationTrigger());
+        assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 0), createTvs(10416L, 360));
+
     }
 
     private void assertTimeValueSample(ModelMatrixAnimation modelMatrixAnimation, TimeValueSample... expectedTimeValueSamples) {
