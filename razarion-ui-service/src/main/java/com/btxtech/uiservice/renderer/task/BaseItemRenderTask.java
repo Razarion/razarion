@@ -8,8 +8,10 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
+import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -32,6 +34,8 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private BaseItemUiService baseItemUiService;
     @Inject
     private Shape3DUiService shape3DUiService;
+    @Inject
+    private VisualUiService visualUiService;
 
     @PostConstruct
     public void postConstruct() {
@@ -47,6 +51,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
         spawn(baseItemType, fillBuffer);
         build(baseItemType, fillBuffer);
         alive(baseItemType, fillBuffer);
+        demolition(baseItemType, fillBuffer);
         harvest(baseItemType, fillBuffer);
         buildBeam(baseItemType, fillBuffer);
         weaponTurret(baseItemType, fillBuffer);
@@ -131,6 +136,31 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             add(modelRenderer);
         } else {
             logger.warning("BaseItemRenderTask: no shape3DId for BaseItemType: " + baseItemType);
+        }
+    }
+
+    private void demolition(BaseItemType baseItemType, boolean fillBuffer) {
+        if (baseItemType.getShape3DId() != null) {
+            ModelRenderer<BaseItemType, CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer>, AbstractDemolitionVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+            modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideDemolitionModelMatrices(baseItemType));
+            Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
+            double maxHeight = Shape3DUtils.getMaxZ(shape3D);
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+                    compositeRenderer.init(vertexContainer);
+                    compositeRenderer.setRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(maxHeight, visualUiService.getVisualConfig().getBaseItemDemolitionCuttingImageId(), visualUiService.getVisualConfig().getBaseItemDemolitionLookUpImageId());
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(maxHeight, visualUiService.getVisualConfig().getBaseItemDemolitionCuttingImageId(), visualUiService.getVisualConfig().getBaseItemDemolitionLookUpImageId());
+                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    if (fillBuffer) {
+                        compositeRenderer.fillBuffers();
+                    }
+                }
+            }
+            add(modelRenderer);
+        } else {
+            logger.warning("BaseItemRenderTask: no spawnShape3DId for BaseItemType: " + baseItemType);
         }
     }
 

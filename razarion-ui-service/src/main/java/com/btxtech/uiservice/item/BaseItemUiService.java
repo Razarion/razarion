@@ -48,6 +48,7 @@ public class BaseItemUiService implements PlanetTickListener {
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> aliveModelMatrices = new MapList<>();
+    private MapList<BaseItemType, ModelMatrices> demolitionModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
@@ -79,6 +80,10 @@ public class BaseItemUiService implements PlanetTickListener {
         return aliveModelMatrices.get(baseItemType);
     }
 
+    public List<ModelMatrices> provideDemolitionModelMatrices(BaseItemType baseItemType) {
+        return demolitionModelMatrices.get(baseItemType);
+    }
+
     public List<ModelMatrices> provideHarvestAnimationModelMatrices(BaseItemType baseItemType) {
         return harvestModelMatrices.get(baseItemType);
     }
@@ -96,6 +101,7 @@ public class BaseItemUiService implements PlanetTickListener {
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
         aliveModelMatrices.clear();
+        demolitionModelMatrices.clear();
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
@@ -115,12 +121,17 @@ public class BaseItemUiService implements PlanetTickListener {
                 buildupModelMatrices.put(baseItemType, modelMatrices.copy(syncBaseItem.getBuildup()));
             }
             // Alive
-            if (!syncBaseItem.isSpawning() && syncBaseItem.isBuildup()) {
+            if (!syncBaseItem.isSpawning() && syncBaseItem.isBuildup() && syncBaseItem.isHealthy()) {
                 aliveModelMatrices.put(baseItemType, modelMatrices);
-                if(syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncWeapon().getSyncTurret() != null) {
+                if (syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncWeapon().getSyncTurret() != null) {
                     weaponTurretModelMatrices.put(baseItemType, syncBaseItem.getSyncWeapon().createTurretModelMatrices4Shape3D());
                 }
             }
+            // Demolition
+            if (!syncBaseItem.isSpawning() && syncBaseItem.isBuildup() && !syncBaseItem.isHealthy()) {
+                demolitionModelMatrices.put(baseItemType, modelMatrices.copy(syncBaseItem.getNormalizedHealth()));
+            }
+
             // Harvesting
             SyncHarvester harvester = syncBaseItem.getSyncHarvester();
             if (harvester != null && harvester.isHarvesting()) {

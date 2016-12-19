@@ -1,5 +1,7 @@
 package com.btxtech.shared.utils;
 
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.DoubleStream;
 
 /**
  * Created by Beat
@@ -137,4 +140,21 @@ public class Shape3DUtils {
         }
         throw new IllegalArgumentException("AnimationId not found: " + animationId);
     }
+
+    public static double getMaxZ(Shape3D shape3D) {
+        if (shape3D.getElement3Ds() != null) {
+            double maxZ = Double.MIN_VALUE;
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    Matrix4 buildupMatrix = vertexContainer.getShapeTransform().setupMatrix();
+                    for (Vertex vertex : vertexContainer.getVertices()) {
+                        maxZ = Math.max(buildupMatrix.multiply(vertex, 1.0).getZ(), maxZ);
+                    }
+                }
+            }
+            return maxZ;
+        }
+        throw new IllegalArgumentException("No vertices in vertex container");
+    }
+
 }

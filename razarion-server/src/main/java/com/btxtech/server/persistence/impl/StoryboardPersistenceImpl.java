@@ -124,7 +124,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
@@ -136,6 +136,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(harvest()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -278,6 +279,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         visualConfig.setWaterLightConfig(lightConfig);
         visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         visualConfig.setClipConfigs(clipPersistence.readClipConfigs());
+        visualConfig.setBaseItemDemolitionCuttingImageId(170418).setBaseItemDemolitionLookUpImageId(272510);
         return visualConfig;
     }
 
@@ -590,6 +592,23 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // div
         CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
         sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setBotAttackCommandConfigs(botAttackCommandConfigs));
+        return sceneConfigs;
+    }
+
+    // Demolition Visualization -----------------------------------------------------------------------------
+    private List<SceneConfig> demolitionVisualization() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // User Spawn
+        CameraConfig cameraConfig = new CameraConfig().setToPosition(new DecimalPosition(70, 170)).setCameraLocked(false);
+        // Bot
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 246))).setNoSpawn(true).setNoRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+
+        sceneConfigs.add(new SceneConfig().setCameraConfig(cameraConfig).setBotConfigs(botConfigs).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 

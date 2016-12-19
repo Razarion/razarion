@@ -59,10 +59,10 @@ public interface Shaders extends ClientBundle {
     @Source("VertexContainer.frag")
     TextResource vertexContainerFragmentShader();
 
-    @Source("LoopUpVertexContainer.vert")
+    @Source("LookUpVertexContainer.vert")
     TextResource lookUpVertexContainerVertexShader();
 
-    @Source("LoopUpVertexContainer.frag")
+    @Source("LookUpVertexContainer.frag")
     TextResource lookUpVertexContainerFragmentShader();
 
     @Source("BuildupVertexContainer.vert")
@@ -76,6 +76,18 @@ public interface Shaders extends ClientBundle {
 
     @Source("BuildupVertexContainerDepthBuffer.frag")
     TextResource buildupVertexContainerDeptBufferFragmentShader();
+
+    @Source("DemolitionVertexContainer.vert")
+    TextResource demolitionVertexContainerVertexShader();
+
+    @Source("DemolitionVertexContainer.frag")
+    TextResource demolitionVertexContainerFragmentShader();
+
+    @Source("DemolitionVertexContainerDepthBuffer.vert")
+    TextResource demolitionVertexContainerDeptBufferVertexShader();
+
+    @Source("DemolitionVertexContainerDepthBuffer.frag")
+    TextResource demolitionVertexContainerDeptBufferFragmentShader();
 
     @Source("VertexContainerDeptBuffer.vert")
     TextResource vertexContainerDeptBufferVertexShader();

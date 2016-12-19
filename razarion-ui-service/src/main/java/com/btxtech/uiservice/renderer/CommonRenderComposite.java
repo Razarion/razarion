@@ -7,10 +7,9 @@ import javax.inject.Inject;
 /**
  * Created by Beat
  * 05.09.2016.
- *
+ * <p>
  * U: render unit
  * D: render data
- *
  */
 @Dependent
 public class CommonRenderComposite<U extends AbstractRenderUnit<D>, D> extends AbstractRenderComposite<U, D> {
@@ -27,12 +26,16 @@ public class CommonRenderComposite<U extends AbstractRenderUnit<D>, D> extends A
     @NormRenderer
     private Instance<AbstractRenderUnit> normInstance;
 
-    public void setRenderUnit(Class<U> clazz) {
-        setRenderUnit(instance.select(clazz).get());
+    public U setRenderUnit(Class<U> clazz) {
+        U u = instance.select(clazz).get();
+        setRenderUnit(u);
+        return u;
     }
 
-    public void setDepthBufferRenderUnit(Class<U> clazz) {
-        setDepthBufferRenderUnit(depthBufferInstance.select(clazz).get());
+    public U setDepthBufferRenderUnit(Class<U> clazz) {
+        U u = depthBufferInstance.select(clazz).get();
+        setDepthBufferRenderUnit(u);
+        return u;
     }
 
     public void setWireRenderUnit(Class<U> clazz) {
@@ -40,8 +43,10 @@ public class CommonRenderComposite<U extends AbstractRenderUnit<D>, D> extends A
         // setWireRenderUnit(wireInstance.select(clazz).get());
     }
 
-    public void setNormRenderUnit(Class<U> clazz) {
-        setNormRenderUnit(normInstance.select(clazz).get());
+    public U setNormRenderUnit(Class<U> clazz) {
+        U u = normInstance.select(clazz).get();
+        setNormRenderUnit(u);
+        return u;
     }
 
 }

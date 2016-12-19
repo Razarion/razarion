@@ -23,6 +23,8 @@ public class VisualConfig {
     private double waterGroundLevel;
     private List<Shape3D> shape3Ds;
     private List<ClipConfig> clipConfigs;
+    private Integer baseItemDemolitionCuttingImageId;
+    private Integer baseItemDemolitionLookUpImageId;
 
     public double getShadowRotationX() {
         return shadowRotationX;
@@ -138,6 +140,24 @@ public class VisualConfig {
 
     public VisualConfig setClipConfigs(List<ClipConfig> clipConfigs) {
         this.clipConfigs = clipConfigs;
+        return this;
+    }
+
+    public Integer getBaseItemDemolitionCuttingImageId() {
+        return baseItemDemolitionCuttingImageId;
+    }
+
+    public VisualConfig setBaseItemDemolitionCuttingImageId(Integer baseItemDemolitionCuttingImageId) {
+        this.baseItemDemolitionCuttingImageId = baseItemDemolitionCuttingImageId;
+        return this;
+    }
+
+    public Integer getBaseItemDemolitionLookUpImageId() {
+        return baseItemDemolitionLookUpImageId;
+    }
+
+    public VisualConfig setBaseItemDemolitionLookUpImageId(Integer baseItemDemolitionLookUpImageId) {
+        this.baseItemDemolitionLookUpImageId = baseItemDemolitionLookUpImageId;
         return this;
     }
 }
