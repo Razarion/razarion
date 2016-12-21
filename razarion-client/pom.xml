@@ -190,7 +190,7 @@
                 <version>${gwt.pulgin.version}</version>
                 <configuration>
                     <warSourceDirectory>${project.parent.basedir}/razarion-server/src/main/webapp/</warSourceDirectory>
-                    <logLevel>INFO</logLevel>
+                    <logLevel>WARN</logLevel>
                     <noServer>true</noServer>
                     <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M </extraJvmArgs>
                     <!--<extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</extraJvmArgs>-->
