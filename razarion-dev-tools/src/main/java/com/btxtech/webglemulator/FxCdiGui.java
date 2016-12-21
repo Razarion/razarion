@@ -1,13 +1,10 @@
 package com.btxtech.webglemulator;
 
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -25,12 +22,7 @@ public class FxCdiGui {
 
     public void start(final Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulator.fxml"));
-        loader.setControllerFactory(new Callback<Class<?>, Object>() {
-            @Override
-            public Object call(Class<?> param) {
-                return webGlEmulatorController;
-            }
-        });
+        loader.setControllerFactory(param -> webGlEmulatorController);
         Parent root = loader.load();
         stage.setTitle("WebGL FX Emulator");
         stage.setScene(new Scene(root));
@@ -39,11 +31,7 @@ public class FxCdiGui {
         stage.setWidth(1277);
         stage.setHeight(1016);
         stage.show();
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent we) {
-                System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY() + " " + stage.getWidth() + ":" + stage.getHeight());
-            }
-        });
+        stage.setOnCloseRequest(we -> System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY() + " " + stage.getWidth() + ":" + stage.getHeight()));
         razarionEmulator.run();
     }
 

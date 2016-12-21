@@ -8,7 +8,6 @@ import java.util.List;
  */
 public class Element3D {
     private String id;
-    private String shape3DInternalName;
     private List<VertexContainer> vertexContainers;
 
     public String getId() {
@@ -20,8 +19,10 @@ public class Element3D {
         return this;
     }
 
-    public void setShape3DInternalName(String shape3DInternalName) {
-        this.shape3DInternalName = shape3DInternalName;
+    public void updateVertexContainerHelperName(String shape3DInternalName) {
+        for (VertexContainer vertexContainer : vertexContainers) {
+            vertexContainer.setShapeElementInternalName(shape3DInternalName + "|" + id);
+        }
     }
 
     public List<VertexContainer> getVertexContainers() {
@@ -30,9 +31,6 @@ public class Element3D {
 
     public Element3D setVertexContainers(List<VertexContainer> vertexContainers) {
         this.vertexContainers = vertexContainers;
-        for (VertexContainer vertexContainer : vertexContainers) {
-            vertexContainer.setShapeElementInternalName(shape3DInternalName + "|" + id);
-        }
         return this;
     }
 

@@ -159,6 +159,10 @@ public class VertexContainer {
         return materialName;
     }
 
+    public String getShapeElementInternalName() {
+        return shapeElementInternalName;
+    }
+
     public boolean empty() {
         return vertices.isEmpty();
     }

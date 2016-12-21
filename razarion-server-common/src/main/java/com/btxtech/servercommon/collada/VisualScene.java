@@ -36,6 +36,7 @@ public class VisualScene extends NameIdColladaXml {
             LOGGER.finest("-:convert node : " + nodeScene);
             Element3D element3D = nodeScene.convert(geometries, materials, effects);
             if (element3D != null) {
+                element3D.updateVertexContainerHelperName(shape3D.getInternalName());
                 element3Ds.add(element3D);
             }
         }

@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import java.util.List;
+
 /**
  * User: beat
  * Date: 04.12.2009
@@ -39,6 +41,7 @@ public class BaseItemType extends ItemType {
     private int spawnDurationMillis;
     private Integer spawnShape3DId;
     private Integer explosionClipId;
+    private List<DemolitionStepEffect> demolitionStepEffects;
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {
         return physicalAreaConfig;
@@ -222,5 +225,40 @@ public class BaseItemType extends ItemType {
     public BaseItemType setExplosionClipId(Integer explosionClipId) {
         this.explosionClipId = explosionClipId;
         return this;
+    }
+
+    public List<DemolitionStepEffect> getDemolitionStepEffects() {
+        return demolitionStepEffects;
+    }
+
+    public BaseItemType setDemolitionStepEffects(List<DemolitionStepEffect> demolitionStepEffects) {
+        this.demolitionStepEffects = demolitionStepEffects;
+        return this;
+    }
+
+    public DemolitionStepEffect getDemolitionStepEffect(double health) {
+        if (demolitionStepEffects == null) {
+            return null;
+        }
+        return demolitionStepEffects.get(getDemolitionStep(health));
+    }
+
+    private int getDemolitionStep(double health) {
+        if (health >= 1.0) {
+            throw new IllegalArgumentException("SyncBaseItem must not be healthy");
+        }
+
+        if (health >= 0.0) {
+            int step = (int) (demolitionStepEffects.size() * (1.0 - health));
+            if (step >= demolitionStepEffects.size()) {
+                return demolitionStepEffects.size() - 1;
+            } else if (step < 0) {
+                return 0;
+            } else {
+                return step;
+            }
+        } else {
+            return demolitionStepEffects.size() - 1;
+        }
     }
 }

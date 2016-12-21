@@ -49,6 +49,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionShape3D;
+import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -257,6 +259,23 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         factory.setExplosionClipId(272485).setBuildup(2);
         factory.getPhysicalAreaConfig().setFixVerticalNorm(true);
         factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER, BASE_ITEM_TYPE_ATTACKER)));
+        List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
+        // Demolition 1
+        List<DemolitionShape3D> demolitionShape3Ds1 = new ArrayList<>();
+        demolitionShape3Ds1.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(0, 0, 3)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3Ds1));
+        // Demolition 2
+        List<DemolitionShape3D> demolitionShape3D2s = new ArrayList<>();
+        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(2, 2, 2)));
+        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(-2, -2, 2)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D2s));
+        // Demolition 3
+        List<DemolitionShape3D> demolitionShape3D3s = new ArrayList<>();
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(3, 0, 1)));
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(0, 3, 1)));
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(3, 3, 1)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D3s));
+        factory.setDemolitionStepEffects(demolitionStepEffects);
     }
 
     private void finalizeTower(BaseItemType tower) {

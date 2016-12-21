@@ -33,6 +33,7 @@ public class ColladaConverterTest {
         Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
         Assert.assertEquals(1, planeElement.getVertexContainers().size());
         VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
+        Assert.assertEquals("Test-Simple-Plane-01:Test-Simple-Plane-01|Plane_Id|PlaneMat-material:PlaneMat",vertexContainer.createShapeElementVertexContainerTag());
         List<Vertex> vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
         List<Vertex> norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupMatrix().normTransformation());
         Assert.assertArrayEquals(new double[]{1.00, -1.00, 0.00, 1.00, 1.00, 0.00, -1.00, 1.00, 0.00, -1.00, -1.00, 0.00, 1.00, -1.00, 0.00, -1.00, 1.00, 0.00}, TestHelper.vertices2DoubleArray(vertices), 0.01);

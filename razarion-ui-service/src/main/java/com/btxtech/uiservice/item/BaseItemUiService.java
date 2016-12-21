@@ -1,11 +1,14 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionShape3D;
+import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.PlanetTickListener;
@@ -49,6 +52,7 @@ public class BaseItemUiService implements PlanetTickListener {
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> aliveModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> demolitionModelMatrices = new MapList<>();
+    private MapList<Integer, ModelMatrices> demolitionEffectModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
@@ -84,6 +88,10 @@ public class BaseItemUiService implements PlanetTickListener {
         return demolitionModelMatrices.get(baseItemType);
     }
 
+    public List<ModelMatrices> provideDemolitionEffectModelMatrices(Integer shape3DId) {
+        return demolitionEffectModelMatrices.get(shape3DId);
+    }
+
     public List<ModelMatrices> provideHarvestAnimationModelMatrices(BaseItemType baseItemType) {
         return harvestModelMatrices.get(baseItemType);
     }
@@ -102,6 +110,7 @@ public class BaseItemUiService implements PlanetTickListener {
         buildupModelMatrices.clear();
         aliveModelMatrices.clear();
         demolitionModelMatrices.clear();
+        demolitionEffectModelMatrices.clear();
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
@@ -130,6 +139,14 @@ public class BaseItemUiService implements PlanetTickListener {
             // Demolition
             if (!syncBaseItem.isSpawning() && syncBaseItem.isBuildup() && !syncBaseItem.isHealthy()) {
                 demolitionModelMatrices.put(baseItemType, modelMatrices.copy(syncBaseItem.getNormalizedHealth()));
+                DemolitionStepEffect demolitionStepEffect = baseItemType.getDemolitionStepEffect(syncBaseItem.getNormalizedHealth());
+                if (demolitionStepEffect != null && demolitionStepEffect.getDemolitionShape3Ds() != null) {
+                    for (DemolitionShape3D demolitionShape3D : demolitionStepEffect.getDemolitionShape3Ds()) {
+                        if (demolitionShape3D.getShape3DId() != null) {
+                            demolitionEffectModelMatrices.put(demolitionShape3D.getShape3DId(), modelMatrices.multiply(Matrix4.createTranslation(demolitionShape3D.getPosition())));
+                        }
+                    }
+                }
             }
 
             // Harvesting

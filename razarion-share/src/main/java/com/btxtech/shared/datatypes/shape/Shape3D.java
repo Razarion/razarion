@@ -43,11 +43,6 @@ public class Shape3D implements ObjectNameIdProvider {
 
     public Shape3D setElement3Ds(List<Element3D> element3Ds) {
         this.element3Ds = element3Ds;
-        if (element3Ds != null) {
-            for (Element3D element3D : element3Ds) {
-                element3D.setShape3DInternalName(internalName);
-            }
-        }
         return this;
     }
 

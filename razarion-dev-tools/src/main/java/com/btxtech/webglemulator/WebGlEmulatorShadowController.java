@@ -25,18 +25,8 @@ public class WebGlEmulatorShadowController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        mainPanel.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
-                canvas.setWidth(width.doubleValue());
-            }
-        });
-        mainPanel.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
-                canvas.setHeight(height.doubleValue());
-            }
-        });
+        mainPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> canvas.setWidth(width.doubleValue()));
+        mainPanel.heightProperty().addListener((observableValue, oldSceneWidth, height) -> canvas.setHeight(height.doubleValue()));
         active = true;
     }
 
