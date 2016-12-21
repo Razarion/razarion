@@ -137,6 +137,10 @@ public class ShapeTransform {
         return scaleZ;
     }
 
+    public Matrix4 getMatrix() {
+        return matrix;
+    }
+
     @Override
     public String toString() {
         return "ShapeTransformTRS{" +
@@ -149,6 +153,7 @@ public class ShapeTransform {
                 ", scaleX=" + scaleX +
                 ", scaleY=" + scaleY +
                 ", scaleZ=" + scaleZ +
+                ", matrix=" + matrix +
                 '}';
     }
 }
