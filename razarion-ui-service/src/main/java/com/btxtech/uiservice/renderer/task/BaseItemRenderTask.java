@@ -14,6 +14,7 @@ import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
+import com.btxtech.uiservice.renderer.AbstractFireVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractLookUpVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
@@ -99,7 +100,6 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.init(vertexContainer);
                     compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
                     compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
-                    // TODO compositeRenderer.setNormRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
                     if (fillBuffer) {
@@ -285,16 +285,17 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                         continue;
                     }
                     Shape3D shape3D = shape3DUiService.getShape3D(shape3DId);
+                    double maxHeight = Shape3DUtils.getMaxZ(shape3D);
+                    double minHeight = Shape3DUtils.getMinZ(shape3D);
+
                     ModelRenderer<Shape3D, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
                     modelRenderer.init(shape3D, timeStamp -> baseItemUiService.provideDemolitionEffectModelMatrices(shape3DId));
                     for (Element3D element3D : shape3D.getElement3Ds()) {
                         for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                             if (vertexContainer.hasLookUpTextureId()) {
-                                CommonRenderComposite<AbstractLookUpVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
+                                CommonRenderComposite<AbstractFireVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                                 compositeRenderer.init(vertexContainer);
-                                compositeRenderer.setRenderUnit(AbstractLookUpVertexContainerRenderUnit.class);
-                                // TODO compositeRenderer.setDepthBufferRenderUnit(AbstractLookUpVertexContainerRenderUnit.class);
-                                // TODO compositeRenderer.setNormRenderUnit(AbstractLookUpVertexContainerRenderUnit.class);
+                                compositeRenderer.setRenderUnit(AbstractFireVertexContainerRenderUnit.class).setAttributes(minHeight, maxHeight);
                                 compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                                 modelRenderer.add(RenderUnitControl.SEMI_TRANSPARENT, compositeRenderer);
                                 if (fillBuffer) {

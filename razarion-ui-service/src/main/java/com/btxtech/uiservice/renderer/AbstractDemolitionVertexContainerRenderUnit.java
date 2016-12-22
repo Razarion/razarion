@@ -2,7 +2,6 @@ package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 
 import java.util.logging.Logger;
@@ -67,6 +66,6 @@ public abstract class AbstractDemolitionVertexContainerRenderUnit extends Abstra
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        draw(modelMatrices,  modelMatrices.getProgress());
+        draw(modelMatrices, modelMatrices.getProgress());
     }
 }

@@ -147,7 +147,7 @@ public class GameLogicService { // Rename to game control or so (See StoryboardS
     }
 
     public void onAttacked(SyncBaseItem target, SyncBaseItem actor, double damage) {
-        System.out.println("GameLogicService.onAttacked(). target: " + target + " actor: " + actor + ". damage: " + damage);
+        // System.out.println("GameLogicService.onAttacked(). target: " + target + " actor: " + actor + ". damage: " + damage);
     }
 
     public void onSyncFactoryProgress(SyncBaseItem syncBaseItem) {

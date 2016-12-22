@@ -157,4 +157,21 @@ public class Shape3DUtils {
         throw new IllegalArgumentException("No vertices in vertex container");
     }
 
+
+    public static double getMinZ(Shape3D shape3D) {
+        if (shape3D.getElement3Ds() != null) {
+            double minZ = Double.MAX_VALUE;
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    Matrix4 buildupMatrix = vertexContainer.getShapeTransform().setupMatrix();
+                    for (Vertex vertex : vertexContainer.getVertices()) {
+                        minZ = Math.min(buildupMatrix.multiply(vertex, 1.0).getZ(), minZ);
+                    }
+                }
+            }
+            return minZ;
+        }
+        throw new IllegalArgumentException("No vertices in vertex container");
+    }
+
 }

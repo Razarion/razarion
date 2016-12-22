@@ -262,18 +262,19 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionShape3D> demolitionShape3Ds1 = new ArrayList<>();
-        demolitionShape3Ds1.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(0, 0, 3)));
+        demolitionShape3Ds1.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(-2.1, 0.0, 3.4)));
+        demolitionShape3Ds1.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(2.8, 2.2, 2.0)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3Ds1));
         // Demolition 2
         List<DemolitionShape3D> demolitionShape3D2s = new ArrayList<>();
-        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(2, 2, 2)));
-        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(-2, -2, 2)));
+        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(2, 2, 2)));
+        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(-2, -2, 2)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D2s));
         // Demolition 3
         List<DemolitionShape3D> demolitionShape3D3s = new ArrayList<>();
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(3, 0, 1)));
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(0, 3, 1)));
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(180831).setPosition(new Vertex(3, 3, 1)));
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(3, 0, 1)));
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(0, 3, 1)));
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(3, 3, 1)));
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D3s));
         factory.setDemolitionStepEffects(demolitionStepEffects);
     }
@@ -285,6 +286,24 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         tower.getPhysicalAreaConfig().setFixVerticalNorm(true);
         tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
         tower.setExplosionClipId(272485);
+        List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
+        // Demolition 1
+        List<DemolitionShape3D> demolitionShape3Ds1 = new ArrayList<>();
+        demolitionShape3Ds1.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(0, 0, 3)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3Ds1));
+        // Demolition 2
+        List<DemolitionShape3D> demolitionShape3D2s = new ArrayList<>();
+        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(2, 2, 2)));
+        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(-2, -2, 2)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D2s));
+        // Demolition 3
+        List<DemolitionShape3D> demolitionShape3D3s = new ArrayList<>();
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(3, 0, 1)));
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(0, 3, 1)));
+        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(3, 3, 1)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D3s));
+        tower.setDemolitionStepEffects(demolitionStepEffects);
+
     }
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
