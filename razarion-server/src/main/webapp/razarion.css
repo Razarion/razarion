@@ -433,26 +433,22 @@ button:disabled {
     color: black;
 }
 
-.gallery-item-table td:nth-child(2) {
+.gallery-item-table-nth-child td:nth-child(2) {
     text-align: right;
 }
 
 .minButton {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    margin: 1px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 80%;
-    width: 48px;
+    font-size: 100%;
 }
 
 .gallery-item-image {
     width: 100px;
     height: 100px;
     background: url('images/TransparentBg.png');
+}
+
+.gallery-item-audio {
+    width: 350px;
 }
 
 .gallery-widget-table {

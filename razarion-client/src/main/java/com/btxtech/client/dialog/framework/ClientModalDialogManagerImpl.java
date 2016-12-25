@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.i18n.I18nHelper;
@@ -34,6 +35,8 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
 
     @Inject
     private Instance<ModalDialogPanel<Object>> containerInstance;
+    @Inject
+    private AudioService audioService;
     private ModalDialogPanel activeDialog;
     private List<DialogParameters> dialogQueue = new ArrayList<>();
     private List<ModalDialogPanel> stackedDialogs = new ArrayList<>();
@@ -90,17 +93,19 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
         ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
         modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
         this.activeDialog = modalDialogPanel;
-        RootPanel.get().add(activeDialog);
-        if (shownCallback != null) {
-            shownCallback.run();
-        }
+        showDialog(activeDialog, shownCallback);
     }
 
     private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
         ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
         modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
         stackedDialogs.add(modalDialogPanel);
+        showDialog(modalDialogPanel, shownCallback);
+    }
+
+    private void showDialog(ModalDialogPanel modalDialogPanel, Runnable shownCallback) {
         RootPanel.get().add(modalDialogPanel);
+        audioService.onDialogOpened();
         if (shownCallback != null) {
             shownCallback.run();
         }
@@ -109,6 +114,7 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
     public void close(ModalDialogPanel modalDialogPanel) {
         modalDialogPanel.onClose();
         RootPanel.get().remove(modalDialogPanel);
+        audioService.onDialogClosed();
         if (modalDialogPanel == activeDialog) {
             activeDialog = null;
             if (!dialogQueue.isEmpty()) {

@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 
 import javax.enterprise.inject.Instance;
@@ -35,6 +36,8 @@ public class StoryboardService implements QuestListener {
     @Inject
     private VisualUiService visualUiService;
     @Inject
+    private AudioService audioService;
+    @Inject
     private Instance<Scene> sceneInstance;
     @Inject
     private SyncItemContainerService syncItemContainerService;
@@ -53,6 +56,7 @@ public class StoryboardService implements QuestListener {
         this.storyboardConfig = storyboardConfig;
         gameEngine.initialise(storyboardConfig.getGameEngineConfig());
         visualUiService.initialise(storyboardConfig.getVisualConfig());
+        audioService.initialise(storyboardConfig.getAudioConfig());
         this.userContext = storyboardConfig.getUserContext();
         cockpitService.init();
         questService.addQuestListener(this);

@@ -3,6 +3,7 @@ package com.btxtech.client.editor;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.client.editor.audio.AudioGalleryDialog;
 import com.btxtech.client.editor.clip.ClipCrudeSidebar;
 import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.helper.HelperSideBar;
@@ -92,6 +93,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
+    private Button audioButton;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
     private Button shape3DButton;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -162,7 +167,13 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("imageButton")
     private void onImageButtonClicked(ClickEvent event) {
         modalDialogPanel.close();
-        modalDialogManager.show("Items", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, null, null, null, DialogButton.Button.CLOSE);
+        modalDialogManager.show("Image Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageGalleryDialog.class, null, null, null, DialogButton.Button.CLOSE);
+    }
+
+    @EventHandler("audioButton")
+    private void onAudioButtonClicked(ClickEvent event) {
+        modalDialogPanel.close();
+        modalDialogManager.show("Audio Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, AudioGalleryDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
     @EventHandler("shape3DButton")

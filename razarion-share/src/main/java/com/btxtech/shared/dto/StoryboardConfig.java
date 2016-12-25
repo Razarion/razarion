@@ -14,6 +14,7 @@ public class StoryboardConfig {
     private List<SceneConfig> sceneConfigs;
     private GameEngineConfig gameEngineConfig;
     private VisualConfig visualConfig;
+    private AudioConfig audioConfig;
     private UserContext userContext;
     private GameTipVisualConfig gameTipVisualConfig;
 
@@ -41,6 +42,15 @@ public class StoryboardConfig {
 
     public StoryboardConfig setVisualConfig(VisualConfig visualConfig) {
         this.visualConfig = visualConfig;
+        return this;
+    }
+
+    public AudioConfig getAudioConfig() {
+        return audioConfig;
+    }
+
+    public StoryboardConfig setAudioConfig(AudioConfig audioConfig) {
+        this.audioConfig = audioConfig;
         return this;
     }
 

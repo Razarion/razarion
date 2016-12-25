@@ -14,6 +14,7 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
@@ -124,6 +125,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
         storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
+        storyboardConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
@@ -320,6 +322,11 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         visualConfig.setBaseItemDemolitionCuttingImageId(170418).setBaseItemDemolitionLookUpImageId(272510);
         return visualConfig;
     }
+
+    private AudioConfig defaultAudioConfig() {
+        return new AudioConfig();
+    }
+
 
     private List<LevelConfig> setupLevelConfigs() {
         List<LevelConfig> levelConfigs = new ArrayList<>();

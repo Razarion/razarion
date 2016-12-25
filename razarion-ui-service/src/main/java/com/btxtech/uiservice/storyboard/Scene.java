@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
@@ -76,6 +77,8 @@ public class Scene implements TerrainScrollListener {
     private ItemTypeService itemTypeService;
     @Inject
     private GameTipService gameTipService;
+    @Inject
+    private AudioService audioService;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -135,6 +138,7 @@ public class Scene implements TerrainScrollListener {
         }
         if (sceneConfig.getQuestConfig() != null) {
             questService.activateCondition(userContext, sceneConfig.getQuestConfig());
+            audioService.onQuestActivated();
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
         }
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
@@ -155,6 +159,7 @@ public class Scene implements TerrainScrollListener {
         if (sceneConfig.getScrollUiQuest() != null) {
             scrollBouncePrevention = false;
             questVisualizer.showSideBar(sceneConfig.getScrollUiQuest());
+            audioService.onQuestActivated();
             terrainScrollHandler.addTerrainScrollListener(this);
         }
         if (sceneConfig.getBoxItemPositions() != null) {
@@ -224,6 +229,7 @@ public class Scene implements TerrainScrollListener {
     }
 
     void onQuestPassed() {
+        audioService.onQuestPassed();
         if (sceneConfig.getQuestConfig() != null) {
             questVisualizer.showSideBar(null);
         }
