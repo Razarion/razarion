@@ -324,7 +324,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private AudioConfig defaultAudioConfig() {
-        return new AudioConfig();
+        AudioConfig audioConfig = new AudioConfig();
+        audioConfig.setDialogOpened(272514);
+        audioConfig.setDialogClosed(272515);
+        return audioConfig;
     }
 
 

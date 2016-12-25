@@ -2,16 +2,21 @@ package com.btxtech.uiservice.audio;
 
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 24.12.2016.
  */
-@ApplicationScoped
-public class AudioService {
+public abstract class AudioService {
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private AudioConfig audioConfig;
+
+    protected abstract void playAudio(String audioServiceUrl);
 
     public void initialise(AudioConfig audioConfig) {
         this.audioConfig = audioConfig;
@@ -42,7 +47,10 @@ public class AudioService {
     }
 
     private void playAudio(int audioId) {
-        String url = RestUrl.getAudioServiceUrl(audioId);
-        // TODO
+        try {
+            playAudio(RestUrl.getAudioServiceUrl(audioId));
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
     }
 }
