@@ -134,7 +134,7 @@ public class BaseItemService {
             syncBaseItem.setSpawnProgress(1.0);
             syncBaseItem.handleIfItemBecomesReady();
         } else {
-            gameLogicService.onSpawnSyncItem(syncBaseItem);
+            gameLogicService.onSpawnSyncItemStart(syncBaseItem);
         }
 
         return syncBaseItem;

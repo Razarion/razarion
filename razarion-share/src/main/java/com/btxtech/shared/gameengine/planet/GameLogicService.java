@@ -168,9 +168,9 @@ public class GameLogicService { // Rename to game control or so (See StoryboardS
         gameLogicDelegate.ifPresent(delegate -> delegate.onProjectileDetonation(syncBaseItem, position, clipId, timeStamp));
     }
 
-    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
-        System.out.println("GameLogicService.onSpawnSyncItem(): " + syncBaseItem);
-        gameLogicDelegate.ifPresent(delegate -> delegate.onSpawnSyncItem(syncBaseItem));
+    public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
+        System.out.println("GameLogicService.onSpawnSyncItemStart(): " + syncBaseItem);
+        gameLogicDelegate.ifPresent(delegate -> delegate.onSpawnSyncItemStart(syncBaseItem));
     }
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {

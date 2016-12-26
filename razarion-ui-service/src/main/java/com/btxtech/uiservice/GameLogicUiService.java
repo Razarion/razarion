@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.GameLogicDelegate;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.clip.ClipService;
 import com.btxtech.uiservice.tip.GameTipService;
 
@@ -29,6 +30,8 @@ public class GameLogicUiService implements GameLogicDelegate {
     private SelectionHandler selectionHandler;
     @Inject
     private GameTipService gameTipService;
+    @Inject
+    private AudioService audioService;
 
     public void onVisualConfig(@Observes VisualConfig visualConfig) {
         gameLogicService.setGameLogicDelegate(this);
@@ -78,7 +81,8 @@ public class GameLogicUiService implements GameLogicDelegate {
     }
 
     @Override
-    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+    public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
         gameTipService.onSpawnSyncItem(syncBaseItem);
+        audioService.onSpawnSyncItem(syncBaseItem);
     }
 }

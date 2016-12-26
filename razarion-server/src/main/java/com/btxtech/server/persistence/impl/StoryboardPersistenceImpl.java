@@ -227,25 +227,28 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         throw new IllegalArgumentException("No BaseItemType for id: " + id);
     }
 
-    private void finalizeBulldozer(BaseItemType baseItemType) {
-        baseItemType.setTerrainType(TerrainType.LAND).setThumbnail(272504);
-        baseItemType.setI18Name(i18nHelper("Bulldozer Name"));
-        baseItemType.setDescription(i18nHelper("Bulldozer Description"));
-        baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        baseItemType.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
-        baseItemType.setBoxPickupRange(2).setExplosionClipId(272485);
+    private void finalizeBulldozer(BaseItemType bulldozer) {
+        bulldozer.setSpawnAudioId(272520);
+        bulldozer.setTerrainType(TerrainType.LAND).setThumbnail(272504);
+        bulldozer.setI18Name(i18nHelper("Bulldozer Name"));
+        bulldozer.setDescription(i18nHelper("Bulldozer Description"));
+        bulldozer.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
+        bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
+        bulldozer.setBoxPickupRange(2).setExplosionClipId(272485);
     }
 
-    private void finalizeHarvester(BaseItemType baseItemType) {
-        baseItemType.setTerrainType(TerrainType.LAND);
-        baseItemType.setI18Name(i18nHelper("Harvester Name"));
-        baseItemType.setDescription(i18nHelper("Harvester Description"));
-        baseItemType.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
-        baseItemType.setHarvesterType(new HarvesterType().setProgress(10).setRange(4).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
-        baseItemType.setBoxPickupRange(2).setExplosionClipId(272485).setBuildup(2);
+    private void finalizeHarvester(BaseItemType harvester) {
+        harvester.setSpawnAudioId(272520);
+        harvester.setTerrainType(TerrainType.LAND);
+        harvester.setI18Name(i18nHelper("Harvester Name"));
+        harvester.setDescription(i18nHelper("Harvester Description"));
+        harvester.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
+        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
+        harvester.setBoxPickupRange(2).setExplosionClipId(272485).setBuildup(2);
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
+        attacker.setSpawnAudioId(272520);
         attacker.setTerrainType(TerrainType.LAND);
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
@@ -255,6 +258,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void finalizeFactory(BaseItemType factory) {
+        factory.setSpawnAudioId(272520);
         factory.setTerrainType(TerrainType.LAND).setThumbnail(272505);
         factory.setI18Name(i18nHelper("Factory Name"));
         factory.setDescription(i18nHelper("Factory Description"));
@@ -282,6 +286,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     }
 
     private void finalizeTower(BaseItemType tower) {
+        tower.setSpawnAudioId(272520);
         tower.setTerrainType(TerrainType.LAND);
         tower.setI18Name(i18nHelper("Tower"));
         tower.setDescription(i18nHelper("Verteidigungsturm"));

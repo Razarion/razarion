@@ -40,6 +40,7 @@ public class BaseItemType extends ItemType {
     private Integer unlockCrystals;
     private int spawnDurationMillis;
     private Integer spawnShape3DId;
+    private Integer spawnAudioId;
     private Integer explosionClipId;
     private List<DemolitionStepEffect> demolitionStepEffects;
 
@@ -215,6 +216,15 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setSpawnShape3DId(Integer spawnShape3DId) {
         this.spawnShape3DId = spawnShape3DId;
+        return this;
+    }
+
+    public Integer getSpawnAudioId() {
+        return spawnAudioId;
+    }
+
+    public BaseItemType setSpawnAudioId(Integer spawnAudioId) {
+        this.spawnAudioId = spawnAudioId;
         return this;
     }
 

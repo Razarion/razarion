@@ -21,5 +21,5 @@ public interface GameLogicDelegate {
 
     void onSyncBaseItemIdle(SyncBaseItem syncBaseItem);
 
-    void onSpawnSyncItem(SyncBaseItem syncBaseItem);
+    void onSpawnSyncItemStart(SyncBaseItem syncBaseItem);
 }
