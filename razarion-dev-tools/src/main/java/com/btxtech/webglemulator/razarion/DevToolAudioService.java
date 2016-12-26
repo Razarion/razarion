@@ -10,8 +10,9 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class DevToolAudioService extends AudioService {
+
     @Override
-    protected void playAudio(String audioServiceUrl) {
-        System.out.println("DevToolAudioService.playAudio(): " + audioServiceUrl);
+    protected void playAudio(int audioId) {
+        System.out.println("DevToolAudioService.playAudio(): " + audioId);
     }
 }

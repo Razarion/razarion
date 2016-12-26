@@ -11,12 +11,9 @@ import javax.inject.Inject;
  * 24.12.2016.
  */
 public abstract class AudioService {
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private ExceptionHandler exceptionHandler;
     private AudioConfig audioConfig;
 
-    protected abstract void playAudio(String audioServiceUrl);
+    protected abstract void playAudio(int audioId);
 
     public void initialise(AudioConfig audioConfig) {
         this.audioConfig = audioConfig;
@@ -42,13 +39,5 @@ public abstract class AudioService {
 
     public AudioConfig getAudioConfig() {
         return audioConfig;
-    }
-
-    private void playAudio(int audioId) {
-        try {
-            playAudio(RestUrl.getAudioServiceUrl(audioId));
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
-        }
     }
 }
