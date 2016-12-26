@@ -9,7 +9,7 @@ public class AudioConfig {
     private Integer dialogClosed;
     private Integer onQuestActivated;
     private Integer onQuestPassed;
-    private Integer onLevelPassed;
+    private Integer onLevelUp;
     private Integer onBoxPicked;
 
     public Integer getDialogOpened() {
@@ -48,12 +48,12 @@ public class AudioConfig {
         return this;
     }
 
-    public Integer getOnLevelPassed() {
-        return onLevelPassed;
+    public Integer getOnLevelUp() {
+        return onLevelUp;
     }
 
-    public AudioConfig setOnLevelPassed(Integer onLevelPassed) {
-        this.onLevelPassed = onLevelPassed;
+    public AudioConfig setOnLevelUp(Integer onLevelUp) {
+        this.onLevelUp = onLevelUp;
         return this;
     }
 

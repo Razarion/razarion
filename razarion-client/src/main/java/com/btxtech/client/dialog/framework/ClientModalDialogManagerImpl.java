@@ -48,7 +48,7 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
 
     @Override
     protected void showLevelUp(UserContext userContext, Runnable closeListener) {
-        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, null, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnLevelPassed(), DialogButton.Button.CLOSE);
+        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, null, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnLevelUp(), DialogButton.Button.CLOSE);
     }
 
     @Override

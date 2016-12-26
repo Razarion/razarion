@@ -329,6 +329,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         audioConfig.setDialogClosed(272515);
         audioConfig.setOnQuestActivated(272516);
         audioConfig.setOnQuestPassed(272517);
+        audioConfig.setOnLevelUp(272518);
+        audioConfig.setOnBoxPicked(272519);
         return audioConfig;
     }
 
