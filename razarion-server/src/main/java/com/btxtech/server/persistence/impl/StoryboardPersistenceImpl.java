@@ -128,7 +128,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
@@ -140,7 +140,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(harvest()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
         return storyboardConfig;
     }
 
@@ -327,6 +327,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         AudioConfig audioConfig = new AudioConfig();
         audioConfig.setDialogOpened(272514);
         audioConfig.setDialogClosed(272515);
+        audioConfig.setOnQuestActivated(272516);
+        audioConfig.setOnQuestPassed(272517);
         return audioConfig;
     }
 

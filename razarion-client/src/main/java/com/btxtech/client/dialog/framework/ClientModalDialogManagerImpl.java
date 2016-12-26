@@ -43,17 +43,17 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
 
     @Override
     protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
-        show("Quest bestanden", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, (button, value) -> closeListener.run(), null, DialogButton.Button.CLOSE);
+        show("Quest bestanden", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnQuestPassed(), DialogButton.Button.CLOSE);
     }
 
     @Override
     protected void showLevelUp(UserContext userContext, Runnable closeListener) {
-        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, null, (button, value) -> closeListener.run(), null, DialogButton.Button.CLOSE);
+        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, null, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnLevelPassed(), DialogButton.Button.CLOSE);
     }
 
     @Override
     public void showBoxPicked(BoxContent boxContent) {
-        show("Box gesammelt", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null, null, DialogButton.Button.CLOSE);
+        show("Box gesammelt", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null, null, audioService.getAudioConfig().getOnBoxPicked(), DialogButton.Button.CLOSE);
     }
 
     @Override
@@ -67,19 +67,23 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
     }
 
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
+        show(title, type, contentClass, t, listener, shownCallback, audioService.getAudioConfig().getDialogOpened(), dialogButtons);
+    }
+
+    public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
         if (activeDialog == null) {
-            showDialog(title, contentClass, t, listener, shownCallback, dialogButtons);
+            showDialog(title, contentClass, t, listener, shownCallback, audioId, dialogButtons);
         } else {
             switch (type) {
                 case PROMPTLY:
                     close(activeDialog);
-                    showDialog(title, contentClass, t, listener, shownCallback, dialogButtons);
+                    showDialog(title, contentClass, t, listener, shownCallback, audioId, dialogButtons);
                     break;
                 case QUEUE_ABLE:
-                    dialogQueue.add(new DialogParameters(title, contentClass, t, listener, shownCallback, dialogButtons));
+                    dialogQueue.add(new DialogParameters(title, contentClass, t, listener, shownCallback, audioId, dialogButtons));
                     break;
                 case STACK_ABLE:
-                    showStackedDialog(title, contentClass, t, listener, shownCallback, dialogButtons);
+                    showStackedDialog(title, contentClass, t, listener, shownCallback, audioId, dialogButtons);
                     break;
                 case UNIMPORTANT:
                     break;
@@ -89,32 +93,32 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
         }
     }
 
-    private void showDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
+    private void showDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
         ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
         modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
         this.activeDialog = modalDialogPanel;
-        showDialog(activeDialog, shownCallback);
+        showDialog(activeDialog, shownCallback, audioId);
     }
 
-    private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
+    private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
         ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
         modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
         stackedDialogs.add(modalDialogPanel);
-        showDialog(modalDialogPanel, shownCallback);
+        showDialog(modalDialogPanel, shownCallback, audioId);
     }
 
-    private void showDialog(ModalDialogPanel modalDialogPanel, Runnable shownCallback) {
+    private void showDialog(ModalDialogPanel modalDialogPanel, Runnable shownCallback, Integer audioId) {
+        audioService.onDialogOpened(audioId);
         RootPanel.get().add(modalDialogPanel);
-        audioService.onDialogOpened();
         if (shownCallback != null) {
             shownCallback.run();
         }
     }
 
     public void close(ModalDialogPanel modalDialogPanel) {
+        audioService.onDialogClosed();
         modalDialogPanel.onClose();
         RootPanel.get().remove(modalDialogPanel);
-        audioService.onDialogClosed();
         if (modalDialogPanel == activeDialog) {
             activeDialog = null;
             if (!dialogQueue.isEmpty()) {
@@ -131,19 +135,21 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
         private Object object;
         private DialogButton.Listener<?> listener;
         private Runnable shownCallback;
+        private Integer audioId;
         private DialogButton.Button[] dialogButtons;
 
-        DialogParameters(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener<?> listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
+        DialogParameters(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener<?> listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
             this.title = title;
             this.contentClass = contentClass;
             this.object = object;
             this.listener = listener;
             this.shownCallback = shownCallback;
+            this.audioId = audioId;
             this.dialogButtons = dialogButtons;
         }
 
         void showDialog() {
-            ClientModalDialogManagerImpl.this.showDialog(title, contentClass, object, listener, shownCallback, dialogButtons);
+            ClientModalDialogManagerImpl.this.showDialog(title, contentClass, object, listener, shownCallback, audioId, dialogButtons);
         }
     }
 }

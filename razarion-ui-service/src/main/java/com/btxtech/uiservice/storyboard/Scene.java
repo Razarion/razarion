@@ -229,7 +229,6 @@ public class Scene implements TerrainScrollListener {
     }
 
     void onQuestPassed() {
-        audioService.onQuestPassed();
         if (sceneConfig.getQuestConfig() != null) {
             questVisualizer.showSideBar(null);
         }

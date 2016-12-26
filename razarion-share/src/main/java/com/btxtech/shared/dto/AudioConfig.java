@@ -7,8 +7,10 @@ package com.btxtech.shared.dto;
 public class AudioConfig {
     private Integer dialogOpened;
     private Integer dialogClosed;
-    private Integer onQuestSActivated;
+    private Integer onQuestActivated;
     private Integer onQuestPassed;
+    private Integer onLevelPassed;
+    private Integer onBoxPicked;
 
     public Integer getDialogOpened() {
         return dialogOpened;
@@ -28,12 +30,12 @@ public class AudioConfig {
         return this;
     }
 
-    public Integer getOnQuestSActivated() {
-        return onQuestSActivated;
+    public Integer getOnQuestActivated() {
+        return onQuestActivated;
     }
 
-    public AudioConfig setOnQuestSActivated(Integer onQuestSActivated) {
-        this.onQuestSActivated = onQuestSActivated;
+    public AudioConfig setOnQuestActivated(Integer onQuestActivated) {
+        this.onQuestActivated = onQuestActivated;
         return this;
     }
 
@@ -43,6 +45,24 @@ public class AudioConfig {
 
     public AudioConfig setOnQuestPassed(Integer onQuestPassed) {
         this.onQuestPassed = onQuestPassed;
+        return this;
+    }
+
+    public Integer getOnLevelPassed() {
+        return onLevelPassed;
+    }
+
+    public AudioConfig setOnLevelPassed(Integer onLevelPassed) {
+        this.onLevelPassed = onLevelPassed;
+        return this;
+    }
+
+    public Integer getOnBoxPicked() {
+        return onBoxPicked;
+    }
+
+    public AudioConfig setOnBoxPicked(Integer onBoxPicked) {
+        this.onBoxPicked = onBoxPicked;
         return this;
     }
 }

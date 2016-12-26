@@ -22,9 +22,9 @@ public abstract class AudioService {
         this.audioConfig = audioConfig;
     }
 
-    public void onDialogOpened() {
-        if (audioConfig.getDialogOpened() != null) {
-            playAudio(audioConfig.getDialogOpened());
+    public void onDialogOpened(Integer audioId) {
+        if (audioId != null) {
+            playAudio(audioId);
         }
     }
 
@@ -35,15 +35,13 @@ public abstract class AudioService {
     }
 
     public void onQuestActivated() {
-        if (audioConfig.getOnQuestSActivated() != null) {
-            playAudio(audioConfig.getOnQuestSActivated());
+        if (audioConfig.getOnQuestActivated() != null) {
+            playAudio(audioConfig.getOnQuestActivated());
         }
     }
 
-    public void onQuestPassed() {
-        if (audioConfig.getOnQuestPassed() != null) {
-            playAudio(audioConfig.getOnQuestPassed());
-        }
+    public AudioConfig getAudioConfig() {
+        return audioConfig;
     }
 
     private void playAudio(int audioId) {
