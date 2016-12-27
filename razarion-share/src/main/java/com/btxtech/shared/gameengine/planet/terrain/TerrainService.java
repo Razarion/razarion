@@ -304,6 +304,10 @@ public class TerrainService {
         return new Vertex(zeroLevel, height);
     }
 
+    public double calculateLandWaterProportion(Rectangle2D viewField) {
+        return 1.0 - water.calculateAabb().coverRatio(viewField);
+    }
+
     // -------------------------------------------------
     // TODO TerrainSettings getTerrainSettings();
 

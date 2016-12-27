@@ -76,6 +76,10 @@ public class Rectangle2D {
         return end.getY();
     }
 
+    public double area() {
+        return width() * height();
+    }
+
     public boolean hasMinSize(double minSize) {
         return height() >= minSize || width() >= minSize;
     }
@@ -184,6 +188,58 @@ public class Rectangle2D {
 
     public Polygon2D toPolygon() {
         return new Polygon2D(toCorners());
+    }
+
+    /**
+     * Returns true if the given rectangle is in the rectangle or adjoins the rectangle
+     *
+     * @param rectangle to check
+     * @return true if the position is inside the rectangle
+     */
+    public boolean adjoins(Rectangle2D rectangle) {
+        double startX = Math.max(start.getX(), rectangle.start.getX());
+        double startY = Math.max(start.getY(), rectangle.start.getY());
+
+        double endX = Math.min(end.getX(), rectangle.end.getX());
+        double endY = Math.min(end.getY(), rectangle.end.getY());
+
+        return startX <= endX && startY <= endY;
+    }
+
+    /**
+     * The cross section inside this rectangle with the given rectangle
+     *
+     * @param rectangle given rectangle
+     * @return cross section inside this rectangle
+     */
+    public Rectangle2D calculateCrossSection(Rectangle2D rectangle) {
+        double startX = Math.max(start.getX(), rectangle.start.getX());
+        double startY = Math.max(start.getY(), rectangle.start.getY());
+
+        double endX = Math.min(end.getX(), rectangle.end.getX());
+        double endY = Math.min(end.getY(), rectangle.end.getY());
+
+        if (startX > endX || startY > endY) {
+            return null;
+        }
+
+        return new Rectangle2D(new DecimalPosition(startX, startY), new DecimalPosition(endX, endY));
+    }
+
+    /**
+     * Calculate the cover ratio of two rectangles
+     * e.g. 100% means the given rectangle is fully inside this rectangle
+     *
+     * @param other given rectangle
+     * @return cover ratio
+     */
+    public double coverRatio(Rectangle2D other) {
+        Rectangle2D cross = calculateCrossSection(other);
+        if (cross == null) {
+            return 0;
+        } else {
+            return  cross.area() / other.area() ;
+        }
     }
 
     @Override

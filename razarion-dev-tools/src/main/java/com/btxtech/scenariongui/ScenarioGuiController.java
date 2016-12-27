@@ -2,8 +2,6 @@ package com.btxtech.scenariongui;
 
 import com.btxtech.scenariongui.scenario.Scenario;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -31,30 +29,18 @@ public class ScenarioGuiController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        anchorPanel.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number width) {
-                canvas.setWidth(width.doubleValue());
-                scenarioRenderer.render();
-            }
+        anchorPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> {
+            canvas.setWidth(width.doubleValue());
+            scenarioRenderer.render();
         });
-        anchorPanel.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number height) {
-                canvas.setHeight(height.doubleValue());
-                scenarioRenderer.render();
-            }
+        anchorPanel.heightProperty().addListener((observableValue, oldSceneWidth, height) -> {
+            canvas.setHeight(height.doubleValue());
+            scenarioRenderer.render();
         });
         scenarioBox.getItems().addAll(Scenario.getScenarios());
-        scenarioRenderer = new ScenarioRenderer(canvas, Scenario.getScenarios().get(0).getScenario(), 1);
-        scaleField.setText("1");
-        zoomSlider.valueProperty().addListener(new ChangeListener<Number>() {
-
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                setZoom(zoomSlider.getValue());
-            }
-        });
+        scenarioRenderer = new ScenarioRenderer(canvas, Scenario.getScenarios().get(0).getScenario(), 4);
+        scaleField.setText("4");
+        zoomSlider.valueProperty().addListener((observableValue, number, t1) -> setZoom(zoomSlider.getValue()));
         scenarioBox.setValue(Scenario.getScenarios().get(0));
     }
 
@@ -75,7 +61,7 @@ public class ScenarioGuiController implements Initializable {
         }
     }
 
-    public void onMouseReleased(Event event) {
+    public void onMouseReleased() {
         scenarioRenderer.stopShift();
     }
 

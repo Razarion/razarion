@@ -1,14 +1,12 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.LightConfig;
-import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -21,6 +19,7 @@ public class Water {
     private List<Vertex> norms = new ArrayList<>();
     private List<Vertex> tangents = new ArrayList<>();
     private List<Vertex> barycentric = new ArrayList<>();
+    private Rectangle2D aabb;
 
     public Water(double level) {
         this.level = level;
@@ -70,5 +69,15 @@ public class Water {
 
     public List<Vertex> getBarycentric() {
         return barycentric;
+    }
+
+    public Rectangle2D calculateAabb() {
+        if (aabb != null) {
+            return aabb;
+        }
+        Polygon2D waterPolygon = new Polygon2D(new ArrayList<>(DecimalPosition.removeSimilarPoints(Vertex.toXY(getVertices()), 1.0)));
+        aabb = waterPolygon.toAabb();
+
+        return aabb;
     }
 }

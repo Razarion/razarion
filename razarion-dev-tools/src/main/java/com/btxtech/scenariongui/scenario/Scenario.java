@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Rectangle 2D", new Rectangle2DScenario());
         register("Bresenhams Test", new FillCircleScenario());
         register("Polygon2D Test", new TestPolygon2DScenario());
         register("Triangle2D", new Triangle2DScenario());
@@ -57,6 +58,12 @@ public abstract class Scenario {
         return false;
     }
 
+    /**
+     * Override in subclasses
+     *
+     * @param position mouse position
+     * @return true if scene should be redraw
+     */
     public boolean onMouseMove(DecimalPosition position) {
         return false;
     }

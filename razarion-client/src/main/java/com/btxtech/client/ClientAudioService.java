@@ -26,6 +26,7 @@ public class ClientAudioService extends AudioService {
     @Inject
     private ExceptionHandler exceptionHandler;
     private Map<Integer, Collection<AudioElement>> audios = new HashMap<>();
+    private AudioElement terrainLoopAudio;
     private boolean isMute = false;
 
     @Override
@@ -34,6 +35,25 @@ public class ClientAudioService extends AudioService {
             AudioElement audio = getAudio(audioId);
             if (audio != null) {
                 audio.play();
+            }
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
+    @Override
+    protected void playTerrainLoopAudio(int audioId) {
+        try {
+            if (terrainLoopAudio != null) {
+                terrainLoopAudio.pause();
+                terrainLoopAudio.setLoop(false);
+                terrainLoopAudio = null;
+            }
+            AudioElement audio = getAudio(audioId);
+            if (audio != null) {
+                audio.play();
+                audio.setLoop(true);
+                terrainLoopAudio = audio;
             }
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
@@ -61,6 +81,9 @@ public class ClientAudioService extends AudioService {
                 if (availableAudio.getNetworkState() == MediaElement.NETWORK_NO_SOURCE) {
                     iterator.remove();
                     continue;
+                }
+                if (terrainLoopAudio == availableAudio) {
+                    break;
                 }
                 if (availableAudio.isEnded() || availableAudio.isPaused()) {
                     audio = availableAudio;

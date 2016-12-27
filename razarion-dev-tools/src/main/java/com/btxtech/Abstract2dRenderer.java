@@ -6,13 +6,15 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 /**
  * Created by Beat
  * 25.06.2016.
  */
 public class Abstract2dRenderer {
-    private static final int GRID_SPACING = 100;
+    private static final int GRID_SPACING_100 = 100;
+    private static final int GRID_SPACING_20 = 20;
     private Canvas canvas;
     private GraphicsContext gc;
     private double scale;
@@ -81,10 +83,17 @@ public class Abstract2dRenderer {
     }
 
     private void drawGrid(GraphicsContext gc, double canvasWidth, double canvasHeight) {
-        gc.setLineWidth(1);
-        gc.setStroke(Color.GRAY);
+        drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_100 * scale), Color.GRAY);
+        drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_20 * scale), Color.LIGHTGRAY);
 
-        int gridSpacing = (int) (GRID_SPACING * scale);
+        gc.setStroke(Color.BLACK);
+        gc.strokeLine(shift.getX() * scale + canvasWidth / 2.0, 0, shift.getX() * scale + canvasWidth / 2.0, canvasHeight);
+        gc.strokeLine(0, canvasHeight / 2.0 - shift.getY() * scale, canvasWidth, canvasHeight / 2.0 - shift.getY() * scale);
+    }
+
+    private void drawGrid(GraphicsContext gc, double canvasWidth, double canvasHeight, int gridSpacing, Paint color) {
+        gc.setLineWidth(1);
+        gc.setStroke(color);
 
         int verticalGrid = (int) Math.ceil(canvasWidth / gridSpacing) * gridSpacing;
         int verticalOffset = (int) (shift.getX() * scale + canvasWidth / 2.0) % gridSpacing;
@@ -96,9 +105,6 @@ public class Abstract2dRenderer {
         for (int y = 0; y <= horizontalGrid; y += gridSpacing) {
             gc.strokeLine(0, y + horizontalOffset, canvasWidth, y + horizontalOffset);
         }
-        gc.setStroke(Color.BLACK);
-        gc.strokeLine(shift.getX() * scale + canvasWidth / 2.0, 0, shift.getX() * scale + canvasWidth / 2.0, canvasHeight);
-        gc.strokeLine(0, canvasHeight / 2.0 - shift.getY() * scale, canvasWidth, canvasHeight / 2.0 - shift.getY() * scale);
     }
 
 

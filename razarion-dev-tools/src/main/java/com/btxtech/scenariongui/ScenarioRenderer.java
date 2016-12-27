@@ -11,7 +11,7 @@ import javafx.scene.canvas.Canvas;
 public class ScenarioRenderer extends Abstract2dRenderer {
     private Scenario scenario;
 
-    public ScenarioRenderer(Canvas canvas, Scenario scenario, double scale) {
+    ScenarioRenderer(Canvas canvas, Scenario scenario, double scale) {
         super.init(canvas, scale);
         this.scenario = scenario;
     }

@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -79,6 +80,14 @@ public class ExtendedGraphicsContext {
             gc.stroke();
         }
 
+    }
+
+    public void fillRectangle(Rectangle2D rectangle, double lineWidth, Color color) {
+        gc.setLineWidth(1);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+        gc.setStroke(color);
+
+        gc.fillRect(rectangle.startX(), rectangle.startY(), rectangle.width(), rectangle.height());
     }
 
     public void strokeCurveIndex(List<Index> curve, double strokeWidth, Color color, boolean showPoint) {

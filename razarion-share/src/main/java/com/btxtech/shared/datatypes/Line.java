@@ -25,7 +25,7 @@ public class Line {
 
     }
 
-    public Line(DecimalPosition start, double angel, int length) {
+    public Line(DecimalPosition start, double angel, double length) {
         this(start, start.getPointWithDistance(angel, length));
     }
 

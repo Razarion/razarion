@@ -183,10 +183,6 @@ public class TerrainScrollHandler {
 
         // TODO check if camera is in valid playground filed. Also check in CollisionService.correctPosition()
         setCameraPosition(camera.getTranslateX() + scrollX, camera.getTranslateY() + scrollY);
-
-        for (TerrainScrollListener terrainScrollListener : terrainScrollListeners) {
-            terrainScrollListener.onScroll(currentViewField);
-        }
     }
 
     public void executeCameraConfig(final CameraConfig cameraConfig, Optional<Runnable> completionCallback) {
@@ -226,6 +222,10 @@ public class TerrainScrollHandler {
     private void setCameraPosition(double xPosition, double yPosition) {
         camera.setTranslateXY(xPosition, yPosition);
         updateViewField();
+
+        for (TerrainScrollListener terrainScrollListener : terrainScrollListeners) {
+            terrainScrollListener.onScroll(currentViewField);
+        }
     }
 
     public void updateViewField() {
