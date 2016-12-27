@@ -24,7 +24,7 @@ public class AudioPersistence {
     private EntityManager entityManager;
 
     @Transactional
-    public byte[] getAudio(int id) throws Exception {
+    public byte[] getAudio(int id) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
         Root<AudioLibraryEntity> root = cq.from(AudioLibraryEntity.class);
@@ -32,6 +32,11 @@ public class AudioPersistence {
         cq.multiselect(root.get(AudioLibraryEntity_.data));
         Tuple tupleResult = entityManager.createQuery(cq).getSingleResult();
         return (byte[]) tupleResult.get(0);
+    }
+
+    @Transactional
+    public AudioItemConfig getAudioItemConfig(int id) {
+        return entityManager.find(AudioLibraryEntity.class, (long) id).toAudioConfig();
     }
 
     @Transactional
@@ -72,5 +77,16 @@ public class AudioPersistence {
             }
             entityManager.merge(audioLibraryEntity);
         }
+    }
+
+    @Transactional
+    public List<AudioLibraryEntity> getAudioLibraryEntities(List<Integer> audioIds) {
+        List<AudioLibraryEntity> audioLibraryEntities = new ArrayList<>();
+        if (audioIds != null) {
+            for (Integer audioId : audioIds) {
+                audioLibraryEntities.add(entityManager.find(AudioLibraryEntity.class, (long) audioId));
+            }
+        }
+        return audioLibraryEntities;
     }
 }

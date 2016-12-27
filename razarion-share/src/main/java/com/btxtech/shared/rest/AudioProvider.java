@@ -24,12 +24,17 @@ public interface AudioProvider {
     @GET
     @Produces({"audio/mpeg"})
     @Path("{id}")
-    Response getAudio(@PathParam("id") int id) throws Exception;
+    Response getAudio(@PathParam("id") int id);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("getall")
-    List<AudioItemConfig> getAllAudios();
+    @Path("getAudioItemConfig/{id}")
+    AudioItemConfig getAudioItemConfig(@PathParam("id") int id);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("getAudioItemConfigs")
+    List<AudioItemConfig> getAudioItemConfigs();
 
     @POST
     @Path("create")

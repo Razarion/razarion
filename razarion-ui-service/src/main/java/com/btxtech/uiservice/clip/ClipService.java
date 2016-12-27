@@ -4,10 +4,9 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.shared.dto.VisualConfig;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.audio.AudioService;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -27,7 +26,7 @@ public class ClipService {
     @Inject
     private Shape3DUiService shape3DUiService;
     @Inject
-    private GameLogicService gameLogicService;
+    private AudioService audioService;
     private Map<Integer, ClipConfig> clips = new HashMap<>();
     private final Collection<PlayingClip> playingClips = new ArrayList<>();
 
@@ -57,14 +56,18 @@ public class ClipService {
     }
 
     public void playClip(Vertex position, int clipId, long timeStamp) {
+        ClipConfig clipConfig = getClipConfig(clipId);
+        playSound(clipConfig);
         synchronized (playingClips) {
-            playingClips.add(new PlayingClip(position, getClipConfig(clipId), timeStamp));
+            playingClips.add(new PlayingClip(position, clipConfig, timeStamp));
         }
     }
 
     public void playClip(Vertex position, Vertex direction, int clipId, long timeStamp) {
+        ClipConfig clipConfig = getClipConfig(clipId);
+        playSound(clipConfig);
         synchronized (playingClips) {
-            playingClips.add(new PlayingClip(position, direction, getClipConfig(clipId), timeStamp));
+            playingClips.add(new PlayingClip(position, direction, clipConfig, timeStamp));
         }
     }
 
@@ -92,5 +95,18 @@ public class ClipService {
 
     public void remove(ClipConfig clipConfig) {
         clips.remove(clipConfig.getId());
+    }
+
+    private void playSound(ClipConfig clipConfig) {
+        List<Integer> audioIs = clipConfig.getAudioIds();
+        if (audioIs != null && !audioIs.isEmpty()) {
+            if (audioIs.size() == 1) {
+                audioService.onClip(audioIs.get(0));
+            } else {
+                int index = (int) (audioIs.size() * Math.random());
+                audioService.onClip(audioIs.get(index));
+            }
+        }
+
     }
 }

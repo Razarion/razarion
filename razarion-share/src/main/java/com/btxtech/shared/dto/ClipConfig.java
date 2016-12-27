@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import java.util.List;
+
 /**
  * Created by Beat
  * 14.10.2016.
@@ -8,7 +10,7 @@ public class ClipConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
     private Integer shape3DId;
-    private Integer soundId;
+    private List<Integer> audioIds;
     private Integer durationMillis;
 
     public int getId() {
@@ -38,12 +40,12 @@ public class ClipConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Integer getSoundId() {
-        return soundId;
+    public List<Integer> getAudioIds() {
+        return audioIds;
     }
 
-    public ClipConfig setSoundId(Integer soundId) {
-        this.soundId = soundId;
+    public ClipConfig setAudioIds(List<Integer> audioIds) {
+        this.audioIds = audioIds;
         return this;
     }
 
@@ -86,7 +88,7 @@ public class ClipConfig implements ObjectNameIdProvider {
                 "id=" + id +
                 ", internalName='" + internalName + '\'' +
                 ", shape3DId=" + shape3DId +
-                ", soundId=" + soundId +
+                ", audioIds=" + audioIds +
                 ", durationMillis=" + durationMillis +
                 '}';
     }

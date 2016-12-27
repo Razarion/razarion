@@ -24,7 +24,7 @@ public class AudioProviderImpl implements AudioProvider {
     private ExceptionHandler exceptionHandler;
 
     @Override
-    public Response getAudio(int id) throws Exception {
+    public Response getAudio(int id) {
         try {
             return Response.ok(audioPersistence.getAudio(id)).lastModified(new Date()).build();
         } catch (Throwable e) {
@@ -34,7 +34,17 @@ public class AudioProviderImpl implements AudioProvider {
     }
 
     @Override
-    public List<AudioItemConfig> getAllAudios() {
+    public AudioItemConfig getAudioItemConfig(int id) {
+        try {
+            return audioPersistence.getAudioItemConfig(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<AudioItemConfig> getAudioItemConfigs() {
         try {
             return audioPersistence.getAllAudios();
         } catch (Throwable e) {

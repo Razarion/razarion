@@ -24,7 +24,7 @@ public class ImagePersistence {
     private EntityManager entityManager;
 
     @Transactional
-    public byte[] getImage(int id) throws Exception {
+    public byte[] getImage(int id) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
         Root<ImageLibraryEntity> root = cq.from(ImageLibraryEntity.class);

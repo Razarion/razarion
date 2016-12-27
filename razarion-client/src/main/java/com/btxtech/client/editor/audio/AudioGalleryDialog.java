@@ -67,9 +67,9 @@ public class AudioGalleryDialog extends Composite implements ModalDialogContent<
                 audioGallery.setValue(audioGalleryItems);
             }
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "getAllAudios failed: " + message, throwable);
+            logger.log(Level.SEVERE, "getAudioItemConfigs failed: " + message, throwable);
             return false;
-        }).getAllAudios();
+        }).getAudioItemConfigs();
     }
 
     @Override

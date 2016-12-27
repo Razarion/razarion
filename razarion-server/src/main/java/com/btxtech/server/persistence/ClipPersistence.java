@@ -23,6 +23,8 @@ public class ClipPersistence {
     private EntityManager entityManager;
     @Inject
     private Shape3DPersistence shape3DPersistence;
+    @Inject
+    private AudioPersistence audioPersistence;
 
     @Transactional
     public List<ClipConfig> readClipConfigs() {
@@ -44,7 +46,7 @@ public class ClipPersistence {
     @Transactional
     public void update(ClipConfig clipConfig) {
         ClipEntity clipEntity = entityManager.find(ClipEntity.class, (long) clipConfig.getId());
-        clipEntity.fromClipConfig(clipConfig);
+        clipEntity.fromClipConfig(clipConfig, audioPersistence.getAudioLibraryEntities(clipConfig.getAudioIds()));
         clipEntity.setShape3D(shape3DPersistence.getColladaEntity(clipConfig.getShape3DId()));
         entityManager.merge(clipEntity);
     }

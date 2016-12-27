@@ -25,7 +25,7 @@ public class ImageProviderImpl implements ImageProvider {
     private ExceptionHandler exceptionHandler;
 
     @Override
-    public Response getImage(int id) throws Exception {
+    public Response getImage(int id) {
         try {
             return Response.ok(imagePersistence.getImage(id)).lastModified(new Date()).build();
         } catch (Throwable e) {

@@ -23,7 +23,7 @@ public interface ImageProvider {
     @GET
     @Produces({"image/jpeg", "image/png", "image/gif"})
     @Path("{id}")
-    Response getImage(@PathParam("id") int id) throws Exception;
+    Response getImage(@PathParam("id") int id);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
