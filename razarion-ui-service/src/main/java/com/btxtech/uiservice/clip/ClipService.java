@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.audio.AudioService;
+import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -27,6 +28,8 @@ public class ClipService {
     private Shape3DUiService shape3DUiService;
     @Inject
     private AudioService audioService;
+    @Inject
+    private TerrainScrollHandler terrainScrollHandler;
     private Map<Integer, ClipConfig> clips = new HashMap<>();
     private final Collection<PlayingClip> playingClips = new ArrayList<>();
 
@@ -57,7 +60,7 @@ public class ClipService {
 
     public void playClip(Vertex position, int clipId, long timeStamp) {
         ClipConfig clipConfig = getClipConfig(clipId);
-        playSound(clipConfig);
+        playSound(clipConfig, position);
         synchronized (playingClips) {
             playingClips.add(new PlayingClip(position, clipConfig, timeStamp));
         }
@@ -65,7 +68,7 @@ public class ClipService {
 
     public void playClip(Vertex position, Vertex direction, int clipId, long timeStamp) {
         ClipConfig clipConfig = getClipConfig(clipId);
-        playSound(clipConfig);
+        playSound(clipConfig, position);
         synchronized (playingClips) {
             playingClips.add(new PlayingClip(position, direction, clipConfig, timeStamp));
         }
@@ -97,7 +100,11 @@ public class ClipService {
         clips.remove(clipConfig.getId());
     }
 
-    private void playSound(ClipConfig clipConfig) {
+    private void playSound(ClipConfig clipConfig, Vertex position) {
+        if (!terrainScrollHandler.getCurrentViewField().isInside(position.toXY())) {
+            return;
+        }
+
         List<Integer> audioIs = clipConfig.getAudioIds();
         if (audioIs != null && !audioIs.isEmpty()) {
             if (audioIs.size() == 1) {

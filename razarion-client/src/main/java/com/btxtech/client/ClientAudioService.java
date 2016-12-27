@@ -22,6 +22,7 @@ import java.util.Map;
 @ApplicationScoped
 public class ClientAudioService extends AudioService {
     private static final int PARALLEL_PLAY_COUNT = 5;
+    private static final double ENVIRONMENT_VOLUME = 0.1;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -52,7 +53,7 @@ public class ClientAudioService extends AudioService {
                 audio.setLoop(true);
                 terrainLoopAudios.put(audioId, audio);
             }
-            audio.setVolume((float) volume);
+            audio.setVolume((float) (volume * ENVIRONMENT_VOLUME));
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
