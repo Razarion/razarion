@@ -17,7 +17,7 @@ public class DevToolAudioService extends AudioService {
     }
 
     @Override
-    protected void playTerrainLoopAudio(int audioId) {
-        System.out.println("#### DevToolAudioService.playTerrainLoopAudio(): " + audioId);
+    protected void playTerrainLoopAudio(int audioId, double volume) {
+        System.out.println("#### DevToolAudioService.playTerrainLoopAudio(): " + audioId + " volume: " + volume);
     }
 }

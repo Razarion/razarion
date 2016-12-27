@@ -26,7 +26,7 @@ public class ClientAudioService extends AudioService {
     @Inject
     private ExceptionHandler exceptionHandler;
     private Map<Integer, Collection<AudioElement>> audios = new HashMap<>();
-    private AudioElement terrainLoopAudio;
+    private Map<Integer, AudioElement> terrainLoopAudios = new HashMap<>();
     private boolean isMute = false;
 
     @Override
@@ -42,19 +42,17 @@ public class ClientAudioService extends AudioService {
     }
 
     @Override
-    protected void playTerrainLoopAudio(int audioId) {
+    protected void playTerrainLoopAudio(int audioId, double volume) {
         try {
-            if (terrainLoopAudio != null) {
-                terrainLoopAudio.pause();
-                terrainLoopAudio.setLoop(false);
-                terrainLoopAudio = null;
-            }
-            AudioElement audio = getAudio(audioId);
-            if (audio != null) {
+            AudioElement audio = terrainLoopAudios.get(audioId);
+            if(audio == null) {
+                audio = Browser.getDocument().createAudioElement();
+                audio.setSrc(RestUrl.getAudioServiceUrl(audioId));
                 audio.play();
                 audio.setLoop(true);
-                terrainLoopAudio = audio;
+                terrainLoopAudios.put(audioId, audio);
             }
+            audio.setVolume((float) volume);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -82,7 +80,7 @@ public class ClientAudioService extends AudioService {
                     iterator.remove();
                     continue;
                 }
-                if (terrainLoopAudio == availableAudio) {
+                if (terrainLoopAudios == availableAudio) {
                     break;
                 }
                 if (availableAudio.isEnded() || availableAudio.isPaused()) {

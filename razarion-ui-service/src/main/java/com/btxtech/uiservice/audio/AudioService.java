@@ -3,6 +3,7 @@ package com.btxtech.uiservice.audio;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
@@ -21,11 +22,11 @@ public abstract class AudioService implements TerrainScrollListener {
     @Inject
     private TerrainService terrainService;
     private AudioConfig audioConfig;
-    private Integer lastTerrainLoopAudio;
+    private double lastLandWaterProportion = -1;
 
     protected abstract void playAudio(int audioId);
 
-    protected abstract void playTerrainLoopAudio(int audioId);
+    protected abstract void playTerrainLoopAudio(int audioId, double volume);
 
     @PostConstruct
     public void postConstruct() {
@@ -71,11 +72,18 @@ public abstract class AudioService implements TerrainScrollListener {
     @Override
     public void onScroll(ViewField viewField) {
         double landWaterProportion = terrainService.calculateLandWaterProportion(viewField.calculateAabbRectangle());
-        int terrainLoopAudio = landWaterProportion > TERRAIN_LAND_LOOP_THRESHOLD ? 272521 : 272522;
-        if (lastTerrainLoopAudio != null && lastTerrainLoopAudio == terrainLoopAudio) {
+        if (MathHelper.compareWithPrecision(lastLandWaterProportion, landWaterProportion, 0.05)) {
             return;
         }
-        lastTerrainLoopAudio = terrainLoopAudio;
-        playTerrainLoopAudio(terrainLoopAudio);
+        if (MathHelper.compareWithPrecision(landWaterProportion, 0.0, 0.05)) {
+            landWaterProportion = 0;
+        } else if (MathHelper.compareWithPrecision(landWaterProportion, 1.0, 0.05)) {
+            landWaterProportion = 1;
+        }
+
+        lastLandWaterProportion = landWaterProportion;
+
+        playTerrainLoopAudio(272521, lastLandWaterProportion);
+        playTerrainLoopAudio(272522, 1.0 - lastLandWaterProportion);
     }
 }
