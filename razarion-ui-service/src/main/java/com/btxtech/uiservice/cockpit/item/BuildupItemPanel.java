@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 
@@ -32,6 +33,8 @@ public abstract class BuildupItemPanel {
     private CommandService commandService;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
+    @Inject
+    private AudioService audioService;
     private Group selectedGroup;
     private Map<Integer, BuildupItem> buildupItems = new HashMap<>();
     private boolean hasItemsToBuild;
@@ -79,6 +82,7 @@ public abstract class BuildupItemPanel {
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
             BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemTypeId);
             buildupItems.add(setupBuildupBlock(itemType, () -> baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
+                audioService.onCommandSent();
                 commandService.build(constructionVehicles.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
             })));
         }
@@ -96,7 +100,10 @@ public abstract class BuildupItemPanel {
             }
             hasItemsToBuild = true;
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
-            buildupItems.add(setupBuildupBlock(itemType, () -> commandService.fabricate(factories.getItems(), itemType)));
+            buildupItems.add(setupBuildupBlock(itemType, () -> {
+                audioService.onCommandSent();
+                commandService.fabricate(factories.getItems(), itemType);
+            }));
         }
         setBuildupItem(buildupItems);
     }

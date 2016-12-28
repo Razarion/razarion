@@ -128,10 +128,10 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
@@ -336,6 +336,11 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         audioConfig.setOnQuestPassed(272517);
         audioConfig.setOnLevelUp(272518);
         audioConfig.setOnBoxPicked(272519);
+        audioConfig.setOnSelectionCleared(272525);
+        audioConfig.setOnOwnMultiSelection(272526);
+        audioConfig.setOnOwnSingleSelection(272527);
+        audioConfig.setOnTargetSelection(272528);
+        audioConfig.setOnCommandSent(272529);
         return audioConfig;
     }
 

@@ -312,7 +312,7 @@ public class WebGlEmulatorController implements Initializable {
             terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.BOTTOM);
         }
         if (event.getCode() == KeyCode.ESCAPE) {
-            selectionHandler.clearSelection();
+            selectionHandler.clearSelection(false);
         }
     }
 

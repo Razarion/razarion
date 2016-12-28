@@ -65,7 +65,7 @@ public class KeyboardEventHandler {
                             break;
                         }
                         case KeyCodes.KEY_ESCAPE: {
-                            selectionHandler.clearSelection();
+                            selectionHandler.clearSelection(false);
                             // TODO  CockpitMode.getInstance().onEscape();
                             break;
                         }

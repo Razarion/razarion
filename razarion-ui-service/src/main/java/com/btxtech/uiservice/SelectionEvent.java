@@ -8,6 +8,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
  * 28.09.2016.
  */
 public class SelectionEvent {
+    private boolean dueToNewSelection;
+
     public enum Type {
         CLEAR,
         OWN,
@@ -28,7 +30,8 @@ public class SelectionEvent {
         this.targetSelection = targetSelection;
     }
 
-    public SelectionEvent() {
+    public SelectionEvent(boolean dueToNewSelection) {
+        this.dueToNewSelection = dueToNewSelection;
         type = Type.CLEAR;
     }
 
@@ -42,5 +45,9 @@ public class SelectionEvent {
 
     public SyncItem getTargetSelection() {
         return targetSelection;
+    }
+
+    public boolean isDueToNewSelection() {
+        return dueToNewSelection;
     }
 }

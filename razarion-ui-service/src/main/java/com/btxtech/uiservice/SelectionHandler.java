@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.storyboard.StoryboardService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -49,6 +50,8 @@ public class SelectionHandler {
     private StoryboardService storyboardService;
     @Inject
     private Event<SelectionEvent> selectionEventEventTrigger;
+    @Inject
+    private AudioService audioService;
     private Group selectedGroup; // Always my property
     private SyncItem selectedTargetSyncItem; // Not my property
 
@@ -90,10 +93,13 @@ public class SelectionHandler {
     public void setTargetSelected(SyncItem target) {
         if (selectedGroup != null) {
             if (selectedGroup.canAttack() && target instanceof SyncBaseItem) {
+                audioService.onCommandSent();
                 commandService.attack(selectedGroup.getItems(), (SyncBaseItem) target);
             } else if (selectedGroup.canCollect() && target instanceof SyncResourceItem) {
+                audioService.onCommandSent();
                 commandService.harvest(selectedGroup.getItems(), (SyncResourceItem) target);
             } else if (selectedGroup.canMove() && target instanceof SyncBoxItem) {
+                audioService.onCommandSent();
                 commandService.pickupBox(selectedGroup.getMovables(), (SyncBoxItem) target);
             }
         } else {
@@ -116,7 +122,7 @@ public class SelectionHandler {
 //    TODO            return;
 //    TODO        }
 //    TODO    }
-        clearSelection();
+        clearSelection(true);
         this.selectedGroup = selectedGroup;
         selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup));
     }
@@ -124,7 +130,7 @@ public class SelectionHandler {
     public void selectRectangle(Rectangle2D rectangle) {
         Collection<SyncItem> selectedItems = syncItemContainerService.findItemsInRect(rectangle);
         if (selectedItems.isEmpty()) {
-            clearSelection();
+            clearSelection(false);
         } else {
             SyncItem other = null;
             Collection<SyncBaseItem> own = new ArrayList<>();
@@ -157,10 +163,10 @@ public class SelectionHandler {
         selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup));
     }
 
-    public void clearSelection() {
+    public void clearSelection(boolean dueToNewSelection) {
         selectedTargetSyncItem = null;
         selectedGroup = null;
-        selectionEventEventTrigger.fire(new SelectionEvent());
+        selectionEventEventTrigger.fire(new SelectionEvent(dueToNewSelection));
     }
 
     private void onTargetSelectionItemChanged(SyncItem target) {
@@ -176,13 +182,13 @@ public class SelectionHandler {
 
     public void itemKilled(SyncItem syncItem) {
         if (syncItem.equals(selectedTargetSyncItem)) {
-            clearSelection();
+            clearSelection(false);
         }
 
         if (selectedGroup != null && syncItem instanceof SyncBaseItem && selectedGroup.contains((SyncBaseItem) syncItem)) {
             selectedGroup.remove((SyncBaseItem) syncItem);
             if (selectedGroup.isEmpty()) {
-                clearSelection();
+                clearSelection(false);
             } else {
                 fireOwnItemSelectionChanged(selectedGroup);
             }

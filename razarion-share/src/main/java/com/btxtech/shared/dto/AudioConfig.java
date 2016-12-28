@@ -11,6 +11,11 @@ public class AudioConfig {
     private Integer onQuestPassed;
     private Integer onLevelUp;
     private Integer onBoxPicked;
+    private Integer onOwnSingleSelection;
+    private Integer onOwnMultiSelection;
+    private Integer onSelectionCleared;
+    private Integer onTargetSelection;
+    private Integer onCommandSent;
 
     public Integer getDialogOpened() {
         return dialogOpened;
@@ -63,6 +68,51 @@ public class AudioConfig {
 
     public AudioConfig setOnBoxPicked(Integer onBoxPicked) {
         this.onBoxPicked = onBoxPicked;
+        return this;
+    }
+
+    public Integer getOnOwnSingleSelection() {
+        return onOwnSingleSelection;
+    }
+
+    public AudioConfig setOnOwnSingleSelection(Integer onOwnSingleSelection) {
+        this.onOwnSingleSelection = onOwnSingleSelection;
+        return this;
+    }
+
+    public Integer getOnOwnMultiSelection() {
+        return onOwnMultiSelection;
+    }
+
+    public AudioConfig setOnOwnMultiSelection(Integer onOwnMultiSelection) {
+        this.onOwnMultiSelection = onOwnMultiSelection;
+        return this;
+    }
+
+    public Integer getOnSelectionCleared() {
+        return onSelectionCleared;
+    }
+
+    public AudioConfig setOnSelectionCleared(Integer onSelectionCleared) {
+        this.onSelectionCleared = onSelectionCleared;
+        return this;
+    }
+
+    public Integer getOnTargetSelection() {
+        return onTargetSelection;
+    }
+
+    public AudioConfig setOnTargetSelection(Integer onTargetSelection) {
+        this.onTargetSelection = onTargetSelection;
+        return this;
+    }
+
+    public Integer getOnCommandSent() {
+        return onCommandSent;
+    }
+
+    public AudioConfig setOnCommandSent(Integer onCommandSent) {
+        this.onCommandSent = onCommandSent;
         return this;
     }
 }

@@ -4,11 +4,14 @@ import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.storyboard.StoryboardService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 /**
@@ -16,7 +19,6 @@ import javax.inject.Inject;
  * 24.12.2016.
  */
 public abstract class AudioService implements TerrainScrollListener {
-    private static final double TERRAIN_LAND_LOOP_THRESHOLD = 0.3;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
@@ -67,6 +69,39 @@ public abstract class AudioService implements TerrainScrollListener {
 
     public void onClip(int audioId) {
         playAudio(audioId);
+    }
+
+    public void onCommandSent() {
+        if (audioConfig.getOnCommandSent() != null) {
+            playAudio(audioConfig.getOnCommandSent());
+        }
+    }
+
+    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        switch (selectionEvent.getType()) {
+
+            case CLEAR:
+                if (!selectionEvent.isDueToNewSelection() && audioConfig.getOnSelectionCleared() != null) {
+                    playAudio(audioConfig.getOnSelectionCleared());
+                }
+                break;
+            case OWN:
+                if (selectionEvent.getSelectedGroup().getCount() > 1) {
+                    if (audioConfig.getOnOwnMultiSelection() != null) {
+                        playAudio(audioConfig.getOnOwnMultiSelection());
+                    }
+                } else {
+                    if (audioConfig.getOnOwnSingleSelection() != null) {
+                        playAudio(audioConfig.getOnOwnSingleSelection());
+                    }
+                }
+                break;
+            case TARGET:
+                if (audioConfig.getOnTargetSelection() != null) {
+                    playAudio(audioConfig.getOnTargetSelection());
+                }
+                break;
+        }
     }
 
     public AudioConfig getAudioConfig() {

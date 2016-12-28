@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.GroupSelectionFrame;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
@@ -76,6 +77,8 @@ public class TerrainMouseHandler {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private AudioService audioService;
 
     public void onMouseMove(int x, int y, int width, int height, boolean primaryButtonDown) {
         try {
@@ -147,6 +150,7 @@ public class TerrainMouseHandler {
                         SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
                         if (storyboardService.isMyOwnProperty(syncBaseItem)) {
                             if (!syncBaseItem.isBuildup() && selectionHandler.atLeastOneItemTypeAllowed2FinalizeBuild(syncBaseItem)) {
+                                audioService.onCommandSent();
                                 commandService.finalizeBuild(selectionHandler.getAllowed2FinalizeBuild(syncBaseItem), syncBaseItem);
                             }
                         } else {
@@ -222,6 +226,7 @@ public class TerrainMouseHandler {
             return;
         }
 
+        audioService.onCommandSent();
         commandService.move(selection.getItems(), position);
     }
 }
