@@ -25,6 +25,7 @@ public class TerrainObjectEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity colladaEntity;
+    private double radius;
 
     public Long getId() {
         return id;
@@ -32,7 +33,7 @@ public class TerrainObjectEntity {
 
     public TerrainObjectConfig toTerrainObjectConfig() {
         TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig();
-        terrainObjectConfig.setId(id.intValue()).setInternalName(internalName);
+        terrainObjectConfig.setId(id.intValue()).setInternalName(internalName).setRadius(radius);
         if (colladaEntity != null) {
             terrainObjectConfig.setShape3DId(colladaEntity.getId().intValue());
         }

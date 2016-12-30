@@ -34,8 +34,8 @@ public class TerrainUiService {
     private TerrainTypeService terrainTypeService;
     @Inject
     private TerrainService terrainService;
-    private static final double HIGHEST_POINT_IN_VIEW = 200;
-    private static final double LOWEST_POINT_IN_VIEW = -20;
+    private static final double HIGHEST_POINT_IN_VIEW = 20;
+    private static final double LOWEST_POINT_IN_VIEW = -2;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
@@ -56,10 +56,6 @@ public class TerrainUiService {
         }
     }
 
-    public void setTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions) {
-        // TODO used in editor this.terrainSlopePositions = terrainSlopePositions;
-    }
-
     public double getHighestPointInView() {
         return highestPointInView;
     }
@@ -67,7 +63,6 @@ public class TerrainUiService {
     public double getLowestPointInView() {
         return lowestPointInView;
     }
-
 
     public VertexList getGroundVertexList() {
         VertexList vertexList;
@@ -98,17 +93,8 @@ public class TerrainUiService {
         return getWaterAnimation(System.currentTimeMillis(), 2000, 500);
     }
 
-    public double getWaterAnimation(long millis, int durationMs, int offsetMs) {
+    private double getWaterAnimation(long millis, int durationMs, int offsetMs) {
         return Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT);
-    }
-
-    @Deprecated
-    public Collection<Integer> getSlopeIds() {
-        return terrainService.getSlopeIds();
-    }
-
-    public Slope getSlope(int id) {
-        return terrainService.getSlope(id);
     }
 
     public List<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {

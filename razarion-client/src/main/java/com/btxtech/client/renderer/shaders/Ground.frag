@@ -64,7 +64,7 @@ vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale, float onePi
 float calculateShadowFactor() {
     float zMap = texture2D(uShadowTexture, vShadowCoord.st).r;
 
-    if(zMap > vShadowCoord.z - 0.01) {
+    if(zMap > vShadowCoord.z - 0.001) {
         return 1.0;
     } else {
         return uShadowAlpha;

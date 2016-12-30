@@ -125,12 +125,6 @@ public interface Shaders extends ClientBundle {
     @Source("TerrainObjectEditor.frag")
     TextResource terrainObjectEditorFragmentShader();
 
-    @Source("TextureTerrainObject.vert")
-    TextResource textureTerrainObjectVertexShader();
-
-    @Source("TextureTerrainObject.frag")
-    TextResource textureTerrainObjectFragmentShader();
-
     @Source("RgbaMvp.vert")
     TextResource rgbaMvpVertexShader();
 

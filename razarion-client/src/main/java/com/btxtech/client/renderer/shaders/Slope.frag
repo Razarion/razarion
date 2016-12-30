@@ -101,7 +101,7 @@ vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
 float calculateShadowFactor() {
     float zMap = texture2D(uShadowTexture, vShadowCoord.st).r;
 
-    if(zMap > vShadowCoord.z - 0.01) {
+    if(zMap > vShadowCoord.z - 0.001) {
         return 1.0;
     } else {
         return uShadowAlpha;

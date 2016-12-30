@@ -83,7 +83,7 @@ public class WebGlEmulatorController implements Initializable {
     @FXML
     private Slider shadowXRotationSlider;
     @FXML
-    private Slider shadowZRotationSlider;
+    private Slider shadowYRotationSlider;
     @FXML
     private Canvas canvas;
     @FXML
@@ -134,7 +134,6 @@ public class WebGlEmulatorController implements Initializable {
     private SelectionHandler selectionHandler;
     @Inject
     private GameTipService gameTipService;
-    private DecimalPosition lastCanvasPosition;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -171,10 +170,12 @@ public class WebGlEmulatorController implements Initializable {
         shadowXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             visualUiService.getVisualConfig().setShadowRotationX(Math.toRadians(shadowXRotationSlider.getValue()));
             shadowUiService.setupMatrices();
+            sceneController.update();
         });
-        shadowZRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
-            visualUiService.getVisualConfig().setShadowRotationZ(Math.toRadians(shadowZRotationSlider.getValue()));
+        shadowYRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
+            visualUiService.getVisualConfig().setShadowRotationY(Math.toRadians(shadowYRotationSlider.getValue()));
             shadowUiService.setupMatrices();
+            sceneController.update();
         });
 
         showRenderTimeCheckBox.setSelected(razarionEmulator.isShowRenderTime());
@@ -191,7 +192,7 @@ public class WebGlEmulatorController implements Initializable {
         zTranslationField.setText(Double.toString(camera.getTranslateZ()));
 
         shadowXRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationX()));
-        shadowZRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationZ()));
+        shadowYRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationY()));
     }
 
     private DecimalPosition toClipCoordinates(DecimalPosition canvasPosition) {
@@ -274,7 +275,7 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onSceneButtonClicked() {
-        if (sceneController.getCanvas() != null) {
+        if (sceneController.isActive()) {
             sceneController.update();
             return;
         }
@@ -289,7 +290,7 @@ public class WebGlEmulatorController implements Initializable {
             stage.setY(168);
             stage.setOnCloseRequest(we -> sceneController = null);
             stage.show();
-            stage.setOnCloseRequest(we -> sceneController.setCanvas(null));
+            stage.setOnCloseRequest(we -> sceneController.close());
 
             sceneController.update();
         } catch (IOException e) {
@@ -352,7 +353,6 @@ public class WebGlEmulatorController implements Initializable {
     public void onMouseReleased(MouseEvent event) {
         terrainMouseHandler.onMouseUp((int) event.getX(), (int) event.getY(), (int) canvas.getWidth(), (int) canvas.getHeight(),
                 event.getButton().equals(MouseButton.PRIMARY));
-        lastCanvasPosition = null;
     }
 
     public Canvas getCanvas() {

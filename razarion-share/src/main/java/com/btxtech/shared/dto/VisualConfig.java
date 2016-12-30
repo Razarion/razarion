@@ -11,7 +11,7 @@ import java.util.List;
 public class VisualConfig {
     // Divide in 3 parts: shadow, water and Shape3D
     private double shadowRotationX;
-    private double shadowRotationZ;
+    private double shadowRotationY;
     private double shadowAlpha;
     private double shape3DLightRotateX;
     private double shape3DLightRotateZ;
@@ -35,12 +35,12 @@ public class VisualConfig {
         return this;
     }
 
-    public double getShadowRotationZ() {
-        return shadowRotationZ;
+    public double getShadowRotationY() {
+        return shadowRotationY;
     }
 
-    public VisualConfig setShadowRotationZ(double shadowRotationZ) {
-        this.shadowRotationZ = shadowRotationZ;
+    public VisualConfig setShadowRotationY(double shadowRotationY) {
+        this.shadowRotationY = shadowRotationY;
         return this;
     }
 

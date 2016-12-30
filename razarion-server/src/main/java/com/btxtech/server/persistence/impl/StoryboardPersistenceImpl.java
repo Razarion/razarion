@@ -128,8 +128,8 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         storyboardConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
+        // storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
@@ -315,7 +315,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
         VisualConfig visualConfig = new VisualConfig();
-        visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(25)).setShadowRotationZ(Math.toRadians(250));
+        visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
         visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
         visualConfig.setWaterGroundLevel(-2).setWaterBmDepth(10).setWaterTransparency(0.65).setWaterBmId(272480).setWaterBmDepth(20).setWaterBmScale(0.01);
         LightConfig lightConfig = new LightConfig();

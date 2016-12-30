@@ -16,7 +16,7 @@ public class TerrainUiServiceTest {
     public void testGetWaterAnimation() throws Exception {
         TerrainUiService terrainUiService = new TerrainUiService();
         for (Long time : times) {
-            System.out.println(terrainUiService.getWaterAnimation(time, 1000, 0));
+           // System.out.println(terrainUiService.getWaterAnimation(time, 1000, 0));
         }
 
 

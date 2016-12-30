@@ -25,7 +25,7 @@ const float GROUND_DEMOLITION_START = 0.2;
 float calculateShadowFactor() {
     float zMap = texture2D(uShadowTexture, vShadowCoord.st).r;
 
-    if(zMap > vShadowCoord.z - 0.01) {
+    if(zMap > vShadowCoord.z - 0.001) {
         return 1.0;
     } else {
         return uShadowAlpha;

@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.shared.datatypes.Vertex;
 
@@ -13,15 +14,15 @@ import java.util.List;
 @Deprecated
 public class SlopeWireUnitRenderer extends AbstractViewPerspectiveWireUnitRenderer {
     @Inject
-    private TerrainUiService terrainUiService;
+    private TerrainService terrainService;
 
     @Override
     protected List<Vertex> getVertexList() {
-        return terrainUiService.getSlope(getId()).getMesh().getVertices();
+        return terrainService.getSlope(getId()).getMesh().getVertices();
     }
 
     @Override
     protected List<Vertex> getBarycentricList() {
-        return terrainUiService.getSlope(getId()).getMesh().getBarycentric();
+        return terrainService.getSlope(getId()).getMesh().getBarycentric();
     }
 }

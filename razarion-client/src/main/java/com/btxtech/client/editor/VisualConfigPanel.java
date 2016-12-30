@@ -45,13 +45,13 @@ public class VisualConfigPanel extends LeftSideBarContent {
     @DataField
     private DoubleBox shadowRotationXBox;
     @Inject
-    @Bound(property = "shadowRotationZ", converter = GradToRadConverter.class)
+    @Bound(property = "shadowRotationY", converter = GradToRadConverter.class)
     @DataField
-    private DoubleBox shadowRotationZSlider;
+    private DoubleBox shadowRotationYSlider;
     @Inject
-    @Bound(property = "shadowRotationZ", converter = GradToRadConverter.class)
+    @Bound(property = "shadowRotationY", converter = GradToRadConverter.class)
     @DataField
-    private DoubleBox shadowRotationZBox;
+    private DoubleBox shadowRotationYBox;
     @Inject
     @Bound
     @DataField

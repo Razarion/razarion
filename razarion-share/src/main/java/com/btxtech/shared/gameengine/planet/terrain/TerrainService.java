@@ -124,13 +124,8 @@ public class TerrainService {
         }
     }
 
-    @Deprecated
     public Slope getSlope(int id) {
         return slopeMap.get(id);
-    }
-
-    public Collection<Integer> getSlopeIds() {
-        return slopeMap.keySet();
     }
 
     public Collection<Slope> getSlopes() {
