@@ -1,4 +1,4 @@
-package com.btxtech.client.system;
+package com.btxtech.common.system;
 
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;

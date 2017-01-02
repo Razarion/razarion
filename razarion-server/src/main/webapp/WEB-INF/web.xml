@@ -5,7 +5,7 @@
 
     <!--<servlet>-->
         <!--<servlet-name>remoteLogging</servlet-name>-->
-        <!--<servlet-class>com.btxtech.server.GwtSuperDevModeLoggingServlet</servlet-class>-->
+        <!--<servlet-class>com.btxtech.server.ClientGwtSuperDevModeLoggingServletervlet</servlet-class>-->
     <!--</servlet>-->
     <!--<servlet-mapping>-->
         <!--<servlet-name>remoteLogging</servlet-name>-->

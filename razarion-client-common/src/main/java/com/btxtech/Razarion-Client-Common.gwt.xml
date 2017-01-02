@@ -1,0 +1,3 @@
+<module rename-to="razarion_client_common">
+    <source path="common" />
+</module>

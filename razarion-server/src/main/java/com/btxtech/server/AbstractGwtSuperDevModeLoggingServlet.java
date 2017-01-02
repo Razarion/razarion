@@ -3,19 +3,19 @@ package com.btxtech.server;
 import com.google.gwt.logging.server.RemoteLoggingServiceImpl;
 import com.google.gwt.user.client.rpc.SerializationException;
 
-import javax.servlet.annotation.WebServlet;
 import java.io.File;
 
 /**
  * Created by Beat
- * 18.04.2015.
+ * 01.01.2017.
  */
-@WebServlet(urlPatterns = "/razarion_client/remote_logging")
-public class GwtSuperDevModeLoggingServlet extends RemoteLoggingServiceImpl {
+public abstract class AbstractGwtSuperDevModeLoggingServlet extends RemoteLoggingServiceImpl {
     private final static String TEMP_DIR = "C:\\Users\\Beat\\AppData\\Local\\Temp";
-    private final static String MODULE_NAME = "com.btxtech.Razarion-Client";
-    private final static String SIMPLE_MODULE_NAME = "razarion_client";
     private String path = null;
+
+    protected abstract String getModuleName();
+
+    protected abstract String getSimpleModuleName();
 
     @Override
     public String processCall(String payload) throws SerializationException {
@@ -40,14 +40,14 @@ public class GwtSuperDevModeLoggingServlet extends RemoteLoggingServiceImpl {
 
             File lastCompile = null;
             if (last != null) {
-                File[] moduleFiles = new File(last.getPath(), MODULE_NAME).listFiles();
+                File[] moduleFiles = new File(last.getPath(), getModuleName()).listFiles();
                 if (moduleFiles == null) {
-                    System.out.println("Invalid module file: " + new File(last.getPath(), MODULE_NAME));
+                    System.out.println("Invalid module file: " + new File(last.getPath(), getModuleName()));
                     return;
                 }
                 for (File f : moduleFiles) {
                     if (f.getName().startsWith("compile-") && (lastCompile == null || f.lastModified() > lastCompile.lastModified())) {
-                        File file = new File(f.getPath() + "\\extras\\" + SIMPLE_MODULE_NAME + "\\symbolMaps\\");
+                        File file = new File(f.getPath() + "\\extras\\" + getSimpleModuleName() + "\\symbolMaps\\");
                         if (file.exists()) {
                             lastCompile = f;
                         }
@@ -56,7 +56,7 @@ public class GwtSuperDevModeLoggingServlet extends RemoteLoggingServiceImpl {
             }
 
             if (lastCompile != null) {
-                String dirpath = lastCompile.getPath() + "\\extras\\" + SIMPLE_MODULE_NAME + "\\symbolMaps\\";
+                String dirpath = lastCompile.getPath() + "\\extras\\" + getSimpleModuleName() + "\\symbolMaps\\";
                 if (!dirpath.equals(path)) {
                     path = dirpath;
                     setSymbolMapsDirectory(path);

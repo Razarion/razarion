@@ -22,6 +22,12 @@
             <version>3.4</version>
             <scope>test</scope>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.google.jsinterop</groupId>-->
+            <!--<artifactId>jsinterop-annotations</artifactId>-->
+            <!--<version>1.0.1</version>-->
+        <!--</dependency>-->
+
     </dependencies>
 
 </project>

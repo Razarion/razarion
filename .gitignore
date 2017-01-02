@@ -11,6 +11,7 @@ razarion-server/razarion-server.iml
 razarion-server/target/
 razarion-server/src/main/webapp/WEB-INF/classes/
 razarion-server/src/main/webapp/razarion_client
+razarion-server/src/main/webapp/razarion_client_worker
 razarion-server/src/main/webapp/WEB-INF/lib
 razarion-server/src/main/webapp/WEB-INF/deploy
 razarion-server/src/main/gwt-unitCache
@@ -24,5 +25,7 @@ razarion-server-emulation/razarion-server-emulation.iml
 razarion-server-emulation/target/
 razarion-client/razarion-client.iml
 razarion-client/target/
+razarion-client-worker/razarion-client-worker.iml
+razarion-client-common/razarion-client-common.iml
 
 

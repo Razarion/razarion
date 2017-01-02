@@ -1,4 +1,4 @@
-package com.btxtech.client.system;
+package com.btxtech.common.system;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import org.jboss.errai.ioc.client.api.UncaughtExceptionHandler;

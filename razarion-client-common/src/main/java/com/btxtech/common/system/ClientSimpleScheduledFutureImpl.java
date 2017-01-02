@@ -1,9 +1,9 @@
-package com.btxtech.client.system;
+package com.btxtech.common.system;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
+import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.google.gwt.user.client.Timer;
 
 import javax.enterprise.context.Dependent;

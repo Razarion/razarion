@@ -11,59 +11,23 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>razarion-client</artifactId>
-    <name>Razarion Client</name>
-
-    <properties>
-        <!-- errai 4.0.0.Beta6 is not working -->
-        <javaee.version>1.0.2.Final</javaee.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jboss.errai.bom</groupId>
-                <artifactId>errai-bom</artifactId>
-                <version>${errai.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- TODO remove if all moved to GWT version-->
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-dev</artifactId>
-                <version>${gwt.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt-user</artifactId>
-                <version>${gwt.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <!-- TODO remove ENDS if all moved to GWT version-->
-        </dependencies>
-    </dependencyManagement>
+    <artifactId>razarion-client-worker</artifactId>
+    <name>Razarion Client Worker</name>
 
     <dependencies>
         <!-- Razarion -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-ui-service</artifactId>
+            <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <!-- use for GWT compilation only -->
             <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-ui-service</artifactId>
+            <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
             <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-share</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <!-- use for GWT compilation only -->
@@ -77,19 +41,17 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-client-common</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <!-- use for GWT compilation only -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-share</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-            <classifier>sources</classifier>
         </dependency>
         <!-- GWT -->
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
             <version>${gwt.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -103,99 +65,26 @@
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-ioc</artifactId>
+            <version>${errai.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.jboss.errai</groupId>-->
-            <!--<artifactId>errai-tools</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-cdi-client</artifactId>
+            <version>${errai.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.jboss.errai</groupId>-->
-            <!--<artifactId>errai-jpa-client</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.jboss.errai</groupId>-->
-            <!--<artifactId>errai-jpa-datasync</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-jaxrs-client</artifactId>
+            <version>${errai.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.jboss.errai</groupId>-->
-            <!--<artifactId>errai-jaxrs-provider</artifactId>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-javax-enterprise</artifactId>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.jboss.errai</groupId>-->
-            <!--<artifactId>errai-cdi-server</artifactId>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-ui</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-navigation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-data-binding</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.errai</groupId>
-            <artifactId>errai-marshalling</artifactId>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.jboss.errai</groupId>-->
-            <!--<artifactId>errai-validation</artifactId>-->
-        <!--</dependency>-->
 
-        <!-- Test -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>JBOSS_NEXUS</id>
-            <url>http://repository.jboss.org/nexus/content/groups/public</url>
-        </repository>
-    </repositories>
 
     <build>
         <finalName>${project.artifactId}</finalName>
         <outputDirectory>src/main/webapp/WEB-INF/classes</outputDirectory>
 
         <plugins>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}</directory>
-                            <includes>
-                                <include>src/main/webapp/app/</include>
-                                <include>src/main/webapp/WEB-INF/deploy/</include>
-                                <include>src/main/webapp/WEB-INF/lib/</include>
-                                <include>**/gwt-unitCache/**</include>
-                                <include>.errai/</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
@@ -204,7 +93,7 @@
                     <warSourceDirectory>${project.parent.basedir}/razarion-server/src/main/webapp/</warSourceDirectory>
                     <logLevel>WARN</logLevel>
                     <noServer>true</noServer>
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M </extraJvmArgs>
+                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M</extraJvmArgs>
                     <!--<extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</extraJvmArgs>-->
                     <runTarget>webgl.html</runTarget>
                     <hostedWebapp>src/main/webapp</hostedWebapp>
@@ -243,4 +132,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

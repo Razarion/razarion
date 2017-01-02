@@ -12,6 +12,7 @@
     <inherits name="elemental.Elemental"/>
     <inherits name='com.btxtech.Razarion-Share'/>
     <inherits name='com.btxtech.Razarion-Ui-Service'/>
+    <inherits name='com.btxtech.Razarion-Client-Common'/>
 
     <!--<replace-with class="org.jboss.errai.demo.client.local.Config">-->
         <!--<when-type-is class="org.jboss.errai.bus.client.framework.Configuration" />-->
