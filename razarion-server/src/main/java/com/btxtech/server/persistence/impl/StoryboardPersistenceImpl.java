@@ -348,7 +348,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
     private List<LevelConfig> setupLevelConfigs() {
         List<LevelConfig> levelConfigs = new ArrayList<>();
         Map<Integer, Integer> level1Limitation = new HashMap<>();
-        level1Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        level1Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 345);
         levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(level1Limitation));
         Map<Integer, Integer> level2Limitation = new HashMap<>();
         level2Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);

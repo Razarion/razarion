@@ -1,9 +1,7 @@
 package com.btxtech.uiservice.storyboard;
 
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.StoryboardConfig;
-import com.btxtech.shared.gameengine.GameEngine;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -20,8 +18,6 @@ import com.btxtech.uiservice.cockpit.CockpitService;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by Beat
@@ -32,7 +28,7 @@ import java.util.Collection;
 public class StoryboardService implements QuestListener {
     // private Logger logger = Logger.getLogger(StoryboardService.class.getName());
     @Inject
-    private GameEngine gameEngine;
+    private GameEngineControl gameEngineControl;
     @Inject
     private VisualUiService visualUiService;
     @Inject
@@ -54,7 +50,7 @@ public class StoryboardService implements QuestListener {
 
     public void init(StoryboardConfig storyboardConfig) {
         this.storyboardConfig = storyboardConfig;
-        gameEngine.initialise(storyboardConfig.getGameEngineConfig());
+        gameEngineControl.initialise(storyboardConfig.getGameEngineConfig());
         visualUiService.initialise(storyboardConfig.getVisualConfig());
         audioService.initialise(storyboardConfig.getAudioConfig());
         this.userContext = storyboardConfig.getUserContext();
@@ -63,7 +59,7 @@ public class StoryboardService implements QuestListener {
     }
 
     public void start() {
-        gameEngine.start();
+        gameEngineControl.start();
         nextSceneNumber = 0;
         runScene();
     }

@@ -210,7 +210,7 @@
                     <hostedWebapp>src/main/webapp</hostedWebapp>
                     <strict>true</strict>
                     <inplace>true</inplace>
-                    <style>DETAILED</style>
+                    <!--<style>DETAILED</style>-->
                     <!-- Only work with modified gwt-maven-plugin -->
                     <!-- mvn gwt:run-codeserver -->
                     <!-- Adds addition -src to the CodeServer -->
