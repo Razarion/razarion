@@ -8,7 +8,7 @@ import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.gameengine.GameEngine;
+import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
@@ -61,7 +61,7 @@ public class ScenarioService implements QuestListener {
     static final int SLOPE_ID = 1;
     static final int TERRAIN_OBJECT_ID = 1;
     @Inject
-    private GameEngine gameEngine;
+    private GameEngineWorker gameEngineWorker;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -226,13 +226,13 @@ public class ScenarioService implements QuestListener {
         }
         currentScenario = newScenario;
         botService.killAllBots();
-        gameEngine.stop();
+        gameEngineWorker.stop();
 
         GameEngineConfig gameEngineConfig = setupGameEngineConfig();
         currentScenario.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
-        gameEngine.initialise(gameEngineConfig);
+        gameEngineWorker.initialise(gameEngineConfig);
         currentScenario.setupBots(botService);
-        gameEngine.start();
+        gameEngineWorker.start();
         UserContext userContext = new UserContext().setName("User 1").setLevelId(LEVEL_1_ID);
         PlayerBase playerBase = baseItemService.createHumanBase(userContext);
         currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService);

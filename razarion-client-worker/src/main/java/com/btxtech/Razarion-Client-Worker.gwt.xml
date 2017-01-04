@@ -10,7 +10,7 @@
     <inherits name="elemental.Elemental"/>
     <inherits name='com.btxtech.Razarion-Share'/>
     <inherits name='com.btxtech.Razarion-Client-Common'/>
-    <!--<entry-point class="com.btxtech.client.worker.MainWorker" />-->
+    <!--<entry-point class="com.btxtech.client.worker.ClientGameEngineWorker" />-->
 
     <set-property name="gwt.logging.enabled" value="TRUE"/>
     <set-property name="gwt.logging.logLevel" value="FINEST"/>

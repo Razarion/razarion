@@ -17,7 +17,7 @@ public class GameEngineMonitor {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameengine/GameEngineMonitor.fxml"));
         loader.setControllerFactory(param -> gameEngineMonitorController);
         Parent root = loader.load();
-        primaryStage.setTitle("GameEngine Monitor");
+        primaryStage.setTitle("GameEngineWorker Monitor");
         primaryStage.setScene(new Scene(root));
         primaryStage.setX(-1279);
         primaryStage.setY(182);
