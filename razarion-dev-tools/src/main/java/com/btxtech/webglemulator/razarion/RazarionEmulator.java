@@ -35,9 +35,10 @@ public class RazarionEmulator {
     public void run() {
         try {
             storyboardService.init(storyboardProviderEmulator.readFromFile());
+            storyboardService.start();
             renderService.setup();
             controller.onEngineInitialized();
-            start();
+            startRenderLoop();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -51,7 +52,7 @@ public class RazarionEmulator {
         this.showRenderTime = showRenderTime;
     }
 
-    private void start() {
+    private void startRenderLoop() {
         scheduler.scheduleWithFixedDelay(() -> Platform.runLater(() -> {
             try {
                 long time = System.currentTimeMillis();
@@ -64,6 +65,5 @@ public class RazarionEmulator {
                 throwable.printStackTrace();
             }
         }), RENDER_DELAY, RENDER_DELAY, TimeUnit.MILLISECONDS);
-        storyboardService.start();
     }
 }

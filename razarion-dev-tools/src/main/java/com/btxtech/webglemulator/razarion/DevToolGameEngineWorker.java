@@ -4,7 +4,7 @@ import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -12,15 +12,18 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class DevToolGameEngineWorker extends GameEngineWorker {
-    @Inject
-    private DevToolGameEngineControl gameEngineControl;
+    private Consumer<GameEngineControlPackage> packageConsumer;
 
     @Override
     protected void dispatchPackage(GameEngineControlPackage.Command command) {
-        gameEngineControl.receivePackage(new GameEngineControlPackage(command, null));
+        packageConsumer.accept(new GameEngineControlPackage(command, null));
     }
 
     void receivePackage(GameEngineControlPackage gameEngineControlPackage) {
         dispatch(gameEngineControlPackage);
+    }
+
+    public void setPackageConsumer(Consumer<GameEngineControlPackage> packageConsumer) {
+        this.packageConsumer = packageConsumer;
     }
 }

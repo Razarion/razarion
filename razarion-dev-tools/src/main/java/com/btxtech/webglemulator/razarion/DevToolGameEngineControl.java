@@ -13,11 +13,12 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class DevToolGameEngineControl extends GameEngineControl {
     @Inject
-    private DevToolGameEngineWorker gameEngineWorker;
+    private WorkerEmulator workerEmulator;
+
 
     @Override
     protected void sendToWorker(GameEngineControlPackage.Command command, Object data) {
-        gameEngineWorker.receivePackage(new GameEngineControlPackage(command, data));
+        workerEmulator.sendPackage(new GameEngineControlPackage(command, data));
     }
 
     void receivePackage(GameEngineControlPackage gameEngineControlPackage) {
