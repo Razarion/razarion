@@ -77,7 +77,6 @@
             <artifactId>errai-jaxrs-client</artifactId>
             <version>${errai.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

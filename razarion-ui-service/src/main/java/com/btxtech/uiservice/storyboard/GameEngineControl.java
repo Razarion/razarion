@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
  * 02.01.2017.
  */
 public interface GameEngineControl {
-    public void initialise(GameEngineConfig gameEngineConfig);
+    void initialise(GameEngineConfig gameEngineConfig);
 
-    public void start();
+    void start();
 }

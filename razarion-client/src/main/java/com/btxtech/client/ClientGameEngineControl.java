@@ -1,15 +1,15 @@
 package com.btxtech.client;
 
 import com.btxtech.common.ClientUrls;
+import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.storyboard.GameEngineControl;
+import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import elemental.client.Browser;
 import elemental.events.ErrorEvent;
 import elemental.events.MessageEvent;
 import elemental.html.Worker;
-import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
-import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -44,27 +44,39 @@ public class ClientGameEngineControl implements GameEngineControl {
     }
 
     private void handleMessages(MessageEvent messageEvent) {
-        logger.severe("ClientGameEngineControl handleMessages: " + messageEvent.getData());
-    }
-
-    @Override
-    public void initialise(GameEngineConfig gameEngineConfig) {
         try {
-            RestClient.setJacksonMarshallingActive(false); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
-            String json;
-            try {
-                json = MarshallingWrapper.toJSON(gameEngineConfig);
-            } finally {
-                RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
+            logger.severe("ClientGameEngineControl handleMessages: " + messageEvent.getData());
+            GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData());
+            switch (controlPackage.getCommand()) {
+                case INITIALIZED:
+                    logger.severe("!!!Initialized!!!!"); // TODO
+                    break;
+                case STARTED:
+                    logger.severe("!!!Started!!!!");
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
             }
-            worker.postMessage(json);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
     }
 
     @Override
-    public void start() {
+    public void initialise(GameEngineConfig gameEngineConfig) {
+        dispatchPackage(GameEngineControlPackage.Command.INITIALIZE, gameEngineConfig);
+    }
 
+    @Override
+    public void start() {
+        dispatchPackage(GameEngineControlPackage.Command.START, null);
+    }
+
+    private void dispatchPackage(GameEngineControlPackage.Command command, Object data) {
+        try {
+            worker.postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, data)));
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 }
