@@ -24,19 +24,19 @@ import javax.inject.Singleton;
  * 05.07.2016.
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
-// Better name: something with game-control, client control (See: GameLogicService)
+// Better name: something with game-control, client control (See: GameLogicService) -> GameControl
 public class StoryboardService implements QuestListener {
     // private Logger logger = Logger.getLogger(StoryboardService.class.getName());
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
     private VisualUiService visualUiService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
     @Inject
     private Instance<Scene> sceneInstance;
-    @Inject
-    private SyncItemContainerService syncItemContainerService;
     @Inject
     private BaseItemService baseItemService;
     @Inject

@@ -9,7 +9,9 @@ public class GameEngineControlPackage {
         INITIALIZE,
         INITIALIZED,
         START,
-        STARTED
+        STARTED,
+        START_BOTS,
+        EXECUTE_BOT_COMMANDS
     }
 
     private Command command;

@@ -2,7 +2,9 @@ package com.btxtech.client;
 
 import com.btxtech.common.ClientUrls;
 import com.btxtech.common.WorkerMarshaller;
+import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.storyboard.GameEngineControl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
@@ -14,6 +16,7 @@ import elemental.html.Worker;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -70,6 +73,16 @@ public class ClientGameEngineControl implements GameEngineControl {
     @Override
     public void start() {
         dispatchPackage(GameEngineControlPackage.Command.START, null);
+    }
+
+    @Override
+    public void startBots(List<BotConfig> botConfigs) {
+        dispatchPackage(GameEngineControlPackage.Command.START_BOTS, botConfigs);
+    }
+
+    @Override
+    public void executeBotCommands(List<? extends AbstractBotCommandConfig> botCommandConfigs) {
+        dispatchPackage(GameEngineControlPackage.Command.EXECUTE_BOT_COMMANDS, botCommandConfigs);
     }
 
     private void dispatchPackage(GameEngineControlPackage.Command command, Object data) {

@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
-import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -49,8 +48,6 @@ public class Scene implements TerrainScrollListener {
     @Inject
     private QuestVisualizer questVisualizer;
     @Inject
-    private BotService botService;
-    @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
     private GameLogicService gameLogicService;
@@ -77,8 +74,12 @@ public class Scene implements TerrainScrollListener {
     private ItemTypeService itemTypeService;
     @Inject
     private GameTipService gameTipService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private GameEngineControl gameEngineControl;
     private UserContext userContext;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
@@ -97,31 +98,31 @@ public class Scene implements TerrainScrollListener {
             storyCover.show(sceneConfig.getIntroText());
         }
         if (sceneConfig.getBotConfigs() != null) {
-            botService.startBots(sceneConfig.getBotConfigs());
+            gameEngineControl.startBots(sceneConfig.getBotConfigs());
         }
         if (sceneConfig.getResourceItemTypePositions() != null) {
             resourceService.createResources(sceneConfig.getResourceItemTypePositions());
         }
         if (sceneConfig.getBotMoveCommandConfigs() != null) {
-            botService.executeCommands(sceneConfig.getBotMoveCommandConfigs());
+            gameEngineControl.executeBotCommands(sceneConfig.getBotMoveCommandConfigs());
         }
         if (sceneConfig.getBotHarvestCommandConfigs() != null) {
-            botService.executeCommands(sceneConfig.getBotHarvestCommandConfigs());
+            gameEngineControl.executeBotCommands(sceneConfig.getBotHarvestCommandConfigs());
         }
         if (sceneConfig.getBotAttackCommandConfigs() != null) {
-            botService.executeCommands(sceneConfig.getBotAttackCommandConfigs());
+            gameEngineControl.executeBotCommands(sceneConfig.getBotAttackCommandConfigs());
         }
         if (sceneConfig.getBotKillOtherBotCommandConfigs() != null) {
-            botService.executeCommands(sceneConfig.getBotKillOtherBotCommandConfigs());
+            gameEngineControl.executeBotCommands(sceneConfig.getBotKillOtherBotCommandConfigs());
         }
         if (sceneConfig.getBotKillHumanCommandConfigs() != null) {
-            botService.executeCommands(sceneConfig.getBotKillHumanCommandConfigs());
+            gameEngineControl.executeBotCommands(sceneConfig.getBotKillHumanCommandConfigs());
         }
         if (sceneConfig.getBotRemoveOwnItemCommandConfigs() != null) {
-            botService.executeCommands(sceneConfig.getBotRemoveOwnItemCommandConfigs());
+            gameEngineControl.executeBotCommands(sceneConfig.getBotRemoveOwnItemCommandConfigs());
         }
         if (sceneConfig.getKillBotCommandConfigs() != null) {
-            botService.executeCommands(sceneConfig.getKillBotCommandConfigs());
+            gameEngineControl.executeBotCommands(sceneConfig.getKillBotCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             baseItemService.surrenderBase(storyboardService.getUserContext());
