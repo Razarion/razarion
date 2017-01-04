@@ -10,7 +10,7 @@ import java.util.List;
  * 05.07.2016.
  */
 // Better name: something with game-control, client control
-public class StoryboardConfig {
+public class GameUiControlConfig {
     private List<SceneConfig> sceneConfigs;
     private GameEngineConfig gameEngineConfig;
     private VisualConfig visualConfig;
@@ -22,7 +22,7 @@ public class StoryboardConfig {
         return sceneConfigs;
     }
 
-    public StoryboardConfig setSceneConfigs(List<SceneConfig> sceneConfigs) {
+    public GameUiControlConfig setSceneConfigs(List<SceneConfig> sceneConfigs) {
         this.sceneConfigs = sceneConfigs;
         return this;
     }
@@ -31,7 +31,7 @@ public class StoryboardConfig {
         return gameEngineConfig;
     }
 
-    public StoryboardConfig setGameEngineConfig(GameEngineConfig gameEngineConfig) {
+    public GameUiControlConfig setGameEngineConfig(GameEngineConfig gameEngineConfig) {
         this.gameEngineConfig = gameEngineConfig;
         return this;
     }
@@ -40,7 +40,7 @@ public class StoryboardConfig {
         return visualConfig;
     }
 
-    public StoryboardConfig setVisualConfig(VisualConfig visualConfig) {
+    public GameUiControlConfig setVisualConfig(VisualConfig visualConfig) {
         this.visualConfig = visualConfig;
         return this;
     }
@@ -49,7 +49,7 @@ public class StoryboardConfig {
         return audioConfig;
     }
 
-    public StoryboardConfig setAudioConfig(AudioConfig audioConfig) {
+    public GameUiControlConfig setAudioConfig(AudioConfig audioConfig) {
         this.audioConfig = audioConfig;
         return this;
     }
@@ -58,7 +58,7 @@ public class StoryboardConfig {
         return userContext;
     }
 
-    public StoryboardConfig setUserContext(UserContext userContext) {
+    public GameUiControlConfig setUserContext(UserContext userContext) {
         this.userContext = userContext;
         return this;
     }
@@ -67,7 +67,7 @@ public class StoryboardConfig {
         return gameTipVisualConfig;
     }
 
-    public StoryboardConfig setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
+    public GameUiControlConfig setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
         this.gameTipVisualConfig = gameTipVisualConfig;
         return this;
     }

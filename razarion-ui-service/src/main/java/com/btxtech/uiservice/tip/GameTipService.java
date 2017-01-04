@@ -9,7 +9,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
 import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
@@ -43,7 +43,7 @@ public class GameTipService {
     @Inject
     private PlanetService planetService;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -96,19 +96,19 @@ public class GameTipService {
     }
 
     public void onCommandSent(SyncBaseItem syncBaseItem, BaseCommand baseCommand) {
-        if (tipTaskContainer != null && storyboardService.isMyOwnProperty(syncBaseItem)) {
+        if (tipTaskContainer != null && gameUiControl.isMyOwnProperty(syncBaseItem)) {
             tipTaskContainer.onCommandSent(baseCommand);
         }
     }
 
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        if (tipTaskContainer != null && storyboardService.isMyOwnProperty(syncBaseItem)) {
+        if (tipTaskContainer != null && gameUiControl.isMyOwnProperty(syncBaseItem)) {
             tipTaskContainer.onSyncBaseItemIdle(syncBaseItem);
         }
     }
 
     public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
-        if (tipTaskContainer != null && storyboardService.isMyOwnProperty(syncBaseItem)) {
+        if (tipTaskContainer != null && gameUiControl.isMyOwnProperty(syncBaseItem)) {
             tipTaskContainer.onSpawnSyncItem(syncBaseItem);
         }
     }

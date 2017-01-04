@@ -1,6 +1,7 @@
 package com.btxtech.persistence;
 
-import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,10 +22,10 @@ import java.util.logging.Logger;
  * 07.07.2016.
  */
 @Singleton
-public class StoryboardProviderEmulator {
+public class GameUiControlProviderEmulator {
     private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
-    private static final String FILE_NAME = "StoryboardConfig.json";
-    private static final String URL = "http://localhost:8080/razarion-server/rest/storyboard/";
+    private static final String FILE_NAME = "GameUiControlConfig.json";
+    private static final String URL = "http://localhost:8080/razarion-server/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Logger logger;
@@ -32,14 +33,14 @@ public class StoryboardProviderEmulator {
     @Inject
     private ExceptionHandler exceptionHandler;
 
-    public StoryboardConfig readFromServer() {
-        return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(StoryboardConfig.class);
+    public GameUiControlConfig readFromServer() {
+        return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(GameUiControlConfig.class);
     }
 
-    public StoryboardConfig readFromFile() {
+    public GameUiControlConfig readFromFile() {
         try {
             String string = new String(Files.readAllBytes(getFile(FILE_NAME).toPath()));
-            return new ObjectMapper().readValue(string, StoryboardConfig.class);
+            return new ObjectMapper().readValue(string, GameUiControlConfig.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

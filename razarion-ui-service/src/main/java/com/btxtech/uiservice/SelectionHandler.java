@@ -24,7 +24,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -47,7 +47,7 @@ public class SelectionHandler {
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private Event<SelectionEvent> selectionEventEventTrigger;
     @Inject
@@ -137,7 +137,7 @@ public class SelectionHandler {
             for (SyncItem selectedItem : selectedItems) {
                 if (selectedItem instanceof SyncBaseItem) {
                     SyncBaseItem syncBaseItem = (SyncBaseItem) selectedItem;
-                    if (storyboardService.isMyOwnProperty(syncBaseItem)) {
+                    if (gameUiControl.isMyOwnProperty(syncBaseItem)) {
                         own.add(syncBaseItem);
                     } else {
                         other = syncBaseItem;

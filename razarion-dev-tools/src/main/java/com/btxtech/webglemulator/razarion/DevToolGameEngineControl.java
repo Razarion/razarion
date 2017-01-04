@@ -1,7 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
-import com.btxtech.uiservice.storyboard.GameEngineControl;
+import com.btxtech.uiservice.control.GameEngineControl;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

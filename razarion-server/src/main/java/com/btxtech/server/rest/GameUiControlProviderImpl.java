@@ -1,9 +1,9 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.servercommon.StoryboardPersistence;
+import com.btxtech.servercommon.GameUiControlConfigPersistence;
 import com.btxtech.servercommon.collada.ColladaException;
-import com.btxtech.shared.rest.StoryboardProvider;
-import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;
 
@@ -16,19 +16,18 @@ import java.io.IOException;
  * Created by Beat
  * 06.07.2016.
  */
-public class StoryboardProviderImpl implements StoryboardProvider {
+public class GameUiControlProviderImpl implements GameUiControlProvider {
     @Inject
-    // @Emulation
-    private StoryboardPersistence storyboardPersistence;
+    private GameUiControlConfigPersistence gameUiControlConfigPersistence;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
 
     @Override
     @Transactional
-    public StoryboardConfig loadStoryboard() {
+    public GameUiControlConfig loadGameUiControlConfig() {
         try {
-            return storyboardPersistence.load();
+            return gameUiControlConfigPersistence.load();
         } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

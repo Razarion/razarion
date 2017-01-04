@@ -5,7 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
 import com.btxtech.uiservice.i18n.I18nHelper;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Image;
@@ -28,7 +28,7 @@ import javax.inject.Named;
 @Templated("ClientBuildupItemPanel.html#buildItemTd")
 public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -129,17 +129,17 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     }
 
     private void discoverEnableState() {
-        itemCount = storyboardService.getItemCount(buildupItem.getItemType().getId());
-        itemLimit = storyboardService.getLimitation4ItemType(buildupItem.getItemType());
-        if (storyboardService.isLevelLimitation4ItemTypeExceeded(buildupItem.getItemType(), 1)) {
+        itemCount = gameUiControl.getItemCount(buildupItem.getItemType().getId());
+        itemLimit = gameUiControl.getLimitation4ItemType(buildupItem.getItemType());
+        if (gameUiControl.isLevelLimitation4ItemTypeExceeded(buildupItem.getItemType(), 1)) {
             enableState = EnableState.DISABLED_LEVEL_EXCEEDED;
             return;
         }
-        if (storyboardService.isHouseSpaceExceeded(buildupItem.getItemType(), 1)) {
+        if (gameUiControl.isHouseSpaceExceeded(buildupItem.getItemType(), 1)) {
             enableState = EnableState.DISABLED_HOUSE_SPACE_EXCEEDED;
             return;
         }
-        if (buildupItem.getItemType().getPrice() > storyboardService.getResources()) {
+        if (buildupItem.getItemType().getPrice() > gameUiControl.getResources()) {
             enableState = EnableState.DISABLED_MONEY;
             return;
         }

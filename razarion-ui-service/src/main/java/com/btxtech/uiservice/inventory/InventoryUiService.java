@@ -12,7 +12,7 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.tip.GameTipService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -33,7 +33,7 @@ public class InventoryUiService {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -63,9 +63,9 @@ public class InventoryUiService {
         if (inventoryItem.hasBaseItemTypeId()) {
             try {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(inventoryItem.getBaseItemType());
-                if (storyboardService.isLevelLimitation4ItemTypeExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
+                if (gameUiControl.isLevelLimitation4ItemTypeExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
                     modalDialogManager.showUseInventoryItemLimitExceeded(baseItemType);
-                } else if (storyboardService.isHouseSpaceExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
+                } else if (gameUiControl.isHouseSpaceExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
                     modalDialogManager.showUseInventoryHouseSpaceExceeded();
                 } else {
                     BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig();
@@ -75,9 +75,9 @@ public class InventoryUiService {
                     baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
                         try {
                             for (DecimalPosition position : decimalPositions) {
-                                baseItemService.spawnSyncBaseItem(baseItemType, position, baseItemService.getPlayerBase(storyboardService.getUserContext()), false);
+                                baseItemService.spawnSyncBaseItem(baseItemType, position, baseItemService.getPlayerBase(gameUiControl.getUserContext()), false);
                             }
-                            gameLogicService.onInventoryItemPlaced(storyboardService.getUserContext(), inventoryItem);
+                            gameLogicService.onInventoryItemPlaced(gameUiControl.getUserContext(), inventoryItem);
                         } catch (Exception e) {
                             exceptionHandler.handleException(e);
                         }

@@ -1,13 +1,12 @@
-package com.btxtech.uiservice.storyboard;
+package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.StoryboardConfig;
+import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -25,8 +24,8 @@ import javax.inject.Singleton;
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
 // Better name: something with game-control, client control (See: GameLogicService) -> GameControl
-public class StoryboardService implements QuestListener {
-    // private Logger logger = Logger.getLogger(StoryboardService.class.getName());
+public class GameUiControl implements QuestListener {
+    // private Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GameEngineControl gameEngineControl;
@@ -43,17 +42,17 @@ public class StoryboardService implements QuestListener {
     private CockpitService cockpitService;
     @Inject
     private QuestService questService;
-    private StoryboardConfig storyboardConfig;
+    private GameUiControlConfig gameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
     private UserContext userContext;
 
-    public void init(StoryboardConfig storyboardConfig) {
-        this.storyboardConfig = storyboardConfig;
-        gameEngineControl.initialise(storyboardConfig.getGameEngineConfig());
-        visualUiService.initialise(storyboardConfig.getVisualConfig());
-        audioService.initialise(storyboardConfig.getAudioConfig());
-        this.userContext = storyboardConfig.getUserContext();
+    public void init(GameUiControlConfig gameUiControlConfig) {
+        this.gameUiControlConfig = gameUiControlConfig;
+        gameEngineControl.initialise(gameUiControlConfig.getGameEngineConfig());
+        visualUiService.initialise(gameUiControlConfig.getVisualConfig());
+        audioService.initialise(gameUiControlConfig.getAudioConfig());
+        this.userContext = gameUiControlConfig.getUserContext();
         cockpitService.init();
         questService.addQuestListener(this);
     }
@@ -81,12 +80,12 @@ public class StoryboardService implements QuestListener {
             currentScene.cleanup();
         }
         currentScene = sceneInstance.get();
-        currentScene.init(userContext, storyboardConfig.getSceneConfigs().get(nextSceneNumber));
+        currentScene.init(userContext, gameUiControlConfig.getSceneConfigs().get(nextSceneNumber));
         currentScene.run();
     }
 
     void onSceneCompleted() {
-        if (nextSceneNumber + 1 < storyboardConfig.getSceneConfigs().size()) {
+        if (nextSceneNumber + 1 < gameUiControlConfig.getSceneConfigs().size()) {
             nextSceneNumber++;
             runScene();
         } else {
@@ -125,8 +124,8 @@ public class StoryboardService implements QuestListener {
         return baseItemService.getResources(userContext);
     }
 
-    public StoryboardConfig getStoryboardConfig() {
-        return storyboardConfig;
+    public GameUiControlConfig getGameUiControlConfig() {
+        return gameUiControlConfig;
     }
 
     @Override

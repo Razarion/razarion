@@ -1,7 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.persistence.StoryboardProviderEmulator;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.persistence.GameUiControlProviderEmulator;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.webglemulator.WebGlEmulatorController;
 import com.btxtech.webglemulator.WebGlEmulatorSceneController;
 import javafx.application.Platform;
@@ -24,18 +24,18 @@ public class RazarionEmulator {
     @Inject
     private WebGlEmulatorSceneController sceneController;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private DevToolsRenderServiceImpl renderService;
     @Inject
-    private StoryboardProviderEmulator storyboardProviderEmulator;
+    private GameUiControlProviderEmulator gameUiControlProviderEmulator;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private boolean showRenderTime;
 
     public void run() {
         try {
-            storyboardService.init(storyboardProviderEmulator.readFromFile());
-            storyboardService.start();
+            gameUiControl.init(gameUiControlProviderEmulator.readFromFile());
+            gameUiControl.start();
             renderService.setup();
             controller.onEngineInitialized();
             startRenderLoop();

@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator;
 
-import com.btxtech.persistence.StoryboardProviderEmulator;
+import com.btxtech.persistence.GameUiControlProviderEmulator;
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
@@ -22,7 +22,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
@@ -121,13 +121,13 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private TerrainMouseHandler terrainMouseHandler;
     @Inject
-    private StoryboardProviderEmulator storyboardProviderEmulator;
+    private GameUiControlProviderEmulator gameUiControlProviderEmulator;
     @Inject
     private InventoryService inventoryService;
     @Inject
     private InventoryUiService inventoryUiService;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private PerfmonService perfmonService;
     @Inject
@@ -373,7 +373,7 @@ public class WebGlEmulatorController implements Initializable {
 
     public void getJsonButtonClicked() {
         System.out.println("---------- Start loading JSON from server ----------");
-        storyboardProviderEmulator.fromServerToFile();
+        gameUiControlProviderEmulator.fromServerToFile();
         System.out.println("---------- JSON loaded ----------");
     }
 
@@ -388,7 +388,7 @@ public class WebGlEmulatorController implements Initializable {
             alert.setHeaderText("Inventory Items");
             alert.setContentText("Choose your option.");
 
-            for (InventoryItemModel inventoryItemModel : inventoryUiService.gatherInventoryItemModels(storyboardService.getUserContext())) {
+            for (InventoryItemModel inventoryItemModel : inventoryUiService.gatherInventoryItemModels(gameUiControl.getUserContext())) {
                 alert.getButtonTypes().add(new ButtonType(Integer.toString(inventoryItemModel.getInventoryItem().getId())));
             }
 

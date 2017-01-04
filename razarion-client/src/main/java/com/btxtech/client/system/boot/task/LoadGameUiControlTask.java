@@ -2,9 +2,9 @@ package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.editor.terrain.TerrainObjectEditor;
 import com.btxtech.client.editor.terrain.TerrainEditor;
-import com.btxtech.shared.rest.StoryboardProvider;
-import com.btxtech.shared.dto.StoryboardConfig;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.shared.rest.GameUiControlProvider;
+import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.uiservice.control.GameUiControl;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -19,27 +19,27 @@ import java.util.logging.Logger;
  * 07.02.2016.
  */
 @Dependent
-public class LoadStoryboardTask extends AbstractStartupTask {
+public class LoadGameUiControlTask extends AbstractStartupTask {
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private TerrainObjectEditor terrainObjectEditor;
     @Inject
     private TerrainEditor terrainEditor;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private Caller<StoryboardProvider> serviceCaller;
-    private Logger logger = Logger.getLogger(LoadStoryboardTask.class.getName());
+    private Caller<GameUiControlProvider> serviceCaller;
+    private Logger logger = Logger.getLogger(LoadGameUiControlTask.class.getName());
 
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        serviceCaller.call(new RemoteCallback<StoryboardConfig>() {
+        serviceCaller.call(new RemoteCallback<GameUiControlConfig>() {
             @Override
-            public void callback(StoryboardConfig storyboardConfig) {
-                storyboardService.init(storyboardConfig);
-                // TODO terrainObjectEditor.setTerrainObjectConfigs(storyboardConfig.getPlanetConfig().getTerrainObjectPositions());
-                // TODO terrainEditor.setTerrainSlopePositions(storyboardConfig.getPlanetConfig().getTerrainSlopePositions());
+            public void callback(GameUiControlConfig gameUiControlConfig) {
+                gameUiControl.init(gameUiControlConfig);
+                // TODO terrainObjectEditor.setTerrainObjectConfigs(gameUiControlConfig.getPlanetConfig().getTerrainObjectPositions());
+                // TODO terrainEditor.setTerrainSlopePositions(gameUiControlConfig.getPlanetConfig().getTerrainSlopePositions());
                 deferredStartup.finished();
             }
         }, new ErrorCallback<Object>() {
@@ -49,6 +49,6 @@ public class LoadStoryboardTask extends AbstractStartupTask {
                 deferredStartup.failed(throwable);
                 return false;
             }
-        }).loadStoryboard();
+        }).loadGameUiControlConfig();
     }
 }

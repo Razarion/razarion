@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.PlanetTickListener;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -22,7 +22,7 @@ public class CockpitService implements PlanetTickListener {
     @Inject
     private PlanetService planetService;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private LevelService levelService;
     @Inject
@@ -43,8 +43,8 @@ public class CockpitService implements PlanetTickListener {
 
     @Override
     public void onPostTick() {
-        sideCockpit.displayResources(storyboardService.getResources());
-        UserContext userContext = storyboardService.getUserContext();
+        sideCockpit.displayResources(gameUiControl.getResources());
+        UserContext userContext = gameUiControl.getUserContext();
         sideCockpit.displayXps(userContext.getXp());
         sideCockpit.displayLevel(levelService.getLevel(userContext.getLevelId()).getNumber());
     }

@@ -23,7 +23,7 @@ import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -65,7 +65,7 @@ public class TerrainMouseHandler {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private CommandService commandService;
     @Inject
@@ -148,7 +148,7 @@ public class TerrainMouseHandler {
                         selectionHandler.setTargetSelected(syncItem);
                     } else if (syncItem instanceof SyncBaseItem) {
                         SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                        if (storyboardService.isMyOwnProperty(syncBaseItem)) {
+                        if (gameUiControl.isMyOwnProperty(syncBaseItem)) {
                             if (!syncBaseItem.isBuildup() && selectionHandler.atLeastOneItemTypeAllowed2FinalizeBuild(syncBaseItem)) {
                                 audioService.onCommandSent();
                                 commandService.finalizeBuild(selectionHandler.getAllowed2FinalizeBuild(syncBaseItem), syncBaseItem);

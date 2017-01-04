@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  * 25.07.2016.
  */
 @ApplicationScoped
-public class GameLogicService { // Rename to game control or so (See StoryboardService)
+public class GameLogicService {
     private Logger logger = Logger.getLogger(GameLogicService.class.getName());
     @Inject
     private PlanetService planetService;

@@ -15,7 +15,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
@@ -42,7 +42,7 @@ public abstract class AbstractTipTask {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private BaseItemService baseItemService;
     private GameTipService gameTipService;
@@ -170,14 +170,14 @@ public abstract class AbstractTipTask {
     }
 
     PlayerBase getPlayerBase() {
-        return baseItemService.getPlayerBase(storyboardService.getUserContext());
+        return baseItemService.getPlayerBase(gameUiControl.getUserContext());
     }
 
     GameTipVisualConfig getGameTipVisualConfig() {
-        return storyboardService.getStoryboardConfig().getGameTipVisualConfig();
+        return gameUiControl.getGameUiControlConfig().getGameTipVisualConfig();
     }
 
     Collection<SyncBaseItem> findItemsOfType(int baseItemTypeId) {
-        return storyboardService.getMyBase().findItemsOfType(baseItemTypeId);
+        return gameUiControl.getMyBase().findItemsOfType(baseItemTypeId);
     }
 }

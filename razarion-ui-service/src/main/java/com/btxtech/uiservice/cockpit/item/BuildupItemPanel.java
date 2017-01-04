@@ -11,7 +11,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public abstract class BuildupItemPanel {
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -75,7 +75,7 @@ public abstract class BuildupItemPanel {
         Collection<Integer> itemTypeIds = constructionVehicles.getFirst().getBaseItemType().getBuilderType().getAbleToBuild();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
-            if (storyboardService.getMyLimitation4ItemType(itemTypeId) == 0) {
+            if (gameUiControl.getMyLimitation4ItemType(itemTypeId) == 0) {
                 continue;
             }
             hasItemsToBuild = true;
@@ -95,7 +95,7 @@ public abstract class BuildupItemPanel {
         Collection<Integer> itemTypeIds = factories.getFirst().getBaseItemType().getFactoryType().getAbleToBuildId();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
-            if (storyboardService.getMyLimitation4ItemType(itemTypeId) == 0) {
+            if (gameUiControl.getMyLimitation4ItemType(itemTypeId) == 0) {
                 continue;
             }
             hasItemsToBuild = true;

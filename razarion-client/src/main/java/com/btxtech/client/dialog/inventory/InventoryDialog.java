@@ -7,7 +7,7 @@ import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -26,7 +26,7 @@ import javax.inject.Inject;
 @Templated("InventoryDialog.html#inventory-dialog")
 public class InventoryDialog extends Composite implements ModalDialogContent<Void> {
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private GameTipService gameTipService;
     @Inject
@@ -46,7 +46,7 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
 
     @Override
     public void init(Void aVoid) {
-        UserContext userContext = storyboardService.getUserContext();
+        UserContext userContext = gameUiControl.getUserContext();
         crystalsLabel.setText(I18nHelper.getConstants().crystalAmount(userContext.getCrystals()));
 
         DOMUtil.removeAllElementChildren(inventoryItemTable.getElement()); // Remove placeholder table row from template.

@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.storyboard;
+package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;

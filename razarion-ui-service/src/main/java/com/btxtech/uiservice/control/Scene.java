@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.storyboard;
+package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
@@ -43,7 +43,7 @@ public class Scene implements TerrainScrollListener {
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private QuestVisualizer questVisualizer;
@@ -125,9 +125,9 @@ public class Scene implements TerrainScrollListener {
             gameEngineControl.executeBotCommands(sceneConfig.getKillBotCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
-            baseItemService.surrenderBase(storyboardService.getUserContext());
+            baseItemService.surrenderBase(gameUiControl.getUserContext());
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), decimalPositions -> {
-                PlayerBase playerBase = baseItemService.createHumanBase(storyboardService.getUserContext());
+                PlayerBase playerBase = baseItemService.createHumanBase(gameUiControl.getUserContext());
                 try {
                     for (DecimalPosition position : decimalPositions) {
                         baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId()), position, playerBase, false);
@@ -171,7 +171,7 @@ public class Scene implements TerrainScrollListener {
         }
 
         if (!hasCompletionCallback) {
-            storyboardService.onSceneCompleted();
+            gameUiControl.onSceneCompleted();
         }
     }
 
@@ -203,7 +203,7 @@ public class Scene implements TerrainScrollListener {
         }
         completionCallbackCount--;
         if (completionCallbackCount == 0) {
-            storyboardService.onSceneCompleted();
+            gameUiControl.onSceneCompleted();
         }
     }
 

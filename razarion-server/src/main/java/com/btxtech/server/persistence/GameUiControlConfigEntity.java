@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 
 import javax.persistence.CascadeType;
@@ -21,8 +21,8 @@ import java.util.List;
  * 06.07.2016.
  */
 @Entity
-@Table(name = "STORYBOARD")
-public class StoryboardEntity {
+@Table(name = "GAME_UI_CONTROL_CONFIG")
+public class GameUiControlConfigEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -33,16 +33,16 @@ public class StoryboardEntity {
     @OrderColumn(name = "orderColumn")
     private List<SceneEntity> scenes;
 
-    public StoryboardConfig toStoryboardConfig(GameEngineConfig gameEngineConfig) {
-        StoryboardConfig storyboardConfig = new StoryboardConfig();
-        storyboardConfig.setGameEngineConfig(gameEngineConfig);
+    public GameUiControlConfig toGameUiControlConfig(GameEngineConfig gameEngineConfig) {
+        GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
+        gameUiControlConfig.setGameEngineConfig(gameEngineConfig);
         gameEngineConfig.setPlanetConfig(planetEntity.toPlanetConfig());
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         for (SceneEntity scene : scenes) {
             sceneConfigs.add(scene.toSceneConfig());
         }
-        storyboardConfig.setSceneConfigs(sceneConfigs);
-        return storyboardConfig;
+        gameUiControlConfig.setSceneConfigs(sceneConfigs);
+        return gameUiControlConfig;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class StoryboardEntity {
             return false;
         }
 
-        StoryboardEntity that = (StoryboardEntity) o;
+        GameUiControlConfigEntity that = (GameUiControlConfigEntity) o;
         return id != null && id.equals(that.id);
     }
 

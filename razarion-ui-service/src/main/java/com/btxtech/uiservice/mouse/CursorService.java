@@ -10,7 +10,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitMode;
-import com.btxtech.uiservice.storyboard.StoryboardService;
+import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ public abstract class CursorService {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private StoryboardService storyboardService;
+    private GameUiControl gameUiControl;
     @Inject
     private TerrainService terrainService;
     private CursorType currentCursorType;
@@ -69,7 +69,7 @@ public abstract class CursorService {
     private void handleItemCursor(SyncItem syncItem) {
         if (syncItem instanceof SyncBaseItem) {
             SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-            if (storyboardService.isMyOwnProperty(syncBaseItem)) {
+            if (gameUiControl.isMyOwnProperty(syncBaseItem)) {
                 if (cockpitMode.isLoadPossible() && syncBaseItem.getSyncItemContainer() != null && isNotMyself(syncBaseItem)) {
                     SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
                     boolean allowed = syncItemContainer.atLeastOneAllowedToLoad(selectionHandler.getOwnSelection().getItems());
@@ -79,7 +79,7 @@ public abstract class CursorService {
                 } else {
                     setPointerCursor();
                 }
-            } else if (storyboardService.isEnemy(syncBaseItem)) {
+            } else if (gameUiControl.isEnemy(syncBaseItem)) {
                 if (cockpitMode.isAttackPossible()) {
                     setCursor(CursorType.ATTACK, selectionHandler.atLeastOneItemTypeAllowed2Attack4Selection(syncBaseItem));
                 } else {

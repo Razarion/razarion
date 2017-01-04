@@ -2,10 +2,10 @@ package com.btxtech.server.persistence.impl;
 
 import com.btxtech.server.persistence.ClipPersistence;
 import com.btxtech.server.persistence.Shape3DPersistence;
-import com.btxtech.server.persistence.StoryboardEntity;
+import com.btxtech.server.persistence.GameUiControlConfigEntity;
 import com.btxtech.server.persistence.TerrainElementPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
-import com.btxtech.servercommon.StoryboardPersistence;
+import com.btxtech.servercommon.GameUiControlConfigPersistence;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
@@ -26,12 +26,12 @@ import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
+import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ScrollUiQuest;
-import com.btxtech.shared.dto.StoryboardConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
@@ -81,7 +81,7 @@ import java.util.Map;
  * 03.08.2016.
  */
 @Singleton
-public class StoryboardPersistenceImpl implements StoryboardPersistence {
+public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPersistence {
     private static final int NPC_BOT_OUTPOST = 1;
     private static final int NPC_BOT_OUTPOST_2 = 2;
     private static final int NPC_BOT_INSTRUCTOR = 3;
@@ -107,7 +107,7 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
 
     @Override
     @Transactional
-    public StoryboardConfig load() throws ParserConfigurationException, SAXException, IOException {
+    public GameUiControlConfig load() throws ParserConfigurationException, SAXException, IOException {
         GameEngineConfig gameEngineConfig = new GameEngineConfig();
         gameEngineConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
         gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
@@ -119,29 +119,29 @@ public class StoryboardPersistenceImpl implements StoryboardPersistence {
         gameEngineConfig.setInventoryItems(setupInventoryItems()); // TODO mode to DB
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
-        CriteriaQuery<StoryboardEntity> userQuery = criteriaBuilder.createQuery(StoryboardEntity.class);
-        Root<StoryboardEntity> from = userQuery.from(StoryboardEntity.class);
-        CriteriaQuery<StoryboardEntity> userSelect = userQuery.select(from);
-        StoryboardConfig storyboardConfig = entityManager.createQuery(userSelect).getSingleResult().toStoryboardConfig(gameEngineConfig);
-        storyboardConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
-        storyboardConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
-        storyboardConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
-        storyboardConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
+        CriteriaQuery<GameUiControlConfigEntity> userQuery = criteriaBuilder.createQuery(GameUiControlConfigEntity.class);
+        Root<GameUiControlConfigEntity> from = userQuery.from(GameUiControlConfigEntity.class);
+        CriteriaQuery<GameUiControlConfigEntity> userSelect = userQuery.select(from);
+        GameUiControlConfig gameUiControlConfig = entityManager.createQuery(userSelect).getSingleResult().toGameUiControlConfig(gameEngineConfig);
+        gameUiControlConfig.setUserContext(new UserContext().setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
+        gameUiControlConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
+        gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
+        gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        storyboardConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupMove()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupTower()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(buildBase()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(harvest()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
-        // storyboardConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
-        return storyboardConfig;
+        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(harvest()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
+        return gameUiControlConfig;
     }
 
     private GameTipVisualConfig defaultGameTipVisualConfig() {
