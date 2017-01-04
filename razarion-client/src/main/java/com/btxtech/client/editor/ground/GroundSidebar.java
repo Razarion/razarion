@@ -170,8 +170,8 @@ public class GroundSidebar extends LeftSideBarContent {
     private void updateButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         terrainTypeService.setGroundSkeletonConfig(groundConfig.getGroundSkeletonConfig());
-        terrainService.setupGround();
-        terrainService.setupPlateaus();
+        terrainService.setupGround(); // TODO does not work anymore. TerrainService is in Worker now
+        terrainService.setupPlateaus(); // TODO does not work anymore. TerrainService is in Worker now
         groundRenderTask.onChanged();
     }
 

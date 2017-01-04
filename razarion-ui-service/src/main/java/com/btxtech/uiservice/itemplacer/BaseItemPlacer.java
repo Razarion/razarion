@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.itemplacer;
 
-import com.btxtech.shared.datatypes.BaseItemPlacerChecker;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;

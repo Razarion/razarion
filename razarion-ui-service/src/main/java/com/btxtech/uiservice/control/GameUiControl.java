@@ -3,6 +3,7 @@ package com.btxtech.uiservice.control;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -45,6 +46,8 @@ public class GameUiControl implements QuestListener {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
+    private TerrainTypeService terrainTypeService;
+    @Inject
     private QuestService questService;
     @Inject
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
@@ -56,6 +59,7 @@ public class GameUiControl implements QuestListener {
     public void init(GameUiControlConfig gameUiControlConfig) {
         this.gameUiControlConfig = gameUiControlConfig;
         itemTypeService.init(gameUiControlConfig.getGameEngineConfig());
+        terrainTypeService.init(gameUiControlConfig.getGameEngineConfig());
         gameUiControlInitEvent.fire(new GameUiControlInitEvent(gameUiControlConfig));
         this.userContext = gameUiControlConfig.getUserContext();
         cockpitService.init();

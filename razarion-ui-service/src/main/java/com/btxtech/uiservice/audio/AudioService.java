@@ -2,13 +2,13 @@ package com.btxtech.uiservice.audio;
 
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
@@ -22,7 +22,7 @@ public abstract class AudioService implements TerrainScrollListener {
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
-    private TerrainService terrainService;
+    private TerrainUiService terrainUiService;
     private AudioConfig audioConfig;
     private double lastLandWaterProportion = -1;
 
@@ -110,7 +110,7 @@ public abstract class AudioService implements TerrainScrollListener {
 
     @Override
     public void onScroll(ViewField viewField) {
-        double landWaterProportion = terrainService.calculateLandWaterProportion(viewField.calculateAabbRectangle());
+        double landWaterProportion = terrainUiService.calculateLandWaterProportion(viewField.calculateAabbRectangle());
         if (MathHelper.compareWithPrecision(lastLandWaterProportion, landWaterProportion, 0.05)) {
             return;
         }

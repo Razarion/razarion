@@ -1,12 +1,14 @@
-package com.btxtech.shared.datatypes;
+package com.btxtech.uiservice.itemplacer;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -24,7 +26,7 @@ public class BaseItemPlacerChecker {
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
-    private TerrainService terrainService;
+    private TerrainUiService terrainUiService;
     @Inject
     private BaseItemService baseItemService;
     private Collection<DecimalPosition> relativeItemPositions;
@@ -55,7 +57,7 @@ public class BaseItemPlacerChecker {
         }
         isTerrainOk = false;
         if (isItemsOk) {
-            isTerrainOk = !terrainService.overlap(absoluteItemPositions, baseItemType);
+            isTerrainOk = !terrainUiService.overlap(absoluteItemPositions, baseItemType);
         }
     }
 

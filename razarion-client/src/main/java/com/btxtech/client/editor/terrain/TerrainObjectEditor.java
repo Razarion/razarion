@@ -67,7 +67,7 @@ public class TerrainObjectEditor {
     public void onTerrainMouseMove(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
+            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
 
             CursorType cursorType;
             hover = false;
@@ -97,7 +97,7 @@ public class TerrainObjectEditor {
     public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
+            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
 
             selected = getAtTerrain(terrainPosition);
 
@@ -132,7 +132,7 @@ public class TerrainObjectEditor {
 
     public void onTerrainMouseUp(@Observes TerrainMouseUpEvent terrainMouseDownEvent) {
         Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-        Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
+        Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
 
         if (selected != null) {
             selected = null;

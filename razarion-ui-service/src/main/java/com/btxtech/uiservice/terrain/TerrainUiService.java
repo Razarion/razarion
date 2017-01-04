@@ -4,15 +4,20 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.Ray3d;
+import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
 import javax.enterprise.event.Observes;
@@ -32,7 +37,6 @@ import java.util.Map;
 public class TerrainUiService {
     @Inject
     private TerrainTypeService terrainTypeService;
-    @Inject
     private TerrainService terrainService;
     private static final double HIGHEST_POINT_IN_VIEW = 20;
     private static final double LOWEST_POINT_IN_VIEW = -2;
@@ -43,6 +47,11 @@ public class TerrainUiService {
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
         lowestPointInView = LOWEST_POINT_IN_VIEW;
+        terrainService = new TerrainService();
+    }
+
+    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+        terrainService.init(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig(), terrainTypeService);
     }
 
     public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
@@ -105,4 +114,35 @@ public class TerrainUiService {
             return Collections.emptyList();
         }
     }
+
+    public double calculateLandWaterProportion(Rectangle2D viewField) {
+        return 1.0 - getWater().calculateAabb().coverRatio(viewField);
+    }
+
+    public Collection<Slope> getSlopes() {
+        return terrainService.getSlopes();
+    }
+
+    public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {
+        return terrainService.getTerrainObjectPositions();
+    }
+
+    public boolean overlap(DecimalPosition position) {
+        return terrainService.overlap(position);
+    }
+
+    public boolean overlap(Collection<DecimalPosition> positions, BaseItemType baseItemType) {
+        return terrainService.overlap(positions, baseItemType);
+    }
+
+    public Vertex getPosition3d(DecimalPosition absoluteXY) {
+        return new Vertex(absoluteXY, terrainService.getInterpolatedTerrainTriangle(absoluteXY).getHeight());
+    }
+
+    public Vertex calculatePositionGroundMesh(Ray3d worldPickRay) {
+        DecimalPosition zeroLevel = terrainService.calculatePositionOnZeroLevel(worldPickRay).toXY();
+        double height = terrainService.getInterpolatedTerrainTriangle(zeroLevel).getHeight();
+        return new Vertex(zeroLevel, height);
+    }
+
 }

@@ -219,8 +219,8 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private void updateButtonClick(ClickEvent event) {
         SlopeConfig slopeConfig = getConfigObject();
         terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
-        terrainService.setupGround();
-        terrainService.setupPlateaus();
+        terrainService.setupGround(); // TODO does not work anymore. TerrainService is in Worker now
+        terrainService.setupPlateaus(); // TODO does not work anymore. TerrainService is in Worker now
         slopeRenderTask.onChanged();
     }
 

@@ -76,7 +76,7 @@ public class TerrainEditor {
     public void onTerrainMouseMoved(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
+            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
             // Cursor
             cursorModelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
 
@@ -110,7 +110,7 @@ public class TerrainEditor {
     public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
         if (active) {
             Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d);
+            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
             Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
             if (hasSelection()) {
                 ModifiedTerrainSlopePosition slopePosition = modifiedTerrainSlopePositions.get(selectedSlopeId);

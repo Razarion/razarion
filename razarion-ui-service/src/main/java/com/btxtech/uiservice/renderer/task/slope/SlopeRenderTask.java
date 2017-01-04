@@ -9,6 +9,7 @@ import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
@@ -31,7 +32,7 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
     @NormRenderer
     private Instance<AbstractSlopeRendererUnit> normRendererInstance;
     @Inject
-    private TerrainService terrainService;
+    private TerrainUiService terrainUiService;
 
     @PostConstruct
     public void postConstruct() {
@@ -44,7 +45,7 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
     }
 
     private void setupSlopes(boolean fillBuffer) {
-        for (Slope slope : terrainService.getSlopes()) {
+        for (Slope slope : terrainUiService.getSlopes()) {
             ModelRenderer<Slope, CommonRenderComposite<AbstractSlopeRendererUnit, Slope>, AbstractSlopeRendererUnit, Slope> modelRenderer = create();
             CommonRenderComposite<AbstractSlopeRendererUnit, Slope> renderComposite = modelRenderer.create();
             renderComposite.init(slope);

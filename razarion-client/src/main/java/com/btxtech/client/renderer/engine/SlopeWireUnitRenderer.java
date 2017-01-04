@@ -18,11 +18,11 @@ public class SlopeWireUnitRenderer extends AbstractViewPerspectiveWireUnitRender
 
     @Override
     protected List<Vertex> getVertexList() {
-        return terrainService.getSlope(getId()).getMesh().getVertices();
+        return terrainService.getSlope(getId()).getMesh().getVertices(); // TODO does not work anymore. TerrainService is in Worker now
     }
 
     @Override
     protected List<Vertex> getBarycentricList() {
-        return terrainService.getSlope(getId()).getMesh().getBarycentric();
+        return terrainService.getSlope(getId()).getMesh().getBarycentric(); // TODO does not work anymore. TerrainService is in Worker now
     }
 }

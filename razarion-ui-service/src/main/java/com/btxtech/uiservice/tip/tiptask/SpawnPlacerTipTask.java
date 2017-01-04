@@ -2,10 +2,10 @@ package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerListener;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.visualization.InGamePositionTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
@@ -22,7 +22,7 @@ public class SpawnPlacerTipTask extends AbstractTipTask implements BaseItemPlace
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
-    private TerrainService terrainService;
+    private TerrainUiService terrainUiService;
     private int spawnItemTypeId;
     private DecimalPosition positionHint;
 
@@ -48,7 +48,7 @@ public class SpawnPlacerTipTask extends AbstractTipTask implements BaseItemPlace
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        return new InGamePositionTipVisualization(terrainService.getPosition3d(positionHint), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getBaseItemPlacerCornerColor(), getGameTipVisualConfig().getBaseItemPlacerShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+        return new InGamePositionTipVisualization(terrainUiService.getPosition3d(positionHint), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getBaseItemPlacerCornerColor(), getGameTipVisualConfig().getBaseItemPlacerShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class SpawnPlacerTipTask extends AbstractTipTask implements BaseItemPlace
 
     @Override
     public void onStateChanged(BaseItemPlacer baseItemPlacer) {
-        if(baseItemPlacer == null) {
+        if (baseItemPlacer == null) {
             onFailed();
         }
     }

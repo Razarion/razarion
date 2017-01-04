@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerListener;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.visualization.InGameItemTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGamePositionTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
@@ -26,7 +27,7 @@ public class SendBuildCommandTipTask extends AbstractTipTask implements BaseItem
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
-    private TerrainService terrainService;
+    private TerrainUiService terrainUiService;
     private int toBeBuildId;
     private SyncBaseItem toBeFinalized;
     private DecimalPosition positionHint;
@@ -80,7 +81,7 @@ public class SendBuildCommandTipTask extends AbstractTipTask implements BaseItem
         if (toBeFinalized != null) {
             return new InGameItemTipVisualization(toBeFinalized, getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getToBeFinalizedCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
         } else {
-            return new InGamePositionTipVisualization(terrainService.getPosition3d(positionHint), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getBaseItemPlacerCornerColor(), getGameTipVisualConfig().getBaseItemPlacerShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+            return new InGamePositionTipVisualization(terrainUiService.getPosition3d(positionHint), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getBaseItemPlacerCornerColor(), getGameTipVisualConfig().getBaseItemPlacerShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
         }
     }
 

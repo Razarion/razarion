@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
@@ -21,11 +22,13 @@ public class TerrainTypeService {
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
 
     public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
-        groundSkeletonConfig = engineInitEvent.getGameEngineConfig().getGroundSkeletonConfig();
+        init(engineInitEvent.getGameEngineConfig());
+    }
 
-        setSlopeSkeletonConfigs(engineInitEvent.getGameEngineConfig().getSlopeSkeletonConfigs());
-
-        setTerrainObjectConfigs(engineInitEvent.getGameEngineConfig().getTerrainObjectConfigs());
+    public void init(GameEngineConfig gameEngineConfig) {
+        groundSkeletonConfig = gameEngineConfig.getGroundSkeletonConfig();
+        setSlopeSkeletonConfigs(gameEngineConfig.getSlopeSkeletonConfigs());
+        setTerrainObjectConfigs(gameEngineConfig.getTerrainObjectConfigs());
     }
 
     public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {

@@ -5,6 +5,7 @@ import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.DoubleBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -24,7 +25,7 @@ public class HelperSideBar extends LeftSideBarContent {
     @Inject
     private TerrainMarkerRenderTask terrainMarkerRenderTask;
     @Inject
-    private TerrainService terrainService;
+    private TerrainUiService terrainUiService;
     @Inject
     @DataField
     private DoubleBox rectX;
@@ -62,10 +63,10 @@ public class HelperSideBar extends LeftSideBarContent {
         if (rectX.getValue() != null && rectY.getValue() != null && rectWidth.getValue() != null && rectHeight.getValue() != null && rectWidth.getValue() > 0.0 && rectHeight.getValue() > 0.0) {
             Rectangle2D rect = new Rectangle2D(rectX.getValue(), rectY.getValue(), rectWidth.getValue(), rectHeight.getValue());
             List<Vertex> polygon = new ArrayList<>();
-            polygon.add(terrainService.getPosition3d(rect.cornerBottomLeft()));
-            polygon.add(terrainService.getPosition3d(rect.cornerBottomRight()));
-            polygon.add(terrainService.getPosition3d(rect.cornerTopRight()));
-            polygon.add(terrainService.getPosition3d(rect.cornerTopLeft()));
+            polygon.add(terrainUiService.getPosition3d(rect.cornerBottomLeft()));
+            polygon.add(terrainUiService.getPosition3d(rect.cornerBottomRight()));
+            polygon.add(terrainUiService.getPosition3d(rect.cornerTopRight()));
+            polygon.add(terrainUiService.getPosition3d(rect.cornerTopLeft()));
             terrainMarkerRenderTask.showPolygon(polygon);
         } else {
             terrainMarkerRenderTask.hidePolygon();

@@ -54,20 +54,29 @@ public class TerrainService {
     private PlanetConfig planetConfig;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+        setup(planetActivationEvent.getPlanetConfig());
+    }
+
+    public void init(PlanetConfig planetConfig, TerrainTypeService terrainTypeService) {
+        this.terrainTypeService = terrainTypeService;
+        setup(planetConfig);
+    }
+
+    private void setup(PlanetConfig planetConfig) {
         logger.severe("Start setup surface");
         long time = System.currentTimeMillis();
-        planetConfig = planetActivationEvent.getPlanetConfig();
+        this.planetConfig = planetConfig;
 
-        groundMeshDimension = planetActivationEvent.getPlanetConfig().getGroundMeshDimension();
+        groundMeshDimension = planetConfig.getGroundMeshDimension();
         setupGround();
 
-        water = new Water(planetActivationEvent.getPlanetConfig().getWaterLevel());
+        water = new Water(planetConfig.getWaterLevel());
 
         setupPlateaus();
 
         terrainObjectConfigPositions = new MapCollection<>();
-        if (planetActivationEvent.getPlanetConfig().getTerrainObjectPositions() != null) {
-            for (TerrainObjectPosition objectPosition : planetActivationEvent.getPlanetConfig().getTerrainObjectPositions()) {
+        if (planetConfig.getTerrainObjectPositions() != null) {
+            for (TerrainObjectPosition objectPosition : planetConfig.getTerrainObjectPositions()) {
                 TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
                 terrainObjectConfigPositions.put(terrainObjectConfig, objectPosition);
             }
@@ -287,20 +296,6 @@ public class TerrainService {
         // TODO water
 
         throw new NoInterpolatedTerrainTriangleException(absoluteXY);
-    }
-
-    public Vertex getPosition3d(DecimalPosition absoluteXY) {
-        return new Vertex(absoluteXY, getInterpolatedTerrainTriangle(absoluteXY).getHeight());
-    }
-
-    public Vertex calculatePositionGroundMesh(Ray3d worldPickRay) {
-        DecimalPosition zeroLevel = calculatePositionOnZeroLevel(worldPickRay).toXY();
-        double height = getInterpolatedTerrainTriangle(zeroLevel).getHeight();
-        return new Vertex(zeroLevel, height);
-    }
-
-    public double calculateLandWaterProportion(Rectangle2D viewField) {
-        return 1.0 - water.calculateAabb().coverRatio(viewField);
     }
 
     // -------------------------------------------------

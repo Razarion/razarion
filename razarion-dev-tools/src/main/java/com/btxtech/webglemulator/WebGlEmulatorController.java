@@ -24,6 +24,7 @@ import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.application.Platform;
@@ -106,8 +107,6 @@ public class WebGlEmulatorController implements Initializable {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
-    @Inject
-    private TerrainService terrainService;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -205,13 +204,6 @@ public class WebGlEmulatorController implements Initializable {
         double yOffset = canvasHeight / 2.0;
 
         return new DecimalPosition((canvasPosition.getX() - xOffset) / xScale, (canvasPosition.getY() - yOffset) / yScale);
-    }
-
-    private Vertex getTerrainPosition(DecimalPosition canvasPosition) {
-        DecimalPosition clipXY = toClipCoordinates(canvasPosition);
-        Ray3d pickRay = projectionTransformation.createPickRay(clipXY);
-        Ray3d worldPickRay = camera.toWorld(pickRay);
-        return terrainService.calculatePositionOnZeroLevel(worldPickRay);
     }
 
     public void onDumpProjectionTransformatioClicked() {

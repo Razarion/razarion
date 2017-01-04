@@ -25,8 +25,6 @@ import java.util.Map;
  */
 public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
     @Inject
-    private TerrainService terrainService;
-    @Inject
     private TerrainUiService terrainUiService;
     @Inject
     private Camera camera;
@@ -58,12 +56,12 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
     private void drawTerrain(ExtendedGraphicsContext egc) {
         egc.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 0.2, Color.BLUE);
 
-        for (Slope slope : terrainService.getSlopes()) {
+        for (Slope slope : terrainUiService.getSlopes()) {
             egc.strokeVertexList(slope.getMesh().getVertices(), 0.2, Color.RED);
         }
 
         egc.getGc().setFill(Color.GREEN);
-        for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainService.getTerrainObjectPositions().getMap().entrySet()) {
+        for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainUiService.getTerrainObjectPositions().getMap().entrySet()) {
             TerrainObjectConfig terrainObjectConfig = entry.getKey();
             for (TerrainObjectPosition terrainObjectPosition : entry.getValue()) {
                 egc.getGc().fillOval(terrainObjectPosition.getPosition().getX() - terrainObjectConfig.getRadius(),

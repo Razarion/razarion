@@ -11,6 +11,7 @@ import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -24,7 +25,7 @@ public abstract class CursorService {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private TerrainService terrainService;
+    private TerrainUiService terrainUiService;
     private CursorType currentCursorType;
     private boolean currentAllowed;
     private boolean currentPointer;
@@ -60,7 +61,7 @@ public abstract class CursorService {
             setCursor(CursorType.UNLOAD, atLeastOnAllowedForUnload(terrainPosition));
         } else if (cockpitMode.isMovePossible()) {
             // If water is implemented, check if selected items can move to it
-            setCursor(CursorType.GO, !terrainService.overlap(terrainPosition));
+            setCursor(CursorType.GO, !terrainUiService.overlap(terrainPosition));
         } else {
             setDefaultCursor();
         }

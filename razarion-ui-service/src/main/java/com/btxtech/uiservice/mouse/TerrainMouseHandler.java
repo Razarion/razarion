@@ -25,6 +25,7 @@ import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -44,7 +45,7 @@ public class TerrainMouseHandler {
     @Inject
     private Camera camera;
     @Inject
-    private TerrainService terrainService;
+    private TerrainUiService terrainUiService;
     @Inject
     private CursorService cursorService;
     @Inject
@@ -85,7 +86,7 @@ public class TerrainMouseHandler {
             terrainScrollHandler.handleMouseMoveScroll(x, y, width, height);
             // Send pick ray event
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
-            Vertex terrainPosition = terrainService.calculatePositionGroundMesh(worldPickRay);
+            Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
             terrainMouseMoveEvent.fire(new TerrainMouseMoveEvent(worldPickRay, terrainPosition));
 
             if (baseItemPlacerService.isActive()) {
@@ -123,7 +124,7 @@ public class TerrainMouseHandler {
     public void onMouseDown(int x, int y, int width, int height, boolean primaryButtonPressed, boolean secondaryButtonPressed, boolean middleButtonPressed, boolean ctrlKey, boolean shiftKey) {
         try {
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
-            Vertex terrainPosition = terrainService.calculatePositionGroundMesh(worldPickRay);
+            Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
             if (shiftKey) {
                 logger.severe("Terrain Position: " + terrainPosition);
             }
@@ -176,7 +177,7 @@ public class TerrainMouseHandler {
     public void onMouseUp(int x, int y, int width, int height, boolean primaryButtonReleased) {
         try {
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
-            Vertex terrainPosition = terrainService.calculatePositionGroundMesh(worldPickRay);
+            Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
             terrainMouseUpEvent.fire(new TerrainMouseUpEvent(worldPickRay));
 
             if (primaryButtonReleased) {
