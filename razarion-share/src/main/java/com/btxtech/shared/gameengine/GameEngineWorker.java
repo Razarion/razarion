@@ -1,9 +1,11 @@
 package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
+import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 
 import javax.enterprise.event.Event;
@@ -22,6 +24,8 @@ public abstract class GameEngineWorker {
     private Event<GameEngineInitEvent> gameEngineInitEvent;
     @Inject
     private BotService botService;
+    @Inject
+    private ResourceService resourceService;
 
     protected abstract void dispatchPackage(GameEngineControlPackage.Command command);
 
@@ -53,6 +57,9 @@ public abstract class GameEngineWorker {
                 break;
             case EXECUTE_BOT_COMMANDS:
                 botService.executeCommands((List<? extends AbstractBotCommandConfig>) controlPackage.getData());
+                break;
+            case CREATE_RESOURCES:
+                resourceService.createResources((Collection<ResourceItemPosition>) controlPackage.getData());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

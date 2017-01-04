@@ -114,7 +114,7 @@ public class Scenario {
 
     protected void createSyncResourceItem(ResourceItemType resourceItemType, DecimalPosition position) {
         try {
-            createdSyncResourceItems.add(resourceService.createResources(resourceItemType.getId(), position, 0));
+            createdSyncResourceItems.add(resourceService.createResource(resourceItemType.getId(), position, 0));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

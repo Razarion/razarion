@@ -4,9 +4,11 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 /**
@@ -19,8 +21,8 @@ public class VisualUiService {
     private Event<VisualConfig> visualConfigTrigger;
     private VisualConfig visualConfig;
 
-    public void initialise(VisualConfig visualConfig) {
-        this.visualConfig = visualConfig;
+    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+        this.visualConfig = gameUiControlInitEvent.getGameUiControlConfig().getVisualConfig();
         visualConfigTrigger.fire(visualConfig);
     }
 

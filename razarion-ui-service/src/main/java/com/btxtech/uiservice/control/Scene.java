@@ -58,8 +58,6 @@ public class Scene implements TerrainScrollListener {
     private AbstractModalDialogManager abstractModalDialogManager;
     @Inject
     private LevelService levelService;
-    @Inject
-    private ResourceService resourceService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
@@ -101,7 +99,7 @@ public class Scene implements TerrainScrollListener {
             gameEngineControl.startBots(sceneConfig.getBotConfigs());
         }
         if (sceneConfig.getResourceItemTypePositions() != null) {
-            resourceService.createResources(sceneConfig.getResourceItemTypePositions());
+            gameEngineControl.createResources(sceneConfig.getResourceItemTypePositions());
         }
         if (sceneConfig.getBotMoveCommandConfigs() != null) {
             gameEngineControl.executeBotCommands(sceneConfig.getBotMoveCommandConfigs());

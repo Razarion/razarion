@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
@@ -34,8 +35,8 @@ public abstract class AudioService implements TerrainScrollListener {
         terrainScrollHandler.addTerrainScrollListener(this);
     }
 
-    public void initialise(AudioConfig audioConfig) {
-        this.audioConfig = audioConfig;
+    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+        this.audioConfig = gameUiControlInitEvent.getGameUiControlConfig().getAudioConfig();
     }
 
     public void onDialogOpened(Integer audioId) {

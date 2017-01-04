@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine;
 
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -22,9 +23,13 @@ public class ItemTypeService {
     private final HashMap<Integer, BoxItemType> boxItemTypes = new HashMap<>();
 
     public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
-        setBaseItemTypes(engineInitEvent.getGameEngineConfig().getBaseItemTypes());
-        setResourceItemTypes(engineInitEvent.getGameEngineConfig().getResourceItemTypes());
-        setBoxItemTypes(engineInitEvent.getGameEngineConfig().getBoxItemTypes());
+        init(engineInitEvent.getGameEngineConfig());
+    }
+
+    public void init(GameEngineConfig gameEngineConfig) {
+        setBaseItemTypes(gameEngineConfig.getBaseItemTypes());
+        setResourceItemTypes(gameEngineConfig.getResourceItemTypes());
+        setBoxItemTypes(gameEngineConfig.getBoxItemTypes());
     }
 
     public ResourceItemType getResourceItemType(int resourceItemTypeId) {

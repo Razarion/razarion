@@ -2,6 +2,7 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -14,6 +15,7 @@ import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,7 +43,11 @@ public class GameUiControl implements QuestListener {
     @Inject
     private CockpitService cockpitService;
     @Inject
+    private ItemTypeService itemTypeService;
+    @Inject
     private QuestService questService;
+    @Inject
+    private Event<GameUiControlInitEvent> gameUiControlInitEvent;
     private GameUiControlConfig gameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -49,9 +55,8 @@ public class GameUiControl implements QuestListener {
 
     public void init(GameUiControlConfig gameUiControlConfig) {
         this.gameUiControlConfig = gameUiControlConfig;
-        gameEngineControl.initialise(gameUiControlConfig.getGameEngineConfig());
-        visualUiService.initialise(gameUiControlConfig.getVisualConfig());
-        audioService.initialise(gameUiControlConfig.getAudioConfig());
+        itemTypeService.init(gameUiControlConfig.getGameEngineConfig());
+        gameUiControlInitEvent.fire(new GameUiControlInitEvent(gameUiControlConfig));
         this.userContext = gameUiControlConfig.getUserContext();
         cockpitService.init();
         questService.addQuestListener(this);
@@ -130,7 +135,7 @@ public class GameUiControl implements QuestListener {
 
     @Override
     public void onQuestPassed(UserContext examinee, QuestConfig questConfig) {
-        if(currentScene != null) {
+        if (currentScene != null) {
             currentScene.onQuestPassed();
         }
     }

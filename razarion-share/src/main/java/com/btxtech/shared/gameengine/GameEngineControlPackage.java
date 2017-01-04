@@ -11,7 +11,8 @@ public class GameEngineControlPackage {
         START,
         STARTED,
         START_BOTS,
-        EXECUTE_BOT_COMMANDS
+        EXECUTE_BOT_COMMANDS,
+        CREATE_RESOURCES
     }
 
     private Command command;

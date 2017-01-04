@@ -56,11 +56,11 @@ public class ResourceService {
 
     public void createResources(Collection<ResourceItemPosition> resourceItemPositions) {
         for (ResourceItemPosition resourceItemPosition : resourceItemPositions) {
-            createResources(resourceItemPosition.getResourceItemTypeId(), resourceItemPosition.getPosition(), resourceItemPosition.getRotationZ());
+            createResource(resourceItemPosition.getResourceItemTypeId(), resourceItemPosition.getPosition(), resourceItemPosition.getRotationZ());
         }
     }
 
-    public SyncResourceItem createResources(int resourceItemTypeId, DecimalPosition position2d, double rotationZ) {
+    public SyncResourceItem createResource(int resourceItemTypeId, DecimalPosition position2d, double rotationZ) {
         ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resourceItemTypeId);
         SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItemType, position2d, rotationZ);
         syncResourceItem.setup(resourceItemType.getAmount());

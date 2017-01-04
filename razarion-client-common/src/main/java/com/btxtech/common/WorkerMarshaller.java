@@ -1,11 +1,15 @@
 package com.btxtech.common;
 
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -20,6 +24,9 @@ public class WorkerMarshaller {
         array.set(COMMAND_OFFSET, controlPackage.getCommand().name());
         switch (controlPackage.getCommand()) {
             case INITIALIZE:
+            case START_BOTS:
+            case EXECUTE_BOT_COMMANDS:
+            case CREATE_RESOURCES:
                 array.set(DATA_OFFSET, toJson(controlPackage.getData()));
                 break;
             case INITIALIZED:
@@ -40,6 +47,15 @@ public class WorkerMarshaller {
         switch (command) {
             case INITIALIZE:
                 data = fromJson(array.getString(DATA_OFFSET), GameEngineConfig.class);
+                break;
+            case START_BOTS:
+                data = fromJson(array.getString(DATA_OFFSET), List.class);
+                break;
+            case EXECUTE_BOT_COMMANDS:
+                data = fromJson(array.getString(DATA_OFFSET), List.class);
+                break;
+            case CREATE_RESOURCES:
+                data = fromJson(array.getString(DATA_OFFSET), List.class);
                 break;
             case INITIALIZED:
             case START:
