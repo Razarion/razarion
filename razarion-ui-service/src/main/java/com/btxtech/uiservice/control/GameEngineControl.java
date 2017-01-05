@@ -6,10 +6,13 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.item.BaseItemUiService;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,6 +25,8 @@ public abstract class GameEngineControl {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private BaseItemUiService baseItemUiService;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -56,6 +61,9 @@ public abstract class GameEngineControl {
                 break;
             case STARTED:
                 logger.severe("!!!Started!!!!");
+                break;
+            case SYNC_ITEM_UPDATE:
+                baseItemUiService.updateSyncBaseItems((Collection<SyncBaseItemSimpleDto>) controlPackage.getSingleData());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

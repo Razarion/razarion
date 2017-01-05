@@ -34,7 +34,6 @@ public class ClientGameEngineControl extends GameEngineControl {
             worker.setOnmessage(event -> {
                 try {
                     MessageEvent messageEvent = (MessageEvent) event;
-                    logger.severe("ClientGameEngineControl dispatch: " + messageEvent.getData());
                     GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData());
                     dispatch(controlPackage);
                 } catch (Throwable t) {

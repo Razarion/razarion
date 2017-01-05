@@ -47,8 +47,8 @@ public class SyncTurret {
         return ModelMatrices.createFromPositionAndZRotation(turretType.getTorrentCenter(), angle);
     }
 
-    ModelMatrices createModelMatrices4Shape3D() {
-        return new ModelMatrices(Matrix4.createZRotation(angle));
+    Matrix4 createModelMatrices4Shape3D() {
+        return Matrix4.createZRotation(angle);
     }
 
     boolean isOnTarget(DecimalPosition target) {

@@ -32,7 +32,7 @@ public class CockpitService implements PlanetTickListener {
 
     @PostConstruct
     public void postConstruct() {
-        planetService.addTickListener(this);
+        planetService.addTickListener(this); // TODO does not work. This code is in the worker now
         sideCockpit = sideCockpitInstance.get();
         sideCockpit.show();
     }

@@ -37,8 +37,8 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     }
 
     @Override
-    protected void dispatchPackage(GameEngineControlPackage.Command command) {
-        getDedicatedWorkerGlobalScope().postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, null)));
+    protected void sendToClient(GameEngineControlPackage.Command command, Object... object) {
+        getDedicatedWorkerGlobalScope().postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, object)));
     }
 
     public static native JsDedicatedWorkerGlobalScope getDedicatedWorkerGlobalScope() /*-{

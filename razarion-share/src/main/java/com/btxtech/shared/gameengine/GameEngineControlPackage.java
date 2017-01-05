@@ -13,7 +13,8 @@ public class GameEngineControlPackage {
         START_BOTS,
         EXECUTE_BOT_COMMANDS,
         CREATE_RESOURCES,
-        CREATE_HUMAN_BASE_WITH_BASE_ITEM
+        CREATE_HUMAN_BASE_WITH_BASE_ITEM,
+        SYNC_ITEM_UPDATE
     }
 
     private Command command;

@@ -4,19 +4,23 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 03.01.2017.
  */
 public class WorkerMarshaller {
+    private static Logger logger = Logger.getLogger(WorkerMarshaller.class.getName());
     private static final int COMMAND_OFFSET = 0;
     private static final int DATA_OFFSET_0 = 1;
     private static final int DATA_OFFSET_1 = 2;
@@ -36,6 +40,7 @@ public class WorkerMarshaller {
             case START_BOTS:
             case EXECUTE_BOT_COMMANDS:
             case CREATE_RESOURCES:
+            case SYNC_ITEM_UPDATE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getSingleData()));
                 break;
             // Triple JSON data
@@ -78,6 +83,11 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), DecimalPosition.class));
                 break;
+            // Javascript structured clone algorithm
+            case SYNC_ITEM_UPDATE:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);
         }

@@ -15,8 +15,8 @@ public class DevToolGameEngineWorker extends GameEngineWorker {
     private Consumer<GameEngineControlPackage> packageConsumer;
 
     @Override
-    protected void dispatchPackage(GameEngineControlPackage.Command command) {
-        packageConsumer.accept(new GameEngineControlPackage(command, null));
+    protected void sendToClient(GameEngineControlPackage.Command command, Object... object) {
+        packageConsumer.accept(new GameEngineControlPackage(command, object));
     }
 
     void receivePackage(GameEngineControlPackage gameEngineControlPackage) {
