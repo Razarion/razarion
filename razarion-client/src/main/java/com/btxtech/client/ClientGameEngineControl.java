@@ -52,7 +52,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     }
 
     @Override
-    protected void sendToWorker(GameEngineControlPackage.Command command, Object data) {
+    protected void sendToWorker(GameEngineControlPackage.Command command, Object ... data) {
         try {
             worker.postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, data)));
         } catch (Throwable t) {

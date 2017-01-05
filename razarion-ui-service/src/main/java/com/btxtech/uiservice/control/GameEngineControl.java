@@ -1,5 +1,7 @@
 package com.btxtech.uiservice.control;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
@@ -21,10 +23,10 @@ public abstract class GameEngineControl {
     @Inject
     private ExceptionHandler exceptionHandler;
 
-    protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object data);
+    protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
     public void start() {
-        sendToWorker(GameEngineControlPackage.Command.START, null);
+        sendToWorker(GameEngineControlPackage.Command.START);
     }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
@@ -41,6 +43,10 @@ public abstract class GameEngineControl {
 
     void createResources(List<ResourceItemPosition> resourceItemTypePositions) {
         sendToWorker(GameEngineControlPackage.Command.CREATE_RESOURCES, resourceItemTypePositions);
+    }
+
+    void createHumanBaseWithBaseItem(UserContext userContext, int baseItemTypeId, DecimalPosition position) {
+        sendToWorker(GameEngineControlPackage.Command.CREATE_HUMAN_BASE_WITH_BASE_ITEM, userContext, baseItemTypeId, position);
     }
 
     protected void dispatch(GameEngineControlPackage controlPackage) {

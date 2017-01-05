@@ -41,7 +41,7 @@ public class BaseItemPlacerService {
         // TODO RadarPanel.getInstance().setLevelRadarMode(RadarMode.MAP_AND_UNITS);
         // TODO ClientDeadEndProtection.getInstance().stop();
 
-        listeners.forEach(baseItemPlacerListener -> baseItemPlacerListener.onStateChanged(baseItemPlacer));
+        new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.onStateChanged(baseItemPlacer));
     }
 
     public void deactivate() {
@@ -49,7 +49,7 @@ public class BaseItemPlacerService {
         baseItemPlacerRenderTask.deactivate();
         // TODO RadarPanel.getInstance().setLevelRadarMode(ClientPlanetServices.getInstance().getPlanetInfo().getRadarMode());
         // TODO ClientDeadEndProtection.getInstance().start();
-        listeners.forEach(baseItemPlacerListener -> baseItemPlacerListener.onStateChanged(null));
+        new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.onStateChanged(null));
     }
 
     public boolean isActive() {

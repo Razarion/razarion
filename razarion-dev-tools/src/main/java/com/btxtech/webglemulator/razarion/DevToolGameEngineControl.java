@@ -15,9 +15,8 @@ public class DevToolGameEngineControl extends GameEngineControl {
     @Inject
     private WorkerEmulator workerEmulator;
 
-
     @Override
-    protected void sendToWorker(GameEngineControlPackage.Command command, Object data) {
+    protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
         workerEmulator.sendPackage(new GameEngineControlPackage(command, data));
     }
 

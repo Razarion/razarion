@@ -1,14 +1,15 @@
 package com.btxtech.common;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,21 +18,31 @@ import java.util.List;
  */
 public class WorkerMarshaller {
     private static final int COMMAND_OFFSET = 0;
-    private static final int DATA_OFFSET = 1;
+    private static final int DATA_OFFSET_0 = 1;
+    private static final int DATA_OFFSET_1 = 2;
+    private static final int DATA_OFFSET_2 = 3;
 
     public static JavaScriptObject marshall(GameEngineControlPackage controlPackage) {
         JsArrayMixed array = JavaScriptObject.createArray().cast();
         array.set(COMMAND_OFFSET, controlPackage.getCommand().name());
         switch (controlPackage.getCommand()) {
+            // No data
+            case INITIALIZED:
+            case START:
+            case STARTED:
+                break;
+            // Single JSON data
             case INITIALIZE:
             case START_BOTS:
             case EXECUTE_BOT_COMMANDS:
             case CREATE_RESOURCES:
-                array.set(DATA_OFFSET, toJson(controlPackage.getData()));
+                array.set(DATA_OFFSET_0, toJson(controlPackage.getSingleData()));
                 break;
-            case INITIALIZED:
-            case START:
-            case STARTED:
+            // Triple JSON data
+            case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
+                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -43,29 +54,35 @@ public class WorkerMarshaller {
         JsArrayMixed array = ((JavaScriptObject) javaScriptObject).cast();
         GameEngineControlPackage.Command command = GameEngineControlPackage.Command.valueOf(array.getString(COMMAND_OFFSET));
 
-        Object data = null;
+        List<Object> data = new ArrayList<>();
         switch (command) {
-            case INITIALIZE:
-                data = fromJson(array.getString(DATA_OFFSET), GameEngineConfig.class);
-                break;
-            case START_BOTS:
-                data = fromJson(array.getString(DATA_OFFSET), List.class);
-                break;
-            case EXECUTE_BOT_COMMANDS:
-                data = fromJson(array.getString(DATA_OFFSET), List.class);
-                break;
-            case CREATE_RESOURCES:
-                data = fromJson(array.getString(DATA_OFFSET), List.class);
-                break;
+            // No data
             case INITIALIZED:
             case START:
             case STARTED:
+                break;
+            case INITIALIZE:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));
+                break;
+            case START_BOTS:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                break;
+            case EXECUTE_BOT_COMMANDS:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                break;
+            case CREATE_RESOURCES:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                break;
+            case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), UserContext.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_2), DecimalPosition.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);
         }
 
-        return new GameEngineControlPackage(command, data);
+        return new GameEngineControlPackage(command, data.toArray());
     }
 
     private static String toJson(Object object) {

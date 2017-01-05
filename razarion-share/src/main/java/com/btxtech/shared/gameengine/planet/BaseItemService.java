@@ -82,6 +82,23 @@ public class BaseItemService {
         return createBase(userContext.getName(), Character.HUMAN, userContext);
     }
 
+
+    private void surrenderHumanBase(UserContext userContext) {
+        PlayerBase playerBase = getPlayerBase(userContext);
+        if (playerBase != null) {
+            gameLogicService.onSurrenderBase(playerBase);
+            while (!playerBase.getItems().isEmpty()) {
+                removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
+            }
+        }
+    }
+
+    public void createHumanBaseWithBaseItem(UserContext userContext, int baseItemTypeId, DecimalPosition position) {
+        surrenderHumanBase(userContext);
+        PlayerBase playerBase = createHumanBase(userContext);
+        spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, playerBase, false);
+    }
+
     public PlayerBase createBotBase(BotConfig botConfig) {
         return createBase(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, null);
     }
@@ -96,16 +113,6 @@ public class BaseItemService {
             bases.put(lastBaseItId, playerBase);
             gameLogicService.onBaseCreated(playerBase);
             return playerBase;
-        }
-    }
-
-    public void surrenderBase(UserContext userContext) {
-        PlayerBase playerBase = getPlayerBase(userContext);
-        if (playerBase != null) {
-            gameLogicService.onSurrenderBase(playerBase);
-            while (!playerBase.getItems().isEmpty()) {
-                removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
-            }
         }
     }
 

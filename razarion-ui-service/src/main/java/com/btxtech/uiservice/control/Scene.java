@@ -1,19 +1,16 @@
 package com.btxtech.uiservice.control;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
-import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.StoryCover;
@@ -63,8 +60,8 @@ public class Scene implements TerrainScrollListener {
     private SimpleExecutorService simpleExecutorService;
     @Inject
     private BoxService boxService;
-    @Inject
-    private BaseItemService baseItemService;
+    // @Inject
+    // private BaseItemService baseItemService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -123,16 +120,20 @@ public class Scene implements TerrainScrollListener {
             gameEngineControl.executeBotCommands(sceneConfig.getKillBotCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
-            baseItemService.surrenderBase(gameUiControl.getUserContext());
+            // TODO baseItemService.surrenderBase(gameUiControl.getUserContext());
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), decimalPositions -> {
-                PlayerBase playerBase = baseItemService.createHumanBase(gameUiControl.getUserContext());
-                try {
-                    for (DecimalPosition position : decimalPositions) {
-                        baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId()), position, playerBase, false);
-                    }
-                } catch (Exception e) {
-                    exceptionHandler.handleException(e);
+                if (decimalPositions.size() != 1) {
+                    throw new IllegalArgumentException("To create a new human base, only one base item is allowed. Given: " + decimalPositions.size());
                 }
+                gameEngineControl.createHumanBaseWithBaseItem(userContext, sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId(), CollectionUtils.getFirst(decimalPositions));
+// TODO                PlayerBase playerBase = baseItemService.createHumanBaseWithBaseItem(gameUiControl.getUserContext());
+// TODO               try {
+//TODO                    for (DecimalPosition position : decimalPositions) {
+// TODO                       baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId()), position, playerBase, false);
+// TODO                   }
+// TODO               } catch (Exception e) {
+// TODO                   exceptionHandler.handleException(e);
+// TODO               }
             });
         }
         if (sceneConfig.getQuestConfig() != null) {

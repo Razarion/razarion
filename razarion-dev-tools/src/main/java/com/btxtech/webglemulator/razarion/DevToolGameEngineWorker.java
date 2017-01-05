@@ -23,7 +23,7 @@ public class DevToolGameEngineWorker extends GameEngineWorker {
         dispatch(gameEngineControlPackage);
     }
 
-    public void setPackageConsumer(Consumer<GameEngineControlPackage> packageConsumer) {
+    void setPackageConsumer(Consumer<GameEngineControlPackage> packageConsumer) {
         this.packageConsumer = packageConsumer;
     }
 }
