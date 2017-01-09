@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.tip.tiptask;
 
-import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -52,10 +51,15 @@ public class SendHarvestCommandTipTask extends AbstractTipTask {
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
+        return new InGameItemTipVisualization(this::provideResource, getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+    }
+
+    private SyncResourceItemSimpleDto provideResource() {
         Collection<SyncResourceItemSimpleDto> syncResourceItems = resourceUiService.findResourceItemWithPlace(toCollectFormId, resourceSelection);
         if (syncResourceItems.isEmpty()) {
-            throw new IllegalArgumentException("Can not create game tip. No resource available to mark: " + resourceSelection);
+            return null;
+        } else {
+            return CollectionUtils.getFirst(syncResourceItems);
         }
-        return new InGameItemTipVisualization(CollectionUtils.getFirst(syncResourceItems), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

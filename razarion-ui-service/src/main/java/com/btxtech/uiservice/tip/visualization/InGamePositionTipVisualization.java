@@ -30,4 +30,9 @@ public class InGamePositionTipVisualization extends InGameTipVisualization {
     DecimalPosition getPosition2D() {
         return position.toXY();
     }
+
+    @Override
+    boolean checkReady() {
+        return true;
+    }
 }

@@ -52,6 +52,6 @@ public class SelectTipTask extends AbstractTipTask {
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        return new InGameItemTipVisualization(baseItemUiService.findMyItemOfType(itemTypeId), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getSelectCornerColor(), getGameTipVisualConfig().getSelectShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+        return new InGameItemTipVisualization(() -> baseItemUiService.findMyItemOfType(itemTypeId), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getSelectCornerColor(), getGameTipVisualConfig().getSelectShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

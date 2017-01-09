@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.tip.visualization.InGameItemTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
@@ -49,10 +48,6 @@ public class SendAttackCommandTipTask extends AbstractTipTask {
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        SyncBaseItemSimpleDto target = baseItemUiService.findEnemyItemWithPlace(placeConfig);
-        if (target == null) {
-            throw new IllegalArgumentException("Can not create visualization. No target available to attack. targetItemTypeId: " + targetItemTypeId + " placeConfig: " + placeConfig);
-        }
-        return new InGameItemTipVisualization(target, getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getAttackCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+        return new InGameItemTipVisualization(() -> baseItemUiService.findEnemyItemWithPlace(placeConfig), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getAttackCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

@@ -5,17 +5,20 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 
+import java.util.function.Supplier;
+
 /**
  * Created by Beat
  * 06.12.2016.
  */
 public class InGameItemTipVisualization extends InGameTipVisualization {
-    private SyncItemSimpleDto syncItem;
+    private Supplier<SyncItemSimpleDto> syncItemProvider;
     private DecimalPosition lastPosition2D;
+    private SyncItemSimpleDto syncItem;
 
-    public InGameItemTipVisualization(SyncItemSimpleDto syncItem, double moveDistance, long duration, double cornerLength, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId) {
+    public InGameItemTipVisualization(Supplier<SyncItemSimpleDto> syncItemProvider, double moveDistance, long duration, double cornerLength, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId) {
         super(cornerLength, moveDistance, duration, cornerColor, shape3DId, outOfViewShape3DId);
-        this.syncItem = syncItem;
+        this.syncItemProvider = syncItemProvider;
     }
 
     @Override
@@ -34,6 +37,12 @@ public class InGameItemTipVisualization extends InGameTipVisualization {
             lastPosition2D = syncItem.getPosition2d();
             return true;
         }
+    }
+
+    @Override
+    boolean checkReady() {
+        syncItem = syncItemProvider.get();
+        return syncItem != null;
     }
 
     @Override

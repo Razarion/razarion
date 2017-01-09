@@ -18,6 +18,7 @@ import java.util.List;
  * Time: 22:51
  */
 public abstract class InGameTipVisualization implements TerrainScrollListener {
+    private static final int READY_CHECK_DELAY = 500;
     private List<Vertex> cornerVertices;
     private final double moveDistance;
     private final long duration;
@@ -26,6 +27,8 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
     private Integer outOfViewShape3DId;
     private boolean inViewFiled;
     private ViewField viewField;
+    private long lastReadyCheck;
+    private boolean ready;
 
     public InGameTipVisualization(double cornerLength, double moveDistance, long duration, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId) {
         this.moveDistance = moveDistance;
@@ -40,15 +43,36 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
 
     abstract boolean hasPositionChanged();
 
+    abstract boolean checkReady();
+
     abstract DecimalPosition getPosition2D();
 
     public void preRender() {
+        if (!ready) {
+            if (lastReadyCheck + READY_CHECK_DELAY > System.currentTimeMillis()) {
+                return;
+            }
+            if (checkReady()) {
+                ready = true;
+                checkInView();
+            } else {
+                lastReadyCheck = System.currentTimeMillis();
+                return;
+            }
+        }
+
+        ready = true;
+
         if (hasPositionChanged()) {
             checkInView();
         }
     }
 
     public List<ModelMatrices> provideCornerModelMatrices(long timeStamp) {
+        if (!ready) {
+            return null;
+        }
+
         if (inViewFiled) {
             return createCornerModelMatrices(getPosition3D(), timeStamp);
         } else {
@@ -57,6 +81,10 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
     }
 
     public List<ModelMatrices> provideShape3DModelMatrices() {
+        if (!ready) {
+            return null;
+        }
+
         if (inViewFiled) {
             return Collections.singletonList(new ModelMatrices(Matrix4.createTranslation(getPosition3D())));
         } else {
@@ -65,6 +93,10 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
     }
 
     public List<ModelMatrices> provideOutOfViewShape3DModelMatrices() {
+        if (!ready) {
+            return null;
+        }
+
         if (inViewFiled) {
             return null;
         } else {
@@ -126,6 +158,8 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
     }
 
     private void checkInView() {
-        inViewFiled = viewField.isInside(getPosition2D());
+        if (ready) {
+            inViewFiled = viewField.isInside(getPosition2D());
+        }
     }
 }
