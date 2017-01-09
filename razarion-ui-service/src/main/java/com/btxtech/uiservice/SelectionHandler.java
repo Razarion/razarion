@@ -74,7 +74,7 @@ public class SelectionHandler {
     private void setItemGroupSelected(Group selectedGroup) {
         clearSelection(true);
         this.selectedGroup = selectedGroup;
-        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, true));
+        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, false));
     }
 
     public void selectRectangle(Rectangle2D rectangle) {
@@ -88,13 +88,13 @@ public class SelectionHandler {
                 } else {
                     other = selectedSyncBaseItem;
                 }
-                if (!own.isEmpty()) {
-                    Group group = groupInstance.get();
-                    group.setItems(own);
-                    setItemGroupSelected(group);
-                } else {
-                    setOtherItemSelected(other);
-                }
+            }
+            if (!own.isEmpty()) {
+                Group group = groupInstance.get();
+                group.setItems(own);
+                setItemGroupSelected(group);
+            } else {
+                setOtherItemSelected(other);
             }
             return;
         }
@@ -115,7 +115,7 @@ public class SelectionHandler {
 
     public void keepOnlyOwnOfType(BaseItemType baseItemType) {
         selectedGroup.keepOnlyOwnOfType(baseItemType);
-        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, true));
+        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, false));
     }
 
     public void clearSelection(boolean dueToNewSelection) {
