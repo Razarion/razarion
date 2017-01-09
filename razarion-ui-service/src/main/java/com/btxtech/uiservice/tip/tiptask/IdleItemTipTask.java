@@ -23,7 +23,7 @@ public class IdleItemTipTask extends AbstractTipTask {
 
     @Override
     public boolean isFulfilled() {
-        return areAllItemsTypeIdle();
+        return false;
     }
 
     @Override
