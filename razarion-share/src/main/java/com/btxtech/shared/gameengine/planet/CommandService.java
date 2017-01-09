@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
@@ -41,10 +41,17 @@ public class CommandService { // Is part of the Base service
     @Inject
     private BaseItemService baseItemService;
     @Inject
+    private ResourceService resourceService;
+    @Inject
+    private BoxService boxService;
+    @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private ItemTypeService itemTypeService;
 
-    public void move(Collection<SyncBaseItem> syncBaseItems, DecimalPosition destination) {
-        for (SyncBaseItem syncBaseItem : syncBaseItems) {
+    public void move(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
+        for (int syncBaseItemId : syncBaseItemIds) {
+            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemId);
             move(syncBaseItem, destination);
         }
     }
@@ -55,6 +62,12 @@ public class CommandService { // Is part of the Base service
         moveCommand.setTimeStamp();
         moveCommand.setPathToDestination(pathingService.setupPathToDestination(syncBaseItem, destination));
         executeCommand(moveCommand);
+    }
+
+    public void build(int builderId, DecimalPosition positionToBeBuild, int itemTypeIdToBuild) {
+        SyncBaseItem builder = syncItemContainerService.getSyncBaseItem(builderId);
+        BaseItemType toBuild = itemTypeService.getBaseItemType(itemTypeIdToBuild);
+        build(builder, positionToBeBuild, toBuild);
     }
 
     public void build(SyncBaseItem builder, DecimalPosition positionToBeBuild, BaseItemType itemTypeToBuild) {
@@ -84,15 +97,19 @@ public class CommandService { // Is part of the Base service
         executeCommand(builderFinalizeCommand);
     }
 
-    public void finalizeBuild(Collection<SyncBaseItem> builders, SyncBaseItem building) {
-        for (SyncBaseItem builder : builders) {
+    public void finalizeBuild(Collection<Integer> builderIds, int buildingId) {
+        SyncBaseItem building = syncItemContainerService.getSyncBaseItem(buildingId);
+        for (int builderId : builderIds) {
+            SyncBaseItem builder = syncItemContainerService.getSyncBaseItem(builderId);
             finalizeBuild(builder, building);
         }
     }
 
-    public void fabricate(Collection<SyncBaseItem> factories, BaseItemType itemTypeToBuild) {
-        for (SyncBaseItem factory : factories) {
-            fabricate(factory, itemTypeToBuild);
+    public void fabricate(Collection<Integer> factoryIds, int itemTypeToBuildId) {
+        BaseItemType toBuild = itemTypeService.getBaseItemType(itemTypeToBuildId);
+        for (int factoryId : factoryIds) {
+            SyncBaseItem factory = syncItemContainerService.getSyncBaseItem(factoryId);
+            fabricate(factory, toBuild);
         }
     }
 
@@ -104,9 +121,11 @@ public class CommandService { // Is part of the Base service
         executeCommand(factoryCommand);
     }
 
-    public void harvest(Collection<SyncBaseItem> syncBaseItems, SyncResourceItem resource) {
-        for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            harvest(syncBaseItem, resource);
+    public void harvest(Collection<Integer> harvesterIds, int resourceId) {
+        SyncResourceItem resource = resourceService.getSyncResourceItem(resourceId);
+        for (int harvesterId : harvesterIds) {
+            SyncBaseItem harvester = syncItemContainerService.getSyncBaseItem(harvesterId);
+            harvest(harvester, resource);
         }
     }
 
@@ -123,9 +142,11 @@ public class CommandService { // Is part of the Base service
         executeCommand(harvestCommand);
     }
 
-    public void attack(Collection<SyncBaseItem> syncBaseItems, SyncBaseItem target) {
-        for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            attack(syncBaseItem, target, syncBaseItem.getSyncPhysicalArea().canMove());
+    public void attack(Collection<Integer> attackerIds, int targetId) {
+        SyncBaseItem target = syncItemContainerService.getSyncBaseItem(targetId);
+        for (int attackerId : attackerIds) {
+            SyncBaseItem attacker = syncItemContainerService.getSyncBaseItem(attackerId);
+            attack(attacker, target, attacker.getSyncPhysicalArea().canMove());
         }
     }
 
@@ -146,9 +167,11 @@ public class CommandService { // Is part of the Base service
         executeCommand(attackCommand);
     }
 
-    public void pickupBox(Collection<SyncBaseItem> syncBaseItems, SyncBoxItem box) {
-        for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            pickupBox(syncBaseItem, box);
+    public void pickupBox(Collection<Integer> pickerIds, int boxId) {
+        SyncBoxItem box = boxService.getSyncBoxItem(boxId);
+        for (int pickerId : pickerIds) {
+            SyncBaseItem picker = syncItemContainerService.getSyncBaseItem(pickerId);
+            pickupBox(picker, box);
         }
     }
 
@@ -167,14 +190,6 @@ public class CommandService { // Is part of the Base service
 
     public void defend(SyncBaseItem attacker, SyncBaseItem target) {
         attack(attacker, target, false);
-    }
-
-    public void loadContainer(SyncBaseItem container, Collection<SyncBaseItem> syncBaseItems) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void unloadContainer(SyncBaseItem container, Index unloadPos) {
-        throw new UnsupportedOperationException();
     }
 
     private void executeCommand(BaseCommand baseCommand) {

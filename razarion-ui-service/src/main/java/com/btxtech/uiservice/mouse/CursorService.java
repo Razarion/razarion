@@ -1,20 +1,18 @@
 package com.btxtech.uiservice.mouse;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItemContainer;
-import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitMode;
-import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.Objects;
 
 public abstract class CursorService {
@@ -23,14 +21,15 @@ public abstract class CursorService {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private GameUiControl gameUiControl;
+    private BaseItemUiService baseItemUiService;
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private ItemTypeService itemTypeService;
     private CursorType currentCursorType;
     private boolean currentAllowed;
     private boolean currentPointer;
     private boolean currentDefault;
-
 
     protected abstract void setCursorInternal(CursorType cursorType, boolean allowed);
 
@@ -44,74 +43,103 @@ public abstract class CursorService {
         }
     }
 
-    public void noCursor() { // TODO not used
-        setDefaultCursor();
-    }
-
-    public void handleMouseMove(SyncItem syncItem, DecimalPosition terrainPosition) {
-        if (syncItem != null) {
-            handleItemCursor(syncItem);
-        } else {
-            handleTerrainCursor(terrainPosition);
+    // Need to be public due to the weld proxies for the dev-tools
+    public void handleMouseOverBaseItem(SyncBaseItemSimpleDto syncBaseItem, DecimalPosition terrainPosition) {
+        if (!selectionHandler.hasOwnSelection() || !isNotMyself(syncBaseItem)) {
+            setPointerCursor();
+            return;
         }
-    }
 
-    private void handleTerrainCursor(DecimalPosition terrainPosition) {
-        if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD) {
-            setCursor(CursorType.UNLOAD, atLeastOnAllowedForUnload(terrainPosition));
-        } else if (cockpitMode.isMovePossible()) {
-            // If water is implemented, check if selected items can move to it
-            setCursor(CursorType.GO, !terrainUiService.overlap(terrainPosition));
-        } else {
-            setDefaultCursor();
-        }
-    }
-
-    private void handleItemCursor(SyncItem syncItem) {
-        if (syncItem instanceof SyncBaseItem) {
-            SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-            if (gameUiControl.isMyOwnProperty(syncBaseItem)) {
-                if (cockpitMode.isLoadPossible() && syncBaseItem.getSyncItemContainer() != null && isNotMyself(syncBaseItem)) {
-                    SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
-                    boolean allowed = syncItemContainer.atLeastOneAllowedToLoad(selectionHandler.getOwnSelection().getItems());
-                    setCursor(CursorType.LOAD, allowed);
-                } else if (cockpitMode.isFinalizeBuildPossible() && !syncBaseItem.isBuildup() && isNotMyself(syncBaseItem)) {
-                    setCursor(CursorType.FINALIZE_BUILD, selectionHandler.atLeastOneItemTypeAllowed2FinalizeBuild(syncBaseItem));
-                } else {
+        if (baseItemUiService.isMyOwnProperty(syncBaseItem)) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD && baseItemType.getItemContainerType() != null) {
+                // TODO
+                setPointerCursor();
+//                SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
+//                boolean allowed = syncItemContainer.atLeastOneAllowedToLoad(selectionHandler.getOwnSelection().getItems());
+//                setCursor(CursorType.LOAD, allowed);
+            } else {
+                if (!syncBaseItem.checkBuildup()) {
+                    Collection<SyncBaseItemSimpleDto> builder = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
+                    if (!builder.isEmpty()) {
+                        setCursor(CursorType.FINALIZE_BUILD, true);
+                    } else {
+                        setPointerCursor();
+                    }
                     setPointerCursor();
                 }
-            } else if (gameUiControl.isEnemy(syncBaseItem)) {
-                if (cockpitMode.isAttackPossible()) {
-                    setCursor(CursorType.ATTACK, selectionHandler.atLeastOneItemTypeAllowed2Attack4Selection(syncBaseItem));
-                } else {
-                    setPointerCursor();
-                }
+            }
+        } else if (baseItemUiService.isEnemy(syncBaseItem)) {
+            Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
+            if (!attackers.isEmpty()) {
+                setCursor(CursorType.ATTACK, true);
             } else {
                 setPointerCursor();
             }
-        } else if (cockpitMode.isCollectPossible() && syncItem instanceof SyncResourceItem) {
+        } else {
+            setPointerCursor();
+        }
+    }
+
+    public void handleMouseOverResourceItem() {
+        if (!selectionHandler.hasOwnSelection()) {
+            setPointerCursor();
+            return;
+        }
+        Collection<SyncBaseItemSimpleDto> harvesters = selectionHandler.getOwnSelection().getHarvesters();
+        if (!harvesters.isEmpty()) {
             setCursor(CursorType.COLLECT, true);
-        } else if (cockpitMode.isMovePossible() && syncItem instanceof SyncBoxItem) {
+        } else {
+            setPointerCursor();
+        }
+    }
+
+    public void handleMouseOverBoxItem() {
+        if (!selectionHandler.hasOwnSelection()) {
+            setPointerCursor();
+            return;
+        }
+        Collection<SyncBaseItemSimpleDto> movables = selectionHandler.getOwnSelection().getMovables();
+        if (!movables.isEmpty()) {
             setCursor(CursorType.PICKUP, true);
         } else {
             setPointerCursor();
         }
     }
 
-    private boolean atLeastOnAllowedForUnload(DecimalPosition position) {
-        for (SyncBaseItem syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
-            if (syncBaseItem.getSyncItemContainer() != null) {
-                SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
-                if (syncItemContainer.atLeastOneAllowedToUnload(position)) {
-                    return true;
-                }
+    // Need to be public due to the weld proxies for the dev-tools
+    public void handleMouseOverTerrain(DecimalPosition terrainPosition) {
+        if (!selectionHandler.hasOwnSelection()) {
+            setPointerCursor();
+            return;
+        }
+        if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD) {
+            setCursor(CursorType.UNLOAD, atLeastOnAllowedForUnload(terrainPosition));
+        } else {
+            Collection<SyncBaseItemSimpleDto> movables = selectionHandler.getOwnSelection().getMovables();
+            if (!movables.isEmpty()) {
+                setCursor(CursorType.GO, !terrainUiService.overlap(terrainPosition));
+            } else {
+                setPointerCursor();
             }
         }
+    }
+
+    private boolean atLeastOnAllowedForUnload(DecimalPosition position) {
+        // TODO
+//        for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
+//            if (syncBaseItem.getSyncItemContainer() != null) {
+//                SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
+//                if (syncItemContainer.atLeastOneAllowedToUnload(position)) {
+//                    return true;
+//                }
+//            }
+//        }
         return false;
     }
 
-    private boolean isNotMyself(SyncBaseItem me) {
-        for (SyncBaseItem syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
+    private boolean isNotMyself(SyncBaseItemSimpleDto me) {
+        for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
             if (syncBaseItem.equals(me)) {
                 return false;
             }

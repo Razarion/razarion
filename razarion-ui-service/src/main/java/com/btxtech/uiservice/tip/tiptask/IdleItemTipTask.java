@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.tip.tiptask;
 
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 
 import javax.enterprise.context.Dependent;
 
@@ -32,8 +31,8 @@ public class IdleItemTipTask extends AbstractTipTask {
     }
 
     @Override
-    public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        if (syncBaseItem.getBaseItemType().getId() == actorItemTypeId) {
+    public void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
+        if (syncBaseItem.getItemTypeId() == actorItemTypeId) {
             if (areAllItemsTypeIdle()) {
                 onSucceed();
             }
@@ -41,7 +40,7 @@ public class IdleItemTipTask extends AbstractTipTask {
     }
 
     private boolean areAllItemsTypeIdle() {
-        for (SyncBaseItem syncBaseItem : findItemsOfType(actorItemTypeId)) {
+        for (SyncBaseItemSimpleDto syncBaseItem : findItemsOfType(actorItemTypeId)) {
             if (!syncBaseItem.isIdle()) {
                 return false;
             }

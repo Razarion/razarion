@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.gameengine.datatypes;
 
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -32,16 +31,18 @@ public class PlayerBase {
     private double resources;
     private String name;
     private Character character;
-    private UserContext userContext;
+    private Integer userId;
+    private Integer levelId;
     private boolean abandoned;
     private final Collection<SyncBaseItem> items = new ArrayList<>();
     private int usedHouseSpace = 0;
 
-    public PlayerBase(int baseId, String name, Character character, UserContext userContext) {
+    public PlayerBase(int baseId, String name, Character character, Integer levelId, Integer userId) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
-        this.userContext = userContext;
+        this.levelId = levelId;
+        this.userId = userId;
     }
 
     public int getBaseId() {
@@ -86,19 +87,6 @@ public class PlayerBase {
         return items.stream().filter(placeConfig::checkInside).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public Collection<SyncBaseItem> findItemsOfType(int baseItemType) {
-        return items.stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().getId() == baseItemType).collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    public SyncBaseItem findSyncBaseItemOfType(int baseItemTypeId) {
-        for (SyncBaseItem item : items) {
-            if (item.getBaseItemType().getId() == baseItemTypeId) {
-                return item;
-            }
-        }
-        throw new IllegalArgumentException("No SyncBaseItem found for type: " + baseItemTypeId + " in base: " + this);
-    }
-
     public int getUsedHouseSpace() {
         return usedHouseSpace;
     }
@@ -108,8 +96,16 @@ public class PlayerBase {
         return 0;
     }
 
-    public UserContext getUserContext() {
-        return userContext;
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public Integer getLevelId() {
+        return levelId;
+    }
+
+    public void setLevelId(Integer levelId) {
+        this.levelId = levelId;
     }
 
     public double getResources() {

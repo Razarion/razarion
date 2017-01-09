@@ -1,7 +1,7 @@
 package com.btxtech.client.cockpit.item;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.cockpit.item.OwnMultiDifferentItemPanel;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -40,7 +40,7 @@ public class ClientOwnMultiDifferentItemPanel extends Composite implements OwnMu
     private ListComponent<BaseItemTypeCount, BaseItemTypeCountPanel> selectedItemTypePanel;
 
     @Override
-    public void init(Map<BaseItemType, Collection<SyncBaseItem>> itemTypes) {
+    public void init(Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes) {
         DOMUtil.removeAllElementChildren(selectedItemTypePanel.getElement()); // Remove placeholder table row from template.
         selectedItemTypePanel.setValue(setupBaseItemTypeCounts(itemTypes));
     }
@@ -55,9 +55,9 @@ public class ClientOwnMultiDifferentItemPanel extends Composite implements OwnMu
         throw new UnsupportedOperationException();
     }
 
-    private List<BaseItemTypeCount> setupBaseItemTypeCounts(Map<BaseItemType, Collection<SyncBaseItem>> itemTypes) {
+    private List<BaseItemTypeCount> setupBaseItemTypeCounts(Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes) {
         List<BaseItemTypeCount> baseItemTypeCounts = new ArrayList<>();
-        for (Map.Entry<BaseItemType, Collection<SyncBaseItem>> entry : itemTypes.entrySet()) {
+        for (Map.Entry<BaseItemType, Collection<SyncBaseItemSimpleDto>> entry : itemTypes.entrySet()) {
             baseItemTypeCounts.add(new BaseItemTypeCount(entry.getKey(), entry.getValue().size()));
         }
         return baseItemTypeCounts;

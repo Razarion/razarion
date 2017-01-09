@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -75,15 +74,14 @@ public class BoxService {
         }
 
         BoxContent boxContent = new BoxContent();
-        box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> addBoxContentToUser(boxItemTypePossibility, picker.getBase().getUserContext(), boxContent));
+        box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> setupBoxContent(boxItemTypePossibility, boxContent));
 
         gameLogicService.onBoxPicket(box, picker, boxContent);
     }
 
-    private void addBoxContentToUser(BoxItemTypePossibility boxItemTypePossibility, UserContext userContext, BoxContent boxContent) {
+    private void setupBoxContent(BoxItemTypePossibility boxItemTypePossibility, BoxContent boxContent) {
         if (boxItemTypePossibility.getInventoryItemId() != null) {
             InventoryItem inventoryItem = inventoryService.getInventoryItem(boxItemTypePossibility.getInventoryItemId());
-            userContext.addInventoryItem(inventoryItem.getId());
             boxContent.addInventoryItem(inventoryItem);
 //            gameLogicService.onInventoryItemFromBox(userContext, syncBoxItem, boxItemTypePossibility);
 //        } else if (boxItemTypePossibility.getDbInventoryArtifact() != null) {
@@ -107,19 +105,6 @@ public class BoxService {
             throw new ItemDoesNotExistException(id);
         }
         return syncBoxItem;
-    }
-
-    public List<ModelMatrices> provideModelMatrices(BoxItemType boxItemType) {
-        List<ModelMatrices> modelMatrices = new ArrayList<>();
-        synchronized (boxes) {
-            for (SyncBoxItem syncBoxItem : boxes.values()) {
-                if (!syncBoxItem.getItemType().equals(boxItemType)) {
-                    continue;
-                }
-                modelMatrices.add(syncBoxItem.getModelMatrices());
-            }
-        }
-        return modelMatrices;
     }
 
     public void tick() {

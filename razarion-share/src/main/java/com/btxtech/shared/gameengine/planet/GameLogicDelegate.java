@@ -16,10 +16,4 @@ public interface GameLogicDelegate {
     void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp);
 
     void onSyncBaseItemRemoved(SyncBaseItem target);
-
-    void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand);
-
-    void onSyncBaseItemIdle(SyncBaseItem syncBaseItem);
-
-    void onSpawnSyncItemStart(SyncBaseItem syncBaseItem);
 }

@@ -1,11 +1,7 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
-import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerListener;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
@@ -29,7 +25,7 @@ public class SendBuildCommandTipTask extends AbstractTipTask implements BaseItem
     @Inject
     private TerrainUiService terrainUiService;
     private int toBeBuildId;
-    private SyncBaseItem toBeFinalized;
+    private SyncBaseItemSimpleDto toBeFinalized;
     private DecimalPosition positionHint;
 
     public void init(int toBeBuildId, DecimalPosition positionHint) {
@@ -40,8 +36,8 @@ public class SendBuildCommandTipTask extends AbstractTipTask implements BaseItem
 
     @Override
     public void internalStart() {
-        for (SyncBaseItem existingItem : findItemsOfType(toBeBuildId)) {
-            if (!existingItem.isBuildup()) {
+        for (SyncBaseItemSimpleDto existingItem : findItemsOfType(toBeBuildId)) {
+            if (!existingItem.checkBuildup()) {
                 toBeFinalized = existingItem;
                 break;
             }
@@ -64,13 +60,13 @@ public class SendBuildCommandTipTask extends AbstractTipTask implements BaseItem
     }
 
     @Override
-    protected void onCommandSent(BaseCommand baseCommand) {
+    protected void onCommandSent(CommandInfo commandInfo) {
         if (toBeFinalized != null) {
-            if (baseCommand instanceof BuilderFinalizeCommand && ((BuilderFinalizeCommand) baseCommand).getBuildingId() == toBeFinalized.getId()) {
+            if (commandInfo.getType() == CommandInfo.Type.FINALIZE_BUILD && commandInfo.getToBeFinalizedId() == toBeFinalized.getId()) {
                 onSucceed();
             }
         } else {
-            if (baseCommand instanceof BuilderCommand && ((BuilderCommand) baseCommand).getToBeBuiltId() == toBeBuildId) {
+            if (commandInfo.getType() == CommandInfo.Type.BUILD && commandInfo.getToBeBuiltId() == toBeBuildId) {
                 onSucceed();
             }
         }

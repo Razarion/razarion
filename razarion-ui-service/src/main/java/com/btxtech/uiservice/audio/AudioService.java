@@ -1,7 +1,9 @@
 package com.btxtech.uiservice.audio;
 
 import com.btxtech.shared.dto.AudioConfig;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
@@ -23,6 +25,8 @@ public abstract class AudioService implements TerrainScrollListener {
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private ItemTypeService itemTypeService;
     private AudioConfig audioConfig;
     private double lastLandWaterProportion = -1;
 
@@ -57,12 +61,13 @@ public abstract class AudioService implements TerrainScrollListener {
         }
     }
 
-    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
-        Integer audioId = syncBaseItem.getBaseItemType().getSpawnAudioId();
+    public void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+        Integer audioId = baseItemType.getSpawnAudioId();
         if (audioId == null) {
             return;
         }
-        if (terrainScrollHandler.getCurrentViewField().isInside(syncBaseItem.getSyncPhysicalArea().getPosition2d())) {
+        if (terrainScrollHandler.getCurrentViewField().isInside(syncBaseItem.getPosition2d())) {
             playAudio(audioId);
         }
     }
@@ -78,10 +83,13 @@ public abstract class AudioService implements TerrainScrollListener {
     }
 
     public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
+        if (selectionEvent.isSuppressAudio()) {
+            return;
+        }
         switch (selectionEvent.getType()) {
 
             case CLEAR:
-                if (!selectionEvent.isDueToNewSelection() && audioConfig.getOnSelectionCleared() != null) {
+                if (audioConfig.getOnSelectionCleared() != null) {
                     playAudio(audioConfig.getOnSelectionCleared());
                 }
                 break;
@@ -96,9 +104,9 @@ public abstract class AudioService implements TerrainScrollListener {
                     }
                 }
                 break;
-            case TARGET:
-                if (audioConfig.getOnTargetSelection() != null) {
-                    playAudio(audioConfig.getOnTargetSelection());
+            case OTHER:
+                if (audioConfig.getOnOtherSelection() != null) {
+                    playAudio(audioConfig.getOnOtherSelection());
                 }
                 break;
         }

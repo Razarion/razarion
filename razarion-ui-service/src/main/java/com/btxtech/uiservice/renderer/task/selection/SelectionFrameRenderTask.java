@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer.task.selection;
 
 import com.btxtech.uiservice.GroupSelectionFrame;
-import com.btxtech.uiservice.cockpit.CockpitMode;
+import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -17,16 +17,18 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class SelectionFrameRenderTask extends AbstractRenderTask<GroupSelectionFrame> {
     @Inject
-    private CockpitMode cockpitMode;
+    private SelectionHandler selectionHandler;
+    private boolean active;
 
     @Override
     public boolean isActive() {
-        return cockpitMode.hasGroupSelectionFrame();
+        return active;
     }
 
     public void startGroupSelection(GroupSelectionFrame groupSelectionFrame) {
         clear();
         setupRenderer(groupSelectionFrame);
+        active = true;
     }
 
     public void onMove(GroupSelectionFrame groupSelectionFrame) {
@@ -35,6 +37,7 @@ public class SelectionFrameRenderTask extends AbstractRenderTask<GroupSelectionF
     }
 
     public void stop() {
+        active = false;
         clear();
     }
 

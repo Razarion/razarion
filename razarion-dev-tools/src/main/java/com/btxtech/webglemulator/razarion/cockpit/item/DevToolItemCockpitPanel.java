@@ -37,13 +37,17 @@ public class DevToolItemCockpitPanel implements ItemCockpitPanel {
 
     @Override
     public void setInfoPanel(Object infoPanel) {
-        webGlEmulatorController.getItemCockpitPanel().getChildren().add((Node) infoPanel);
+        Platform.runLater(() -> {
+            webGlEmulatorController.getItemCockpitPanel().getChildren().add((Node) infoPanel);
+        });
     }
 
     @Override
     public void setBuildupItemPanel(BuildupItemPanel buildupItemPanel) {
         DevToolBuildupItemPanel devToolBuildupItemPanel = (DevToolBuildupItemPanel) buildupItemPanel;
-        webGlEmulatorController.getItemCockpitPanel().getChildren().add(devToolBuildupItemPanel.getHBox());
+        Platform.runLater(() -> {
+            webGlEmulatorController.getItemCockpitPanel().getChildren().add(devToolBuildupItemPanel.getHBox());
+        });
     }
 
     @Override
@@ -53,6 +57,8 @@ public class DevToolItemCockpitPanel implements ItemCockpitPanel {
 
     @Override
     public void showPanel(boolean visible) {
-        webGlEmulatorController.getItemCockpitPanel().setVisible(visible);
+        Platform.runLater(() -> {
+            webGlEmulatorController.getItemCockpitPanel().setVisible(visible);
+        });
     }
 }

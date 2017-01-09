@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -11,10 +12,12 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class UnlockService {
+
     public boolean isItemLocked(BaseItemType baseItemType, PlayerBase playerBase) {
-        return baseItemType.unlockNeeded()
-                && !playerBase.getCharacter().isBot()
-                && playerBase.getUserContext().containsUnlockedItemTypeId(baseItemType.getId());
+        return false;
+//        return baseItemType.unlockNeeded()
+//                && !playerBase.getCharacter().isBot()
+//                && playerBase.getUserContext().containsUnlockedItemTypeId(baseItemType.getId());
     }
 
     // TODO boolean isQuestLocked(QuestInfo questInfo, PlayerBase simpleBase);

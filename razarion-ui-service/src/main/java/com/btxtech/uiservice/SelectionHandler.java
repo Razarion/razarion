@@ -13,26 +13,25 @@
 
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.datatypes.Group;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.CommandService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.BoxUiService;
+import com.btxtech.uiservice.item.ResourceUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -41,19 +40,22 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class SelectionHandler {
-    private Logger logger = Logger.getLogger(SelectionHandler.class.getName());
-    @Inject
-    private CommandService commandService;
-    @Inject
-    private SyncItemContainerService syncItemContainerService;
-    @Inject
-    private GameUiControl gameUiControl;
+    // private Logger logger = Logger.getLogger(SelectionHandler.class.getName());
     @Inject
     private Event<SelectionEvent> selectionEventEventTrigger;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
-    private Group selectedGroup; // Always my property
-    private SyncItem selectedTargetSyncItem; // Not my property
+    @Inject
+    private Instance<Group> groupInstance;
+    @Inject
+    private BaseItemUiService baseItemUiService;
+    @Inject
+    private ResourceUiService resourceUiService;
+    @Inject
+    private BoxUiService boxUiService;
+    private Group selectedGroup;
+    private SyncItemSimpleDto selectedOtherSyncItem;
 
     public Group getOwnSelection() {
         return selectedGroup;
@@ -63,147 +65,85 @@ public class SelectionHandler {
         return selectedGroup != null && !selectedGroup.isEmpty();
     }
 
-    public Collection<SurfaceType> getOwnSelectionSurfaceTypes() {
-        if (selectedGroup != null) {
-            return selectedGroup.getAllowedSurfaceTypes();
-        } else {
-            return new HashSet<>();
-        }
+    private void setOtherItemSelected(SyncItemSimpleDto syncBaseItem) {
+        clearSelection(true);
+        selectedOtherSyncItem = syncBaseItem;
+        selectionEventEventTrigger.fire(new SelectionEvent(syncBaseItem));
     }
 
-    public boolean atLeastOneItemTypeAllowed2Attack4Selection(SyncBaseItem syncBaseItem) {
-        return selectedGroup == null || selectedGroup.atLeastOneItemTypeAllowed2Attack(syncBaseItem);
-    }
-
-    public boolean atLeastOneItemTypeAllowed2FinalizeBuild(SyncBaseItem tobeFinalized) {
-        return selectedGroup == null || selectedGroup.atLeastOneItemTypeAllowed2FinalizeBuild(tobeFinalized);
-    }
-
-    public Collection<SyncBaseItem> getAllowed2FinalizeBuild(SyncBaseItem ableToBuild) {
-        if (selectedGroup == null) {
-            throw new IllegalStateException("selectedGroup == null");
-        }
-        Collection<SyncBaseItem> builders = selectedGroup.getBuilders(ableToBuild.getBaseItemType());
-        if (builders.isEmpty()) {
-            throw new IllegalStateException("builders.isEmpty()");
-        }
-        return builders;
-    }
-
-    public void setTargetSelected(SyncItem target) {
-        if (selectedGroup != null) {
-            if (selectedGroup.canAttack() && target instanceof SyncBaseItem) {
-                audioService.onCommandSent();
-                commandService.attack(selectedGroup.getItems(), (SyncBaseItem) target);
-            } else if (selectedGroup.canCollect() && target instanceof SyncResourceItem) {
-                audioService.onCommandSent();
-                commandService.harvest(selectedGroup.getItems(), (SyncResourceItem) target);
-            } else if (selectedGroup.canMove() && target instanceof SyncBoxItem) {
-                audioService.onCommandSent();
-                commandService.pickupBox(selectedGroup.getMovables(), (SyncBoxItem) target);
-            }
-        } else {
-            // TODO this may be wrong
-            this.selectedTargetSyncItem = target;
-            onTargetSelectionItemChanged(this.selectedTargetSyncItem);
-        }
-    }
-
-    public void setItemGroupSelected(Group selectedGroup) {
-//    TODO    if (hasOwnSelection() && selectedGroup.getCount() == 1) {
-//    TODO        if (selectedGroup.getFirst().hasSyncItemContainer()) {
-//    TODO            if (!this.selectedGroup.equals(selectedGroup) && this.selectedGroup.canMove()) {
-//    TODO                commandService.loadContainer(selectedGroup.getFirst(), this.selectedGroup.getItems());
-//    TODO                clearSelection();
-//    TODO                return;
-//    TODO            }
-//    TODO        } else if (!selectedGroup.getFirst().isBuildup()) {
-//    TODO            commandService.finalizeBuild(this.selectedGroup.getItems(), selectedGroup.getFirst());
-//    TODO            return;
-//    TODO        }
-//    TODO    }
+    private void setItemGroupSelected(Group selectedGroup) {
         clearSelection(true);
         this.selectedGroup = selectedGroup;
-        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup));
+        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, true));
     }
 
     public void selectRectangle(Rectangle2D rectangle) {
-        Collection<SyncItem> selectedItems = syncItemContainerService.findItemsInRect(rectangle);
-        if (selectedItems.isEmpty()) {
-            clearSelection(false);
-        } else {
-            SyncItem other = null;
-            Collection<SyncBaseItem> own = new ArrayList<>();
-            for (SyncItem selectedItem : selectedItems) {
-                if (selectedItem instanceof SyncBaseItem) {
-                    SyncBaseItem syncBaseItem = (SyncBaseItem) selectedItem;
-                    if (gameUiControl.isMyOwnProperty(syncBaseItem)) {
-                        own.add(syncBaseItem);
-                    } else {
-                        other = syncBaseItem;
-                    }
+        Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.findItemsInRect(rectangle);
+        if (selectedBaseItems != null) {
+            Collection<SyncBaseItemSimpleDto> own = new ArrayList<>();
+            SyncBaseItemSimpleDto other = null;
+            for (SyncBaseItemSimpleDto selectedSyncBaseItem : selectedBaseItems) {
+                if (baseItemUiService.isMyOwnProperty(selectedSyncBaseItem)) {
+                    own.add(selectedSyncBaseItem);
                 } else {
-                    other = selectedItem;
+                    other = selectedSyncBaseItem;
+                }
+                if (!own.isEmpty()) {
+                    Group group = groupInstance.get();
+                    group.setItems(own);
+                    setItemGroupSelected(group);
+                } else {
+                    setOtherItemSelected(other);
                 }
             }
-
-            if (!own.isEmpty()) {
-                setItemGroupSelected(new Group(own));
-            } else if (other != null) {
-                onTargetSelectionItemChanged(other);
-            } else {
-                logger.warning("SelectionHandler.selectRectangle() unknown state");
-            }
-
+            return;
         }
+        Collection<SyncBoxItemSimpleDto> selectedBoxItems = boxUiService.findItemsInRect(rectangle);
+        if (selectedBoxItems != null) {
+            setOtherItemSelected(CollectionUtils.getFirst(selectedBoxItems));
+            return;
+        }
+
+        Collection<SyncResourceItemSimpleDto> selectedResourceItems = resourceUiService.findItemsInRect(rectangle);
+        if (selectedResourceItems != null) {
+            setOtherItemSelected(CollectionUtils.getFirst(selectedResourceItems));
+            return;
+        }
+
+        clearSelection(false);
     }
 
     public void keepOnlyOwnOfType(BaseItemType baseItemType) {
         selectedGroup.keepOnlyOwnOfType(baseItemType);
-        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup));
+        selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, true));
     }
 
     public void clearSelection(boolean dueToNewSelection) {
-        selectedTargetSyncItem = null;
+        selectedOtherSyncItem = null;
         selectedGroup = null;
         selectionEventEventTrigger.fire(new SelectionEvent(dueToNewSelection));
     }
 
-    private void onTargetSelectionItemChanged(SyncItem target) {
-        selectionEventEventTrigger.fire(new SelectionEvent(target));
-    }
-
-    @Deprecated
-    private void fireOwnItemSelectionChanged(Group selection) {
-//  TODO      for (SelectionListener listener : new ArrayList<SelectionListener>(listeners)) {
-//            listener.onOwnSelectionChanged(selection);
-//        }
-    }
-
-    public void itemKilled(SyncItem syncItem) {
-        if (syncItem.equals(selectedTargetSyncItem)) {
-            clearSelection(false);
-        }
-
-        if (selectedGroup != null && syncItem instanceof SyncBaseItem && selectedGroup.contains((SyncBaseItem) syncItem)) {
-            selectedGroup.remove((SyncBaseItem) syncItem);
+    public void baseItemRemoved(SyncBaseItemSimpleDto syncBaseItem) { // TODO call this method
+        if (selectedGroup != null && selectedGroup.contains(syncBaseItem)) {
+            selectedGroup.remove(syncBaseItem);
             if (selectedGroup.isEmpty()) {
-                clearSelection(false);
+                clearSelection(true);
             } else {
-                fireOwnItemSelectionChanged(selectedGroup);
+                selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, true));
             }
         }
     }
 
-    public void refresh() {
-        if (selectedGroup != null) {
-            setItemGroupSelected(selectedGroup);
-        } else if (selectedTargetSyncItem != null) {
-            onTargetSelectionItemChanged(selectedTargetSyncItem);
+    public void boxItemRemove(SyncBoxItemSimpleDto syncBoxItem) { // TODO call this method
+        if (syncBoxItem.equals(selectedOtherSyncItem)) {
+            clearSelection(false);
         }
     }
 
-    public SyncItem getSelectedTargetSyncItem() {
-        return selectedTargetSyncItem;
+    public void resourceItemRemove(SyncResourceItemSimpleDto syncResourceItem) { // TODO call this method
+        if (syncResourceItem.equals(selectedOtherSyncItem)) {
+            clearSelection(false);
+        }
     }
 }

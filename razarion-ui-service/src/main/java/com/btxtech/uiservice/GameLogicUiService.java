@@ -19,6 +19,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 30.11.2016.
  */
+@Deprecated
 @ApplicationScoped
 public class GameLogicUiService implements GameLogicDelegate {
     private Logger logger = Logger.getLogger(GameLogicUiService.class.getName());
@@ -27,18 +28,16 @@ public class GameLogicUiService implements GameLogicDelegate {
     @Inject
     private ClipService clipService;
     @Inject
-    private SelectionHandler selectionHandler;
-    @Inject
     private GameTipService gameTipService;
-    @Inject
-    private AudioService audioService;
 
     public void onVisualConfig(@Observes VisualConfig visualConfig) {
         gameLogicService.setGameLogicDelegate(this);
     }
 
     @Override
+    @Deprecated
     public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex muzzleDirection, Integer clipId, long timeStamp) {
+        // TODO
         if (clipId != null) {
             clipService.playClip(muzzlePosition, muzzleDirection, clipId, timeStamp);
         } else {
@@ -47,7 +46,9 @@ public class GameLogicUiService implements GameLogicDelegate {
     }
 
     @Override
+    @Deprecated
     public void onProjectileDetonation(SyncBaseItem syncBaseItem, Vertex position, Integer clipId, long timeStamp) {
+        // TODO
         if (clipId != null) {
             clipService.playClip(position, clipId, timeStamp);
         } else {
@@ -56,33 +57,18 @@ public class GameLogicUiService implements GameLogicDelegate {
     }
 
     @Override
+    @Deprecated
     public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
+        // TODO
         if (target.getBaseItemType().getExplosionClipId() != null) {
             clipService.playClip(target.getSyncPhysicalArea().getPosition3d(), target.getBaseItemType().getExplosionClipId(), timeStamp);
         } else {
             logger.warning("No explosion ClipId configured for: " + target);
         }
-        selectionHandler.itemKilled(target);
     }
 
     @Override
+    @Deprecated
     public void onSyncBaseItemRemoved(SyncBaseItem target) {
-        selectionHandler.itemKilled(target);
-    }
-
-    @Override
-    public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
-        gameTipService.onCommandSent(syncItem, baseCommand);
-    }
-
-    @Override
-    public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        gameTipService.onSyncBaseItemIdle(syncBaseItem);
-    }
-
-    @Override
-    public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        gameTipService.onSpawnSyncItem(syncBaseItem);
-        audioService.onSpawnSyncItem(syncBaseItem);
     }
 }

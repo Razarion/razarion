@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.PlanetTickListener;
 import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.annotation.PostConstruct;
@@ -18,7 +17,7 @@ import java.util.function.Function;
  * 16.11.2016.
  */
 @ApplicationScoped
-public class CockpitService implements PlanetTickListener {
+public class CockpitService {
     @Inject
     private PlanetService planetService;
     @Inject
@@ -32,21 +31,17 @@ public class CockpitService implements PlanetTickListener {
 
     @PostConstruct
     public void postConstruct() {
-        planetService.addTickListener(this); // TODO does not work. This code is in the worker now
         sideCockpit = sideCockpitInstance.get();
         sideCockpit.show();
     }
 
-    public void init() {
-        // TODO set planet info
-    }
-
-    @Override
-    public void onPostTick() {
-        sideCockpit.displayResources(gameUiControl.getResources());
-        UserContext userContext = gameUiControl.getUserContext();
+    public void updateLevelAndXp(UserContext userContext) {
         sideCockpit.displayXps(userContext.getXp());
         sideCockpit.displayLevel(levelService.getLevel(userContext.getLevelId()).getNumber());
+    }
+
+    public void updateResource(int resource) {
+        sideCockpit.displayResources(resource);
     }
 
     public Rectangle getInventoryButtonLocation() {

@@ -27,7 +27,7 @@ public class AbstractConditionProgress {
     private ConditionTrigger conditionTrigger;
     private AbstractComparison abstractComparison;
     private boolean fulfilled = false;
-    private UserContext examinee;
+    private int userId;
     private QuestConfig questConfig;
 
     public AbstractConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
@@ -39,8 +39,8 @@ public class AbstractConditionProgress {
         }
     }
 
-    public void setExaminee(UserContext examinee) {
-        this.examinee = examinee;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public ConditionTrigger getConditionTrigger() {
@@ -59,8 +59,8 @@ public class AbstractConditionProgress {
         fulfilled = true;
     }
 
-    public UserContext getExaminee() {
-        return examinee;
+    public int getUserId() {
+        return userId;
     }
 
     public void setQuestConfig(QuestConfig questConfig) {

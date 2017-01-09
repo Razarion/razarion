@@ -1,17 +1,13 @@
 package com.btxtech.uiservice.tip.tiptask;
 
-import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.tip.visualization.InGameItemTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * User: beat
@@ -21,7 +17,7 @@ import java.util.Collection;
 @Dependent
 public class SendAttackCommandTipTask extends AbstractTipTask {
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private BaseItemUiService baseItemUiService;
     private Integer targetItemTypeId;
     private PlaceConfig placeConfig;
 
@@ -45,17 +41,18 @@ public class SendAttackCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    protected void onCommandSent(BaseCommand baseCommand) {
-        if (baseCommand instanceof AttackCommand) {
+    protected void onCommandSent(CommandInfo commandInfo) {
+        if (commandInfo.getType() == CommandInfo.Type.ATTACK) {
             onSucceed();
         }
     }
 
+    @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        Collection<SyncBaseItem> targets = syncItemContainerService.findEnemyBaseItemWithPlace(null, getPlayerBase(), placeConfig);
-        if (targets.isEmpty()) {
+        SyncBaseItemSimpleDto target = baseItemUiService.findEnemyItemWithPlace(placeConfig);
+        if (target == null) {
             throw new IllegalArgumentException("Can not create visualization. No target available to attack. targetItemTypeId: " + targetItemTypeId + " placeConfig: " + placeConfig);
         }
-        return new InGameItemTipVisualization(CollectionUtils.getFirst(targets), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getAttackCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+        return new InGameItemTipVisualization(target, getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getAttackCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

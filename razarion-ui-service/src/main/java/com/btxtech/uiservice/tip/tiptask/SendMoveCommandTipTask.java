@@ -1,8 +1,6 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.visualization.InGamePositionTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
@@ -40,8 +38,8 @@ public class SendMoveCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    protected void onCommandSent(BaseCommand baseCommand) {
-        if (baseCommand instanceof MoveCommand) {
+    protected void onCommandSent(CommandInfo commandInfo) {
+        if (commandInfo.getType() == CommandInfo.Type.MOVE) {
             onSucceed();
         }
     }

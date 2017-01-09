@@ -1,21 +1,20 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 
-import com.btxtech.shared.datatypes.Group;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.uiservice.Group;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
@@ -44,7 +43,7 @@ public abstract class AbstractTipTask {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private BaseItemService baseItemService;
+    private BaseItemUiService baseItemUiService;
     private GameTipService gameTipService;
     private boolean failOnSelectionCleared;
     private boolean failOnTargetSelectionChanged;
@@ -79,15 +78,15 @@ public abstract class AbstractTipTask {
     }
 
     // Override ins subclasses
-    protected void onCommandSent(BaseCommand baseCommand) {
+    protected void onCommandSent(CommandInfo commandInfo) {
     }
 
     // Override ins subclasses
-    protected void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
+    protected void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
     }
 
     // Override ins subclasses
-    protected void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+    protected void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
     }
 
     // Override ins subclasses
@@ -102,7 +101,7 @@ public abstract class AbstractTipTask {
     protected void onInventoryItemPlacerActivated(InventoryItem inventoryItem) {
     }
 
-    protected void onFailed() {
+    void onFailed() {
         cleanup();
         gameTipService.onTaskFailed();
     }
@@ -132,7 +131,7 @@ public abstract class AbstractTipTask {
                 onOwnSelectionChanged(selectionEvent.getSelectedGroup());
                 break;
             }
-            case TARGET: {
+            case OTHER: {
                 if (failOnTargetSelectionChanged) {
                     onFailed();
                 }
@@ -151,12 +150,12 @@ public abstract class AbstractTipTask {
         failOnTargetSelectionChanged = true;
     }
 
-    Group getOwnSelection() {
+    private Group getOwnSelection() {
         return selectionHandler.getOwnSelection();
     }
 
     boolean isSingleSelection(int selectedItemTypeId, Group selectedGroup) {
-        Map<BaseItemType, Collection<SyncBaseItem>> selectedItemTypes = selectedGroup.getGroupedItems();
+        Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> selectedItemTypes = selectedGroup.getGroupedItems();
         return selectedItemTypes.size() == 1 && CollectionUtils.getFirst(selectedItemTypes.keySet()).getId() == selectedItemTypeId;
     }
 
@@ -169,15 +168,11 @@ public abstract class AbstractTipTask {
         questVisualizer.setShowInGameVisualisation(show);
     }
 
-    PlayerBase getPlayerBase() {
-        return baseItemService.getPlayerBase(gameUiControl.getUserContext());
-    }
-
     GameTipVisualConfig getGameTipVisualConfig() {
         return gameUiControl.getGameUiControlConfig().getGameTipVisualConfig();
     }
 
-    Collection<SyncBaseItem> findItemsOfType(int baseItemTypeId) {
-        return gameUiControl.getMyBase().findItemsOfType(baseItemTypeId);
+    Collection<SyncBaseItemSimpleDto> findItemsOfType(int baseItemTypeId) {
+        return baseItemUiService.findMyItemsOfType(baseItemTypeId);
     }
 }

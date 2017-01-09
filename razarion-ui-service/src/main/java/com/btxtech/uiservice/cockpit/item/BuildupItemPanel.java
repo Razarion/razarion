@@ -1,18 +1,19 @@
 package com.btxtech.uiservice.cockpit.item;
 
-import com.btxtech.shared.datatypes.Group;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.CommandService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.audio.AudioService;
+import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import com.btxtech.uiservice.control.GameUiControl;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,16 +26,20 @@ import java.util.Map;
  * 29.09.2016.
  */
 public abstract class BuildupItemPanel {
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private GameUiControl gameUiControl;
+    private GameEngineControl gameEngineControl;
+    @Inject
+    private BaseItemPlacerService baseItemPlacerService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private AudioService audioService;
+    @Inject
+    private Instance<Group> groupInstance;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private CommandService commandService;
-    @Inject
-    private BaseItemPlacerService baseItemPlacerService;
-    @Inject
-    private AudioService audioService;
+    private BaseItemUiService baseItemUiService;
     private Group selectedGroup;
     private Map<Integer, BuildupItem> buildupItems = new HashMap<>();
     private boolean hasItemsToBuild;
@@ -45,22 +50,23 @@ public abstract class BuildupItemPanel {
 
     protected abstract Rectangle getBuildButtonLocation(BuildupItem buildupItem);
 
-    public void display(SyncBaseItem syncBaseItem) {
+    public void display(SyncBaseItemSimpleDto syncBaseItem) {
         selectedGroup = null;
-        if (syncBaseItem.getSyncBuilder() != null) {
-            Group group = new Group();
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+        if (baseItemType.getBuilderType() != null) {
+            Group group = groupInstance.get();
             group.addItem(syncBaseItem);
             selectedGroup = group;
             setupBuildupItemsCV(group);
-        } else if (syncBaseItem.getSyncFactory() != null) {
-            Group group = new Group();
+        } else if (baseItemType.getFactoryType() != null) {
+            Group group = groupInstance.get();
             group.addItem(syncBaseItem);
             selectedGroup = group;
             setupBuildupItemsFactory(group);
         }
     }
 
-    public void display(Group selectedGroup) {
+    void display(Group selectedGroup) {
         this.selectedGroup = selectedGroup;
         if (selectedGroup.onlyConstructionVehicle()) {
             setupBuildupItemsCV(selectedGroup);
@@ -72,10 +78,10 @@ public abstract class BuildupItemPanel {
     private void setupBuildupItemsCV(Group constructionVehicles) throws NoSuchItemTypeException {
         clear();
         hasItemsToBuild = false;
-        Collection<Integer> itemTypeIds = constructionVehicles.getFirst().getBaseItemType().getBuilderType().getAbleToBuild();
+        Collection<Integer> itemTypeIds = itemTypeService.getBaseItemType(constructionVehicles.getFirst().getItemTypeId()).getBuilderType().getAbleToBuild();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
-            if (gameUiControl.getMyLimitation4ItemType(itemTypeId) == 0) {
+            if (baseItemUiService.getMyLimitation4ItemType(itemTypeId) == 0) {
                 continue;
             }
             hasItemsToBuild = true;
@@ -83,7 +89,7 @@ public abstract class BuildupItemPanel {
             BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemTypeId);
             buildupItems.add(setupBuildupBlock(itemType, () -> baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
                 audioService.onCommandSent();
-                commandService.build(constructionVehicles.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
+                gameEngineControl.buildCmd(constructionVehicles.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
             })));
         }
         setBuildupItem(buildupItems);
@@ -92,17 +98,17 @@ public abstract class BuildupItemPanel {
     private void setupBuildupItemsFactory(Group factories) throws NoSuchItemTypeException {
         clear();
         hasItemsToBuild = false;
-        Collection<Integer> itemTypeIds = factories.getFirst().getBaseItemType().getFactoryType().getAbleToBuildId();
+        Collection<Integer> itemTypeIds = itemTypeService.getBaseItemType(factories.getFirst().getItemTypeId()).getFactoryType().getAbleToBuildId();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
-            if (gameUiControl.getMyLimitation4ItemType(itemTypeId) == 0) {
+            if (baseItemUiService.getMyLimitation4ItemType(itemTypeId) == 0) {
                 continue;
             }
             hasItemsToBuild = true;
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
             buildupItems.add(setupBuildupBlock(itemType, () -> {
                 audioService.onCommandSent();
-                commandService.fabricate(factories.getItems(), itemType);
+                gameEngineControl.fabricateCmd(factories.getItems(), itemType);
             }));
         }
         setBuildupItem(buildupItems);

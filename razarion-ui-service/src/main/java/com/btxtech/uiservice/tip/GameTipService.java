@@ -3,15 +3,18 @@ package com.btxtech.uiservice.tip;
 import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
+import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
 import com.btxtech.uiservice.tip.tiptask.TipTaskFactory;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
@@ -22,6 +25,7 @@ import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * User: beat
@@ -43,7 +47,7 @@ public class GameTipService {
     @Inject
     private PlanetService planetService;
     @Inject
-    private GameUiControl gameUiControl;
+    private BaseItemUiService baseItemUiService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -95,20 +99,20 @@ public class GameTipService {
         }
     }
 
-    public void onCommandSent(SyncBaseItem syncBaseItem, BaseCommand baseCommand) {
-        if (tipTaskContainer != null && gameUiControl.isMyOwnProperty(syncBaseItem)) {
-            tipTaskContainer.onCommandSent(baseCommand);
+    public void onCommandSent(CommandInfo commandInfo) {
+        if (tipTaskContainer != null) {
+            tipTaskContainer.onCommandSent(commandInfo);
         }
     }
 
-    public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        if (tipTaskContainer != null && gameUiControl.isMyOwnProperty(syncBaseItem)) {
+    public void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
+        if (tipTaskContainer != null && baseItemUiService.isMyOwnProperty(syncBaseItem)) {
             tipTaskContainer.onSyncBaseItemIdle(syncBaseItem);
         }
     }
 
-    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
-        if (tipTaskContainer != null && gameUiControl.isMyOwnProperty(syncBaseItem)) {
+    public void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
+        if (tipTaskContainer != null && baseItemUiService.isMyOwnProperty(syncBaseItem)) {
             tipTaskContainer.onSpawnSyncItem(syncBaseItem);
         }
     }

@@ -2,8 +2,6 @@ package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.GuiPointingTipVisualization;
@@ -41,8 +39,8 @@ public class SendFactorizeCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    protected void onCommandSent(BaseCommand baseCommand) {
-        if (baseCommand instanceof FactoryCommand && ((FactoryCommand) baseCommand).getToBeBuiltId() == itemTypeToFactorized) {
+    protected void onCommandSent(CommandInfo commandInfo) {
+        if (commandInfo.getType() == CommandInfo.Type.FABRICATE && commandInfo.getToBeBuiltId() == itemTypeToFactorized) {
             onSucceed();
         }
     }

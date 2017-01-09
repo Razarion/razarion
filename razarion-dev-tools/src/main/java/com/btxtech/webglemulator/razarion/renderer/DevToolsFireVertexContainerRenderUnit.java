@@ -52,7 +52,7 @@ public class DevToolsFireVertexContainerRenderUnit extends AbstractFireVertexCon
 
     @Override
     protected void prepareDraw(double yTextureOffset, Matrix4 heightMatrix, double minHeight, double maxHeight) {
-        System.out.println("yTextureOffset: " + yTextureOffset);
+        // System.out.println("yTextureOffset: " + yTextureOffset);
     }
 
     @Override

@@ -1,33 +1,44 @@
 package com.btxtech.uiservice.item;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionShape3D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
+import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 28.12.2015.
  * *
  */
-@Singleton
+@ApplicationScoped
 public class BaseItemUiService {
-    // private Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
+    private Logger logger = Logger.getLogger(BaseItemUiService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -38,6 +49,14 @@ public class BaseItemUiService {
     private PlanetService planetService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private SelectionHandler selectionHandler;
+    @Inject
+    private GameUiControl gameUiControl;
+    private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
+    private PlayerBaseDto myBase;
+    private int resources;
+    private Collection<SyncBaseItemSimpleDto> syncBaseItems;
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> aliveModelMatrices = new MapList<>();
@@ -46,6 +65,8 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
+
+    // TODO selectionHandler: kill and remove items
 
     @Deprecated
     public VertexContainer getItemTypeVertexContainer(int id) {
@@ -90,6 +111,7 @@ public class BaseItemUiService {
     }
 
     public void updateSyncBaseItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+        this.syncBaseItems = syncBaseItems;
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
         aliveModelMatrices.clear();
@@ -99,8 +121,8 @@ public class BaseItemUiService {
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getBaseItemTypeId());
-            if (!terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition(), baseItemType.getPhysicalAreaConfig().getRadius())) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (!terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
                 continue;
             }
@@ -146,5 +168,134 @@ public class BaseItemUiService {
                 builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction));
             }
         }
+    }
+
+    public void addBase(PlayerBaseDto playerBase) {
+        synchronized (bases) {
+            if (bases.put(playerBase.getBaseId(), playerBase) != null) {
+                logger.warning("Base already exists: " + playerBase);
+            }
+            if (playerBase.getUserId() != null && playerBase.getUserId() == gameUiControl.getUserContext().getUserId()) {
+                myBase = playerBase;
+            }
+        }
+    }
+
+    public void removeBase(int baseId) {
+        synchronized (bases) {
+            if (bases.remove(baseId) == null) {
+                logger.warning("Base does not exist already exists: " + baseId);
+            }
+            if (myBase != null && myBase.getBaseId() == baseId) {
+                myBase = null;
+            }
+        }
+    }
+
+    public PlayerBaseDto getBase(int baseId) {
+        synchronized (bases) {
+            PlayerBaseDto base = bases.get(baseId);
+            if (base == null) {
+                throw new IllegalArgumentException("No such base: " + baseId);
+            }
+            return base;
+        }
+    }
+
+    public PlayerBaseDto getBase(SyncBaseItemSimpleDto syncBaseItem) {
+        return getBase(syncBaseItem.getBaseId());
+    }
+
+    public PlayerBaseDto getMyBase() {
+        return myBase;
+    }
+
+    public boolean isMyOwnProperty(SyncBaseItemSimpleDto syncBaseItem) {
+        return myBase != null && syncBaseItem.getBaseId() == myBase.getBaseId();
+    }
+
+    public boolean isEnemy(SyncBaseItemSimpleDto syncBaseItem) {
+        return getBase(syncBaseItem).getCharacter().isEnemy(getMyBase().getCharacter());
+    }
+
+    public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (syncBaseItem.getPosition2d().getDistance(decimalPosition) <= baseItemType.getPhysicalAreaConfig().getRadius()) {
+                return syncBaseItem;
+            }
+        }
+        return null;
+    }
+
+    public Collection<SyncBaseItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
+        Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (rectangle.adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
+                result.add(syncBaseItem);
+            }
+        }
+        return result;
+    }
+
+    public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId) {
+        Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (!isMyOwnProperty(syncBaseItem)) {
+                continue;
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (baseItemType.getId() == baseItemTypeId) {
+                result.add(syncBaseItem);
+            }
+        }
+        return result;
+    }
+
+    public SyncItemSimpleDto findMyItemOfType(int baseItemTypeId) {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (!isMyOwnProperty(syncBaseItem)) {
+                continue;
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (baseItemType.getId() == baseItemTypeId) {
+                return syncBaseItem;
+            }
+        }
+        return null;
+    }
+
+    public SyncBaseItemSimpleDto findEnemyItemWithPlace(PlaceConfig placeConfig) {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (!isEnemy(syncBaseItem)) {
+                continue;
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (placeConfig.checkInside(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
+                return syncBaseItem;
+            }
+        }
+        return null;
+    }
+
+    public int getResources() {
+        return resources;
+    }
+
+    public void setResources(int resources) {
+        this.resources = resources;
+    }
+
+    public int getMyLimitation4ItemType(Integer itemTypeId) {
+        return 1; // TODO
+    }
+
+    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType baseItemType, int baseItemTypeCount) {
+        return false;// TODO
+    }
+
+    public boolean isHouseSpaceExceeded(BaseItemType baseItemType, int baseItemTypeCount) {
+        return false; // TODO
     }
 }

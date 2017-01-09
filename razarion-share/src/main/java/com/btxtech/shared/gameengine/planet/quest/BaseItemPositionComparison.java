@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.gameengine.planet.quest;
 
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -38,16 +37,16 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
     private Map<BaseItemType, Integer> itemTypes;
     private PlaceConfig placeConfig;
     private Integer time;
-    private UserContext examinee;
+    private int userId;
     private boolean isFulfilled = false;
     private final Collection<SyncBaseItem> fulfilledItems = new HashSet<>();
     private Long fulfilledTimeStamp;
 
-    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer time, boolean addExistingItems, UserContext examinee) {
+    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer time, boolean addExistingItems, int userId) {
         this.itemTypes = itemTypes;
         this.placeConfig = placeConfig;
         this.time = time;
-        this.examinee = examinee;
+        this.userId = userId;
         if (addExistingItems) {
             addInitial();
             checkFulfilled();
@@ -83,7 +82,7 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
     }
 
     private void addInitial() {
-        PlayerBase playerBase = baseItemService.getPlayerBase(examinee);
+        PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userId);
         if (playerBase == null) {
             return;
         }

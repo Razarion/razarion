@@ -5,8 +5,8 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -28,7 +28,7 @@ public class BoxItemRenderTask extends AbstractRenderTask<BoxItemType> {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private BoxService boxService;
+    private BoxUiService boxUiService;
     @Inject
     private Shape3DUiService shape3DUiService;
 
@@ -45,7 +45,7 @@ public class BoxItemRenderTask extends AbstractRenderTask<BoxItemType> {
     private void setupBoxItemType(BoxItemType boxItemType, boolean fillBuffer) {
         if (boxItemType.getShape3DId() != null) {
             ModelRenderer<BoxItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(boxItemType, timeStamp -> boxService.provideModelMatrices(boxItemType));
+            modelRenderer.init(boxItemType, timeStamp -> boxUiService.provideModelMatrices(boxItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(boxItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {

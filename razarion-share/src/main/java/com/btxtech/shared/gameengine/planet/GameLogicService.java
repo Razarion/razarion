@@ -1,10 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.ModalDialogManager;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
@@ -40,15 +37,16 @@ public class GameLogicService {
     private QuestService questService;
     @Inject
     private BotService botService;
+    private Optional<GameLogicListener> gameLogicListener;
     private Optional<GameLogicDelegate> gameLogicDelegate = Optional.empty();
-    private ModalDialogManager modalDialogManager;
 
-    public void setModalDialogManager(ModalDialogManager modalDialogManager) {
-        this.modalDialogManager = modalDialogManager;
-    }
-
+    @Deprecated
     public void setGameLogicDelegate(GameLogicDelegate gameLogicDelegate) {
         this.gameLogicDelegate = Optional.of(gameLogicDelegate);
+    }
+
+    public void setGameLogicListener(GameLogicListener gameLogicListener) {
+        this.gameLogicListener = Optional.of(gameLogicListener);
     }
 
     public void onInsufficientFundsException(InsufficientFundsException e) {
@@ -78,7 +76,6 @@ public class GameLogicService {
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
         // TODO connectionService.sendSyncInfo(syncItem);
         System.out.println("GameLogicService.onCommandSent() " + syncItem + " " + baseCommand);
-        gameLogicDelegate.ifPresent(delegate -> delegate.onCommandSent(syncItem, baseCommand));
     }
 
     public void onInvalidPath(BaseCommand baseCommand) {
@@ -102,16 +99,22 @@ public class GameLogicService {
     }
 
     public void onBaseCreated(PlayerBase playerBase) {
-        // TODO sendBaseChangedPacket(BaseChangedPacket.Type.CREATED, base.getSimpleBase());
         System.out.println("GameLogicService.onBaseCreated(): " + playerBase);
+        gameLogicListener.ifPresent(listener -> listener.onBaseCreated(playerBase));
     }
 
     public void onBaseKilled(PlayerBase playerBase, SyncBaseItem actor) {
         System.out.println("GameLogicService.onBaseKilled(). base: " + playerBase + " killed by: " + actor);
+        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase));
     }
 
     public void onBaseRemoved(PlayerBase playerBase) {
         System.out.println("GameLogicService.onBaseRemoved(). base: " + playerBase);
+        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase));
+    }
+
+    public void onSurrenderBase(PlayerBase playerBase) {
+        System.out.println("GameLogicService.onSurrenderBase(): " + playerBase);
     }
 
     public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
@@ -170,7 +173,8 @@ public class GameLogicService {
 
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
         System.out.println("GameLogicService.onSpawnSyncItemStart(): " + syncBaseItem);
-        gameLogicDelegate.ifPresent(delegate -> delegate.onSpawnSyncItemStart(syncBaseItem));
+        // gameLogicDelegate.ifPresent(delegate -> delegate.onSpawnSyncItemStart(syncBaseItem));
+        gameLogicListener.ifPresent(listener -> listener.onSpawnSyncItemStart(syncBaseItem));
     }
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
@@ -180,9 +184,11 @@ public class GameLogicService {
 
     public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
         System.out.println("GameLogicService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
-        gameLogicDelegate.ifPresent(delegate -> delegate.onKilledSyncBaseItem(target,  actor,  timeStamp));
+        gameLogicDelegate.ifPresent(delegate -> delegate.onKilledSyncBaseItem(target, actor, timeStamp));
 
         questService.onSyncItemKilled(target, actor);
+
+        gameLogicListener.ifPresent(listener -> listener.onSyncItemKilled(target, actor));
 
         if (target.getBase().getCharacter().isBot()) {
             botService.enrageOnKill(target, actor.getBase());
@@ -212,21 +218,23 @@ public class GameLogicService {
 
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
         System.out.println("GameLogicService.onResourceCreated(): " + syncResourceItem);
+        gameLogicListener.ifPresent(listener -> listener.onResourceCreated(syncResourceItem));
     }
 
     public void onResourceExhausted(SyncResourceItem syncResourceItem) {
         System.out.println("GameLogicService.onResourceExhausted(): " + syncResourceItem);
+        gameLogicListener.ifPresent(listener -> listener.onResourceDeleted(syncResourceItem));
     }
 
     public void onBoxCreated(SyncBoxItem syncBoxItem) {
         System.out.println("GameLogicService.onBoxCreated(): " + syncBoxItem);
+        gameLogicListener.ifPresent(listener -> listener.onBoxCreated(syncBoxItem));
     }
 
     public void onBoxPicket(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
         System.out.println("GameLogicService.onBoxPicket(): " + box + " picker: " + picker + " boxContent: " + boxContent);
-        if (modalDialogManager != null) {
-            modalDialogManager.showBoxPicked(boxContent);
-        }
+        gameLogicListener.ifPresent(listener -> listener.onBoxPicked(picker.getBase().getUserId(), boxContent));
+        gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeleted(box));
         questService.onSyncBoxItemPicked(picker);
     }
 
@@ -263,16 +271,8 @@ public class GameLogicService {
         questService.onSyncItemBuilt(syncBaseItem);
     }
 
-    public void onInventoryItemPlaced(UserContext userContext, InventoryItem inventoryItem) {
-        System.out.println("GameLogicService.onInventoryItemPlaced(): ");
-        questService.onInventoryItemPlaced(userContext, inventoryItem);
-    }
-
-    public void onSurrenderBase(PlayerBase playerBase) {
-        System.out.println("GameLogicService.onSurrenderBase(): " + playerBase);
-    }
-
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        gameLogicDelegate.ifPresent(delegate -> delegate.onSyncBaseItemIdle(syncBaseItem));
+        // gameLogicDelegate.ifPresent(delegate -> delegate.onSyncBaseItemIdle(syncBaseItem));
+        gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemIdle(syncBaseItem));
     }
 }

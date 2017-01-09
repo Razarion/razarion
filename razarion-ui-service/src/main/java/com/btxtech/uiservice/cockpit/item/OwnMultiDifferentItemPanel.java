@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.cockpit.item;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,5 +11,5 @@ import java.util.Map;
  * 29.09.2016.
  */
 public interface OwnMultiDifferentItemPanel {
-    void init(Map<BaseItemType, Collection<SyncBaseItem>> itemTypes);
+    void init(Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes);
 }

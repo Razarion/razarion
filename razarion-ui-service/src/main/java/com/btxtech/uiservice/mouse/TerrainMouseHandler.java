@@ -1,35 +1,35 @@
 package com.btxtech.uiservice.mouse;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Group;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.CommandService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.GroupSelectionFrame;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
+import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.BoxUiService;
+import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -46,6 +46,7 @@ public class TerrainMouseHandler {
     private Camera camera;
     @Inject
     private TerrainUiService terrainUiService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private CursorService cursorService;
     @Inject
@@ -62,24 +63,29 @@ public class TerrainMouseHandler {
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
-    @Inject
     private SelectionHandler selectionHandler;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private GameUiControl gameUiControl;
-    @Inject
-    private CommandService commandService;
+    private GameEngineControl gameEngineControl;
     @Inject
     private ItemCockpitService itemCockpitService;
     @Inject
     private CockpitMode cockpitMode;
     @Inject
     private SelectionFrameRenderTask renderTask;
+    @Inject
+    private BaseItemUiService baseItemUiService;
+    @Inject
+    private ResourceUiService resourceUiService;
+    @Inject
+    private BoxUiService boxUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
+    private GroupSelectionFrame groupSelectionFrame;
 
     public void onMouseMove(int x, int y, int width, int height, boolean primaryButtonDown) {
         try {
@@ -95,7 +101,6 @@ public class TerrainMouseHandler {
             }
 
             if (primaryButtonDown) {
-                GroupSelectionFrame groupSelectionFrame = cockpitMode.getGroupSelectionFrame();
                 if (groupSelectionFrame != null) {
                     groupSelectionFrame.onMove(terrainPosition.toXY());
                     renderTask.onMove(groupSelectionFrame);
@@ -103,8 +108,22 @@ public class TerrainMouseHandler {
                     logger.warning("TerrainMouseHandler.onMouseMove(): groupSelectionFrame != null");
                 }
             } else {
-                SyncItem syncItem = syncItemContainerService.findItemAtPosition(terrainPosition.toXY());
-                cursorService.handleMouseMove(syncItem, terrainPosition.toXY());
+                SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
+                if (syncBaseItem != null) {
+                    cursorService.handleMouseOverBaseItem(syncBaseItem, terrainPosition.toXY());
+                    return;
+                }
+                SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
+                if (syncResourceItem != null) {
+                    cursorService.handleMouseOverResourceItem();
+                    return;
+                }
+                SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
+                if (syncBoxItem != null) {
+                    cursorService.handleMouseOverBoxItem();
+                    return;
+                }
+                cursorService.handleMouseOverTerrain(terrainPosition.toXY());
             }
         } catch (NoInterpolatedTerrainTriangleException e) {
             logger.warning(e.getMessage());
@@ -138,34 +157,52 @@ public class TerrainMouseHandler {
             }
 
             if (primaryButtonPressed) {
-                GroupSelectionFrame groupSelectionFrame = new GroupSelectionFrame(terrainPosition.toXY());
-                cockpitMode.setGroupSelectionFrame(groupSelectionFrame);
+                groupSelectionFrame = new GroupSelectionFrame(terrainPosition.toXY());
                 renderTask.startGroupSelection(groupSelectionFrame);
             } else if (secondaryButtonPressed) {
-                SyncItem syncItem = syncItemContainerService.findItemAtPosition(terrainPosition.toXY());
-                if (syncItem != null) {
-                    // On item clicked
-                    if (syncItem instanceof SyncResourceItem) {
-                        selectionHandler.setTargetSelected(syncItem);
-                    } else if (syncItem instanceof SyncBaseItem) {
-                        SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                        if (gameUiControl.isMyOwnProperty(syncBaseItem)) {
-                            if (!syncBaseItem.isBuildup() && selectionHandler.atLeastOneItemTypeAllowed2FinalizeBuild(syncBaseItem)) {
-                                audioService.onCommandSent();
-                                commandService.finalizeBuild(selectionHandler.getAllowed2FinalizeBuild(syncBaseItem), syncBaseItem);
-                            }
-                        } else {
-                            selectionHandler.setTargetSelected(syncBaseItem);
-                        }
-                    } else if (syncItem instanceof SyncBoxItem) {
-                        selectionHandler.setTargetSelected(syncItem);
-                    } else {
-                        throw new IllegalArgumentException(this + " onMouseDown: SyncItem not supported: " + syncItem);
-                    }
-                } else {
-                    // On terrain clicked
-                    executeMoveCommand(terrainPosition.toXY());
+                if (!selectionHandler.hasOwnSelection()) {
+                    return;
                 }
+                SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
+                if (syncBaseItem != null) {
+                    if (baseItemUiService.isMyOwnProperty(syncBaseItem)) {
+                        if (!syncBaseItem.checkBuildup()) {
+                            Collection<SyncBaseItemSimpleDto> builders = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
+                            if (!builders.isEmpty()) {
+                                audioService.onCommandSent();
+                                gameEngineControl.finalizeBuildCmd(builders, syncBaseItem);
+                            }
+                        }
+                    } else {
+                        if (baseItemUiService.isEnemy(syncBaseItem)) {
+                            Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
+                            if (!attackers.isEmpty()) {
+                                audioService.onCommandSent();
+                                gameEngineControl.attackCmd(attackers, syncBaseItem);
+                            }
+                        }
+                    }
+                    return;
+                }
+                SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
+                if (syncResourceItem != null) {
+                    Collection<SyncBaseItemSimpleDto> harvesters = selectionHandler.getOwnSelection().getHarvesters();
+                    if (!harvesters.isEmpty()) {
+                        audioService.onCommandSent();
+                        gameEngineControl.harvestCmd(harvesters, syncResourceItem);
+                    }
+                    return;
+                }
+                SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
+                if (syncBoxItem != null) {
+                    Collection<SyncBaseItemSimpleDto> pickers = selectionHandler.getOwnSelection().getMovables();
+                    if (!pickers.isEmpty()) {
+                        audioService.onCommandSent();
+                        gameEngineControl.pickBoxCmd(pickers, syncBoxItem);
+                    }
+                    return;
+                }
+                executeMoveCommand(terrainPosition.toXY());
             }
         } catch (NoInterpolatedTerrainTriangleException e) {
             logger.warning(e.getMessage());
@@ -181,14 +218,13 @@ public class TerrainMouseHandler {
             terrainMouseUpEvent.fire(new TerrainMouseUpEvent(worldPickRay));
 
             if (primaryButtonReleased) {
-                GroupSelectionFrame groupSelectionFrame = cockpitMode.getGroupSelectionFrame();
                 if (groupSelectionFrame != null) {
                     renderTask.stop();
                     Rectangle2D rectangle = groupSelectionFrame.finished(terrainPosition.toXY());
                     if (rectangle != null) {
                         selectionHandler.selectRectangle(rectangle);
                     }
-                    cockpitMode.setGroupSelectionFrame(null);
+                    groupSelectionFrame = null;
                 } else {
                     logger.warning("TerrainMouseHandler.onMouseUp(): groupSelectionFrame != null");
                 }
@@ -223,11 +259,12 @@ public class TerrainMouseHandler {
             return;
         }
 
-        if (!selection.canMove()) {
+        Collection<SyncBaseItemSimpleDto> movables = selection.getMovables();
+        if (movables.isEmpty()) {
             return;
         }
 
         audioService.onCommandSent();
-        commandService.move(selection.getItems(), position);
+        gameEngineControl.moveCmd(movables, position);
     }
 }

@@ -252,27 +252,6 @@ public class SyncItemContainerService {
         return false;
     }
 
-    public SyncItem findItemAtPosition(DecimalPosition position) {
-        return iterateOverItems(false, false, null, syncItem -> {
-            if (syncItem.getSyncPhysicalArea().overlap(position)) {
-                return syncItem;
-            } else {
-                return null;
-            }
-        });
-    }
-
-    public Collection<SyncItem> findItemsInRect(Rectangle2D rectangle) {
-        Collection<SyncItem> result = new ArrayList<>();
-        iterateOverItems(false, false, null, syncItem -> {
-            if (syncItem.getSyncPhysicalArea().overlap(rectangle)) {
-                result.add(syncItem);
-            }
-            return null;
-        });
-        return result;
-    }
-
     public Collection<SyncBaseItem> findEnemyBaseItemWithPlace(Integer baseItemTypeId, PlayerBase playerBase, PlaceConfig placeConfig) {
         Collection<SyncBaseItem> result = new ArrayList<>();
         iterateOverBaseItems(false, false, null, syncBaseItem -> {
@@ -340,21 +319,6 @@ public class SyncItemContainerService {
             if (resourceSelection.checkInside(syncResourceItem)) {
                 result.add(syncResourceItem);
             }
-            return null;
-        });
-        return result;
-    }
-
-    public Collection<SyncBoxItem> findBoxItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {
-        Collection<SyncBoxItem> result = new ArrayList<>();
-        iterateOverBoxItems(null, syncBoxItem -> {
-            if (syncBoxItem.getItemType().getId() != resourceItemTypeId) {
-                return null;
-            }
-            if (resourceSelection != null && !resourceSelection.checkInside(syncBoxItem)) {
-                return null;
-            }
-            result.add(syncBoxItem);
             return null;
         });
         return result;

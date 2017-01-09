@@ -1,38 +1,38 @@
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.datatypes.Group;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 
 /**
  * Created by Beat
  * 28.09.2016.
  */
 public class SelectionEvent {
-    private boolean dueToNewSelection;
+    private boolean suppressAudio;
 
     public enum Type {
         CLEAR,
         OWN,
-        TARGET
+        OTHER
     }
 
     private Type type;
     private Group selectedGroup;
-    private SyncItem targetSelection;
+    private SyncItemSimpleDto selectedOther;
 
-    public SelectionEvent(Group selectedGroup) {
+    public SelectionEvent(Group selectedGroup, boolean suppressAudio) {
         type = Type.OWN;
         this.selectedGroup = selectedGroup;
+        this.suppressAudio = suppressAudio;
     }
 
-    public SelectionEvent(SyncItem targetSelection) {
-        type = Type.TARGET;
-        this.targetSelection = targetSelection;
+    public SelectionEvent(SyncItemSimpleDto selectedOther) {
+        type = Type.OTHER;
+        this.selectedOther = selectedOther;
     }
 
-    public SelectionEvent(boolean dueToNewSelection) {
-        this.dueToNewSelection = dueToNewSelection;
+    public SelectionEvent(boolean suppressAudio) {
         type = Type.CLEAR;
+        this.suppressAudio = suppressAudio;
     }
 
     public Type getType() {
@@ -43,11 +43,11 @@ public class SelectionEvent {
         return selectedGroup;
     }
 
-    public SyncItem getTargetSelection() {
-        return targetSelection;
+    public SyncItemSimpleDto getSelectedOther() {
+        return selectedOther;
     }
 
-    public boolean isDueToNewSelection() {
-        return dueToNewSelection;
+    public boolean isSuppressAudio() {
+        return suppressAudio;
     }
 }

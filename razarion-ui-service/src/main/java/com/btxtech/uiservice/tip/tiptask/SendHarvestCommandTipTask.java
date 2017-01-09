@@ -1,11 +1,10 @@
 package com.btxtech.uiservice.tip.tiptask;
 
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.tip.visualization.InGameItemTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
@@ -21,7 +20,7 @@ import java.util.Collection;
 @Dependent
 public class SendHarvestCommandTipTask extends AbstractTipTask {
     @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private ResourceUiService resourceUiService;
     private int toCollectFormId;
     private PlaceConfig resourceSelection;
 
@@ -45,15 +44,15 @@ public class SendHarvestCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    protected void onCommandSent(BaseCommand baseCommand) {
-        if (baseCommand instanceof HarvestCommand) {
+    protected void onCommandSent(CommandInfo commandInfo) {
+        if (commandInfo.getType() == CommandInfo.Type.HARVEST) {
             onSucceed();
         }
     }
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        Collection<SyncResourceItem> syncResourceItems = syncItemContainerService.findResourceItemWithPlace(toCollectFormId, resourceSelection);
+        Collection<SyncResourceItemSimpleDto> syncResourceItems = resourceUiService.findResourceItemWithPlace(toCollectFormId, resourceSelection);
         if (syncResourceItems.isEmpty()) {
             throw new IllegalArgumentException("Can not create game tip. No resource available to mark: " + resourceSelection);
         }

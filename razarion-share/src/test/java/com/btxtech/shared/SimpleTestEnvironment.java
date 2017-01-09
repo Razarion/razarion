@@ -45,10 +45,6 @@ public class SimpleTestEnvironment {
 //        return syncBaseItem;
 //    }
 
-    public PlayerBase createHumanPlayerBase(UserContext userContext) {
-        return new PlayerBase(1, userContext.getName(), Character.HUMAN, userContext);
-    }
-
     static {
         BaseItemType simpleMovable = new BaseItemType();
         simpleMovable.setHealth(100).setSpawnDurationMillis(1000);

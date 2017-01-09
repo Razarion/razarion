@@ -26,12 +26,14 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     @PostConstruct
     public void onModuleLoad() {
         getDedicatedWorkerGlobalScope().setOnmessage(evt -> {
+            Object data = null;
             try {
                 MessageEvent messageEvent = (MessageEvent) evt;
+                data = messageEvent.getData();
                 GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData());
                 dispatch(controlPackage);
             } catch (Throwable t) {
-                exceptionHandler.handleException(t);
+                exceptionHandler.handleException("data: " + data, t);
             }
         });
     }

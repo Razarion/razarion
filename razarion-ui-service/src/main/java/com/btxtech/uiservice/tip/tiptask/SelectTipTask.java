@@ -1,10 +1,12 @@
 package com.btxtech.uiservice.tip.tiptask;
 
-import com.btxtech.shared.datatypes.Group;
+import com.btxtech.uiservice.Group;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.tip.visualization.InGameItemTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  * User: beat
@@ -13,6 +15,8 @@ import javax.enterprise.context.Dependent;
  */
 @Dependent
 public class SelectTipTask extends AbstractTipTask {
+    @Inject
+    private BaseItemUiService baseItemUiService;
     private int itemTypeId;
 
     public void init(int itemTypeId) {
@@ -46,7 +50,8 @@ public class SelectTipTask extends AbstractTipTask {
         }
     }
 
+    @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        return new InGameItemTipVisualization(getPlayerBase().findSyncBaseItemOfType(itemTypeId), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getSelectCornerColor(), getGameTipVisualConfig().getSelectShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+        return new InGameItemTipVisualization(baseItemUiService.findMyItemOfType(itemTypeId), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getSelectCornerColor(), getGameTipVisualConfig().getSelectShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

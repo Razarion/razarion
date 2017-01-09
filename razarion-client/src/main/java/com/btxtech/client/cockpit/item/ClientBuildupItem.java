@@ -4,8 +4,9 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
-import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Image;
@@ -29,6 +30,8 @@ import javax.inject.Named;
 public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     @Inject
     private GameUiControl gameUiControl;
+    @Inject
+    private BaseItemUiService baseItemUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -58,24 +61,24 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
                 return I18nHelper.getConstants().tooltipBuild(itemName);
             }
         },
-        DISABLED_LEVEL(false) {
-            @Override
-            String lookup(String itemName) {
-                return I18nHelper.getConstants().tooltipNoBuildLevel(itemName);
-            }
-        },
-        DISABLED_LEVEL_EXCEEDED(false) {
-            @Override
-            String lookup(String itemName) {
-                return I18nHelper.getConstants().tooltipNoBuildLimit(itemName);
-            }
-        },
-        DISABLED_HOUSE_SPACE_EXCEEDED(false) {
-            @Override
-            String lookup(String itemName) {
-                return I18nHelper.getConstants().tooltipNoBuildHouseSpace(itemName);
-            }
-        },
+//        DISABLED_LEVEL(false) {
+//            @Override
+//            String lookup(String itemName) {
+//                return I18nHelper.getConstants().tooltipNoBuildLevel(itemName);
+//            }
+//        },
+//        DISABLED_LEVEL_EXCEEDED(false) {
+//            @Override
+//            String lookup(String itemName) {
+//                return I18nHelper.getConstants().tooltipNoBuildLimit(itemName);
+//            }
+//        },
+//        DISABLED_HOUSE_SPACE_EXCEEDED(false) {
+//            @Override
+//            String lookup(String itemName) {
+//                return I18nHelper.getConstants().tooltipNoBuildHouseSpace(itemName);
+//            }
+//        },
         DISABLED_MONEY(false) {
             @Override
             String lookup(String itemName) {
@@ -129,20 +132,21 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     }
 
     private void discoverEnableState() {
-        itemCount = gameUiControl.getItemCount(buildupItem.getItemType().getId());
-        itemLimit = gameUiControl.getLimitation4ItemType(buildupItem.getItemType());
-        if (gameUiControl.isLevelLimitation4ItemTypeExceeded(buildupItem.getItemType(), 1)) {
-            enableState = EnableState.DISABLED_LEVEL_EXCEEDED;
-            return;
-        }
-        if (gameUiControl.isHouseSpaceExceeded(buildupItem.getItemType(), 1)) {
-            enableState = EnableState.DISABLED_HOUSE_SPACE_EXCEEDED;
-            return;
-        }
-        if (buildupItem.getItemType().getPrice() > gameUiControl.getResources()) {
-            enableState = EnableState.DISABLED_MONEY;
-            return;
-        }
+        // TODO
+//        itemCount = gameUiControl.getItemCount(buildupItem.getItemType().getId());
+//        itemLimit = gameUiControl.getLimitation4ItemType(buildupItem.getItemType());
+//        if (gameUiControl.isLevelLimitation4ItemTypeExceeded(buildupItem.getItemType())) {
+//            enableState = EnableState.DISABLED_LEVEL_EXCEEDED;
+//            return;
+//        }
+//        if (gameUiControl.isHouseSpaceExceeded(buildupItem.getItemType())) {
+//            enableState = EnableState.DISABLED_HOUSE_SPACE_EXCEEDED;
+//            return;
+//        }
+//        if (buildupItem.getItemType().getPrice() > baseItemUiService.getResources()) {
+//            enableState = EnableState.DISABLED_MONEY;
+//            return;
+//        }
         enableState = EnableState.ENABLE;
     }
 

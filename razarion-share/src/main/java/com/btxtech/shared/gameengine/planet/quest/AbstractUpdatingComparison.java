@@ -17,7 +17,7 @@ public abstract class AbstractUpdatingComparison implements AbstractComparison {
 //            return;
 //        }
 //        if (globalServices != null) {
-//            globalServices.getConditionService().sendProgressUpdate(getAbstractConditionProgress().getExaminee(), getAbstractConditionProgress().getIdentifier());
+//            globalServices.getConditionService().sendProgressUpdate(getAbstractConditionProgress().getUserId(), getAbstractConditionProgress().getIdentifier());
 //            lastProgressSendTime = System.currentTimeMillis();
 //            hasUpdateToSend = false;
 //        }

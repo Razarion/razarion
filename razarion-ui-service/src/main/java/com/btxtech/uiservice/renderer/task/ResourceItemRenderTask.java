@@ -5,8 +5,8 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
-import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -28,7 +28,7 @@ public class ResourceItemRenderTask extends AbstractRenderTask<ResourceItemType>
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private ResourceService resourceService;
+    private ResourceUiService resourceUiService;
     @Inject
     private Shape3DUiService shape3DUiService;
 
@@ -45,7 +45,7 @@ public class ResourceItemRenderTask extends AbstractRenderTask<ResourceItemType>
     private void setupResourceItemType(ResourceItemType resourceItemType, boolean fillBuffer) {
         if (resourceItemType.getShape3DId() != null) {
             ModelRenderer<ResourceItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(resourceItemType, timeStamp -> resourceService.provideModelMatrices(resourceItemType));
+            modelRenderer.init(resourceItemType, timeStamp -> resourceUiService.provideModelMatrices(resourceItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(resourceItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {

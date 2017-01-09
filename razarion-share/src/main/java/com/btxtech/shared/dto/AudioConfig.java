@@ -14,7 +14,7 @@ public class AudioConfig {
     private Integer onOwnSingleSelection;
     private Integer onOwnMultiSelection;
     private Integer onSelectionCleared;
-    private Integer onTargetSelection;
+    private Integer onOtherSelection;
     private Integer onCommandSent;
 
     public Integer getDialogOpened() {
@@ -98,12 +98,12 @@ public class AudioConfig {
         return this;
     }
 
-    public Integer getOnTargetSelection() {
-        return onTargetSelection;
+    public Integer getOnOtherSelection() {
+        return onOtherSelection;
     }
 
-    public AudioConfig setOnTargetSelection(Integer onTargetSelection) {
-        this.onTargetSelection = onTargetSelection;
+    public AudioConfig setOnOtherSelection(Integer onOtherSelection) {
+        this.onOtherSelection = onOtherSelection;
         return this;
     }
 

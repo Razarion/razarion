@@ -14,8 +14,7 @@ public class BuildupItem {
      * @param itemType to be build type
      * @param callback where to place the ToBeBuildPlacer
      */
-    public BuildupItem(BaseItemType itemType, Runnable callback) {
-
+    BuildupItem(BaseItemType itemType, Runnable callback) {
         this.itemType = itemType;
         this.callback = callback;
     }

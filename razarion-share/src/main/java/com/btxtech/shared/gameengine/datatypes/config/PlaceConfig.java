@@ -61,6 +61,28 @@ public class PlaceConfig {
         }
     }
 
+    /**
+     * If PlaceConfig contains a polygon, only the position is checked.
+     * NO CHECK FOR THE RADIUS IS PERFORMED
+     *
+     * @param position position to check
+     * @param radius   radius to check
+     * @return true if inside
+     */
+    public boolean checkInside(DecimalPosition position, double radius) {
+        if (this.position != null) {
+            if (this.radius != null) {
+                return position.getDistance(this.position) < this.radius + radius;
+            } else {
+                return position.getDistance(this.position) < radius;
+            }
+        } else if (polygon2D != null) {
+            return polygon2D.isInside(position);
+        } else {
+            throw new IllegalStateException("Invalid PlaceConfig");
+        }
+    }
+
     public boolean checkInside(DecimalPosition position) {
         if (this.position != null) {
             return this.position.equalsDelta(position);

@@ -1,12 +1,16 @@
 package com.btxtech.client.cockpit.item;
 
+import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.rest.RestUrl;
-import com.btxtech.uiservice.i18n.I18nHelper;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.uiservice.cockpit.item.OtherInfoPanel;
+import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
@@ -23,6 +27,10 @@ import javax.inject.Inject;
  */
 @Templated("ClientOtherInfoPanel.html#other-info-panel")
 public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
+    @Inject
+    private ItemTypeService itemTypeService;
+    @Inject
+    private BaseItemUiService baseItemUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -53,16 +61,16 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
     private Image enemyImage;
 
     @Override
-    public void init(SyncItem target) {
-        image.setUrl(RestUrl.getImageServiceUrlSafe(target.getItemType().getThumbnail()));
-        itemTypeName.setText(I18nHelper.getLocalizedString(target.getItemType().getI18Name()));
-        itemTypeDescr.setHTML(I18nHelper.getLocalizedString(target.getItemType().getDescription()));
+    public void init(SyncItemSimpleDto otherSelection) {
         friendImage.setVisible(false);
         enemyImage.setVisible(false);
-        if (target instanceof SyncBaseItem) {
-            SyncBaseItem syncBaseItem = (SyncBaseItem) target;
-            baseName.setText(syncBaseItem.getBase().getName());
-            switch (syncBaseItem.getBase().getCharacter()) {
+        ItemType itemType = null;
+        if (otherSelection instanceof SyncBaseItemSimpleDto) {
+            itemType = itemTypeService.getBaseItemType(otherSelection.getItemTypeId());
+            SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) otherSelection;
+            PlayerBaseDto base = baseItemUiService.getBase(syncBaseItem.getBaseId());
+            baseName.setText(base.getName());
+            switch (base.getCharacter()) {
                 case HUMAN:
                     type.setTextContent(I18nHelper.getConstants().playerFriend());
                     friendImage.setVisible(true);
@@ -79,14 +87,21 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
                     enemyImage.setVisible(false);
                     break;
                 default:
-                    throw new UnsupportedOperationException("Unknown character: " + syncBaseItem.getBase().getCharacter());
+                    throw new UnsupportedOperationException("Unknown character: " + base.getCharacter());
             }
-        } else if (target instanceof SyncResourceItem) {
+        } else if (otherSelection instanceof SyncResourceItemSimpleDto) {
+            itemType = itemTypeService.getResourceItemType(otherSelection.getItemTypeId());
             baseName.setVisible(false);
             type.getStyle().setProperty("display", "none");
-        } else if (target instanceof SyncBoxItem) {
+        } else if (otherSelection instanceof SyncBoxItemSimpleDto) {
+            itemType = itemTypeService.getBoxItemType(otherSelection.getItemTypeId());
             baseName.setVisible(false);
             type.getStyle().setProperty("display", "none");
+        }
+        if (itemType != null) {
+            image.setUrl(RestUrl.getImageServiceUrlSafe(itemType.getThumbnail()));
+            itemTypeName.setText(I18nHelper.getLocalizedString(itemType.getI18Name()));
+            itemTypeDescr.setHTML(I18nHelper.getLocalizedString(itemType.getDescription()));
         }
     }
 }

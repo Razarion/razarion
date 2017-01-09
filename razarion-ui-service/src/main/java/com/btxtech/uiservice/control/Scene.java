@@ -5,9 +5,6 @@ import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
-import com.btxtech.shared.gameengine.planet.BoxService;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
-import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -46,10 +43,6 @@ public class Scene implements TerrainScrollListener {
     private QuestVisualizer questVisualizer;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
-    @Inject
-    private GameLogicService gameLogicService;
-    @Inject
-    private QuestService questService;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AbstractModalDialogManager abstractModalDialogManager;
@@ -58,8 +51,6 @@ public class Scene implements TerrainScrollListener {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
-    @Inject
-    private BoxService boxService;
     // @Inject
     // private BaseItemService baseItemService;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -120,24 +111,15 @@ public class Scene implements TerrainScrollListener {
             gameEngineControl.executeBotCommands(sceneConfig.getKillBotCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
-            // TODO baseItemService.surrenderBase(gameUiControl.getUserContext());
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), decimalPositions -> {
                 if (decimalPositions.size() != 1) {
                     throw new IllegalArgumentException("To create a new human base, only one base item is allowed. Given: " + decimalPositions.size());
                 }
-                gameEngineControl.createHumanBaseWithBaseItem(userContext, sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId(), CollectionUtils.getFirst(decimalPositions));
-// TODO                PlayerBase playerBase = baseItemService.createHumanBaseWithBaseItem(gameUiControl.getUserContext());
-// TODO               try {
-//TODO                    for (DecimalPosition position : decimalPositions) {
-// TODO                       baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId()), position, playerBase, false);
-// TODO                   }
-// TODO               } catch (Exception e) {
-// TODO                   exceptionHandler.handleException(e);
-// TODO               }
+                gameEngineControl.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUserId(), userContext.getName(), sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId(), CollectionUtils.getFirst(decimalPositions));
             });
         }
         if (sceneConfig.getQuestConfig() != null) {
-            questService.activateCondition(userContext, sceneConfig.getQuestConfig());
+            gameEngineControl.activateQuest(userContext, sceneConfig.getQuestConfig());
             audioService.onQuestActivated();
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
         }
@@ -163,7 +145,7 @@ public class Scene implements TerrainScrollListener {
             terrainScrollHandler.addTerrainScrollListener(this);
         }
         if (sceneConfig.getBoxItemPositions() != null) {
-            boxService.dropBoxes(sceneConfig.getBoxItemPositions());
+            gameEngineControl.dropBoxes(sceneConfig.getBoxItemPositions());
         }
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.start(sceneConfig.getGameTipConfig());
@@ -191,8 +173,6 @@ public class Scene implements TerrainScrollListener {
         if (!scrollBouncePrevention && viewField.isInside(sceneConfig.getScrollUiQuest().getScrollTargetRectangle())) {
             scrollBouncePrevention = true;
             onQuestPassed();
-            abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
-            levelService.increaseXp(userContext, sceneConfig.getScrollUiQuest().getXp());
         }
     }
 
@@ -231,9 +211,13 @@ public class Scene implements TerrainScrollListener {
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
             questVisualizer.showSideBar(null);
+            abstractModalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
+            gameUiControl.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questVisualizer.showSideBar(null);
+            abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
+            gameUiControl.increaseXp(sceneConfig.getScrollUiQuest().getXp());
         }
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.stop();

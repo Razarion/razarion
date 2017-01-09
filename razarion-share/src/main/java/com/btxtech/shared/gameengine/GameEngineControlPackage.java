@@ -6,15 +6,44 @@ package com.btxtech.shared.gameengine;
  */
 public class GameEngineControlPackage {
     public enum Command {
+        // System
         INITIALIZE,
         INITIALIZED,
         START,
         STARTED,
+        TICK_UPDATE,
+        // Bot
         START_BOTS,
         EXECUTE_BOT_COMMANDS,
+        // Commands
+        COMMAND_ATTACK,
+        COMMAND_FINALIZE_BUILD,
+        COMMAND_BUILD,
+        COMMAND_FABRICATE,
+        COMMAND_HARVEST,
+        COMMAND_MOVE,
+        COMMAND_PICK_BOX,
+        // Resources
         CREATE_RESOURCES,
+        RESOURCE_CREATED,
+        RESOURCE_DELETED,
+        // Base
         CREATE_HUMAN_BASE_WITH_BASE_ITEM,
-        SYNC_ITEM_UPDATE
+        BASE_CREATED,
+        BASE_DELETED,
+        SPAWN_BASE_ITEMS,
+        UPDATE_LEVEL,
+        // Base items
+        SYNC_ITEM_START_SPAWNED,
+        SYNC_ITEM_IDLE,
+        // Boxes
+        CREATE_BOXES,
+        BOX_CREATED,
+        BOX_DELETED,
+        BOX_PICKED,
+        // Quest
+        ACTIVATE_QUEST,
+        QUEST_PASSED
     }
 
     private Command command;

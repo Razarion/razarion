@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -16,7 +17,11 @@ public class InventoryService {
     private final HashMap<Integer, InventoryItem> inventoryItems = new HashMap<>();
 
     public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
-        setInventoryItems(engineInitEvent.getGameEngineConfig().getInventoryItems());
+        init(engineInitEvent.getGameEngineConfig());
+    }
+
+    public void init(GameEngineConfig gameEngineConfig) {
+        setInventoryItems(gameEngineConfig.getInventoryItems());
     }
 
     private void setInventoryItems(List<InventoryItem> inventoryItems) {

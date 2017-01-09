@@ -2,7 +2,7 @@ package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
@@ -44,10 +44,13 @@ public class ToBeBuildPlacerTipTask extends AbstractTipTask implements BaseItemP
 
     @Override
     public boolean isFulfilled() {
-        Collection<SyncBaseItem> existingItems = findItemsOfType(itemTypeToBePlaced);
-        for (SyncBaseItem existingItem : existingItems) {
-            if (!existingItem.isBuildup() && selectionHandler.atLeastOneItemTypeAllowed2FinalizeBuild(existingItem)) {
-                return true;
+        Collection<SyncBaseItemSimpleDto> existingItems = findItemsOfType(itemTypeToBePlaced);
+        for (SyncBaseItemSimpleDto existingItem : existingItems) {
+            if (!existingItem.checkBuildup() && selectionHandler.hasOwnSelection()) {
+                Collection<SyncBaseItemSimpleDto> builders = selectionHandler.getOwnSelection().getBuilders(existingItem.getItemTypeId());
+                if (!builders.isEmpty()) {
+                    return true;
+                }
             }
         }
         BaseItemPlacer baseItemPlacer = baseItemPlacerService.getBaseItemPlacer();

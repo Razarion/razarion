@@ -230,18 +230,18 @@ public class ScenarioService implements QuestListener {
 
         GameEngineConfig gameEngineConfig = setupGameEngineConfig();
         currentScenario.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
-        gameEngineWorker.initialise(gameEngineConfig);
+        UserContext userContext = new UserContext().setUserId(1).setName("User 1").setLevelId(LEVEL_1_ID);
+        gameEngineWorker.initialise(gameEngineConfig, userContext);
         currentScenario.setupBots(botService);
         gameEngineWorker.start();
-        UserContext userContext = new UserContext().setName("User 1").setLevelId(LEVEL_1_ID);
-        PlayerBase playerBase = baseItemService.createHumanBase(userContext);
+        PlayerBase playerBase = baseItemService.createHumanBase(userContext.getLevelId(), userContext.getUserId(), userContext.getName());
         currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService);
         List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
         currentScenario.setupBotCommands(botCommandConfigs);
         botService.executeCommands(botCommandConfigs);
         QuestConfig questConfig = currentScenario.setupQuest();
         if (questConfig != null) {
-            questService.activateCondition(userContext, questConfig);
+            questService.activateCondition(userContext.getUserId(), questConfig);
         }
         currentScenario.executeCommands(commandService);
     }
@@ -338,7 +338,7 @@ public class ScenarioService implements QuestListener {
     }
 
     @Override
-    public void onQuestPassed(UserContext examinee, QuestConfig questConfig) {
+    public void onQuestPassed(int userId, QuestConfig questConfig) {
         System.out.println("************************************************");
         System.out.println("**************** Quest passed ******************");
         System.out.println("************************************************");

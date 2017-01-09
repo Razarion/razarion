@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.Character;
@@ -78,13 +77,13 @@ public class BaseItemService {
         throw new IllegalStateException("No human base found");
     }
 
-    public PlayerBase createHumanBase(UserContext userContext) {
-        return createBase(userContext.getName(), Character.HUMAN, userContext);
+    public PlayerBase createHumanBase(int levelId, int userId, String name) {
+        return createBase(name, Character.HUMAN, levelId, userId);
     }
 
 
-    private void surrenderHumanBase(UserContext userContext) {
-        PlayerBase playerBase = getPlayerBase(userContext);
+    private void surrenderHumanBase(int userId) {
+        PlayerBase playerBase = getPlayerBase4UserId(userId);
         if (playerBase != null) {
             gameLogicService.onSurrenderBase(playerBase);
             while (!playerBase.getItems().isEmpty()) {
@@ -93,23 +92,31 @@ public class BaseItemService {
         }
     }
 
-    public void createHumanBaseWithBaseItem(UserContext userContext, int baseItemTypeId, DecimalPosition position) {
-        surrenderHumanBase(userContext);
-        PlayerBase playerBase = createHumanBase(userContext);
+    public void createHumanBaseWithBaseItem(int levelId, int userId, String name, int baseItemTypeId, DecimalPosition position) {
+        surrenderHumanBase(userId);
+        PlayerBase playerBase = createHumanBase(levelId, userId, name);
         spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, playerBase, false);
     }
 
-    public PlayerBase createBotBase(BotConfig botConfig) {
-        return createBase(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, null);
+    public void updateLevel(int userId, int levelId) {
+        PlayerBase playerBase = getPlayerBase4UserId(userId);
+        if (playerBase == null) {
+            throw new IllegalArgumentException("No base for userId: " + userId);
+        }
+        playerBase.setLevelId(levelId);
     }
 
-    private PlayerBase createBase(String name, Character character, UserContext userContext) {
+    public PlayerBase createBotBase(BotConfig botConfig) {
+        return createBase(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, null, null);
+    }
+
+    private PlayerBase createBase(String name, Character character, Integer levelId, Integer userId) {
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("Base with Id already exits: " + lastBaseItId);
             }
-            PlayerBase playerBase = new PlayerBase(lastBaseItId, name, character, userContext);
+            PlayerBase playerBase = new PlayerBase(lastBaseItId, name, character, levelId, userId);
             bases.put(lastBaseItId, playerBase);
             gameLogicService.onBaseCreated(playerBase);
             return playerBase;
@@ -133,8 +140,15 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    public SyncBaseItem spawnSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
-        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
+    public void spawnSyncBaseItem(int baseItemTypeId, Collection<DecimalPosition> positions, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
+        for (DecimalPosition position : positions) {
+            spawnSyncBaseItem(baseItemType, position, base, false);
+        }
+    }
+
+    public SyncBaseItem spawnSyncBaseItem(BaseItemType baseItemTypeId, DecimalPosition position, PlayerBase base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
+        SyncBaseItem syncBaseItem = createSyncBaseItem(baseItemTypeId, position, base);
         syncBaseItem.setBuildup(1.0);
 
         if (noSpawn) {
@@ -206,12 +220,7 @@ public class BaseItemService {
     }
 
     public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, int itemCount2Add, PlayerBase playerBase) throws NoSuchItemTypeException {
-        return getItemCount(playerBase, newItemType) + itemCount2Add > getLimitation4ItemType(playerBase, newItemType);
-    }
-
-    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, int itemCount2Add, UserContext userContext) throws NoSuchItemTypeException {
-        PlayerBase playerBase = getPlayerBase(userContext);
-        return playerBase == null || isLevelLimitation4ItemTypeExceeded(newItemType, itemCount2Add, playerBase);
+        return playerBase.getCharacter().isBot() || getItemCount(playerBase, newItemType) + itemCount2Add > getLimitation4ItemType(newItemType.getId(), playerBase.getLevelId());
     }
 
     public int getItemCount(PlayerBase playerBase, BaseItemType baseItemType) {
@@ -253,18 +262,10 @@ public class BaseItemService {
         return nearest;
     }
 
-    public int getLimitation4ItemType(UserContext userContext, int itemTypeId) {
-        int levelCount = levelService.getLevel(userContext.getLevelId()).limitation4ItemType(itemTypeId);
+    public int getLimitation4ItemType(int itemTypeId, int levelId) {
+        int levelCount = levelService.getLevel(levelId).limitation4ItemType(itemTypeId);
         int planetCount = planetService.getPlanetConfig().imitation4ItemType(itemTypeId);
         return Math.min(levelCount, planetCount);
-    }
-
-    public int getLimitation4ItemType(UserContext userContext, BaseItemType itemType) {
-        return getLimitation4ItemType(userContext, itemType.getId());
-    }
-
-    public int getLimitation4ItemType(PlayerBase playerBase, BaseItemType itemType) {
-        return getLimitation4ItemType(playerBase.getUserContext(), itemType);
     }
 
     public boolean isEnemy(SyncBaseItem syncBaseItem1, SyncBaseItem syncBaseItem2) {
@@ -277,11 +278,6 @@ public class BaseItemService {
         return false; // TODO if enemies implemented
     }
 
-    public boolean isHouseSpaceExceeded(UserContext userContext, BaseItemType toBeBuiltType, int itemCount2Add) {
-        PlayerBase playerBase = getPlayerBase(userContext);
-        return playerBase == null || isHouseSpaceExceeded(playerBase, toBeBuiltType, itemCount2Add);
-    }
-
     public boolean isHouseSpaceExceeded(PlayerBase playerBase, BaseItemType toBeBuiltType) {
         return isHouseSpaceExceeded(playerBase, toBeBuiltType, 1);
     }
@@ -290,46 +286,15 @@ public class BaseItemService {
         return playerBase.getUsedHouseSpace() + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetService.getPlanetConfig().getHouseSpace();
     }
 
-    public PlayerBase getPlayerBase(UserContext userContext) {
+    public PlayerBase getPlayerBase4UserId(int userId) {
         synchronized (bases) {
             for (PlayerBase playerBase : bases.values()) {
-                if (userContext.equals(playerBase.getUserContext())) {
+                if (playerBase.getUserId() != null && playerBase.getUserId() == userId) {
                     return playerBase;
                 }
             }
         }
         return null;
-    }
-
-    public int getItemCount(UserContext userContext) {
-        PlayerBase playerBase = getPlayerBase(userContext);
-        if (playerBase != null) {
-            return playerBase.getItemCount();
-        } else {
-            return 0;
-        }
-    }
-
-    public int getItemCount(UserContext userContext, int itemTypeId) {
-        PlayerBase playerBase = getPlayerBase(userContext);
-        if (playerBase != null) {
-            return getItemCount(playerBase, itemTypeId);
-        } else {
-            return 0;
-        }
-    }
-
-    private int getItemCount(PlayerBase playerBase, int baseItemTypeId) {
-        return getItemCount(playerBase, itemTypeService.getBaseItemType(baseItemTypeId));
-    }
-
-    public int getResources(UserContext userContext) {
-        PlayerBase playerBase = getPlayerBase(userContext);
-        if (playerBase != null) {
-            return (int) playerBase.getResources();
-        } else {
-            return 0;
-        }
     }
 
     public void tick(long timeStamp) {

@@ -2,19 +2,21 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.Character;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.quest.QuestListener;
-import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
+import com.btxtech.uiservice.item.BaseItemUiService;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -26,8 +28,7 @@ import javax.inject.Singleton;
  * 05.07.2016.
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
-// Better name: something with game-control, client control (See: GameLogicService) -> GameControl
-public class GameUiControl implements QuestListener {
+public class GameUiControl {
     // private Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -40,7 +41,7 @@ public class GameUiControl implements QuestListener {
     @Inject
     private Instance<Scene> sceneInstance;
     @Inject
-    private BaseItemService baseItemService;
+    private BaseItemUiService baseItemUiService;
     @Inject
     private CockpitService cockpitService;
     @Inject
@@ -48,7 +49,12 @@ public class GameUiControl implements QuestListener {
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
-    private QuestService questService;
+    private LevelService levelService;
+    @Inject
+    private InventoryService inventoryService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private AbstractModalDialogManager dialogManager;
     @Inject
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
     private GameUiControlConfig gameUiControlConfig;
@@ -60,10 +66,11 @@ public class GameUiControl implements QuestListener {
         this.gameUiControlConfig = gameUiControlConfig;
         itemTypeService.init(gameUiControlConfig.getGameEngineConfig());
         terrainTypeService.init(gameUiControlConfig.getGameEngineConfig());
-        gameUiControlInitEvent.fire(new GameUiControlInitEvent(gameUiControlConfig));
+        levelService.init(gameUiControlConfig.getGameEngineConfig());
+        inventoryService.init(gameUiControlConfig.getGameEngineConfig());
         this.userContext = gameUiControlConfig.getUserContext();
-        cockpitService.init();
-        questService.addQuestListener(this);
+        gameEngineControl.init(gameUiControlConfig.getGameEngineConfig(), userContext);
+        gameUiControlInitEvent.fire(new GameUiControlInitEvent(gameUiControlConfig));
     }
 
     public void start() {
@@ -74,14 +81,6 @@ public class GameUiControl implements QuestListener {
 
     public UserContext getUserContext() {
         return userContext;
-    }
-
-    public boolean isMyOwnProperty(SyncBaseItem syncBaseItem) {
-        return syncBaseItem.getBase().getUserContext() != null && syncBaseItem.getBase().getUserContext().equals(userContext);
-    }
-
-    public boolean isEnemy(SyncBaseItem syncBaseItem) {
-        return Character.HUMAN.isEnemy(syncBaseItem.getBase().getCharacter());
     }
 
     private void runScene() {
@@ -105,42 +104,47 @@ public class GameUiControl implements QuestListener {
         }
     }
 
-    public PlayerBase getMyBase() {
-        return baseItemService.getPlayerBase(userContext);
-    }
-
-    public int getMyLimitation4ItemType(Integer itemTypeId) {
-        return baseItemService.getLimitation4ItemType(userContext, itemTypeId);
-    }
-
-    public int getItemCount(int itemTypeId) {
-        return baseItemService.getItemCount(userContext, itemTypeId);
-    }
-
-    public int getLimitation4ItemType(BaseItemType itemType) {
-        return baseItemService.getLimitation4ItemType(userContext, itemType);
-    }
-
-    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType itemType, int itemCount2Add) {
-        return baseItemService.isLevelLimitation4ItemTypeExceeded(itemType, itemCount2Add, userContext);
-    }
-
-    public boolean isHouseSpaceExceeded(BaseItemType itemType, int itemCount2Add) {
-        return baseItemService.isHouseSpaceExceeded(userContext, itemType, itemCount2Add);
-    }
-
-    public int getResources() {
-        return baseItemService.getResources(userContext);
-    }
-
     public GameUiControlConfig getGameUiControlConfig() {
         return gameUiControlConfig;
     }
 
-    @Override
-    public void onQuestPassed(UserContext examinee, QuestConfig questConfig) {
+    public void onQuestPassed() {
         if (currentScene != null) {
             currentScene.onQuestPassed();
         }
+    }
+
+    public void setGameInfo(GameInfo gameInfo) {
+        baseItemUiService.setResources(gameInfo.getResources());
+        cockpitService.updateResource(baseItemUiService.getResources());
+        int xp = 0;
+        for (SyncBaseItemSimpleDto syncBaseItem : gameInfo.getKilled()) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            xp += baseItemType.getXpOnKilling();
+        }
+        increaseXp(xp);
+    }
+
+    public void increaseXp(int deltaXp) {
+        int xp = userContext.getXp() + deltaXp;
+        LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());
+        if (xp >= levelConfig.getXp2LevelUp()) {
+            LevelConfig newLevelConfig = levelService.getNextLevel(levelConfig);
+            userContext.setLevelId(newLevelConfig.getLevelId());
+            userContext.setXp(0);
+            gameEngineControl.updateLevel(newLevelConfig.getLevelId());
+            cockpitService.updateLevelAndXp(userContext);
+            dialogManager.onLevelPassed(userContext, levelConfig, newLevelConfig);
+        } else {
+            userContext.setXp(xp);
+            cockpitService.updateLevelAndXp(userContext);
+        }
+    }
+
+    public void onOnBoxPicked(BoxContent boxContent) {
+        for (InventoryItem inventoryItem : boxContent.getInventoryItems()) {
+            userContext.addInventoryItem(inventoryItem.getId());
+        }
+        dialogManager.showBoxPicked(boxContent);
     }
 }

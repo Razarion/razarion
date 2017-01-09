@@ -3,7 +3,7 @@ package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.tip.GameTipService;
 
@@ -91,19 +91,19 @@ public class TipTaskContainer {
         }
     }
 
-    public void onCommandSent(BaseCommand baseCommand) {
+    public void onCommandSent(CommandInfo commandInfo) {
         if (hasTip()) {
-            getCurrentTask().onCommandSent(baseCommand);
+            getCurrentTask().onCommandSent(commandInfo);
         }
     }
 
-    public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
+    public void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
         if (hasTip()) {
             getCurrentTask().onSyncBaseItemIdle(syncBaseItem);
         }
     }
 
-    public void onSpawnSyncItem(SyncBaseItem syncBaseItem) {
+    public void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
         if (hasTip()) {
             getCurrentTask().onSpawnSyncItem(syncBaseItem);
         }

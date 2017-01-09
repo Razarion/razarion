@@ -1,8 +1,6 @@
 package com.btxtech.uiservice.dialog;
 
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.LevelService;
-import com.btxtech.shared.gameengine.datatypes.LevelServiceListener;
 import com.btxtech.shared.gameengine.datatypes.ModalDialogManager;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -18,26 +16,15 @@ import javax.inject.Inject;
  * Created by Beat
  * 24.09.2016.
  */
-public abstract class AbstractModalDialogManager implements ModalDialogManager, QuestListener, LevelServiceListener {
+public abstract class AbstractModalDialogManager implements ModalDialogManager {
     @Inject
     private QuestService questService;
-    @Inject
-    private LevelService levelService;
-    @Inject
-    private GameLogicService gameLogicService;
     private Runnable levelUpCallback;
     private Runnable questPassedCallback;
 
     abstract protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener);
 
     abstract protected void showLevelUp(UserContext userContext, Runnable closeListener);
-
-    @PostConstruct
-    public void init() {
-        questService.addQuestListener(this);
-        levelService.addLevelServiceListener(this);
-        gameLogicService.setModalDialogManager(this);
-    }
 
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
         showQuestPassed(questDescriptionConfig, () -> {
@@ -49,12 +36,6 @@ public abstract class AbstractModalDialogManager implements ModalDialogManager, 
         });
     }
 
-    @Override
-    public void onQuestPassed(UserContext examinee, QuestConfig questConfig) {
-        showQuestPassed(questConfig);
-    }
-
-    @Override
     public void onLevelPassed(UserContext userContext, LevelConfig oldLevel, LevelConfig newLevel) {
         showLevelUp(userContext, () -> {
             if (levelUpCallback != null) {

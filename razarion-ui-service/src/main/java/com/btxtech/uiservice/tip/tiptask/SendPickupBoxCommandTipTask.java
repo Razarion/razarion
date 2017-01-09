@@ -1,11 +1,8 @@
 package com.btxtech.uiservice.tip.tiptask;
 
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
-import com.btxtech.shared.gameengine.planet.BoxService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.tip.visualization.InGameItemTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
@@ -20,9 +17,7 @@ import java.util.Collection;
 @Dependent
 public class SendPickupBoxCommandTipTask extends AbstractTipTask {
     @Inject
-    private BoxService boxService;
-    @Inject
-    private SyncItemContainerService syncItemContainerService;
+    private BoxUiService boxUiService;
     private int boxItemTypeId;
 
     public void init(int boxItemTypeId) {
@@ -45,17 +40,17 @@ public class SendPickupBoxCommandTipTask extends AbstractTipTask {
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        Collection<SyncBoxItem> syncBoxItems = syncItemContainerService.findBoxItemWithPlace(boxItemTypeId, null);
-        if (syncBoxItems.isEmpty()) {
+        SyncBoxItemSimpleDto syncBoxItem = boxUiService.findFirstBoxItem(boxItemTypeId);
+        if (syncBoxItem == null) {
             throw new IllegalArgumentException("Can not create game tip. No box available to mark: " + boxItemTypeId);
         }
-        return new InGameItemTipVisualization(CollectionUtils.getFirst(syncBoxItems), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+        return new InGameItemTipVisualization(syncBoxItem, getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 
     @Override
-    protected void onCommandSent(BaseCommand baseCommand) {
-        if (baseCommand instanceof PickupBoxCommand) {
-            int boxItemTypeId = boxService.getSyncBoxItem(((PickupBoxCommand) baseCommand).getSynBoxItemId()).getBoxItemType().getId();
+    protected void onCommandSent(CommandInfo commandInfo) {
+        if (commandInfo.getType() == CommandInfo.Type.PICK_BOX) {
+            int boxItemTypeId = boxUiService.getSyncBoxItem(commandInfo.getSynBoxItemId()).getItemTypeId();
             if (boxItemTypeId == this.boxItemTypeId) {
                 onSucceed();
             }

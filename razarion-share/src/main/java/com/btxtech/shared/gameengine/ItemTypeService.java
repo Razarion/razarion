@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine;
 
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
