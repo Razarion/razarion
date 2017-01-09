@@ -63,10 +63,15 @@ public class ToBeBuildPlacerTipTask extends AbstractTipTask implements BaseItemP
     }
 
     @Override
-    public void onStateChanged(BaseItemPlacer baseItemPlacer) {
+    public void activatePlacer(BaseItemPlacer baseItemPlacer) {
         if (baseItemPlacer.getBaseItemType().getId() == itemTypeToBePlaced) {
             onSucceed();
         }
+    }
+
+    @Override
+    public void deactivatePlacer(boolean canceled) {
+        // Ignore
     }
 
     @Override

@@ -5,5 +5,7 @@ package com.btxtech.uiservice.itemplacer;
  * 06.12.2016.
  */
 public interface BaseItemPlacerListener {
-    void onStateChanged(BaseItemPlacer baseItemPlacer);
+    void activatePlacer(BaseItemPlacer baseItemPlacer);
+
+    void deactivatePlacer(boolean canceled);
 }

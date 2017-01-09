@@ -27,29 +27,13 @@ public class BaseItemPlacerService {
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, Consumer<Collection<DecimalPosition>> executionCallback) {
         this.executionCallback = executionCallback;
-
-
-
-
-//    TODO    if (baseItemPlacerConfig.getSuggestedPosition() != null) {
-//    TODO        terrainScrollHandler.moveToMiddle(startPointInfo.getSuggestedPosition());
-//    TODO    }
-//    TODO CursorHandler.getInstance().noCursor();
-//    TODO TerrainView.getInstance().setFocus();
         baseItemPlacer = instance.get().init(baseItemPlacerConfig);
         baseItemPlacerRenderTask.activate(baseItemPlacer);
-        // TODO RadarPanel.getInstance().setLevelRadarMode(RadarMode.MAP_AND_UNITS);
-        // TODO ClientDeadEndProtection.getInstance().stop();
-
-        new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.onStateChanged(baseItemPlacer));
+        new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.activatePlacer(baseItemPlacer));
     }
 
     public void deactivate() {
-        baseItemPlacer = null;
-        baseItemPlacerRenderTask.deactivate();
-        // TODO RadarPanel.getInstance().setLevelRadarMode(ClientPlanetServices.getInstance().getPlanetInfo().getRadarMode());
-        // TODO ClientDeadEndProtection.getInstance().start();
-        new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.onStateChanged(null));
+        deactivateInternal(true);
     }
 
     public boolean isActive() {
@@ -63,7 +47,7 @@ public class BaseItemPlacerService {
         baseItemPlacer.onMove(terrainPosition);
         if (baseItemPlacer.isPositionValid()) {
             executionCallback.accept(baseItemPlacer.setupAbsolutePositions());
-            deactivate();
+            deactivateInternal(false);
         }
     }
 
@@ -86,16 +70,9 @@ public class BaseItemPlacerService {
         listeners.remove(baseItemPlacerListener);
     }
 
-
-    //   TODO public void onBaseLost(BaseLostPacket baseLostPacket) {
-//   TODO     if (isActive()) {
-//   TODO         log.warning("StartPointMode.onBaseLost() is already active");
-//   TODO     }
-//   TODO
-//   TODO     RealDeltaStartupTask.setCommon(baseLostPacket.getRealGameInfo());
-//   TODO     ClientBase.getInstance().recalculateOnwItems();
-//   TODO     SideCockpit.getInstance().updateItemLimit();
-//   TODO     activate(baseLostPacket.getRealGameInfo().getStartPointInfo());
-//    }
-
+    private void deactivateInternal(boolean canceled) {
+        baseItemPlacer = null;
+        baseItemPlacerRenderTask.deactivate();
+        new ArrayList<>(listeners).forEach(baseItemPlacerListener -> baseItemPlacerListener.deactivatePlacer(canceled));
+    }
 }

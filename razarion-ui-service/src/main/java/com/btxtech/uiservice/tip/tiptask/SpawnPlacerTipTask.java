@@ -59,8 +59,13 @@ public class SpawnPlacerTipTask extends AbstractTipTask implements BaseItemPlace
     }
 
     @Override
-    public void onStateChanged(BaseItemPlacer baseItemPlacer) {
-        if (baseItemPlacer == null) {
+    public void activatePlacer(BaseItemPlacer baseItemPlacer) {
+        // Ignore
+    }
+
+    @Override
+    public void deactivatePlacer(boolean canceled) {
+        if (canceled) {
             onFailed();
         }
     }

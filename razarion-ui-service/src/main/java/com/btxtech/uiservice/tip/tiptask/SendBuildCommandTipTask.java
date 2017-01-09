@@ -82,8 +82,13 @@ public class SendBuildCommandTipTask extends AbstractTipTask implements BaseItem
     }
 
     @Override
-    public void onStateChanged(BaseItemPlacer baseItemPlacer) {
-        if (baseItemPlacer == null) {
+    public void activatePlacer(BaseItemPlacer baseItemPlacer) {
+        // Ignore
+    }
+
+    @Override
+    public void deactivatePlacer(boolean canceled) {
+        if (canceled) {
             onFailed();
         }
     }

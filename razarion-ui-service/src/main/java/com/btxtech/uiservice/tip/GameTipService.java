@@ -2,13 +2,10 @@ package com.btxtech.uiservice.tip;
 
 import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
@@ -25,7 +22,6 @@ import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * User: beat
