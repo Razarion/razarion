@@ -33,18 +33,7 @@ public class IdleItemTipTask extends AbstractTipTask {
     @Override
     public void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
         if (syncBaseItem.getItemTypeId() == actorItemTypeId) {
-            if (areAllItemsTypeIdle()) {
-                onSucceed();
-            }
+            onSucceed();
         }
-    }
-
-    private boolean areAllItemsTypeIdle() {
-        for (SyncBaseItemSimpleDto syncBaseItem : findItemsOfType(actorItemTypeId)) {
-            if (!syncBaseItem.isIdle()) {
-                return false;
-            }
-        }
-        return true;
     }
 }
