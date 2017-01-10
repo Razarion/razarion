@@ -25,6 +25,7 @@ import com.btxtech.uiservice.clip.EffectService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
+import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
@@ -63,6 +64,8 @@ public abstract class GameEngineControl {
     private SelectionHandler selectionHandler;
     @Inject
     private EffectService effectService;
+    @Inject
+    private ProjectileUiService projectileUiService;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -188,7 +191,7 @@ public abstract class GameEngineControl {
                 gameUiControl.onOnBoxPicked((BoxContent) controlPackage.getSingleData());
                 break;
             case PROJECTILE_FIRED:
-                effectService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1), (Vertex) controlPackage.getData(2));
+                projectileUiService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1), (Vertex) controlPackage.getData(2));
                 break;
             case PROJECTILE_DETONATION:
                 effectService.onProjectileDetonation((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));

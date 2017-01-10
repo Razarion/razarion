@@ -183,8 +183,8 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    public void killSyncItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
-        gameLogicService.onKilledSyncBaseItem(target, actor, timeStamp);
+    public void killSyncItem(SyncBaseItem target, SyncBaseItem actor) {
+        gameLogicService.onKilledSyncBaseItem(target, actor);
         PlayerBase base = target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);
@@ -297,7 +297,7 @@ public class BaseItemService {
         return null;
     }
 
-    public void tick(long timeStamp) {
+    public void tick() {
         synchronized (activeItems) {
             synchronized (activeItemQueue) {
                 activeItems.addAll(activeItemQueue);
@@ -319,7 +319,7 @@ public class BaseItemService {
                     continue;
                 }
                 try {
-                    if (!activeItem.tick(timeStamp)) {
+                    if (!activeItem.tick()) {
                         try {
                             activeItem.stop();
                             iterator.remove();

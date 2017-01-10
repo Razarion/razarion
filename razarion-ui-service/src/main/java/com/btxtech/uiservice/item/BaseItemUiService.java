@@ -66,8 +66,6 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
 
-    // TODO selectionHandler: kill and remove items
-
     @Deprecated
     public VertexContainer getItemTypeVertexContainer(int id) {
         throw new UnsupportedOperationException();

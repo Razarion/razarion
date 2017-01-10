@@ -72,15 +72,15 @@ public class SyncWeapon extends SyncBaseAbility {
     /**
      * @return true if more tick are needed to fulfil the job
      */
-    public boolean tick(long timeStamp) {
+    public boolean tick() {
         if (reloadProgress < weaponType.getReloadTime()) {
             reloadProgress += PlanetService.TICK_FACTOR;
         }
 
-        return target != null && tickAttack(timeStamp);
+        return target != null && tickAttack();
     }
 
-    private boolean tickAttack(long timeStamp) {
+    private boolean tickAttack() {
         try {
             if (!target.isAlive()) {
                 stop();
@@ -125,7 +125,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 return true;
             }
 
-            doAttack(timeStamp, target);
+            doAttack(target);
             return true;
         } catch (TargetHasNoPositionException e) {
             // Target may moved to a container
@@ -134,9 +134,9 @@ public class SyncWeapon extends SyncBaseAbility {
         }
     }
 
-    private void doAttack(long timeStamp, SyncBaseItem targetItem) {
+    private void doAttack(SyncBaseItem targetItem) {
         if (reloadProgress >= weaponType.getReloadTime()) {
-            projectileService.fireProjectile(timeStamp, getSyncBaseItem(), targetItem);
+            projectileService.fireProjectile(getSyncBaseItem(), targetItem);
             reloadProgress = 0;
         }
     }

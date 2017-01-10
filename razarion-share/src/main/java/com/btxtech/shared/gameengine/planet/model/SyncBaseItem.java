@@ -264,7 +264,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     @Override
-    public boolean tick(long timeStamp) throws ItemDoesNotExistException, NoSuchItemTypeException {
+    public boolean tick() throws ItemDoesNotExistException, NoSuchItemTypeException {
         if (isSpawning()) {
             spawnProgress += PlanetService.TICK_FACTOR / (getBaseItemType().getSpawnDurationMillis() / 1000.0);
             if (spawnProgress >= 1.0) {
@@ -285,7 +285,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (syncWeapon != null && syncWeapon.isActive()) {
-            return syncWeapon.tick(timeStamp);
+            return syncWeapon.tick();
         }
 
         if (syncFactory != null && syncFactory.isActive()) {
@@ -459,11 +459,11 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return getBase().isEnemy(playerBase);
     }
 
-    private void decreaseHealth(double damage, SyncBaseItem actor, long timeStamp) {
+    private void decreaseHealth(double damage, SyncBaseItem actor) {
         health -= damage;
         if (health <= 0) {
             health = 0;
-            baseItemService.killSyncItem(this, actor, timeStamp);
+            baseItemService.killSyncItem(this, actor);
         }
     }
 
@@ -593,9 +593,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return getBaseItemType().getDropBoxPossibility();
     }
 
-    public void onAttacked(double damage, SyncBaseItem actor, long timeStamp) throws TargetHasNoPositionException {
+    public void onAttacked(double damage, SyncBaseItem actor) throws TargetHasNoPositionException {
         gameLogicService.onAttacked(this, actor, damage);
-        decreaseHealth(damage, actor, timeStamp);
+        decreaseHealth(damage, actor);
         if (PlanetService.MODE != PlanetMode.MASTER) {
             return;
         }

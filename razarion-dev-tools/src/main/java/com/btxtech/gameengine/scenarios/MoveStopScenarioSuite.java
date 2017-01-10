@@ -64,11 +64,6 @@ public class MoveStopScenarioSuite extends ScenarioSuite {
                     }
                 }
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
         addScenario(new Scenario("Factory") {
             private ScheduledFuture backgroundWorker;

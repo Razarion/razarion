@@ -136,15 +136,15 @@ public class ExtendedGraphicsContext {
 
     }
 
-    public void strokeVertex(Vertex vertex, Paint color) {
+    public void strokeVertex(Vertex vertex, Paint color, double radius) {
         gc.setFill(color);
         DecimalPosition point = vertex.toXY();
-        gc.fillOval(point.getX() - 10.0, point.getY() - 10.0, 20.0, 20.0);
+        gc.fillOval(point.getX() - radius, point.getY() - radius, 2.0 * radius, 2.0 * radius);
     }
 
-    public void strokeVertices(Collection<Vertex> vertices, Paint color) {
+    public void strokeVertices(Collection<Vertex> vertices, Paint color, double radius) {
         for (Vertex vertex : vertices) {
-            strokeVertex(vertex, color);
+            strokeVertex(vertex, color, radius);
         }
     }
 

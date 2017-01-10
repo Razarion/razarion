@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.GameEngineInitEvent;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -28,6 +29,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
@@ -37,6 +39,7 @@ import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,8 +64,6 @@ public class ScenarioService implements QuestListener {
     static final int SLOPE_ID = 1;
     static final int TERRAIN_OBJECT_ID = 1;
     @Inject
-    private GameEngineWorker gameEngineWorker;
-    @Inject
     private BaseItemService baseItemService;
     @Inject
     private DevToolsSimpleExecutorServiceImpl devToolsSimpleExecutorService;
@@ -76,6 +77,10 @@ public class ScenarioService implements QuestListener {
     private CommandService commandService;
     @Inject
     private QuestService questService;
+    @Inject
+    private PlanetService planetService;
+    @Inject
+    private Event<GameEngineInitEvent> gameEngineInitEvent;
     private List<ScenarioSuite> scenarioSuites = new ArrayList<>();
     private Scenario currentScenario;
 
@@ -226,14 +231,15 @@ public class ScenarioService implements QuestListener {
         }
         currentScenario = newScenario;
         botService.killAllBots();
-        gameEngineWorker.stop();
+        planetService.stop();
 
         GameEngineConfig gameEngineConfig = setupGameEngineConfig();
         currentScenario.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
         UserContext userContext = new UserContext().setUserId(1).setName("User 1").setLevelId(LEVEL_1_ID);
-        gameEngineWorker.initialise(gameEngineConfig, userContext);
+        gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
+        planetService.initialise(gameEngineConfig.getPlanetConfig());
         currentScenario.setupBots(botService);
-        gameEngineWorker.start();
+        planetService.start();
         PlayerBase playerBase = baseItemService.createHumanBase(userContext.getLevelId(), userContext.getUserId(), userContext.getName());
         currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService);
         List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();

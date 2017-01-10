@@ -71,12 +71,11 @@ public class PlanetService implements Runnable {
             return;
         }
         try {
-            long timeStamp = System.currentTimeMillis();
             pathingService.tick();
             questService.checkPositionCondition();
-            baseItemService.tick(timeStamp);
+            baseItemService.tick();
             boxService.tick();
-            projectileService.tick(timeStamp);
+            projectileService.tick();
             notifyTickListeners();
             tickCount++;
         } catch (Throwable t) {

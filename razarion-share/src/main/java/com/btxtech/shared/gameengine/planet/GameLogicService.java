@@ -156,13 +156,13 @@ public class GameLogicService {
         System.out.println("GameLogicService.onSyncFactoryStopped(): " + syncBaseItem);
     }
 
-    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex muzzleDirection) {
-        System.out.println("GameLogicService.onProjectileFired(): " + System.currentTimeMillis() + ": " + syncBaseItem);
-        gameLogicListener.ifPresent(listener -> listener.onProjectileFired(syncBaseItem.getItemType().getId(), muzzlePosition, muzzleDirection));
+    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex target) {
+        // System.out.println("GameLogicService.onProjectileFired(): " + System.currentTimeMillis() + ": " + syncBaseItem);
+        gameLogicListener.ifPresent(listener -> listener.onProjectileFired(syncBaseItem.getItemType().getId(), muzzlePosition, target));
     }
 
     public void onProjectileDetonation(SyncBaseItem syncBaseItem, Vertex position) {
-        System.out.println("GameLogicService.onProjectileDetonation(): " + System.currentTimeMillis() + ": " + syncBaseItem);
+        // System.out.println("GameLogicService.onProjectileDetonation(): " + System.currentTimeMillis() + ": " + syncBaseItem);
         gameLogicListener.ifPresent(listener -> listener.onProjectileDetonation(syncBaseItem.getBaseItemType().getId(), position));
     }
 
@@ -177,7 +177,7 @@ public class GameLogicService {
         questService.onSyncItemBuilt(syncBaseItem);
     }
 
-    public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
+    public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor) {
         System.out.println("GameLogicService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
         questService.onSyncItemKilled(target, actor);
         gameLogicListener.ifPresent(listener -> listener.onSyncItemKilled(target, actor));

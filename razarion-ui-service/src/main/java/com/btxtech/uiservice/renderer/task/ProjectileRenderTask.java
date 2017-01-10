@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
+import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public class ProjectileRenderTask extends AbstractRenderTask<BaseItemType> {
     private Logger logger = Logger.getLogger(ProjectileRenderTask.class.getName());
     @Inject
-    private ProjectileService projectileService;
+    private ProjectileUiService projectileUiService;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -42,10 +42,15 @@ public class ProjectileRenderTask extends AbstractRenderTask<BaseItemType> {
         setupBaseItemType(baseItemType, true);
     }
 
+    @Override
+    protected void preRender(long timeStamp) {
+        projectileUiService.preRender(timeStamp);
+    }
+
     private void setupBaseItemType(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getWeaponType().getProjectileShape3DId() != null) {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(baseItemType, timeStamp -> projectileService.getProjectiles(baseItemType, timeStamp));
+            modelRenderer.init(baseItemType, timeStamp -> projectileUiService.getProjectiles(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getWeaponType().getProjectileShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {

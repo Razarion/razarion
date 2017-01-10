@@ -69,14 +69,13 @@ public class EffectService {
         return clipConfig;
     }
 
-    public void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection) {
-        BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
+    public void onProjectileFired(BaseItemType baseItemType, Vertex muzzlePosition, Vertex target) {
         Integer muzzleClipId = baseItemType.getWeaponType().getMuzzleFlashClipId();
         if (muzzleClipId == null) {
             logger.warning("No MuzzleFlashClipId configured for: " + baseItemType);
             return;
         }
-        playClip(muzzlePosition, muzzleDirection, muzzleClipId, System.currentTimeMillis());
+        playClip(muzzlePosition, target.sub(muzzlePosition), muzzleClipId, System.currentTimeMillis());
     }
 
     public void onProjectileDetonation(int baseItemTypeId, Vertex position) {

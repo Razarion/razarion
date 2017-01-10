@@ -297,8 +297,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection) {
-        sendToClient(GameEngineControlPackage.Command.PROJECTILE_FIRED, baseItemTypeId, muzzlePosition, muzzleDirection);
+    public void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex target) {
+        sendToClient(GameEngineControlPackage.Command.PROJECTILE_FIRED, baseItemTypeId, muzzlePosition, target);
     }
 
     @Override
