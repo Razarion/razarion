@@ -182,13 +182,18 @@ public class BaseItemUiService {
     }
 
     public void removeBase(int baseId) {
+        boolean wasMyBase = false;
         synchronized (bases) {
             if (bases.remove(baseId) == null) {
                 logger.warning("Base does not exist already exists: " + baseId);
             }
             if (myBase != null && myBase.getBaseId() == baseId) {
                 myBase = null;
+                wasMyBase = true;
             }
+        }
+        if(wasMyBase) {
+            selectionHandler.onMyBaseRemoved();
         }
     }
 

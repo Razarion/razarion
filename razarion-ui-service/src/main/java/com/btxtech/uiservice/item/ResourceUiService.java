@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.uiservice.SelectionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -27,6 +28,8 @@ public class ResourceUiService {
     private Logger logger = Logger.getLogger(ResourceUiService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private SelectionHandler selectionHandler;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private final MapList<ResourceItemType, ModelMatrices> resourceModelMatrices = new MapList<>();
 
@@ -41,9 +44,11 @@ public class ResourceUiService {
 
     public void removeResource(int id) {
         synchronized (resources) {
-            if (resources.remove(id) == null) {
+            SyncResourceItemSimpleDto resource = resources.remove(id);
+            if (resource == null) {
                 throw new IllegalStateException("No resource for id: " + id);
             }
+            selectionHandler.resourceItemRemove(resource);
         }
         setupModelMatrices();
     }

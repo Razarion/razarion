@@ -19,6 +19,8 @@ public interface GameLogicListener {
 
     void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor);
 
+    void onSyncItemRemoved(SyncBaseItem target);
+
     void onResourceCreated(SyncResourceItem syncResourceItem);
 
     void onResourceDeleted(SyncResourceItem syncResourceItem);

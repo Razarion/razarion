@@ -58,7 +58,6 @@ public class WorkerMarshaller {
                 break;
             // Double JSON data
             case INITIALIZE:
-            case TICK_UPDATE:
             case COMMAND_ATTACK:
             case COMMAND_FINALIZE_BUILD:
             case COMMAND_FABRICATE:
@@ -72,6 +71,7 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
             // Triple JSON data
+            case TICK_UPDATE:
             case COMMAND_BUILD:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
@@ -127,6 +127,7 @@ public class WorkerMarshaller {
             case TICK_UPDATE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_2), List.class));
                 break;
             case COMMAND_ATTACK:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));

@@ -115,6 +115,7 @@ public class GameLogicService {
 
     public void onSurrenderBase(PlayerBase playerBase) {
         System.out.println("GameLogicService.onSurrenderBase(): " + playerBase);
+        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase));
     }
 
     public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
@@ -197,6 +198,8 @@ public class GameLogicService {
 
     public void onSyncBaseItemRemoved(SyncBaseItem target) {
         System.out.println("GameLogicService.onSyncBaseItemRemoved(). target: " + target);
+        gameLogicListener.ifPresent(listener -> listener.onSyncItemRemoved(target));
+
         gameLogicDelegate.ifPresent(delegate -> delegate.onSyncBaseItemRemoved(target));
     }
 

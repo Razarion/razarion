@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class GameInfo {
     private int resources;
-    private List<SyncBaseItemSimpleDto> killed;
+    private int xpFromKills;
 
     public int getResources() {
         return resources;
@@ -18,11 +18,15 @@ public class GameInfo {
         this.resources = resources;
     }
 
-    public List<SyncBaseItemSimpleDto> getKilled() {
-        return killed;
+    public int getXpFromKills() {
+        return xpFromKills;
     }
 
-    public void setKilled(List<SyncBaseItemSimpleDto> killed) {
-        this.killed = killed;
+    public void setXpFromKills(int xpFromKills) {
+        this.xpFromKills = xpFromKills;
+    }
+
+    public void add2xpFromKills(int xp) {
+        xpFromKills += xp;
     }
 }

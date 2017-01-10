@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -67,6 +68,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private GameLogicService logicService;
     private UserContext userContext;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
+    private int xpFromKills;
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
 
@@ -168,12 +170,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         });
         PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userContext.getUserId());
         GameInfo gameInfo = new GameInfo();
-        gameInfo.setKilled(killed);
+        gameInfo.setXpFromKills(xpFromKills);
+        List<SyncBaseItemSimpleDto> tmpKilled = killed;
         killed = new ArrayList<>();
         if (playerBase != null) {
             gameInfo.setResources((int) playerBase.getResources());
         }
-        sendToClient(GameEngineControlPackage.Command.TICK_UPDATE, syncItems, gameInfo);
+        sendToClient(GameEngineControlPackage.Command.TICK_UPDATE, syncItems, gameInfo, tmpKilled);
     }
 
     @Override
@@ -279,8 +282,14 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
+        killed.add(createSyncBaseItemSimpleDto(target));
         if (actor.getBase().getUserId() != null && actor.getBase().getUserId() == userContext.getUserId()) {
-            killed.add(createSyncBaseItemSimpleDto(target));
+            xpFromKills += target.getBaseItemType().getXpOnKilling();
         }
+    }
+
+    @Override
+    public void onSyncItemRemoved(SyncBaseItem target) {
+        killed.add(createSyncBaseItemSimpleDto(target));
     }
 }

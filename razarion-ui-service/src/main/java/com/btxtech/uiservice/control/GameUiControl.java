@@ -9,9 +9,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
@@ -117,12 +115,9 @@ public class GameUiControl {
     public void setGameInfo(GameInfo gameInfo) {
         baseItemUiService.setResources(gameInfo.getResources());
         cockpitService.updateResource(baseItemUiService.getResources());
-        int xp = 0;
-        for (SyncBaseItemSimpleDto syncBaseItem : gameInfo.getKilled()) {
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            xp += baseItemType.getXpOnKilling();
+        if (gameInfo.getXpFromKills() > 0) {
+            increaseXp(gameInfo.getXpFromKills());
         }
-        increaseXp(xp);
     }
 
     public void increaseXp(int deltaXp) {

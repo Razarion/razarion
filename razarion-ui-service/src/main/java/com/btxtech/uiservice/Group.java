@@ -110,8 +110,8 @@ public class Group {
         return syncBaseItems.contains(syncBaseItem);
     }
 
-    public void remove(SyncBaseItemSimpleDto syncBaseItem) {
-        syncBaseItems.remove(syncBaseItem);
+    public boolean remove(SyncBaseItemSimpleDto syncBaseItem) {
+        return syncBaseItems.remove(syncBaseItem);
     }
 
     public boolean isEmpty() {

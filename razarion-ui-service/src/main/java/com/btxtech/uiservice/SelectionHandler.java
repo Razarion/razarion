@@ -21,7 +21,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
@@ -118,20 +117,40 @@ public class SelectionHandler {
         selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, false));
     }
 
-    public void clearSelection(boolean dueToNewSelection) {
+    public void clearSelection(boolean suppressAudio) {
         selectedOtherSyncItem = null;
         selectedGroup = null;
-        selectionEventEventTrigger.fire(new SelectionEvent(dueToNewSelection));
+        selectionEventEventTrigger.fire(new SelectionEvent(suppressAudio));
     }
 
-    public void baseItemRemoved(SyncBaseItemSimpleDto syncBaseItem) { // TODO call this method
-        if (selectedGroup != null && selectedGroup.contains(syncBaseItem)) {
-            selectedGroup.remove(syncBaseItem);
-            if (selectedGroup.isEmpty()) {
-                clearSelection(true);
-            } else {
-                selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, true));
+    public void baseItemRemoved(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+        if (selectedGroup != null) {
+            boolean changed = false;
+            for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+                if (selectedGroup.remove(syncBaseItem)) {
+                    changed = true;
+                }
             }
+            if (changed) {
+                if (selectedGroup.isEmpty()) {
+                    clearSelection(true);
+                } else {
+                    selectionEventEventTrigger.fire(new SelectionEvent(selectedGroup, true));
+                }
+            }
+        } else if (selectedOtherSyncItem != null && selectedOtherSyncItem instanceof SyncBaseItemSimpleDto) {
+            for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+                if (selectedOtherSyncItem.equals(syncBaseItem)) {
+                    clearSelection(true);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void onMyBaseRemoved() {
+        if (selectedGroup != null) {
+            clearSelection(true);
         }
     }
 

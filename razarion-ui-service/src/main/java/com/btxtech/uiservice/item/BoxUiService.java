@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.uiservice.SelectionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -26,6 +27,8 @@ public class BoxUiService {
     private Logger logger = Logger.getLogger(BoxUiService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private SelectionHandler selectionHandler;
     private final Map<Integer, SyncBoxItemSimpleDto> boxes = new HashMap<>();
     private final MapList<BoxItemType, ModelMatrices> boxModelMatrices = new MapList<>();
 
@@ -40,9 +43,11 @@ public class BoxUiService {
 
     public void removeBox(int id) {
         synchronized (boxes) {
-            if (boxes.remove(id) == null) {
+            SyncBoxItemSimpleDto box = boxes.remove(id);
+            if (box == null) {
                 throw new IllegalStateException("No box for id: " + id);
             }
+            selectionHandler.boxItemRemove(box);
         }
         setupModelMatrices();
     }

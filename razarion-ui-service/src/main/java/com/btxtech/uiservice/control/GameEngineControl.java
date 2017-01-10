@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -56,6 +57,8 @@ public abstract class GameEngineControl {
     private GameUiControl gameUiControl;
     @Inject
     private CockpitService cockpitService;
+    @Inject
+    private SelectionHandler selectionHandler;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -145,6 +148,7 @@ public abstract class GameEngineControl {
             case TICK_UPDATE:
                 baseItemUiService.updateSyncBaseItems((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(0));
                 gameUiControl.setGameInfo((GameInfo) controlPackage.getData(1));
+                selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
                 break;
             case SYNC_ITEM_START_SPAWNED:
                 audioService.onSpawnSyncItem((SyncBaseItemSimpleDto) controlPackage.getSingleData());
