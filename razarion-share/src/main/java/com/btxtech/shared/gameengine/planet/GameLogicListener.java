@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -32,4 +33,8 @@ public interface GameLogicListener {
     void onSyncBoxDeleted(SyncBoxItem box);
 
     void onSyncBaseItemIdle(SyncBaseItem syncBaseItem);
+
+    void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection);
+
+    void onProjectileDetonation(int baseItemTypeId, Vertex position);
 }

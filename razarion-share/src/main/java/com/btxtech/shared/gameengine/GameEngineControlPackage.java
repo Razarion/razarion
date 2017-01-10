@@ -43,7 +43,10 @@ public class GameEngineControlPackage {
         BOX_PICKED,
         // Quest
         ACTIVATE_QUEST,
-        QUEST_PASSED
+        QUEST_PASSED,
+        // Projectile
+        PROJECTILE_FIRED,
+        PROJECTILE_DETONATION
     }
 
     private Command command;

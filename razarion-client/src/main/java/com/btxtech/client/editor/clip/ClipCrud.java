@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.rest.ClipProvider;
-import com.btxtech.uiservice.clip.ClipService;
+import com.btxtech.uiservice.clip.EffectService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -31,7 +31,7 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
     @Inject
     private Caller<ClipProvider> caller;
     @Inject
-    private ClipService clipService;
+    private EffectService effectService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -42,7 +42,7 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
         caller.call(new RemoteCallback<ClipConfig>() {
             @Override
             public void callback(ClipConfig clipConfig) {
-                clipService.override(clipConfig);
+                effectService.override(clipConfig);
                 fire();
                 fireSelection(clipConfig.createObjectNameId());
             }
@@ -57,7 +57,7 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
         caller.call(new RemoteCallback<List<ClipConfig>>() {
             @Override
             public void callback(List<ClipConfig> clipConfigs) {
-                clipService.setShapes3Ds(clipConfigs);
+                effectService.setShapes3Ds(clipConfigs);
                 fire();
                 fireChange(clipConfigs);
             }
@@ -69,7 +69,7 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
 
     @Override
     public void getInstance(ObjectNameId objectNameId, Consumer<ClipConfig> callback) {
-        callback.accept(clipService.getClipConfig(objectNameId.getId()));
+        callback.accept(effectService.getClipConfig(objectNameId.getId()));
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
     @Override
     public void delete(ClipConfig clipConfig) {
         caller.call(response -> {
-            clipService.remove(clipConfig);
+            effectService.remove(clipConfig);
             fire();
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "ClipCrud.delete failed: " + message, throwable);
@@ -94,7 +94,7 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
 
     @Override
     protected List<ObjectNameId> setupObjectNameIds() {
-        return clipService.getClipConfigs().stream().map(ClipConfig::createObjectNameId).collect(Collectors.toList());
+        return effectService.getClipConfigs().stream().map(ClipConfig::createObjectNameId).collect(Collectors.toList());
     }
 
     @Override

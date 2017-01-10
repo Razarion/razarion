@@ -2,6 +2,7 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -20,6 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleD
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
+import com.btxtech.uiservice.clip.EffectService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
@@ -59,6 +61,8 @@ public abstract class GameEngineControl {
     private CockpitService cockpitService;
     @Inject
     private SelectionHandler selectionHandler;
+    @Inject
+    private EffectService effectService;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -149,6 +153,8 @@ public abstract class GameEngineControl {
                 baseItemUiService.updateSyncBaseItems((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(0));
                 gameUiControl.setGameInfo((GameInfo) controlPackage.getData(1));
                 selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
+                selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
+                effectService.onSyncBaseItemsExplode((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
                 break;
             case SYNC_ITEM_START_SPAWNED:
                 audioService.onSpawnSyncItem((SyncBaseItemSimpleDto) controlPackage.getSingleData());
@@ -180,6 +186,12 @@ public abstract class GameEngineControl {
                 break;
             case BOX_PICKED:
                 gameUiControl.onOnBoxPicked((BoxContent) controlPackage.getSingleData());
+                break;
+            case PROJECTILE_FIRED:
+                effectService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1), (Vertex) controlPackage.getData(2));
+                break;
+            case PROJECTILE_DETONATION:
+                effectService.onProjectileDetonation((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

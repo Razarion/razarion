@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -10,7 +11,6 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -68,6 +68,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private GameLogicService logicService;
     private UserContext userContext;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
+    private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
     private int xpFromKills;
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
@@ -173,10 +174,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         gameInfo.setXpFromKills(xpFromKills);
         List<SyncBaseItemSimpleDto> tmpKilled = killed;
         killed = new ArrayList<>();
+        List<SyncBaseItemSimpleDto> tmpRemoved = removed;
+        removed = new ArrayList<>();
         if (playerBase != null) {
             gameInfo.setResources((int) playerBase.getResources());
         }
-        sendToClient(GameEngineControlPackage.Command.TICK_UPDATE, syncItems, gameInfo, tmpKilled);
+        sendToClient(GameEngineControlPackage.Command.TICK_UPDATE, syncItems, gameInfo, tmpRemoved, tmpKilled);
     }
 
     @Override
@@ -290,6 +293,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncItemRemoved(SyncBaseItem target) {
-        killed.add(createSyncBaseItemSimpleDto(target));
+        removed.add(createSyncBaseItemSimpleDto(target));
+    }
+
+    @Override
+    public void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection) {
+        sendToClient(GameEngineControlPackage.Command.PROJECTILE_FIRED, baseItemTypeId, muzzlePosition, muzzleDirection);
+    }
+
+    @Override
+    public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
+        sendToClient(GameEngineControlPackage.Command.PROJECTILE_DETONATION, baseItemTypeId, position);
     }
 }

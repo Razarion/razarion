@@ -2,6 +2,7 @@ package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
@@ -67,17 +68,24 @@ public class WorkerMarshaller {
             case BASE_CREATED:
             case BASE_DELETED:
             case SPAWN_BASE_ITEMS:
+            case PROJECTILE_DETONATION:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
             // Triple JSON data
-            case TICK_UPDATE:
             case COMMAND_BUILD:
+            case PROJECTILE_FIRED:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
             // Quadruple JSON data
+            case TICK_UPDATE:
+                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                break;
             // Quintuple  JSON data
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
@@ -128,6 +136,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), List.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_3), List.class));
                 break;
             case COMMAND_ATTACK:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
@@ -197,6 +206,15 @@ public class WorkerMarshaller {
                 break;
             case UPDATE_LEVEL:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                break;
+            case PROJECTILE_FIRED:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Vertex.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_2), Vertex.class));
+                break;
+            case PROJECTILE_DETONATION:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Vertex.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.clip.ClipService;
+import com.btxtech.uiservice.clip.EffectService;
 import com.btxtech.uiservice.renderer.AbstractLookUpVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
@@ -26,13 +26,13 @@ import java.util.logging.Logger;
 public class ClipRenderTask extends AbstractRenderTask<ClipConfig> {
     private Logger logger = Logger.getLogger(ClipRenderTask.class.getName());
     @Inject
-    private ClipService clipService;
+    private EffectService effectService;
     @Inject
     private Shape3DUiService shape3DUiService;
 
     @PostConstruct
     public void postConstruct() {
-        clipService.getClipConfigs().forEach(clipConfig -> setupClip(clipConfig, false));
+        effectService.getClipConfigs().forEach(clipConfig -> setupClip(clipConfig, false));
     }
 
     public void changeClip(ClipConfig clipConfig) {
@@ -43,7 +43,7 @@ public class ClipRenderTask extends AbstractRenderTask<ClipConfig> {
     private void setupClip(ClipConfig clipConfig, boolean fillBuffer) {
         if (clipConfig.getShape3DId() != null) {
             ModelRenderer<ClipConfig, CommonRenderComposite<AbstractLookUpVertexContainerRenderUnit, VertexContainer>, AbstractLookUpVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-            modelRenderer.init(clipConfig, timeStamp -> clipService.provideModelMatrices(clipConfig, timeStamp));
+            modelRenderer.init(clipConfig, timeStamp -> effectService.provideModelMatrices(clipConfig, timeStamp));
             Shape3D shape3D = shape3DUiService.getShape3D(clipConfig.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {

@@ -4,8 +4,12 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.audio.AudioService;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -17,19 +21,26 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 14.10.2016.
  */
 @ApplicationScoped
-public class ClipService {
+public class EffectService {
+    private Logger logger = Logger.getLogger(EffectService.class.getName());
     @Inject
     private Shape3DUiService shape3DUiService;
+    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private ItemTypeService itemTypeService;
+    @Inject
+    private BaseItemUiService baseItemUiService;
     private Map<Integer, ClipConfig> clips = new HashMap<>();
     private final Collection<PlayingClip> playingClips = new ArrayList<>();
 
@@ -56,6 +67,43 @@ public class ClipService {
             throw new IllegalArgumentException("No ClipConfig for id: " + clipId);
         }
         return clipConfig;
+    }
+
+    public void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
+        Integer muzzleClipId = baseItemType.getWeaponType().getMuzzleFlashClipId();
+        if (muzzleClipId == null) {
+            logger.warning("No MuzzleFlashClipId configured for: " + baseItemType);
+            return;
+        }
+        playClip(muzzlePosition, muzzleDirection, muzzleClipId, System.currentTimeMillis());
+    }
+
+    public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
+        Integer detonationClipId = baseItemType.getWeaponType().getDetonationClipId();
+        if (detonationClipId == null) {
+            logger.warning("No projectile detonation configured for: " + baseItemType);
+            return;
+        }
+        playClip(position, detonationClipId, System.currentTimeMillis());
+    }
+
+    public void onSyncBaseItemsExplode(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+        long timeStamp = System.currentTimeMillis();
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            onSyncBaseItemExplode(syncBaseItem, timeStamp);
+        }
+    }
+
+    private void onSyncBaseItemExplode(SyncBaseItemSimpleDto syncBaseItem, long timeStamp) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+        Integer explosionClipId = baseItemType.getExplosionClipId();
+        if (explosionClipId == null) {
+            logger.warning("o explosion ClipId configured for: " + System.currentTimeMillis());
+            return;
+        }
+        playClip(syncBaseItem.getPosition3d(), explosionClipId, timeStamp);
     }
 
     public void playClip(Vertex position, int clipId, long timeStamp) {

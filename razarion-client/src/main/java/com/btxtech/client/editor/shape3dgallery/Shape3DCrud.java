@@ -13,7 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.clip.ClipService;
+import com.btxtech.uiservice.clip.EffectService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ClipRenderTask;
@@ -60,7 +60,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     @Inject
     private TerrainObjectRenderTask terrainObjectRenderTask;
     @Inject
-    private ClipService clipService;
+    private EffectService effectService;
     @Inject
     private ClipRenderTask clipRenderTask;
     private Map<Integer, Shape3DConfig> changes = new HashMap<>();
@@ -213,7 +213,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
                     projectileRenderTask.onBaseItemTypeChanged(baseItemType);
                 }
                 if (weaponType.getMuzzleFlashClipId() != null) {
-                    ClipConfig clipConfig = clipService.getClipConfig(weaponType.getMuzzleFlashClipId());
+                    ClipConfig clipConfig = effectService.getClipConfig(weaponType.getMuzzleFlashClipId());
                     if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId())
                         clipRenderTask.changeClip(clipConfig);
                 }

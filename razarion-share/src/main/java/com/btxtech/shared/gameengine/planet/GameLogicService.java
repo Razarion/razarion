@@ -37,13 +37,7 @@ public class GameLogicService {
     private QuestService questService;
     @Inject
     private BotService botService;
-    private Optional<GameLogicListener> gameLogicListener;
-    private Optional<GameLogicDelegate> gameLogicDelegate = Optional.empty();
-
-    @Deprecated
-    public void setGameLogicDelegate(GameLogicDelegate gameLogicDelegate) {
-        this.gameLogicDelegate = Optional.of(gameLogicDelegate);
-    }
+    private Optional<GameLogicListener> gameLogicListener = Optional.empty();
 
     public void setGameLogicListener(GameLogicListener gameLogicListener) {
         this.gameLogicListener = Optional.of(gameLogicListener);
@@ -162,14 +156,14 @@ public class GameLogicService {
         System.out.println("GameLogicService.onSyncFactoryStopped(): " + syncBaseItem);
     }
 
-    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex muzzleDirection, Integer clipId, long timeStamp) {
+    public void onProjectileFired(SyncBaseItem syncBaseItem, Vertex muzzlePosition, Vertex muzzleDirection) {
         System.out.println("GameLogicService.onProjectileFired(): " + System.currentTimeMillis() + ": " + syncBaseItem);
-        gameLogicDelegate.ifPresent(delegate -> delegate.onProjectileFired(syncBaseItem, muzzlePosition, muzzleDirection, clipId, timeStamp));
+        gameLogicListener.ifPresent(listener -> listener.onProjectileFired(syncBaseItem.getItemType().getId(), muzzlePosition, muzzleDirection));
     }
 
-    public void onProjectileDetonation(SyncBaseItem syncBaseItem, Vertex position, Integer clipId, long timeStamp) {
+    public void onProjectileDetonation(SyncBaseItem syncBaseItem, Vertex position) {
         System.out.println("GameLogicService.onProjectileDetonation(): " + System.currentTimeMillis() + ": " + syncBaseItem);
-        gameLogicDelegate.ifPresent(delegate -> delegate.onProjectileDetonation(syncBaseItem, position, clipId, timeStamp));
+        gameLogicListener.ifPresent(listener -> listener.onProjectileDetonation(syncBaseItem.getBaseItemType().getId(), position));
     }
 
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
@@ -185,12 +179,8 @@ public class GameLogicService {
 
     public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor, long timeStamp) {
         System.out.println("GameLogicService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
-        gameLogicDelegate.ifPresent(delegate -> delegate.onKilledSyncBaseItem(target, actor, timeStamp));
-
         questService.onSyncItemKilled(target, actor);
-
         gameLogicListener.ifPresent(listener -> listener.onSyncItemKilled(target, actor));
-
         if (target.getBase().getCharacter().isBot()) {
             botService.enrageOnKill(target, actor.getBase());
         }
@@ -199,8 +189,6 @@ public class GameLogicService {
     public void onSyncBaseItemRemoved(SyncBaseItem target) {
         System.out.println("GameLogicService.onSyncBaseItemRemoved(). target: " + target);
         gameLogicListener.ifPresent(listener -> listener.onSyncItemRemoved(target));
-
-        gameLogicDelegate.ifPresent(delegate -> delegate.onSyncBaseItemRemoved(target));
     }
 
     // TODO when to call?
