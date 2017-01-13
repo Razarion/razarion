@@ -33,8 +33,9 @@ public class TerrainScrollHandler {
     }
 
     private static final int SCROLL_AUTO_MOUSE_DETECTION_WIDTH = 40;
-    private static final int SCROLL_TIMER_DELAY = 150; // Browser is not able to go faster due to the AnimationScheduler
-    private static final double SCROLL_AUTO_DISTANCE = 6;
+    private static final int SCROLL_TIMER_DELAY = 30;
+    private static final double SCROLL_SPEED = 60; // Meter per seconds
+    private static final double DISTANCE_PER_SCROLL_TICK = SCROLL_SPEED * (double) SCROLL_TIMER_DELAY / 1000.0;
     // private Logger logger = Logger.getLogger(TerrainScrollHandler.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -163,22 +164,22 @@ public class TerrainScrollHandler {
     }
 
     private void autoScroll() {
-        if(scrollDirectionX == ScrollDirection.STOP && scrollDirectionY == ScrollDirection.STOP) {
+        if (scrollDirectionX == ScrollDirection.STOP && scrollDirectionY == ScrollDirection.STOP) {
             return;
         }
 
         double scrollX = 0;
         if (scrollDirectionX == ScrollDirection.LEFT) {
-            scrollX = -SCROLL_AUTO_DISTANCE;
+            scrollX = -DISTANCE_PER_SCROLL_TICK;
         } else if (scrollDirectionX == ScrollDirection.RIGHT) {
-            scrollX = SCROLL_AUTO_DISTANCE;
+            scrollX = DISTANCE_PER_SCROLL_TICK;
         }
 
         double scrollY = 0;
         if (scrollDirectionY == ScrollDirection.TOP) {
-            scrollY = SCROLL_AUTO_DISTANCE;
+            scrollY = DISTANCE_PER_SCROLL_TICK;
         } else if (scrollDirectionY == ScrollDirection.BOTTOM) {
-            scrollY = -SCROLL_AUTO_DISTANCE;
+            scrollY = -DISTANCE_PER_SCROLL_TICK;
         }
 
         // TODO check if camera is in valid playground filed. Also check in CollisionService.correctPosition()
