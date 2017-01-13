@@ -23,7 +23,7 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto {
     private double health;
     private Vertex harvestingResourcePosition;
     private Vertex buildingPosition;
-    private boolean idle;
+    private DecimalPosition interpolatableVelocity;
 
     public int getBaseId() {
         return baseId;
@@ -93,11 +93,11 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto {
         this.buildingPosition = buildingPosition;
     }
 
-    public boolean isIdle() {
-        return idle;
+    public DecimalPosition getInterpolatableVelocity() {
+        return interpolatableVelocity;
     }
 
-    public void setIdle(boolean idle) {
-        this.idle = idle;
+    public void setInterpolatableVelocity(DecimalPosition interpolatableVelocity) {
+        this.interpolatableVelocity = interpolatableVelocity;
     }
 }

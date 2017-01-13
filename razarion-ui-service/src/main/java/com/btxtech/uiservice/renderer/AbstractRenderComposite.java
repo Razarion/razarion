@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
@@ -71,7 +70,9 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         this.id = id;
     }
 
-    public ModelMatrices mixTransformation(ModelMatrices modelMatrix) {
+    public ModelMatrices mixTransformation(ModelMatrices modelMatrix, double interpolationFactor) {
+        modelMatrix = modelMatrix.interpolateVelocity(interpolationFactor);
+
         if (shapeTransform == null) {
             return modelMatrix;
         }
@@ -109,33 +110,33 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
 
     }
 
-    public void draw(List<ModelMatrices> modelMatrices) {
+    public void draw(List<ModelMatrices> modelMatrices, double interpolationFactor) {
         if (renderUnit == null || !renderUnit.hasElements()) {
             return;
         }
-        draw(renderUnit, modelMatrices);
+        draw(renderUnit, modelMatrices, interpolationFactor);
     }
 
-    public void drawDepthBuffer(List<ModelMatrices> modelMatrices) {
+    public void drawDepthBuffer(List<ModelMatrices> modelMatrices, double interpolationFactor) {
         if (depthBufferRenderUnit == null || !depthBufferRenderUnit.hasElements()) {
             return;
         }
-        draw(depthBufferRenderUnit, modelMatrices);
+        draw(depthBufferRenderUnit, modelMatrices, interpolationFactor);
     }
 
-    public void drawNorm(List<ModelMatrices> modelMatrices) {
+    public void drawNorm(List<ModelMatrices> modelMatrices, double interpolationFactor) {
         if (normRenderUnit == null || !normRenderUnit.hasElements()) {
             return;
         }
-        draw(normRenderUnit, modelMatrices);
+        draw(normRenderUnit, modelMatrices, interpolationFactor);
     }
 
-    protected void draw(AbstractRenderUnit renderUnit, List<ModelMatrices> modelMatrices) {
+    protected void draw(AbstractRenderUnit renderUnit, List<ModelMatrices> modelMatrices, double interpolationFactor) {
         renderUnit.prepareDraw();
 
         if (modelMatrices != null) {
             for (ModelMatrices modelMatrice : modelMatrices) {
-                renderUnit.draw(mixTransformation(modelMatrice));
+                renderUnit.draw(mixTransformation(modelMatrice, interpolationFactor));
             }
         } else {
             renderUnit.draw(null);

@@ -129,7 +129,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
         gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
+        // ameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
@@ -232,7 +232,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         bulldozer.setTerrainType(TerrainType.LAND).setThumbnail(272504);
         bulldozer.setI18Name(i18nHelper("Bulldozer Name"));
         bulldozer.setDescription(i18nHelper("Bulldozer Description"));
-        bulldozer.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
+        bulldozer.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30));
         bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
         bulldozer.setBoxPickupRange(2).setExplosionClipId(272485);
     }
@@ -242,7 +242,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         harvester.setTerrainType(TerrainType.LAND);
         harvester.setI18Name(i18nHelper("Harvester Name"));
         harvester.setDescription(i18nHelper("Harvester Description"));
-        harvester.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
+        harvester.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
         harvester.setBoxPickupRange(2).setExplosionClipId(272485).setBuildup(2);
     }
@@ -252,7 +252,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         attacker.setTerrainType(TerrainType.LAND);
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
-        attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30));
+        attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30));
         attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionClipId(272485);
     }

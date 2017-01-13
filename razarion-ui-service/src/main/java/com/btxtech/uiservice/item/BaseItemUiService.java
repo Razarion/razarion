@@ -65,6 +65,7 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
+    private long lastUpdateTimeStamp;
 
     @Deprecated
     public VertexContainer getItemTypeVertexContainer(int id) {
@@ -109,6 +110,7 @@ public class BaseItemUiService {
     }
 
     public void updateSyncBaseItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+        lastUpdateTimeStamp = System.currentTimeMillis();
         this.syncBaseItems = syncBaseItems;
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
@@ -134,14 +136,14 @@ public class BaseItemUiService {
             }
             // Alive
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && syncBaseItem.checkHealth()) {
-                aliveModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel()));
+                aliveModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));
                 if (syncBaseItem.getWeaponTurret() != null) {
                     weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret()));
                 }
             }
             // Demolition
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && !syncBaseItem.checkHealth()) {
-                ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getHealth());
+                ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getHealth()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity());
                 demolitionModelMatrices.put(baseItemType, modelMatrices);
                 DemolitionStepEffect demolitionStepEffect = baseItemType.getDemolitionStepEffect(syncBaseItem.getHealth());
                 if (demolitionStepEffect != null && demolitionStepEffect.getDemolitionShape3Ds() != null) {
@@ -190,7 +192,7 @@ public class BaseItemUiService {
                 wasMyBase = true;
             }
         }
-        if(wasMyBase) {
+        if (wasMyBase) {
             selectionHandler.onMyBaseRemoved();
         }
     }
@@ -300,5 +302,10 @@ public class BaseItemUiService {
 
     public boolean isHouseSpaceExceeded(BaseItemType baseItemType, int baseItemTypeCount) {
         return false; // TODO
+    }
+
+    public double setupInterpolationFactor() {
+        return (double) (System.currentTimeMillis() - lastUpdateTimeStamp) / 1000.0;
+        // return 0;
     }
 }

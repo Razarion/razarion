@@ -24,7 +24,6 @@ import javafx.scene.layout.Pane;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -35,6 +34,7 @@ import java.util.ResourceBundle;
  */
 @Singleton
 public class GameEngineMonitorController implements Initializable {
+    private static final double INIT_ZOOM = 10;
     @FXML
     private Canvas canvas;
     @FXML
@@ -56,6 +56,8 @@ public class GameEngineMonitorController implements Initializable {
     @Inject
     private JavaFxGameEngineRenderer renderer;
     @Inject
+    private ClientEmulatorGameEngineRenderer overlayRenderer;
+    @Inject
     private ScenarioService scenarioService;
     @Inject
     private DevToolsSimpleExecutorServiceImpl devToolsSimpleExecutorService;
@@ -63,10 +65,11 @@ public class GameEngineMonitorController implements Initializable {
     private PlanetService planetService;
     @Inject
     private PerfmonService perfmonService;
+    @Inject
+    private ClientEmulator clientEmulator;
     private int delay = PlanetService.TICK_TIME_MILLI_SECONDS;
     // private List<Collection<Unit>> backups = new ArrayList<>();
     private SyncItemSidePaneController hoverSyncItemSidePaneController;
-    private boolean selected;
     private DevToolFutureControl gameEngineFutureControl;
 
     @Override
@@ -91,7 +94,9 @@ public class GameEngineMonitorController implements Initializable {
         gameEngineFutureControl.setAfterExecutionCallback(this::tick);
 
         onRestartScenario();
-        renderer.init(canvas, 4.0);
+        renderer.init(canvas, INIT_ZOOM);
+        overlayRenderer.init(overlayCanvas, INIT_ZOOM);
+        zoomSlider.setValue(renderer.getZoom());
         renderer.render();
 
         onRun();
@@ -207,6 +212,7 @@ public class GameEngineMonitorController implements Initializable {
 
     private void setZoom(double zoom) {
         renderer.setZoom(zoom);
+        overlayRenderer.setZoom(zoom);
         scaleField.setText(String.format("%.2f", renderer.getScale()));
         renderer.render();
     }
@@ -216,6 +222,7 @@ public class GameEngineMonitorController implements Initializable {
     }
 
     private void tick() {
+        clientEmulator.onTick();
         backup();
         Platform.runLater(() -> {
             try {
@@ -237,18 +244,18 @@ public class GameEngineMonitorController implements Initializable {
 
     public void onMouseDragged(Event event) {
         renderer.shifting(event);
+        overlayRenderer.shifting(event);
         renderer.render();
     }
 
     public void onMouseReleased() {
         renderer.stopShift();
+        overlayRenderer.stopShift();
     }
 
     public void onMousePressed() {
         if (hoverSyncItemSidePaneController != null) {
-            selected = true;
             hoverSyncItemSidePaneController.setSelected(() -> {
-                selected = false;
                 leftSidePanel.getChildren().clear();
                 hoverSyncItemSidePaneController = null;
             });

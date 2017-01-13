@@ -8,6 +8,7 @@ public class ModelMatrices {
     private Matrix4 model;
     private Matrix4 norm;
     private double progress;
+    private DecimalPosition interpolatableVelocity;
 
     public ModelMatrices(Matrix4 model) {
         this(model, 0);
@@ -33,6 +34,20 @@ public class ModelMatrices {
 
     public double getProgress() {
         return progress;
+    }
+
+    public ModelMatrices setInterpolatableVelocity(DecimalPosition interpolatableVelocity) {
+        this.interpolatableVelocity = interpolatableVelocity;
+        return this;
+    }
+
+    public ModelMatrices interpolateVelocity(double factor) {
+        if (interpolatableVelocity != null && factor != 0.0) {
+            DecimalPosition interpolation = interpolatableVelocity.multiply(factor);
+            return new ModelMatrices(Matrix4.createTranslation(interpolation.getX(), interpolation.getY(), 0).multiply(model), progress);
+        } else {
+            return this;
+        }
     }
 
     public ModelMatrices multiply(ModelMatrices modelMatrices) {

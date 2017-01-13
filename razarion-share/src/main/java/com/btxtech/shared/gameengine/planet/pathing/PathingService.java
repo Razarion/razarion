@@ -21,6 +21,7 @@ public class PathingService {
     public static final double MAXIMUM_CORRECTION = 0.02;
     public static final double PENETRATION_TOLERANCE = 0.1;
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
+    public static final double STOP_DETECTION_DISTANCE = 0.1;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -57,7 +58,7 @@ public class PathingService {
                 return null;
             }
 
-            syncBaseItem.getSyncPhysicalMovable().setupForTick(syncItemContainerService);
+            syncBaseItem.getSyncPhysicalMovable().setupForTick();
 
             return null;
         });

@@ -25,6 +25,7 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
 
@@ -37,13 +38,17 @@ import java.util.ArrayList;
 @Dependent
 @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
 public class SyncPhysicalMovable extends SyncPhysicalArea {
-    public static final String NAMED = SyncPhysicalArea.class.getName();
+    private static final double BREAK_DISTANCE_FAR = 40; // Meters
+    private static final double BREAK_DISTANCE_NEAR = 5; // Meters
+    private static final double BREAK_DISTANCE_NEAR_SPEED_FACTOR = 0.5; // Meters
+    private static final double BREAK_ANGLE = MathHelper.SIX_TEENTH_RADIANT; // Rad
+    @Inject
+    private SyncItemContainerService syncItemContainerService;
     private final static int LOOK_AHEAD_TICKS = 20;
     private double lookAheadDistance;
-    private double acceleration; // Pixel per square second
-    private double maxSpeed; // Pixel per second
-    private double minTurnSpeed; // Min speed if wrong angle pixel per second
-    private double angleVelocity;
+    private double acceleration; // Meter per square second
+    private double maxSpeed; // Meter per second
+    private double angularVelocity; // Rad per second
     private DecimalPosition destination;
     private DecimalPosition velocity;
     private DecimalPosition lastDestination;
@@ -53,59 +58,69 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.isFixVerticalNorm(), position2d, angle);
         this.velocity = velocity;
         maxSpeed = physicalAreaConfig.getSpeed();
-        angleVelocity = physicalAreaConfig.getAngularVelocity();
+        angularVelocity = physicalAreaConfig.getAngularVelocity();
         acceleration = physicalAreaConfig.getAcceleration();
-        minTurnSpeed = physicalAreaConfig.getMinTurnSpeed();
         lookAheadDistance = LOOK_AHEAD_TICKS * maxSpeed * PlanetService.TICK_FACTOR;
     }
 
-    public void setupForTick(SyncItemContainerService syncItemContainerService) {
+    public void setupForTick() {
         if (destination != null) {
             DecimalPosition desiredVelocity = destination.sub(getPosition2d()).normalize(maxSpeed);
             if (velocity == null) {
                 velocity = DecimalPosition.createVector(getAngle(), 0.001);
             }
-            desiredVelocity = forwardLooking(syncItemContainerService, desiredVelocity).normalize(maxSpeed);
+            desiredVelocity = forwardLooking(desiredVelocity).normalize(maxSpeed);
             double desiredAngle = desiredVelocity.angle();
             double deltaAngle = MathHelper.negateAngle(desiredVelocity.angle() - getAngle());
             // Fix angle
-            double angleSpeedFactor = 1.0;
-            if (Math.abs(deltaAngle) > angleVelocity * PlanetService.TICK_FACTOR) {
-                double possibleAngle = MathHelper.negateAngle(getAngle() + Math.signum(deltaAngle) * angleVelocity * PlanetService.TICK_FACTOR);
-                setAngle(possibleAngle);
-                DecimalPosition desiredVelocityNorm = desiredVelocity.normalize();
-                DecimalPosition fixedAngleVelocityNorm = DecimalPosition.createVector(possibleAngle, 1.0);
-                angleSpeedFactor = Math.max(0.0, Math.min(1.0, fixedAngleVelocityNorm.dotProduct(desiredVelocityNorm)));
+            if (Math.abs(deltaAngle) > angularVelocity * PlanetService.TICK_FACTOR) {
+                setAngle(MathHelper.negateAngle(getAngle() + Math.signum(deltaAngle) * angularVelocity * PlanetService.TICK_FACTOR));
             } else {
                 setAngle(desiredAngle);
             }
-            // Fix velocity
-            double originalSpeed = velocity.magnitude(); // TODO That is wrong... but I don't remember why
-            double possibleSpeed = Math.max(minTurnSpeed, angleSpeedFactor * maxSpeed);
-            double speed;
-            double breakingDistance = (originalSpeed * originalSpeed) / (2.0 * acceleration) + range;
-            if (breakingDistance > getPosition2d().getDistance(destination)) {
-                // Breaking distance
-                speed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
-                speed = Math.max(maxSpeed * PlanetService.TICK_FACTOR, speed);
-            } else if (Math.abs(originalSpeed - possibleSpeed) > acceleration * PlanetService.TICK_FACTOR) {
-                if (originalSpeed < possibleSpeed) {
-                    speed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
+            // Max possible speed
+            double possibleSpeed;
+            double distance = getPosition2d().getDistance(destination) - range;
+            if (distance > BREAK_DISTANCE_NEAR) {
+                double deltaDesiredAngle = MathHelper.getAngle(getAngle(), desiredAngle);
+                double angleSpeedFactor;
+                if (deltaDesiredAngle > BREAK_ANGLE) {
+                    angleSpeedFactor = 0;
                 } else {
-                    speed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
+                    angleSpeedFactor = 1.0 - deltaDesiredAngle / BREAK_ANGLE;
+                }
+                double distanceSpeedFactor;
+                if (distance > BREAK_DISTANCE_FAR) {
+                    distanceSpeedFactor = 1.0;
+                } else {
+                    distanceSpeedFactor = distance / BREAK_DISTANCE_FAR;
+                }
+                possibleSpeed = maxSpeed * (distanceSpeedFactor + angleSpeedFactor) / 2.0;
+            } else {
+                possibleSpeed = maxSpeed * distance / BREAK_DISTANCE_NEAR * BREAK_DISTANCE_NEAR_SPEED_FACTOR;
+            }
+            // Fix velocity
+            double originalSpeed = velocity.magnitude();
+            double desiredSpeed;
+            if (Math.abs(originalSpeed - possibleSpeed) > acceleration * PlanetService.TICK_FACTOR) {
+                if (originalSpeed < possibleSpeed) {
+                    desiredSpeed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
+                } else {
+                    desiredSpeed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
                 }
             } else {
-                speed = possibleSpeed;
+                desiredSpeed = possibleSpeed;
             }
-            // Check if destination too near to turn
-            deltaAngle = MathHelper.negateAngle(desiredVelocity.angle() - getAngle());
-            double turnSteps = Math.abs(deltaAngle) / (angleVelocity * PlanetService.TICK_FACTOR);
-            double distance = turnSteps * speed * PlanetService.TICK_FACTOR;
-            if (distance > getPosition2d().getDistance(destination)) {
-                speed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
-            }
+//            // Check if target is near to start breaking
+//            double ticksToZeroSpeed = desiredSpeed / (acceleration * PlanetService.TICK_FACTOR);
+//            double breakingDistance = ticksToZeroSpeed * desiredSpeed / 2.0;
+//
+//            double speed = desiredSpeed;
+//            if (breakingDistance > distance) {
+//                speed = Math.sqrt(2.0 * distance * acceleration * PlanetService.TICK_FACTOR);
+//            }
 
-            speed = Math.min(maxSpeed, speed);
+            double speed = Math.min(maxSpeed, desiredSpeed);
             speed = Math.max(0.0, speed);
             velocity = DecimalPosition.createVector(getAngle(), speed);
         } else {
@@ -125,7 +140,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         }
     }
 
-    private DecimalPosition forwardLooking(SyncItemContainerService syncItemContainerService, DecimalPosition desiredVelocity) {
+    private DecimalPosition forwardLooking(DecimalPosition desiredVelocity) {
         ClearanceHole clearanceHole = new ClearanceHole(this);
         SyncItem target = ((SyncBaseItem) getSyncItem()).getTarget();
         syncItemContainerService.iterateOverItems(false, false, null, getSyncItem(), otherSyncItem -> {
@@ -184,7 +199,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public boolean checkDestinationReached(SyncItemContainerService syncItemContainerService) {
         // 1) Position reached directly
-        if (getPosition2d().getDistance(destination) < getRadius() + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
+        if (getPosition2d().getDistance(destination) < PathingService.STOP_DETECTION_DISTANCE) {
             return true;
         }
         // 2) None moving neighbor reached destination
@@ -207,7 +222,9 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setDestination(Path path) {
         destination = path.getDestination();
-        range = path.getRange();
+        if (path.getRange() > 0) {
+            range = path.getRange() - PathingService.STOP_DETECTION_DISTANCE;
+        }
     }
 
     @Override
@@ -255,197 +272,13 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         }
     }
 
-    // ---------------- OLD ---------------------------------
-//
-//    private static double MIN_DISTANCE = 0.01;
-//
-//    public interface OverlappingHandler {
-//        Path calculateNewPath();
-//    }
-//
-//    @Inject
-//    private BaseItemService baseItemService;
-//    @Inject
-//    private CollisionService collisionService;
-//    @Inject
-//    private GameLogicService activityService;
-//    @Inject
-//    private BoxService boxService;
-//    private PhysicalMovableConfig physicalMovableConfig;
-//    private List<DecimalPosition> pathToDestination;
-//    private Double destinationAngel;
-//    private Integer targetContainer;
-//    private Integer syncBoxItemId;
-//
-//    public boolean isActive() {
-//        return getSyncBaseItem().isAlive() && (targetContainer != null || syncBoxItemId != null || (pathToDestination != null && !pathToDestination.isEmpty()));
-//    }
-//
-//    /**
-//     * @return true if more tick are needed to fulfil the job
-//     */
-//    public boolean tick() {
-//        return tickMove(overlappingHandler) || targetContainer != null && putInContainer() || syncBoxItemId != null && pickupBox();
-//
-//    }
-//
-//    boolean tickMove(OverlappingHandler overlappingHandler) {
-//        if (pathToDestination == null) {
-//            return false;
-//        }
-//
-//        if (pathToDestination.isEmpty()) {
-//            pathToDestination = null;
-//            // no new destination
-//            return onFinished(overlappingHandler);
-//        }
-//
-//        DecimalPosition destination = pathToDestination.get(0);
-//
-//        DecimalPosition decimalPoint = getSyncItemArea().getDecimalPosition().getPointWithDistance(getDistance(), destination, false);
-//        if (decimalPoint.equalsDelta(destination)) {
-//            pathToDestination.remove(0);
-//            if (pathToDestination.isEmpty()) {
-//                pathToDestination = null;
-//                getSyncItemArea().turnTo(destinationAngel);
-//                getSyncItemArea().setDecimalPosition(decimalPoint);
-//                return onFinished(overlappingHandler);
-//            }
-//        }
-//
-//        double realDistance = decimalPoint.getDistance(getSyncItemArea().getDecimalPosition());
-//        double relativeDistance = realDistance / (double) physicalMovableConfig.getSpeed();
-//        if (PlanetService.TICK_FACTOR - relativeDistance > MIN_DISTANCE) {
-//            getSyncItemArea().turnTo(destination);
-//            getSyncItemArea().setDecimalPosition(decimalPoint);
-//            return tickMove(overlappingHandler);
-//        }
-//
-//        getSyncItemArea().turnTo(destination);
-//        getSyncItemArea().setDecimalPosition(decimalPoint);
-//        return true;
-//    }
-//
-//    public boolean onFinished(OverlappingHandler overlappingHandler) {
-//        if (PlanetService.MODE != PlanetMode.MASTER) {
-//            return false;
-//        }
-//        SyncBaseItem syncBaseItem = getSyncBaseItem();
-//        if (baseItemService.isSyncItemOverlapping(syncBaseItem)) {
-//            Path path = overlappingHandler.calculateNewPath();
-//            if (path != null) {
-//                pathToDestination = path.getPath();
-//                destinationAngel = path.getActualDestinationAngel();
-//                activityService.onNewPathRecalculation(getSyncBaseItem());
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } else {
-//            return false;
-//        }
-//    }
-//
-//    private boolean putInContainer() {
-//        if (tickMove(overlappingHandler)) {
-//            return true;
-//        }
-//
-//        try {
-//            SyncBaseItem syncItemContainer = (SyncBaseItem) baseItemService.getItem(targetContainer);
-//            if (getSyncItemArea().isInRange(syncItemContainer.getSyncItemContainer().getRange(), syncItemContainer)) {
-//                getSyncItemArea().turnTo(syncItemContainer);
-//                syncItemContainer.getSyncItemContainer().load(getSyncBaseItem());
-//            } else {
-//                throw new IllegalStateException("Not in item container range: " + getSyncBaseItem() + " container: " + syncItemContainer);
-//            }
-//        } catch (ItemDoesNotExistException ignore) {
-//            // Item container may be killed
-//        } catch (ItemContainerFullException e) {
-//            // Item container full
-//        } catch (TargetHasNoPositionException e) {
-//            // Target container has moved to a container
-//        } catch (WrongOperationSurfaceException e) {
-//            // Item container is at the wrong position
-//        }
-//        stop();
-//        return false;
-//    }
-//
-//
-//    @Override
-//    public void synchronize(SyncItemInfo syncItemInfo) {
-//        pathToDestination = syncItemInfo.getPathToDestination();
-//        targetContainer = syncItemInfo.getTargetContainer();
-//        syncBoxItemId = syncItemInfo.getSyncBoxItemId();
-//        destinationAngel = syncItemInfo.getDestinationAngel();
-//    }
-//
-//    @Override
-//    public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
-//        syncItemInfo.setPathToDestination(CollectionUtils.saveArrayListCopy(pathToDestination));
-//        syncItemInfo.setDestinationAngel(destinationAngel);
-//        syncItemInfo.setTargetContainer(targetContainer);
-//        syncItemInfo.setSyncBoxItemId(targetContainer);
-//    }
-//
-//    public void stop() {
-//        pathToDestination = null;
-//        targetContainer = null;
-//        destinationAngel = null;
-//        syncBoxItemId = null;
-//    }
-//
-//    public void executeCommand(PathToDestinationCommand pathToDestinationCommand) {
-//        if (getSyncBaseItem().getSyncItemArea().positionReached(pathToDestinationCommand.getPathToDestination().getActualDestination())) {
-//            return;
-//        }
-//        pathToDestination = pathToDestinationCommand.getPathToDestination().getPath();
-//        destinationAngel = pathToDestinationCommand.getPathToDestination().getActualDestinationAngel();
-//    }
-//
-//    public void executeCommand(LoadContainerCommand loadContainerCommand) {
-//        if (loadContainerCommand.getId() == loadContainerCommand.getItemContainer()) {
-//            throw new IllegalArgumentException("Can not contain oneself: " + getSyncBaseItem());
-//        }
-//        targetContainer = loadContainerCommand.getItemContainer();
-//        pathToDestination = loadContainerCommand.getPathToDestination().getPath();
-//        destinationAngel = loadContainerCommand.getPathToDestination().getActualDestinationAngel();
-//    }
-//
-//    public List<DecimalPosition> getPathToDestination() {
-//        return pathToDestination;
-//    }
-//
-//    public Double getDestinationAngel() {
-//        return destinationAngel;
-//    }
-//
-//    public void setPathToDestination(List<DecimalPosition> pathToDestination, Double destinationAngel) {
-//        this.pathToDestination = pathToDestination;
-//        this.destinationAngel = destinationAngel;
-//    }
-//
-//    public DecimalPosition getDestination() {
-//        if (pathToDestination != null && !pathToDestination.isEmpty()) {
-//            return pathToDestination.get(pathToDestination.size() - 1);
-//        }
-//        return null;
-//    }
-//
-//    public Integer getTargetContainer() {
-//        return targetContainer;
-//    }
-//
-//    public void setTargetContainer(Integer targetContainer) {
-//        this.targetContainer = targetContainer;
-//    }
-//
-//    public PhysicalMovableConfig getPhysicalMovableConfig() {
-//        return physicalMovableConfig;
-//    }
-//
-//    public Integer getSyncBoxItemId() {
-//        return syncBoxItemId;
-//    }
+    public DecimalPosition setupInterpolatableVelocity() {
+        if (velocity == null) {
+            System.out.println("velocity: null");
+            return null;
+        }
+        System.out.println("velocity: " + velocity + " magnitude: " + velocity.magnitude());
+        return velocity;
+
+    }
 }

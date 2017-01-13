@@ -49,7 +49,7 @@ public class SimpleTestEnvironment {
         BaseItemType simpleMovable = new BaseItemType();
         simpleMovable.setHealth(100).setSpawnDurationMillis(1000);
         simpleMovable.setId(1);
-        simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(40.0).setMinTurnSpeed(40.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(10));
+        simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(40.0).setAngularVelocity(Math.toRadians(30)).setRadius(10));
         SIMPLE_MOVABLE_ITEM_TYPE = simpleMovable;
     }
 }

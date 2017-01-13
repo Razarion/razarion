@@ -64,25 +64,25 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
         }
     }
 
-    public void draw(RenderUnitControl renderUnitControl) {
-        if(!hasSomethingToDraw) {
+    public void draw(RenderUnitControl renderUnitControl, double interpolationFactor) {
+        if (!hasSomethingToDraw) {
             return;
         }
-        abstractRenderComposites.getSave(renderUnitControl).forEach(abstractRenderComposite -> abstractRenderComposite.draw(modelMatrices));
+        abstractRenderComposites.getSave(renderUnitControl).forEach(abstractRenderComposite -> abstractRenderComposite.draw(modelMatrices, interpolationFactor));
     }
 
-    public void drawDepthBuffer() {
-        if(!hasSomethingToDraw) {
+    public void drawDepthBuffer(double interpolationFactor) {
+        if (!hasSomethingToDraw) {
             return;
         }
-        abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawDepthBuffer(modelMatrices));
+        abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawDepthBuffer(modelMatrices, interpolationFactor));
     }
 
-    public void drawNorm() {
-        if(!hasSomethingToDraw) {
+    public void drawNorm(double interpolationFactor) {
+        if (!hasSomethingToDraw) {
             return;
         }
-        abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawNorm(modelMatrices));
+        abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawNorm(modelMatrices, interpolationFactor));
     }
 
     public void fillBuffers() {

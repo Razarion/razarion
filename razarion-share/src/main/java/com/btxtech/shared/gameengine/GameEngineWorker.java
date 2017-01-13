@@ -28,8 +28,6 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.gameengine.planet.model.SyncBuilder;
-import com.btxtech.shared.gameengine.planet.model.SyncHarvester;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -164,7 +162,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncItemContainerService.iterateOverItems(false, false, null, syncItem -> {
             if (syncItem instanceof SyncBaseItem) {
                 SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                SyncBaseItemSimpleDto simpleDto = createSyncBaseItemSimpleDto(syncBaseItem);
+                SyncBaseItemSimpleDto simpleDto = syncBaseItem.createSyncBaseItemSimpleDto();
                 syncItems.add(simpleDto);
             }
             return null;
@@ -223,12 +221,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, createSyncBaseItemSimpleDto(syncBaseItem));
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createSyncBaseItemSimpleDto());
     }
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, createSyncBaseItemSimpleDto(syncBaseItem));
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, syncBaseItem.createSyncBaseItemSimpleDto());
     }
 
     @Override
@@ -253,47 +251,21 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private SyncBaseItemSimpleDto createSyncBaseItemSimpleDto(SyncBaseItem syncBaseItem) {
-        SyncBaseItemSimpleDto simpleDto = new SyncBaseItemSimpleDto();
-        simpleDto.setId(syncBaseItem.getId());
-        simpleDto.setItemTypeId(syncBaseItem.getItemType().getId());
-        simpleDto.setBaseId(syncBaseItem.getBase().getBaseId());
-        simpleDto.setModel(syncBaseItem.getSyncPhysicalArea().getModelMatrices().getModel());
-        if (syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncWeapon().getSyncTurret() != null) {
-            simpleDto.setWeaponTurret(syncBaseItem.getSyncWeapon().createTurretModelMatrices4Shape3D());
-        }
-        simpleDto.setPosition2d(syncBaseItem.getSyncPhysicalArea().getPosition2d());
-        simpleDto.setPosition3d(syncBaseItem.getSyncPhysicalArea().getPosition3d());
-        simpleDto.setSpawning(syncBaseItem.getSpawnProgress());
-        simpleDto.setBuildup(syncBaseItem.getBuildup());
-        simpleDto.setHealth(syncBaseItem.getNormalizedHealth());
-        SyncHarvester harvester = syncBaseItem.getSyncHarvester();
-        if (harvester != null && harvester.isHarvesting()) {
-            simpleDto.setHarvestingResourcePosition(harvester.getResource().getSyncPhysicalArea().getPosition3d());
-        }
-        SyncBuilder builder = syncBaseItem.getSyncBuilder();
-        if (builder != null && builder.isBuilding()) {
-            simpleDto.setBuildingPosition(builder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d());
-        }
-        simpleDto.setIdle(syncBaseItem.isIdle());
-        return simpleDto;
-    }
-
     public UserContext getUserContext() {
         return userContext;
     }
 
     @Override
     public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
-        killed.add(createSyncBaseItemSimpleDto(target));
+        killed.add(target.createSyncBaseItemSimpleDto());
         if (actor.getBase().getUserId() != null && actor.getBase().getUserId() == userContext.getUserId()) {
             xpFromKills += target.getBaseItemType().getXpOnKilling();
         }
     }
 
     @Override
-    public void onSyncItemRemoved(SyncBaseItem target) {
-        removed.add(createSyncBaseItemSimpleDto(target));
+    public void onSyncItemRemoved(SyncBaseItem syncBaseItem) {
+        removed.add(syncBaseItem.createSyncBaseItemSimpleDto());
     }
 
     @Override

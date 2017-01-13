@@ -18,6 +18,7 @@ public abstract class AbstractRenderTask<T> {
     private Instance<ModelRenderer<T, ?, ?, ?>> instance;
     private List<ModelRenderer> modelRenderers = new ArrayList<>();
     private boolean active;
+    private double interpolationFactor;
 
     /**
      * Override in sub classes
@@ -35,6 +36,11 @@ public abstract class AbstractRenderTask<T> {
     // Override in subclasses
     protected void preRender(long timeStamp) {
 
+    }
+
+    // Override in subclasses
+    protected double setupInterpolationFactor() {
+        return 0;
     }
 
     public void removeAll(T model) {
@@ -61,12 +67,13 @@ public abstract class AbstractRenderTask<T> {
     }
 
     protected <T, C extends AbstractRenderComposite<U, D>, U extends AbstractRenderUnit<D>, D> ModelRenderer<T, C, U, D> create() {
-        return (ModelRenderer)instance.get();
+        return (ModelRenderer) instance.get();
     }
 
     public void prepareRender(long timeStamp) {
         active = isActive();
         if (active) {
+            interpolationFactor = setupInterpolationFactor();
             preRender(timeStamp);
             modelRenderers.forEach(modelRenderer -> modelRenderer.setupModelMatrices(timeStamp));
         }
@@ -74,19 +81,19 @@ public abstract class AbstractRenderTask<T> {
 
     public void draw(RenderUnitControl renderUnitControl) {
         if (active) {
-            modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderUnitControl));
+            modelRenderers.forEach(modelRenderer -> modelRenderer.draw(renderUnitControl, interpolationFactor));
         }
     }
 
     public void drawDepthBuffer() {
         if (active) {
-            modelRenderers.forEach(ModelRenderer::drawDepthBuffer);
+            modelRenderers.forEach(modelRenderer -> modelRenderer.drawDepthBuffer(interpolationFactor));
         }
     }
 
     public void drawNorm() {
         if (active) {
-            modelRenderers.forEach(ModelRenderer::drawNorm);
+            modelRenderers.forEach(modelRenderer -> modelRenderer.drawNorm(interpolationFactor));
         }
     }
 

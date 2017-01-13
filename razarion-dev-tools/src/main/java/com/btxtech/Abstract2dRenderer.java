@@ -118,6 +118,16 @@ public class Abstract2dRenderer {
         }
     }
 
+    public double getZoom() {
+        if (scale > 1.0) {
+            return scale;
+        } else if (scale < 1.0) {
+            return -1.0 / scale;
+        } else {
+            return 1.0;
+        }
+    }
+
     public double getScale() {
         return scale;
     }

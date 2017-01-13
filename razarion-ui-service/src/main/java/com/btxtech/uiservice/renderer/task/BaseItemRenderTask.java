@@ -15,7 +15,6 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractFireVertexContainerRenderUnit;
-import com.btxtech.uiservice.renderer.AbstractLookUpVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -51,6 +50,11 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     public void onBaseItemTypeChanged(BaseItemType baseItemType) {
         removeAll(baseItemType);
         setupBaseItemType(baseItemType, true);
+    }
+
+    @Override
+    protected double setupInterpolationFactor() {
+        return baseItemUiService.setupInterpolationFactor();
     }
 
     private void setupBaseItemType(BaseItemType baseItemType, boolean fillBuffer) {
@@ -267,7 +271,6 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
 
         add(modelRenderer);
     }
-
 
     private void demolitionEffects(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getDemolitionStepEffects() == null || baseItemType.getDemolitionStepEffects().isEmpty()) {

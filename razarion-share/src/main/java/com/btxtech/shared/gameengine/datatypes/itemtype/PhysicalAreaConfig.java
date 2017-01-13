@@ -7,10 +7,9 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 public class PhysicalAreaConfig {
     private double radius;
     private boolean fixVerticalNorm;
-    private Double angularVelocity; //Grad per second
+    private Double angularVelocity; //Rad per second
     private Double speed;
     private Double acceleration;
-    private Double minTurnSpeed;
 
     public double getRadius() {
         return radius;
@@ -57,17 +56,8 @@ public class PhysicalAreaConfig {
         return this;
     }
 
-    public Double getMinTurnSpeed() {
-        return minTurnSpeed;
-    }
-
-    public PhysicalAreaConfig setMinTurnSpeed(Double minTurnSpeed) {
-        this.minTurnSpeed = minTurnSpeed;
-        return this;
-    }
-
     public boolean fulfilledMovable() {
-        return angularVelocity != null && speed != null && acceleration != null && minTurnSpeed != null;
+        return angularVelocity != null && speed != null && acceleration != null;
     }
 
 }
