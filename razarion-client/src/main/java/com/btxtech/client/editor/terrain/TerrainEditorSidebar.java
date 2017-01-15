@@ -1,20 +1,17 @@
 package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.rest.TerrainElementEditorProvider;
+import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.renderer.Camera;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.ValueListBox;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -34,16 +31,14 @@ import java.util.logging.Logger;
 public class TerrainEditorSidebar extends LeftSideBarContent {
     private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
     @Inject
-    private ClientRenderServiceImpl renderService;
-    @Inject
-    private TerrainEditor terrainEditor;
+    private TerrainEditorImpl terrainEditor;
     @Inject
     private Caller<TerrainElementEditorProvider> terrainEditorService;
     @Inject
-    private TerrainUiService terrainUiService;
+    private Camera camera;
     @Inject
     @DataField
-    private IntegerBox cursorRadius;
+    private DoubleBox cursorRadius;
     @Inject
     @DataField
     private IntegerBox cursorCorners;
@@ -52,22 +47,17 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
     private ValueListBox<ObjectNameId> slopeSelection;
     @Inject
     @DataField
-    private Button sculptButton;
+    private Button topViewButton;
     @Inject
     @DataField
-    private Button saveButton;
+    private Button sculptButton;
 
     @PostConstruct
     public void init() {
         terrainEditor.activate();
         cursorRadius.setValue(terrainEditor.getCursorRadius());
         cursorCorners.setValue(terrainEditor.getCursorCorners());
-        slopeSelection.addValueChangeHandler(new ValueChangeHandler<ObjectNameId>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<ObjectNameId> event) {
-                terrainEditor.setSlope4New(slopeSelection.getValue());
-            }
-        });
+        slopeSelection.addValueChangeHandler(event -> terrainEditor.setSlope4New(slopeSelection.getValue()));
         terrainEditorService.call(new RemoteCallback<Collection<ObjectNameId>>() {
             @Override
             public void callback(Collection<ObjectNameId> objectNameIds) {
@@ -76,12 +66,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
                 slopeSelection.setValue(objectNameId);
                 terrainEditor.setSlope4New(objectNameId);
             }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
-                return false;
-            }
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
+            return false;
         }).getSlopeNameIds();
 
     }
@@ -101,16 +88,19 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
         terrainEditor.setCursorCorners(cursorCorners.getValue());
     }
 
-    @EventHandler("sculptButton")
-    private void sculptButtonClick(ClickEvent event) {
-        terrainEditor.updateTerrainSurface();
-        // TODO terrainUiService.setup();
-        renderService.setup();
-        renderService.fillBuffers();
+    @EventHandler("topViewButton")
+    private void topViewButtonClick(ClickEvent event) {
+        camera.setTop();
     }
 
-    @EventHandler("saveButton")
-    private void saveButtonClick(ClickEvent event) {
-        terrainEditor.save();
+    @EventHandler("sculptButton")
+    private void sculptButtonClick(ClickEvent event) {
+        terrainEditor.sculpt();
+    }
+
+    @Override
+    protected void onConfigureDialog() {
+        registerSaveButton(terrainEditor::save);
+        enableSaveButton(true);
     }
 }

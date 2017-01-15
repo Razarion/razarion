@@ -225,7 +225,11 @@ public class TerrainScrollHandler {
         updateViewField();
 
         for (TerrainScrollListener terrainScrollListener : terrainScrollListeners) {
-            terrainScrollListener.onScroll(currentViewField);
+            try {
+                terrainScrollListener.onScroll(currentViewField);
+            } catch (Throwable t) {
+                exceptionHandler.handleException("TerrainScrollHandler notify listeners", t);
+            }
         }
     }
 

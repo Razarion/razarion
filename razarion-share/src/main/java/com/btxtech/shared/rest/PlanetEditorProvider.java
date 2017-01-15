@@ -17,13 +17,22 @@ import java.util.List;
 public interface PlanetEditorProvider {
 
     @PUT
-    @Path("saveTerrainSlopePositions")
+    @Path("createTerrainSlopePositions")
     @Consumes(MediaType.APPLICATION_JSON)
-    void saveTerrainSlopePositions(List<TerrainSlopePosition> terrainSlopePositions);
+    void createTerrainSlopePositions(List<TerrainSlopePosition> createdSlopes);
+
+    @PUT
+    @Path("updateTerrainSlopePositions")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateTerrainSlopePositions(List<TerrainSlopePosition> updatedSlopes);
+
+    @PUT
+    @Path("deleteTerrainSlopePositions")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void deleteTerrainSlopePositions(List<Integer> deletedSlopeIds);
 
     @PUT
     @Path("saveTerrainObjectPositions")
     @Consumes(MediaType.APPLICATION_JSON)
     void saveTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions);
-
 }

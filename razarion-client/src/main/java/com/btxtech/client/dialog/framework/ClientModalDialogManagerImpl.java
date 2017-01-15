@@ -66,6 +66,10 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
         show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemHouseSpace(), null, null, DialogButton.Button.CLOSE);
     }
 
+    public void showMessageDialog(String title, String message) {
+        show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
+    }
+
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
         show(title, type, contentClass, t, listener, shownCallback, audioService.getAudioConfig().getDialogOpened(), dialogButtons);
     }

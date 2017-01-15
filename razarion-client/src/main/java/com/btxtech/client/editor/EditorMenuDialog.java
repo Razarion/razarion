@@ -16,6 +16,7 @@ import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
+import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -127,6 +128,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("terrainButton")
     private void onTerrainButtonClicked(ClickEvent event) {
+        openEditor(TerrainEditorSidebar.class);
     }
 
     @EventHandler("helperButton")

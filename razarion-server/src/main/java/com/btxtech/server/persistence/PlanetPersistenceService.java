@@ -2,16 +2,14 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
-import com.btxtech.server.persistence.object.TerrainObjectPositionEntity_;
-import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -26,6 +24,8 @@ import java.util.List;
  */
 @Singleton
 public class PlanetPersistenceService {
+    @Inject
+    private TerrainElementPersistence terrainElementPersistence;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -33,9 +33,9 @@ public class PlanetPersistenceService {
     public void saveTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions) {
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
         for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
-            TerrainObjectPositionEntity terrainSlopePositionEntity = new TerrainObjectPositionEntity();
-            terrainSlopePositionEntity.fromTerrainObjectPosition(objectPosition, entityManager.find(TerrainObjectEntity.class, (long) objectPosition.getTerrainObjectId()));
-            terrainObjectPositionEntities.add(terrainSlopePositionEntity);
+            TerrainObjectPositionEntity terrainObjectPositionEntity = new TerrainObjectPositionEntity();
+            terrainObjectPositionEntity.fromTerrainObjectPosition(objectPosition, entityManager.find(TerrainObjectEntity.class, (long) objectPosition.getTerrainObjectId()));
+            terrainObjectPositionEntities.add(terrainObjectPositionEntity);
         }
         PlanetEntity planetEntity = loadPlanet();
         planetEntity.setTerrainObjectPositionEntities(terrainObjectPositionEntities);
@@ -43,30 +43,47 @@ public class PlanetPersistenceService {
     }
 
     @Transactional
-    public void saveTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions) {
+    public void updateTerrainSlopePositions(List<TerrainSlopePosition> updatedSlopes) {
+        PlanetEntity planetEntity = loadPlanet();
+        for (TerrainSlopePosition terrainSlopePosition : updatedSlopes) {
+            TerrainSlopePositionEntity terrainSlopePositionEntity = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePosition.getId());
+            terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeId()));
+            terrainSlopePositionEntity.getPolygon().clear();
+            terrainSlopePositionEntity.getPolygon().addAll(terrainSlopePosition.getPolygon());
+        }
+        entityManager.merge(planetEntity);
+    }
+
+    @Transactional
+    public void createTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions) {
         List<TerrainSlopePositionEntity> terrainSlopePositionEntities = new ArrayList<>();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             TerrainSlopePositionEntity terrainSlopePositionEntity = new TerrainSlopePositionEntity();
-            terrainSlopePositionEntity.fromTerrainSlopePosition(terrainSlopePosition, entityManager.find(SlopeConfigEntity.class, (long) terrainSlopePosition.getSlopeId()));
+            terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeId()));
+            terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon());
             terrainSlopePositionEntities.add(terrainSlopePositionEntity);
         }
 
         PlanetEntity planetEntity = loadPlanet();
-        planetEntity.setTerrainSlopePositionEntities(terrainSlopePositionEntities);
-        entityManager.merge(planetEntity);
+        planetEntity.getTerrainSlopePositionEntities().addAll(terrainSlopePositionEntities);
+        entityManager.persist(planetEntity);
     }
 
-    private Collection<Long> getTerrainObjectPositionIds() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
-        Root<TerrainObjectPositionEntity> root = cq.from(TerrainObjectPositionEntity.class);
-        cq.multiselect(root.get(TerrainObjectPositionEntity_.id));
-        List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
-        Collection<Long> ids = new ArrayList<>();
-        for (Tuple t : tupleResult) {
-            ids.add((Long) t.get(0));
+    @Transactional
+    public void deleteTerrainSlopePositions(Collection<Integer> terrainSlopePositionIds) {
+        PlanetEntity planetEntity = loadPlanet();
+        for (int terrainSlopePositionId : terrainSlopePositionIds) {
+            planetEntity.getTerrainSlopePositionEntities().remove(getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePositionId));
         }
-        return ids;
+    }
+
+    private TerrainSlopePositionEntity getSlopePositionEntityFromPlanet(PlanetEntity planetEntity, int id) {
+        for (TerrainSlopePositionEntity terrainSlopePositionEntity : planetEntity.getTerrainSlopePositionEntities()) {
+            if (terrainSlopePositionEntity.getId() == id) {
+                return terrainSlopePositionEntity;
+            }
+        }
+        throw new IllegalArgumentException("No TerrainSlopePositionEntity on planet for id: " + id);
     }
 
     private PlanetEntity loadPlanet() {
@@ -77,5 +94,4 @@ public class PlanetPersistenceService {
         CriteriaQuery<PlanetEntity> userSelect = userQuery.select(from);
         return entityManager.createQuery(userSelect).getSingleResult();
     }
-
 }

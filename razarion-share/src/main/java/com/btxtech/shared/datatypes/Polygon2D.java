@@ -1,5 +1,6 @@
 package com.btxtech.shared.datatypes;
 
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -51,14 +52,14 @@ public class Polygon2D {
 
     public boolean isInside(Collection<DecimalPosition> positions) {
         for (DecimalPosition position : positions) {
-            if(!isInside(position)) {
+            if (!isInside(position)) {
                 return false;
             }
         }
         return true;
     }
 
-        public boolean isLineCrossing(Line testLine) {
+    public boolean isLineCrossing(Line testLine) {
         for (Line line : lines) {
             if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
                 continue;
@@ -142,9 +143,115 @@ public class Polygon2D {
     }
 
     public Polygon2D combine(Polygon2D other) {
-        List<DecimalPosition> corners = new ArrayList<>(this.corners);
-        corners.addAll(other.getCorners());
-        return new Polygon2D(ConvexHull.convexHull2D(corners));
+        List<Integer> thisInsideOthers = other.getInsideCorners(this);
+        List<Integer> othersInsideThis = getInsideCorners(other);
+
+        if ((othersInsideThis.isEmpty() || othersInsideThis.size() == other.size()) && (thisInsideOthers.isEmpty() || thisInsideOthers.size() == size())) {
+            throw new IllegalArgumentException("Polygons do not adjoin or one is completely inside the other");
+        }
+
+        List<DecimalPosition> combined;
+        if (thisInsideOthers.size() > othersInsideThis.size()) {
+            combined = combineIfThisMoreCovered(thisInsideOthers, other, othersInsideThis);
+        } else {
+            combined = other.combineIfThisMoreCovered(othersInsideThis, this, thisInsideOthers);
+        }
+
+        return new Polygon2D(combined);
+    }
+
+    private List<Integer> getInsideCorners(Polygon2D other) {
+        List<Integer> insideCorners = new ArrayList<>();
+        for (int i = 0; i < other.getCorners().size(); i++) {
+            DecimalPosition otherCorner = other.getCorners().get(i);
+            if (isInside(otherCorner)) {
+                insideCorners.add(i);
+            }
+        }
+        return insideCorners;
+    }
+
+    private List<DecimalPosition> combineIfThisMoreCovered(List<Integer> thisInsideOthers, Polygon2D other, List<Integer> othersInsideThis) {
+        int thisValidCorners = size() - thisInsideOthers.size();
+        int otherValidCorners = other.size() - othersInsideThis.size();
+        List<DecimalPosition> combined = new ArrayList<>();
+
+        PairHolder<Integer> thisBeginEnd = getBeginEnd(thisInsideOthers);
+        int thisBegin = thisBeginEnd.getO1();
+        int thisEnd = thisBeginEnd.getO2();
+
+        // Other begin - end
+        int otherBegin;
+        int otherEnd;
+        if (othersInsideThis.isEmpty()) {
+            PairHolder<Integer> crossIndices = other.getCrossingIndices(getCorner(thisEnd), getCorner(thisEnd + 1));
+            otherBegin = crossIndices.getO2();
+            otherEnd = crossIndices.getO1();
+        } else {
+            PairHolder<Integer> otherBeginEnd = other.getBeginEnd(othersInsideThis);
+            otherBegin = otherBeginEnd.getO1();
+            otherEnd = otherBeginEnd.getO2();
+        }
+        if (thisBegin < 0 || thisEnd < 0) {
+            throw new IllegalArgumentException("begin or end not found");
+        }
+        // Combine
+        // Add valid this corners
+        for (int i = thisBegin; i < thisValidCorners + thisBegin; i++) {
+            combined.add(getCorner(i));
+        }
+        // Add cross 1
+        Line thisEndLine = new Line(getCorner(thisEnd), getCorner(thisEnd + 1));
+        Line otherBeginLine = new Line(other.getCorner(otherBegin - 1), other.getCorner(otherBegin));
+        DecimalPosition cross = thisEndLine.getCrossInclusive(otherBeginLine);
+        if (cross == null) {
+            throw new IllegalArgumentException("cross == null");
+        }
+        combined.add(cross);
+        // Add valid other corners
+        for (int i = otherBegin; i < otherValidCorners + otherBegin; i++) {
+            combined.add(other.getCorner(i));
+        }
+        // Add cross 2
+        Line otherEndLine = new Line(other.getCorner(otherEnd), other.getCorner(otherEnd + 1));
+        Line thisBeginLine = new Line(getCorner(thisBegin - 1), getCorner(thisBegin));
+        cross = otherEndLine.getCrossInclusive(thisBeginLine);
+        if (cross == null) {
+            throw new IllegalArgumentException("cross == null");
+        }
+        combined.add(cross);
+        return combined;
+    }
+
+    private PairHolder<Integer> getBeginEnd(List<Integer> insideIndices) {
+        int thisBegin = -1;
+        int thisEnd = -1;
+        for (int i = size() - 1; i >= 0; i--) {
+            if (insideIndices.contains(i)) {
+                if (!insideIndices.contains(CollectionUtils.getCorrectedIndex(i - 1, size()))) {
+                    thisEnd = CollectionUtils.getCorrectedIndex(i - 1, size());
+                }
+            } else {
+                if (insideIndices.contains(CollectionUtils.getCorrectedIndex(i - 1, size()))) {
+                    thisBegin = i;
+                }
+            }
+        }
+        if (thisBegin < 0 || thisEnd < 0) {
+            throw new IllegalArgumentException("begin or end not found");
+        }
+        return new PairHolder<>(thisBegin, thisEnd);
+    }
+
+    private PairHolder<Integer> getCrossingIndices(DecimalPosition p1, DecimalPosition p2) {
+        Line line = new Line(p1, p2);
+        for (int i = 0; i < lines.size(); i++) {
+            Line polyLine = lines.get(i);
+            if (polyLine.getCrossInclusive(line) != null) {
+                return new PairHolder<>(i, getCorrectedIndex(i + 1));
+            }
+        }
+        throw new IllegalArgumentException("Given points do not cross");
     }
 
     //
@@ -158,9 +265,117 @@ public class Polygon2D {
 //        return c;
 //    }
 
+    /**
+     * Subtracts given polygon from this. Sort of stamp out.
+     *
+     * @param other polygon
+     * @return null if this polygon is completely removed. (Other swallows it)
+     * @throws IllegalArgumentException if the polygon do not overlap
+     */
     public Polygon2D remove(Polygon2D other) {
-        // TODO see Polygon2I
-        throw new UnsupportedOperationException();
+        List<Integer> thisInsideOthers = other.getInsideCorners(this);
+        int thisValidCorners = size() - thisInsideOthers.size();
+        List<Integer> othersInsideThis = getInsideCorners(other);
+
+        if (thisInsideOthers.size() == size()) {
+            return null;
+        } else if (thisInsideOthers.isEmpty()) {
+            if (othersInsideThis.isEmpty()) {
+                throw new IllegalArgumentException("Polygons do not overlap");
+            } else if (othersInsideThis.size() == other.size()) {
+                throw new IllegalArgumentException("Other polygon completely inside. Making wholes not allowed");
+            }
+        }
+
+        List<DecimalPosition> remaining = new ArrayList<>();
+        if (thisInsideOthers.isEmpty()) {
+            PairHolder<Integer> otherBeginEnd = other.getBeginEnd(othersInsideThis);
+            int otherBegin = otherBeginEnd.getO1();
+            int otherEnd = otherBeginEnd.getO2();
+
+            // This begin - end
+            PairHolder<Integer> crossIndices = getCrossingIndices(other.getCorner(otherEnd), other.getCorner(otherEnd + 1));
+            int thisBegin = crossIndices.getO2();
+            int thisEnd = crossIndices.getO1();
+
+            // Combine
+            // Add valid this corners
+            for (int i = thisBegin; i < thisValidCorners + thisBegin; i++) {
+                remaining.add(getCorner(i));
+            }
+
+            // Add cross 1
+            Line thisLine = new Line(getCorner(thisBegin), getCorner(thisEnd));
+            Line otherBeginLine = new Line(other.getCorner(otherBegin - 1), other.getCorner(otherBegin));
+            DecimalPosition cross = thisLine.getCrossInclusive(otherBeginLine);
+            if (cross == null) {
+                throw new IllegalArgumentException("cross == null");
+            }
+            remaining.add(cross);
+
+            // Add stamp out other corners
+            for (int i = 1; i < othersInsideThis.size() + 1; i++) {
+                remaining.add(other.getCorner(otherBegin - i));
+            }
+
+            // Add cross 2
+            Line otherEndLine = new Line(other.getCorner(otherEnd), other.getCorner(otherEnd + 1));
+            cross = thisLine.getCrossInclusive(otherEndLine);
+            if (cross == null) {
+                throw new IllegalArgumentException("cross == null");
+            }
+            remaining.add(cross);
+        } else {
+            PairHolder<Integer> thisBeginEnd = getBeginEnd(thisInsideOthers);
+            int thisBegin = thisBeginEnd.getO1();
+            int thisEnd = thisBeginEnd.getO2();
+
+            // Other begin - end
+            int otherBegin;
+            int otherEnd;
+            if (othersInsideThis.isEmpty()) {
+                PairHolder<Integer> crossIndices = other.getCrossingIndices(getCorner(thisEnd), getCorner(thisEnd + 1));
+                otherBegin = crossIndices.getO2();
+                otherEnd = crossIndices.getO1();
+            } else {
+                PairHolder<Integer> otherBeginEnd = other.getBeginEnd(othersInsideThis);
+                otherBegin = otherBeginEnd.getO1();
+                otherEnd = otherBeginEnd.getO2();
+            }
+            if (thisBegin < 0 || thisEnd < 0) {
+                throw new IllegalArgumentException("begin or end not found");
+            }
+
+            // Combine
+            // Add valid this corners
+            for (int i = thisBegin; i < thisValidCorners + thisBegin; i++) {
+                remaining.add(getCorner(i));
+            }
+
+            // Add cross 1
+            Line thisLineEnd = new Line(getCorner(thisEnd), getCorner(thisEnd + 1));
+            Line otherBeginLine = new Line(other.getCorner(otherBegin - 1), other.getCorner(otherBegin));
+            DecimalPosition cross = thisLineEnd.getCrossInclusive(otherBeginLine);
+            if (cross == null) {
+                throw new IllegalArgumentException("cross == null");
+            }
+            remaining.add(cross);
+
+            // Add stamp out other corners
+            for (int i = 1; i < othersInsideThis.size() + 1; i++) {
+                remaining.add(other.getCorner(otherBegin - i));
+            }
+
+            // Add cross 2
+            Line thisLineBegin = new Line(getCorner(thisBegin - 1), getCorner(thisBegin));
+            Line otherBeginEnd = new Line(other.getCorner(otherEnd + 1), other.getCorner(otherEnd));
+            cross = thisLineBegin.getCrossInclusive(otherBeginEnd);
+            if (cross == null) {
+                throw new IllegalArgumentException("cross == null");
+            }
+            remaining.add(cross);
+        }
+        return new Polygon2D(remaining);
     }
 
     public Rectangle2D toAabb() {

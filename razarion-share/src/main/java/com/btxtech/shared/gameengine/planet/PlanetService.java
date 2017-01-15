@@ -87,7 +87,7 @@ public class PlanetService implements Runnable {
         return tickCount;
     }
 
-    PlanetConfig getPlanetConfig() {
+    public PlanetConfig getPlanetConfig() {
         return planetConfig;
     }
 

@@ -128,10 +128,10 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // ameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
+        gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB

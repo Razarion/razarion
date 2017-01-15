@@ -26,6 +26,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
     private D rendererData;
     private ShapeTransform shapeTransform;
     private Collection<ProgressAnimation> progressAnimations;
+    private ModelRenderer modelRenderer;
     @Deprecated
     private int id;
 
@@ -171,5 +172,13 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
     @Deprecated
     public int getId() {
         return id;
+    }
+
+    public ModelRenderer getModelRenderer() {
+        return modelRenderer;
+    }
+
+    public void setModelRenderer(ModelRenderer modelRenderer) {
+        this.modelRenderer = modelRenderer;
     }
 }

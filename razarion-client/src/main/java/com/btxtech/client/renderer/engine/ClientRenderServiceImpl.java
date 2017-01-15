@@ -1,8 +1,8 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.editor.terrain.TerrainEditor;
+import com.btxtech.client.editor.terrain.TerrainEditorImpl;
+import com.btxtech.client.editor.terrain.renderer.TerrainEditorSlopeRenderUnit;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.editor.renderer.ShadowMonitorRendererUnit;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.uiservice.renderer.AbstractRenderComposite;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
@@ -47,19 +47,16 @@ public class ClientRenderServiceImpl extends RenderService {
     @Inject
     private TerrainObjectService terrainObjectService;
     @Inject
-    private TerrainEditor terrainEditor;
+    private TerrainEditorImpl terrainEditor;
     @Deprecated
     private List<AbstractRenderComposite> renderQueue;
     @Deprecated
     private Collection<AbstractRenderComposite> terrainObjectRenders;
-    private Collection<TerrainEditorUnitRenderer> terrainEditorRenderers;
-    private TerrainEditorCursorUnitRenderer terrainEditorCursorRenderer;
     private TerrainObjectEditorUnitRenderer terrainObjectEditorRenderer;
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
-    private boolean showSlopeEditor = false;
     private boolean showObjectEditor = false;
     @Deprecated
     private Collection<AbstractRenderComposite> terrainObjectNorms;
@@ -74,15 +71,7 @@ public class ClientRenderServiceImpl extends RenderService {
         renderQueue = new ArrayList<>();
         terrainObjectNorms = new ArrayList<>();
         terrainObjectRenders = new ArrayList<>();
-        terrainEditorRenderers = new ArrayList<>();
-        for (int id : terrainEditor.getSlopePolygonIds()) {
-            TerrainEditorUnitRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorUnitRenderer.class).get();
-            // TODO terrainEditorRenderer.setId(id);
-            terrainEditorRenderers.add(terrainEditorRenderer);
-        }
         setupTerrainObjectRenderer();
-        terrainEditorCursorRenderer = renderInstance.select(TerrainEditorCursorUnitRenderer.class).get();
-        terrainEditorCursorRenderer.fillBuffers();
         terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorUnitRenderer.class).get();
         terrainObjectEditorRenderer.fillBuffers();
     }
@@ -108,22 +97,18 @@ public class ClientRenderServiceImpl extends RenderService {
         for (AbstractRenderComposite terrainObjectRender : terrainObjectRenders) {
             terrainObjectRender.fillBuffers();
         }
-        for (TerrainEditorUnitRenderer terrainEditorRenderer : terrainEditorRenderers) {
-            terrainEditorRenderer.fillBuffers();
-        }
     }
 
     public void createTerrainEditorRenderer(int id) {
-        TerrainEditorUnitRenderer terrainEditorRenderer = renderInstance.select(TerrainEditorUnitRenderer.class).get();
+        TerrainEditorSlopeRenderUnit terrainEditorRenderer = renderInstance.select(TerrainEditorSlopeRenderUnit.class).get();
         // TODO terrainEditorRenderer.setId(id);
-        terrainEditorRenderers.add(terrainEditorRenderer);
         terrainEditorRenderer.fillBuffers();
     }
 
 
     public void removeTerrainEditorRenderer(int id) {
         // TODO
-//        for (TerrainEditorUnitRenderer terrainEditorRenderer : terrainEditorRenderers) {
+//        for (TerrainEditorSlopeRenderUnit terrainEditorRenderer : terrainEditorRenderers) {
 //            if (terrainEditorRenderer.getId() == id) {
 //                terrainEditorRenderers.remove(terrainEditorRenderer);
 //                return;
@@ -246,18 +231,6 @@ public class ClientRenderServiceImpl extends RenderService {
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
 
         // Dirty way to render terrain editor
-        if (showSlopeEditor) {
-            gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
-            for (TerrainEditorUnitRenderer terrainEditorRenderer : terrainEditorRenderers) {
-                if (terrainEditorRenderer.hasElements()) {
-                    terrainEditorRenderer.draw(null);
-                }
-            }
-            if (terrainEditorCursorRenderer.hasElements()) {
-                terrainEditorCursorRenderer.draw(null);
-            }
-            gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
-        }
         if (showObjectEditor && terrainObjectEditorRenderer.hasElements()) {
             gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
             terrainObjectEditorRenderer.draw(null);
@@ -316,10 +289,6 @@ public class ClientRenderServiceImpl extends RenderService {
 
     public WebGLTexture getDepthTexture() {
         return depthTexture;
-    }
-
-    public void setShowSlopeEditor(boolean showSlopeEditor) {
-        this.showSlopeEditor = showSlopeEditor;
     }
 
     public void setShowObjectEditor(boolean showObjectEditor) {

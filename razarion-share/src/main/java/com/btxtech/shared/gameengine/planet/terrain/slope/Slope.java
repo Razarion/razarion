@@ -69,7 +69,7 @@ public class Slope {
     }
 
     private void setupSlopingBorder(List<DecimalPosition> corners) {
-        // Correct the borders. Outer corners can not be too close to other corners. Id needs some safety distance
+        // Correct the borders. Outer corners can not be too close to other corners. It needs some safety distance
         boolean violationsFound = true;
         while (violationsFound) {
             violationsFound = false;
@@ -89,6 +89,17 @@ public class Slope {
                         violationsFound = true;
                         corners.remove(i);
                         break;
+                    }
+
+                    DecimalPosition afterNext = corners.get(CollectionUtils.getCorrectedIndex(i + 2, corners.size()));
+                    double innerAngleNext = next.angle(afterNext, current);
+                    if (innerAngleNext > MathHelper.HALF_RADIANT) {
+                        double safetyDistanceNext = slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngleNext) / 2.0);
+                        if (current.getDistance(next) < safetyDistance + safetyDistanceNext) {
+                            violationsFound = true;
+                            corners.remove(i);
+                            break;
+                        }
                     }
                 }
             }

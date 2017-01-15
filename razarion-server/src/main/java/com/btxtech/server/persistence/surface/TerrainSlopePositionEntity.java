@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.surface;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
 import javax.persistence.CollectionTable;
@@ -35,21 +34,24 @@ public class TerrainSlopePositionEntity {
     @OrderColumn(name = "orderColumn")
     private List<DecimalPosition> polygon;
 
-    public void fromTerrainSlopePosition(TerrainSlopePosition terrainSlopePosition, SlopeConfigEntity slopeConfigEntity) {
-        if (terrainSlopePosition.hasId()) {
-            id = (long) terrainSlopePosition.getId();
-        }
-        this.slopeConfigEntity = slopeConfigEntity;
-        if (this.polygon != null) {
-            this.polygon.clear();
-        } else {
-            this.polygon = new ArrayList<>();
-        }
-        this.polygon.addAll(terrainSlopePosition.getPolygon());
+    public Long getId() {
+        return id;
     }
 
     public TerrainSlopePosition toTerrainSlopePosition() {
-        return new TerrainSlopePosition(id.intValue(), slopeConfigEntity.getId().intValue(), new ArrayList<>(polygon));
+        return new TerrainSlopePosition().setId(id.intValue()).setSlopeId(slopeConfigEntity.getId().intValue()).setPolygon(new ArrayList<>(polygon));
+    }
+
+    public void setSlopeConfigEntity(SlopeConfigEntity slopeConfigEntity) {
+        this.slopeConfigEntity = slopeConfigEntity;
+    }
+
+    public void setPolygon(List<DecimalPosition> polygon) {
+        this.polygon = polygon;
+    }
+
+    public List<DecimalPosition> getPolygon() {
+        return polygon;
     }
 
     @Override

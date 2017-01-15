@@ -25,7 +25,6 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     private PlanetPersistenceService persistenceService;
 
     @Override
-    @Transactional
     public void saveTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions) {
         try {
             persistenceService.saveTerrainObjectPositions(terrainObjectPositions);
@@ -36,10 +35,29 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     }
 
     @Override
-    @Transactional
-    public void saveTerrainSlopePositions(List<TerrainSlopePosition> terrainSlopePositions) {
+    public void createTerrainSlopePositions(List<TerrainSlopePosition> createdSlopes) {
         try {
-            persistenceService.saveTerrainSlopePositions(terrainSlopePositions);
+            persistenceService.createTerrainSlopePositions(createdSlopes);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateTerrainSlopePositions(List<TerrainSlopePosition> updatedSlopes) {
+        try {
+            persistenceService.updateTerrainSlopePositions(updatedSlopes);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void deleteTerrainSlopePositions(List<Integer> deletedSlopeIds) {
+        try {
+            persistenceService.deleteTerrainSlopePositions(deletedSlopeIds);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

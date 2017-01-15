@@ -7,15 +7,16 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
@@ -37,6 +38,8 @@ import java.util.Map;
 public class TerrainUiService {
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private TerrainService terrainService;
     private static final double HIGHEST_POINT_IN_VIEW = 20;
     private static final double LOWEST_POINT_IN_VIEW = -2;
@@ -51,16 +54,24 @@ public class TerrainUiService {
     }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        terrainService.init(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig(), terrainTypeService);
+        init(gameUiControlInitEvent.getGameUiControlConfig());
+    }
+
+    public void init(GameUiControlConfig gameUiControlConfig) {
+        terrainService.init(gameUiControlConfig.getGameEngineConfig().getPlanetConfig(), terrainTypeService);
     }
 
     public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
         terrainObjectConfigModelMatrices = new MapCollection<>();
         for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainService.getTerrainObjectPositions().getMap().entrySet()) {
             for (TerrainObjectPosition objectPosition : entry.getValue()) {
-                int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
-                Matrix4 model = objectPosition.createModelMatrix(z);
-                terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices(model));
+                try {
+                    int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
+                    Matrix4 model = objectPosition.createModelMatrix(z);
+                    terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices(model));
+                } catch(Throwable t) {
+                    exceptionHandler.handleException("Placing terrain object failed", t);
+                }
             }
         }
     }

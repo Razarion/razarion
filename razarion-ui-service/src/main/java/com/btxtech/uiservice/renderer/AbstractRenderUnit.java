@@ -57,6 +57,10 @@ public abstract class AbstractRenderUnit<D> {
         this.abstractRenderComposite = abstractRenderComposite;
     }
 
+    public AbstractRenderComposite<AbstractRenderUnit<D>, D> getRenderComposite() {
+        return abstractRenderComposite;
+    }
+
     protected D getRenderData() {
         return abstractRenderComposite.getRendererData();
     }

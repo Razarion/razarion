@@ -1,40 +1,99 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.persistence.GameUiControlProviderEmulator;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.slope.AbstractBorder;
+import com.btxtech.shared.gameengine.planet.terrain.slope.InnerCornerBorder;
+import com.btxtech.shared.gameengine.planet.terrain.slope.LineBorder;
+import com.btxtech.shared.gameengine.planet.terrain.slope.OuterCornerBorder;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
+import javafx.scene.paint.Color;
 
 /**
  * Created by Beat
  * 19.03.2016.
  */
 public class TerrainScenario extends Scenario {
-    // private TerrainUiService terrainUiService;
+    private TerrainService terrainService;
+
+    public TerrainScenario() {
+        GameUiControlProviderEmulator gameUiControlProviderEmulator = new GameUiControlProviderEmulator();
+        GameUiControlConfig gameUiControlConfig = gameUiControlProviderEmulator.readFromFile();
+        TerrainTypeService terrainTypeService = new TerrainTypeService();
+        terrainTypeService.init(gameUiControlConfig.getGameEngineConfig());
+        terrainService = new TerrainService();
+        terrainService.init(gameUiControlConfig.getGameEngineConfig().getPlanetConfig(), terrainTypeService);
+    }
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-//        terrainUiService = GameMock.startTerrainSurface("/SlopeSkeletonSlope.json", "/SlopeSkeletonBeach.json", "/GroundSkeleton.json", "/TerrainSlopePositions.json");
-//        context.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 0.1, Color.BLUE);
-//
-//        for (Integer slopeId : terrainUiService.getSlopeIds()) {
-//            Slope slope = terrainUiService.getSlope(slopeId);
-//
-//
-//            // context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
-//            // context.fillVertexList(slope.getGroundPlateauConnector().getOuterConnectionVertexList().getVertices(), 2, Color.RED);
-//
-//            context.strokeVertexList(slope.getMesh().getVertices(), 0.1, Color.PINK);
-//
-//
-////            context.strokeCurve(slope.getGroundPlateauConnector().getOuterGroundEdges(), 1, Color.GREEN, true);
-////            context.strokeCurve(slope.getGroundPlateauConnector().getOuterSlopeEdges(), 1, Color.RED, false);
-//
-//            if (!slope.hasWater()) {
-//                context.strokeCurve(slope.getGroundPlateauConnector().getInnerGroundEdges(), 0.1, Color.GREEN, true);
-//                context.strokeCurve(slope.getGroundPlateauConnector().getInnerSlopeEdges(), 0.1, Color.RED, true);
-//            }
-//
-//
-//        }
+        context.strokeVertexList(terrainService.getGroundMesh().provideVertexList().getVertices(), 0.1, Color.BLUE);
+
+        for (Slope slope : terrainService.getSlopes()) {
+
+            try {
+//            context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
+                context.fillVertexList(slope.getGroundPlateauConnector().getOuterConnectionVertexList().getVertices(), 0.1, Color.RED);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+
+            context.strokeVertexList(slope.getMesh().getVertices(), 0.02, Color.PINK);
+
+            try {
+//                context.strokeCurve(slope.getGroundPlateauConnector().getOuterGroundEdges(), 0.1, Color.GREEN, true);
+//            context.strokeCurve(slope.getGroundPlateauConnector().getOuterSlopeEdges(), 1, Color.RED, false);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+
+            if (!slope.hasWater()) {
+                context.strokeVertexList(slope.getGroundPlateauConnector().getTopMesh().provideVertexList().getVertices(), 0.1, Color.BLUEVIOLET);
+                context.strokeCurve(slope.getGroundPlateauConnector().getInnerGroundEdges(), 0.1, Color.GREEN, true);
+                context.strokeCurve(slope.getGroundPlateauConnector().getInnerSlopeEdges(), 0.1, Color.RED, true);
+                context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 0.1, Color.RED);
+            }
+
+            context.strokeCurveDecimalPosition(slope.getCorner2d(), 0.01, Color.BLACK, true);
+
+            context.getGc().setLineWidth(0.02);
+            for (AbstractBorder abstractBorder : slope.getBorders()) {
+                if (abstractBorder instanceof LineBorder) {
+                    context.getGc().setStroke(Color.BLUE);
+                    LineBorder lineBorder = (LineBorder) abstractBorder;
+                    context.getGc().beginPath();
+                    context.getGc().moveTo(lineBorder.getInnerStart().getX(), lineBorder.getInnerStart().getY());
+                    context.getGc().lineTo(lineBorder.getInnerEnd().getX(), lineBorder.getInnerEnd().getY());
+                    context.getGc().lineTo(lineBorder.getOuterEnd().getX(), lineBorder.getOuterEnd().getY());
+                    context.getGc().lineTo(lineBorder.getOuterStart().getX(), lineBorder.getOuterStart().getY());
+                    context.getGc().closePath();
+                    context.getGc().stroke();
+                } else if (abstractBorder instanceof InnerCornerBorder) {
+                    context.getGc().setStroke(Color.GREEN);
+                    InnerCornerBorder innerCornerBorder = (InnerCornerBorder) abstractBorder;
+                    context.getGc().beginPath();
+                    context.getGc().moveTo(innerCornerBorder.getInnerStart().getX(), innerCornerBorder.getInnerStart().getY());
+                    context.getGc().lineTo(innerCornerBorder.getOuterStart().getX(), innerCornerBorder.getOuterStart().getY());
+                    context.getGc().lineTo(innerCornerBorder.getOuterEnd().getX(), innerCornerBorder.getOuterEnd().getY());
+                    context.getGc().closePath();
+                    context.getGc().stroke();
+                } else if (abstractBorder instanceof OuterCornerBorder) {
+                    context.getGc().setStroke(Color.BROWN);
+                    OuterCornerBorder outerCornerBorder = (OuterCornerBorder) abstractBorder;
+                    context.getGc().beginPath();
+                    context.getGc().moveTo(outerCornerBorder.getInnerEnd().getX(), outerCornerBorder.getInnerEnd().getY());
+                    context.getGc().lineTo(outerCornerBorder.getInnerStart().getX(), outerCornerBorder.getInnerStart().getY());
+                    context.getGc().lineTo(outerCornerBorder.getOuterStart().getX(), outerCornerBorder.getOuterStart().getY());
+                    context.getGc().closePath();
+                    context.getGc().stroke();
+                }
+            }
+
+        }
     }
 
     @Override

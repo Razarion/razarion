@@ -93,9 +93,7 @@ public class Camera {
     }
 
     public void setTop() {
-        translateX = 0;
-        translateY = 0;
-        translateZ = 1000;
+        translateZ = 200;
         rotateX = Math.toRadians(0);
         rotateZ = Math.toRadians(0);
         setupMatrices();

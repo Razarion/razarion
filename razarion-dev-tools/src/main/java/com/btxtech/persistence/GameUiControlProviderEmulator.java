@@ -2,10 +2,8 @@ package com.btxtech.persistence;
 
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.rest.RestUrl;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -15,7 +13,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -26,12 +23,6 @@ public class GameUiControlProviderEmulator {
     private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
     private static final String FILE_NAME = "GameUiControlConfig.json";
     private static final String URL = "http://localhost:8080/razarion-server/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private Logger logger;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private ExceptionHandler exceptionHandler;
 
     public GameUiControlConfig readFromServer() {
         return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(GameUiControlConfig.class);

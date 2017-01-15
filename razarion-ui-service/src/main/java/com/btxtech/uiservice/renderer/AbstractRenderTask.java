@@ -29,10 +29,6 @@ public abstract class AbstractRenderTask<T> {
         return true;
     }
 
-    protected void add(ModelRenderer modelRenderer) {
-        this.modelRenderers.add(modelRenderer);
-    }
-
     // Override in subclasses
     protected void preRender(long timeStamp) {
 
@@ -56,6 +52,14 @@ public abstract class AbstractRenderTask<T> {
                 }
             }
         }
+    }
+
+    protected void add(ModelRenderer modelRenderer) {
+        this.modelRenderers.add(modelRenderer);
+    }
+
+    protected void remove(ModelRenderer modelRenderer) {
+        this.modelRenderers.remove(modelRenderer);
     }
 
     protected List<ModelRenderer> getAll() {

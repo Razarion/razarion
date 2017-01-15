@@ -60,4 +60,6 @@ public class InnerCornerBorder extends AbstractCornerBorder {
         double totalAngle = innerCenter.getAngle(outerStart) + getSegmentAngle(verticalSpace) * count;
         return innerCenter.getPointWithDistance(totalAngle, getDistance());
     }
+
+
 }

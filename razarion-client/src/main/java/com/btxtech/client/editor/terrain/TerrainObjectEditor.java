@@ -1,11 +1,6 @@
 package com.btxtech.client.editor.terrain;
 
-import com.btxtech.client.TerrainKeyDownEvent;
-import com.btxtech.client.TerrainKeyUpEvent;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.uiservice.mouse.TerrainMouseDownEvent;
-import com.btxtech.uiservice.mouse.TerrainMouseMoveEvent;
-import com.btxtech.uiservice.mouse.TerrainMouseUpEvent;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.datatypes.Ray3d;
@@ -64,64 +59,64 @@ public class TerrainObjectEditor {
     private boolean deletePressed;
     private boolean hover;
 
-    public void onTerrainMouseMove(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
-        if (active) {
-            Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
+//    public void onTerrainMouseMove(@Observes TerrainMouseMoveEvent terrainMouseMoveEvent) {
+//        if (active) {
+//            Ray3d ray3d = terrainMouseMoveEvent.getWorldPickRay();
+//            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
+//
+//            CursorType cursorType;
+//            hover = false;
+//            if (selected != null) {
+//                selected.setPosition(terrainPosition.toXY());
+//                terrainObjectService.setupModelMatrices(terrainObjects);
+//                cursorType = CursorType.SELECTED;
+//            } else if (getAtTerrain(terrainPosition) != null) {
+//                hover = true;
+//                if (deletePressed) {
+//                    cursorType = CursorType.DELETE_SELECTED;
+//                } else {
+//                    cursorType = CursorType.HOVER;
+//                }
+//            } else {
+//                if (deletePressed) {
+//                    cursorType = CursorType.DELETE_MODE;
+//                } else {
+//                    cursorType = CursorType.NORMAL;
+//                }
+//            }
+//            terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(cursorType, terrainPosition));
+//        }
+//    }
 
-            CursorType cursorType;
-            hover = false;
-            if (selected != null) {
-                selected.setPosition(terrainPosition.toXY());
-                terrainObjectService.setupModelMatrices(terrainObjects);
-                cursorType = CursorType.SELECTED;
-            } else if (getAtTerrain(terrainPosition) != null) {
-                hover = true;
-                if (deletePressed) {
-                    cursorType = CursorType.DELETE_SELECTED;
-                } else {
-                    cursorType = CursorType.HOVER;
-                }
-            } else {
-                if (deletePressed) {
-                    cursorType = CursorType.DELETE_MODE;
-                } else {
-                    cursorType = CursorType.NORMAL;
-                }
-            }
-            terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(cursorType, terrainPosition));
-        }
-    }
 
-
-    public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
-        if (active) {
-            Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
-
-            selected = getAtTerrain(terrainPosition);
-
-            if (selected == null && !deletePressed) {
-                // Create new terrain object position
-                TerrainObjectPosition objectPosition = new TerrainObjectPosition();
-                if (randomScale < 1.0) {
-                    throw new IllegalArgumentException("randomScale < 1.0: " + randomScale);
-                }
-                objectPosition.setScale(1.0 / randomScale + (randomScale - 1.0 / randomScale) * Math.random());
-                objectPosition.setZRotation(MathHelper.ONE_RADIANT * Math.random());
-                objectPosition.setPosition(terrainPosition.toXY());
-                objectPosition.setTerrainObjectId(newObjectId.getId());
-                terrainObjects.add(objectPosition);
-                selected = objectPosition;
-                terrainObjectService.setupModelMatrices(terrainObjects);
-                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.SELECTED, terrainPosition));
-            } else if (selected != null && deletePressed) {
-                deleteSelected();
-            }
-
-            // terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(terrainPosition));
-        }
-    }
+//    public void onTerrainMouseDown(@Observes TerrainMouseDownEvent terrainMouseDownEvent) {
+//        if (active) {
+//            Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
+//            Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
+//
+//            selected = getAtTerrain(terrainPosition);
+//
+//            if (selected == null && !deletePressed) {
+//                // Create new terrain object position
+//                TerrainObjectPosition objectPosition = new TerrainObjectPosition();
+//                if (randomScale < 1.0) {
+//                    throw new IllegalArgumentException("randomScale < 1.0: " + randomScale);
+//                }
+//                objectPosition.setScale(1.0 / randomScale + (randomScale - 1.0 / randomScale) * Math.random());
+//                objectPosition.setZRotation(MathHelper.ONE_RADIANT * Math.random());
+//                objectPosition.setPosition(terrainPosition.toXY());
+//                objectPosition.setTerrainObjectId(newObjectId.getId());
+//                terrainObjects.add(objectPosition);
+//                selected = objectPosition;
+//                terrainObjectService.setupModelMatrices(terrainObjects);
+//                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.SELECTED, terrainPosition));
+//            } else if (selected != null && deletePressed) {
+//                deleteSelected();
+//            }
+//
+//            // terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(terrainPosition));
+//        }
+//    }
 
     private void deleteSelected() {
         terrainObjects.remove(selected);
@@ -130,41 +125,41 @@ public class TerrainObjectEditor {
         terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.NORMAL, null));
     }
 
-    public void onTerrainMouseUp(@Observes TerrainMouseUpEvent terrainMouseDownEvent) {
-        Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
-        Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
-
-        if (selected != null) {
-            selected = null;
-            terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.HOVER, terrainPosition));
-        }
-    }
-
-
-    public void onTerrainKeyDown(@Observes TerrainKeyDownEvent terrainKeyDownEvent) {
-        if (terrainKeyDownEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
-            deletePressed = true;
-            if (selected != null) {
-                deleteSelected();
-            } else if (hover) {
-                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.DELETE_SELECTED, null));
-            } else {
-                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.DELETE_MODE, null));
-            }
-        }
-    }
-
-    public void onTerrainKeyUp(@Observes TerrainKeyUpEvent terrainKeyUpEvent) {
-        if (terrainKeyUpEvent.getKeyboardEvent().getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
-            deletePressed = false;
-            if (selected != null) {
-                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.SELECTED, null));
-            } else if (hover) {
-                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.HOVER, null));
-            }
-        }
-
-    }
+//    public void onTerrainMouseUp(@Observes TerrainMouseUpEvent terrainMouseDownEvent) {
+//        Ray3d ray3d = terrainMouseDownEvent.getWorldPickRay();
+//        Vertex terrainPosition = terrainService.calculatePositionOnZeroLevel(ray3d); // TODO does not work anymore. TerrainService is in Worker now
+//
+//        if (selected != null) {
+//            selected = null;
+//            terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.HOVER, terrainPosition));
+//        }
+//    }
+//
+//
+//    public void onTerrainKeyDown(@Observes TerrainKeyDownEvent terrainKeyDownEvent) {
+//        if (terrainKeyDownEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+//            deletePressed = true;
+//            if (selected != null) {
+//                deleteSelected();
+//            } else if (hover) {
+//                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.DELETE_SELECTED, null));
+//            } else {
+//                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.DELETE_MODE, null));
+//            }
+//        }
+//    }
+//
+//    public void onTerrainKeyUp(@Observes TerrainKeyUpEvent terrainKeyUpEvent) {
+//        if (terrainKeyUpEvent.getKeyboardEvent().getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+//            deletePressed = false;
+//            if (selected != null) {
+//                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.SELECTED, null));
+//            } else if (hover) {
+//                terrainObjectEditorSelectedEvent.fire(new TerrainObjectEditorSelectedEvent(CursorType.HOVER, null));
+//            }
+//        }
+//
+//    }
 
     private TerrainObjectPosition getAtTerrain(Vertex terrainPosition) {
         for (TerrainObjectPosition terrainObject : terrainObjects) {

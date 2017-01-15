@@ -12,6 +12,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.GroupSelectionFrame;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.TerrainEditor;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -27,7 +28,6 @@ import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -49,15 +49,6 @@ public class TerrainMouseHandler {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private CursorService cursorService;
-    @Inject
-    @Deprecated
-    private Event<TerrainMouseMoveEvent> terrainMouseMoveEvent;
-    @Inject
-    @Deprecated
-    private Event<TerrainMouseDownEvent> terrainMouseDownEvent;
-    @Inject
-    @Deprecated
-    private Event<TerrainMouseUpEvent> terrainMouseUpEvent;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
@@ -86,6 +77,7 @@ public class TerrainMouseHandler {
     @Inject
     private AudioService audioService;
     private GroupSelectionFrame groupSelectionFrame;
+    private TerrainEditor terrainEditor;
 
     public void onMouseMove(int x, int y, int width, int height, boolean primaryButtonDown) {
         try {
@@ -93,7 +85,10 @@ public class TerrainMouseHandler {
             // Send pick ray event
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
             Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
-            terrainMouseMoveEvent.fire(new TerrainMouseMoveEvent(worldPickRay, terrainPosition));
+            if (terrainEditor != null) {
+                terrainEditor.onMouseMove(terrainPosition);
+                return;
+            }
 
             if (baseItemPlacerService.isActive()) {
                 baseItemPlacerService.onMouseMoveEvent(terrainPosition.toXY());
@@ -147,7 +142,10 @@ public class TerrainMouseHandler {
             if (shiftKey) {
                 logger.severe("Terrain Position: " + terrainPosition);
             }
-            terrainMouseDownEvent.fire(new TerrainMouseDownEvent(worldPickRay, terrainPosition, primaryButtonPressed, secondaryButtonPressed, middleButtonPressed, ctrlKey));
+            if (terrainEditor != null) {
+                terrainEditor.onMouseDown(terrainPosition);
+                return;
+            }
 
             if (baseItemPlacerService.isActive()) {
                 if (primaryButtonPressed) {
@@ -215,7 +213,7 @@ public class TerrainMouseHandler {
         try {
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
             Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
-            terrainMouseUpEvent.fire(new TerrainMouseUpEvent(worldPickRay));
+            // TODO in editor terrainMouseUpEvent.fire(new TerrainMouseUpEvent(worldPickRay));
 
             if (primaryButtonReleased) {
                 if (groupSelectionFrame != null) {
@@ -243,6 +241,10 @@ public class TerrainMouseHandler {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
+    }
+
+    public void setTerrainEditor(TerrainEditor terrainEditor) {
+        this.terrainEditor = terrainEditor;
     }
 
     private Ray3d setupTerrainRay3d(int x, int y, int width, int height) {

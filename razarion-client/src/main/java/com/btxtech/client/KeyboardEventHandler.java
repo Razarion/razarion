@@ -2,11 +2,11 @@ package com.btxtech.client;
 
 
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.TerrainEditor;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import elemental.client.Browser;
 import elemental.events.Event;
-import elemental.events.EventListener;
 import elemental.events.KeyboardEvent;
 
 import javax.inject.Inject;
@@ -24,99 +24,89 @@ import java.util.logging.Logger;
 public class KeyboardEventHandler {
     private Logger logger = Logger.getLogger(KeyboardEventHandler.class.getName());
     @Inject
-    private javax.enterprise.event.Event<TerrainKeyDownEvent> terrainKeyDownEvent;
-    @Inject
-    private javax.enterprise.event.Event<TerrainKeyUpEvent> terrainKeyUpEventEvent;
-    @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private SelectionHandler selectionHandler;
     private Set<Integer> keysDown = new HashSet<>();
+    private TerrainEditor terrainEditor;
 
     public void init() {
-        Browser.getWindow().addEventListener(Event.KEYDOWN, new EventListener() {
-            @Override
-            public void handleEvent(Event evt) {
-                try {
-                    KeyboardEvent keyboardEvent = (KeyboardEvent) evt;
-                    switch (keyboardEvent.getKeyCode()) {
-                        case 65:
-                        case KeyCodes.KEY_LEFT: {
-                            terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.LEFT, null);
-                            // TODO evt.cancel(); // Prevent from scrolling the browser window
-                            break;
-                        }
-                        case 68:
-                        case KeyCodes.KEY_RIGHT: {
-                            terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.RIGHT, null);
-                            // TODO evt.cancel();
-                            break;
-                        }
-                        case 87:
-                        case KeyCodes.KEY_UP: {
-                            terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.TOP);
-                            // TODO evt.cancel();
-                            break;
-                        }
-                        case 83:
-                        case KeyCodes.KEY_DOWN: {
-                            terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.BOTTOM);
-                            // TODO  evt.cancel();
-                            break;
-                        }
-                        case KeyCodes.KEY_ESCAPE: {
-                            selectionHandler.clearSelection(false);
-                            // TODO  CockpitMode.getInstance().onEscape();
-                            break;
-                        }
+        Browser.getWindow().addEventListener(Event.KEYDOWN, evt -> {
+            try {
+                KeyboardEvent keyboardEvent = (KeyboardEvent) evt;
+                switch (keyboardEvent.getKeyCode()) {
+                    case 65:
+                    case KeyCodes.KEY_LEFT: {
+                        terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.LEFT, null);
+                        break;
                     }
+                    case 68:
+                    case KeyCodes.KEY_RIGHT: {
+                        terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.RIGHT, null);
+                        break;
+                    }
+                    case 87:
+                    case KeyCodes.KEY_UP: {
+                        terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.TOP);
+                        break;
+                    }
+                    case 83:
+                    case KeyCodes.KEY_DOWN: {
+                        terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.BOTTOM);
+                        break;
+                    }
+                    case KeyCodes.KEY_ESCAPE: {
+                        selectionHandler.clearSelection(false);
+                        break;
+                    }
+                }
+                if (!keysDown.contains(keyboardEvent.getKeyCode())) {
+                    keysDown.add(keyboardEvent.getKeyCode());
+                    if (terrainEditor != null && keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+                        terrainEditor.onDeleteKeyDown(true);
+                    }
+                }
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "Handling key down events failed: " + evt, t);
+            }
+        }, true);
+        Browser.getWindow().addEventListener(Event.KEYUP, evt -> {
+            try {
+                KeyboardEvent keyboardEvent = (KeyboardEvent) evt;
+                switch (keyboardEvent.getKeyCode()) {
+                    case 65:
+                    case KeyCodes.KEY_LEFT: {
+                        terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.STOP, null);
+                        break;
+                    }
+                    case 68:
+                    case KeyCodes.KEY_RIGHT: {
+                        terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.STOP, null);
+                        break;
+                    }
+                    case 87:
+                    case KeyCodes.KEY_UP: {
+                        terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.STOP);
+                        break;
+                    }
+                    case 83:
+                    case KeyCodes.KEY_DOWN: {
+                        terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.STOP);
+                        break;
+                    }
+                }
+                keysDown.remove(keyboardEvent.getKeyCode());
+                if (terrainEditor != null && keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+                    terrainEditor.onDeleteKeyDown(false);
+                }
 
-                    if(!keysDown.contains(keyboardEvent.getKeyCode())) {
-                        keysDown.add(keyboardEvent.getKeyCode());
-                        terrainKeyDownEvent.fire(new TerrainKeyDownEvent(keyboardEvent));
-                    }
-                } catch (Throwable t) {
-                    logger.log(Level.SEVERE, "Handling key down events failed: " + evt, t);
-                }
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "Handling key up events failed: " + evt, t);
             }
         }, true);
-        Browser.getWindow().addEventListener(Event.KEYUP, new EventListener() {
-            @Override
-            public void handleEvent(Event evt) {
-                try {
-                    KeyboardEvent keyboardEvent = (KeyboardEvent) evt;
-                    switch (keyboardEvent.getKeyCode()) {
-                        case 65:
-                        case KeyCodes.KEY_LEFT: {
-                            terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.STOP, null);
-                            // TODO evt.cancel(); // Prevent from scrolling the browser window
-                            break;
-                        }
-                        case 68:
-                        case KeyCodes.KEY_RIGHT: {
-                            terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.STOP, null);
-                            // TODO evt.cancel();
-                            break;
-                        }
-                        case 87:
-                        case KeyCodes.KEY_UP: {
-                            terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.STOP);
-                            // TODO evt.cancel();
-                            break;
-                        }
-                        case 83:
-                        case KeyCodes.KEY_DOWN: {
-                            terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.STOP);
-                            // TODO evt.cancel();
-                            break;
-                        }
-                    }
-                    keysDown.remove(keyboardEvent.getKeyCode());
-                    terrainKeyUpEventEvent.fire(new TerrainKeyUpEvent(keyboardEvent));
-                } catch (Throwable t) {
-                    logger.log(Level.SEVERE, "Handling key up events failed: " + evt, t);
-                }
-            }
-        }, true);
+    }
+
+    public void setTerrainEditor(TerrainEditor terrainEditor) {
+        this.terrainEditor = terrainEditor;
     }
 }

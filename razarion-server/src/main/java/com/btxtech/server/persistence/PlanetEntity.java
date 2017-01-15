@@ -49,9 +49,8 @@ public class PlanetEntity {
         return planetConfig;
     }
 
-    public void setTerrainSlopePositionEntities(List<TerrainSlopePositionEntity> terrainSlopePositionEntities) {
-        this.terrainSlopePositionEntities.clear();
-        this.terrainSlopePositionEntities.addAll(terrainSlopePositionEntities);
+    public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {
+        return terrainSlopePositionEntities;
     }
 
     public void setTerrainObjectPositionEntities(List<TerrainObjectPositionEntity> terrainObjectPositionEntities) {

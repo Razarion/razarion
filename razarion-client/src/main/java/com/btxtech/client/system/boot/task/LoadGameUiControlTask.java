@@ -1,7 +1,7 @@
 package com.btxtech.client.system.boot.task;
 
 import com.btxtech.client.editor.terrain.TerrainObjectEditor;
-import com.btxtech.client.editor.terrain.TerrainEditor;
+import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -25,7 +25,7 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Inject
     private TerrainObjectEditor terrainObjectEditor;
     @Inject
-    private TerrainEditor terrainEditor;
+    private TerrainEditorImpl terrainEditor;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<GameUiControlProvider> serviceCaller;
@@ -39,7 +39,6 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
             public void callback(GameUiControlConfig gameUiControlConfig) {
                 gameUiControl.init(gameUiControlConfig);
                 // TODO terrainObjectEditor.setTerrainObjectConfigs(gameUiControlConfig.getPlanetConfig().getTerrainObjectPositions());
-                // TODO terrainEditor.setTerrainSlopePositions(gameUiControlConfig.getPlanetConfig().getTerrainSlopePositions());
                 deferredStartup.finished();
             }
         }, new ErrorCallback<Object>() {

@@ -1,16 +1,15 @@
 package com.btxtech.shared.gameengine.planet.terrain.ground;
 
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Polygon2I;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,10 +64,18 @@ public class GroundSlopeConnector {
 
             if (hasTop) {
                 topMesh.setupNorms();
-                setupInnerConnections();
+                try {
+                    setupInnerConnections();
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "setupInnerConnections failed", e);
+                }
             }
 
-            setupOuterConnections();
+            try {
+                setupOuterConnections();
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "setupOuterConnections failed", e);
+            }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -183,7 +190,7 @@ public class GroundSlopeConnector {
             connectingEdges.add(start.add(-1, 0));
         }
         if (connectingEdges.size() != 2) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("start: " + start);
         }
 
         return connectingEdges;
@@ -201,12 +208,7 @@ public class GroundSlopeConnector {
     }
 
     private void setupInnerConnections() {
-        for (Iterator<Index> iterator = topIndices.iterator(); iterator.hasNext(); ) {
-            Index topIndex = iterator.next();
-            if (!isValidTriangle(topIndex, topIndices)) {
-                iterator.remove();
-            }
-        }
+        topIndices.removeIf(topIndex -> !isValidVertex(topIndex, topIndices));
 
         innerGroundEdges = setupGroundEdgeList(topIndices, topMesh);
         innerSlopeEdges = setupSlopeEdgeList(slope.getInnerLineMeshIndex(), groundMeshOriginal, innerGroundEdges.get(0));
@@ -217,23 +219,29 @@ public class GroundSlopeConnector {
     }
 
 
-    private boolean isValidTriangle(Index edge, List<Index> indices) {
-        if (exist(indices, edge, 1, 0) && exist(indices, edge, 0, 1)) {
+    private boolean isValidVertex(Index edge, List<Index> indices) {
+        // Horizontally edge
+        if (exist(indices, edge, 1, 0) && exist(indices, edge, -1, 0)) {
             return true;
         }
-        if (exist(indices, edge, 0, 1) && exist(indices, edge, -1, 1)) {
+        // Vertically edge
+        if (exist(indices, edge, 0, 1) && exist(indices, edge, 0, -1)) {
             return true;
         }
-        if (exist(indices, edge, -1, 1) && exist(indices, edge, -1, 0)) {
+        // Corner bottom left
+        if (exist(indices, edge, 0, 1) && exist(indices, edge, 1, 0)) {
             return true;
         }
+        // Corner bottom right
+        if (exist(indices, edge, -1, 0) && exist(indices, edge, 0, 1)) {
+            return true;
+        }
+        // Corner top right
         if (exist(indices, edge, -1, 0) && exist(indices, edge, 0, -1)) {
             return true;
         }
-        if (exist(indices, edge, 0, -1) && exist(indices, edge, 1, -1)) {
-            return true;
-        }
-        if (exist(indices, edge, 1, -1) && exist(indices, edge, 1, 0)) {
+        // Corner top left
+        if (exist(indices, edge, 0, -1) && exist(indices, edge, 1, 0)) {
             return true;
         }
         return false;

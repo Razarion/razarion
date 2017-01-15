@@ -47,11 +47,15 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     }
 
     public <U extends AbstractRenderUnit<D>, D> CommonRenderComposite<U, D> create() {
-        return (CommonRenderComposite) instanceCommonRenderComposite.get();
+        CommonRenderComposite<U, D> commonRenderComposite = (CommonRenderComposite<U, D>) instanceCommonRenderComposite.get();
+        commonRenderComposite.setModelRenderer(this);
+        return commonRenderComposite;
     }
 
     public C create(Class<C> clazz) {
-        return instance.select(clazz).get();
+        C c = instance.select(clazz).get();
+        c.setModelRenderer(this);
+        return c;
     }
 
     public void setupModelMatrices(long timeStamp) {

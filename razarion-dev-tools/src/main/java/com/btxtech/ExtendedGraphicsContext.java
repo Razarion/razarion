@@ -63,7 +63,7 @@ public class ExtendedGraphicsContext {
     }
 
     public void fillVertexList(List<Vertex> vertices, double lineWidth, Color color) {
-        gc.setLineWidth(1);
+        gc.setLineWidth(lineWidth);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
         gc.setStroke(color);
         for (int i = 0; i < vertices.size(); i += 3) {
@@ -83,7 +83,7 @@ public class ExtendedGraphicsContext {
     }
 
     public void fillRectangle(Rectangle2D rectangle, double lineWidth, Color color) {
-        gc.setLineWidth(1);
+        gc.setLineWidth(lineWidth);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
         gc.setStroke(color);
 
@@ -115,7 +115,7 @@ public class ExtendedGraphicsContext {
 
             gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
             if (showPoint) {
-                gc.fillOval(start.getX() - strokeWidth * 3.0, start.getY() - strokeWidth * 3.0, strokeWidth * 6.0, strokeWidth * 6.0);
+                gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
             }
         }
     }
@@ -133,7 +133,6 @@ public class ExtendedGraphicsContext {
                 gc.fillOval(start.getX() - strokeWidth * 3.0, start.getY() - strokeWidth * 3.0, strokeWidth * 6.0, strokeWidth * 6.0);
             }
         }
-
     }
 
     public void strokeVertex(Vertex vertex, Paint color, double radius) {

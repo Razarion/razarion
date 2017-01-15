@@ -1,9 +1,9 @@
 package com.btxtech.shared.gameengine.planet.terrain.ground;
 
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.VertexList;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,20 +40,28 @@ public class GroundSlopeConnectorTriangulator {
             VertexDataObject groundVertex = groundLine.get(outerIndex);
             VertexDataObject slopeVertex = slopeLine.get(innerIndex);
 
+            boolean canOuterGrow = outerIndex + 1 < groundLine.size();
             double distanceOuter = Double.MAX_VALUE;
-            if (outerIndex + 1 < groundLine.size()) {
+            if (canOuterGrow) {
                 distanceOuter = groundLine.get(outerIndex + 1).distance(slopeVertex);
             }
 
+            boolean canInnerGrow = innerIndex + 1 < slopeLine.size();
             double distanceInner = Double.MAX_VALUE;
-            if (innerIndex + 1 < slopeLine.size()) {
+            if (canInnerGrow) {
                 distanceInner = slopeLine.get(innerIndex + 1).distance(groundVertex);
             }
 
             if (distanceOuter < distanceInner) {
+                if (!canOuterGrow) {
+                    throw new IllegalStateException("outerIndex is out of range");
+                }
                 if (isCrossing(groundLine.get(outerIndex + 1), slopeVertex)) {
+                    if (!canInnerGrow) {
+                        throw new IllegalStateException("innerIndex is out of range");
+                    }
                     if (isCrossing(slopeLine.get(innerIndex + 1), groundVertex)) {
-                        logger.severe("Ignoring triangle");
+                        logger.severe("Ignoring triangle due to crossing");
                         // TODO here
                         outerIndex++;
                     } else {
@@ -65,9 +73,15 @@ public class GroundSlopeConnectorTriangulator {
                     outerIndex++;
                 }
             } else {
+                if (!canInnerGrow) {
+                    throw new IllegalStateException("innerIndex is out of range");
+                }
                 if (isCrossing(slopeLine.get(innerIndex + 1), groundVertex)) {
+                    if (!canOuterGrow) {
+                        throw new IllegalStateException("outerIndex is out of range");
+                    }
                     if (isCrossing(groundLine.get(outerIndex + 1), slopeVertex)) {
-                        logger.severe("Ignoring triangle");
+                        logger.severe("Ignoring triangle due to crossing");
                         innerIndex++;
                         // TODO here
                     } else {
@@ -98,10 +112,6 @@ public class GroundSlopeConnectorTriangulator {
             vertexACorrected = vertexB;
             vertexBCorrected = vertexA;
         }
-        double zA = vertexACorrected.cross(vertexBCorrected, vertexC).getZ();
-        double zB = vertexBCorrected.cross(vertexC, vertexACorrected).getZ();
-        double zC = vertexC.cross(vertexACorrected, vertexBCorrected).getZ();
-
         vertexList.add(vertexACorrected, vertexACorrected.getNorm(), vertexACorrected.getTangent(), vertexACorrected.getSplatting(),
                 vertexBCorrected, vertexBCorrected.getNorm(), vertexBCorrected.getTangent(), vertexBCorrected.getSplatting(),
                 vertexC, vertexC.getNorm(), vertexC.getTangent(), vertexC.getSplatting());

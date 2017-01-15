@@ -173,4 +173,9 @@ public class TerrainElementPersistence {
         entityManager.persist(terrainObjectEntity);
         return terrainObjectEntity.toTerrainObjectConfig();
     }
+
+    @Transactional
+    public SlopeConfigEntity getSlopeConfigEntity(long slopeId) {
+        return entityManager.find(SlopeConfigEntity.class, slopeId);
+    }
 }
