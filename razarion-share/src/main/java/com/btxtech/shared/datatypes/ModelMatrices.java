@@ -32,6 +32,15 @@ public class ModelMatrices {
         return norm;
     }
 
+    public void setProgress(double progress) {
+        this.progress = progress;
+    }
+
+    public void setModel(Matrix4 model) {
+        this.model = model;
+        this.norm = model.normTransformation();
+    }
+
     public double getProgress() {
         return progress;
     }

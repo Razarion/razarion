@@ -1,12 +1,10 @@
 package com.btxtech.client.system.boot.task;
 
-import com.btxtech.client.editor.terrain.TerrainObjectEditor;
 import com.btxtech.client.editor.terrain.TerrainEditorImpl;
-import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.uiservice.control.GameUiControl;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.enterprise.context.Dependent;
@@ -23,8 +21,6 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private TerrainObjectEditor terrainObjectEditor;
-    @Inject
     private TerrainEditorImpl terrainEditor;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -38,16 +34,12 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
             @Override
             public void callback(GameUiControlConfig gameUiControlConfig) {
                 gameUiControl.init(gameUiControlConfig);
-                // TODO terrainObjectEditor.setTerrainObjectConfigs(gameUiControlConfig.getPlanetConfig().getTerrainObjectPositions());
                 deferredStartup.finished();
             }
-        }, new ErrorCallback<Object>() {
-            @Override
-            public boolean error(Object message, Throwable throwable) {
-                logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
-                deferredStartup.failed(throwable);
-                return false;
-            }
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
+            deferredStartup.failed(throwable);
+            return false;
         }).loadGameUiControlConfig();
     }
 }

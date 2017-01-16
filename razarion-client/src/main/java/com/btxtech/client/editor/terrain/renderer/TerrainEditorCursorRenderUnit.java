@@ -72,6 +72,9 @@ public class TerrainEditorCursorRenderUnit extends AbstractRenderUnit<Polygon2D>
 
     @Override
     public void draw(ModelMatrices modelMatrices) {
+        if(!terrainEditor.isCursorVisible()) {
+            return;
+        }
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());

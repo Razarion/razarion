@@ -1,12 +1,15 @@
 package com.btxtech.client.editor.terrain.renderer;
 
-import com.btxtech.client.editor.terrain.ModifiedSlope;
+import com.btxtech.client.editor.terrain.ModifiedTerrainObject;
+import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
@@ -21,24 +24,26 @@ import java.util.List;
 
 /**
  * Created by Beat
- * 04.05.2016.
+ * 13.05.2016.
  */
 @ColorBufferRenderer
 @Dependent
-public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlope> {
-    @Inject
-    private ProjectionTransformation projectionTransformation;
+public class TerrainEditorTerrainObjectRendererUnit extends AbstractRenderUnit<Void> {
+    private static final int TRIANGLE_COUNT = 10;
     @Inject
     private Camera camera;
     @Inject
+    private ProjectionTransformation projectionTransformation;
+    @Inject
     private WebGlFacade webGlFacade;
+    @Inject
+    private TerrainEditorImpl terrainEditor;
     private VertexShaderAttribute vertices;
-    private ModifiedSlope modifiedSlope;
 
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.terrainEditorVertexShader(), Shaders.INSTANCE.terrainEditorFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.terrainObjectEditorVertexShader(), Shaders.INSTANCE.terrainObjectEditorFragmentShader());
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
@@ -47,41 +52,37 @@ public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlo
         // Ignore
     }
 
-    public void update() {
-        fillBuffers();
-    }
-
     @Override
-    public void fillBuffers(ModifiedSlope modifiedSlope) {
-        this.modifiedSlope = modifiedSlope;
-        fillBuffers();
-    }
-
-    public void fillBuffers() {
-        List<Vertex> corners = new ArrayList<>();
-        for (DecimalPosition position : modifiedSlope.getPolygon().getCorners()) {
-            corners.add(new Vertex(position, 0));
+    public void fillBuffers(Void ignore) {
+        List<Vertex> triangleFan = new ArrayList<>();
+        triangleFan.add(new Vertex(0, 0, 0));
+        for (int i = 0; i < TRIANGLE_COUNT; i++) {
+            double angle = MathHelper.ONE_RADIANT * (double) i / (double) TRIANGLE_COUNT;
+            triangleFan.add(new Vertex(DecimalPosition.createVector(angle, 1), 0));
         }
-        vertices.fillBuffer(corners);
-        setElementCount(corners.size());
+        triangleFan.add(new Vertex(1, 0, 0));
+        vertices.fillBuffer(triangleFan);
+        setElementCount(triangleFan.size());
     }
 
     @Override
     protected void prepareDraw() {
-
-    }
-
-    @Override
-    public void draw(ModelMatrices modelMatrices) {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
 
-        webGlFacade.uniform1b("uHover", modifiedSlope.isHover());
+        webGlFacade.uniform1b("uDelete", terrainEditor.isDeletePressed());
+    }
+
+    @Override
+    public void draw(ModelMatrices modelMatrices) {
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
+        webGlFacade.uniform1b("uHover", modelMatrices.getProgress() > 0.0);
 
         vertices.activate();
 
-        webGlFacade.drawArrays(WebGLRenderingContext.LINE_LOOP);
+        // Draw
+        webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLE_FAN);
     }
 }

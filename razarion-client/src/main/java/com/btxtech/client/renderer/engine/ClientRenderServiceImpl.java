@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.client.editor.terrain.renderer.TerrainEditorSlopeRenderUnit;
+import com.btxtech.client.editor.terrain.renderer.TerrainEditorTerrainObjectRendererUnit;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.uiservice.renderer.AbstractRenderComposite;
@@ -10,7 +11,6 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
-import com.btxtech.uiservice.terrain.TerrainObjectService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
@@ -45,14 +45,11 @@ public class ClientRenderServiceImpl extends RenderService {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private TerrainObjectService terrainObjectService;
-    @Inject
     private TerrainEditorImpl terrainEditor;
     @Deprecated
     private List<AbstractRenderComposite> renderQueue;
     @Deprecated
     private Collection<AbstractRenderComposite> terrainObjectRenders;
-    private TerrainObjectEditorUnitRenderer terrainObjectEditorRenderer;
     private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
@@ -72,8 +69,6 @@ public class ClientRenderServiceImpl extends RenderService {
         terrainObjectNorms = new ArrayList<>();
         terrainObjectRenders = new ArrayList<>();
         setupTerrainObjectRenderer();
-        terrainObjectEditorRenderer = renderInstance.select(TerrainObjectEditorUnitRenderer.class).get();
-        terrainObjectEditorRenderer.fillBuffers();
     }
 
     // TODO
@@ -230,12 +225,6 @@ public class ClientRenderServiceImpl extends RenderService {
         gameCanvas.getCtx3d().depthMask(true);
         gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
 
-        // Dirty way to render terrain editor
-        if (showObjectEditor && terrainObjectEditorRenderer.hasElements()) {
-            gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
-            terrainObjectEditorRenderer.draw(null);
-            gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
-        }
 
         framesCount++;
         if (lastTime == 0) {

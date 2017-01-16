@@ -2,6 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity_;
+import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
@@ -177,5 +178,10 @@ public class TerrainElementPersistence {
     @Transactional
     public SlopeConfigEntity getSlopeConfigEntity(long slopeId) {
         return entityManager.find(SlopeConfigEntity.class, slopeId);
+    }
+
+    @Transactional
+    public TerrainObjectEntity getTerrainObjectEntity(long terrainObjectId) {
+        return entityManager.find(TerrainObjectEntity.class, terrainObjectId);
     }
 }

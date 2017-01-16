@@ -13,4 +13,6 @@ public interface TerrainEditor {
     void onMouseDown(Vertex terrainPosition);
 
     void onDeleteKeyDown(boolean down);
+
+    void onMouseUp();
 }

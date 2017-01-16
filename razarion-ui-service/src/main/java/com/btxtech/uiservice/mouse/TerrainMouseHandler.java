@@ -213,7 +213,11 @@ public class TerrainMouseHandler {
         try {
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
             Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
-            // TODO in editor terrainMouseUpEvent.fire(new TerrainMouseUpEvent(worldPickRay));
+
+            if (terrainEditor != null) {
+                terrainEditor.onMouseUp();
+                return;
+            }
 
             if (primaryButtonReleased) {
                 if (groupSelectionFrame != null) {

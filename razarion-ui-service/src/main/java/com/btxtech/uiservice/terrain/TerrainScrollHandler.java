@@ -222,6 +222,15 @@ public class TerrainScrollHandler {
 
     private void setCameraPosition(double xPosition, double yPosition) {
         camera.setTranslateXY(xPosition, yPosition);
+        update();
+    }
+
+    public void updateViewField() {
+        currentViewField = projectionTransformation.calculateViewField(0);
+        currentAabb = currentViewField.calculateAabbRectangle();
+    }
+
+    public void update() {
         updateViewField();
 
         for (TerrainScrollListener terrainScrollListener : terrainScrollListeners) {
@@ -231,11 +240,6 @@ public class TerrainScrollHandler {
                 exceptionHandler.handleException("TerrainScrollHandler notify listeners", t);
             }
         }
-    }
-
-    public void updateViewField() {
-        currentViewField = projectionTransformation.calculateViewField(0);
-        currentAabb = currentViewField.calculateAabbRectangle();
     }
 
     public void addTerrainScrollListener(TerrainScrollListener terrainScrollListener) {

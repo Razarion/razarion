@@ -12,9 +12,6 @@ void main(void) {
     } else  if(uCursorType == 2){
         // REMOVE_MODE
         gl_FragColor = vec4(1.0, 0.8, 0.8, 1.0);
-    } else if(uCursorType == 3){
-        // REMOVE
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
      } else {
          gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
    }

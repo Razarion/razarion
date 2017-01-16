@@ -15,6 +15,20 @@ import java.util.List;
  */
 @Path(RestUrl.PLANET_EDITOR_SERVICE_PATH)
 public interface PlanetEditorProvider {
+    @PUT
+    @Path("createTerrainObjectPositions")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void createTerrainObjectPositions(List<TerrainObjectPosition> createdTerrainObjects);
+
+    @PUT
+    @Path("updateTerrainObjectPositions")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateTerrainObjectPositions(List<TerrainObjectPosition> updatedTerrainObjects);
+
+    @PUT
+    @Path("deleteTerrainObjectPositionIds")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void deleteTerrainObjectPositionIds(List<Integer> deletedTerrainIds);
 
     @PUT
     @Path("createTerrainSlopePositions")
@@ -27,12 +41,7 @@ public interface PlanetEditorProvider {
     void updateTerrainSlopePositions(List<TerrainSlopePosition> updatedSlopes);
 
     @PUT
-    @Path("deleteTerrainSlopePositions")
+    @Path("deleteTerrainSlopePositionIds")
     @Consumes(MediaType.APPLICATION_JSON)
-    void deleteTerrainSlopePositions(List<Integer> deletedSlopeIds);
-
-    @PUT
-    @Path("saveTerrainObjectPositions")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void saveTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions);
+    void deleteTerrainSlopePositionIds(List<Integer> deletedSlopeIds);
 }

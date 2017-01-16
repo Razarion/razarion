@@ -11,7 +11,7 @@ public class ModifiedSlope {
     private Integer originalId;
     private int slopeId;
     private Polygon2D polygon;
-    private boolean selected;
+    private boolean hover;
     private boolean dirty;
 
     public ModifiedSlope(TerrainSlopePosition original) {
@@ -29,11 +29,11 @@ public class ModifiedSlope {
         return polygon;
     }
 
-    public TerrainSlopePosition createServerTerrainSlopePositionNoId() {
+    public TerrainSlopePosition createTerrainSlopePositionNoId() {
         return new TerrainSlopePosition().setSlopeId(slopeId).setPolygon(polygon.getCorners());
     }
 
-    public TerrainSlopePosition createServerTerrainSlopePosition() {
+    public TerrainSlopePosition createTerrainSlopePosition() {
         return new TerrainSlopePosition().setId(originalId).setSlopeId(slopeId).setPolygon(polygon.getCorners());
     }
 
@@ -49,12 +49,12 @@ public class ModifiedSlope {
         return polygon;
     }
 
-    public boolean isSelected() {
-        return selected;
+    public boolean isHover() {
+        return hover;
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setHover(boolean hover) {
+        this.hover = hover;
     }
 
     public boolean isCreated() {
@@ -71,5 +71,9 @@ public class ModifiedSlope {
 
     public int getOriginalId() {
         return originalId;
+    }
+
+    public boolean contains(Polygon2D cursor) {
+        return polygon != null && polygon.adjoins(cursor);
     }
 }

@@ -12,7 +12,7 @@ public class TerrainObjectPosition {
     private int terrainObjectId;
     private DecimalPosition position;
     private double scale;
-    private double zRotation;
+    private double rotationZ;
 
     public int getId() {
         return id;
@@ -54,17 +54,18 @@ public class TerrainObjectPosition {
         return this;
     }
 
-    public double getZRotation() {
-        return zRotation;
+    public double getRotationZ() {
+        return rotationZ;
     }
 
-    public void setZRotation(double zRotation) {
-        this.zRotation = zRotation;
+    public TerrainObjectPosition setRotationZ(double rotationZ) {
+        this.rotationZ = rotationZ;
+        return this;
     }
 
     public Matrix4 createModelMatrix(int z) {
         Matrix4 matrix4 = Matrix4.createTranslation(position.getX(), position.getY(), z);
         matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
-        return matrix4.multiply(Matrix4.createZRotation(zRotation));
+        return matrix4.multiply(Matrix4.createZRotation(rotationZ));
     }
 }

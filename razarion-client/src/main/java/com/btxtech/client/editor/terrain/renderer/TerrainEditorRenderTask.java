@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.terrain.renderer;
 
 import com.btxtech.client.editor.terrain.ModifiedSlope;
+import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -8,6 +9,7 @@ import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,8 @@ import java.util.Map;
  */
 @ApplicationScoped
 public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
+    @Inject
+    private TerrainEditorImpl terrainEditor;
     private boolean active;
     private TerrainEditorCursorRenderUnit cursorRenderer;
     private Map<ModifiedSlope, TerrainEditorSlopeRenderUnit> slopeRenderers = new HashMap<>();
@@ -31,6 +35,7 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
         clear();
         setupCursor(cursor);
         setupModifiedSlopes(modifiedSlopes);
+        setupModifiedTerrainObject();
         active = true;
     }
 
@@ -83,4 +88,17 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
         add(modelRenderer);
         renderComposite.fillBuffers();
     }
+
+
+    private void setupModifiedTerrainObject() {
+        ModelRenderer<Void, CommonRenderComposite<TerrainEditorTerrainObjectRendererUnit, Void>, TerrainEditorTerrainObjectRendererUnit, Void> modelRenderer = create();
+        modelRenderer.init(null, timeStamp -> terrainEditor.provideTerrainObjectModelMatrices());
+        CommonRenderComposite<TerrainEditorTerrainObjectRendererUnit, Void> renderComposite = modelRenderer.create();
+        renderComposite.init(null);
+        renderComposite.setRenderUnit(TerrainEditorTerrainObjectRendererUnit.class);
+        modelRenderer.add(RenderUnitControl.SELECTION_FRAME, renderComposite);
+        add(modelRenderer);
+        renderComposite.fillBuffers();
+    }
+
 }

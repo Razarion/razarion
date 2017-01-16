@@ -66,7 +66,6 @@ public interface TerrainElementEditorProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("getTerrainObjectNameIds")
-    @Deprecated
     List<ObjectNameId> getTerrainObjectNameIds();
 
     @POST

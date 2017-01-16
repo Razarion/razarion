@@ -8,6 +8,17 @@
 
 <table id="terrainEditor" style="border-spacing: 0; border-collapse: separate; margin: 5px">
     <tr>
+        <td>Creation Mode</td>
+        <td>
+            <button id="creationModeButton"></button>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <hr>
+        </td>
+    </tr>
+    <tr>
         <td colspan="2">Slopes</td>
     </tr>
     <tr>
@@ -29,6 +40,18 @@
     </tr>
     <tr>
         <td colspan="2">Terrain Objects</td>
+    </tr>
+    <tr>
+        <td>New Terrain Object</td>
+        <td><select id="terrainObjectSelection" style="text-align: center"></select></td>
+    </tr>
+    <tr>
+        <td>Random Z Rotation [0&#176...180&#176]</td>
+        <td><input id="terrainObjectRandomZRotation" type="range" max="180" min="0" step="1"></td>
+    </tr>
+    <tr>
+        <td>Random Scale [1...5]</td>
+        <td><input id="terrainObjectRandomScale" type="range" max="5" min="1" step="0.01"></td>
     </tr>
     <tr>
         <td colspan="2">

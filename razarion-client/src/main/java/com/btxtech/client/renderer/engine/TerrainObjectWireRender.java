@@ -3,11 +3,9 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.terrain.TerrainObjectService;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -22,8 +20,8 @@ import java.util.logging.Logger;
 @Deprecated
 public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     private Logger logger = Logger.getLogger(TerrainObjectWireRender.class.getName());
-    @Inject
-    private TerrainObjectService terrainObjectService;
+    //    @Inject
+//    private TerrainObjectService terrainObjectService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -60,17 +58,17 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
     }
 
     public void fillBuffers() {
-        terrainObjectId = terrainObjectService.getTerrainObjectId4VertexContainer(getId());
-        VertexContainer vertexContainer = terrainObjectService.getVertexContainer(getId());
-        if (vertexContainer == null || vertexContainer.empty()) {
-            logger.warning("No vertices to render");
-            return;
-        }
-        positions.fillBuffer(vertexContainer.getVertices());
-        barycentric.fillBuffer(vertexContainer.generateBarycentric());
-        textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
-
-        setElementCount(vertexContainer);
+        // TODO terrainObjectId = terrainObjectService.getTerrainObjectId4VertexContainer(getId());
+//  TODO      VertexContainer vertexContainer = terrainObjectService.getVertexContainer(getId());
+//  TODO      if (vertexContainer == null || vertexContainer.empty()) {
+//  TODO          logger.warning("No vertices to render");
+//  TODO          return;
+//  TODO      }
+//  TODO      positions.fillBuffer(vertexContainer.getVertices());
+//  TODO      barycentric.fillBuffer(vertexContainer.generateBarycentric());
+//  TODO      textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
+//
+//  TODO      setElementCount(vertexContainer);
     }
 
     @Override

@@ -5,10 +5,14 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.terrain.renderer.TerrainEditorRenderTask;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.TerrainEditor;
@@ -36,8 +40,7 @@ public class TerrainEditorImpl implements TerrainEditor {
     public enum CursorType {
         CREATE,
         MODIFY,
-        REMOVE_MODE,
-        REMOVE
+        REMOVE_MODE
     }
 
     private Logger logger = Logger.getLogger(TerrainEditorImpl.class.getName());
@@ -57,92 +60,124 @@ public class TerrainEditorImpl implements TerrainEditor {
     private GameUiControl gameUiControl;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
+    @Inject
+    private TerrainTypeService terrainTypeService;
     private boolean active;
+    private boolean newSlopeMode = true;
     private Polygon2D cursor;
     private double cursorRadius = 10;
     private int cursorCorners = 20;
     private ObjectNameId slope4New;
-    private ModifiedSlope selection;
+    private ObjectNameId terrainObject4New;
+    private ModifiedSlope hoverSlope;
+    private ModifiedTerrainObject hoverTerrainObject;
+    private ModifiedTerrainObject modifyingTerrainObject;
     private CursorType cursorType = CursorType.CREATE;
     private Collection<ModifiedSlope> modifiedSlopes;
+    private Collection<ModifiedTerrainObject> modifiedTerrainObjects;
     private boolean deletePressed;
     private Matrix4 cursorModelMatrix = Matrix4.createIdentity();
-
-    public TerrainEditorImpl() {
-    }
+    private List<ModelMatrices> terrainObjectModelMatrices;
+    private double terrainObjectRandomZRotation = Math.toDegrees(180);
+    private double terrainObjectRandomScale = 1.5;
 
     @Override
     public void onMouseMove(Vertex terrainPosition) {
         // Cursor
         cursorModelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
 
-        // Handle inside polygon
-        ModifiedSlope selection = null;
-        Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
-        for (ModifiedSlope modifiedSlope : modifiedSlopes) {
-            if (selection == null) {
-                Polygon2D polygon = modifiedSlope.getPolygon();
-                if (polygon != null && polygon.adjoins(movedCursor)) {
-                    modifiedSlope.setSelected(true);
-                    selection = modifiedSlope;
-                } else {
-                    modifiedSlope.setSelected(false);
-                }
-            } else {
-                modifiedSlope.setSelected(false);
-            }
-        }
-        this.selection = selection;
-        if (selection != null) {
-            if (deletePressed) {
-                cursorType = CursorType.REMOVE;
-            } else {
-                cursorType = CursorType.MODIFY;
-            }
+        if (modifyingTerrainObject != null) {
+            modifyingTerrainObject.setNewPosition(terrainPosition);
         } else {
-            if (deletePressed) {
-                cursorType = CursorType.REMOVE_MODE;
+            dehoverAll();
+            hoverTerrainObject = getTerrainObjectAtTerrain(terrainPosition);
+            if (hoverTerrainObject != null) {
+                hoverTerrainObject.setHover(true);
+                hoverSlope = null;
             } else {
-                cursorType = CursorType.CREATE;
+                hoverSlope = getSlopeAtTerrain(terrainPosition);
+                if (hoverSlope != null) {
+                    hoverSlope.setHover(true);
+                }
+            }
+
+            if (hoverSlope != null) {
+                if (deletePressed) {
+                    cursorType = CursorType.REMOVE_MODE;
+                } else {
+                    cursorType = CursorType.MODIFY;
+                }
+            } else if (hoverTerrainObject == null) {
+                if (newSlopeMode) {
+                    if (!deletePressed) {
+                        cursorType = CursorType.CREATE;
+                    }
+                }
             }
         }
     }
 
     @Override
     public void onMouseDown(Vertex terrainPosition) {
-        Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
-        if (selection != null) {
+        if (hoverTerrainObject != null) {
             if (deletePressed) {
-                Polygon2D newPolygon = selection.remove(movedCursor);
+                hoverTerrainObject.setDeleted();
+                hoverTerrainObject = null;
+                modifyingTerrainObject = null;
+                terrainObjectModelMatrices = setupModelMatrices();
+            } else {
+                modifyingTerrainObject = hoverTerrainObject;
+            }
+        } else if (hoverSlope != null) {
+            Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
+            if (deletePressed) {
+                Polygon2D newPolygon = hoverSlope.remove(movedCursor);
                 if (newPolygon != null) {
-                    terrainEditorRenderTask.updateSlope(selection);
+                    terrainEditorRenderTask.updateSlope(hoverSlope);
                 } else {
-                    terrainEditorRenderTask.removeSlope(selection);
+                    terrainEditorRenderTask.removeSlope(hoverSlope);
                 }
             } else {
-                selection.combine(movedCursor);
-                terrainEditorRenderTask.updateSlope(selection);
+                hoverSlope.combine(movedCursor);
+                terrainEditorRenderTask.updateSlope(hoverSlope);
             }
         } else {
             if (!deletePressed) {
-                ModifiedSlope slopePosition = new ModifiedSlope(slope4New.getId(), movedCursor);
-                modifiedSlopes.add(slopePosition);
-                terrainEditorRenderTask.newSlope(slopePosition);
+                if (newSlopeMode) {
+                    ModifiedSlope slopePosition = new ModifiedSlope(slope4New.getId(), cursor.translate(terrainPosition.toXY()));
+                    modifiedSlopes.add(slopePosition);
+                    terrainEditorRenderTask.newSlope(slopePosition);
+                } else {
+                    if (terrainObjectRandomScale < 1.0) {
+                        throw new IllegalArgumentException("terrainObjectRandomScale < 1.0: " + terrainObjectRandomScale);
+                    }
+                    double scale = 1.0 / terrainObjectRandomScale + (terrainObjectRandomScale - 1.0 / terrainObjectRandomScale) * Math.random();
+                    double rotationZ = Math.toRadians(terrainObjectRandomZRotation) * (2.0 * Math.random() - 1.0);
+                    double radius = terrainTypeService.getTerrainObjectConfig(terrainObject4New.getId()).getRadius();
+                    ModifiedTerrainObject objectPosition = new ModifiedTerrainObject(terrainObject4New.getId(), terrainPosition.toXY(), scale, rotationZ, radius);
+                    modifyingTerrainObject = objectPosition;
+                    hoverTerrainObject = objectPosition;
+                    modifiedTerrainObjects.add(objectPosition);
+                    terrainObjectModelMatrices = setupModelMatrices();
+                }
             }
         }
+    }
+
+    @Override
+    public void onMouseUp() {
+        modifyingTerrainObject = null;
     }
 
     @Override
     public void onDeleteKeyDown(boolean down) {
         deletePressed = down;
         if (down) {
-            if (selection != null) {
-                cursorType = CursorType.REMOVE;
-            } else {
+            if (hoverSlope != null) {
                 cursorType = CursorType.REMOVE_MODE;
             }
         } else {
-            if (selection != null) {
+            if (hoverSlope != null) {
                 cursorType = CursorType.MODIFY;
             } else {
                 cursorType = CursorType.CREATE;
@@ -157,6 +192,8 @@ public class TerrainEditorImpl implements TerrainEditor {
         active = true;
         cursor = setupCursor();
         modifiedSlopes = setupModifiedSlopes();
+        modifiedTerrainObjects = setupModifiedTerrainObjects();
+        terrainObjectModelMatrices = setupModelMatrices();
         renderService.addRenderTask(terrainEditorRenderTask);
         terrainMouseHandler.setTerrainEditor(this);
         keyboardEventHandler.setTerrainEditor(this);
@@ -208,37 +245,47 @@ public class TerrainEditorImpl implements TerrainEditor {
         return new Polygon2D(corners);
     }
 
-
     private Collection<ModifiedSlope> setupModifiedSlopes() {
         return gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions().stream().map(ModifiedSlope::new).collect(Collectors.toList());
     }
 
+    private Collection<ModifiedTerrainObject> setupModifiedTerrainObjects() {
+        return gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions()
+                .stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
+    }
+
+    private List<ModelMatrices> setupModelMatrices() {
+        return modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createModelMatrices).collect(Collectors.toList());
+    }
+
     public void sculpt() {
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        for (ModifiedSlope modifiedSlope : modifiedSlopes) {
-            if (!modifiedSlope.isEmpty()) {
-                terrainSlopePositions.add(modifiedSlope.createServerTerrainSlopePositionNoId());
-            }
-        }
-        gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().setTerrainSlopePositions(terrainSlopePositions);
+        PlanetConfig planetConfig = gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig();
+        planetConfig.setTerrainSlopePositions(modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList()));
+        planetConfig.setTerrainObjectPositions(modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList()));
         terrainUiService.init(gameUiControl.getGameUiControlConfig());
         renderService.setup();
+        modalDialogManager.showMessageDialog("Attention", "Terrain is overridden. Reload browser. Reopen editor will fail!");
     }
 
     public void save() {
+        saveSlope();
+        saveTerrainObjects();
+    }
+
+    private void saveSlope() {
         List<TerrainSlopePosition> createdSlopes = new ArrayList<>();
         List<TerrainSlopePosition> updatedSlopes = new ArrayList<>();
         List<Integer> deletedSlopeIds = new ArrayList<>();
         for (ModifiedSlope modifiedSlope : modifiedSlopes) {
             if (modifiedSlope.isCreated()) {
                 if (!modifiedSlope.isEmpty()) {
-                    createdSlopes.add(modifiedSlope.createServerTerrainSlopePositionNoId());
+                    createdSlopes.add(modifiedSlope.createTerrainSlopePositionNoId());
                 }
             } else {
                 if (modifiedSlope.isEmpty()) {
                     deletedSlopeIds.add(modifiedSlope.getOriginalId());
                 } else if (modifiedSlope.isDirty()) {
-                    updatedSlopes.add(modifiedSlope.createServerTerrainSlopePosition());
+                    updatedSlopes.add(modifiedSlope.createTerrainSlopePosition());
                 }
             }
         }
@@ -257,14 +304,56 @@ public class TerrainEditorImpl implements TerrainEditor {
         }
         if (!deletedSlopeIds.isEmpty()) {
             planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
-                logger.log(Level.SEVERE, "deleteTerrainSlopePositions failed: " + message, throwable);
+                logger.log(Level.SEVERE, "deleteTerrainSlopePositionIds failed: " + message, throwable);
                 return false;
-            }).deleteTerrainSlopePositions(deletedSlopeIds);
+            }).deleteTerrainSlopePositionIds(deletedSlopeIds);
+        }
+    }
+
+    private void saveTerrainObjects() {
+        List<TerrainObjectPosition> createdTerrainObjects = new ArrayList<>();
+        List<TerrainObjectPosition> updatedTerrainObjects = new ArrayList<>();
+        List<Integer> deletedTerrainObjectsIds = new ArrayList<>();
+        for (ModifiedTerrainObject modifiedTerrainObject : modifiedTerrainObjects) {
+            if (modifiedTerrainObject.isCreated()) {
+                if (modifiedTerrainObject.isNotDeleted()) {
+                    createdTerrainObjects.add(modifiedTerrainObject.createTerrainObjectPositionNoId());
+                }
+            } else {
+                if (!modifiedTerrainObject.isNotDeleted()) {
+                    deletedTerrainObjectsIds.add(modifiedTerrainObject.getOriginalId());
+                } else if (modifiedTerrainObject.isDirty()) {
+                    updatedTerrainObjects.add(modifiedTerrainObject.createTerrainObjectPosition());
+                }
+            }
+        }
+
+        if (!createdTerrainObjects.isEmpty()) {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+                logger.log(Level.SEVERE, "createTerrainObjectPositions failed: " + message, throwable);
+                return false;
+            }).createTerrainObjectPositions(createdTerrainObjects);
+        }
+        if (!updatedTerrainObjects.isEmpty()) {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+                logger.log(Level.SEVERE, "updateTerrainObjectPositions failed: " + message, throwable);
+                return false;
+            }).updateTerrainObjectPositions(updatedTerrainObjects);
+        }
+        if (!deletedTerrainObjectsIds.isEmpty()) {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+                logger.log(Level.SEVERE, "deleteTerrainObjectPositionIds failed: " + message, throwable);
+                return false;
+            }).deleteTerrainObjectPositionIds(deletedTerrainObjectsIds);
         }
     }
 
     public void setSlope4New(ObjectNameId slope4New) {
         this.slope4New = slope4New;
+    }
+
+    public void setTerrainObject4New(ObjectNameId terrainObject4New) {
+        this.terrainObject4New = terrainObject4New;
     }
 
     public Matrix4 getCursorModelMatrix() {
@@ -274,4 +363,78 @@ public class TerrainEditorImpl implements TerrainEditor {
     public CursorType getCursorType() {
         return cursorType;
     }
+
+    public boolean isDeletePressed() {
+        return deletePressed;
+    }
+
+    private ModifiedTerrainObject getTerrainObjectAtTerrain(Vertex terrainPosition) {
+        for (ModifiedTerrainObject modifiedTerrainObject : modifiedTerrainObjects) {
+            if (modifiedTerrainObject.overlaps(terrainPosition)) {
+                return modifiedTerrainObject;
+            }
+        }
+        return null;
+    }
+
+    private ModifiedSlope getSlopeAtTerrain(Vertex terrainPosition) {
+        Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
+        for (ModifiedSlope modifiedSlope : modifiedSlopes) {
+            if (modifiedSlope.contains(movedCursor)) {
+                return modifiedSlope;
+            }
+        }
+        return null;
+    }
+
+    private void dehoverAll() {
+        modifiedSlopes.forEach(modifiedSlope -> modifiedSlope.setHover(false));
+        modifiedTerrainObjects.forEach(modifiedTerrainObject -> modifiedTerrainObject.setHover(false));
+    }
+
+    public List<ModelMatrices> provideTerrainObjectModelMatrices() {
+        return terrainObjectModelMatrices;
+    }
+
+    public void setTerrainObjectRandomZRotation(double terrainObjectRandomZRotation) {
+        this.terrainObjectRandomZRotation = terrainObjectRandomZRotation;
+    }
+
+    public void setTerrainObjectRandomScale(double terrainObjectRandomScale) {
+        this.terrainObjectRandomScale = terrainObjectRandomScale;
+    }
+
+    public double getTerrainObjectRandomZRotation() {
+        return terrainObjectRandomZRotation;
+    }
+
+    public double getTerrainObjectRandomScale() {
+        return terrainObjectRandomScale;
+    }
+
+    public boolean isCursorVisible() {
+        if (hoverTerrainObject != null) {
+            return false;
+        }
+        if (newSlopeMode) {
+            return !deletePressed || hoverSlope != null;
+        } else {
+            return hoverSlope != null;
+        }
+    }
+
+    public void toggleCreationMode() {
+        newSlopeMode = !newSlopeMode;
+        modifyingTerrainObject = null;
+    }
+
+    public String getCreationModeText() {
+        if (newSlopeMode) {
+            return "Slope";
+        } else {
+            return "Terrain Object";
+        }
+    }
+
+
 }

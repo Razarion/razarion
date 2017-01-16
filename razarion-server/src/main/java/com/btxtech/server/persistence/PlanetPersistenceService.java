@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -30,16 +29,41 @@ public class PlanetPersistenceService {
     private EntityManager entityManager;
 
     @Transactional
-    public void saveTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions) {
+    public void createTerrainObjectPositions(List<TerrainObjectPosition> createdTerrainObjects) {
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
-        for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
+        for (TerrainObjectPosition terrainObjectPosition : createdTerrainObjects) {
             TerrainObjectPositionEntity terrainObjectPositionEntity = new TerrainObjectPositionEntity();
-            terrainObjectPositionEntity.fromTerrainObjectPosition(objectPosition, entityManager.find(TerrainObjectEntity.class, (long) objectPosition.getTerrainObjectId()));
+            terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getTerrainObjectEntity(terrainObjectPosition.getTerrainObjectId()));
+            terrainObjectPositionEntity.setPosition(terrainObjectPosition.getPosition());
+            terrainObjectPositionEntity.setScale(terrainObjectPosition.getScale());
+            terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
             terrainObjectPositionEntities.add(terrainObjectPositionEntity);
         }
+
         PlanetEntity planetEntity = loadPlanet();
-        planetEntity.setTerrainObjectPositionEntities(terrainObjectPositionEntities);
+        planetEntity.getTerrainObjectPositionEntities().addAll(terrainObjectPositionEntities);
+        entityManager.persist(planetEntity);
+    }
+
+    @Transactional
+    public void updateTerrainObjectPositions(List<TerrainObjectPosition> updatedTerrainObjects) {
+        PlanetEntity planetEntity = loadPlanet();
+        for (TerrainObjectPosition terrainObjectPosition : updatedTerrainObjects) {
+            TerrainObjectPositionEntity terrainObjectPositionEntity = getTerrainObjectPositionEntity(planetEntity, terrainObjectPosition.getId());
+            terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getTerrainObjectEntity(terrainObjectPosition.getTerrainObjectId()));
+            terrainObjectPositionEntity.setPosition(terrainObjectPosition.getPosition());
+            terrainObjectPositionEntity.setScale(terrainObjectPosition.getScale());
+            terrainObjectPositionEntity.setRotationZ(terrainObjectPosition.getRotationZ());
+        }
         entityManager.merge(planetEntity);
+    }
+
+    @Transactional
+    public void deleteTerrainObjectPositionIds(List<Integer> deletedTerrainIds) {
+        PlanetEntity planetEntity = loadPlanet();
+        for (int terrainSlopePositionId : deletedTerrainIds) {
+            planetEntity.getTerrainObjectPositionEntities().remove(getTerrainObjectPositionEntity(planetEntity, terrainSlopePositionId));
+        }
     }
 
     @Transactional
@@ -84,6 +108,15 @@ public class PlanetPersistenceService {
             }
         }
         throw new IllegalArgumentException("No TerrainSlopePositionEntity on planet for id: " + id);
+    }
+
+    private TerrainObjectPositionEntity getTerrainObjectPositionEntity(PlanetEntity planetEntity, int id) {
+        for (TerrainObjectPositionEntity terrainObjectPositionEntity : planetEntity.getTerrainObjectPositionEntities()) {
+            if (terrainObjectPositionEntity.getId() == id) {
+                return terrainObjectPositionEntity;
+            }
+        }
+        throw new IllegalArgumentException("No TerrainObjectPositionEntity on planet for id: " + id);
     }
 
     private PlanetEntity loadPlanet() {
