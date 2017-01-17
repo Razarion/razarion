@@ -69,9 +69,9 @@ public class InventoryUiService {
         if (inventoryItem.hasBaseItemTypeId()) {
             try {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(inventoryItem.getBaseItemType());
-                if (baseItemUiService.isLevelLimitation4ItemTypeExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
+                if (baseItemUiService.isMyLevelLimitation4ItemTypeExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
                     modalDialogManager.showUseInventoryItemLimitExceeded(baseItemType);
-                } else if (baseItemUiService.isHouseSpaceExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
+                } else if (baseItemUiService.isMyHouseSpaceExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
                     modalDialogManager.showUseInventoryHouseSpaceExceeded();
                 } else {
                     BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig();

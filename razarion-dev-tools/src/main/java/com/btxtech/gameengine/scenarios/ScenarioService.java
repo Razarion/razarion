@@ -241,7 +241,7 @@ public class ScenarioService implements QuestListener {
         planetService.initialise(gameEngineConfig.getPlanetConfig());
         currentScenario.setupBots(botService);
         planetService.start();
-        PlayerBase playerBase = baseItemService.createHumanBase(userContext.getLevelId(), userContext.getUserId(), userContext.getName());
+        PlayerBase playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getUserId(), userContext.getName());
         currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService);
         List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
         currentScenario.setupBotCommands(botCommandConfigs);
@@ -295,7 +295,7 @@ public class ScenarioService implements QuestListener {
 
     private PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setGroundMeshDimension(new Rectangle(-20, -20, 40, 40)).setWaterLevel(0).setHouseSpace(1000);
+        planetConfig.setGroundMeshDimension(new Rectangle(-20, -20, 40, 40)).setWaterLevel(0).setHouseSpace(1000).setStartRazarion(100);
         planetConfig.setTerrainSlopePositions(new ArrayList<>());
         planetConfig.setTerrainObjectPositions(new ArrayList<>());
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();

@@ -241,10 +241,12 @@ button:disabled {
     position: relative;
     padding: 2px;
     cursor: pointer;
+    z-index: 1;
     background: white;
     border: none;
     width: 40px;
     height: 40px;
+    border-radius: 0;
 }
 
 .item-cockpit-buildup-button:hover {
@@ -270,6 +272,23 @@ button:disabled {
     font-size: 80%;
     background: rgba(0, 0, 0, 0.4);
     color: #fff;
+}
+
+.item-cockpit-buildup-disable {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 3;
+    cursor: default;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+}
+
+.item-cockpit-buildup-price-label {
+    font-size: 12px;
+    color: #d8d0d0;
+    background-color: black;
 }
 
 /** -------------------------- COCKPIT ENDS -------------------------- */
@@ -382,9 +401,7 @@ button:disabled {
 }
 
 .generic-gallery-table-row-selected {
-
     background-color: #060606;
-
     color: white;
 }
 

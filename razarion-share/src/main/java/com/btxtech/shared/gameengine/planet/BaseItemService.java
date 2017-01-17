@@ -77,8 +77,8 @@ public class BaseItemService {
         throw new IllegalStateException("No human base found");
     }
 
-    public PlayerBase createHumanBase(int levelId, int userId, String name) {
-        return createBase(name, Character.HUMAN, levelId, userId);
+    public PlayerBase createHumanBase(int resources, int levelId, int userId, String name) {
+        return createBase(name, Character.HUMAN, resources, levelId, userId);
     }
 
 
@@ -94,7 +94,7 @@ public class BaseItemService {
 
     public void createHumanBaseWithBaseItem(int levelId, int userId, String name, int baseItemTypeId, DecimalPosition position) {
         surrenderHumanBase(userId);
-        PlayerBase playerBase = createHumanBase(levelId, userId, name);
+        PlayerBase playerBase = createHumanBase(planetService.getPlanetConfig().getStartRazarion(), levelId, userId, name);
         spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, playerBase, false);
     }
 
@@ -107,16 +107,16 @@ public class BaseItemService {
     }
 
     public PlayerBase createBotBase(BotConfig botConfig) {
-        return createBase(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, null, null);
+        return createBase(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null);
     }
 
-    private PlayerBase createBase(String name, Character character, Integer levelId, Integer userId) {
+    private PlayerBase createBase(String name, Character character, int resources, Integer levelId, Integer userId) {
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("Base with Id already exits: " + lastBaseItId);
             }
-            PlayerBase playerBase = new PlayerBase(lastBaseItId, name, character, levelId, userId);
+            PlayerBase playerBase = new PlayerBase(lastBaseItId, name, character, resources, levelId, userId);
             bases.put(lastBaseItId, playerBase);
             gameLogicService.onBaseCreated(playerBase);
             return playerBase;

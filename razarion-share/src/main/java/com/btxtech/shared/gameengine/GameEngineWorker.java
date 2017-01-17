@@ -175,6 +175,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         List<SyncBaseItemSimpleDto> tmpRemoved = removed;
         removed = new ArrayList<>();
         if (playerBase != null) {
+            gameInfo.setHouseSpace(playerBase.getHouseSpace());
+            gameInfo.setUsedHouseSpace(playerBase.getUsedHouseSpace());
             gameInfo.setResources((int) playerBase.getResources());
         }
         sendToClient(GameEngineControlPackage.Command.TICK_UPDATE, syncItems, gameInfo, tmpRemoved, tmpKilled);

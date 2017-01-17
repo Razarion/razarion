@@ -19,10 +19,6 @@ public class BuildupItem {
         this.callback = callback;
     }
 
-    void onMoneyChanged(double accountBalance) {
-        throw new UnsupportedOperationException();
-    }
-
     public BaseItemType getItemType() {
         return itemType;
     }

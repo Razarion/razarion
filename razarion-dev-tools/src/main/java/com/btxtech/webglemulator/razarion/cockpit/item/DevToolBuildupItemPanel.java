@@ -3,6 +3,7 @@ package com.btxtech.webglemulator.razarion.cockpit.item;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
@@ -17,16 +18,20 @@ public class DevToolBuildupItemPanel extends BuildupItemPanel {
 
     @Override
     protected void clear() {
-        hBox.getChildren().clear();
+        Platform.runLater(() -> {
+            hBox.getChildren().clear();
+        });
     }
 
     @Override
     protected void setBuildupItem(List<BuildupItem> buildupItems) {
-        for (BuildupItem buildupItem : buildupItems) {
-            Button button = new Button(buildupItem.getItemType().getName());
-            button.setOnMouseClicked(event -> buildupItem.onBuild());
-            hBox.getChildren().add(button);
-        }
+        Platform.runLater(() -> {
+            for (BuildupItem buildupItem : buildupItems) {
+                Button button = new Button(buildupItem.getItemType().getName());
+                button.setOnMouseClicked(event -> buildupItem.onBuild());
+                hBox.getChildren().add(button);
+            }
+        });
     }
 
     public HBox getHBox() {
@@ -36,5 +41,10 @@ public class DevToolBuildupItemPanel extends BuildupItemPanel {
     @Override
     protected Rectangle getBuildButtonLocation(BuildupItem buildupItem) {
         return new Rectangle(100, 300, 50, 50);
+    }
+
+    @Override
+    public void onResourcesChanged(int resources) {
+        System.out.println("+++ DevToolBuildupItemPanel on resource changed: " + resources);
     }
 }

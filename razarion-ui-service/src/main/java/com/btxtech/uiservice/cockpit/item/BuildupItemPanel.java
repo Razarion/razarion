@@ -10,6 +10,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 
@@ -26,12 +27,10 @@ import java.util.Map;
  * 29.09.2016.
  */
 public abstract class BuildupItemPanel {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
     @Inject
@@ -40,6 +39,8 @@ public abstract class BuildupItemPanel {
     private ItemTypeService itemTypeService;
     @Inject
     private BaseItemUiService baseItemUiService;
+    @Inject
+    private GameUiControl gameUiControl;
     private Group selectedGroup;
     private Map<Integer, BuildupItem> buildupItems = new HashMap<>();
     private boolean hasItemsToBuild;
@@ -49,6 +50,8 @@ public abstract class BuildupItemPanel {
     protected abstract void setBuildupItem(List<BuildupItem> buildupItems);
 
     protected abstract Rectangle getBuildButtonLocation(BuildupItem buildupItem);
+
+    public abstract void onResourcesChanged(int resources);
 
     public void display(SyncBaseItemSimpleDto syncBaseItem) {
         selectedGroup = null;
@@ -81,16 +84,18 @@ public abstract class BuildupItemPanel {
         Collection<Integer> itemTypeIds = itemTypeService.getBaseItemType(constructionVehicles.getFirst().getItemTypeId()).getBuilderType().getAbleToBuild();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
-            if (baseItemUiService.getMyLimitation4ItemType(itemTypeId) == 0) {
+            if (gameUiControl.getPlanetConfig().imitation4ItemType(itemTypeId) == 0) {
                 continue;
             }
             hasItemsToBuild = true;
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
-            BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemTypeId);
-            buildupItems.add(setupBuildupBlock(itemType, () -> baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
-                audioService.onCommandSent();
-                gameEngineControl.buildCmd(constructionVehicles.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
-            })));
+            buildupItems.add(setupBuildupBlock(itemType, () -> {
+                BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemTypeId);
+                baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
+                    audioService.onCommandSent();
+                    gameEngineControl.buildCmd(constructionVehicles.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
+                });
+            }));
         }
         setBuildupItem(buildupItems);
     }
@@ -101,7 +106,7 @@ public abstract class BuildupItemPanel {
         Collection<Integer> itemTypeIds = itemTypeService.getBaseItemType(factories.getFirst().getItemTypeId()).getFactoryType().getAbleToBuildId();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
-            if (baseItemUiService.getMyLimitation4ItemType(itemTypeId) == 0) {
+            if (gameUiControl.getPlanetConfig().imitation4ItemType(itemTypeId) == 0) {
                 continue;
             }
             hasItemsToBuild = true;
@@ -118,12 +123,6 @@ public abstract class BuildupItemPanel {
         BuildupItem buildupItem = new BuildupItem(itemType, callback);
         this.buildupItems.put(itemType.getId(), buildupItem);
         return buildupItem;
-    }
-
-    public void onMoneyChanged(double accountBalance) {
-        for (BuildupItem buildupItem : this.buildupItems.values()) {
-            buildupItem.onMoneyChanged(accountBalance);
-        }
     }
 
     public void onStateChanged() {

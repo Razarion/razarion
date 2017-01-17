@@ -29,26 +29,25 @@ import javax.inject.Named;
 @Templated("ClientBuildupItemPanel.html#buildItemTd")
 public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     @Inject
-    private GameUiControl gameUiControl;
-    @Inject
     private BaseItemUiService baseItemUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private GameUiControl gameUiControl;
     @Inject
     @DataField
     @Named("td")
     private TableCell buildItemTd;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Image image;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label priceLabel;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Span itemLimitLabel;
+    @Inject
+    @DataField
+    private Span disableSpawn;
     private BuildupItem buildupItem;
     private int itemCount;
     private int itemLimit;
@@ -61,25 +60,19 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
                 return I18nHelper.getConstants().tooltipBuild(itemName);
             }
         },
-//        DISABLED_LEVEL(false) {
-//            @Override
-//            String lookup(String itemName) {
-//                return I18nHelper.getConstants().tooltipNoBuildLevel(itemName);
-//            }
-//        },
-//        DISABLED_LEVEL_EXCEEDED(false) {
-//            @Override
-//            String lookup(String itemName) {
-//                return I18nHelper.getConstants().tooltipNoBuildLimit(itemName);
-//            }
-//        },
-//        DISABLED_HOUSE_SPACE_EXCEEDED(false) {
-//            @Override
-//            String lookup(String itemName) {
-//                return I18nHelper.getConstants().tooltipNoBuildHouseSpace(itemName);
-//            }
-//        },
-        DISABLED_MONEY(false) {
+        DISABLED_LEVEL_EXCEEDED(false) {
+            @Override
+            String lookup(String itemName) {
+                return I18nHelper.getConstants().tooltipNoBuildLimit(itemName);
+            }
+        },
+        DISABLED_HOUSE_SPACE_EXCEEDED(false) {
+            @Override
+            String lookup(String itemName) {
+                return I18nHelper.getConstants().tooltipNoBuildHouseSpace(itemName);
+            }
+        },
+        DISABLED_RESOURCES(false) {
             @Override
             String lookup(String itemName) {
                 return I18nHelper.getConstants().tooltipNoBuildMoney(itemName);
@@ -114,7 +107,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
         image.setUrl(RestUrl.getImageServiceUrlSafe(buildupItem.getItemType().getThumbnail()));
         discoverEnableState();
         priceLabel.setText(Integer.toString(buildupItem.getItemType().getPrice()));
-        accomplishEnableState();
+        displayEnableState();
     }
 
     @Override
@@ -132,28 +125,37 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     }
 
     private void discoverEnableState() {
-        // TODO
-//        itemCount = gameUiControl.getItemCount(buildupItem.getItemType().getId());
-//        itemLimit = gameUiControl.getLimitation4ItemType(buildupItem.getItemType());
-//        if (gameUiControl.isLevelLimitation4ItemTypeExceeded(buildupItem.getItemType())) {
-//            enableState = EnableState.DISABLED_LEVEL_EXCEEDED;
-//            return;
-//        }
-//        if (gameUiControl.isHouseSpaceExceeded(buildupItem.getItemType())) {
-//            enableState = EnableState.DISABLED_HOUSE_SPACE_EXCEEDED;
-//            return;
-//        }
-//        if (buildupItem.getItemType().getPrice() > baseItemUiService.getResources()) {
-//            enableState = EnableState.DISABLED_MONEY;
-//            return;
-//        }
+        itemCount = baseItemUiService.getMyItemCount(buildupItem.getItemType().getId());
+        itemLimit = gameUiControl.getMyLimitation4ItemType(buildupItem.getItemType().getId());
+        if (baseItemUiService.isMyLevelLimitation4ItemTypeExceeded(buildupItem.getItemType(), 1)) {
+            enableState = EnableState.DISABLED_LEVEL_EXCEEDED;
+            return;
+        }
+        if (baseItemUiService.isMyHouseSpaceExceeded(buildupItem.getItemType(), 1)) {
+            enableState = EnableState.DISABLED_HOUSE_SPACE_EXCEEDED;
+            return;
+        }
+        if (buildupItem.getItemType().getPrice() > baseItemUiService.getResources()) {
+            enableState = EnableState.DISABLED_RESOURCES;
+            return;
+        }
         enableState = EnableState.ENABLE;
     }
 
-    private void accomplishEnableState() {
-        buildItemTd.setTitle(enableState.getToolTip((buildupItem.getItemType())));
-        // TODO buildupItemButtonContent.setEnabled(enableState.isEnabled());
+    public void onResourcesChanged(int resources) {
+        int price = buildupItem.getItemType().getPrice();
+        if (price > resources && enableState == EnableState.ENABLE) {
+            enableState = EnableState.DISABLED_RESOURCES;
+            displayEnableState();
+        } else if (price <= resources && enableState == EnableState.DISABLED_RESOURCES) {
+            discoverEnableState();
+            displayEnableState();
+        }
+    }
+
+    private void displayEnableState() {
+        buildItemTd.setTitle(enableState.getToolTip(buildupItem.getItemType()));
         itemLimitLabel.setTextContent(itemCount + "/" + itemLimit);
-        // TODO button.setEnabled(enableState.isEnabled());
+        disableSpawn.getStyle().setProperty("visibility", enableState.isEnabled() ? "hidden" : "visible");
     }
 }

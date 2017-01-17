@@ -62,4 +62,8 @@ public class CockpitService {
     public void onInventoryDialogClosed() {
         inventoryPositionProvider = null;
     }
+
+    public void onItemCountChanged(int itemCount) {
+        sideCockpit.displayItemCount(itemCount);
+    }
 }

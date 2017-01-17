@@ -16,6 +16,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,19 +25,15 @@ import java.util.List;
  */
 @Templated("ClientBuildupItemPanel.html#buildup-item-panel")
 public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElement {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("buildup-item-panel")
     private Div div;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button leftArrowButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button rightArrowButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     @ListContainer("tbody")
@@ -59,7 +56,7 @@ public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElemen
 
     @Override
     protected void clear() {
-        buildItemTypePanel.setValue(null);
+        buildItemTypePanel.setValue(Collections.emptyList());
     }
 
     @Override
@@ -71,5 +68,12 @@ public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElemen
     @Override
     protected Rectangle getBuildButtonLocation(BuildupItem buildupItem) {
         return buildItemTypePanel.getComponent(buildupItem).orElseThrow(IllegalStateException::new).getBuildButtonLocation();
+    }
+
+    @Override
+    public void onResourcesChanged(int resources) {
+        for (BuildupItem buildupItem : buildItemTypePanel.getValue()) {
+            buildItemTypePanel.getComponent(buildupItem).orElseThrow(IllegalStateException::new).onResourcesChanged(resources);
+        }
     }
 }

@@ -47,4 +47,9 @@ public class DevToolSideCockpit implements SideCockpit {
     public Rectangle getInventoryDialogButtonLocation() {
         return new Rectangle(10, 10, 100, 20);
     }
+
+    @Override
+    public void displayItemCount(int itemCount) {
+        System.out.println("++++ item count: " + itemCount);
+    }
 }

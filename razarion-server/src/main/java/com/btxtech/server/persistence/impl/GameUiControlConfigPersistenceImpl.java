@@ -123,7 +123,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         Root<GameUiControlConfigEntity> from = userQuery.from(GameUiControlConfigEntity.class);
         CriteriaQuery<GameUiControlConfigEntity> userSelect = userQuery.select(from);
         GameUiControlConfig gameUiControlConfig = entityManager.createQuery(userSelect).getSingleResult().toGameUiControlConfig(gameEngineConfig);
-        gameUiControlConfig.setUserContext(new UserContext().setUserId(1).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
+        gameUiControlConfig.setUserContext(new UserContext().setUserId(1).setName("Emulator Name").setLevelId(4).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         gameUiControlConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
@@ -131,13 +131,13 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // ameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
+        gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(harvest()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
@@ -235,6 +235,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         bulldozer.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30));
         bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
         bulldozer.setBoxPickupRange(2).setExplosionClipId(272485);
+        bulldozer.setPrice(100);
     }
 
     private void finalizeHarvester(BaseItemType harvester) {
@@ -245,6 +246,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         harvester.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4).setAnimationShape3dId(180831).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
         harvester.setBoxPickupRange(2).setExplosionClipId(272485).setBuildup(2);
+        harvester.setPrice(100);
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
@@ -255,6 +257,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         attacker.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30));
         attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionClipId(272485);
+        attacker.setPrice(100);
     }
 
     private void finalizeFactory(BaseItemType factory) {
@@ -265,6 +268,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         factory.setExplosionClipId(272485).setBuildup(2);
         factory.getPhysicalAreaConfig().setFixVerticalNorm(true);
         factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER, BASE_ITEM_TYPE_ATTACKER)));
+        factory.setPrice(200);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionShape3D> demolitionShape3Ds1 = new ArrayList<>();
@@ -364,7 +368,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         level4Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         level4Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
         level4Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
-        level4Limitation.put(BASE_ITEM_TYPE_FACTORY, 100);
+        level4Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
         levelConfigs.add(new LevelConfig().setLevelId(4).setNumber(4).setXp2LevelUp(50).setItemTypeLimitation(level4Limitation));
         return levelConfigs;
     }
@@ -381,10 +385,11 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         itemTypeLimitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         itemTypeLimitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
         itemTypeLimitation.put(BASE_ITEM_TYPE_HARVESTER, 5);
-        itemTypeLimitation.put(BASE_ITEM_TYPE_FACTORY, 100);
+        itemTypeLimitation.put(BASE_ITEM_TYPE_FACTORY, 1);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setWaterLevel(-0.7);
+        planetConfig.setStartRazarion(550);
     }
 
 

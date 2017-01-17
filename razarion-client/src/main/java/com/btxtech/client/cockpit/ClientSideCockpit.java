@@ -27,26 +27,23 @@ import javax.inject.Inject;
 public class ClientSideCockpit extends Composite implements SideCockpit {
     @Inject
     private GameTipService gameTipService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button inventoryButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button editorButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Span resourceLabel;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @DataField
+    private Span itemCountLabel;
     @Inject
     @DataField
     private Span xpLabel;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Span levelLabel;
@@ -74,6 +71,11 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Override
     public void displayResources(int resources) {
         resourceLabel.setTextContent(Integer.toString(resources));
+    }
+
+    @Override
+    public void displayItemCount(int itemCount) {
+        itemCountLabel.setTextContent(Integer.toString(itemCount));
     }
 
     @Override

@@ -9,10 +9,12 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 
@@ -26,7 +28,7 @@ import javax.inject.Singleton;
  * 05.07.2016.
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
-public class GameUiControl {
+public class GameUiControl { // Equivalent worker class is PlanetService
     // private Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -42,6 +44,8 @@ public class GameUiControl {
     private BaseItemUiService baseItemUiService;
     @Inject
     private CockpitService cockpitService;
+    @Inject
+    private ItemCockpitService itemCockpitService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -106,6 +110,10 @@ public class GameUiControl {
         return gameUiControlConfig;
     }
 
+    public PlanetConfig getPlanetConfig() {
+        return gameUiControlConfig.getGameEngineConfig().getPlanetConfig();
+    }
+
     public void onQuestPassed() {
         if (currentScene != null) {
             currentScene.onQuestPassed();
@@ -113,8 +121,7 @@ public class GameUiControl {
     }
 
     public void setGameInfo(GameInfo gameInfo) {
-        baseItemUiService.setResources(gameInfo.getResources());
-        cockpitService.updateResource(baseItemUiService.getResources());
+        baseItemUiService.updateGameInfo(gameInfo);
         if (gameInfo.getXpFromKills() > 0) {
             increaseXp(gameInfo.getXpFromKills());
         }
@@ -129,6 +136,7 @@ public class GameUiControl {
             userContext.setXp(0);
             gameEngineControl.updateLevel(newLevelConfig.getLevelId());
             cockpitService.updateLevelAndXp(userContext);
+            itemCockpitService.onStateChanged();
             dialogManager.onLevelPassed(userContext, levelConfig, newLevelConfig);
         } else {
             userContext.setXp(xp);
@@ -141,5 +149,11 @@ public class GameUiControl {
             userContext.addInventoryItem(inventoryItem.getId());
         }
         dialogManager.showBoxPicked(boxContent);
+    }
+
+    public int getMyLimitation4ItemType(int itemTypeId) {
+        int levelCount = levelService.getLevel(userContext.getLevelId()).limitation4ItemType(itemTypeId);
+        int planetCount = getPlanetConfig().imitation4ItemType(itemTypeId);
+        return Math.min(levelCount, planetCount);
     }
 }

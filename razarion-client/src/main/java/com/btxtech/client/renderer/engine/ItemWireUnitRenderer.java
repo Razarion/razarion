@@ -52,16 +52,16 @@ public class ItemWireUnitRenderer extends AbstractWebGlUnitRenderer {
     }
 
     public void fillBuffers() {
-        VertexContainer vertexContainer = baseItemUiService.getItemTypeVertexContainer(getId());
-        if (vertexContainer == null) {
-            return;
-        }
-
-        positions.fillBuffer(vertexContainer.getVertices());
-        barycentrics.fillBuffer(vertexContainer.generateBarycentric());
-        textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
-
-        setElementCount(vertexContainer);
+//        VertexContainer vertexContainer = baseItemUiService.getItemTypeVertexContainer(getId());
+//        if (vertexContainer == null) {
+//            return;
+//        }
+//
+//        positions.fillBuffer(vertexContainer.getVertices());
+//        barycentrics.fillBuffer(vertexContainer.generateBarycentric());
+//        textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
+//
+//        setElementCount(vertexContainer);
     }
 
     @Override

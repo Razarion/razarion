@@ -113,4 +113,18 @@ public class ItemCockpitService {
         }
         return buildupItemPanel.getBuildButtonLocation(baseItemTypeId);
     }
+
+    public void onResourcesChanged(int resources) {
+        if (buildupItemPanel != null) {
+            buildupItemPanel.onResourcesChanged(resources);
+        }
+    }
+
+    // This method is may not called enough. Only called on Level change and houseSpace and usedHouseSpace changed
+    // If an item is create and and item of a different item type is killed, this is method not called
+    public void onStateChanged() {
+        if (buildupItemPanel != null) {
+            buildupItemPanel.onStateChanged();
+        }
+    }
 }

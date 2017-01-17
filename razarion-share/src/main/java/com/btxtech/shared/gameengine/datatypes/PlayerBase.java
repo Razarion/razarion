@@ -37,12 +37,13 @@ public class PlayerBase {
     private final Collection<SyncBaseItem> items = new ArrayList<>();
     private int usedHouseSpace = 0;
 
-    public PlayerBase(int baseId, String name, Character character, Integer levelId, Integer userId) {
+    public PlayerBase(int baseId, String name, Character character, int resources, Integer levelId, Integer userId) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
         this.levelId = levelId;
         this.userId = userId;
+        this.resources = resources;
     }
 
     public int getBaseId() {
@@ -92,7 +93,7 @@ public class PlayerBase {
     }
 
     public int getHouseSpace() {
-        // TODO
+        // TODO no houses yet
         return 0;
     }
 

@@ -6,18 +6,19 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionShape3D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
+import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
-import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -46,16 +47,21 @@ public class BaseItemUiService {
     @Inject
     private ResourceService resourceService;
     @Inject
-    private PlanetService planetService;
-    @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
     private GameUiControl gameUiControl;
+    @Inject
+    private CockpitService cockpitService;
+    @Inject
+    private ItemCockpitService itemCockpitService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private PlayerBaseDto myBase;
     private int resources;
+    private int usedHouseSpace;
+    private int houseSpace;
+    private int itemCount;
     private Collection<SyncBaseItemSimpleDto> syncBaseItems;
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
@@ -66,12 +72,6 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
     private long lastUpdateTimeStamp;
-
-    @Deprecated
-    public VertexContainer getItemTypeVertexContainer(int id) {
-        throw new UnsupportedOperationException();
-        // return vertexContainers.get(id);
-    }
 
     public Collection<BaseItemType> getBaseItemTypes() {
         return itemTypeService.getBaseItemTypes();
@@ -120,7 +120,11 @@ public class BaseItemUiService {
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
+        int tmpItemCount = 0;
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (isMyOwnProperty(syncBaseItem)) {
+                tmpItemCount++;
+            }
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (!terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
@@ -167,6 +171,11 @@ public class BaseItemUiService {
                 Vertex direction = syncBaseItem.getBuildingPosition().sub(origin).normalize(1.0);
                 builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction));
             }
+        }
+        if (itemCount != tmpItemCount) {
+            itemCount = tmpItemCount;
+            cockpitService.onItemCountChanged(itemCount);
+            itemCockpitService.onStateChanged();
         }
     }
 
@@ -288,24 +297,36 @@ public class BaseItemUiService {
         return resources;
     }
 
-    public void setResources(int resources) {
-        this.resources = resources;
+    public void updateGameInfo(GameInfo gameInfo) {
+        if (resources != gameInfo.getResources()) {
+            resources = gameInfo.getResources();
+            cockpitService.updateResource(resources);
+            itemCockpitService.onResourcesChanged(resources);
+        }
+        if (houseSpace != gameInfo.getHouseSpace()) {
+            houseSpace = gameInfo.getHouseSpace();
+            itemCockpitService.onStateChanged();
+        }
+        if (usedHouseSpace != gameInfo.getUsedHouseSpace()) {
+            usedHouseSpace = gameInfo.getUsedHouseSpace();
+            itemCockpitService.onStateChanged();
+        }
     }
 
-    public int getMyLimitation4ItemType(Integer itemTypeId) {
-        return 1; // TODO
+    public boolean isMyLevelLimitation4ItemTypeExceeded(BaseItemType toBeBuiltType, int itemCount2Add) {
+        return getMyItemCount(toBeBuiltType.getId()) + itemCount2Add > gameUiControl.getMyLimitation4ItemType(toBeBuiltType.getId());
     }
 
-    public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType baseItemType, int baseItemTypeCount) {
-        return false;// TODO
-    }
-
-    public boolean isHouseSpaceExceeded(BaseItemType baseItemType, int baseItemTypeCount) {
-        return false; // TODO
+    public boolean isMyHouseSpaceExceeded(BaseItemType toBeBuiltType, int itemCount2Add) {
+        return usedHouseSpace + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > houseSpace + gameUiControl.getPlanetConfig().getHouseSpace();
     }
 
     public double setupInterpolationFactor() {
         return (double) (System.currentTimeMillis() - lastUpdateTimeStamp) / 1000.0;
-        // return 0;
     }
+
+    public int getMyItemCount(int itemTypeId) {
+        return findMyItemsOfType(itemTypeId).size();
+    }
+
 }

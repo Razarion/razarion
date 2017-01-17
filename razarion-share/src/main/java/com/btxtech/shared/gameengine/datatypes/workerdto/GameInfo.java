@@ -9,6 +9,8 @@ import java.util.List;
 public class GameInfo {
     private int resources;
     private int xpFromKills;
+    private int houseSpace;
+    private int usedHouseSpace;
 
     public int getResources() {
         return resources;
@@ -26,7 +28,19 @@ public class GameInfo {
         this.xpFromKills = xpFromKills;
     }
 
-    public void add2xpFromKills(int xp) {
-        xpFromKills += xp;
+    public int getHouseSpace() {
+        return houseSpace;
+    }
+
+    public void setHouseSpace(int houseSpace) {
+        this.houseSpace = houseSpace;
+    }
+
+    public int getUsedHouseSpace() {
+        return usedHouseSpace;
+    }
+
+    public void setUsedHouseSpace(int usedHouseSpace) {
+        this.usedHouseSpace = usedHouseSpace;
     }
 }

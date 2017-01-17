@@ -274,10 +274,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public DecimalPosition setupInterpolatableVelocity() {
         if (velocity == null) {
-            System.out.println("velocity: null");
             return null;
         }
-        System.out.println("velocity: " + velocity + " magnitude: " + velocity.magnitude());
         return velocity;
 
     }

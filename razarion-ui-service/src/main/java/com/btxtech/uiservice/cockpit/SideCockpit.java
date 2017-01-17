@@ -16,4 +16,6 @@ public interface SideCockpit {
     void displayLevel(int levelNumber);
 
     Rectangle getInventoryDialogButtonLocation();
+
+    void displayItemCount(int itemCount);
 }

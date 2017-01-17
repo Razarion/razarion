@@ -18,6 +18,7 @@ public class PlanetConfig {
     private Map<Integer, Integer> itemTypeLimitation;
     private double waterLevel;
     private int houseSpace;
+    private int startRazarion;
 
     public Rectangle getGroundMeshDimension() {
         return groundMeshDimension;
@@ -79,6 +80,15 @@ public class PlanetConfig {
 
     public PlanetConfig setHouseSpace(int houseSpace) {
         this.houseSpace = houseSpace;
+        return this;
+    }
+
+    public int getStartRazarion() {
+        return startRazarion;
+    }
+
+    public PlanetConfig setStartRazarion(int startRazarion) {
+        this.startRazarion = startRazarion;
         return this;
     }
 }

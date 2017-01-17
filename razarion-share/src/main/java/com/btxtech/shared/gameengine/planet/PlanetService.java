@@ -21,17 +21,15 @@ import java.util.Collection;
  * 13.07.2016.
  */
 @Singleton
-public class PlanetService implements Runnable {
+public class PlanetService implements Runnable { // Only available in worker. On ui part is GameUiControl
     public static final PlanetMode MODE = PlanetMode.MASTER;
     public static final int TICK_TIME_MILLI_SECONDS = 100;
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
     // private Logger logger = Logger.getLogger(PlanetService.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private Event<PlanetActivationEvent> activationEvent;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject
