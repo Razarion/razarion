@@ -1,8 +1,8 @@
 package com.btxtech.server.persistence.impl;
 
 import com.btxtech.server.persistence.ClipPersistence;
-import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
+import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.TerrainElementPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.servercommon.GameUiControlConfigPersistence;
@@ -388,6 +388,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         itemTypeLimitation.put(BASE_ITEM_TYPE_FACTORY, 1);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
+        planetConfig.setPlayGround(new Rectangle2D(50, 40, 310, 320));
         planetConfig.setWaterLevel(-0.7);
         planetConfig.setStartRazarion(550);
     }

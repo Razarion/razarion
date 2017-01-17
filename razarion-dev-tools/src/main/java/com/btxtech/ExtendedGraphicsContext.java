@@ -90,6 +90,12 @@ public class ExtendedGraphicsContext {
         gc.fillRect(rectangle.startX(), rectangle.startY(), rectangle.width(), rectangle.height());
     }
 
+    public void strokeRectangle(Rectangle2D rectangle, double lineWidth, Color color) {
+        gc.setLineWidth(lineWidth);
+        gc.setStroke(color);
+        gc.strokeRect(rectangle.startX(), rectangle.startY(), rectangle.width(), rectangle.height());
+    }
+
     public void strokeCurveIndex(List<Index> curve, double strokeWidth, Color color, boolean showPoint) {
         gc.setStroke(color);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));

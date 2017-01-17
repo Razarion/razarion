@@ -2,11 +2,13 @@ package com.btxtech.webglemulator;
 
 import com.btxtech.Abstract2dRenderer;
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
@@ -16,7 +18,6 @@ import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +33,8 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private ShadowUiService shadowUiService;
+    @Inject
+    private GameUiControl gameUiControl;
 
     public void render() {
         preRender();
@@ -46,6 +49,18 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
             if (!cameraView.hasNullPosition()) {
                 egc.strokeCurveDecimalPosition(cameraView.toList(), 0.5, Color.BLACK, false);
             }
+
+            // Ground Mesh
+            Rectangle groundRect = gameUiControl.getPlanetConfig().getGroundMeshDimension();
+            Rectangle2D groundMesh = new Rectangle2D(groundRect.startX() * TerrainService.MESH_NODE_EDGE_LENGTH,
+                    groundRect.startY() * TerrainService.MESH_NODE_EDGE_LENGTH,
+                    groundRect.width() * TerrainService.MESH_NODE_EDGE_LENGTH,
+                    groundRect.height() * TerrainService.MESH_NODE_EDGE_LENGTH);
+            egc.strokeRectangle(groundMesh, 1.0, Color.RED);
+
+            // Play ground
+            egc.strokeRectangle(gameUiControl.getPlanetConfig().getPlayGround(), 1.0, Color.BLACK);
+            // egc.strokeRectangle(new Rectangle2D(50, 40, 310, 320), 1.0, Color.BLACK);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,12 +69,15 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
     }
 
     private void drawTerrain(ExtendedGraphicsContext egc) {
+        // Ground mesh
         egc.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 0.2, Color.BLUE);
 
+        // Slopes
         for (Slope slope : terrainUiService.getSlopes()) {
             egc.strokeVertexList(slope.getMesh().getVertices(), 0.2, Color.RED);
         }
 
+        // Terrain objects
         egc.getGc().setFill(Color.GREEN);
         for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainUiService.getTerrainObjectPositions().getMap().entrySet()) {
             TerrainObjectConfig terrainObjectConfig = entry.getKey();

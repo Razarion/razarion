@@ -238,8 +238,12 @@ public class Rectangle2D {
         if (cross == null) {
             return 0;
         } else {
-            return  cross.area() / other.area() ;
+            return cross.area() / other.area();
         }
+    }
+
+    public Rectangle2D translate(double deltaX, double deltaY) {
+        return new Rectangle2D(startX() + deltaX, startY() + deltaY, width(), height());
     }
 
     @Override

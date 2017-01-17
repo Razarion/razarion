@@ -29,7 +29,7 @@ public class FxCdiGui {
         stage.setX(-1279);
         stage.setY(182);
         stage.setWidth(1277);
-        stage.setHeight(1016);
+        stage.setHeight(984);
         stage.show();
         stage.setOnCloseRequest(we -> System.out.println("Stage is closing. Windows position: " + stage.getX() + ":" + stage.getY() + " " + stage.getWidth() + ":" + stage.getHeight()));
         razarionEmulator.run();

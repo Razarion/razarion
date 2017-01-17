@@ -17,6 +17,7 @@ import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;

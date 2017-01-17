@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
@@ -19,6 +20,7 @@ public class PlanetConfig {
     private double waterLevel;
     private int houseSpace;
     private int startRazarion;
+    private Rectangle2D playGround;
 
     public Rectangle getGroundMeshDimension() {
         return groundMeshDimension;
@@ -89,6 +91,15 @@ public class PlanetConfig {
 
     public PlanetConfig setStartRazarion(int startRazarion) {
         this.startRazarion = startRazarion;
+        return this;
+    }
+
+    public Rectangle2D getPlayGround() {
+        return playGround;
+    }
+
+    public PlanetConfig setPlayGround(Rectangle2D playGround) {
+        this.playGround = playGround;
         return this;
     }
 }

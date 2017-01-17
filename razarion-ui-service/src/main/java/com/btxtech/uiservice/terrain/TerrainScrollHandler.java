@@ -6,11 +6,13 @@ import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
+import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import java.util.Optional;
  */
 @Singleton
 public class TerrainScrollHandler {
+
     public enum ScrollDirection {
         TOP,
         BOTTOM,
@@ -59,10 +62,19 @@ public class TerrainScrollHandler {
     private ViewField currentViewField;
     private Rectangle2D currentAabb;
     private Collection<TerrainScrollListener> terrainScrollListeners = new ArrayList<>();
+    private Rectangle2D playGround;
 
     @PostConstruct
-    public void init() {
+    public void postConstruct() {
         simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, false, this::autoScroll, SimpleExecutorService.Type.UNSPECIFIED);
+    }
+
+    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+        setPlayGround(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getPlayGround());
+    }
+
+    public void setPlayGround(Rectangle2D playGround) {
+        this.playGround = playGround;
     }
 
     public void cleanup() {
@@ -182,7 +194,6 @@ public class TerrainScrollHandler {
             scrollY = -DISTANCE_PER_SCROLL_TICK;
         }
 
-        // TODO check if camera is in valid playground filed. Also check in CollisionService.correctPosition()
         setCameraPosition(camera.getTranslateX() + scrollX, camera.getTranslateY() + scrollY);
     }
 
@@ -221,7 +232,29 @@ public class TerrainScrollHandler {
     }
 
     private void setCameraPosition(double xPosition, double yPosition) {
-        camera.setTranslateXY(xPosition, yPosition);
+        double correctedXPosition = xPosition;
+        double correctedYPosition = yPosition;
+        if (playGround != null) {
+            if(currentViewField == null || currentAabb == null) {
+                camera.setTranslateXY(correctedXPosition, correctedYPosition);
+                update();
+            }
+            double deltaX = xPosition - camera.getTranslateX();
+            double deltaY = yPosition - camera.getTranslateY();
+            Rectangle2D viewFiledAabb = currentViewField.calculateAabbRectangle().translate(deltaX, deltaY);
+            if(playGround.startX() > viewFiledAabb.startX()) {
+                correctedXPosition += playGround.startX() - viewFiledAabb.startX();
+            } else if(playGround.endX() < viewFiledAabb.endX()){
+                correctedXPosition -= viewFiledAabb.endX() - playGround.endX();
+            }
+
+            if(playGround.startY() > viewFiledAabb.startY()) {
+                correctedYPosition += playGround.startY() - viewFiledAabb.startY();
+            } else if(playGround.endY() < viewFiledAabb.endY()){
+                correctedYPosition -= viewFiledAabb.endY() - playGround.endY();
+            }
+        }
+        camera.setTranslateXY(correctedXPosition, correctedYPosition);
         update();
     }
 
@@ -257,56 +290,4 @@ public class TerrainScrollHandler {
     public Rectangle2D getCurrentAabb() {
         return currentAabb;
     }
-
-    //    public static Index calculateSafeDelta(int deltaX, int deltaY, TerrainSettings terrainSettings, Rectangle viewRect) {
-//        if (terrainSettings == null) {
-//            return new Index(0, 0);
-//        }
-//        int viewOriginLeft = viewRect.startX();
-//        int viewOriginTop = viewRect.startY();
-//        int viewWidth = viewRect.width();
-//        int viewHeight = viewRect.height();
-//
-//        if (viewWidth == 0 && viewHeight == 0) {
-//            return new Index(0, 0);
-//        }
-//
-//        int orgViewOriginLeft = viewOriginLeft;
-//        int orgViewOriginTop = viewOriginTop;
-//
-//        int tmpViewOriginLeft = viewOriginLeft + deltaX;
-//        int tmpViewOriginTop = viewOriginTop + deltaY;
-//
-//        if (tmpViewOriginLeft < 0) {
-//            deltaX = deltaX - tmpViewOriginLeft;
-//        } else if (tmpViewOriginLeft > terrainSettings.getPlayFieldXSize() - viewWidth - 1) {
-//            deltaX = deltaX - (tmpViewOriginLeft - (terrainSettings.getPlayFieldXSize() - viewWidth)) - 1;
-//        }
-//        if (viewWidth >= terrainSettings.getPlayFieldXSize()) {
-//            deltaX = 0;
-//            viewOriginLeft = 0;
-//        } else {
-//            viewOriginLeft += deltaX;
-//        }
-//
-//        if (tmpViewOriginTop < 0) {
-//            deltaY = deltaY - tmpViewOriginTop;
-//        } else if (tmpViewOriginTop > terrainSettings.getPlayFieldYSize() - viewHeight - 1) {
-//            deltaY = deltaY - (tmpViewOriginTop - (terrainSettings.getPlayFieldYSize() - viewHeight)) - 1;
-//        }
-//        if (viewHeight >= terrainSettings.getPlayFieldYSize()) {
-//            deltaY = 0;
-//            viewOriginTop = 0;
-//        } else {
-//            viewOriginTop += deltaY;
-//        }
-//
-//        if (orgViewOriginLeft == viewOriginLeft && orgViewOriginTop == viewOriginTop) {
-//            // No moveDelta
-//            return new Index(0, 0);
-//        }
-//        return new Index(deltaX, deltaY);
-//    }
-
-
 }
