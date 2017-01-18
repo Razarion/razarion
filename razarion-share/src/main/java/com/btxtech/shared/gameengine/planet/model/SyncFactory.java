@@ -139,8 +139,8 @@ public class SyncFactory extends SyncBaseAbility {
 
     private void setupRallyPoint() {
         double maxRadius = Double.MIN_VALUE;
-        for (int baseItemTypeId : factoryType.getAbleToBuildId()) {
-            maxRadius = Math.max(maxRadius, itemTypeService.getBaseItemType(baseItemTypeId).getPhysicalAreaConfig().getRadius());
+        for (int ableToBuildId : factoryType.getAbleToBuildId()) {
+            maxRadius = Math.max(maxRadius, itemTypeService.getBaseItemType(ableToBuildId).getPhysicalAreaConfig().getRadius());
         }
         rallyPoint = getSyncBaseItem().getSyncPhysicalArea().getPosition2d().sub(0, getSyncBaseItem().getSyncPhysicalArea().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE + maxRadius);
     }

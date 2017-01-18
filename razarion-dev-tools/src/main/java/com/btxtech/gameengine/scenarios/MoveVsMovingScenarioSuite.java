@@ -16,7 +16,7 @@ public class MoveVsMovingScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Crash sideways") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-6, 10), new DecimalPosition(20, 10));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-4, 10), new DecimalPosition(20, 10));
                 createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6, 0), new DecimalPosition(-20, 0));
             }
         });

@@ -50,6 +50,7 @@ import java.util.Map;
 @ApplicationScoped
 public class ScenarioService implements QuestListener {
     static final BaseItemType SIMPLE_MOVABLE_ITEM_TYPE;
+    static final BaseItemType SIMPLE_FAST_MOVABLE_ITEM_TYPE;
     static final BaseItemType SIMPLE_FIX_ITEM_TYPE;
     static final BaseItemType HARVESTER_ITEM_TYPE;
     static final BaseItemType ATTACKER_ITEM_TYPE;
@@ -85,13 +86,20 @@ public class ScenarioService implements QuestListener {
 
     static {
         int itemId = 0;
+
         BaseItemType simpleMovable = new BaseItemType();
         simpleMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Movable");
         simpleMovable.setId(++itemId);
-        // simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         // simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(17.0).setMinTurnSpeed(17.0 * 0.2).setAngularVelocity(Math.toRadians(30)).setRadius(2));
-        simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        // simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         SIMPLE_MOVABLE_ITEM_TYPE = simpleMovable;
+
+        BaseItemType simpleFastMovable = new BaseItemType();
+        simpleFastMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Faset Movable");
+        simpleFastMovable.setId(++itemId);
+        simpleFastMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        SIMPLE_FAST_MOVABLE_ITEM_TYPE = simpleFastMovable;
 
         BaseItemType simpleFix = new BaseItemType();
         simpleFix.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Fix");
@@ -102,7 +110,7 @@ public class ScenarioService implements QuestListener {
         BaseItemType harvester = new BaseItemType();
         harvester.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Harvester");
         harvester.setId(++itemId);
-        harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
+        harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
         HARVESTER_ITEM_TYPE = harvester;
 
@@ -114,7 +122,7 @@ public class ScenarioService implements QuestListener {
         ATTACKER_ITEM_TYPE = attacker;
 
         BaseItemType factory = new BaseItemType();
-        factory.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(3).setName("Factory");
+        factory.setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setName("Factory");
         factory.setId(++itemId);
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5));
         FACTORY_ITEM_TYPE = factory;
@@ -259,7 +267,7 @@ public class ScenarioService implements QuestListener {
         gameEngineConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
         gameEngineConfig.setTerrainObjectConfigs(setupTerrainObjectConfigs());
         gameEngineConfig.setLevelConfigs(setupLevels());
-        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE, BUILDER_ITEM_TYPE, TOWER_ITEM_TYPE, FACTORY_ITEM_TYPE));
+        gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, SIMPLE_FAST_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE, BUILDER_ITEM_TYPE, TOWER_ITEM_TYPE, FACTORY_ITEM_TYPE));
         gameEngineConfig.setResourceItemTypes(Collections.singletonList(RESOURCE_ITEM_TYPE));
         gameEngineConfig.setBoxItemTypes(Collections.singletonList(BOX_ITEM_TYPE));
         gameEngineConfig.setInventoryItems(Collections.singletonList(INVENTORY_ITEM));
@@ -295,11 +303,12 @@ public class ScenarioService implements QuestListener {
 
     private PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setGroundMeshDimension(new Rectangle(-20, -20, 40, 40)).setWaterLevel(0).setHouseSpace(1000).setStartRazarion(100);
+        planetConfig.setGroundMeshDimension(new Rectangle(-70, -70, 140, 140)).setWaterLevel(0).setHouseSpace(1000).setStartRazarion(100);
         planetConfig.setTerrainSlopePositions(new ArrayList<>());
         planetConfig.setTerrainObjectPositions(new ArrayList<>());
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(SIMPLE_FAST_MOVABLE_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);
@@ -314,6 +323,7 @@ public class ScenarioService implements QuestListener {
         List<LevelConfig> levels = new ArrayList<>();
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1000);
+        itemTypeLimitation.put(SIMPLE_FAST_MOVABLE_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(SIMPLE_FIX_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(HARVESTER_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(ATTACKER_ITEM_TYPE.getId(), 1000);

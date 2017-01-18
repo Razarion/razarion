@@ -38,10 +38,6 @@ import java.util.ArrayList;
 @Dependent
 @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
 public class SyncPhysicalMovable extends SyncPhysicalArea {
-    private static final double BREAK_DISTANCE_FAR = 40; // Meters
-    private static final double BREAK_DISTANCE_NEAR = 5; // Meters
-    private static final double BREAK_DISTANCE_NEAR_SPEED_FACTOR = 0.5; // Meters
-    private static final double BREAK_ANGLE = MathHelper.SIX_TEENTH_RADIANT; // Rad
     @Inject
     private SyncItemContainerService syncItemContainerService;
     private final static int LOOK_AHEAD_TICKS = 20;
@@ -79,46 +75,35 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 setAngle(desiredAngle);
             }
             // Max possible speed
-            double possibleSpeed;
+            double originalSpeed = velocity.magnitude();
             double distance = getPosition2d().getDistance(destination) - range;
-            if (distance > BREAK_DISTANCE_NEAR) {
-                double deltaDesiredAngle = MathHelper.getAngle(getAngle(), desiredAngle);
-                double angleSpeedFactor;
-                if (deltaDesiredAngle > BREAK_ANGLE) {
-                    angleSpeedFactor = 0;
+            double possibleSpeed;
+            if (MathHelper.compareWithPrecision(MathHelper.getAngle(desiredAngle, getAngle()), 0.0)) {
+                double tickCountToStop = maxSpeed / (acceleration * PlanetService.TICK_FACTOR);
+                double breakingDistance = tickCountToStop * (maxSpeed / 2.0) * PlanetService.TICK_FACTOR;
+                if (breakingDistance < distance) {
+                    possibleSpeed = maxSpeed;
                 } else {
-                    angleSpeedFactor = 1.0 - deltaDesiredAngle / BREAK_ANGLE;
+                    double ticksAwayFromDest = Math.sqrt((2.0 * distance) / acceleration) / PlanetService.TICK_FACTOR;
+                    possibleSpeed = acceleration * ticksAwayFromDest * PlanetService.TICK_FACTOR;
+                    possibleSpeed = Math.min(maxSpeed, possibleSpeed);
                 }
-                double distanceSpeedFactor;
-                if (distance > BREAK_DISTANCE_FAR) {
-                    distanceSpeedFactor = 1.0;
-                } else {
-                    distanceSpeedFactor = distance / BREAK_DISTANCE_FAR;
-                }
-                possibleSpeed = maxSpeed * (distanceSpeedFactor + angleSpeedFactor) / 2.0;
             } else {
-                possibleSpeed = maxSpeed * distance / BREAK_DISTANCE_NEAR * BREAK_DISTANCE_NEAR_SPEED_FACTOR;
+                double angle = MathHelper.getAngle(getAngle(), desiredAngle) - MathHelper.QUARTER_RADIANT;
+                double radius = distance / (2.0 * Math.cos(angle));
+                possibleSpeed = radius * angularVelocity;
             }
             // Fix velocity
-            double originalSpeed = velocity.magnitude();
             double desiredSpeed;
             if (Math.abs(originalSpeed - possibleSpeed) > acceleration * PlanetService.TICK_FACTOR) {
                 if (originalSpeed < possibleSpeed) {
                     desiredSpeed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
                 } else {
-                    desiredSpeed = originalSpeed - acceleration * PlanetService.TICK_FACTOR;
+                    desiredSpeed = possibleSpeed;
                 }
             } else {
                 desiredSpeed = possibleSpeed;
             }
-//            // Check if target is near to start breaking
-//            double ticksToZeroSpeed = desiredSpeed / (acceleration * PlanetService.TICK_FACTOR);
-//            double breakingDistance = ticksToZeroSpeed * desiredSpeed / 2.0;
-//
-//            double speed = desiredSpeed;
-//            if (breakingDistance > distance) {
-//                speed = Math.sqrt(2.0 * distance * acceleration * PlanetService.TICK_FACTOR);
-//            }
 
             double speed = Math.min(maxSpeed, desiredSpeed);
             speed = Math.max(0.0, speed);

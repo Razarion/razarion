@@ -128,7 +128,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // ameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
@@ -137,7 +137,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(harvest()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
