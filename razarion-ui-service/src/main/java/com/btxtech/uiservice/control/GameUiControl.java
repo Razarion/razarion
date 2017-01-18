@@ -77,6 +77,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void start() {
+        cockpitService.show();
         gameEngineControl.start();
         nextSceneNumber = 0;
         runScene();

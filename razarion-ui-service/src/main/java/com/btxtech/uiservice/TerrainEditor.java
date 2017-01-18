@@ -14,5 +14,7 @@ public interface TerrainEditor {
 
     void onDeleteKeyDown(boolean down);
 
+    void onSpaceKeyDown(boolean down);
+
     void onMouseUp();
 }

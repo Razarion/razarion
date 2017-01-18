@@ -32,6 +32,9 @@ public class CockpitService {
     @PostConstruct
     public void postConstruct() {
         sideCockpit = sideCockpitInstance.get();
+    }
+
+    public void show() {
         sideCockpit.show();
     }
 

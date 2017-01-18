@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -37,6 +38,8 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class TerrainEditorImpl implements TerrainEditor {
+    private Consumer<Vertex> terrainPositionListener;
+
     public enum CursorType {
         CREATE,
         MODIFY,
@@ -77,6 +80,7 @@ public class TerrainEditorImpl implements TerrainEditor {
     private Collection<ModifiedTerrainObject> modifiedTerrainObjects;
     private boolean deletePressed;
     private Matrix4 cursorModelMatrix = Matrix4.createIdentity();
+    private Vertex terrainPosition;
     private List<ModelMatrices> terrainObjectModelMatrices;
     private double terrainObjectRandomZRotation = Math.toDegrees(180);
     private double terrainObjectRandomScale = 1.5;
@@ -85,6 +89,7 @@ public class TerrainEditorImpl implements TerrainEditor {
     public void onMouseMove(Vertex terrainPosition) {
         // Cursor
         cursorModelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
+        this.terrainPosition = terrainPosition;
 
         if (modifyingTerrainObject != null) {
             modifyingTerrainObject.setNewPosition(terrainPosition);
@@ -182,6 +187,13 @@ public class TerrainEditorImpl implements TerrainEditor {
             } else {
                 cursorType = CursorType.CREATE;
             }
+        }
+    }
+
+    @Override
+    public void onSpaceKeyDown(boolean down) {
+        if (down && terrainPosition != null && terrainPositionListener != null) {
+            terrainPositionListener.accept(terrainPosition);
         }
     }
 
@@ -436,5 +448,8 @@ public class TerrainEditorImpl implements TerrainEditor {
         }
     }
 
+    public void setTerrainPositionListener(Consumer<Vertex> terrainPositionListener) {
+        this.terrainPositionListener = terrainPositionListener;
+    }
 
 }

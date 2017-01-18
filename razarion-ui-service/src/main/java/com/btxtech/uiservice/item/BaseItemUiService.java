@@ -62,7 +62,7 @@ public class BaseItemUiService {
     private int usedHouseSpace;
     private int houseSpace;
     private int itemCount;
-    private Collection<SyncBaseItemSimpleDto> syncBaseItems;
+    private Collection<SyncBaseItemSimpleDto> syncBaseItems = new ArrayList<>();
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> aliveModelMatrices = new MapList<>();

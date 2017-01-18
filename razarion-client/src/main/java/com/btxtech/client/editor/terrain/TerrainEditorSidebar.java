@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -8,15 +9,13 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.ValueListBox;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -42,6 +41,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
     private Camera camera;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    @DataField
+    private Span terrainPositionLabel;
     @Inject
     @DataField
     private Button creationModeButton;
@@ -104,7 +106,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
             logger.log(Level.SEVERE, "getTerrainObjectNameIds failed: " + message, throwable);
             return false;
         }).getTerrainObjectNameIds();
-
+        terrainEditor.setTerrainPositionListener(vertex -> terrainPositionLabel.setTextContent(DisplayUtils.formatVertex(vertex)));
     }
 
     @EventHandler("creationModeButton")

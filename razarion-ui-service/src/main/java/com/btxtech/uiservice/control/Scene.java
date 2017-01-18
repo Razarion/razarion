@@ -119,7 +119,7 @@ public class Scene implements TerrainScrollListener {
             });
         }
         if (sceneConfig.getQuestConfig() != null) {
-            gameEngineControl.activateQuest(userContext, sceneConfig.getQuestConfig());
+            gameEngineControl.activateQuest(sceneConfig.getQuestConfig());
             audioService.onQuestActivated();
             questVisualizer.showSideBar(sceneConfig.getQuestConfig());
         }

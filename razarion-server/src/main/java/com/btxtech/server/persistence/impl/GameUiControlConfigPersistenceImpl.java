@@ -684,7 +684,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private List<SceneConfig> setupTutorial() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // Level 1
-        addResources(sceneConfigs);
+        // addResources(sceneConfigs);
         addNpcBot(sceneConfigs);
         addEnemyBot(sceneConfigs);
         addScrollOverTerrain(sceneConfigs);

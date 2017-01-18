@@ -18,15 +18,13 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.clip.EffectService;
-import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
-import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
+import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 
@@ -42,9 +40,6 @@ import java.util.logging.Logger;
  */
 public abstract class GameEngineControl {
     private Logger logger = Logger.getLogger(GameEngineControl.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private ExceptionHandler exceptionHandler;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -53,13 +48,10 @@ public abstract class GameEngineControl {
     private ResourceUiService resourceUiService;
     @Inject
     private BoxUiService boxUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
     @Inject
     private GameUiControl gameUiControl;
-    @Inject
-    private CockpitService cockpitService;
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
@@ -132,7 +124,7 @@ public abstract class GameEngineControl {
         gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FABRICATE).setToBeBuiltId(toBeBuild.getId()));
     }
 
-    public void activateQuest(UserContext userContext, QuestConfig questConfig) {
+    public void activateQuest(QuestConfig questConfig) {
         sendToWorker(GameEngineControlPackage.Command.ACTIVATE_QUEST, questConfig);
     }
 

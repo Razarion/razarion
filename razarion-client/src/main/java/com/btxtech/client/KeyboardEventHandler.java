@@ -62,8 +62,13 @@ public class KeyboardEventHandler {
                 }
                 if (!keysDown.contains(keyboardEvent.getKeyCode())) {
                     keysDown.add(keyboardEvent.getKeyCode());
-                    if (terrainEditor != null && keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
-                        terrainEditor.onDeleteKeyDown(true);
+                    if (terrainEditor != null) {
+                        if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+                            terrainEditor.onDeleteKeyDown(true);
+                        }
+                        if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SPACE) {
+                            terrainEditor.onSpaceKeyDown(true);
+                        }
                     }
                 }
             } catch (Throwable t) {
@@ -96,8 +101,13 @@ public class KeyboardEventHandler {
                     }
                 }
                 keysDown.remove(keyboardEvent.getKeyCode());
-                if (terrainEditor != null && keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
-                    terrainEditor.onDeleteKeyDown(false);
+                if (terrainEditor != null) {
+                    if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
+                        terrainEditor.onDeleteKeyDown(false);
+                    }
+                    if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SPACE) {
+                        terrainEditor.onSpaceKeyDown(false);
+                    }
                 }
 
             } catch (Throwable t) {
