@@ -144,6 +144,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
     @EventHandler("topViewButton")
     private void topViewButtonClick(ClickEvent event) {
         terrainScrollHandler.setPlayGround(null);
+        terrainScrollHandler.setScrollDisabled(false);
         camera.setTop();
         terrainScrollHandler.update();
     }

@@ -86,7 +86,7 @@ public class TerrainScrollHandler {
         }
     }
 
-    private void setScrollDisabled(boolean scrollDisabled) {
+    public void setScrollDisabled(boolean scrollDisabled) {
         this.scrollDisabled = scrollDisabled;
         if (scrollDisabled) {
             simpleScheduledFuture.cancel();

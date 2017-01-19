@@ -302,7 +302,7 @@ public class BotItemContainer {
     private void handleMoveCommand(BotMoveCommandConfig botMoveCommandConfig) {
         Collection<BotSyncBaseItem> mover = getBotSyncBaseItem(botMoveCommandConfig.getBaseItemTypeId());
         if (mover.isEmpty()) {
-            throw new IllegalArgumentException("Can not execute BotMoveCommandConfig. No BotSyncBaseItem found for baseItemTypeId: " + botMoveCommandConfig.getBaseItemTypeId() + ". Command: " + botMoveCommandConfig);
+            throw new IllegalArgumentException("Can not execute BotMoveCommandConfig. No Mover BotSyncBaseItem found for baseItemTypeId: " + botMoveCommandConfig.getBaseItemTypeId() + ". Command: " + botMoveCommandConfig);
         }
         CollectionUtils.getFirst(mover).move(botMoveCommandConfig.getTargetPosition());
     }
@@ -314,7 +314,7 @@ public class BotItemContainer {
         }
         Collection<BotSyncBaseItem> harvester = getBotSyncBaseItem(botHarvestCommandConfig.getHarvesterItemTypeId());
         if (harvester.isEmpty()) {
-            throw new IllegalArgumentException("Can not execute BotHarvestCommandConfig. No BotSyncBaseItem found for baseItemTypeId: " + botHarvestCommandConfig.getHarvesterItemTypeId() + ". Command: " + botHarvestCommandConfig);
+            throw new IllegalArgumentException("Can not execute BotHarvestCommandConfig. No Harvester BotSyncBaseItem found for baseItemTypeId: " + botHarvestCommandConfig.getHarvesterItemTypeId() + ". Command: " + botHarvestCommandConfig);
         }
         Map<BotSyncBaseItem, SyncResourceItem> assignedHarvester = ShortestWaySorter.setupAttackerTarget(harvester, resources, (botSyncBaseItem, syncResourceItem) -> botSyncBaseItem.isAbleToHarvest());
         if (assignedHarvester.isEmpty()) {
@@ -332,7 +332,7 @@ public class BotItemContainer {
         }
         Collection<BotSyncBaseItem> attacker = getBotSyncBaseItem(botAttackCommandConfig.getActorItemTypeId());
         if (attacker.isEmpty()) {
-            throw new IllegalArgumentException("Can not execute BotAttackCommandConfig. No BotSyncBaseItem found for baseItemTypeId: " + botAttackCommandConfig.getActorItemTypeId() + ". Command: " + botAttackCommandConfig);
+            throw new IllegalArgumentException("Can not execute BotAttackCommandConfig. No Attacker BotSyncBaseItem found for baseItemTypeId: " + botAttackCommandConfig.getActorItemTypeId() + ". Command: " + botAttackCommandConfig);
         }
         Map<BotSyncBaseItem, SyncBaseItem> assignedAttacker = ShortestWaySorter.setupAttackerTarget(attacker, targets, BotSyncBaseItem::isAbleToAttack);
         if (assignedAttacker.isEmpty()) {
