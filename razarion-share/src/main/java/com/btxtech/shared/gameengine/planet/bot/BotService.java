@@ -66,9 +66,9 @@ public class BotService {
         }
     }
 
-    public void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {
+    public void enrageOnKill(SyncBaseItem target, PlayerBase actor) {
         try {
-            getBotRunner(syncBaseItem.getBase()).enrageOnKill(syncBaseItem, actor);
+            getBotRunner(target.getBase()).enrageOnKill(target, actor);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

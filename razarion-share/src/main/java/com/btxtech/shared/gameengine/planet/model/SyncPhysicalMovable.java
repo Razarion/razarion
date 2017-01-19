@@ -61,6 +61,11 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setupForTick() {
         if (destination != null) {
+            double distance = getPosition2d().getDistance(destination) - range;
+            if (distance <= 0) {
+                stopNoDestination();
+                return;
+            }
             DecimalPosition desiredVelocity = destination.sub(getPosition2d()).normalize(maxSpeed);
             if (velocity == null) {
                 velocity = DecimalPosition.createVector(getAngle(), 0.001);
@@ -76,7 +81,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
             // Max possible speed
             double originalSpeed = velocity.magnitude();
-            double distance = getPosition2d().getDistance(destination) - range;
             double possibleSpeed;
             if (MathHelper.compareWithPrecision(MathHelper.getAngle(desiredAngle, getAngle()), 0.0)) {
                 double tickCountToStop = maxSpeed / (acceleration * PlanetService.TICK_FACTOR);
@@ -109,18 +113,22 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             speed = Math.max(0.0, speed);
             velocity = DecimalPosition.createVector(getAngle(), speed);
         } else {
-            if (velocity == null) {
-                return;
-            }
-            double magnitude = velocity.magnitude();
-            double acceleration = this.acceleration * PlanetService.TICK_FACTOR;
-            if (acceleration >= magnitude) {
+            stopNoDestination();
+        }
+    }
+
+    private void stopNoDestination() {
+        if (velocity == null) {
+            return;
+        }
+        double magnitude = velocity.magnitude();
+        double acceleration = this.acceleration * PlanetService.TICK_FACTOR;
+        if (acceleration >= magnitude) {
+            velocity = null;
+        } else {
+            velocity = velocity.normalize(magnitude - acceleration);
+            if (velocity.equalsDeltaZero()) {
                 velocity = null;
-            } else {
-                velocity = velocity.normalize(magnitude - acceleration);
-                if (velocity.equalsDeltaZero()) {
-                    velocity = null;
-                }
             }
         }
     }

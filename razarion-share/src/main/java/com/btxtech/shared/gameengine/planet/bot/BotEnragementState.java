@@ -106,10 +106,7 @@ public class BotEnragementState {
         return bases;
     }
 
-    void enrageOnKill(SyncBaseItem botBaseItem, PlayerBase actor) {
-        if (botItemContainer.itemBelongsToMe(botBaseItem)) {
-            throw new IllegalArgumentException("SyncBaseItem does not belong to bot: " + this + " botBaseItem:" + botBaseItem + " actor: " + actor);
-        }
+    void enrageOnKill(SyncBaseItem target, PlayerBase actor) {
         if (isEnragementActive) {
             Integer kills = killsPerBase.get(actor);
             if (kills == null) {
@@ -119,7 +116,7 @@ public class BotEnragementState {
             killsPerBase.put(actor, kills);
             if (kills >= currentBotEnragementStateConfig.getEnrageUpKills()) {
                 BotEnragementStateConfig nextState = botEnragementStateConfigs.get(botEnragementStateConfigs.indexOf(currentBotEnragementStateConfig) + 1);
-                activateEnragementState(nextState, botBaseItem.getBase());
+                activateEnragementState(nextState, target.getBase());
                 if (listener != null) {
                     listener.onEnrageUp(botName, nextState, actor);
                 }

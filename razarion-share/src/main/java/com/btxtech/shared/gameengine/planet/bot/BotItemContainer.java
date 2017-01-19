@@ -330,13 +330,13 @@ public class BotItemContainer {
         if (targets.isEmpty()) {
             throw new IllegalArgumentException("Can not execute BotAttackCommandConfig. No target available to attack. Command: " + botAttackCommandConfig);
         }
-        Collection<BotSyncBaseItem> attacker = getBotSyncBaseItem(botAttackCommandConfig.getActorItemTypeId());
-        if (attacker.isEmpty()) {
+        Collection<BotSyncBaseItem> attackers = getBotSyncBaseItem(botAttackCommandConfig.getActorItemTypeId());
+        if (attackers.isEmpty()) {
             throw new IllegalArgumentException("Can not execute BotAttackCommandConfig. No Attacker BotSyncBaseItem found for baseItemTypeId: " + botAttackCommandConfig.getActorItemTypeId() + ". Command: " + botAttackCommandConfig);
         }
-        Map<BotSyncBaseItem, SyncBaseItem> assignedAttacker = ShortestWaySorter.setupAttackerTarget(attacker, targets, BotSyncBaseItem::isAbleToAttack);
+        Map<BotSyncBaseItem, SyncBaseItem> assignedAttacker = ShortestWaySorter.setupAttackerTarget(attackers, targets, BotSyncBaseItem::isAbleToAttack);
         if (assignedAttacker.isEmpty()) {
-            throw new IllegalArgumentException("Can not execute BotAttackCommandConfig. Can not assign attacker to target. Command: " + botAttackCommandConfig);
+            throw new IllegalArgumentException("Can not execute BotAttackCommandConfig. Can not assign attackers to target. Command: " + botAttackCommandConfig);
         }
         for (Map.Entry<BotSyncBaseItem, SyncBaseItem> entry : assignedAttacker.entrySet()) {
             entry.getKey().attack(entry.getValue());
