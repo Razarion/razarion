@@ -35,7 +35,11 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
         terrainService.getObstacles().forEach(extendedGraphicsContext::drawObstacle);
         // Items
         syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
-            extendedGraphicsContext.drawUnit(syncItem);
+            try {
+                extendedGraphicsContext.drawUnit(syncItem);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
             return null;
         });
         // Projectiles

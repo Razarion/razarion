@@ -44,11 +44,6 @@ public class BotScenarioSuite extends ScenarioSuite {
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
                 botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setTargetPosition(new DecimalPosition(0, 20)).setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
         // 39
         addScenario(new Scenario("Harvest command") {

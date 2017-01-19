@@ -21,10 +21,11 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 
 import javax.enterprise.context.Dependent;
@@ -47,6 +48,8 @@ public class SyncWeapon extends SyncBaseAbility {
     private ProjectileService projectileService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private PathingService pathingService;
     @Inject
     private Instance<SyncTurret> syncTurretInstance;
     private WeaponType weaponType;
@@ -107,10 +110,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
                     if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition2d())) {
                         targetPosition = target.getSyncPhysicalArea().getPosition2d();
-                        throw new UnsupportedOperationException();
-//                            recalculateAndSetNewPath(weaponType.getRange(), targetItem);
-//                            gameLogicService.onNewPathRecalculation(getSyncBaseItem());
-//                            return getSyncBaseItem().getSyncMovable().tickMove(overlappingHandler);
+                        getSyncPhysicalMovable().setDestination(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
                     }
                     targetPositionLastCheck = System.currentTimeMillis();
                 }

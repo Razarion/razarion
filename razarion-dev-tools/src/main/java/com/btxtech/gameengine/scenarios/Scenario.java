@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -82,6 +83,11 @@ public class Scenario {
     }
 
     // Override in subclasses
+    public GameEngineConfig setupGameEngineConfig() {
+        return null;
+    }
+
+    // Override in subclasses
     public void stop() {
 
     }
@@ -89,6 +95,10 @@ public class Scenario {
     // Override in subclasses
     public boolean isStart() {
         return false;
+    }
+
+    public PlayerBase getPlayerBase() {
+        return playerBase;
     }
 
     public void setupSyncItems(BaseItemService baseItemService, PlayerBase playerBase, ResourceService resourceService, BoxService boxService) {
@@ -179,5 +189,4 @@ public class Scenario {
     public String toString() {
         return scenarioSuite.getName() + "->" + name;
     }
-
 }

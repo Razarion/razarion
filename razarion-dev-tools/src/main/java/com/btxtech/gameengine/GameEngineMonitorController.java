@@ -27,6 +27,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Beat
@@ -34,7 +37,7 @@ import java.util.ResourceBundle;
  */
 @Singleton
 public class GameEngineMonitorController implements Initializable {
-    private static final double INIT_ZOOM = 10;
+    private static final double INIT_ZOOM = 2;
     @FXML
     private Canvas canvas;
     @FXML
@@ -79,15 +82,23 @@ public class GameEngineMonitorController implements Initializable {
         });
 
         anchorPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> {
-            overlayCanvas.setWidth(width.doubleValue());
-            canvas.setWidth(width.doubleValue());
-            renderer.render();
+            try {
+                overlayCanvas.setWidth(width.doubleValue());
+                canvas.setWidth(width.doubleValue());
+                renderer.render();
+            } catch (IllegalArgumentException e) {
+                // Catch ugly initialization bug
+            }
         });
 
         anchorPanel.heightProperty().addListener((observableValue, oldSceneWidth, height) -> {
-            overlayCanvas.setHeight(height.doubleValue());
-            canvas.setHeight(height.doubleValue());
-            renderer.render();
+            try {
+                overlayCanvas.setHeight(height.doubleValue());
+                canvas.setHeight(height.doubleValue());
+                renderer.render();
+            } catch (IllegalArgumentException e) {
+                // Catch ugly initialization bug
+            }
         });
 
         gameEngineFutureControl = devToolsSimpleExecutorService.createDevToolFutureControl(SimpleExecutorService.Type.GAME_ENGINE);
@@ -224,7 +235,7 @@ public class GameEngineMonitorController implements Initializable {
     private void tick() {
         clientEmulator.onTick();
         backup();
-        Platform.runLater(() -> {
+        runAndWait(() -> {
             try {
                 renderer.render();
                 stepField.setText(Long.toString(planetService.getTickCount()));
@@ -233,6 +244,44 @@ public class GameEngineMonitorController implements Initializable {
             }
         });
     }
+
+    public static void runAndWait(final Runnable run) {
+        if (Platform.isFxApplicationThread()) {
+            try {
+                run.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            final Lock lock = new ReentrantLock();
+            final Condition condition = lock.newCondition();
+            lock.lock();
+            try {
+                Platform.runLater(() -> {
+                    lock.lock();
+                    try {
+                        run.run();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            condition.signal();
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                });
+                try {
+                    condition.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
 
     private void backup() {
 //        List<Unit> backupEntry = new ArrayList<>();

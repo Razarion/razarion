@@ -242,7 +242,10 @@ public class ScenarioService implements QuestListener {
         botService.killAllBots();
         planetService.stop();
 
-        GameEngineConfig gameEngineConfig = setupGameEngineConfig();
+        GameEngineConfig gameEngineConfig = currentScenario.setupGameEngineConfig();
+        if (gameEngineConfig == null) {
+            gameEngineConfig = setupGameEngineConfig();
+        }
         currentScenario.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
         UserContext userContext = new UserContext().setUserId(1).setName("User 1").setLevelId(LEVEL_1_ID);
         gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
@@ -352,6 +355,7 @@ public class ScenarioService implements QuestListener {
         addScenarioSuite(new PickBoxScenarioSuite());
         addScenarioSuite(new BuildScenarioSuite());
         addScenarioSuite(new FabricateScenarioSuite());
+        addScenarioSuite(new RealGameScenarioSuite());
     }
 
     @Override
