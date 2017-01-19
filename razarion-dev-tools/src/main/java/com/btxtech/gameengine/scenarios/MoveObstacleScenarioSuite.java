@@ -21,7 +21,7 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
             @Override
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(10, 0);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, direction);
             }
 
             @Override
@@ -33,7 +33,7 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
             @Override
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(40, 0);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, direction);
             }
 
             @Override
@@ -50,8 +50,8 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
                 // createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-6, 0), direction);
                 // createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-4, 0), direction);
                 // createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-2, 0), direction);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(2, 0), direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(2, 0), 0, direction);
             }
 
             @Override
@@ -65,7 +65,7 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
                 DecimalPosition direction = new DecimalPosition(60, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), 0, direction);
                     }
                 }
             }
@@ -81,7 +81,7 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
                 DecimalPosition direction = new DecimalPosition(50, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), 0, direction);
                     }
                 }
             }

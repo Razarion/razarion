@@ -23,33 +23,33 @@ public class MoveStopScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Simple stop") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(10, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(10, 0));
             }
         });
         addScenario(new Scenario("Destination occupied") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-10, 0), new DecimalPosition(0, 0));
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-2, 0), null);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-10, 0), 0, new DecimalPosition(0, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-2, 0), 0, null);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
             }
         });
         addScenario(new Scenario("Tow move to same destination with same angle") {
             @Override
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(5, 0);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, -10), direction);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 10), direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, -10), 0, direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 10), 0, direction);
             }
         });
         addScenario(new Scenario("Destination inside group") {
             @Override
             public void createSyncItems() {
                 DecimalPosition destination = new DecimalPosition(0, 0);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 0), destination);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-30, 0), 0, destination);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), destination);
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), 0, destination);
                     }
                 }
             }
@@ -60,7 +60,7 @@ public class MoveStopScenarioSuite extends ScenarioSuite {
                 DecimalPosition direction = new DecimalPosition(50, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), direction);
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), 0, direction);
                     }
                 }
             }
@@ -72,7 +72,7 @@ public class MoveStopScenarioSuite extends ScenarioSuite {
             public void createSyncItems() {
                 backgroundWorker = scheduler.scheduleAtFixedRate((Runnable) () -> {
                     try {
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-20, 0), new DecimalPosition(20, 0));
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-20, 0), 0, new DecimalPosition(20, 0));
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }

@@ -21,7 +21,7 @@ public class PickBoxScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Pick box quest east") {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
                 createBoxItem(ScenarioService.BOX_ITEM_TYPE, new DecimalPosition(15, 0));
             }
 
@@ -38,7 +38,7 @@ public class PickBoxScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Pick box quest north") {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
                 createBoxItem(ScenarioService.BOX_ITEM_TYPE, new DecimalPosition(0, 15));
             }
 
@@ -55,7 +55,7 @@ public class PickBoxScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Pick box quest south") {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
                 createBoxItem(ScenarioService.BOX_ITEM_TYPE, new DecimalPosition(0, -80));
             }
 

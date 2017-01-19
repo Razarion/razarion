@@ -13,6 +13,7 @@ public class BotItemConfig {
     private boolean createDirectly;
     private boolean noSpawn;
     private PlaceConfig place;
+    private double angle;
     private boolean moveRealmIfIdle;
     private Integer idleTtl;
     private boolean noRebuild;
@@ -45,6 +46,15 @@ public class BotItemConfig {
 
     public BotItemConfig setMoveRealmIfIdle(boolean moveRealmIfIdle) {
         this.moveRealmIfIdle = moveRealmIfIdle;
+        return this;
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+
+    public BotItemConfig setAngle(double angle) {
+        this.angle = angle;
         return this;
     }
 

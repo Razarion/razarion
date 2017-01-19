@@ -22,7 +22,7 @@ public class HarvestScenarioSuite extends ScenarioSuite {
             @Override
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(20, 0);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, direction);
                 createSyncResourceItem(ScenarioService.RESOURCE_ITEM_TYPE, new DecimalPosition(10, 0));
             }
         });
@@ -30,7 +30,7 @@ public class HarvestScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Harvest command") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.HARVESTER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncBaseItem(ScenarioService.HARVESTER_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
                 createSyncResourceItem(ScenarioService.RESOURCE_ITEM_TYPE, new DecimalPosition(0, 20));
             }
 

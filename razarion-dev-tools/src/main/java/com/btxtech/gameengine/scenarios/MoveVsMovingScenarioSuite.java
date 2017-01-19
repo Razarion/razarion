@@ -16,15 +16,15 @@ public class MoveVsMovingScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Crash sideways") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-4, 10), new DecimalPosition(20, 10));
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6, 0), new DecimalPosition(-20, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-4, 10), 0, new DecimalPosition(20, 10));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6, 0), 0, new DecimalPosition(-20, 0));
             }
         });
         addScenario(new Scenario("Move mutual places") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-3, 0), new DecimalPosition(10, 0));
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(3, 0), new DecimalPosition(-10, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-3, 0), 0, new DecimalPosition(10, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(3, 0), 0, new DecimalPosition(-10, 0));
             }
         });
     }

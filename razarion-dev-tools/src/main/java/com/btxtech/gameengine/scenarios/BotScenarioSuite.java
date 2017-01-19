@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
+import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +35,7 @@ public class BotScenarioSuite extends ScenarioSuite {
             public void setupBots(Collection<BotConfig> botConfigs) {
                 List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
                 List<BotItemConfig> botItems = new ArrayList<>();
-                botItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setNoSpawn(true));
+                botItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setAngle(MathHelper.QUARTER_RADIANT).setNoSpawn(true));
                 botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
                 botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
             }
@@ -42,6 +43,11 @@ public class BotScenarioSuite extends ScenarioSuite {
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
                 botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setTargetPosition(new DecimalPosition(0, 20)).setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()));
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
         });
         // 39
@@ -99,10 +105,10 @@ public class BotScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Kill human command") {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(20, 20), null);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 25), null);
-                createSyncBaseItem(ScenarioService.HARVESTER_ITEM_TYPE, new DecimalPosition(25, 20), null);
-                createSyncBaseItem(ScenarioService.HARVESTER_ITEM_TYPE, new DecimalPosition(25, 25), null);
+                createSyncBaseItem(ScenarioService.ATTACKER_ITEM_TYPE, new DecimalPosition(20, 20), 0, null);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(20, 25), 0, null);
+                createSyncBaseItem(ScenarioService.HARVESTER_ITEM_TYPE, new DecimalPosition(25, 20), 0, null);
+                createSyncBaseItem(ScenarioService.HARVESTER_ITEM_TYPE, new DecimalPosition(25, 25), 0, null);
             }
 
             @Override

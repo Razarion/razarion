@@ -172,9 +172,9 @@ public class SyncItemContainerService {
         return defaultReturn;
     }
 
-    public SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position2d) {
+    public SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position2d, double zRotation) {
         SyncBaseItem syncBaseItem = syncItemInstance.select(SyncBaseItem.class).get();
-        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d);
+        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d, zRotation);
         initAndAdd(baseItemType, syncBaseItem, syncPhysicalArea);
         return syncBaseItem;
     }
@@ -204,15 +204,15 @@ public class SyncItemContainerService {
         syncItem.getSyncPhysicalArea().setupPosition3d();
     }
 
-    private SyncPhysicalArea createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, DecimalPosition position2d) {
+    private SyncPhysicalArea createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, DecimalPosition position2d, double zRotation) {
         PhysicalAreaConfig physicalAreaConfig = baseItemType.getPhysicalAreaConfig();
         if (physicalAreaConfig.fulfilledMovable()) {
             SyncPhysicalMovable syncPhysicalMovable = syncPhysicalMovableInstance.get();
-            syncPhysicalMovable.init(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position2d, 0, null);
+            syncPhysicalMovable.init(syncBaseItem, baseItemType.getPhysicalAreaConfig(), position2d, zRotation, null);
             return syncPhysicalMovable;
         } else {
             SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
-            syncPhysicalArea.init(syncBaseItem, physicalAreaConfig.getRadius(), physicalAreaConfig.isFixVerticalNorm(), position2d, 0);
+            syncPhysicalArea.init(syncBaseItem, physicalAreaConfig.getRadius(), physicalAreaConfig.isFixVerticalNorm(), position2d, zRotation);
             return syncPhysicalArea;
         }
     }

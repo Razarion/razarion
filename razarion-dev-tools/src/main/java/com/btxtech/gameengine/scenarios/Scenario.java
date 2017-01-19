@@ -99,9 +99,9 @@ public class Scenario {
         createSyncItems();
     }
 
-    protected SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, DecimalPosition destination) {
+    protected SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, double angle, DecimalPosition destination) {
         try {
-            SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, playerBase, true);
+            SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, angle, playerBase, true);
             if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
                 ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setDestination(destination);
             }

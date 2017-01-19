@@ -22,7 +22,7 @@ public class MoveSingleOutOfGroupScenarioSuite extends ScenarioSuite {
                         if (x == 0 && y == 0) {
                             destination = new DecimalPosition(50, 0);
                         }
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), destination);
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), 0, destination);
                     }
                 }
             }
@@ -36,7 +36,7 @@ public class MoveSingleOutOfGroupScenarioSuite extends ScenarioSuite {
                         if (x == -2 && y == 0) {
                             destination = new DecimalPosition(50, 0);
                         }
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), destination);
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), 0, destination);
                     }
                 }
             }

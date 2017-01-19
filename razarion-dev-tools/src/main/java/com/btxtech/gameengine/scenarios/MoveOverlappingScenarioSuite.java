@@ -17,8 +17,8 @@ public class MoveOverlappingScenarioSuite extends ScenarioSuite {
             @Override
             public void createSyncItems() {
                 DecimalPosition direction = new DecimalPosition(20, 0);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), direction);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(1, 0), direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, direction);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(1, 0), 0, direction);
             }
         });
     }

@@ -95,7 +95,7 @@ public class BaseItemService {
     public void createHumanBaseWithBaseItem(int levelId, int userId, String name, int baseItemTypeId, DecimalPosition position) {
         surrenderHumanBase(userId);
         PlayerBase playerBase = createHumanBase(planetService.getPlanetConfig().getStartRazarion(), levelId, userId, name);
-        spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, playerBase, false);
+        spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, 0, playerBase, false);
     }
 
     public void updateLevel(int userId, int levelId) {
@@ -124,7 +124,7 @@ public class BaseItemService {
     }
 
     public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
-        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
+        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
         syncBaseItem.setSpawnProgress(1.0);
         syncBaseItem.setBuildup(1.0);
         gameLogicService.onFactorySyncItem(syncBaseItem, toBeBuilt);
@@ -132,7 +132,7 @@ public class BaseItemService {
     }
 
     public SyncBaseItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBase base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
-        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, base);
+        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
 
         syncBaseItem.setSpawnProgress(1.0);
         gameLogicService.onBuildingSyncItem(syncBaseItem, toBeBuilt);
@@ -143,12 +143,12 @@ public class BaseItemService {
     public void spawnSyncBaseItem(int baseItemTypeId, Collection<DecimalPosition> positions, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
         for (DecimalPosition position : positions) {
-            spawnSyncBaseItem(baseItemType, position, base, false);
+            spawnSyncBaseItem(baseItemType, position, 0, base, false);
         }
     }
 
-    public SyncBaseItem spawnSyncBaseItem(BaseItemType baseItemTypeId, DecimalPosition position, PlayerBase base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
-        SyncBaseItem syncBaseItem = createSyncBaseItem(baseItemTypeId, position, base);
+    public SyncBaseItem spawnSyncBaseItem(BaseItemType baseItemTypeId, DecimalPosition position, double zRotation, PlayerBase base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
+        SyncBaseItem syncBaseItem = createSyncBaseItem(baseItemTypeId, position, zRotation, base);
         syncBaseItem.setBuildup(1.0);
 
         if (noSpawn) {
@@ -161,7 +161,7 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    private SyncBaseItem createSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position2d, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
+    private SyncBaseItem createSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position2d, double zRotation, PlayerBase base) throws ItemLimitExceededException, HouseSpaceExceededException {
         if (!isAlive(base)) {
             throw new BaseDoesNotExistException(base);
         }
@@ -175,7 +175,7 @@ public class BaseItemService {
         }
 
         // TODO check item free range etc (use: BaseItemPlacerChecker) but not for factory
-        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position2d);
+        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItem(toBeBuilt, position2d, zRotation);
         syncBaseItem.setup(base);
         base.addItem(syncBaseItem);
         addToActiveItemQueue(syncBaseItem);

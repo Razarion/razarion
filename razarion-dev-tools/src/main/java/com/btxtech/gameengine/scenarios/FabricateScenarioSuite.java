@@ -24,7 +24,7 @@ public class FabricateScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Fabricate") {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(ScenarioService.FACTORY_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncBaseItem(ScenarioService.FACTORY_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
             }
 
             @Override

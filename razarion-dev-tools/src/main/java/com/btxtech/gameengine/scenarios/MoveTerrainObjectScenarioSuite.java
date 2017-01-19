@@ -20,7 +20,7 @@ public class MoveTerrainObjectScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Frontal") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(20, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(20, 0));
             }
 
             @Override
@@ -31,7 +31,7 @@ public class MoveTerrainObjectScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Not frontal") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(20, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(20, 0));
             }
 
             @Override

@@ -16,17 +16,17 @@ public class MoveBypassFrontalScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Movable vs fix") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(10, 0));
-                createSyncBaseItem(ScenarioService.SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(5, 0), null);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(10, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(5, 0), 0, null);
             }
         });
         addScenario(new Scenario("Movable vs two standing and 3 fix") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-6, 0), new DecimalPosition(20, 0));
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), null);
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4, 0), null);
-                createSyncBaseItem(ScenarioService.SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(8, 0), null);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(-6, 0), 0, new DecimalPosition(20, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4, 0), 0, null);
+                createSyncBaseItem(ScenarioService.SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(8, 0), 0, null);
             }
         });
     }

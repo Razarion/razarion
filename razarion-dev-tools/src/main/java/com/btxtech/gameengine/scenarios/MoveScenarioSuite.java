@@ -1,6 +1,7 @@
 package com.btxtech.gameengine.scenarios;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.utils.MathHelper;
 
 /**
  * Created by Beat
@@ -13,34 +14,41 @@ public class MoveScenarioSuite extends ScenarioSuite {
 
     @Override
     protected void setupScenarios() {
-        addScenario(new Scenario("Move east") {
+        addScenario(new Scenario("Move strait") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(50, 0));
-            }
-
-            @Override
-            public boolean isStart() {
-                return true;
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(50, 0));
             }
 
         });
-        addScenario(new Scenario("Move east fast") {
+        addScenario(new Scenario("Move strait down") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_FAST_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(50, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), MathHelper.THREE_QUARTER_RADIANT, new DecimalPosition(0, -30));
             }
         });
-        addScenario(new Scenario("Move South") {
+        addScenario(new Scenario("Move strait fast") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(0, 10));
+                createSyncBaseItem(ScenarioService.SIMPLE_FAST_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(50, 0));
             }
         });
-        addScenario(new Scenario("Move Fast South") {
+        addScenario(new Scenario("Move 90dec") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_FAST_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(0, 10));
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(0, 10));
+            }
+        });
+        addScenario(new Scenario("Move 90dec") {
+            @Override
+            public void createSyncItems() {
+                createSyncBaseItem(ScenarioService.SIMPLE_FAST_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(0, 10));
+            }
+        });
+        addScenario(new Scenario("Move 180dec") {
+            @Override
+            public void createSyncItems() {
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), MathHelper.THREE_QUARTER_RADIANT, new DecimalPosition(0, 30));
             }
         });
     }

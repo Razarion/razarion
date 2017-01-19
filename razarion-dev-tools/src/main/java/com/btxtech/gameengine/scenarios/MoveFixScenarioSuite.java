@@ -16,15 +16,15 @@ public class MoveFixScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Frontal") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), new DecimalPosition(20, 0));
-                createSyncBaseItem(ScenarioService.SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(6, 0), null);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(20, 0));
+                createSyncBaseItem(ScenarioService.SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(6, 0), 0, null);
             }
         });
         addScenario(new Scenario("Not frontal") {
             @Override
             public void createSyncItems() {
-                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 1), new DecimalPosition(20, 1));
-                createSyncBaseItem(ScenarioService.SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(6, 0), null);
+                createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 1), 0, new DecimalPosition(20, 1));
+                createSyncBaseItem(ScenarioService.SIMPLE_FIX_ITEM_TYPE, new DecimalPosition(6, 0), 0, null);
             }
         });
     }

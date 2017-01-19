@@ -18,7 +18,7 @@ public class BuildScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Build west") {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(ScenarioService.BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncBaseItem(ScenarioService.BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
             }
 
             @Override
@@ -29,7 +29,7 @@ public class BuildScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Build north") {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(ScenarioService.BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), null);
+                createSyncBaseItem(ScenarioService.BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
             }
 
             @Override
@@ -40,8 +40,8 @@ public class BuildScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Finalize build") {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(ScenarioService.BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), null);
-                SyncBaseItem factory = createSyncBaseItem(ScenarioService.FACTORY_ITEM_TYPE, new DecimalPosition(0, 20), null);
+                createSyncBaseItem(ScenarioService.BUILDER_ITEM_TYPE, new DecimalPosition(0, 0), 0, null);
+                SyncBaseItem factory = createSyncBaseItem(ScenarioService.FACTORY_ITEM_TYPE, new DecimalPosition(0, 20), 0, null);
                 factory.setBuildup(0.5);
             }
 
