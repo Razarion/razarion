@@ -3,17 +3,14 @@ package com.btxtech.webglemulator;
 import com.btxtech.persistence.GameUiControlProviderEmulator;
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.Ray3d;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.shared.system.perfmon.StatisticEntry;
+import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -22,9 +19,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.application.Platform;
@@ -53,7 +48,6 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -133,6 +127,8 @@ public class WebGlEmulatorController implements Initializable {
     private SelectionHandler selectionHandler;
     @Inject
     private GameTipService gameTipService;
+    @Inject
+    private GameEngineControl gameEngineControl;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -393,16 +389,23 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onPerfomButtonClicked() {
-        MapList<PerfmonEnum, StatisticEntry> statisticEntries = perfmonService.getStatisticEntries();
-        System.out.println("---------------------------------------------------------------------------------------------------------");
-
-        for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
-            System.out.println(entry.getKey());
-            for (StatisticEntry statisticEntry : entry.getValue()) {
-                System.out.println(statisticEntry.toInfoString());
+        List<PerfmonStatistic> clientPerfmonStatistics = perfmonService.getPerfmonStatistics();
+        System.out.println("Client---------------------------------------------------------------------------------------------------------");
+        for (PerfmonStatistic perfmonStatistic : clientPerfmonStatistics) {
+            for (int i = 0; i < perfmonStatistic.size(); i++) {
+                System.out.println(perfmonStatistic.toInfoString(i));
             }
         }
         System.out.println("---------------------------------------------------------------------------------------------------------");
+        gameEngineControl.perfmonRequest(perfmonStatistics -> {
+            System.out.println("Worker---------------------------------------------------------------------------------------------------------");
+            for (PerfmonStatistic perfmonStatistic : perfmonStatistics) {
+                for (int i = 0; i < perfmonStatistic.size(); i++) {
+                    System.out.println(perfmonStatistic.toInfoString(i));
+                }
+            }
+            System.out.println("---------------------------------------------------------------------------------------------------------");
+        });
     }
 
     public void displayResource(int resource) {

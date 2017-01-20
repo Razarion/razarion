@@ -18,6 +18,8 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.system.perfmon.PerfmonStatistic;
+import com.btxtech.shared.system.perfmon.StatisticEntry;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.clip.EffectService;
@@ -32,6 +34,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -58,6 +61,7 @@ public abstract class GameEngineControl {
     private EffectService effectService;
     @Inject
     private ProjectileUiService projectileUiService;
+    private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -136,6 +140,18 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.UPDATE_LEVEL, levelId);
     }
 
+    public void perfmonRequest(Consumer<Collection<PerfmonStatistic>> perfmonConsumer) {
+        this.perfmonConsumer = perfmonConsumer;
+        sendToWorker(GameEngineControlPackage.Command.PERFMON_REQUEST);
+    }
+
+    private void onPerfmonResponse(Collection<PerfmonStatistic> statisticEntries) {
+        if(perfmonConsumer != null) {
+            perfmonConsumer.accept(statisticEntries);
+            perfmonConsumer = null;
+        }
+    }
+
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
             case INITIALIZED:
@@ -187,6 +203,9 @@ public abstract class GameEngineControl {
                 break;
             case PROJECTILE_DETONATION:
                 effectService.onProjectileDetonation((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
+                break;
+            case PERFMON_RESPONSE:
+                onPerfmonResponse((Collection<PerfmonStatistic>) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

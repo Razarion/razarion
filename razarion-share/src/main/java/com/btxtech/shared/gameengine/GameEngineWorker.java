@@ -31,6 +31,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.system.perfmon.PerfmonService;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -64,6 +65,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private CommandService commandService;
     @Inject
     private GameLogicService logicService;
+    @Inject
+    private PerfmonService perfmonService;
     private UserContext userContext;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
     private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
@@ -135,6 +138,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case UPDATE_LEVEL:
                 baseItemService.updateLevel(userContext.getUserId(), (int) controlPackage.getData(0));
+                break;
+            case PERFMON_REQUEST:
+                onPerfmonRequest();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -278,5 +284,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
         sendToClient(GameEngineControlPackage.Command.PROJECTILE_DETONATION, baseItemTypeId, position);
+    }
+
+    private void onPerfmonRequest() {
+        sendToClient(GameEngineControlPackage.Command.PERFMON_RESPONSE, perfmonService.getPerfmonStatistics());
     }
 }

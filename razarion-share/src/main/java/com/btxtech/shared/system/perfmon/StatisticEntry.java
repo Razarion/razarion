@@ -14,6 +14,12 @@ public class StatisticEntry {
     private int totalDuration;
     private double avgDuration;
 
+    /**
+     * Used by Errai
+     */
+    public StatisticEntry() {
+    }
+
     public StatisticEntry(PerfmonEnum perfmonEnum) {
         this.perfmonEnum = perfmonEnum;
     }
@@ -49,9 +55,5 @@ public class StatisticEntry {
         samplingDuration = (double) (lastSample - fistSample) / 1000.0;
         frequency = (double) samples / samplingDuration;
         avgDuration = (double) totalDuration / (double) samples / 1000.0;
-    }
-
-    public String toInfoString() {
-        return perfmonEnum.getDisplayName() + "\tSampling duration: " + samplingDuration + "s\tFrequency=" + frequency + "hz\tAvg Duration: " + avgDuration + 's';
     }
 }

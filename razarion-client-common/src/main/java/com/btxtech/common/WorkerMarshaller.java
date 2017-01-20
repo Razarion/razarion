@@ -40,6 +40,7 @@ public class WorkerMarshaller {
             case START:
             case STARTED:
             case QUEST_PASSED:
+            case PERFMON_REQUEST:
                 break;
             // Single JSON data
             case START_BOTS:
@@ -55,6 +56,7 @@ public class WorkerMarshaller {
             case BOX_PICKED:
             case ACTIVATE_QUEST:
             case UPDATE_LEVEL:
+            case PERFMON_RESPONSE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -111,6 +113,7 @@ public class WorkerMarshaller {
             case START:
             case STARTED:
             case QUEST_PASSED:
+            case PERFMON_REQUEST:
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));
@@ -215,6 +218,9 @@ public class WorkerMarshaller {
             case PROJECTILE_DETONATION:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Vertex.class));
+                break;
+            case PERFMON_RESPONSE:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

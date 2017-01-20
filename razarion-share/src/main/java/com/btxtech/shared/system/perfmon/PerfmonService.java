@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -42,7 +43,7 @@ public class PerfmonService {
                 Collection<StatisticEntry> statisticEntries = analyse();
                 for (StatisticEntry statisticEntry : statisticEntries) {
                     this.statisticEntries.put(statisticEntry.getPerfmonEnum(), statisticEntry);
-                    if(this.statisticEntries.get(statisticEntry.getPerfmonEnum()).size() >= COUNT) {
+                    if (this.statisticEntries.get(statisticEntry.getPerfmonEnum()).size() >= COUNT) {
                         this.statisticEntries.get(statisticEntry.getPerfmonEnum()).remove(0);
                     }
                 }
@@ -70,6 +71,24 @@ public class PerfmonService {
 
     public MapList<PerfmonEnum, StatisticEntry> getStatisticEntries() {
         return statisticEntries;
+    }
+
+    public List<PerfmonStatistic> getPerfmonStatistics() {
+        List<PerfmonStatistic> perfmonStatistics = new ArrayList<>();
+        for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
+            PerfmonStatistic perfmonStatistic = new PerfmonStatistic();
+            perfmonStatistic.setPerfmonEnum(entry.getKey());
+            List<Double> frequency = new ArrayList<>();
+            List<Double> avgDuration = new ArrayList<>();
+            for (StatisticEntry statisticEntry : entry.getValue()) {
+                frequency.add(statisticEntry.getFrequency());
+                avgDuration.add(statisticEntry.getAvgDuration());
+            }
+            perfmonStatistic.setFrequency(frequency);
+            perfmonStatistic.setAvgDuration(avgDuration);
+            perfmonStatistics.add(perfmonStatistic);
+        }
+        return perfmonStatistics;
     }
 
     private Collection<StatisticEntry> analyse() {

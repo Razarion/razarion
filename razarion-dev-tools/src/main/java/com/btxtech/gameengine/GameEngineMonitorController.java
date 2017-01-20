@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.StatisticEntry;
 import com.btxtech.webglemulator.razarion.DevToolFutureControl;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
@@ -312,15 +313,12 @@ public class GameEngineMonitorController implements Initializable {
     }
 
     public void onPerfmonButtonClicked() {
-        MapList<PerfmonEnum, StatisticEntry> statisticEntries = perfmonService.getStatisticEntries();
+        List<PerfmonStatistic> clientPerfmonStatistics = perfmonService.getPerfmonStatistics();
         System.out.println("---------------------------------------------------------------------------------------------------------");
-
-        for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
-            System.out.println(entry.getKey());
-            for (StatisticEntry statisticEntry : entry.getValue()) {
-                System.out.println(statisticEntry.toInfoString());
+        for (PerfmonStatistic perfmonStatistic : clientPerfmonStatistics) {
+            for (int i = 0; i < perfmonStatistic.size(); i++) {
+                System.out.println(perfmonStatistic.toInfoString(i));
             }
         }
-        System.out.println("---------------------------------------------------------------------------------------------------------");
     }
 }

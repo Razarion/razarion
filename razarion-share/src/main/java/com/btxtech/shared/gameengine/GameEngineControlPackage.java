@@ -12,6 +12,8 @@ public class GameEngineControlPackage {
         START,
         STARTED,
         TICK_UPDATE,
+        PERFMON_REQUEST,
+        PERFMON_RESPONSE,
         // Bot
         START_BOTS,
         EXECUTE_BOT_COMMANDS,
