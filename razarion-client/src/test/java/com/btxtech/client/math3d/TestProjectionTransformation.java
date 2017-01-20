@@ -50,7 +50,7 @@ public class TestProjectionTransformation {
         projectionTransformation.setAspectRatio(0.9982078853046595);
         Matrix4 actual = projectionTransformation.getMatrix();
 
-        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -2.3962, -2036.4613}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -2.3962, -2036.4613}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class TestProjectionTransformation {
         projectionTransformation.setAspectRatio(0.9982078853046595);
         Matrix4 actual = projectionTransformation.getMatrix();
 
-        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -12.2545, -8204.5636}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -12.2545, -8204.5636}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TestProjectionTransformation {
         projectionTransformation.setAspectRatio(0.9982078853046595);
         Matrix4 actual = projectionTransformation.getMatrix();
 
-        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0004, -1832.4801}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0004, -1832.4801}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class TestProjectionTransformation {
         projectionTransformation.setAspectRatio(0.9982078853046595);
         Matrix4 actual = projectionTransformation.getMatrix();
 
-        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
@@ -106,13 +106,13 @@ public class TestProjectionTransformation {
         projectionTransformation.setAspectRatio(0.9982078853046595);
         Matrix4 actual = projectionTransformation.getMatrix();
 
-        TestHelper.assertMatrix(new Matrix4(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
+        TestHelper.assertMatrix(Matrix4.fromField(new double[][]{{2.4185, 0.0000, 0.0000, 0.0000}, {0.0000, 2.4142, 0.0000, 0.0000}, {0.0000, 0.0000, -1.0000, -20.0000}, {0.0000, 0.0000, -1.0000, 0.0000}}), actual, 0.0001);
     }
 
     @Test
     public void makePerspective() {
         Matrix4 actual = ProjectionTransformation.makePerspectiveFrustum(Math.toRadians(45), 480.0 / 480.0, 0.1, 100.0);
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {2.4142135623730954, 0.0, 0.0, 0.0},
                 {0.0, 2.4142135623730954, 0.0, 0.0},
                 {0.0, 0.0, -1.002002002002002, -0.20020020020020018},
@@ -120,7 +120,7 @@ public class TestProjectionTransformation {
         });
         Assert.assertEquals(expected, actual);
         actual = ProjectionTransformation.makePerspectiveFrustum(Math.toRadians(90), 640.0 / 640.0, 0.1, 100.0);
-        expected = new Matrix4(new double[][]{
+        expected = Matrix4.fromField(new double[][]{
                 {1.0000000000000002, 0.0, 0.0, 0.0},
                 {0.0, 1.0000000000000002, 0.0, 0.0},
                 {0.0, 0.0, -1.002002002002002, -0.20020020020020018},
@@ -131,8 +131,8 @@ public class TestProjectionTransformation {
 
     @Test
     public void makeBalancedFrustumToGetRight() {
-        Matrix4 actual = ProjectionTransformation.makeBalancedPerspectiveFrustum(12, 56, 0.1, 100);
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 actual = Matrix4.makeBalancedPerspectiveFrustum(12, 56, 0.1, 100);
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {0.008333333333333333, 0.0, 0.0, 0.0},
                 {0.0, 0.0017857142857142859, 0.0, 0.0},
                 {0.0, 0.0, -1.002002002002002, -0.20020020020020018},

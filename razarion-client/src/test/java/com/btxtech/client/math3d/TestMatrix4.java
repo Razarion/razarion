@@ -176,7 +176,7 @@ public class TestMatrix4 {
 
     @Test
     public void constructor1() {
-        Matrix4 matrix4 = new Matrix4(new double[][]{
+        Matrix4 matrix4 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -230,7 +230,7 @@ public class TestMatrix4 {
 
     @Test
     public void constructor3() {
-        Matrix4 matrix4Tmp = new Matrix4(new double[][]{
+        Matrix4 matrix4Tmp = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -260,13 +260,13 @@ public class TestMatrix4 {
 
     @Test
     public void hashCode1() {
-        Matrix4 matrix = new Matrix4(new double[][]{
+        Matrix4 matrix = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
         Assert.assertEquals(-237111135, matrix.hashCode());
-        matrix = new Matrix4(new double[][]{
+        matrix = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -276,13 +276,13 @@ public class TestMatrix4 {
 
     @Test
     public void hashCode2() {
-        Matrix4 matrix = new Matrix4(new double[][]{
+        Matrix4 matrix = Matrix4.fromField(new double[][]{
                 {99, 2, 3, 433},
                 {0.5, 6, 44, 8},
                 {9, 789, 11, 12},
                 {44, 14, 15, 222}});
         Assert.assertEquals(1842244628, matrix.hashCode());
-        matrix = new Matrix4(new double[][]{
+        matrix = Matrix4.fromField(new double[][]{
                 {99, 2, 3, 433},
                 {0.5, 6, 44, 8},
                 {9, 789, 11, 12},
@@ -292,13 +292,13 @@ public class TestMatrix4 {
 
     @Test
     public void hashCode3() {
-        Matrix4 matrix = new Matrix4(new double[][]{
+        Matrix4 matrix = Matrix4.fromField(new double[][]{
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0}});
         Assert.assertEquals(1353309697, matrix.hashCode());
-        matrix = new Matrix4(new double[][]{
+        matrix = Matrix4.fromField(new double[][]{
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
@@ -308,18 +308,18 @@ public class TestMatrix4 {
 
     @Test
     public void equals1() {
-        Matrix4 matrix1 = new Matrix4(new double[][]{
+        Matrix4 matrix1 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
-        Matrix4 matrix2 = new Matrix4(new double[][]{
+        Matrix4 matrix2 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
         Assert.assertTrue(matrix1.equals(matrix2));
-        Matrix4 matrix3 = new Matrix4(new double[][]{
+        Matrix4 matrix3 = Matrix4.fromField(new double[][]{
                 {99, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -330,12 +330,12 @@ public class TestMatrix4 {
 
     @Test
     public void equals2() {
-        Matrix4 matrix1 = new Matrix4(new double[][]{
+        Matrix4 matrix1 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 0.0000001},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
-        Matrix4 matrix2 = new Matrix4(new double[][]{
+        Matrix4 matrix2 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 0.000001},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -371,7 +371,7 @@ public class TestMatrix4 {
     @Test
     public void createXRotation1() {
         Matrix4 actual = Matrix4.createXRotation(Math.toRadians(10));
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {1, 0, 0, 0},
                 {0, 0.984807753012208, -0.17364817766693033, 0},
                 {0, 0.17364817766693033, 0.984807753012208, 0},
@@ -382,7 +382,7 @@ public class TestMatrix4 {
     @Test
     public void createXRotation2() {
         Matrix4 actual = Matrix4.createXRotation(Math.toRadians(60));
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {1, 0, 0, 0},
                 {0, 0.5000000000000001, -0.8660254037844386, 0},
                 {0, 0.8660254037844386, 0.5000000000000001, 0},
@@ -393,7 +393,7 @@ public class TestMatrix4 {
     @Test
     public void createYRotation1() {
         Matrix4 actual = Matrix4.createYRotation(Math.toRadians(10));
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {0.984807753012208, 0, 0.17364817766693033, 0},
                 {0, 1, 0, 0},
                 {-0.17364817766693033, 0, 0.984807753012208, 0},
@@ -404,7 +404,7 @@ public class TestMatrix4 {
     @Test
     public void createYRotation2() {
         Matrix4 actual = Matrix4.createYRotation(Math.toRadians(60));
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {0.5000000000000001, 0, 0.8660254037844386, 0},
                 {0, 1, 0, 0},
                 {-0.8660254037844386, 0, 0.5000000000000001, 0},
@@ -415,7 +415,7 @@ public class TestMatrix4 {
     @Test
     public void createZRotation1() {
         Matrix4 actual = Matrix4.createZRotation(Math.toRadians(10));
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {0.984807753012208, -0.17364817766693033, 0, 0},
                 {0.17364817766693033, 0.984807753012208, 0, 0},
                 {0, 0, 1, 0},
@@ -426,7 +426,7 @@ public class TestMatrix4 {
     @Test
     public void createZRotation2() {
         Matrix4 actual = Matrix4.createZRotation(Math.toRadians(60));
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {0.5000000000000001, -0.8660254037844386, 0, 0},
                 {0.8660254037844386, 0.5000000000000001, 0, 0},
                 {0, 0, 1, 0},
@@ -437,7 +437,7 @@ public class TestMatrix4 {
     @Test
     public void createTranslation1() {
         Matrix4 actual = Matrix4.createTranslation(0.5, -3, 10);
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {1, 0, 0, 0.5},
                 {0, 1, 0, -3},
                 {0, 0, 1, 10},
@@ -448,7 +448,7 @@ public class TestMatrix4 {
     @Test
     public void createTranslation2() {
         Matrix4 actual = Matrix4.createTranslation(0, 0, 1);
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {1, 0, 0, 0},
                 {0, 1, 0, 0},
                 {0, 0, 1, 1},
@@ -459,7 +459,7 @@ public class TestMatrix4 {
     @Test
     public void createScale1() {
         Matrix4 actual = Matrix4.createScale(0.15, -13, 55);
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {0.15, 0, 0, 0},
                 {0, -13, 0, 0},
                 {0, 0, 55, 0},
@@ -470,7 +470,7 @@ public class TestMatrix4 {
     @Test
     public void createScale2() {
         Matrix4 actual = Matrix4.createScale(-11, 0.75, 1);
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {-11, 0, 0, 0},
                 {0, 0.75, 0, 0},
                 {0, 0, 1, 0},
@@ -480,7 +480,7 @@ public class TestMatrix4 {
 
     @Test
     public void getElementsCopy() {
-        Matrix4 matrix4 = new Matrix4(new double[][]{
+        Matrix4 matrix4 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -497,7 +497,7 @@ public class TestMatrix4 {
 
     @Test
     public void toArray() {
-        Matrix4 matrix4 = new Matrix4(new double[][]{
+        Matrix4 matrix4 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -507,7 +507,7 @@ public class TestMatrix4 {
 
     @Test
     public void toWebGlArray() {
-        Matrix4 matrix4 = new Matrix4(new double[][]{
+        Matrix4 matrix4 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -517,18 +517,18 @@ public class TestMatrix4 {
 
     @Test
     public void multiplyMatrix() {
-        Matrix4 matrix1 = new Matrix4(new double[][]{
+        Matrix4 matrix1 = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
-        Matrix4 matrix2 = new Matrix4(new double[][]{
+        Matrix4 matrix2 = Matrix4.fromField(new double[][]{
                 {-0.5, 456, 324, 0.001},
                 {-234, 4, 87, 1},
                 {-654, -7, 0.009, -0.5},
                 {17, -214, 98, -18}});
         Matrix4 actual = matrix1.multiply(matrix2);
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {-2362.5, -413, 890.027, -71.499},
                 {-5848.5, 543, 2926.063, -141.495},
                 {-9334.5, 1499, 4962.099, -211.49099999999999},
@@ -539,7 +539,7 @@ public class TestMatrix4 {
 
     @Test
     public void multiplyVector() {
-        Matrix4 matrix = new Matrix4(new double[][]{
+        Matrix4 matrix = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -552,7 +552,7 @@ public class TestMatrix4 {
 
     @Test
     public void multiplyWVector() {
-        Matrix4 matrix = new Matrix4(new double[][]{
+        Matrix4 matrix = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -564,13 +564,13 @@ public class TestMatrix4 {
 
     @Test
     public void inverse() {
-        Matrix4 matrix4 = new Matrix4(new double[][]{
+        Matrix4 matrix4 = Matrix4.fromField(new double[][]{
                 {1, 0, 0, 4},
                 {0, 1, 0, 8},
                 {0, 0, 1, 6},
                 {0, 0, 0, 1}});
         Matrix4 inverse = matrix4.invert();
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {1, 0, 0, -4},
                 {0, 1, 0, -8},
                 {0, 0, 1, -6},
@@ -603,14 +603,24 @@ public class TestMatrix4 {
     }
 
     @Test
+    public void invertOrNull() {
+        Matrix4 actual = Matrix4.fromField(new double[][]{
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}});
+        Assert.assertNull(actual.invertOrNull());
+    }
+
+    @Test
     public void transpose() {
-        Matrix4 matrix = new Matrix4(new double[][]{
+        Matrix4 matrix = Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
         Matrix4 transpose = matrix.transpose();
-        Matrix4 expected = new Matrix4(new double[][]{
+        Matrix4 expected = Matrix4.fromField(new double[][]{
                 {1, 5, 9, 13},
                 {2, 6, 10, 14},
                 {3, 7, 11, 15},

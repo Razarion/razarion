@@ -7,10 +7,8 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Created by Beat
@@ -187,19 +185,7 @@ public class ProjectionTransformation {
         double top = zNear * Math.tan(fovY / 2.0);
         double right = top * aspectRatio;
 
-        return makeBalancedPerspectiveFrustum(right, top, zNear, zFar);
+        return Matrix4.makeBalancedPerspectiveFrustum(right, top, zNear, zFar);
     }
 
-    public static Matrix4 makeBalancedPerspectiveFrustum(double right, double top, double zNear, double zFar) {
-        double x = zNear / right;
-        double y = zNear / top;
-        double a = -(zFar + zNear) / (zFar - zNear);
-        double b = -2 * zFar * zNear / (zFar - zNear);
-
-        return new Matrix4(new double[][]{
-                {x, 0, 0, 0},
-                {0, y, 0, 0},
-                {0, 0, a, b},
-                {0, 0, -1, 0}});
-    }
 }

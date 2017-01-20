@@ -22,11 +22,7 @@ import java.util.logging.Logger;
 public class ShadowUiService {
     private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
     private static final double Z_NEAR = 10;
-    private static final Matrix4 TEXTURE_COORDINATE_TRANSFORMATION = new Matrix4(new double[][]{
-            {0.5, 0.0, 0.0, 0.5},
-            {0.0, 0.5, 0.0, 0.5},
-            {0.0, 0.0, 0.5, 0.5},
-            {0.0, 0.0, 0.0, 1.0}});
+    private static final Matrix4 TEXTURE_COORDINATE_TRANSFORMATION = Matrix4.makeTextureCoordinateTransformation();
     @Inject
     private VisualUiService visualUiService;
     @Inject
@@ -136,7 +132,7 @@ public class ShadowUiService {
 
         double distanceZNear2ZFar = distanceZero2Plane + distanceTerrainLowest;
 
-        depthProjectionTransformation = makeBalancedOrthographicFrustum(edge, edge, Z_NEAR, Z_NEAR + distanceZNear2ZFar);
+        depthProjectionTransformation = Matrix4.makeBalancedOrthographicFrustum(edge, edge, Z_NEAR, Z_NEAR + distanceZNear2ZFar);
 
         Vertex lightPosition = lightPositionOnPlane.add(lightDirection.multiply(-Z_NEAR));
 
@@ -178,17 +174,4 @@ public class ShadowUiService {
         lightDirection = Matrix4.createYRotation(visualConfig.getShadowRotationY()).multiply(Matrix4.createXRotation(visualConfig.getShadowRotationX())).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
-    /**
-     * http://www.songho.ca/opengl/gl_projectionmatrix.html
-     */
-    private Matrix4 makeBalancedOrthographicFrustum(double right, double top, double zNear, double zFar) {
-        double a = -2.0 / (zFar - zNear);
-        double b = -(zFar + zNear) / (zFar - zNear);
-
-        return new Matrix4(new double[][]{
-                {1.0 / right, 0, 0, 0},
-                {0, 1.0 / top, 0, 0},
-                {0, 0, a, b},
-                {0, 0, 0, 1}});
-    }
 }

@@ -23,16 +23,16 @@ public class Matrix4 {
     public Matrix4() {
     }
 
-    public Matrix4(double[][] numbers) {
-        this.numbers = copyFiled(numbers);
-    }
-
     public Matrix4(double[] numbers) {
         this.numbers = array2Field(numbers);
     }
 
     public Matrix4(Matrix4 matrix4) {
         this.numbers = matrix4.elementsCopy();
+    }
+
+    private Matrix4(double[][] numbers) {
+        this.numbers = numbers;
     }
 
     public double numberAt(int column, int row) {
@@ -85,38 +85,37 @@ public class Matrix4 {
     }
 
     public Matrix4 invertOrNull() {
-        double[] m = field2Array(numbers);
-        double[] r = new double[ROWS * COLUMNS];
+        double[][] r = new double[ROWS][COLUMNS];
 
-        r[0] = m[5] * m[10] * m[15] - m[5] * m[14] * m[11] - m[6] * m[9] * m[15] + m[6] * m[13] * m[11] + m[7] * m[9] * m[14] - m[7] * m[13] * m[10];
-        r[1] = -m[1] * m[10] * m[15] + m[1] * m[14] * m[11] + m[2] * m[9] * m[15] - m[2] * m[13] * m[11] - m[3] * m[9] * m[14] + m[3] * m[13] * m[10];
-        r[2] = m[1] * m[6] * m[15] - m[1] * m[14] * m[7] - m[2] * m[5] * m[15] + m[2] * m[13] * m[7] + m[3] * m[5] * m[14] - m[3] * m[13] * m[6];
-        r[3] = -m[1] * m[6] * m[11] + m[1] * m[10] * m[7] + m[2] * m[5] * m[11] - m[2] * m[9] * m[7] - m[3] * m[5] * m[10] + m[3] * m[9] * m[6];
-
-        r[4] = -m[4] * m[10] * m[15] + m[4] * m[14] * m[11] + m[6] * m[8] * m[15] - m[6] * m[12] * m[11] - m[7] * m[8] * m[14] + m[7] * m[12] * m[10];
-        r[5] = m[0] * m[10] * m[15] - m[0] * m[14] * m[11] - m[2] * m[8] * m[15] + m[2] * m[12] * m[11] + m[3] * m[8] * m[14] - m[3] * m[12] * m[10];
-        r[6] = -m[0] * m[6] * m[15] + m[0] * m[14] * m[7] + m[2] * m[4] * m[15] - m[2] * m[12] * m[7] - m[3] * m[4] * m[14] + m[3] * m[12] * m[6];
-        r[7] = m[0] * m[6] * m[11] - m[0] * m[10] * m[7] - m[2] * m[4] * m[11] + m[2] * m[8] * m[7] + m[3] * m[4] * m[10] - m[3] * m[8] * m[6];
-
-        r[8] = m[4] * m[9] * m[15] - m[4] * m[13] * m[11] - m[5] * m[8] * m[15] + m[5] * m[12] * m[11] + m[7] * m[8] * m[13] - m[7] * m[12] * m[9];
-        r[9] = -m[0] * m[9] * m[15] + m[0] * m[13] * m[11] + m[1] * m[8] * m[15] - m[1] * m[12] * m[11] - m[3] * m[8] * m[13] + m[3] * m[12] * m[9];
-        r[10] = m[0] * m[5] * m[15] - m[0] * m[13] * m[7] - m[1] * m[4] * m[15] + m[1] * m[12] * m[7] + m[3] * m[4] * m[13] - m[3] * m[12] * m[5];
-        r[11] = -m[0] * m[5] * m[11] + m[0] * m[9] * m[7] + m[1] * m[4] * m[11] - m[1] * m[8] * m[7] - m[3] * m[4] * m[9] + m[3] * m[8] * m[5];
-
-        r[12] = -m[4] * m[9] * m[14] + m[4] * m[13] * m[10] + m[5] * m[8] * m[14] - m[5] * m[12] * m[10] - m[6] * m[8] * m[13] + m[6] * m[12] * m[9];
-        r[13] = m[0] * m[9] * m[14] - m[0] * m[13] * m[10] - m[1] * m[8] * m[14] + m[1] * m[12] * m[10] + m[2] * m[8] * m[13] - m[2] * m[12] * m[9];
-        r[14] = -m[0] * m[5] * m[14] + m[0] * m[13] * m[6] + m[1] * m[4] * m[14] - m[1] * m[12] * m[6] - m[2] * m[4] * m[13] + m[2] * m[12] * m[5];
-        r[15] = m[0] * m[5] * m[10] - m[0] * m[9] * m[6] - m[1] * m[4] * m[10] + m[1] * m[8] * m[6] + m[2] * m[4] * m[9] - m[2] * m[8] * m[5];
-
-        double det = m[0] * r[0] + m[1] * r[4] + m[2] * r[8] + m[3] * r[12];
+        double r0 = numbers[1][1] * numbers[2][2] * numbers[3][3] - numbers[1][1] * numbers[3][2] * numbers[2][3] - numbers[1][2] * numbers[2][1] * numbers[3][3] + numbers[1][2] * numbers[3][1] * numbers[2][3] + numbers[1][3] * numbers[2][1] * numbers[3][2] - numbers[1][3] * numbers[3][1] * numbers[2][2];
+        double r4 = -numbers[1][0] * numbers[2][2] * numbers[3][3] + numbers[1][0] * numbers[3][2] * numbers[2][3] + numbers[1][2] * numbers[2][0] * numbers[3][3] - numbers[1][2] * numbers[3][0] * numbers[2][3] - numbers[1][3] * numbers[2][0] * numbers[3][2] + numbers[1][3] * numbers[3][0] * numbers[2][2];
+        double r8 = numbers[1][0] * numbers[2][1] * numbers[3][3] - numbers[1][0] * numbers[3][1] * numbers[2][3] - numbers[1][1] * numbers[2][0] * numbers[3][3] + numbers[1][1] * numbers[3][0] * numbers[2][3] + numbers[1][3] * numbers[2][0] * numbers[3][1] - numbers[1][3] * numbers[3][0] * numbers[2][1];
+        double r12 = -numbers[1][0] * numbers[2][1] * numbers[3][2] + numbers[1][0] * numbers[3][1] * numbers[2][2] + numbers[1][1] * numbers[2][0] * numbers[3][2] - numbers[1][1] * numbers[3][0] * numbers[2][2] - numbers[1][2] * numbers[2][0] * numbers[3][1] + numbers[1][2] * numbers[3][0] * numbers[2][1];
+        double det = numbers[0][0] * r0 + numbers[0][1] * r4 + numbers[0][2] * r8 + numbers[0][3] * r12;
         if (det == 0.0) {
             return null;
         }
-        for (int i = 0; i < 16; i++) {
-            r[i] /= det;
-        }
+        r[0][0] = r0 / det;
+        r[0][1] = (-numbers[0][1] * numbers[2][2] * numbers[3][3] + numbers[0][1] * numbers[3][2] * numbers[2][3] + numbers[0][2] * numbers[2][1] * numbers[3][3] - numbers[0][2] * numbers[3][1] * numbers[2][3] - numbers[0][3] * numbers[2][1] * numbers[3][2] + numbers[0][3] * numbers[3][1] * numbers[2][2]) / det;
+        r[0][2] = (numbers[0][1] * numbers[1][2] * numbers[3][3] - numbers[0][1] * numbers[3][2] * numbers[1][3] - numbers[0][2] * numbers[1][1] * numbers[3][3] + numbers[0][2] * numbers[3][1] * numbers[1][3] + numbers[0][3] * numbers[1][1] * numbers[3][2] - numbers[0][3] * numbers[3][1] * numbers[1][2]) / det;
+        r[0][3] = (-numbers[0][1] * numbers[1][2] * numbers[2][3] + numbers[0][1] * numbers[2][2] * numbers[1][3] + numbers[0][2] * numbers[1][1] * numbers[2][3] - numbers[0][2] * numbers[2][1] * numbers[1][3] - numbers[0][3] * numbers[1][1] * numbers[2][2] + numbers[0][3] * numbers[2][1] * numbers[1][2]) / det;
 
-        return new Matrix4(array2Field(r));
+        r[1][0] = r4 / det;
+        r[1][1] = (numbers[0][0] * numbers[2][2] * numbers[3][3] - numbers[0][0] * numbers[3][2] * numbers[2][3] - numbers[0][2] * numbers[2][0] * numbers[3][3] + numbers[0][2] * numbers[3][0] * numbers[2][3] + numbers[0][3] * numbers[2][0] * numbers[3][2] - numbers[0][3] * numbers[3][0] * numbers[2][2]) / det;
+        r[1][2] = (-numbers[0][0] * numbers[1][2] * numbers[3][3] + numbers[0][0] * numbers[3][2] * numbers[1][3] + numbers[0][2] * numbers[1][0] * numbers[3][3] - numbers[0][2] * numbers[3][0] * numbers[1][3] - numbers[0][3] * numbers[1][0] * numbers[3][2] + numbers[0][3] * numbers[3][0] * numbers[1][2]) / det;
+        r[1][3] = (numbers[0][0] * numbers[1][2] * numbers[2][3] - numbers[0][0] * numbers[2][2] * numbers[1][3] - numbers[0][2] * numbers[1][0] * numbers[2][3] + numbers[0][2] * numbers[2][0] * numbers[1][3] + numbers[0][3] * numbers[1][0] * numbers[2][2] - numbers[0][3] * numbers[2][0] * numbers[1][2]) / det;
+
+        r[2][0] = r8 / det;
+        r[2][1] = (-numbers[0][0] * numbers[2][1] * numbers[3][3] + numbers[0][0] * numbers[3][1] * numbers[2][3] + numbers[0][1] * numbers[2][0] * numbers[3][3] - numbers[0][1] * numbers[3][0] * numbers[2][3] - numbers[0][3] * numbers[2][0] * numbers[3][1] + numbers[0][3] * numbers[3][0] * numbers[2][1]) / det;
+        r[2][2] = (numbers[0][0] * numbers[1][1] * numbers[3][3] - numbers[0][0] * numbers[3][1] * numbers[1][3] - numbers[0][1] * numbers[1][0] * numbers[3][3] + numbers[0][1] * numbers[3][0] * numbers[1][3] + numbers[0][3] * numbers[1][0] * numbers[3][1] - numbers[0][3] * numbers[3][0] * numbers[1][1]) / det;
+        r[2][3] = (-numbers[0][0] * numbers[1][1] * numbers[2][3] + numbers[0][0] * numbers[2][1] * numbers[1][3] + numbers[0][1] * numbers[1][0] * numbers[2][3] - numbers[0][1] * numbers[2][0] * numbers[1][3] - numbers[0][3] * numbers[1][0] * numbers[2][1] + numbers[0][3] * numbers[2][0] * numbers[1][1]) / det;
+
+        r[3][0] = r12 / det;
+        r[3][1] = (numbers[0][0] * numbers[2][1] * numbers[3][2] - numbers[0][0] * numbers[3][1] * numbers[2][2] - numbers[0][1] * numbers[2][0] * numbers[3][2] + numbers[0][1] * numbers[3][0] * numbers[2][2] + numbers[0][2] * numbers[2][0] * numbers[3][1] - numbers[0][2] * numbers[3][0] * numbers[2][1]) / det;
+        r[3][2] = (-numbers[0][0] * numbers[1][1] * numbers[3][2] + numbers[0][0] * numbers[3][1] * numbers[1][2] + numbers[0][1] * numbers[1][0] * numbers[3][2] - numbers[0][1] * numbers[3][0] * numbers[1][2] - numbers[0][2] * numbers[1][0] * numbers[3][1] + numbers[0][2] * numbers[3][0] * numbers[1][1]) / det;
+        r[3][3] = (numbers[0][0] * numbers[1][1] * numbers[2][2] - numbers[0][0] * numbers[2][1] * numbers[1][2] - numbers[0][1] * numbers[1][0] * numbers[2][2] + numbers[0][1] * numbers[2][0] * numbers[1][2] + numbers[0][2] * numbers[1][0] * numbers[2][1] - numbers[0][2] * numbers[2][0] * numbers[1][1]) / det;
+
+        return new Matrix4(r);
     }
 
     public Matrix4 invert() {
@@ -129,27 +128,26 @@ public class Matrix4 {
     }
 
     public Matrix4 transpose() {
-        double[] m = field2Array(numbers);
-        double[] r = new double[ROWS * COLUMNS];
+        double[][] r = new double[ROWS][COLUMNS];
 
-        r[0] = m[0];
-        r[1] = m[4];
-        r[2] = m[8];
-        r[3] = m[12];
-        r[4] = m[1];
-        r[5] = m[5];
-        r[6] = m[9];
-        r[7] = m[13];
-        r[8] = m[2];
-        r[9] = m[6];
-        r[10] = m[10];
-        r[11] = m[14];
-        r[12] = m[3];
-        r[13] = m[7];
-        r[14] = m[11];
-        r[15] = m[15];
+        r[0][0] = numbers[0][0];
+        r[0][1] = numbers[1][0];
+        r[0][2] = numbers[2][0];
+        r[0][3] = numbers[3][0];
+        r[1][0] = numbers[0][1];
+        r[1][1] = numbers[1][1];
+        r[1][2] = numbers[2][1];
+        r[1][3] = numbers[3][1];
+        r[2][0] = numbers[0][2];
+        r[2][1] = numbers[1][2];
+        r[2][2] = numbers[2][2];
+        r[2][3] = numbers[3][2];
+        r[3][0] = numbers[0][3];
+        r[3][1] = numbers[1][3];
+        r[3][2] = numbers[2][3];
+        r[3][3] = numbers[3][3];
 
-        return new Matrix4(array2Field(r));
+        return new Matrix4(r);
     }
 
     public boolean zero() {
@@ -341,6 +339,46 @@ public class Matrix4 {
             System.arraycopy(inputField[i], 0, outputField[i], 0, inputField[i].length);
         }
         return outputField;
+    }
+
+
+    public static Matrix4 fromField(double[][] numbers) {
+        return new Matrix4(copyFiled(numbers));
+    }
+
+    public static Matrix4 makeBalancedPerspectiveFrustum(double right, double top, double zNear, double zFar) {
+        double x = zNear / right;
+        double y = zNear / top;
+        double a = -(zFar + zNear) / (zFar - zNear);
+        double b = -2 * zFar * zNear / (zFar - zNear);
+
+        return new Matrix4(new double[][]{
+                {x, 0, 0, 0},
+                {0, y, 0, 0},
+                {0, 0, a, b},
+                {0, 0, -1, 0}});
+    }
+
+    /**
+     * http://www.songho.ca/opengl/gl_projectionmatrix.html
+     */
+    public static Matrix4 makeBalancedOrthographicFrustum(double right, double top, double zNear, double zFar) {
+        double a = -2.0 / (zFar - zNear);
+        double b = -(zFar + zNear) / (zFar - zNear);
+
+        return new Matrix4(new double[][]{
+                {1.0 / right, 0, 0, 0},
+                {0, 1.0 / top, 0, 0},
+                {0, 0, a, b},
+                {0, 0, 0, 1}});
+    }
+
+    public static Matrix4 makeTextureCoordinateTransformation() {
+        return new Matrix4(new double[][]{
+                {0.5, 0.0, 0.0, 0.5},
+                {0.0, 0.5, 0.0, 0.5},
+                {0.0, 0.0, 0.5, 0.5},
+                {0.0, 0.0, 0.0, 1.0}});
     }
 
     /**

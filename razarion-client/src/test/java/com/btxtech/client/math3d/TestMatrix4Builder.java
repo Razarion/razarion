@@ -41,7 +41,7 @@ public class TestMatrix4Builder {
 
     @Test
     public void constructor2() {
-        Matrix4Builder matrixBuilder = new Matrix4Builder(new Matrix4(new double[][]{
+        Matrix4Builder matrixBuilder = new Matrix4Builder(Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -70,7 +70,7 @@ public class TestMatrix4Builder {
 
     @Test
     public void toMatrix() {
-        Matrix4Builder matrixBuilder = new Matrix4Builder(new Matrix4(new double[][]{
+        Matrix4Builder matrixBuilder = new Matrix4Builder(Matrix4.fromField(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
