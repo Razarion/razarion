@@ -421,7 +421,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(200, 100));
 
-        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setWait4LevelUpDialog(true));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Fahre zum Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setWait4LevelUpDialog(true));
 
         return sceneConfigs;
     }
@@ -707,12 +707,12 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         addFactorizeHarvesterTask(sceneConfigs);
         addHarvestTask(sceneConfigs);
         addHarvestExplanationTask(sceneConfigs);
-//        // Level 4
-//        addBuildViperTask(sceneConfigs);
-//        addNpcAttackTowerCommand(sceneConfigs);
-//        addNpcTooWeakCommand(sceneConfigs);
-//        addBuildViperTask2(sceneConfigs);
-//        addKillTower(sceneConfigs);
+        // Level 4
+        addBuildViperTask(sceneConfigs);
+        addNpcAttackTowerCommand(sceneConfigs);
+        addNpcTooWeakCommand(sceneConfigs);
+        addBuildViperTask2(sceneConfigs);
+        addKillTower(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -972,14 +972,14 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
 
     private void addHarvestTask(List<SceneConfig> sceneConfigs) {
         // Harvest quest
-        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100));
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(30));
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.HARVEST);
         gameTipConfig.setActor(BASE_ITEM_TYPE_HARVESTER);
         gameTipConfig.setToGrabItemTypeId(RESOURCE_ITEM_TYPE);
         gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(108, 254)));
-        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4LevelUpDialog(true));
     }
 
     private void addHarvestExplanationTask(List<SceneConfig> sceneConfigs) {
@@ -1003,13 +1003,13 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private void addNpcAttackTowerCommand(List<SceneConfig> sceneConfigs) {
         // Attack command
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
-        botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(NPC_BOT_OUTPOST_2).setTargetItemTypeId(BASE_ITEM_TYPE_TOWER).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(175, 270))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER));
-        sceneConfigs.add(new SceneConfig().setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(3000).setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(175, 190))));
+        botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(NPC_BOT_OUTPOST_2).setTargetItemTypeId(BASE_ITEM_TYPE_TOWER).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(190, 242))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER));
+        sceneConfigs.add(new SceneConfig().setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(5000).setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(190, 180)).setSpeed(50.0)));
     }
 
     private void addNpcTooWeakCommand(List<SceneConfig> sceneConfigs) {
         // Attack command
-        sceneConfigs.add(new SceneConfig().setIntroText("Der Turm ist zu stark, wir brauchen eine grössere Armee").setDuration(2000).setCameraConfig(new CameraConfig().setToPosition(new DecimalPosition(175, 190))));
+        sceneConfigs.add(new SceneConfig().setIntroText("Der Turm ist zu stark, wir brauchen eine grössere Armee").setDuration(2000));
     }
 
     private void addBuildViperTask2(List<SceneConfig> sceneConfigs) {
@@ -1034,7 +1034,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.ATTACK);
         gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER);
-        gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(175, 270)));
+        gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(190, 242)));
 
         sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
