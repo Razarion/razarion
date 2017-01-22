@@ -20,6 +20,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundModeler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
@@ -45,16 +47,18 @@ public class TerrainService {
     private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private ObstacleContainer obstacleContainer;
     private Water water;
     private GroundMesh groundMesh;
     private Rectangle groundMeshDimension;
     private Map<Integer, Slope> slopeMap = new HashMap<>();
     private MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions;
-    private Collection<Obstacle> obstacles;
     private PlanetConfig planetConfig;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         setup(planetActivationEvent.getPlanetConfig());
+        obstacleContainer.setup(planetActivationEvent.getPlanetConfig().getGroundMeshDimension(), slopeMap.values(), terrainObjectConfigPositions);
     }
 
     public void init(PlanetConfig planetConfig, TerrainTypeService terrainTypeService) {
@@ -82,22 +86,7 @@ public class TerrainService {
             }
         }
 
-        setupObstacles();
-
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
-    }
-
-    private void setupObstacles() {
-        obstacles = new ArrayList<>();
-        for (Slope slope : slopeMap.values()) {
-            obstacles.addAll(slope.generateObstacles());
-        }
-
-        terrainObjectConfigPositions.iterate((terrainObject, position) -> obstacles.add(new ObstacleCircle(new Circle2D(position.getPosition(), terrainObject.getRadius()))));
-    }
-
-    public Collection<Obstacle> getObstacles() {
-        return obstacles;
     }
 
     public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {

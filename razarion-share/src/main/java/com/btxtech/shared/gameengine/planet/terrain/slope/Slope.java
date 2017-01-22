@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain.slope;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
-import com.btxtech.shared.datatypes.Line2I;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -275,13 +275,13 @@ public class Slope {
     }
 
     private void fillObstacle(List<Vertex> polygon, Collection<Obstacle> obstacles) {
-        Index last = polygon.get(0).toXY().toIndexRound();
+        DecimalPosition last = polygon.get(0).toXY();
         for (int i = 0; i < polygon.size(); i++) {
-            Index next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY().toIndexRound();
+            DecimalPosition next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY();
             if (last.equals(next)) {
                 continue;
             }
-            obstacles.add(new ObstacleLine(new Line2I(last, next)));
+            obstacles.add(new ObstacleLine(new Line(last, next)));
             last = next;
         }
     }

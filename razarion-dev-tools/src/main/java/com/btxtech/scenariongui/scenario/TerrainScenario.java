@@ -1,11 +1,7 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.persistence.GameUiControlProviderEmulator;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.GameUiControlConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.AbstractBorder;
 import com.btxtech.shared.gameengine.planet.terrain.slope.InnerCornerBorder;
 import com.btxtech.shared.gameengine.planet.terrain.slope.LineBorder;
@@ -17,23 +13,13 @@ import javafx.scene.paint.Color;
  * Created by Beat
  * 19.03.2016.
  */
-public class TerrainScenario extends Scenario {
-    private TerrainService terrainService;
-
-    public TerrainScenario() {
-        GameUiControlProviderEmulator gameUiControlProviderEmulator = new GameUiControlProviderEmulator();
-        GameUiControlConfig gameUiControlConfig = gameUiControlProviderEmulator.readFromFile();
-        TerrainTypeService terrainTypeService = new TerrainTypeService();
-        terrainTypeService.init(gameUiControlConfig.getGameEngineConfig());
-        terrainService = new TerrainService();
-        terrainService.init(gameUiControlConfig.getGameEngineConfig().getPlanetConfig(), terrainTypeService);
-    }
+public class TerrainScenario extends AbstractTerrainScenario {
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-        context.strokeVertexList(terrainService.getGroundMesh().provideVertexList().getVertices(), 0.1, Color.BLUE);
+        context.strokeVertexList(getTerrainService().getGroundMesh().provideVertexList().getVertices(), 0.1, Color.BLUE);
 
-        for (Slope slope : terrainService.getSlopes()) {
+        for (Slope slope : getTerrainService().getSlopes()) {
 
             try {
 //            context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));

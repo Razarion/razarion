@@ -2,6 +2,7 @@ package com.btxtech.scenariongui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Line2I;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.TextureCoordinate;
@@ -56,6 +57,14 @@ public class InstanceStringGenerator {
     public static String generate(DecimalPosition decimalPosition) {
         if (decimalPosition != null) {
             return "new DecimalPosition(" + decimalPosition.getX() + ", " + decimalPosition.getY() + ")";
+        } else {
+            return NULL_STRING;
+        }
+    }
+
+    public static String generate(Line line) {
+        if (line != null) {
+            return "new Line(" + generate(line.getPoint1()) + ", " + generate(line.getPoint2()) + ")";
         } else {
             return NULL_STRING;
         }

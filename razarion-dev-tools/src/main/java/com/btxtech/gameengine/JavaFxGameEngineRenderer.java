@@ -2,7 +2,11 @@ package com.btxtech.gameengine;
 
 import com.btxtech.Abstract2dRenderer;
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerTile;
 import com.btxtech.shared.gameengine.planet.projectile.Projectile;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -21,6 +25,8 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
     @Inject
     private TerrainService terrainService;
     @Inject
+    private ObstacleContainer obstacleContainer;
+    @Inject
     private ProjectileService projectileService;
 
     public void init(Canvas canvas, double scale) {
@@ -32,7 +38,17 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
 
         ExtendedGraphicsContext extendedGraphicsContext = createExtendedGraphicsContext();
         // Obstacles
-        terrainService.getObstacles().forEach(extendedGraphicsContext::drawObstacle);
+        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
+            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
+                Index index = new Index(x, y);
+                ObstacleContainerTile obstacleContainerTile = obstacleContainer.getObstacleContainerTile(index);
+                if (obstacleContainerTile != null) {
+                    for (Obstacle obstacle : obstacleContainerTile.getObstacles()) {
+                        extendedGraphicsContext.drawObstacle(obstacle, Color.BLACK, Color.BLACK);
+                    }
+                }
+            }
+        }
         // Items
         syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
             try {

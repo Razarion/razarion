@@ -1,7 +1,11 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.persistence.GameUiControlProviderEmulator;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +41,11 @@ public abstract class Scenario {
     }
 
     static {
+        register("Obstacle Container Test", new ObstacleContainerScenario());
+        register("Bresenhams Test", new FillCircleScenario());
+        register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
         register("Terrain", new TerrainScenario());
         register("Rectangle 2D", new Rectangle2DScenario());
-        register("Bresenhams Test", new FillCircleScenario());
         register("Polygon2D Test", new TestPolygon2DScenario());
         register("Triangle2D", new Triangle2DScenario());
         register("Draw Polygon", new DrawPolygonScenario());
@@ -54,6 +60,18 @@ public abstract class Scenario {
 
     abstract public void render(ExtendedGraphicsContext extendedGraphicsContext);
 
+    /**
+     * Override in subclasses
+     */
+    public void init() {
+    }
+
+    /**
+     * Override in subclasses
+     *
+     * @param position mouse position
+     * @return true if scene should be redraw
+     */
     public boolean onMouseDown(DecimalPosition position) {
         return false;
     }
@@ -75,5 +93,4 @@ public abstract class Scenario {
     public void onCmd1() {
         System.out.println("---- onCmd1() not overridden ---");
     }
-
 }

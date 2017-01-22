@@ -63,8 +63,16 @@ public class DecimalPosition {
         return new Index((int) Math.round(x), (int) Math.round(y));
     }
 
+    public Index toIndexCeil() {
+        return new Index((int) Math.ceil(x), (int) Math.ceil(y));
+    }
+
     public Index toIndex() {
         return new Index((int) x, (int) y);
+    }
+
+    public Index toIndexFloor() {
+        return new Index((int) Math.floor(x), (int) Math.floor(y));
     }
 
     public DecimalPosition getPointWithDistance(double distance, Index directionTo, boolean allowOverrun) {

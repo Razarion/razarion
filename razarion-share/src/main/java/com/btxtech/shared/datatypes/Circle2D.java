@@ -40,4 +40,9 @@ public class Circle2D {
     public double getRadius() {
         return radius;
     }
+
+    public Circle2D translate(DecimalPosition translation) {
+        return new Circle2D(center.add(translation), radius);
+    }
+
 }

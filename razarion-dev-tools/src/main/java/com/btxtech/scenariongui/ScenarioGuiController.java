@@ -38,7 +38,9 @@ public class ScenarioGuiController implements Initializable {
             scenarioRenderer.render();
         });
         scenarioBox.getItems().addAll(Scenario.getScenarios());
-        scenarioRenderer = new ScenarioRenderer(canvas, Scenario.getScenarios().get(0).getScenario(), 4);
+        Scenario scenario = Scenario.getScenarios().get(0).getScenario();
+        scenario.init();
+        scenarioRenderer = new ScenarioRenderer(canvas, scenario, 4);
         scaleField.setText(String.format("%.2f", scenarioRenderer.getScale()));
         zoomSlider.setValue(scenarioRenderer.getZoom());
         zoomSlider.valueProperty().addListener((observableValue, number, t1) -> setZoom(zoomSlider.getValue()));

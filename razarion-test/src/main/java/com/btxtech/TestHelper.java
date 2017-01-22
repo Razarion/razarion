@@ -1,11 +1,11 @@
 package com.btxtech;
 
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.VertexList;
 import org.junit.Assert;
 
 import java.io.BufferedReader;

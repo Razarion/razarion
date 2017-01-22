@@ -14,6 +14,7 @@
 package com.btxtech.shared.datatypes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -159,6 +160,73 @@ public class Rectangle2D {
         }
 
         throw new IllegalArgumentException("The point is inside the rectangle");
+    }
+
+    public Collection<DecimalPosition> getCrossPointsInfiniteLine(Line line) {
+        Collection<DecimalPosition> crossPoints = new ArrayList<>();
+        DecimalPosition crossPoint = lineW().getCrossInfinite(line);
+        if (crossPoint != null && lineW().isPointInLineInclusive(crossPoint)) {
+            crossPoints.add(crossPoint);
+        }
+        crossPoint = lineS().getCrossInfinite(line);
+        if (crossPoint != null && lineS().isPointInLineInclusive(crossPoint) && !crossPoints.contains(crossPoint)) {
+            crossPoints.add(crossPoint);
+        }
+        crossPoint = lineE().getCrossInfinite(line);
+        if (crossPoint != null && lineE().isPointInLineInclusive(crossPoint) && !crossPoints.contains(crossPoint)) {
+            crossPoints.add(crossPoint);
+        }
+        crossPoint = lineN().getCrossInfinite(line);
+        if (crossPoint != null && lineN().isPointInLineInclusive(crossPoint) && !crossPoints.contains(crossPoint)) {
+            crossPoints.add(crossPoint);
+        }
+        crossPoints = DecimalPosition.removeSimilarPoints(crossPoints, 0.001);
+
+        if (crossPoints.size() > 2) {
+            throw new IllegalStateException("A rectangle can not be crossed more then twice by a line");
+        }
+        return crossPoints;
+    }
+
+
+    public Collection<DecimalPosition> getCrossPointsLine(Line line) {
+        List<DecimalPosition> crossPoints = new ArrayList<>();
+        DecimalPosition crossPoint = lineW().getCrossInclusive(line);
+        if (crossPoint != null) {
+            crossPoints.add(crossPoint);
+        }
+        crossPoint = lineS().getCrossInclusive(line);
+        if (crossPoint != null && !crossPoints.contains(crossPoint)) {
+            crossPoints.add(crossPoint);
+        }
+        crossPoint = lineE().getCrossInclusive(line);
+        if (crossPoint != null && !crossPoints.contains(crossPoint)) {
+            crossPoints.add(crossPoint);
+        }
+        crossPoint = lineN().getCrossInclusive(line);
+        if (crossPoint != null && !crossPoints.contains(crossPoint)) {
+            crossPoints.add(crossPoint);
+        }
+        if (crossPoints.size() > 2) {
+            throw new IllegalStateException("A rectangle can not be crossed more then twice by a line");
+        }
+        return crossPoints;
+    }
+
+    public Line lineW() {
+        return new Line(new DecimalPosition(cornerTopLeft()), new DecimalPosition(cornerBottomLeft()));
+    }
+
+    public Line lineS() {
+        return new Line(new DecimalPosition(cornerBottomLeft()), new DecimalPosition(cornerBottomRight()));
+    }
+
+    public Line lineE() {
+        return new Line(new DecimalPosition(cornerBottomRight()), new DecimalPosition(cornerTopRight()));
+    }
+
+    public Line lineN() {
+        return new Line(new DecimalPosition(cornerTopRight()), new DecimalPosition(cornerTopLeft()));
     }
 
     public DecimalPosition cornerBottomLeft() {

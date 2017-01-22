@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Line2I;
 
 /**
@@ -8,9 +9,9 @@ import com.btxtech.shared.datatypes.Line2I;
  * 20.09.2016.
  */
 public class ObstacleLine extends Obstacle {
-    private Line2I line;
+    private Line line;
 
-    public ObstacleLine(Line2I line) {
+    public ObstacleLine(Line line) {
         this.line = line;
     }
 
@@ -18,7 +19,7 @@ public class ObstacleLine extends Obstacle {
         return line.getNearestPointOnLine(point);
     }
 
-    public Line2I getLine() {
+    public Line getLine() {
         return line;
     }
 

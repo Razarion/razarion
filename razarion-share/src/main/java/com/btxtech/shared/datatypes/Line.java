@@ -67,6 +67,10 @@ public class Line {
         return new Line(point1.getPointWithDistance(angel, distance), point2.getPointWithDistance(angel, distance));
     }
 
+    public Line translate(DecimalPosition translation) {
+        return new Line(point1.add(translation), point2.add(translation));
+    }
+
     public double getM() {
         return m;
     }

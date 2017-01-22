@@ -26,6 +26,9 @@ public class PathingService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private ObstacleContainer obstacleContainer;
+    int obstacleCount;
 
     public Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return new Path().setDestination(destination);
@@ -87,7 +90,7 @@ public class PathingService {
     }
 
     private void findObstacleContacts(SyncPhysicalMovable item, Collection<Contact> contacts) {
-        for (Obstacle obstacle : terrainService.getObstacles()) {
+        for (Obstacle obstacle : obstacleContainer.getObstacles(item)) {
             Contact contact = obstacle.hasContact(item);
             if (contact != null) {
                 contacts.add(contact);
@@ -153,11 +156,16 @@ public class PathingService {
     }
 
     private void solvePosition() {
-        while (!solvePositionContacts()) ;
+        System.out.println("-----------------------------------------------------");
+        boolean solved = false;
+        for (int i = 0; i < 10 && !solved; i++) {
+            solved = solvePositionContacts();
+        }
     }
 
     private boolean solvePositionContacts() {
         SingleHolder<Boolean> solved = new SingleHolder<>(true);
+        int unitCount = 0;
         // Units
         List<SyncPhysicalMovable> itemsToCheck = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
@@ -173,6 +181,7 @@ public class PathingService {
             SyncPhysicalMovable item1 = itemsToCheck.remove(0);
             for (SyncPhysicalMovable item2 : itemsToCheck) {
                 double distance = item1.getDistance(item2);
+                unitCount++;
                 if (distance >= -PENETRATION_TOLERANCE) {
                     continue;
                 }
@@ -191,6 +200,7 @@ public class PathingService {
                 }
             }
         }
+        obstacleCount = 0;
         // obstacles
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
@@ -199,7 +209,8 @@ public class PathingService {
             }
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
 
-            for (Obstacle obstacle : terrainService.getObstacles()) {
+            for (Obstacle obstacle : obstacleContainer.getObstacles(syncPhysicalMovable)) {
+                obstacleCount++;
                 // There is no check if the unit is inside the restricted area
                 DecimalPosition projection = obstacle.project(syncPhysicalMovable.getPosition2d());
                 double distance = projection.getDistance(syncPhysicalMovable.getPosition2d()) - syncPhysicalMovable.getRadius();
@@ -271,19 +282,6 @@ public class PathingService {
         });
     }
 }
-
-// TODO slow down before reach target. Avoid overrun destination.
-
-// TODO make two units dest in middle (both point to the destination before start)
-
-// TODO 1 slow
-// TODO 3: prevent lining up
-// TODO 16,17,23 does not bypass enough
-// TODO 18 tooks very 1ong unti1 are units are stopped
-// TODO 31,32,33 very slow
-// TODO Performance(solve position contacts & stop condition)
-// TODO different speed, acceleration and radius
-
 
 
 

@@ -67,7 +67,7 @@ public class MapCollection<T, U> {
 
     /**
      * Iterates over the map collection
-     * the callback should return true to stop the iteration
+     * the callback should return false to stop the iteration
      *
      * @param callback callback
      */

@@ -242,13 +242,13 @@ public class ExtendedGraphicsContext {
         gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
     }
 
-    public void drawObstacle(Obstacle obstacle) {
-        gc.setStroke(TERRAIN_OBSTACLE_COLOR);
-        gc.setFill(TERRAIN_OBSTACLE_COLOR);
+    public void drawObstacle(Obstacle obstacle, Paint stroke, Paint fill) {
+        gc.setStroke(stroke);
+        gc.setFill(fill);
         gc.setLineWidth(0.2);
         if (obstacle instanceof ObstacleLine) {
-            Index point1 = ((ObstacleLine) obstacle).getLine().getPoint1();
-            Index point2 = ((ObstacleLine) obstacle).getLine().getPoint2();
+            DecimalPosition point1 = ((ObstacleLine) obstacle).getLine().getPoint1();
+            DecimalPosition point2 = ((ObstacleLine) obstacle).getLine().getPoint2();
             gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
         } else if (obstacle instanceof ObstacleCircle) {
             Circle2D circle = ((ObstacleCircle) obstacle).getCircle();
