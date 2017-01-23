@@ -26,7 +26,6 @@ import java.util.Optional;
  */
 @Singleton
 public class TerrainScrollHandler {
-
     public enum ScrollDirection {
         TOP,
         BOTTOM,
@@ -88,6 +87,7 @@ public class TerrainScrollHandler {
 
     public void setScrollDisabled(boolean scrollDisabled) {
         this.scrollDisabled = scrollDisabled;
+        projectionTransformation.setDisableFovYChange(scrollDisabled);
         if (scrollDisabled) {
             simpleScheduledFuture.cancel();
         } else {
@@ -229,6 +229,7 @@ public class TerrainScrollHandler {
                 setCameraPosition(cameraConfig.getToPosition().getX(), cameraConfig.getToPosition().getY());
             }
         }
+        projectionTransformation.setDefaultFovY();
     }
 
     private void setCameraPosition(double xPosition, double yPosition) {

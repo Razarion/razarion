@@ -154,7 +154,7 @@ public class WebGlEmulatorController implements Initializable {
         canvas.addEventFilter(MouseEvent.ANY, mouseEvent -> canvas.requestFocus());
 
         fovSlider.valueProperty().addListener((observableValue, number, newValue) -> {
-            projectionTransformation.setFovY(Math.toRadians(fovSlider.getValue()));
+            projectionTransformation.setConstrainedFovY(Math.toRadians(fovSlider.getValue()));
         });
         cameraXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             camera.setRotateX(Math.toRadians(cameraXRotationSlider.getValue()));

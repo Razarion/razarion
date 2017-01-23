@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -41,6 +42,8 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
     private Camera camera;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
     @Inject
     @DataField
     private Span terrainPositionLabel;
@@ -143,6 +146,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
 
     @EventHandler("topViewButton")
     private void topViewButtonClick(ClickEvent event) {
+        projectionTransformation.disableFovYConstrain();
         terrainScrollHandler.setPlayGround(null);
         terrainScrollHandler.setScrollDisabled(false);
         camera.setTop();

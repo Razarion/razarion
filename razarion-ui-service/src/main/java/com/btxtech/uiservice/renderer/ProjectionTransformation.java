@@ -20,6 +20,9 @@ import javax.inject.Inject;
 public class ProjectionTransformation {
     private static final int Z_NEAR_FALLBACK = 10;
     private static final int Z_FAR_FALLBACK = 5000000;
+    private static final double MIN_FOV_Y = Math.toRadians(30);
+    private static final double MAX_FOV_Y = Math.toRadians(70);
+    private static final double DEFAULT_FOV_Y = Math.toRadians(45);
     // private Logger logger = Logger.getLogger(ProjectionTransformation.class.getName());
     @Inject
     private Camera camera;
@@ -27,11 +30,13 @@ public class ProjectionTransformation {
     private TerrainUiService terrainUiService;
     @Inject
     private ShadowUiService shadowUiService;
-    private double fovY = Math.toRadians(45);
+    private double fovY = DEFAULT_FOV_Y;
     private double aspectRatio = 4.0 / 3.0;
     private Matrix4 matrix;
     private double zNear;
     private double zFar;
+    private boolean fovYConstrain = true;
+    private boolean disableFovYChange;
 
     public double getFovY() {
         return fovY;
@@ -40,6 +45,21 @@ public class ProjectionTransformation {
     public void setFovY(double fovY) {
         this.fovY = fovY;
         setupMatrices();
+    }
+
+    public void setDefaultFovY() {
+        setFovY(DEFAULT_FOV_Y);
+    }
+
+    public void setConstrainedFovY(double fovY) {
+        if (disableFovYChange) {
+            return;
+        }
+        if (fovYConstrain) {
+            setFovY(MathHelper.clamp(fovY, MIN_FOV_Y, MAX_FOV_Y));
+        } else {
+            setFovY(fovY);
+        }
     }
 
     public double getAspectRatio() {
@@ -162,6 +182,14 @@ public class ProjectionTransformation {
         Matrix4 rotation = Matrix4.createXRotation(rotateX).multiply(Matrix4.createYRotation(rotateY));
         direction = rotation.multiply(direction, 1.0);
         return new Ray3d(new Vertex(0, 0, 0), direction);
+    }
+
+    public void disableFovYConstrain() {
+        fovYConstrain = false;
+    }
+
+    public void setDisableFovYChange(boolean disableFovYChange) {
+        this.disableFovYChange = disableFovYChange;
     }
 
     @Override

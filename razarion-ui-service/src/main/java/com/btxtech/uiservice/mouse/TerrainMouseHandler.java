@@ -240,7 +240,7 @@ public class TerrainMouseHandler {
 
     public void onMouseWheel(double deltaY) {
         try {
-            projectionTransformation.setFovY(projectionTransformation.getFovY() - Math.toRadians(deltaY) / MOUSE_WHEEL_DIVIDER);
+            projectionTransformation.setConstrainedFovY(projectionTransformation.getFovY() - Math.toRadians(deltaY) / MOUSE_WHEEL_DIVIDER);
             terrainScrollHandler.updateViewField();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
