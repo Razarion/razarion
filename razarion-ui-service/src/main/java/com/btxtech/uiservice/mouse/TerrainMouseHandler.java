@@ -82,7 +82,7 @@ public class TerrainMouseHandler {
     public void onMouseMove(int x, int y, int width, int height, boolean primaryButtonDown) {
         try {
             terrainScrollHandler.handleMouseMoveScroll(x, y, width, height);
-            // Send pick ray event
+
             Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
             Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
             if (terrainEditor != null) {
@@ -222,9 +222,11 @@ public class TerrainMouseHandler {
             if (primaryButtonReleased) {
                 if (groupSelectionFrame != null) {
                     renderTask.stop();
-                    Rectangle2D rectangle = groupSelectionFrame.finished(terrainPosition.toXY());
-                    if (rectangle != null) {
-                        selectionHandler.selectRectangle(rectangle);
+                    groupSelectionFrame.onMove(terrainPosition.toXY());
+                    if(groupSelectionFrame.getRectangle() != null) {
+                        selectionHandler.selectRectangle(groupSelectionFrame.getRectangle());
+                    } else {
+                        selectionHandler.selectPosition(groupSelectionFrame.getStart());
                     }
                     groupSelectionFrame = null;
                 } else {

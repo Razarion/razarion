@@ -134,7 +134,7 @@ button:disabled {
     right: 0;
     width: 200px;
     display: table;
-    animation: quest-sidebar-background-animation 2s ease-out 1;
+    animation: quest-sidebar-background-animation 4s ease-out 1;
     background-image: url('images/DialogBackground.png');
     border: 8px solid transparent;
     border-image-source: url('images/Border.png');

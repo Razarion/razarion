@@ -110,7 +110,7 @@ public abstract class CursorService {
     // Need to be public due to the weld proxies for the dev-tools
     public void handleMouseOverTerrain(DecimalPosition terrainPosition) {
         if (!selectionHandler.hasOwnSelection()) {
-            setPointerCursor();
+            setDefaultCursor();
             return;
         }
         if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD) {

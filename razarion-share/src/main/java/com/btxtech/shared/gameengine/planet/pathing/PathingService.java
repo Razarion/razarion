@@ -156,7 +156,6 @@ public class PathingService {
     }
 
     private void solvePosition() {
-        System.out.println("-----------------------------------------------------");
         boolean solved = false;
         for (int i = 0; i < 10 && !solved; i++) {
             solved = solvePositionContacts();

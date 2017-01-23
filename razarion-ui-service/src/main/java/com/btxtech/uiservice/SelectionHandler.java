@@ -13,6 +13,7 @@
 
 package com.btxtech.uiservice;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -31,6 +32,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * User: beat
@@ -79,22 +81,7 @@ public class SelectionHandler {
     public void selectRectangle(Rectangle2D rectangle) {
         Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.findItemsInRect(rectangle);
         if (selectedBaseItems != null) {
-            Collection<SyncBaseItemSimpleDto> own = new ArrayList<>();
-            SyncBaseItemSimpleDto other = null;
-            for (SyncBaseItemSimpleDto selectedSyncBaseItem : selectedBaseItems) {
-                if (baseItemUiService.isMyOwnProperty(selectedSyncBaseItem)) {
-                    own.add(selectedSyncBaseItem);
-                } else {
-                    other = selectedSyncBaseItem;
-                }
-            }
-            if (!own.isEmpty()) {
-                Group group = groupInstance.get();
-                group.setItems(own);
-                setItemGroupSelected(group);
-            } else {
-                setOtherItemSelected(other);
-            }
+            onBaseItemsSelected(selectedBaseItems);
             return;
         }
         Collection<SyncBoxItemSimpleDto> selectedBoxItems = boxUiService.findItemsInRect(rectangle);
@@ -110,6 +97,45 @@ public class SelectionHandler {
         }
 
         clearSelection(false);
+    }
+
+    public void selectPosition(DecimalPosition position) {
+        SyncBaseItemSimpleDto selectedBaseItem = baseItemUiService.findItemAtPosition(position);
+        if(selectedBaseItem != null) {
+            onBaseItemsSelected(Collections.singletonList(selectedBaseItem));
+            return;
+        }
+        SyncBoxItemSimpleDto selectedBoxItem = boxUiService.findItemAtPosition(position);
+        if (selectedBoxItem != null) {
+            setOtherItemSelected(selectedBoxItem);
+            return;
+        }
+        SyncResourceItemSimpleDto selectedResourceItem = resourceUiService.findItemAtPosition(position);
+        if (selectedResourceItem != null) {
+            setOtherItemSelected(selectedResourceItem);
+            return;
+        }
+
+        clearSelection(false);
+    }
+
+    private void onBaseItemsSelected(Collection<SyncBaseItemSimpleDto> selectedBaseItems) {
+        Collection<SyncBaseItemSimpleDto> own = new ArrayList<>();
+        SyncBaseItemSimpleDto other = null;
+        for (SyncBaseItemSimpleDto selectedSyncBaseItem : selectedBaseItems) {
+            if (baseItemUiService.isMyOwnProperty(selectedSyncBaseItem)) {
+                own.add(selectedSyncBaseItem);
+            } else {
+                other = selectedSyncBaseItem;
+            }
+        }
+        if (!own.isEmpty()) {
+            Group group = groupInstance.get();
+            group.setItems(own);
+            setItemGroupSelected(group);
+        } else {
+            setOtherItemSelected(other);
+        }
     }
 
     public void keepOnlyOwnOfType(BaseItemType baseItemType) {
