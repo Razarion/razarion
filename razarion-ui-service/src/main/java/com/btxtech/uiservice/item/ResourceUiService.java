@@ -114,12 +114,12 @@ public class ResourceUiService {
         if (syncResourceItems.isEmpty()) {
             return null;
         } else {
-            return monitorSyncItem(CollectionUtils.getFirst(syncResourceItems));
+            return monitorSyncResourceItem(CollectionUtils.getFirst(syncResourceItems));
         }
     }
 
-    private SyncItemMonitor monitorSyncItem(SyncResourceItemSimpleDto syncResourceItemSimpleDto) {
+    public SyncItemMonitor monitorSyncResourceItem(SyncResourceItemSimpleDto syncResourceItemSimpleDto) {
         // No monitoring is done, since resources do not move
-        return new SyncItemMonitor(syncResourceItemSimpleDto, null);
+        return new SyncItemState(syncResourceItemSimpleDto, null, itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 }

@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class TerrainEditorImpl implements TerrainEditor {
-    private Consumer<Vertex> terrainPositionListener;
-
     public enum CursorType {
         CREATE,
         MODIFY,
@@ -84,6 +82,7 @@ public class TerrainEditorImpl implements TerrainEditor {
     private List<ModelMatrices> terrainObjectModelMatrices;
     private double terrainObjectRandomZRotation = Math.toDegrees(180);
     private double terrainObjectRandomScale = 1.5;
+    private Consumer<Vertex> terrainPositionListener;
 
     @Override
     public void onMouseMove(Vertex terrainPosition) {

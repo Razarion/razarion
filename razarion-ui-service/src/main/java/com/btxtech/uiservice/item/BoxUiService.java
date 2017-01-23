@@ -118,14 +118,14 @@ public class BoxUiService {
     public SyncItemMonitor monitorFirstBoxItem(int boxItemTypeId) {
         SyncBoxItemSimpleDto boxItemSimpleDto = findFirstBoxItem(boxItemTypeId);
         if (boxItemSimpleDto != null) {
-            return monitorSyncIBoxItem(boxItemSimpleDto);
+            return monitorSyncBoxItem(boxItemSimpleDto);
         } else {
             return null;
         }
     }
 
-    public SyncItemMonitor monitorSyncIBoxItem(SyncBoxItemSimpleDto boxItemSimpleDto) {
+    public SyncItemMonitor monitorSyncBoxItem(SyncBoxItemSimpleDto boxItemSimpleDto) {
         // No monitoring is done, since boxes do not move
-        return new SyncItemMonitor(boxItemSimpleDto, null);
+        return new SyncItemState(boxItemSimpleDto, null, itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 }

@@ -2,8 +2,6 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 
 import java.util.function.Consumer;
 
@@ -12,47 +10,44 @@ import java.util.function.Consumer;
  * 23.01.2017.
  */
 public class SyncItemMonitor {
-    private int syncItemId;
-    private DecimalPosition position2d;
-    private Vertex position3d;
-    private Consumer<SyncItemMonitor> releaseMonitorCallback;
-    private int monitorCount;
+    private SyncItemState syncItemState;
+    private Consumer<SyncItemMonitor> positionChangeListener;
 
-    public SyncItemMonitor(SyncItemSimpleDto syncItemSimpleDto, Consumer<SyncItemMonitor> releaseMonitorCallback) {
-        syncItemId = syncItemSimpleDto.getId();
-        position2d = syncItemSimpleDto.getPosition2d();
-        position3d = syncItemSimpleDto.getPosition3d();
-        this.releaseMonitorCallback = releaseMonitorCallback;
+    public SyncItemMonitor(SyncItemState syncItemState) {
+        this.syncItemState = syncItemState;
     }
 
     public int getSyncItemId() {
-        return syncItemId;
+        return syncItemState.getSyncItemId();
+    }
+
+    public DecimalPosition getInterpolatableVelocity() {
+        return syncItemState.getInterpolatableVelocity();
     }
 
     public DecimalPosition getPosition2d() {
-        return position2d;
+        return syncItemState.getPosition2d();
     }
 
     public Vertex getPosition3d() {
-        return position3d;
+        return syncItemState.getPosition3d();
     }
 
-    public void increaseMonitorCount() {
-        monitorCount++;
+    public double getRadius() {
+        return syncItemState.getRadius();
     }
 
-    public void update(SyncBaseItemSimpleDto syncItemSimpleDto) {
-        if (position2d.equals(syncItemSimpleDto.getPosition2d())) {
-            return;
-        }
-        position2d = syncItemSimpleDto.getPosition2d();
-        position3d = syncItemSimpleDto.getPosition3d();
+    public void setPositionChangeListener(Consumer<SyncItemMonitor> positionChangeListener) {
+        this.positionChangeListener = positionChangeListener;
     }
 
     public void release() {
-        monitorCount--;
-        if (monitorCount <= 0 && releaseMonitorCallback != null) {
-            releaseMonitorCallback.accept(this);
+        syncItemState.releaseMonitor(this);
+    }
+
+    public void onPositionChanged() {
+        if (positionChangeListener != null) {
+            positionChangeListener.accept(this);
         }
     }
 }

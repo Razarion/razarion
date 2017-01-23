@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer.task.selection;
 
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.ItemMarkerService;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -18,10 +19,17 @@ import javax.inject.Inject;
 public class ItemMarkerRenderTask extends AbstractRenderTask<Void> {
     @Inject
     private ItemMarkerService itemMarkerService;
+    @Inject
+    private BaseItemUiService baseItemUiService;
 
     @PostConstruct
     public void postConstruct() {
         setupItemMarker();
+    }
+
+    @Override
+    protected double setupInterpolationFactor() {
+        return baseItemUiService.setupInterpolationFactor();
     }
 
     private void setupItemMarker() {

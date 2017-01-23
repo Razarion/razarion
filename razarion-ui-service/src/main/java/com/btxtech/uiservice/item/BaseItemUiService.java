@@ -14,7 +14,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitService;
@@ -57,7 +56,7 @@ public class BaseItemUiService {
     @Inject
     private ItemCockpitService itemCockpitService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
-    private Map<Integer, SyncItemMonitor> syncItemMonitors = new HashMap<>();
+    private Map<Integer, SyncItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
     private int resources;
     private int usedHouseSpace;
@@ -111,6 +110,7 @@ public class BaseItemUiService {
     }
 
     public void updateSyncBaseItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+        // May be easier if replaced with SyncItemState and SyncItemMonitor
         lastUpdateTimeStamp = System.currentTimeMillis();
         this.syncBaseItems = syncBaseItems;
         spawningModelMatrices.clear();
@@ -269,28 +269,28 @@ public class BaseItemUiService {
         return result;
     }
 
-    public SyncItemMonitor monitorSyncItem(SyncItemSimpleDto syncItemSimpleDto) {
-        SyncItemMonitor syncItemMonitor = syncItemMonitors.computeIfAbsent(syncItemSimpleDto.getId(), k -> new SyncItemMonitor(syncItemSimpleDto, this::releaseSyncItemMonitor));
-        syncItemMonitor.increaseMonitorCount();
-        return syncItemMonitor;
+    public SyncItemMonitor monitorSyncItem(SyncBaseItemSimpleDto syncBaseItemSimpleDto) {
+        double radius = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId()).getPhysicalAreaConfig().getRadius();
+        SyncItemState syncItemState = syncItemStates.computeIfAbsent(syncBaseItemSimpleDto.getId(), k -> new SyncItemState(syncBaseItemSimpleDto, syncBaseItemSimpleDto.getInterpolatableVelocity(), radius, this::releaseSyncItemMonitor));
+        return syncItemState.createSyncItemMonitor();
     }
 
-    private void releaseSyncItemMonitor(SyncItemMonitor syncItemMonitor) {
-        syncItemMonitors.remove(syncItemMonitor.getSyncItemId());
+    private void releaseSyncItemMonitor(SyncItemState syncItemState) {
+        syncItemStates.remove(syncItemState.getSyncItemId());
     }
 
     private void updateSyncItemMonitor(SyncBaseItemSimpleDto syncBaseItem) {
-        SyncItemMonitor syncItemMonitor = syncItemMonitors.get(syncBaseItem.getId());
-        if(syncItemMonitor == null) {
+        SyncItemState syncItemState = syncItemStates.get(syncBaseItem.getId());
+        if (syncItemState == null) {
             return;
         }
-        syncItemMonitor.update(syncBaseItem);
+        syncItemState.update(syncBaseItem, syncBaseItem.getInterpolatableVelocity());
     }
 
     public SyncItemMonitor monitorMySyncBaseItemOfType(int itemTypeId) {
-        SyncItemSimpleDto syncItemSimpleDto = findMyItemOfType(itemTypeId);
-        if (syncItemSimpleDto != null) {
-            return monitorSyncItem(syncItemSimpleDto);
+        SyncBaseItemSimpleDto syncBaseItem = findMyItemOfType(itemTypeId);
+        if (syncBaseItem != null) {
+            return monitorSyncItem(syncBaseItem);
         } else {
             return null;
         }
@@ -341,7 +341,7 @@ public class BaseItemUiService {
         return findMyItemsOfType(itemTypeId).size();
     }
 
-    private SyncItemSimpleDto findMyItemOfType(int baseItemTypeId) {
+    private SyncBaseItemSimpleDto findMyItemOfType(int baseItemTypeId) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
             if (!isMyOwnProperty(syncBaseItem)) {
                 continue;
