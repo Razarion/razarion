@@ -126,6 +126,10 @@ public abstract class CursorService {
         }
     }
 
+    public void handleItemPlaceActivated() {
+        setDefaultCursor();
+    }
+
     private boolean atLeastOnAllowedForUnload(DecimalPosition position) {
         // TODO
 //        for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection().getItems()) {

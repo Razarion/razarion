@@ -2,6 +2,7 @@ package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
+import com.btxtech.uiservice.mouse.CursorService;
 import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,11 +22,14 @@ public class BaseItemPlacerService {
     private Instance<BaseItemPlacer> instance;
     @Inject
     private BaseItemPlacerRenderTask baseItemPlacerRenderTask;
+    @Inject
+    private CursorService cursorService;
     private BaseItemPlacer baseItemPlacer;
     private Consumer<Collection<DecimalPosition>> executionCallback;
     private Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
 
     public void activate(BaseItemPlacerConfig baseItemPlacerConfig, Consumer<Collection<DecimalPosition>> executionCallback) {
+        cursorService.handleItemPlaceActivated();
         this.executionCallback = executionCallback;
         baseItemPlacer = instance.get().init(baseItemPlacerConfig);
         baseItemPlacerRenderTask.activate(baseItemPlacer);
