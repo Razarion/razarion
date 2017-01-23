@@ -57,6 +57,7 @@ public class BaseItemUiService {
     @Inject
     private ItemCockpitService itemCockpitService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
+    private Map<Integer, SyncItemMonitor> syncItemMonitors = new HashMap<>();
     private PlayerBaseDto myBase;
     private int resources;
     private int usedHouseSpace;
@@ -125,6 +126,7 @@ public class BaseItemUiService {
             if (isMyOwnProperty(syncBaseItem)) {
                 tmpItemCount++;
             }
+            updateSyncItemMonitor(syncBaseItem);
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (!terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
@@ -267,30 +269,40 @@ public class BaseItemUiService {
         return result;
     }
 
-    public SyncItemSimpleDto findMyItemOfType(int baseItemTypeId) {
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (!isMyOwnProperty(syncBaseItem)) {
-                continue;
-            }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (baseItemType.getId() == baseItemTypeId) {
-                return syncBaseItem;
-            }
-        }
-        return null;
+    public SyncItemMonitor monitorSyncItem(SyncItemSimpleDto syncItemSimpleDto) {
+        SyncItemMonitor syncItemMonitor = syncItemMonitors.computeIfAbsent(syncItemSimpleDto.getId(), k -> new SyncItemMonitor(syncItemSimpleDto, this::releaseSyncItemMonitor));
+        syncItemMonitor.increaseMonitorCount();
+        return syncItemMonitor;
     }
 
-    public SyncBaseItemSimpleDto findEnemyItemWithPlace(PlaceConfig placeConfig) {
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (!isEnemy(syncBaseItem)) {
-                continue;
-            }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (placeConfig.checkInside(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
-                return syncBaseItem;
-            }
+    private void releaseSyncItemMonitor(SyncItemMonitor syncItemMonitor) {
+        syncItemMonitors.remove(syncItemMonitor.getSyncItemId());
+    }
+
+    private void updateSyncItemMonitor(SyncBaseItemSimpleDto syncBaseItem) {
+        SyncItemMonitor syncItemMonitor = syncItemMonitors.get(syncBaseItem.getId());
+        if(syncItemMonitor == null) {
+            return;
         }
-        return null;
+        syncItemMonitor.update(syncBaseItem);
+    }
+
+    public SyncItemMonitor monitorMySyncBaseItemOfType(int itemTypeId) {
+        SyncItemSimpleDto syncItemSimpleDto = findMyItemOfType(itemTypeId);
+        if (syncItemSimpleDto != null) {
+            return monitorSyncItem(syncItemSimpleDto);
+        } else {
+            return null;
+        }
+    }
+
+    public SyncItemMonitor monitorEnemyItemWithPlace(PlaceConfig placeConfig) {
+        SyncBaseItemSimpleDto enemy = findEnemyItemWithPlace(placeConfig);
+        if (enemy != null) {
+            return monitorSyncItem(enemy);
+        } else {
+            return null;
+        }
     }
 
     public int getResources() {
@@ -327,6 +339,32 @@ public class BaseItemUiService {
 
     public int getMyItemCount(int itemTypeId) {
         return findMyItemsOfType(itemTypeId).size();
+    }
+
+    private SyncItemSimpleDto findMyItemOfType(int baseItemTypeId) {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (!isMyOwnProperty(syncBaseItem)) {
+                continue;
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (baseItemType.getId() == baseItemTypeId) {
+                return syncBaseItem;
+            }
+        }
+        return null;
+    }
+
+    private SyncBaseItemSimpleDto findEnemyItemWithPlace(PlaceConfig placeConfig) {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (!isEnemy(syncBaseItem)) {
+                continue;
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (placeConfig.checkInside(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
+                return syncBaseItem;
+            }
+        }
+        return null;
     }
 
 }

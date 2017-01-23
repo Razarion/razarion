@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -78,7 +79,7 @@ public class ResourceUiService {
         return result;
     }
 
-    public Collection<SyncResourceItemSimpleDto> findResourceItemWithPlace(int resourceTypeId, PlaceConfig resourceSelection) {
+    private Collection<SyncResourceItemSimpleDto> findResourceItemWithPlace(int resourceTypeId, PlaceConfig resourceSelection) {
         Collection<SyncResourceItemSimpleDto> result = new ArrayList<>();
         synchronized (resources) {
             for (SyncResourceItemSimpleDto resource : resources.values()) {
@@ -108,4 +109,17 @@ public class ResourceUiService {
         }
     }
 
+    public SyncItemMonitor monitorResourceItemWithPlace(int toCollectFormId, PlaceConfig resourceSelection) {
+        Collection<SyncResourceItemSimpleDto> syncResourceItems = findResourceItemWithPlace(toCollectFormId, resourceSelection);
+        if (syncResourceItems.isEmpty()) {
+            return null;
+        } else {
+            return monitorSyncItem(CollectionUtils.getFirst(syncResourceItems));
+        }
+    }
+
+    private SyncItemMonitor monitorSyncItem(SyncResourceItemSimpleDto syncResourceItemSimpleDto) {
+        // No monitoring is done, since resources do not move
+        return new SyncItemMonitor(syncResourceItemSimpleDto, null);
+    }
 }

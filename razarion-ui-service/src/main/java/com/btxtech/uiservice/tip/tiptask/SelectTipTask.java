@@ -25,9 +25,6 @@ public class SelectTipTask extends AbstractTipTask {
 
     @Override
     public void internalStart() {
-        activateFailOnSelectionCleared();
-        activateFailOnTargetSelectionChanged();
-        // TODO may needed activateConversionOnMouseMove();
         setShowInGameQuestVisualisation(false);
     }
 
@@ -45,13 +42,11 @@ public class SelectTipTask extends AbstractTipTask {
     public void onOwnSelectionChanged(Group selectedGroup) {
         if (isSingleSelection(itemTypeId, selectedGroup)) {
             onSucceed();
-        } else {
-            onFailed();
         }
     }
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        return new InGameItemTipVisualization(() -> baseItemUiService.findMyItemOfType(itemTypeId), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getSelectCornerColor(), getGameTipVisualConfig().getSelectShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+        return new InGameItemTipVisualization(() -> baseItemUiService.monitorMySyncBaseItemOfType(itemTypeId), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getSelectCornerColor(), getGameTipVisualConfig().getSelectShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

@@ -77,7 +77,7 @@ public class BoxUiService {
         return result;
     }
 
-    public SyncBoxItemSimpleDto findFirstBoxItem(int boxItemTypeId) {
+    private SyncBoxItemSimpleDto findFirstBoxItem(int boxItemTypeId) {
         synchronized (boxes) {
             for (SyncBoxItemSimpleDto box : boxes.values()) {
                 BoxItemType boxItemType = itemTypeService.getBoxItemType(box.getItemTypeId());
@@ -115,4 +115,17 @@ public class BoxUiService {
         }
     }
 
+    public SyncItemMonitor monitorFirstBoxItem(int boxItemTypeId) {
+        SyncBoxItemSimpleDto boxItemSimpleDto = findFirstBoxItem(boxItemTypeId);
+        if (boxItemSimpleDto != null) {
+            return monitorSyncIBoxItem(boxItemSimpleDto);
+        } else {
+            return null;
+        }
+    }
+
+    public SyncItemMonitor monitorSyncIBoxItem(SyncBoxItemSimpleDto boxItemSimpleDto) {
+        // No monitoring is done, since boxes do not move
+        return new SyncItemMonitor(boxItemSimpleDto, null);
+    }
 }

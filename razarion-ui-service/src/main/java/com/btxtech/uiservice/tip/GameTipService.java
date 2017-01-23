@@ -182,6 +182,7 @@ public class GameTipService {
         if (inGameTipVisualization != null) {
             tipRenderTask.deactivate();
             terrainScrollHandler.removeTerrainScrollListener(inGameTipVisualization);
+            inGameTipVisualization.cleanup();
             inGameTipVisualization = null;
         }
         if (inGameDirectionVisualization != null) {

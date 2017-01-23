@@ -1,15 +1,12 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.tip.visualization.InGameItemTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * User: beat
@@ -51,15 +48,6 @@ public class SendHarvestCommandTipTask extends AbstractTipTask {
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        return new InGameItemTipVisualization(this::provideResource, getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
-    }
-
-    private SyncResourceItemSimpleDto provideResource() {
-        Collection<SyncResourceItemSimpleDto> syncResourceItems = resourceUiService.findResourceItemWithPlace(toCollectFormId, resourceSelection);
-        if (syncResourceItems.isEmpty()) {
-            return null;
-        } else {
-            return CollectionUtils.getFirst(syncResourceItems);
-        }
+        return new InGameItemTipVisualization(() -> resourceUiService.monitorResourceItemWithPlace(toCollectFormId, resourceSelection), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getGrabCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
     }
 }

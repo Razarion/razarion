@@ -66,6 +66,7 @@ public abstract class CursorService {
                     } else {
                         setPointerCursor();
                     }
+                } else {
                     setPointerCursor();
                 }
             }

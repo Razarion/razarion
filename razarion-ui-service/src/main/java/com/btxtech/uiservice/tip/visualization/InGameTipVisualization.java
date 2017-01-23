@@ -47,6 +47,10 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
 
     abstract DecimalPosition getPosition2D();
 
+    public void cleanup() {
+       // Override in subclasses
+    }
+
     public void preRender() {
         if (!ready) {
             if (lastReadyCheck + READY_CHECK_DELAY > System.currentTimeMillis()) {

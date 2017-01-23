@@ -21,7 +21,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
@@ -44,9 +43,6 @@ public class SelectionHandler {
     // private Logger logger = Logger.getLogger(SelectionHandler.class.getName());
     @Inject
     private Event<SelectionEvent> selectionEventEventTrigger;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private AudioService audioService;
     @Inject
     private Instance<Group> groupInstance;
     @Inject
@@ -101,7 +97,7 @@ public class SelectionHandler {
 
     public void selectPosition(DecimalPosition position) {
         SyncBaseItemSimpleDto selectedBaseItem = baseItemUiService.findItemAtPosition(position);
-        if(selectedBaseItem != null) {
+        if (selectedBaseItem != null) {
             onBaseItemsSelected(Collections.singletonList(selectedBaseItem));
             return;
         }
@@ -180,13 +176,13 @@ public class SelectionHandler {
         }
     }
 
-    public void boxItemRemove(SyncBoxItemSimpleDto syncBoxItem) { // TODO call this method
+    public void boxItemRemove(SyncBoxItemSimpleDto syncBoxItem) {
         if (syncBoxItem.equals(selectedOtherSyncItem)) {
             clearSelection(false);
         }
     }
 
-    public void resourceItemRemove(SyncResourceItemSimpleDto syncResourceItem) { // TODO call this method
+    public void resourceItemRemove(SyncResourceItemSimpleDto syncResourceItem) {
         if (syncResourceItem.equals(selectedOtherSyncItem)) {
             clearSelection(false);
         }
