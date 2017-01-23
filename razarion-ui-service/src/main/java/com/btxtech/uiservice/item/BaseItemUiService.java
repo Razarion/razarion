@@ -144,7 +144,7 @@ public class BaseItemUiService {
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && syncBaseItem.checkHealth()) {
                 aliveModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));
                 if (syncBaseItem.getWeaponTurret() != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret()));
+                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));
                 }
             }
             // Demolition

@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -58,7 +59,7 @@ public class SyncItemState {
     }
 
     public void update(SyncBaseItemSimpleDto syncItemSimpleDto, DecimalPosition interpolatableVelocity) {
-        if (position2d.equals(syncItemSimpleDto.getPosition2d())) {
+        if (position2d.equals(syncItemSimpleDto.getPosition2d()) && Objects.equals(this.interpolatableVelocity, interpolatableVelocity)) {
             return;
         }
         position2d = syncItemSimpleDto.getPosition2d();
