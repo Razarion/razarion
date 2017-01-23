@@ -37,7 +37,7 @@ public class GroundRenderTask extends AbstractRenderTask<GroundSkeletonConfig> {
         renderComposite.setRenderUnit(AbstractGroundRendererUnit.class);
         renderComposite.setDepthBufferRenderUnit(AbstractGroundRendererUnit.class);
         renderComposite.setNormRenderUnit(AbstractGroundRendererUnit.class);
-        modelRenderer.add(RenderUnitControl.NORMAL, renderComposite);
+        modelRenderer.add(RenderUnitControl.TERRAIN, renderComposite);
         add(modelRenderer);
         if (fillBuffer) {
             renderComposite.fillBuffers();

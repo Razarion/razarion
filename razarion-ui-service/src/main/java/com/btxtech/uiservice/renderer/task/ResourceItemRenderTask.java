@@ -55,7 +55,7 @@ public class ResourceItemRenderTask extends AbstractRenderTask<ResourceItemType>
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }

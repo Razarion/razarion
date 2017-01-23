@@ -81,7 +81,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }
@@ -105,7 +105,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
                     compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }
@@ -137,7 +137,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }
@@ -162,7 +162,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(maxHeight, visualUiService.getVisualConfig().getBaseItemDemolitionCuttingImageId(), visualUiService.getVisualConfig().getBaseItemDemolitionLookUpImageId());
                     compositeRenderer.setDepthBufferRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(maxHeight, visualUiService.getVisualConfig().getBaseItemDemolitionCuttingImageId(), visualUiService.getVisualConfig().getBaseItemDemolitionLookUpImageId());
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }
@@ -197,7 +197,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }
@@ -230,7 +230,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }
@@ -264,7 +264,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
         compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
         compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
         compositeRenderer.setupAnimation(shape3D, Shape3DUtils.getElement4MaterialId(shape3D, shape3dMaterialId), vertexContainer.getShapeTransform());
-        modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+        modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
         if (fillBuffer) {
             compositeRenderer.fillBuffers();
         }
@@ -311,7 +311,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                                 compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                                 compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                                 compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                                modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                                modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                                 if (fillBuffer) {
                                     compositeRenderer.fillBuffers();
                                 }

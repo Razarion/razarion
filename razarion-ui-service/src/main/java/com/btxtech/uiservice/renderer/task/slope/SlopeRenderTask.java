@@ -52,7 +52,7 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
             renderComposite.setRenderUnit(rendererInstance.get());
             renderComposite.setDepthBufferRenderUnit(depthBufferRendererInstance.get());
             renderComposite.setNormRenderUnit(normRendererInstance.get());
-            modelRenderer.add(RenderUnitControl.NORMAL, renderComposite);
+            modelRenderer.add(RenderUnitControl.TERRAIN, renderComposite);
             add(modelRenderer);
             if (fillBuffer) {
                 renderComposite.fillBuffers();

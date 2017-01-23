@@ -55,7 +55,7 @@ public class BoxItemRenderTask extends AbstractRenderTask<BoxItemType> {
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }

@@ -55,7 +55,7 @@ public class TerrainObjectRenderTask extends AbstractRenderTask<TerrainObjectCon
                     compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                    modelRenderer.add(RenderUnitControl.NORMAL, compositeRenderer);
+                    modelRenderer.add(RenderUnitControl.TERRAIN, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();
                     }
