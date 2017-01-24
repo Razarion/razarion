@@ -89,7 +89,7 @@ public enum StartupTestSeq implements StartupSeq {
             return true;
         }
     },
-    TEST_WAIT_FOR_BACKGROUND {
+    TEST_WAIT_FOR_BACKGROUND_SIMPLE {
         @Override
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return WaitForBackgroundTestTaskEnum.values();
@@ -98,6 +98,16 @@ public enum StartupTestSeq implements StartupSeq {
         public boolean isCold() {
             return true;
         }
-    };
+    },
+    TEST_WAIT_FOR_BACKGROUND_COMPLEX {
+        @Override
+        public StartupTaskEnum[] getAbstractStartupTaskEnum() {
+            return WaitForBackgroundComplexTestTaskEnum.values();
+        }
+        @Override
+        public boolean isCold() {
+            return true;
+        }
+    }
 
 }

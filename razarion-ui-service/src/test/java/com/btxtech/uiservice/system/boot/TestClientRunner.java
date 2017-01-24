@@ -420,7 +420,7 @@ public class TestClientRunner {
     @Test
     public void runWaitForBackgroundSimple() {
         StartupProgressListener mockListener = createStrictMock(StartupProgressListener.class);
-        mockListener.onStart(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND);
+        mockListener.onStart(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND_SIMPLE);
 
         mockListener.onNextTask(WaitForBackgroundTestTaskEnum.TEST_1_BACKGROUND);
 
@@ -444,8 +444,57 @@ public class TestClientRunner {
 
         ClientRunner clientRunner = createClientRunner();
         clientRunner.addStartupProgressListener(mockListener);
-        clientRunner.start(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND);
+        clientRunner.start(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND_SIMPLE);
         getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(0).finished();
+        verify(mockListener);
+        failOnException();
+    }
+
+    @Test
+    public void runWaitForBackgroundComplex() {
+        StartupProgressListener mockListener = createStrictMock(StartupProgressListener.class);
+        mockListener.onStart(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND_COMPLEX);
+
+        mockListener.onNextTask(WaitForBackgroundComplexTestTaskEnum.TEST_1_DEFERRED_BACKGROUND);
+
+        mockListener.onNextTask(WaitForBackgroundComplexTestTaskEnum.TEST_2_DEFERRED);
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundComplexTestTaskEnum.TEST_2_DEFERRED));
+
+        mockListener.onNextTask(WaitForBackgroundComplexTestTaskEnum.TEST_3_DEFERRED_BACKGROUND);
+
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundComplexTestTaskEnum.TEST_1_DEFERRED_BACKGROUND));
+
+        mockListener.onNextTask(WaitForBackgroundComplexTestTaskEnum.TEST_4_DEFERRED_BACKGROUND);
+
+        mockListener.onNextTask(WaitForBackgroundComplexTestTaskEnum.TEST_5_SIMPLE);
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundComplexTestTaskEnum.TEST_5_SIMPLE));
+
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundComplexTestTaskEnum.TEST_3_DEFERRED_BACKGROUND));
+        mockListener.onNextTask(WaitForBackgroundComplexTestTaskEnum.TEST_6_SIMPLE);
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundComplexTestTaskEnum.TEST_6_SIMPLE));
+
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundComplexTestTaskEnum.TEST_4_DEFERRED_BACKGROUND));
+        mockListener.onNextTask(WaitForBackgroundComplexTestTaskEnum.TEST_7_SIMPLE);
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundComplexTestTaskEnum.TEST_7_SIMPLE));
+
+        mockListener.onStartupFinished(eqStartupTaskInfo(new StartupTaskEnum[]{WaitForBackgroundComplexTestTaskEnum.TEST_2_DEFERRED,
+                WaitForBackgroundComplexTestTaskEnum.TEST_1_DEFERRED_BACKGROUND,
+                WaitForBackgroundComplexTestTaskEnum.TEST_5_SIMPLE,
+                WaitForBackgroundComplexTestTaskEnum.TEST_3_DEFERRED_BACKGROUND,
+                WaitForBackgroundComplexTestTaskEnum.TEST_6_SIMPLE,
+                WaitForBackgroundComplexTestTaskEnum.TEST_4_DEFERRED_BACKGROUND,
+                WaitForBackgroundComplexTestTaskEnum.TEST_7_SIMPLE,
+        }), geq(0L));
+
+        replay(mockListener);
+
+        ClientRunner clientRunner = createClientRunner();
+        clientRunner.addStartupProgressListener(mockListener);
+        clientRunner.start(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND_COMPLEX);
+        getStartupTestTaskMonitor().getDeferredStartupTestTask(0).finished();
+        getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(0).finished();
+        getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(1).finished();
+        getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(2).finished();
         verify(mockListener);
         failOnException();
     }

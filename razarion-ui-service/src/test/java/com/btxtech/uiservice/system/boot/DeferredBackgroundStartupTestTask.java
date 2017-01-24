@@ -40,4 +40,9 @@ public class DeferredBackgroundStartupTestTask extends AbstractStartupTask {
     public void failed(Throwable throwable) {
         deferredStartup.failed(throwable);
     }
+
+    @Override
+    public String toString() {
+        return "DeferredBackgroundStartupTestTask{" + deferredStartup.getStartupTaskEnum() + "}";
+    }
 }
