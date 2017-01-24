@@ -1,4 +1,4 @@
-package com.btxtech.client.system.boot.task;
+package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.shared.dto.GameUiControlConfig;

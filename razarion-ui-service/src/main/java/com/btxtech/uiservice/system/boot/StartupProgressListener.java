@@ -1,6 +1,4 @@
-package com.btxtech.client.system.boot;
-
-import com.btxtech.client.system.boot.task.AbstractStartupTask;
+package com.btxtech.uiservice.system.boot;
 
 import java.util.List;
 

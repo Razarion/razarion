@@ -11,26 +11,17 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.client.system.boot.task;
+package com.btxtech.uiservice.system.boot;
 
 /**
  * User: beat
- * Date: 04.12.2010
- * Time: 13:01:44
+ * Date: 06.12.2010
+ * Time: 19:36:23
  */
-public interface DeferredStartup {
-    public static final String NO_CONNECTION = "No connection";
-    public static final String NO_SYNC_INFO = "No synchronization information received";
+public interface StartupTaskEnum {
+    boolean isFirstTask();
 
-    void setDeferred();
+    Class<? extends AbstractStartupTask> getTaskClass();
 
-    void finished();
-
-    void failed(Throwable throwable);
-
-    void failed(String error);
-
-    void setBackground();
-
-    boolean isBackground();
+    String name();
 }

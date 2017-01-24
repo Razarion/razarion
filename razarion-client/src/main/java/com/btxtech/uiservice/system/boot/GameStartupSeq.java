@@ -11,7 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.client.system.boot;
+package com.btxtech.uiservice.system.boot;
 
 /**
  * User: beat

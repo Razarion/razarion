@@ -1,4 +1,4 @@
-package com.btxtech.client.system.boot.task;
+package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;

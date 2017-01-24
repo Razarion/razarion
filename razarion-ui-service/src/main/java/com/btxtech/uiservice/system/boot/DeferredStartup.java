@@ -11,17 +11,26 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.client.system.boot;
+package com.btxtech.uiservice.system.boot;
 
 /**
  * User: beat
- * Date: 22.12.2010
- * Time: 14:31:16
+ * Date: 04.12.2010
+ * Time: 13:01:44
  */
-public interface StartupSeq {
-    StartupTaskEnum[] getAbstractStartupTaskEnum();
+public interface DeferredStartup {
+    public static final String NO_CONNECTION = "No connection";
+    public static final String NO_SYNC_INFO = "No synchronization information received";
 
-    boolean isCold();
+    void setDeferred();
 
-    boolean isBackEndMode();
+    void finished();
+
+    void failed(Throwable throwable);
+
+    void failed(String error);
+
+    void setBackground();
+
+    boolean isBackground();
 }

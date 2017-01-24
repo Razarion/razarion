@@ -1,8 +1,7 @@
-package com.btxtech.client.system.boot;
+package com.btxtech.uiservice.system.boot;
 
-import com.btxtech.client.system.boot.task.AbstractStartupTask;
-import com.btxtech.client.system.boot.task.DeferredStartup;
-import com.btxtech.client.utils.GwtCommon;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.inject.Instance;
@@ -11,7 +10,6 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -21,15 +19,17 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class ClientRunner {
+    private Logger logger = Logger.getLogger(ClientRunner.class.getName());
     private Collection<StartupProgressListener> listeners = new ArrayList<>();
     private List<AbstractStartupTask> startupList = new ArrayList<>();
     private List<DeferredStartup> deferredStartups = new ArrayList<>();
     private List<AbstractStartupTask> finishedTasks = new ArrayList<>();
     private boolean failed;
-    private Logger logger = Logger.getLogger(ClientRunner.class.getName());
     private String startUuid;
     @Inject
     private Instance<AbstractStartupTask> taskInstance;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
     public void addStartupProgressListener(StartupProgressListener startupProgressListener) {
         listeners.add(startupProgressListener);
@@ -66,7 +66,7 @@ public class ClientRunner {
                 try {
                     listener.onNextTask(task.getTaskEnum());
                 } catch (Throwable t) {
-                    logger.log(Level.SEVERE, "", t);
+                    exceptionHandler.handleException(t);
                 }
             }
             try {
@@ -172,7 +172,7 @@ public class ClientRunner {
     }
 
     void onTaskFailed(AbstractStartupTask abstractStartupTask, Throwable t) {
-        onTaskFailed(abstractStartupTask, GwtCommon.setupStackTrace(null, t), t);
+        onTaskFailed(abstractStartupTask, ExceptionUtil.setupStackTrace(null, t), t);
     }
 
     private void setupStartupSeq(StartupSeq startupSeq) {

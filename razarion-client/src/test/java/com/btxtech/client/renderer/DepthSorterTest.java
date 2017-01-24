@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer;
 
-import com.btxtech.TestHelper;
+import com.btxtech.test.TestHelper;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.Camera;

@@ -1,6 +1,6 @@
 package com.btxtech.servercommon.collada;
 
-import com.btxtech.TestHelper;
+import com.btxtech.test.TestHelper;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;

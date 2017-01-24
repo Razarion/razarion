@@ -11,9 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.client.system.boot;
-
-import com.btxtech.client.system.boot.StartupTaskEnum;
+package com.btxtech.uiservice.system.boot;
 
 import java.io.Serializable;
 

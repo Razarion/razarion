@@ -11,10 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.client.system.boot.task;
-
-import com.btxtech.client.system.boot.StartupTaskEnum;
-import com.btxtech.client.system.boot.StartupTaskInfo;
+package com.btxtech.uiservice.system.boot;
 
 /**
  * User: beat

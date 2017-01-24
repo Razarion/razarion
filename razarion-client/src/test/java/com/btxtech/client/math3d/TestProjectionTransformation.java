@@ -1,6 +1,6 @@
 package com.btxtech.client.math3d;
 
-import com.btxtech.TestHelper;
+import com.btxtech.test.TestHelper;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.uiservice.VisualUiService;

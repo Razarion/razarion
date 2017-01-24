@@ -124,7 +124,7 @@ public class ImageLoader<T> {
             stringBuilder.append(url);
             stringBuilder.append('\n');
         }
-        // TODO GwtCommon.sendDebug(GwtCommon.DEBUG_CATEGORY_IMAGE_LOADER, stringBuilder.toString());
+        // TODO ExceptionUtil.sendDebug(ExceptionUtil.DEBUG_CATEGORY_IMAGE_LOADER, stringBuilder.toString());
         GWT.log(stringBuilder.toString());
         startTimer();
     }

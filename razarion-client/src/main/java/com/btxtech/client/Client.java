@@ -1,13 +1,13 @@
 package com.btxtech.client;
 
 import com.btxtech.client.clientI18n.ClientI18nConstants;
-import com.btxtech.client.system.boot.ClientRunner;
-import com.btxtech.client.system.boot.GameStartupSeq;
-import com.btxtech.client.system.boot.StartupProgressListener;
-import com.btxtech.client.system.boot.StartupSeq;
-import com.btxtech.client.system.boot.StartupTaskEnum;
-import com.btxtech.client.system.boot.StartupTaskInfo;
-import com.btxtech.client.system.boot.task.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.system.boot.GameStartupSeq;
+import com.btxtech.uiservice.system.boot.StartupProgressListener;
+import com.btxtech.uiservice.system.boot.StartupSeq;
+import com.btxtech.uiservice.system.boot.StartupTaskEnum;
+import com.btxtech.uiservice.system.boot.StartupTaskInfo;
+import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.i18n.I18nHelper;

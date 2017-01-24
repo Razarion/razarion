@@ -1,4 +1,4 @@
-package com.btxtech;
+package com.btxtech.test;
 
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;

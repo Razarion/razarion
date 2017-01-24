@@ -11,10 +11,7 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.client.system.boot;
-
-import com.btxtech.client.system.boot.task.AbstractStartupTask;
-import com.btxtech.client.system.boot.task.DeferredStartup;
+package com.btxtech.uiservice.system.boot;
 
 /**
  * User: beat

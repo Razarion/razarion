@@ -11,19 +11,17 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.client.system.boot;
-
-import com.btxtech.client.system.boot.task.AbstractStartupTask;
+package com.btxtech.uiservice.system.boot;
 
 /**
  * User: beat
- * Date: 06.12.2010
- * Time: 19:36:23
+ * Date: 22.12.2010
+ * Time: 14:31:16
  */
-public interface StartupTaskEnum {
-    boolean isFirstTask();
+public interface StartupSeq {
+    StartupTaskEnum[] getAbstractStartupTaskEnum();
 
-    Class<? extends AbstractStartupTask> getTaskClass();
+    boolean isCold();
 
-    String name();
+    boolean isBackEndMode();
 }

@@ -1,6 +1,6 @@
-package com.btxtech.client.utils;
+package com.btxtech.shared.utils;
 
-public class GwtCommon {
+public class ExceptionUtil {
 
     public static String setupStackTrace(String message, Throwable throwable) {
         try {
