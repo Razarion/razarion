@@ -23,6 +23,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -30,7 +31,7 @@ import javax.inject.Singleton;
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
 public class GameUiControl { // Equivalent worker class is PlanetService
-    // private Logger logger = Logger.getLogger(GameUiControl.class.getName());
+    private Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GameEngineControl gameEngineControl;
@@ -92,6 +93,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             currentScene.cleanup();
         }
         currentScene = sceneInstance.get();
+        logger.warning("Run Scene: " + currentScene);
         currentScene.init(userContext, gameUiControlConfig.getSceneConfigs().get(nextSceneNumber));
         currentScene.run();
     }

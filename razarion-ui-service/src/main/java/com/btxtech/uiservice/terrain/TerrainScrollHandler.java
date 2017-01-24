@@ -37,7 +37,6 @@ public class TerrainScrollHandler {
     private static final int SCROLL_AUTO_MOUSE_DETECTION_WIDTH = 40;
     private static final int SCROLL_TIMER_DELAY = 30;
     private static final double SCROLL_SPEED = 60; // Meter per seconds
-    private static final double DISTANCE_PER_SCROLL_TICK = SCROLL_SPEED * (double) SCROLL_TIMER_DELAY / 1000.0;
     // private Logger logger = Logger.getLogger(TerrainScrollHandler.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -62,6 +61,7 @@ public class TerrainScrollHandler {
     private Rectangle2D currentAabb;
     private Collection<TerrainScrollListener> terrainScrollListeners = new ArrayList<>();
     private Rectangle2D playGround;
+    private long lastAutoScrollTimeStamp;
 
     @PostConstruct
     public void postConstruct() {
@@ -83,6 +83,7 @@ public class TerrainScrollHandler {
             moveHandler.cancel();
             moveHandler = null;
         }
+        lastAutoScrollTimeStamp = 0;
     }
 
     public void setScrollDisabled(boolean scrollDisabled) {
@@ -90,7 +91,9 @@ public class TerrainScrollHandler {
         projectionTransformation.setDisableFovYChange(scrollDisabled);
         if (scrollDisabled) {
             simpleScheduledFuture.cancel();
+            lastAutoScrollTimeStamp = 0;
         } else {
+            lastAutoScrollTimeStamp = 0;
             simpleScheduledFuture.start();
         }
     }
@@ -167,9 +170,11 @@ public class TerrainScrollHandler {
             if (isTimerRunningOld != isTimerRunningNew) {
                 if (isTimerRunningNew) {
                     autoScroll();
+                    lastAutoScrollTimeStamp = 0;
                     simpleScheduledFuture.start();
                 } else {
                     simpleScheduledFuture.cancel();
+                    lastAutoScrollTimeStamp = 0;
                 }
             }
         }
@@ -180,21 +185,28 @@ public class TerrainScrollHandler {
             return;
         }
 
+        if (lastAutoScrollTimeStamp == 0) {
+            lastAutoScrollTimeStamp = System.currentTimeMillis();
+            return;
+        }
+
         double scrollX = 0;
         if (scrollDirectionX == ScrollDirection.LEFT) {
-            scrollX = -DISTANCE_PER_SCROLL_TICK;
+            scrollX = -1;
         } else if (scrollDirectionX == ScrollDirection.RIGHT) {
-            scrollX = DISTANCE_PER_SCROLL_TICK;
+            scrollX = 1;
         }
 
         double scrollY = 0;
         if (scrollDirectionY == ScrollDirection.TOP) {
-            scrollY = DISTANCE_PER_SCROLL_TICK;
+            scrollY = 1;
         } else if (scrollDirectionY == ScrollDirection.BOTTOM) {
-            scrollY = -DISTANCE_PER_SCROLL_TICK;
+            scrollY = -1;
         }
 
-        setCameraPosition(camera.getTranslateX() + scrollX, camera.getTranslateY() + scrollY);
+        double distance = setupScrollDistance(SCROLL_SPEED);
+        DecimalPosition cameraPosition = DecimalPosition.NULL.getPointWithDistance(distance, new DecimalPosition(scrollX, scrollY), true).add(camera.getTranslateX(), camera.getTranslateY());
+        setCameraPosition(cameraPosition.getX(), cameraPosition.getY());
     }
 
     public void executeCameraConfig(final CameraConfig cameraConfig, Optional<Runnable> completionCallback) {
@@ -206,15 +218,22 @@ public class TerrainScrollHandler {
             if (cameraConfig.getToPosition() != null) {
                 if (moveHandler != null) {
                     moveHandler.cancel();
+                    lastAutoScrollTimeStamp = 0;
                     moveHandler = null;
                 }
+                lastAutoScrollTimeStamp = 0;
                 moveHandler = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, true, () -> {
                     DecimalPosition cameraPosition = new DecimalPosition(camera.getTranslateX(), camera.getTranslateY());
-                    double distance = cameraConfig.getSpeed() * ((double) SCROLL_TIMER_DELAY / 1000.0);
+                    if (lastAutoScrollTimeStamp == 0) {
+                        lastAutoScrollTimeStamp = System.currentTimeMillis();
+                        return;
+                    }
+                    double distance = setupScrollDistance(cameraConfig.getSpeed());
                     if (cameraPosition.getDistance(cameraConfig.getToPosition()) < distance) {
                         setCameraPosition(cameraConfig.getToPosition().getX(), cameraConfig.getToPosition().getY());
                         setScrollDisabled(cameraConfig.isCameraLocked());
                         moveHandler.cancel();
+                        lastAutoScrollTimeStamp = 0;
                         moveHandler = null;
                         completionCallback.ifPresent(Runnable::run);
                     } else {
@@ -236,22 +255,22 @@ public class TerrainScrollHandler {
         double correctedXPosition = xPosition;
         double correctedYPosition = yPosition;
         if (playGround != null) {
-            if(currentViewField == null || currentAabb == null) {
+            if (currentViewField == null || currentAabb == null) {
                 camera.setTranslateXY(correctedXPosition, correctedYPosition);
                 update();
             }
             double deltaX = xPosition - camera.getTranslateX();
             double deltaY = yPosition - camera.getTranslateY();
             Rectangle2D viewFiledAabb = currentViewField.calculateAabbRectangle().translate(deltaX, deltaY);
-            if(playGround.startX() > viewFiledAabb.startX()) {
+            if (playGround.startX() > viewFiledAabb.startX()) {
                 correctedXPosition += playGround.startX() - viewFiledAabb.startX();
-            } else if(playGround.endX() < viewFiledAabb.endX()){
+            } else if (playGround.endX() < viewFiledAabb.endX()) {
                 correctedXPosition -= viewFiledAabb.endX() - playGround.endX();
             }
 
-            if(playGround.startY() > viewFiledAabb.startY()) {
+            if (playGround.startY() > viewFiledAabb.startY()) {
                 correctedYPosition += playGround.startY() - viewFiledAabb.startY();
-            } else if(playGround.endY() < viewFiledAabb.endY()){
+            } else if (playGround.endY() < viewFiledAabb.endY()) {
                 correctedYPosition -= viewFiledAabb.endY() - playGround.endY();
             }
         }
@@ -290,5 +309,11 @@ public class TerrainScrollHandler {
 
     public Rectangle2D getCurrentAabb() {
         return currentAabb;
+    }
+
+    private double setupScrollDistance(double scrollSpeed) {
+        double distance = (System.currentTimeMillis() - lastAutoScrollTimeStamp) / 1000.0 * scrollSpeed;
+        lastAutoScrollTimeStamp = System.currentTimeMillis();
+        return distance;
     }
 }
