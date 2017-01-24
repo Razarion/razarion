@@ -690,7 +690,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         addScrollOverTerrain(sceneConfigs);
         addBotSpawnScene(sceneConfigs);
         addUserSpawnScene(sceneConfigs);
-        addBotMoveScene(sceneConfigs);//
+        addBotMoveScene(sceneConfigs);
         addScrollToOwnScene(sceneConfigs);
         addUserMoveScene(sceneConfigs);
         // Level 2

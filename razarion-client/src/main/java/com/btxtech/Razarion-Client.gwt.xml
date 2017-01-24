@@ -6,7 +6,6 @@
     <inherits name="org.jboss.errai.enterprise.Jaxrs" />
     <inherits name="org.jboss.errai.ui.DataBindingUIExtensions" />
     <inherits name="org.jboss.errai.ui.UI" />
-    <inherits name="org.jboss.errai.ui.nav.Navigation" />
 
     <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
     <inherits name="elemental.Elemental"/>

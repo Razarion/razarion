@@ -23,6 +23,7 @@ public class StartGameUiControl extends AbstractStartupTask {
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
+        gameCanvas.init();
         gameUiControl.start();
         renderService.setup();
         gameCanvas.startRenderLoop();

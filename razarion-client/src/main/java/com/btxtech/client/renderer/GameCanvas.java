@@ -1,5 +1,7 @@
 package com.btxtech.client.renderer;
 
+import com.btxtech.client.KeyboardEventHandler;
+import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.utils.GwtUtils;
@@ -7,7 +9,9 @@ import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 import elemental.client.Browser;
 import elemental.dom.Element;
 import elemental.events.Event;
@@ -15,6 +19,7 @@ import elemental.events.MouseEvent;
 import elemental.events.WheelEvent;
 import elemental.html.WebGLRenderingContext;
 import elemental.js.html.JsUint8Array;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -30,13 +35,14 @@ public class GameCanvas {
     private WebGLRenderingContext ctx3d;
     // @Inject does not work
     private Logger logger = Logger.getLogger(GameCanvas.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
     private TerrainMouseHandler terrainMouseHandler;
+    @Inject
+    private KeyboardEventHandler keyboardEventHandler;
     private int width;
     private int height;
     private Canvas canvas;
@@ -45,14 +51,20 @@ public class GameCanvas {
         logger.severe("GameCanvas <init> called twice????");
     }
 
-    public void init(Canvas canvas) {
-        this.canvas = canvas;
+    public void init() {
+        canvas = Canvas.createIfSupported();
+        if(canvas == null) {
+            throw new IllegalStateException("Canvas is not supported");
+        }
 
         initCanvas();
 
         Window.addResizeHandler(event -> resizeCanvas());
 
         initMouseHandler();
+        keyboardEventHandler.init();
+
+        RootPanel.get().add(canvas);
     }
 
     private void resizeCanvas() {
@@ -64,6 +76,11 @@ public class GameCanvas {
     }
 
     private void initCanvas() {
+        // CSS settings
+        canvas.getElement().getStyle().setZIndex(ZIndexConstants.WEBGL_CANVAS);
+        canvas.getElement().getStyle().setWidth(100, Style.Unit.PCT);
+        canvas.getElement().getStyle().setHeight(100, Style.Unit.PCT);
+        canvas.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
         // Create 3d context
         ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "experimental-webgl");
         if (ctx3d == null) {

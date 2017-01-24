@@ -23,7 +23,7 @@ import com.btxtech.client.system.boot.task.StartGameUiControl;
  * Time: 18:21:15
  */
 public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
-    LOCAD_GAME_UI_CONTROL_CONFIG(LoadGameUiControlTask.class), // TODO
+    LOAD_GAME_UI_CONTROL_CONFIG(LoadGameUiControlTask.class),
     START_GAME_UI_CONTROL(StartGameUiControl.class);
 
     private Class<? extends AbstractStartupTask> taskClass;
