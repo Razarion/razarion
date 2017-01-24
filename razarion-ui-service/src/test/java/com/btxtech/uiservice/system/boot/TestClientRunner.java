@@ -417,6 +417,39 @@ public class TestClientRunner {
         failOnException();
     }
 
+    @Test
+    public void runWaitForBackgroundSimple() {
+        StartupProgressListener mockListener = createStrictMock(StartupProgressListener.class);
+        mockListener.onStart(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND);
+
+        mockListener.onNextTask(WaitForBackgroundTestTaskEnum.TEST_1_BACKGROUND);
+
+        mockListener.onNextTask(WaitForBackgroundTestTaskEnum.TEST_2_SIMPLE);
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundTestTaskEnum.TEST_2_SIMPLE));
+
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundTestTaskEnum.TEST_1_BACKGROUND));
+
+        mockListener.onNextTask(WaitForBackgroundTestTaskEnum.TEST_3_SIMPLE_WAIT_FOR_BACKGROUND);
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundTestTaskEnum.TEST_3_SIMPLE_WAIT_FOR_BACKGROUND));
+
+        mockListener.onNextTask(WaitForBackgroundTestTaskEnum.TEST_4_SIMPLE);
+        mockListener.onTaskFinished(eqAbstractStartupTask(WaitForBackgroundTestTaskEnum.TEST_4_SIMPLE));
+
+        mockListener.onStartupFinished(eqStartupTaskInfo(new StartupTaskEnum[]{WaitForBackgroundTestTaskEnum.TEST_2_SIMPLE,
+                WaitForBackgroundTestTaskEnum.TEST_1_BACKGROUND,
+                WaitForBackgroundTestTaskEnum.TEST_3_SIMPLE_WAIT_FOR_BACKGROUND,
+                WaitForBackgroundTestTaskEnum.TEST_4_SIMPLE
+        }), geq(0L));
+        replay(mockListener);
+
+        ClientRunner clientRunner = createClientRunner();
+        clientRunner.addStartupProgressListener(mockListener);
+        clientRunner.start(StartupTestSeq.TEST_WAIT_FOR_BACKGROUND);
+        getStartupTestTaskMonitor().getDeferredBackgroundStartupTestTask(0).finished();
+        verify(mockListener);
+        failOnException();
+    }
+
     public static List<StartupTaskInfo> eqStartupTaskInfo(StartupSeq startupSeq) {
         EasyMock.reportMatcher(new StartupTaskInfoEquals(startupSeq));
         return null;

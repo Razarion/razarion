@@ -29,11 +29,6 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
     }
 
     @Override
-    public boolean isFirstTask() {
-        return ordinal() == 0;
-    }
-
-    @Override
     public Class<? extends AbstractStartupTask> getTaskClass() {
         return taskClass;
     }

@@ -19,9 +19,11 @@ package com.btxtech.uiservice.system.boot;
  * Time: 19:36:23
  */
 public interface StartupTaskEnum {
-    boolean isFirstTask();
-
     Class<? extends AbstractStartupTask> getTaskClass();
 
     String name();
+
+    default StartupTaskEnum getWaitForBackgroundTask() {
+        return null;
+    }
 }

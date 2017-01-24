@@ -31,17 +31,13 @@ public abstract class AbstractStartupTask {
     }
 
     public void start(DeferredStartup deferredStartup) {
-        startTime = calculateStartTime();
+        startTime = System.currentTimeMillis();
         try {
             privateStart(deferredStartup);
             isBackground = deferredStartup.isBackground();
         } finally {
             duration = System.currentTimeMillis() - startTime;
         }
-    }
-
-    protected long calculateStartTime() {
-        return System.currentTimeMillis();
     }
 
     public long getStartTime() {
@@ -72,5 +68,9 @@ public abstract class AbstractStartupTask {
 
     public boolean isBackground() {
         return isBackground;
+    }
+
+    public StartupTaskEnum getWaitForBackgroundTask() {
+        return taskEnum.getWaitForBackgroundTask();
     }
 }

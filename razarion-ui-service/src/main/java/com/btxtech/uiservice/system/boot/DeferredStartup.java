@@ -18,19 +18,57 @@ package com.btxtech.uiservice.system.boot;
  * Date: 04.12.2010
  * Time: 13:01:44
  */
-public interface DeferredStartup {
-    public static final String NO_CONNECTION = "No connection";
-    public static final String NO_SYNC_INFO = "No synchronization information received";
+public class DeferredStartup {
+    private boolean isDeferred;
+    private boolean isBackground;
+    private AbstractStartupTask task;
+    private ClientRunner clientRunner;
+    private boolean isFinished = false;
 
-    void setDeferred();
+    public DeferredStartup(AbstractStartupTask task, ClientRunner clientRunner) {
+        this.task = task;
+        this.clientRunner = clientRunner;
+    }
 
-    void finished();
+    public void setDeferred() {
+        isDeferred = true;
+    }
 
-    void failed(Throwable throwable);
+    public void finished() {
+        isFinished = true;
+        task.correctDeferredDuration();
+        clientRunner.onTaskFinished(task, this);
+    }
 
-    void failed(String error);
+    public void failed(Throwable t) {
+        isFinished = true;
+        task.correctDeferredDuration();
+        clientRunner.onTaskFailed(task, t);
+    }
 
-    void setBackground();
+    public void failed(String error) {
+        isFinished = true;
+        task.correctDeferredDuration();
+        clientRunner.onTaskFailed(task, error, null);
+    }
 
-    boolean isBackground();
+    public void setBackground() {
+        isBackground = true;
+    }
+
+    public boolean isDeferred() {
+        return isDeferred;
+    }
+
+    public boolean isBackground() {
+        return isBackground;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public StartupTaskEnum getStartupTaskEnum() {
+        return task.getTaskEnum();
+    }
 }

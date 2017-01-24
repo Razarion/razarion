@@ -18,14 +18,20 @@ package com.btxtech.uiservice.system.boot;
  * Date: 18.12010
  * Time: 14:18:24
  */
-public enum SimpleExceptionTestTaskEnum implements StartupTaskEnum {
-    TEST_1(SimpleStartupTestTask.class),
-    TEST_2_EXCEPTION(SimpleExceptionStartupTestTask.class),
-    TEST_3(SimpleStartupTestTask.class);
+public enum WaitForBackgroundTestTaskEnum implements StartupTaskEnum {
+    TEST_1_BACKGROUND(DeferredBackgroundStartupTestTask.class),
+    TEST_2_SIMPLE(SimpleStartupTestTask.class),
+    TEST_3_SIMPLE_WAIT_FOR_BACKGROUND(SimpleWaitForBackgroundStartupTestTask.class) {
+        @Override
+        public StartupTaskEnum getWaitForBackgroundTask() {
+            return TEST_1_BACKGROUND;
+        }
+    },
+    TEST_4_SIMPLE(SimpleStartupTestTask.class);
 
     private Class<? extends AbstractStartupTask> taskClass;
 
-    SimpleExceptionTestTaskEnum(Class<? extends AbstractStartupTask> taskClass) {
+    WaitForBackgroundTestTaskEnum(Class<? extends AbstractStartupTask> taskClass) {
         this.taskClass = taskClass;
     }
 

@@ -13,13 +13,18 @@
 
 package com.btxtech.uiservice.system.boot;
 
+import javax.enterprise.context.Dependent;
+
 /**
  * User: beat
- * Date: 22.12.2010
- * Time: 14:31:16
+ * Date: 18.02.2010
+ * Time: 12:50:50
  */
-public interface StartupSeq {
-    StartupTaskEnum[] getAbstractStartupTaskEnum();
+@Dependent
+public class SimpleWaitForBackgroundStartupTestTask extends AbstractStartupTask {
 
-    boolean isCold();
+    @Override
+    protected void privateStart(final DeferredStartup deferredStartup) {
+    }
+
 }

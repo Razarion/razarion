@@ -23,7 +23,9 @@ public class ClientRunner {
     private Collection<StartupProgressListener> listeners = new ArrayList<>();
     private List<AbstractStartupTask> startupList = new ArrayList<>();
     private List<DeferredStartup> deferredStartups = new ArrayList<>();
+    private List<DeferredStartup> deferredBackgroundStartups = new ArrayList<>();
     private List<AbstractStartupTask> finishedTasks = new ArrayList<>();
+    private AbstractStartupTask waitingTask;
     private boolean failed;
     private String startUuid;
     @Inject
@@ -37,10 +39,6 @@ public class ClientRunner {
 
     public void removeStartupProgressListener(StartupProgressListener startupProgressListener) {
         listeners.remove(startupProgressListener);
-    }
-
-    public void cleanupBeforeTest() {
-        listeners.clear();
     }
 
     public void start(StartupSeq startupSeq) {
@@ -60,39 +58,65 @@ public class ClientRunner {
         if (startupList.isEmpty()) {
             onStartupFinish();
         } else {
+            waitingTask = null;
             AbstractStartupTask task = startupList.remove(0);
-            ClientRunnerDeferredStartupImpl deferredStartup = new ClientRunnerDeferredStartupImpl(task, this);
-            for (StartupProgressListener listener : listeners) {
-                try {
-                    listener.onNextTask(task.getTaskEnum());
-                } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
-                }
-            }
-            try {
-                task.start(deferredStartup);
-            } catch (Throwable t) {
-                onTaskFailed(task, t);
-                return;
-            }
-            if (deferredStartup.isDeferred()) {
-                if (deferredStartup.isFinished()) {
-                    onTaskFinished(task);
+            StartupTaskEnum waitForBackgroundTaskEnum = task.getWaitForBackgroundTask();
+            if (waitForBackgroundTaskEnum != null) {
+                DeferredStartup toWaitForDeferredStartup = getBackgroundTask(waitForBackgroundTaskEnum);
+                if (toWaitForDeferredStartup.isFinished()) {
+                    runTask(task);
                 } else {
-                    deferredStartups.add(deferredStartup);
-                }
-
-                if (deferredStartup.isBackground()) {
-                    runNextTask();
+                    waitingTask = task;
                 }
             } else {
-                onTaskFinished(task);
+                runTask(task);
             }
         }
     }
 
+    private void runTask(AbstractStartupTask task) {
+        DeferredStartup deferredStartup = new DeferredStartup(task, this);
+        for (StartupProgressListener listener : listeners) {
+            try {
+                listener.onNextTask(task.getTaskEnum());
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
+        }
+        try {
+            task.start(deferredStartup);
+        } catch (Throwable t) {
+            onTaskFailed(task, t);
+            return;
+        }
+        if (deferredStartup.isDeferred()) {
+            if (deferredStartup.isFinished()) {
+                onTaskFinished(task);
+            } else {
+                deferredStartups.add(deferredStartup);
+            }
+
+            if (deferredStartup.isBackground()) {
+                deferredBackgroundStartups.add(deferredStartup);
+                runNextTask();
+            }
+        } else {
+            onTaskFinished(task);
+        }
+    }
+
+    private DeferredStartup getBackgroundTask(StartupTaskEnum waitForBackgroundTaskEnum) {
+        for (DeferredStartup deferredBackgroundStartup : deferredBackgroundStartups) {
+            if (deferredBackgroundStartup.getStartupTaskEnum() == waitForBackgroundTaskEnum) {
+                return deferredBackgroundStartup;
+            }
+        }
+        throw new IllegalStateException("No deferred background task found for: " + waitForBackgroundTaskEnum);
+    }
+
     private void cleanup() {
         finishedTasks.clear();
+        deferredBackgroundStartups.clear();
         startupList.clear();
         deferredStartups.clear();
     }
@@ -143,7 +167,9 @@ public class ClientRunner {
         }
 
         finishedTasks.add(abstractStartupTask);
-        if (!abstractStartupTask.isBackground()) {
+        if (waitingTask != null && waitingTask.getWaitForBackgroundTask() == abstractStartupTask.getTaskEnum()) {
+            runTask(waitingTask);
+        } else if (!abstractStartupTask.isBackground()) {
             runNextTask();
         } else if (startupList.isEmpty()) {
             onStartupFinish();

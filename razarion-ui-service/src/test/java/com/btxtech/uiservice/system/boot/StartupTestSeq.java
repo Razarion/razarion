@@ -88,11 +88,16 @@ public enum StartupTestSeq implements StartupSeq {
         public boolean isCold() {
             return true;
         }
+    },
+    TEST_WAIT_FOR_BACKGROUND {
+        @Override
+        public StartupTaskEnum[] getAbstractStartupTaskEnum() {
+            return WaitForBackgroundTestTaskEnum.values();
+        }
+        @Override
+        public boolean isCold() {
+            return true;
+        }
     };
 
-
-    @Override
-    public boolean isBackEndMode() {
-        return true;
-    }
 }
