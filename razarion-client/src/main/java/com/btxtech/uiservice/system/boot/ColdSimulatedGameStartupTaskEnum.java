@@ -29,13 +29,12 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
         }
     },
     INIT_GAME_UI(InitGameUiTask.class),
-//    START_RENDERER(StartGameUiControl.class) { // TODO
-//
-//        @Override
-//        public StartupTaskEnum getWaitForBackgroundTask() {
-//            return LOAD_MEDIAS;
-//        }
-//    },
+    INIT_RENDERER(InitRendererTask.class) {
+        @Override
+        public StartupTaskEnum getWaitForBackgroundTask() {
+            return LOAD_MEDIAS;
+        }
+    },
     RUN_GAME(RunGameUiControl.class) { // TODO
 
         @Override

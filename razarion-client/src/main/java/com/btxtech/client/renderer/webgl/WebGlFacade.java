@@ -1,6 +1,5 @@
 package com.btxtech.client.renderer.webgl;
 
-import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.FloatShaderAttribute;
@@ -9,17 +8,14 @@ import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
-import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.ShadowUiService;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.TextResource;
 import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLTexture;
 import elemental.html.WebGLUniformLocation;
 
 import javax.enterprise.context.Dependent;
@@ -70,7 +66,7 @@ public class WebGlFacade {
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
-    private ImageUiService imageUiService;
+    private WebGLTextureContainer textureContainer;
     private AbstractRenderUnit abstractRenderUnit;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
@@ -171,13 +167,14 @@ public class WebGlFacade {
 
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale) {
         WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, null);
-        webGlUniformTexture.setWebGLTexture(setupTexture(imageId));
+        webGlUniformTexture.setWebGLTexture(textureContainer.getTexture(imageId));
         return webGlUniformTexture;
     }
 
     public WebGlUniformTexture createWebGLBumpMapTexture(int imageId, String samplerUniformName, String scaleUniformLocation, Double scale, String onePixelUniformLocation) {
         WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, onePixelUniformLocation);
-        webGlUniformTexture.setWebGLTexture(setupTextureForBumpMap(imageId, webGlUniformTexture));
+        webGlUniformTexture.setWebGLTexture(textureContainer.getTextureForBumpMap(imageId));
+        textureContainer.handleImageSize(imageId, webGlUniformTexture::onImageSizeReceived);
         return webGlUniformTexture;
     }
 
@@ -198,44 +195,6 @@ public class WebGlFacade {
         uniform3fNoAlpha("uLightAmbient" + postfix, lightConfig.getAmbient());
         uniform1f("uLightSpecularIntensity" + postfix, lightConfig.getSpecularIntensity());
         uniform1f("uLightSpecularHardness" + postfix, lightConfig.getSpecularHardness());
-    }
-
-    protected WebGLTexture setupTexture(int imageId) {
-        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
-        imageUiService.requestImage(imageId, imageElement -> {
-            bindTexture(imageElement, webGLTexture);
-        });
-        return webGLTexture;
-    }
-
-    private void bindTexture(ImageElement imageElement, WebGLTexture webGLTexture) {
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
-        gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
-        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) GwtUtils.castElementToElement(imageElement));
-        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
-        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR_MIPMAP_NEAREST);
-        gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
-        WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
-    }
-
-    protected WebGLTexture setupTextureForBumpMap(int imageId, WebGlUniformTexture webGlUniformTexture) {
-        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
-        imageUiService.requestImage(imageId, imageElement -> {
-            webGlUniformTexture.onImageSizeReceived(imageElement.getWidth());
-            bindTextureForBumpMap(imageElement, webGLTexture);
-        });
-        return webGLTexture;
-    }
-
-    private void bindTextureForBumpMap(ImageElement imageElement, WebGLTexture webGLTexture) {
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
-        gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
-        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) GwtUtils.castElementToElement(imageElement));
-        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.LINEAR);
-        gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR);
-        gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
-        WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
     }
 
     public WebGLRenderingContext getCtx3d() {

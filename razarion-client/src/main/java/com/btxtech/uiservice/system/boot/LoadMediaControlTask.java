@@ -1,13 +1,11 @@
 package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.client.imageservice.ImageUiService;
-import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -23,17 +21,18 @@ public class LoadMediaControlTask extends AbstractStartupTask {
     @Inject
     private GameUiControl gameUiControl;
 
-
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
         deferredStartup.setBackground();
 
-        Collection<Integer> textureIds = Shape3DUtils.getAllTextures(gameUiControl.getGameUiControlConfig().getVisualConfig().getShape3Ds());
-        if (textureIds.isEmpty()) {
+        Set<Integer> allTextureIds = gameUiControl.getAllTextureIds();
+        allTextureIds.addAll(gameUiControl.getAllBumpTextureIds());
+
+        if (allTextureIds.isEmpty()) {
             deferredStartup.finished();
         } else {
-            imageUiService.preloadImages(textureIds, deferredStartup);
+            imageUiService.preloadImages(allTextureIds, deferredStartup);
         }
     }
 }

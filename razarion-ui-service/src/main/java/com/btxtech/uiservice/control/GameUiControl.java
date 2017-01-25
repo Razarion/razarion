@@ -2,6 +2,8 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
@@ -11,18 +13,20 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
+import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -160,5 +164,44 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         int levelCount = levelService.getLevel(userContext.getLevelId()).limitation4ItemType(itemTypeId);
         int planetCount = getPlanetConfig().imitation4ItemType(itemTypeId);
         return Math.min(levelCount, planetCount);
+    }
+
+    public Set<Integer> getAllTextureIds() {
+        Set<Integer> textureIds = Shape3DUtils.getAllTextures(gameUiControlConfig.getVisualConfig().getShape3Ds());
+
+        for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getGameEngineConfig().getSlopeSkeletonConfigs()) {
+            if (slopeSkeletonConfig.getTextureId() != null) {
+                textureIds.add(slopeSkeletonConfig.getTextureId());
+            }
+        }
+
+        GroundSkeletonConfig groundSkeletonConfig = gameUiControlConfig.getGameEngineConfig().getGroundSkeletonConfig();
+        if (groundSkeletonConfig.getTopTextureId() != null) {
+            textureIds.add(groundSkeletonConfig.getTopTextureId());
+        }
+        if (groundSkeletonConfig.getBottomTextureId() != null) {
+            textureIds.add(groundSkeletonConfig.getBottomTextureId());
+        }
+
+        return textureIds;
+    }
+
+    public Set<Integer> getAllBumpTextureIds() {
+        Set<Integer> bumpIds = new HashSet<>();
+        for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getGameEngineConfig().getSlopeSkeletonConfigs()) {
+            if (slopeSkeletonConfig.getBmId() != null) {
+                bumpIds.add(slopeSkeletonConfig.getBmId());
+            }
+        }
+
+        GroundSkeletonConfig groundSkeletonConfig = gameUiControlConfig.getGameEngineConfig().getGroundSkeletonConfig();
+        if (groundSkeletonConfig.getTopBmId() != null) {
+            bumpIds.add(groundSkeletonConfig.getTopBmId());
+        }
+        if (groundSkeletonConfig.getBottomBmId() != null) {
+            bumpIds.add(groundSkeletonConfig.getBottomBmId());
+        }
+
+        return bumpIds;
     }
 }

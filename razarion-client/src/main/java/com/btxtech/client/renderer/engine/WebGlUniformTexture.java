@@ -22,7 +22,6 @@ public class WebGlUniformTexture {
     private String onePixelUniformLocation;
     private Double onePixel;
 
-
     public WebGlUniformTexture(WebGLRenderingContext ctx3d, WebGlFacade webGlFacade, String samplerUniformName, TextureIdHandler.WebGlTextureId webGlTextureId, String scaleUniformLocation, Double scale, String onePixelUniformLocation) {
         this.ctx3d = ctx3d;
         this.webGlFacade = webGlFacade;
