@@ -36,6 +36,7 @@ public class WorkerMarshaller {
         array.set(COMMAND_OFFSET, controlPackage.getCommand().name());
         switch (controlPackage.getCommand()) {
             // No data
+            case LOADED:
             case INITIALIZED:
             case START:
             case STARTED:
@@ -109,6 +110,7 @@ public class WorkerMarshaller {
         List<Object> data = new ArrayList<>();
         switch (command) {
             // No data
+            case LOADED:
             case INITIALIZED:
             case START:
             case STARTED:

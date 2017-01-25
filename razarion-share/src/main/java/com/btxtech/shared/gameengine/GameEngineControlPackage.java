@@ -7,6 +7,7 @@ package com.btxtech.shared.gameengine;
 public class GameEngineControlPackage {
     public enum Command {
         // System
+        LOADED,
         INITIALIZE,
         INITIALIZED,
         START,

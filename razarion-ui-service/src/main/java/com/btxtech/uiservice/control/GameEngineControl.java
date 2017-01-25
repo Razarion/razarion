@@ -65,6 +65,8 @@ public abstract class GameEngineControl {
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
+    protected abstract void onLoaded();
+
     public void start() {
         sendToWorker(GameEngineControlPackage.Command.START);
     }
@@ -154,6 +156,9 @@ public abstract class GameEngineControl {
 
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
+            case LOADED:
+                onLoaded();
+                break;
             case INITIALIZED:
                 logger.severe("!!!Initialized!!!!"); // TODO
                 break;

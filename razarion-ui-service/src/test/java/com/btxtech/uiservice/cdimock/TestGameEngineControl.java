@@ -15,4 +15,10 @@ public class TestGameEngineControl extends GameEngineControl {
     protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    protected void onLoaded() {
+        throw new UnsupportedOperationException();
+    }
+
 }

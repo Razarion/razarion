@@ -23,4 +23,9 @@ public class DevToolGameEngineControl extends GameEngineControl {
     void receivePackage(GameEngineControlPackage gameEngineControlPackage) {
         dispatch(gameEngineControlPackage);
     }
+
+    @Override
+    protected void onLoaded() {
+        throw new UnsupportedOperationException();
+    }
 }

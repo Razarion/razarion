@@ -34,7 +34,8 @@ public class RazarionEmulator {
 
     public void run() {
         try {
-            gameUiControl.init(gameUiControlProviderEmulator.readFromFile());
+            gameUiControl.setGameUiControlConfig(gameUiControlProviderEmulator.readFromFile());
+            gameUiControl.init();
             gameUiControl.start();
             renderService.setup();
             controller.onEngineInitialized();

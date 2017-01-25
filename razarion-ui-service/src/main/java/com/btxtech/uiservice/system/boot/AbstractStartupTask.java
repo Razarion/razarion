@@ -73,4 +73,10 @@ public abstract class AbstractStartupTask {
     public StartupTaskEnum getWaitForBackgroundTask() {
         return taskEnum.getWaitForBackgroundTask();
     }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + " {" + taskEnum + " duration: " + (duration / 1000.0) + "s}";
+    }
+
 }

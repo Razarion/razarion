@@ -22,7 +22,6 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     private GameUiControl gameUiControl;
     @Inject
     private TerrainEditorImpl terrainEditor;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<GameUiControlProvider> serviceCaller;
     private Logger logger = Logger.getLogger(LoadGameUiControlTask.class.getName());
@@ -33,7 +32,7 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
         serviceCaller.call(new RemoteCallback<GameUiControlConfig>() {
             @Override
             public void callback(GameUiControlConfig gameUiControlConfig) {
-                gameUiControl.init(gameUiControlConfig);
+                gameUiControl.setGameUiControlConfig(gameUiControlConfig);
                 deferredStartup.finished();
             }
         }, (message, throwable) -> {

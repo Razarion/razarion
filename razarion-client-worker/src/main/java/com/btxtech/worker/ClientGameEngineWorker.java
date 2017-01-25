@@ -19,7 +19,6 @@ import javax.inject.Inject;
 @EntryPoint
 public class ClientGameEngineWorker extends GameEngineWorker {
     // private Logger logger = Logger.getLogger(ClientGameEngineWorker.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
 
@@ -36,6 +35,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                 exceptionHandler.handleException("data: " + data, t);
             }
         });
+        sendToClient(GameEngineControlPackage.Command.LOADED);
     }
 
     @Override
