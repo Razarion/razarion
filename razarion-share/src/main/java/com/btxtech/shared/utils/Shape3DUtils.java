@@ -9,10 +9,12 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.DoubleStream;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -70,6 +72,20 @@ public class Shape3DUtils {
             }
         }
         return new ArrayList<>(vertexContainers.values());
+    }
+
+    public static Set<Integer> getAllTextures(Collection<Shape3D> shape3Ds) {
+        Set<Integer> textureIds = new HashSet<>();
+        for (Shape3D shape3D : shape3Ds) {
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    if (vertexContainer.getTextureId() != null) {
+                        textureIds.add(vertexContainer.getTextureId());
+                    }
+                }
+            }
+        }
+        return textureIds;
     }
 
     public static void saveTextureIds(Shape3D source, Shape3D target) {

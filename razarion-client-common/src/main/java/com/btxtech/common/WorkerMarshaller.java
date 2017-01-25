@@ -39,7 +39,6 @@ public class WorkerMarshaller {
             case LOADED:
             case INITIALIZED:
             case START:
-            case STARTED:
             case QUEST_PASSED:
             case PERFMON_REQUEST:
                 break;
@@ -58,6 +57,7 @@ public class WorkerMarshaller {
             case ACTIVATE_QUEST:
             case UPDATE_LEVEL:
             case PERFMON_RESPONSE:
+            case INITIALISING_FAILED:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -113,7 +113,6 @@ public class WorkerMarshaller {
             case LOADED:
             case INITIALIZED:
             case START:
-            case STARTED:
             case QUEST_PASSED:
             case PERFMON_REQUEST:
                 break;
@@ -121,6 +120,8 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), UserContext.class));
                 break;
+            case INITIALISING_FAILED:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), String.class));
             case START_BOTS:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 break;

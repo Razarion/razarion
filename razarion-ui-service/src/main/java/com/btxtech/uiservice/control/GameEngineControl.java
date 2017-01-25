@@ -19,7 +19,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
-import com.btxtech.shared.system.perfmon.StatisticEntry;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.clip.EffectService;
@@ -27,6 +26,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 
@@ -35,14 +35,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 02.01.2017.
  */
 public abstract class GameEngineControl {
-    private Logger logger = Logger.getLogger(GameEngineControl.class.getName());
+    // private Logger logger = Logger.getLogger(GameEngineControl.class.getName());
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -62,6 +61,7 @@ public abstract class GameEngineControl {
     @Inject
     private ProjectileUiService projectileUiService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
+    private DeferredStartup initializationReferredStartup;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -71,7 +71,8 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.START);
     }
 
-    public void init(GameEngineConfig gameEngineConfig, UserContext userContext) {
+    public void init(GameEngineConfig gameEngineConfig, UserContext userContext, DeferredStartup initializationReferredStartup) {
+        this.initializationReferredStartup = initializationReferredStartup;
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, gameEngineConfig, userContext);
     }
 
@@ -148,9 +149,23 @@ public abstract class GameEngineControl {
     }
 
     private void onPerfmonResponse(Collection<PerfmonStatistic> statisticEntries) {
-        if(perfmonConsumer != null) {
+        if (perfmonConsumer != null) {
             perfmonConsumer.accept(statisticEntries);
             perfmonConsumer = null;
+        }
+    }
+
+    private void onInitialized() {
+        if (initializationReferredStartup != null) {
+            initializationReferredStartup.finished();
+            initializationReferredStartup = null;
+        }
+    }
+
+    private void onInitialisingFailed(String errorText) {
+        if (initializationReferredStartup != null) {
+            initializationReferredStartup.failed(errorText);
+            initializationReferredStartup = null;
         }
     }
 
@@ -160,10 +175,10 @@ public abstract class GameEngineControl {
                 onLoaded();
                 break;
             case INITIALIZED:
-                logger.severe("!!!Initialized!!!!"); // TODO
+                onInitialized();
                 break;
-            case STARTED:
-                logger.severe("!!!Started!!!!");
+            case INITIALISING_FAILED:
+                onInitialisingFailed((String) controlPackage.getSingleData());
                 break;
             case TICK_UPDATE:
                 baseItemUiService.updateSyncBaseItems((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(0));

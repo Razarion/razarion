@@ -21,23 +21,22 @@ package com.btxtech.uiservice.system.boot;
 public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
     LOAD_AND_START_WORKER(LoadWorkerTask.class),
     LOAD_GAME_UI_CONTROL_CONFIG(LoadGameUiControlTask.class),
-    LOAD_MEDIAS(LoadGameUiControlTask.class), // TODO deferred background
-    INIT_WORKER(LoadGameUiControlTask.class) { // TODO deferred background
-
+    LOAD_MEDIAS(LoadMediaControlTask.class),
+    INIT_WORKER(InitWorkerTask.class) {
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {
             return LOAD_AND_START_WORKER;
         }
     },
-    INIT_GAME_UI(LoadGameUiControlTask.class), // TODO
-    START_RENDERER(StartGameUiControl.class) { // TODO
-
-        @Override
-        public StartupTaskEnum getWaitForBackgroundTask() {
-            return LOAD_MEDIAS;
-        }
-    },
-    RUN_GAME(StartGameUiControl.class) { // TODO
+    INIT_GAME_UI(InitGameUiTask.class),
+//    START_RENDERER(StartGameUiControl.class) { // TODO
+//
+//        @Override
+//        public StartupTaskEnum getWaitForBackgroundTask() {
+//            return LOAD_MEDIAS;
+//        }
+//    },
+    RUN_GAME(RunGameUiControl.class) { // TODO
 
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {

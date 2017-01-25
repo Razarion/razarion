@@ -68,6 +68,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void setGameUiControlConfig(GameUiControlConfig gameUiControlConfig) {
         this.gameUiControlConfig = gameUiControlConfig;
+        userContext = gameUiControlConfig.getUserContext();
     }
 
     public void init() {
@@ -75,14 +76,11 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         terrainTypeService.init(gameUiControlConfig.getGameEngineConfig());
         levelService.init(gameUiControlConfig.getGameEngineConfig());
         inventoryService.init(gameUiControlConfig.getGameEngineConfig());
-        userContext = gameUiControlConfig.getUserContext();
-        gameEngineControl.init(gameUiControlConfig.getGameEngineConfig(), userContext);
         gameUiControlInitEvent.fire(new GameUiControlInitEvent(gameUiControlConfig));
     }
 
     public void start() {
         cockpitService.show();
-        gameEngineControl.start();
         nextSceneNumber = 0;
         runScene();
     }

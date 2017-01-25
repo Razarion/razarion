@@ -2,6 +2,7 @@ package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
+import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.enterprise.context.Dependent;
@@ -12,18 +13,21 @@ import javax.inject.Inject;
  * 07.02.2016.
  */
 @Dependent
-public class StartGameUiControl extends AbstractStartupTask {
-    // private Logger logger = Logger.getLogger(StartGameUiControl.class.getName());
+public class RunGameUiControl extends AbstractStartupTask {
+    // private Logger logger = Logger.getLogger(RunGameUiControl.class.getName());
     @Inject
     private GameCanvas gameCanvas;
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
     private GameUiControl gameUiControl;
+    @Inject
+    private GameEngineControl gameEngineControl;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
         gameCanvas.init();
+        gameEngineControl.start();
         gameUiControl.start();
         renderService.setup();
         gameCanvas.startRenderLoop();

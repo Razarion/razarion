@@ -31,7 +31,9 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.shared.utils.ExceptionUtil;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -67,6 +69,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private GameLogicService logicService;
     @Inject
     private PerfmonService perfmonService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private UserContext userContext;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
     private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
@@ -84,15 +88,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         switch (controlPackage.getCommand()) {
             case INITIALIZE:
                 initialise((GameEngineConfig) controlPackage.getData(0), (UserContext) controlPackage.getData(1));
-                sendToClient(GameEngineControlPackage.Command.INITIALIZED);
-                break;
-            case INITIALIZED:
                 break;
             case START:
                 start();
-                sendToClient(GameEngineControlPackage.Command.STARTED);
-                break;
-            case STARTED:
                 break;
             case START_BOTS:
                 botService.startBots((Collection<BotConfig>) controlPackage.getSingleData());
@@ -147,11 +145,17 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    public void initialise(GameEngineConfig gameEngineConfig, UserContext userContext) {
-        this.userContext = userContext;
-        gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
-        planetService.initialise(gameEngineConfig.getPlanetConfig());
-        planetService.addTickListener(this);
+    private void initialise(GameEngineConfig gameEngineConfig, UserContext userContext) {
+        try {
+            this.userContext = userContext;
+            gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
+            planetService.initialise(gameEngineConfig.getPlanetConfig());
+            planetService.addTickListener(this);
+            sendToClient(GameEngineControlPackage.Command.INITIALIZED);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));
+        }
     }
 
     public void start() {

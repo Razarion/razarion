@@ -3,6 +3,7 @@ package com.btxtech.client.imageservice;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.google.gwt.dom.client.ImageElement;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -167,6 +168,27 @@ public class ImageUiService {
 
     public Set<ImageGalleryItem> getChanged() {
         return changed;
+    }
+
+    public void preloadImages(Collection<Integer> imageIds, DeferredStartup deferredStartup) {
+        ImageLoader<Integer> imageLoader = new ImageLoader<>();
+        for (Integer imageId : imageIds) {
+            imageLoader.addImageUrl(RestUrl.getImageServiceUrl(imageId), imageId);
+        }
+        imageLoader.startLoading((loadedImageElements, failed) -> {
+            for (Integer imageId : failed) {
+                logger.warning("Failed preload image with id: " + imageId);
+            }
+            for (Map.Entry<Integer, ImageElement> entry : loadedImageElements.entrySet()) {
+                if (entry.getValue() == null) {
+                    logger.warning("Could not preload image. ImageElement is null for id: " + entry.getKey());
+                }
+                imageElementLibrary.put(entry.getKey(), entry.getValue());
+                currentlyLoading.remove(entry.getKey());
+                fireImageElementListeners(entry.getKey(), entry.getValue());
+            }
+            deferredStartup.finished();
+        });
     }
 
     private void loadImage(final int id, final boolean loadLoadImageGalleyItem) {

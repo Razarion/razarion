@@ -1,6 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.persistence.GameUiControlProviderEmulator;
+import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.webglemulator.WebGlEmulatorController;
 import com.btxtech.webglemulator.WebGlEmulatorSceneController;
@@ -29,13 +30,17 @@ public class RazarionEmulator {
     private DevToolsRenderServiceImpl renderService;
     @Inject
     private GameUiControlProviderEmulator gameUiControlProviderEmulator;
+    @Inject
+    private GameEngineControl gameEngineControl;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private boolean showRenderTime;
 
     public void run() {
         try {
             gameUiControl.setGameUiControlConfig(gameUiControlProviderEmulator.readFromFile());
+            gameEngineControl.init(gameUiControl.getGameUiControlConfig().getGameEngineConfig(), gameUiControl.getUserContext(), null);
             gameUiControl.init();
+            gameEngineControl.start();
             gameUiControl.start();
             renderService.setup();
             controller.onEngineInitialized();
