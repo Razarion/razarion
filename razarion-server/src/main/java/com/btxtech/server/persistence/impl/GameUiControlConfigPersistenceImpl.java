@@ -903,7 +903,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private void addEnemyKillTask(List<SceneConfig> sceneConfigs) {
         // Kill bot command
         List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs = new ArrayList<>();
-        botKillOtherBotCommandConfigs.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(1).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209, 80, 70))));
+        botKillOtherBotCommandConfigs.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(1).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(212, 162, 51, 87))));
         // Kill human command
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
         botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209, 80, 70))));
