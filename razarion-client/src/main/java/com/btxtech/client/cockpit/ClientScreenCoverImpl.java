@@ -1,8 +1,9 @@
 package com.btxtech.client.cockpit;
 
-import com.btxtech.uiservice.cockpit.StoryCover;
+import com.btxtech.uiservice.cockpit.ScreenCover;
 import elemental.client.Browser;
 import elemental.css.CSSStyleDeclaration;
+import elemental.dom.Element;
 import elemental.html.DivElement;
 
 import javax.inject.Singleton;
@@ -12,12 +13,14 @@ import javax.inject.Singleton;
  * 10.07.2016.
  */
 @Singleton
-public class ClientStoryCoverImpl implements StoryCover {
+public class ClientScreenCoverImpl implements ScreenCover {
+    private static final String LOADING_COVER_ID = "RAZARION_LOADING_COVER";
+    // private Logger logger = Logger.getLogger(ClientScreenCoverImpl.class.getName());
     private DivElement topDiv;
     private DivElement bottomDiv;
 
     @Override
-    public void show(String html) {
+    public void showStoryCover(String html) {
         if (topDiv == null || bottomDiv == null) {
             topDiv = createCoverDiv(true);
             topDiv.setInnerHTML(html);
@@ -28,13 +31,24 @@ public class ClientStoryCoverImpl implements StoryCover {
     }
 
     @Override
-    public void hide() {
+    public void hideStoryCover() {
         if (topDiv != null || bottomDiv != null) {
             Browser.getDocument().getBody().removeChild(topDiv);
             topDiv = null;
             Browser.getDocument().getBody().removeChild(bottomDiv);
             bottomDiv = null;
         }
+    }
+
+    @Override
+    public void removeLoadingCover() {
+        Browser.getDocument().getBody().removeChild(Browser.getDocument().getElementById(LOADING_COVER_ID));
+    }
+
+    @Override
+    public void fadeOutLoadingCover() {
+        Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
+        element.getStyle().setOpacity(0);
     }
 
     private DivElement createCoverDiv(boolean top) {

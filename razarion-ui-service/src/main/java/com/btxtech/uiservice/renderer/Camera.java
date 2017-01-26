@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.logging.Logger;
@@ -24,6 +25,11 @@ public class Camera {
     private double rotateZ;
     private Matrix4 matrix4;
     private Matrix4 normMatrix4;
+
+    @PostConstruct
+    public void postConstruct() {
+        setupMatrices();
+    }
 
     public double getTranslateX() {
         return translateX;

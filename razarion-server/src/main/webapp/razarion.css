@@ -37,7 +37,30 @@ button:disabled {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #3D4850), color-stop(4%, #313d45), color-stop(100%, #232B30)); /* webkit */
 }
 
-/** ----- Tip Animation ----- */
+/** -------------------------- COMMON ENDS -------------------------- */
+/** -------------------------- Cover ENDS -------------------------- */
+
+.loading-cover {
+    position: absolute;
+    z-index: 9; /* Edit in com.btxtech.client.cockpit.ZIndexConstants.LOADING_COVER*/
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    transition: opacity 2s ease-in-out; /* Edit in com.btxtech.uiservice.cockpit.ScreenCover.LOADING_FADE_DURATION*/
+    opacity: 1;
+}
+
+.inner-loading-cover {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    font-size: 300%;
+    color: #d8d0d0;
+    transform: translate(-50%, -50%);}
+
+/** -------------------------- Cover -------------------------- */
+
+/** -------------------------- Tip Animation -------------------------- */
 @keyframes tip-west-animation {
     0% {
         /* Corresponds to the MOVE_DISTANCE in com.btxtech.client.tip.WestGuiTip*/
@@ -97,7 +120,7 @@ button:disabled {
     animation: splash-south-animation 0.75s ease-out infinite;
 }
 
-/** -------------------------- COMMON ENDS -------------------------- */
+/** -------------------------- Tip Animation ENDS-------------------------- */
 
 /** -------------------------- COCKPIT -------------------------- */
 /** ----- Main ----- */

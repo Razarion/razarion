@@ -19,7 +19,7 @@ public class DevToolSideCockpit implements SideCockpit {
 
     @Override
     public void show() {
-        System.out.println("++++ DevToolSideCockpit.show()");
+        System.out.println("++++ DevToolSideCockpit.showStoryCover()");
     }
 
     @Override

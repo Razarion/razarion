@@ -128,7 +128,7 @@ public class BaseItemUiService {
             }
             updateSyncItemMonitor(syncBaseItem);
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (!terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
+            if (terrainScrollHandler.getCurrentAabb() == null || !terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
                 continue;
             }

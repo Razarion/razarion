@@ -21,7 +21,6 @@ import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotKillHumanCommandConfig;
 import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
-import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.CameraConfig;
 import com.btxtech.shared.dto.GameTipConfig;
@@ -687,6 +686,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         addResources(sceneConfigs);
         addNpcBot(sceneConfigs);
         addEnemyBot(sceneConfigs);
+        addFadeOutLoadingCover(sceneConfigs);
         addScrollOverTerrain(sceneConfigs);
         addBotSpawnScene(sceneConfigs);
         addUserSpawnScene(sceneConfigs);
@@ -768,6 +768,10 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Razar Industries").setNpc(false));
         sceneConfigs.add(new SceneConfig().setBotConfigs(botConfigs));
+    }
+
+    private void addFadeOutLoadingCover(List<SceneConfig> sceneConfigs) {
+        sceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true));
     }
 
     private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {
@@ -899,10 +903,10 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private void addEnemyKillTask(List<SceneConfig> sceneConfigs) {
         // Kill bot command
         List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs = new ArrayList<>();
-        botKillOtherBotCommandConfigs.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(1).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209 , 80, 70))));
+        botKillOtherBotCommandConfigs.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(1).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209, 80, 70))));
         // Kill human command
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
-        botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209 , 80, 70))));
+        botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209, 80, 70))));
         sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000));
     }
 

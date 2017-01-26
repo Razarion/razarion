@@ -29,6 +29,7 @@ public class SceneConfig {
     private ScrollUiQuest scrollUiQuest;
     private List<BoxItemPosition> boxItemPositions;
     private GameTipConfig gameTipConfig;
+    private boolean removeLoadingCover;
 
     public String getIntroText() {
         return introText;
@@ -198,6 +199,15 @@ public class SceneConfig {
 
     public SceneConfig setGameTipConfig(GameTipConfig gameTipConfig) {
         this.gameTipConfig = gameTipConfig;
+        return this;
+    }
+
+    public boolean isRemoveLoadingCover() {
+        return removeLoadingCover;
+    }
+
+    public SceneConfig setRemoveLoadingCover(boolean removeLoadingCover) {
+        this.removeLoadingCover = removeLoadingCover;
         return this;
     }
 }

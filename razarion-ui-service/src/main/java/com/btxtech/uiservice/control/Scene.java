@@ -10,7 +10,7 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
-import com.btxtech.uiservice.cockpit.StoryCover;
+import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.ViewField;
@@ -33,37 +33,29 @@ public class Scene implements TerrainScrollListener {
     private Logger logger = Logger.getLogger(Scene.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private StoryCover storyCover;
+    private ScreenCover screenCover;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private GameUiControl gameUiControl;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private QuestVisualizer questVisualizer;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AbstractModalDialogManager abstractModalDialogManager;
     @Inject
     private LevelService levelService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
-    // @Inject
-    // private BaseItemService baseItemService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private GameTipService gameTipService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GameEngineControl gameEngineControl;
     private UserContext userContext;
@@ -80,8 +72,17 @@ public class Scene implements TerrainScrollListener {
 
     public void run() {
         setupCameraConfig(sceneConfig.getCameraConfig());
+        if (sceneConfig.isRemoveLoadingCover()) {
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            screenCover.fadeOutLoadingCover();
+            simpleExecutorService.schedule(ScreenCover.LOADING_FADE_DURATION, () -> {
+                screenCover.removeLoadingCover();
+                onComplete();
+            }, SimpleExecutorService.Type.UNSPECIFIED);
+        }
         if (sceneConfig.getIntroText() != null) {
-            storyCover.show(sceneConfig.getIntroText());
+            screenCover.showStoryCover(sceneConfig.getIntroText());
         }
         if (sceneConfig.getBotConfigs() != null) {
             gameEngineControl.startBots(sceneConfig.getBotConfigs());
@@ -188,7 +189,7 @@ public class Scene implements TerrainScrollListener {
 
     public void cleanup() {
         if (sceneConfig.getIntroText() != null) {
-            storyCover.hide();
+            screenCover.hideStoryCover();
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             baseItemPlacerService.deactivate();
