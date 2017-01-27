@@ -270,20 +270,24 @@ public class TerrainService {
     }
 
     public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {
+        // Ground
         InterpolatedTerrainTriangle interpolatedTerrainTriangle = groundMesh.getInterpolatedTerrainTriangle(absoluteXY);
         if (interpolatedTerrainTriangle != null) {
             return interpolatedTerrainTriangle;
         }
-
+        // Slope
         for (Slope slope : getSlopes()) {
             interpolatedTerrainTriangle = slope.getInterpolatedVertexData(absoluteXY);
             if (interpolatedTerrainTriangle != null) {
                 return interpolatedTerrainTriangle;
             }
         }
-
-        // TODO water
-
+        // Water
+        interpolatedTerrainTriangle = water.getInterpolatedVertexData(absoluteXY);
+        if (interpolatedTerrainTriangle != null) {
+            return interpolatedTerrainTriangle;
+        }
+        // Nothing found
         throw new NoInterpolatedTerrainTriangleException(absoluteXY);
     }
 

@@ -3,10 +3,9 @@ package com.btxtech.shared.gameengine.planet.terrain.slope;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
-import com.btxtech.shared.datatypes.TerrainTriangleCorner;
-import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
+import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -266,17 +265,6 @@ public class Mesh {
     }
 
     public InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY) {
-        for (int i = 0; i < vertices.size(); i += 3) {
-            Triangle2d triangle2d = new Triangle2d(vertices.get(i).toXY(), vertices.get(i + 1).toXY(), vertices.get(i + 2).toXY());
-            if (triangle2d.isInside(absoluteXY)) {
-                InterpolatedTerrainTriangle interpolatedTerrainTriangle = new InterpolatedTerrainTriangle();
-                interpolatedTerrainTriangle.setCornerA(new TerrainTriangleCorner(vertices.get(i), norms.get(i), tangents.get(i), splatting.get(i)));
-                interpolatedTerrainTriangle.setCornerB(new TerrainTriangleCorner(vertices.get(i + 1), norms.get(i + 1), tangents.get(i + 1), splatting.get(i + 1)));
-                interpolatedTerrainTriangle.setCornerC(new TerrainTriangleCorner(vertices.get(i + 2), norms.get(i + 2), tangents.get(i + 2), splatting.get(i + 2)));
-                interpolatedTerrainTriangle.setupInterpolation(absoluteXY);
-                return interpolatedTerrainTriangle;
-            }
-        }
-        return null;
+        return GeometricUtil.getInterpolatedVertexData(absoluteXY, vertices, norms::get, tangents::get, index -> splatting.get(index).doubleValue());
     }
 }

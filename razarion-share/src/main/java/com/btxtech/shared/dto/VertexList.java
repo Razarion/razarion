@@ -3,11 +3,10 @@ package com.btxtech.shared.dto;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
-import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -242,18 +241,7 @@ public class VertexList {
     }
 
     public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {
-        for (int i = 0; i < vertices.size(); i += 3) {
-            Triangle2d triangle2d = new Triangle2d(vertices.get(i).toXY(), vertices.get(i + 1).toXY(), vertices.get(i + 2).toXY());
-            if (triangle2d.isInside(absoluteXY)) {
-                InterpolatedTerrainTriangle interpolatedTerrainTriangle = new InterpolatedTerrainTriangle();
-                interpolatedTerrainTriangle.setCornerA(new TerrainTriangleCorner(vertices.get(i), normVertices.get(i), tangentVertices.get(i), splattings.get(i)));
-                interpolatedTerrainTriangle.setCornerB(new TerrainTriangleCorner(vertices.get(i + 1), normVertices.get(i + 1), tangentVertices.get(i + 1), splattings.get(i + 1)));
-                interpolatedTerrainTriangle.setCornerC(new TerrainTriangleCorner(vertices.get(i + 2), normVertices.get(i + 2), tangentVertices.get(i + 2), splattings.get(i + 2)));
-                interpolatedTerrainTriangle.setupInterpolation(absoluteXY);
-                return interpolatedTerrainTriangle;
-            }
-        }
-        return null;
+        return GeometricUtil.getInterpolatedVertexData(absoluteXY, vertices, normVertices::get, tangentVertices::get, splattings::get);
     }
 
     @Override

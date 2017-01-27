@@ -3,9 +3,12 @@ package com.btxtech.shared.utils;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.TerrainTriangleCorner;
+import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.ArrayList;
@@ -14,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.DoubleFunction;
+import java.util.function.Function;
+import java.util.function.IntToDoubleFunction;
 
 /**
  * Created by Beat
@@ -198,6 +204,21 @@ public class GeometricUtil {
         }
 
         return tiles;
+    }
+
+    public static InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY, List<Vertex> vertices, Function<Integer, Vertex> normProvider, Function<Integer, Vertex> tangentsProvider, IntToDoubleFunction splattingProvider) {
+        for (int i = 0; i < vertices.size(); i += 3) {
+            Triangle2d triangle2d = new Triangle2d(vertices.get(i).toXY(), vertices.get(i + 1).toXY(), vertices.get(i + 2).toXY());
+            if (triangle2d.isInside(absoluteXY)) {
+                InterpolatedTerrainTriangle interpolatedTerrainTriangle = new InterpolatedTerrainTriangle();
+                interpolatedTerrainTriangle.setCornerA(new TerrainTriangleCorner(vertices.get(i), normProvider.apply(i), tangentsProvider.apply(i), splattingProvider.applyAsDouble(i)));
+                interpolatedTerrainTriangle.setCornerB(new TerrainTriangleCorner(vertices.get(i + 1), normProvider.apply(i + 1), tangentsProvider.apply(i + 1), splattingProvider.applyAsDouble(i + 1)));
+                interpolatedTerrainTriangle.setCornerC(new TerrainTriangleCorner(vertices.get(i + 2), normProvider.apply(i + 2), tangentsProvider.apply(i + 2), splattingProvider.applyAsDouble(i + 2)));
+                interpolatedTerrainTriangle.setupInterpolation(absoluteXY);
+                return interpolatedTerrainTriangle;
+            }
+        }
+        return null;
     }
 
 }
