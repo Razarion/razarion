@@ -11,7 +11,7 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
-import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.tip.GameTipService;
@@ -40,7 +40,7 @@ public class InventoryUiService {
     private ExceptionHandler exceptionHandler;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private AbstractModalDialogManager modalDialogManager;
+    private ModalDialogManager modalDialogManager;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject

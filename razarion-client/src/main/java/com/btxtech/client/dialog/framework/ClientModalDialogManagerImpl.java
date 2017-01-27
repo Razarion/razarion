@@ -9,8 +9,8 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
 import com.btxtech.uiservice.dialog.DialogButton;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -25,7 +25,7 @@ import java.util.List;
  * 20.05.2016.
  */
 @Singleton
-public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
+public class ClientModalDialogManagerImpl extends ModalDialogManager {
     public enum Type {
         PROMPTLY,
         STACK_ABLE,
@@ -64,6 +64,11 @@ public class ClientModalDialogManagerImpl extends AbstractModalDialogManager {
     @Override
     public void showUseInventoryHouseSpaceExceeded() {
         show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemHouseSpace(), null, null, DialogButton.Button.CLOSE);
+    }
+
+    @Override
+    protected void showBaseLost(Runnable closeListener) {
+        show(I18nHelper.getConstants().baseLostTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, MessageDialog.class, I18nHelper.getConstants().baseLost(), (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnBaseLost(), DialogButton.Button.CLOSE);
     }
 
     public void showMessageDialog(String title, String message) {

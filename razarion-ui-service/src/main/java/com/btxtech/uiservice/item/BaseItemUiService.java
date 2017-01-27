@@ -19,6 +19,7 @@ import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -55,6 +56,8 @@ public class BaseItemUiService {
     private CockpitService cockpitService;
     @Inject
     private ItemCockpitService itemCockpitService;
+    @Inject
+    private ModalDialogManager modalDialogManager;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private Map<Integer, SyncItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
@@ -205,6 +208,7 @@ public class BaseItemUiService {
         }
         if (wasMyBase) {
             selectionHandler.onMyBaseRemoved();
+            modalDialogManager.onShowBaseLost();
         }
     }
 

@@ -333,7 +333,7 @@ public interface I18nConstants {
 
     String reallyAbortMission();
 
-    // Dead and and new base
+    // Dead-end and new base
     String reachedDeadEnd();
 
     String reachedDeadEndItem();
@@ -341,6 +341,10 @@ public interface I18nConstants {
     String reachedDeadEndMoney();
 
     String startNewBase();
+
+    String baseLostTitle();
+
+    String baseLost();
 
     // Item cockpit
     String guildMembershipRequestItemCockpit();

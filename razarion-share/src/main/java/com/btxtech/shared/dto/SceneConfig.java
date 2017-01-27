@@ -24,6 +24,7 @@ public class SceneConfig {
     private BaseItemPlacerConfig startPointPlacerConfig;
     private Boolean wait4LevelUpDialog;
     private Boolean wait4QuestPassedDialog;
+    private Boolean waitForBaseLostDialog;
     private List<ResourceItemPosition> resourceItemTypePositions;
     private Integer duration;
     private ScrollUiQuest scrollUiQuest;
@@ -154,6 +155,15 @@ public class SceneConfig {
 
     public SceneConfig setWait4LevelUpDialog(Boolean wait4LevelUpDialog) {
         this.wait4LevelUpDialog = wait4LevelUpDialog;
+        return this;
+    }
+
+    public Boolean isWaitForBaseLostDialog() {
+        return waitForBaseLostDialog;
+    }
+
+    public SceneConfig setWaitForBaseLostDialog(Boolean waitForBaseLostDialog) {
+        this.waitForBaseLostDialog = waitForBaseLostDialog;
         return this;
     }
 

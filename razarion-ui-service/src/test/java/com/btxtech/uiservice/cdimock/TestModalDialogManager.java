@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -13,7 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
  * 24.01.2017.
  */
 @ApplicationScoped
-public class TestModalDialogManager extends AbstractModalDialogManager {
+public class TestModalDialogManager extends ModalDialogManager {
     @Override
     public void showBoxPicked(BoxContent boxContent) {
         throw new UnsupportedOperationException();
@@ -36,6 +36,11 @@ public class TestModalDialogManager extends AbstractModalDialogManager {
 
     @Override
     protected void showLevelUp(UserContext userContext, Runnable closeListener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void showBaseLost(Runnable closeListener) {
         throw new UnsupportedOperationException();
     }
 }

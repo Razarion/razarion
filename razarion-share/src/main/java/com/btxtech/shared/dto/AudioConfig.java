@@ -16,6 +16,7 @@ public class AudioConfig {
     private Integer onSelectionCleared;
     private Integer onOtherSelection;
     private Integer onCommandSent;
+    private Integer onBaseLost;
 
     public Integer getDialogOpened() {
         return dialogOpened;
@@ -113,6 +114,15 @@ public class AudioConfig {
 
     public AudioConfig setOnCommandSent(Integer onCommandSent) {
         this.onCommandSent = onCommandSent;
+        return this;
+    }
+
+    public Integer getOnBaseLost() {
+        return onBaseLost;
+    }
+
+    public AudioConfig setOnBaseLost(Integer onBaseLost) {
+        this.onBaseLost = onBaseLost;
         return this;
     }
 }

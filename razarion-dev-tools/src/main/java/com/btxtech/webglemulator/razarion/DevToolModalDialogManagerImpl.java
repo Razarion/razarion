@@ -4,8 +4,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.uiservice.dialog.ApplyListener;
-import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
@@ -16,7 +15,7 @@ import javax.inject.Singleton;
  * 24.09.2016.
  */
 @Singleton
-public class DevToolModalDialogManagerImpl extends AbstractModalDialogManager {
+public class DevToolModalDialogManagerImpl extends ModalDialogManager {
     @Override
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
         System.out.println("*** showQuestPassed Dialog");
@@ -76,6 +75,19 @@ public class DevToolModalDialogManagerImpl extends AbstractModalDialogManager {
             alert.setHeaderText(null);
             alert.setContentText("showUseInventoryHouseSpaceExceeded");
             alert.showAndWait();
+        });
+    }
+
+    @Override
+    protected void showBaseLost(Runnable closeListener) {
+        System.out.println("*** showBaseLost Dialog");
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("showBaseLost");
+            alert.setHeaderText(null);
+            alert.setContentText("showBaseLost");
+            alert.showAndWait();
+            closeListener.run();
         });
     }
 }

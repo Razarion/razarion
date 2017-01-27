@@ -18,7 +18,7 @@ import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
-import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 
 import javax.enterprise.event.Event;
@@ -36,12 +36,10 @@ import java.util.logging.Logger;
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
 public class GameUiControl { // Equivalent worker class is PlanetService
     private Logger logger = Logger.getLogger(GameUiControl.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
     private VisualUiService visualUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
     @Inject
@@ -60,9 +58,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private LevelService levelService;
     @Inject
     private InventoryService inventoryService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
-    private AbstractModalDialogManager dialogManager;
+    private ModalDialogManager dialogManager;
     @Inject
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
     private GameUiControlConfig gameUiControlConfig;

@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.ViewPositionConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.dto.ViewPositionConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -11,7 +11,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.ScreenCover;
-import com.btxtech.uiservice.dialog.AbstractModalDialogManager;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
@@ -43,7 +43,7 @@ public class Scene implements TerrainScrollListener {
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
-    private AbstractModalDialogManager abstractModalDialogManager;
+    private ModalDialogManager modalDialogManager;
     @Inject
     private LevelService levelService;
     @Inject
@@ -127,12 +127,17 @@ public class Scene implements TerrainScrollListener {
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            abstractModalDialogManager.setLevelUpDialogCallback(this::onComplete);
+            modalDialogManager.setLevelUpDialogCallback(this::onComplete);
         }
         if (sceneConfig.isWait4QuestPassedDialog() != null && sceneConfig.isWait4QuestPassedDialog()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            abstractModalDialogManager.setQuestPassedCallback(this::onComplete);
+            modalDialogManager.setQuestPassedCallback(this::onComplete);
+        }
+        if (sceneConfig.isWaitForBaseLostDialog() != null && sceneConfig.isWaitForBaseLostDialog()) {
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            modalDialogManager.setBaseLostCallback(this::onComplete);
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -212,12 +217,12 @@ public class Scene implements TerrainScrollListener {
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
             questVisualizer.showSideBar(null);
-            abstractModalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
+            modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
             gameUiControl.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questVisualizer.showSideBar(null);
-            abstractModalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
+            modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
             gameUiControl.increaseXp(sceneConfig.getScrollUiQuest().getXp());
         }
         if (sceneConfig.getGameTipConfig() != null) {

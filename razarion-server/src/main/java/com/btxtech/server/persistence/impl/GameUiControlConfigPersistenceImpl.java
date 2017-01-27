@@ -344,6 +344,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         audioConfig.setOnOwnSingleSelection(272527);
         audioConfig.setOnOtherSelection(272528);
         audioConfig.setOnCommandSent(272529);
+        audioConfig.setOnCommandSent(272518);
         return audioConfig;
     }
 
@@ -701,6 +702,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         addAttackTask(sceneConfigs);
         // Level 3
         addEnemyKillTask(sceneConfigs);
+        addWaitForDeadTask(sceneConfigs);
         addNpcEscapeTask(sceneConfigs);
         addUserSpawnScene2(sceneConfigs);
         addBuildFactoryTask(sceneConfigs);
@@ -907,12 +909,16 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // Kill human command
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
         botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209, 80, 70))));
-        sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000));
+        sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000).setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(212, 160)).setSpeed(50.0)));
+    }
+
+    private void addWaitForDeadTask(List<SceneConfig> sceneConfigs) {
+        sceneConfigs.add(new SceneConfig().setWaitForBaseLostDialog(true).setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(212, 130)).setSpeed(50.0)));
     }
 
     private void addNpcEscapeTask(List<SceneConfig> sceneConfigs) {
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
-        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetPosition(new DecimalPosition(93, 86)));
+        botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetPosition(new DecimalPosition(48, 110)));
         sceneConfigs.add(new SceneConfig().setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries.").setDuration(3000));
     }
 
