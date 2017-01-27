@@ -21,14 +21,14 @@ public class Camera {
     private double translateX;
     private double translateY;
     private double translateZ = 80;
-    private double rotateX= Math.toRadians(35);
+    private double rotateX = Math.toRadians(35);
     private double rotateZ;
     private Matrix4 matrix4;
     private Matrix4 normMatrix4;
 
     @PostConstruct
     public void postConstruct() {
-        setupMatrices();
+        setupInternalMatrices();
     }
 
     public double getTranslateX() {
@@ -126,9 +126,13 @@ public class Camera {
     }
 
     private void setupMatrices() {
+        setupInternalMatrices();
+        projectionTransformation.setupMatrices();
+    }
+
+    private void setupInternalMatrices() {
         matrix4 = Matrix4.createXRotation(-rotateX).multiply(Matrix4.createZRotation(-rotateZ)).multiply(Matrix4.createTranslation(-translateX, -translateY, -translateZ));
         normMatrix4 = matrix4.normTransformation();
-        projectionTransformation.setupMatrices();
     }
 
     public Ray3d toWorld(Ray3d pickRay) {
