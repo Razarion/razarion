@@ -120,7 +120,7 @@ public class ProjectionTransformation {
     }
 
     /**
-     * Calculates a polygon representing the view field for the given z.
+     * Calculates the view field for the given z.
      * <p>
      *
      * @param z ground level
@@ -184,6 +184,13 @@ public class ProjectionTransformation {
         return new Ray3d(new Vertex(0, 0, 0), direction);
     }
 
+    public DecimalPosition viewFieldCenterToCamera(DecimalPosition position, double z) {
+        double topXRotDistance = Math.tan(camera.getRotateX() + fovY / 2.0) * (camera.getTranslateZ() - z);
+        double bottomXRotDistance = Math.tan(camera.getRotateX() - fovY / 2.0) * (camera.getTranslateZ() - z);
+        double xRotDistance = (topXRotDistance + bottomXRotDistance) / 2.0;
+        return position.getPointWithDistance(camera.getRotateZ() + MathHelper.THREE_QUARTER_RADIANT, xRotDistance);
+    }
+
     public void disableFovYConstrain() {
         fovYConstrain = false;
     }
@@ -215,5 +222,4 @@ public class ProjectionTransformation {
 
         return Matrix4.makeBalancedPerspectiveFrustum(right, top, zNear, zFar);
     }
-
 }

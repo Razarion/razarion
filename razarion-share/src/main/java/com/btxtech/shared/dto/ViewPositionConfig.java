@@ -1,13 +1,12 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 
 /**
  * Created by Beat
  * 05.07.2016.
  */
-public class CameraConfig {
+public class ViewPositionConfig {
     private DecimalPosition fromPosition;
     private DecimalPosition toPosition;
     private Double speed;
@@ -17,7 +16,7 @@ public class CameraConfig {
         return fromPosition;
     }
 
-    public CameraConfig setFromPosition(DecimalPosition fromPosition) {
+    public ViewPositionConfig setFromPosition(DecimalPosition fromPosition) {
         this.fromPosition = fromPosition;
         return this;
     }
@@ -26,7 +25,7 @@ public class CameraConfig {
         return toPosition;
     }
 
-    public CameraConfig setToPosition(DecimalPosition toPosition) {
+    public ViewPositionConfig setToPosition(DecimalPosition toPosition) {
         this.toPosition = toPosition;
         return this;
     }
@@ -35,7 +34,7 @@ public class CameraConfig {
         return speed;
     }
 
-    public CameraConfig setSpeed(Double speed) {
+    public ViewPositionConfig setSpeed(Double speed) {
         this.speed = speed;
         return this;
     }
@@ -44,7 +43,7 @@ public class CameraConfig {
         return cameraLocked;
     }
 
-    public CameraConfig setCameraLocked(boolean cameraLocked) {
+    public ViewPositionConfig setCameraLocked(boolean cameraLocked) {
         this.cameraLocked = cameraLocked;
         return this;
     }
