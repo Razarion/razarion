@@ -347,7 +347,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (baseCommand instanceof MoveCommand) {
-            ((SyncPhysicalMovable) getSyncPhysicalArea()).setDestination(((MoveCommand) baseCommand).getPathToDestination());
+            ((SyncPhysicalMovable) getSyncPhysicalArea()).setPath(((MoveCommand) baseCommand).getPathToDestination());
             return;
         }
 
@@ -384,7 +384,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
         if (baseCommand instanceof PickupBoxCommand) {
             PickupBoxCommand pickupBoxCommand = (PickupBoxCommand) baseCommand;
-            getSyncPhysicalMovable().setDestination(pickupBoxCommand.getPathToDestination());
+            getSyncPhysicalMovable().setPath(pickupBoxCommand.getPathToDestination());
             syncBoxItemToPick = boxService.getSyncBoxItem(pickupBoxCommand.getSynBoxItemId());
             return;
         }

@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -10,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -28,10 +30,14 @@ public class PathingService {
     private TerrainService terrainService;
     @Inject
     private ObstacleContainer obstacleContainer;
+    @Inject
+    private Instance<AStar> instanceAStar;
+    @Inject
+    private Instance<Path> instancePath;
     int obstacleCount;
 
     public Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
-        return new Path().setDestination(destination);
+        return setupPathToDestination(syncItem, destination, 0);
     }
 
     public Path setupPathToDestination(SyncBaseItem syncBaseItem, double range, SyncItem target) {
@@ -40,7 +46,29 @@ public class PathingService {
 
     public Path setupPathToDestination(SyncBaseItem syncBaseItem, double range, DecimalPosition targetPosition, double targetRadius) {
         double totalRange = syncBaseItem.getSyncPhysicalArea().getRadius() + targetRadius + range;
-        return new Path().setDestination(targetPosition).setRange(totalRange);
+        return setupPathToDestination(syncBaseItem, targetPosition, totalRange);
+    }
+
+    private Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange) {
+        Path path = instancePath.get();
+        List<DecimalPosition> positions = new ArrayList<>();
+        Index startTile = obstacleContainer.toTile(syncItem.getSyncPhysicalArea().getPosition2d());
+        Index destinationTile = obstacleContainer.toTile(destination);
+        if (startTile.equals(destinationTile)) {
+            positions.add(destination);
+            path.init(positions, totalRange);
+            return path;
+        }
+
+        AStar aStar = instanceAStar.get();
+        aStar.init(startTile, destinationTile);
+        aStar.expandAllNodes();
+        for (Index index : aStar.convertPath()) {
+            positions.add(obstacleContainer.toAbsoluteMiddle(index));
+        }
+        positions.add(destination);
+        path.init(positions, totalRange);
+        return path;
     }
 
     public void tick() {
@@ -164,7 +192,6 @@ public class PathingService {
 
     private boolean solvePositionContacts() {
         SingleHolder<Boolean> solved = new SingleHolder<>(true);
-        int unitCount = 0;
         // Units
         List<SyncPhysicalMovable> itemsToCheck = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
@@ -180,7 +207,6 @@ public class PathingService {
             SyncPhysicalMovable item1 = itemsToCheck.remove(0);
             for (SyncPhysicalMovable item2 : itemsToCheck) {
                 double distance = item1.getDistance(item2);
-                unitCount++;
                 if (distance >= -PENETRATION_TOLERANCE) {
                     continue;
                 }

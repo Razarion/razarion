@@ -15,54 +15,80 @@ package com.btxtech.shared.gameengine.datatypes;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import java.util.List;
 
 
-/**
- * User: beat
- * Date: May 27, 2009
- * Time: 6:29:22 PM
- */
+@Dependent
 public class Path {
-    private DecimalPosition destination;
-    private double range;
+    @Inject
+    private ObstacleContainer obstacleContainer;
+    private List<DecimalPosition> wayPositions;
+    private int currentWayPointIndex;
+    private double totalRange;
 
-    public Path() {
+    /**
+     * @param path       the path
+     * @param totalRange radius SyncItem + radius target + weapon range
+     */
+    public void init(List<DecimalPosition> path, double totalRange) {
+        if (path.isEmpty()) {
+            throw new IllegalArgumentException("At least one way point must be available");
+        }
+        this.totalRange = totalRange;
+        wayPositions = path;
+        currentWayPointIndex = 0;
     }
 
-    @Deprecated
-    public Path(DecimalPosition start, DecimalPosition destination, boolean destinationReachable) {
+    public DecimalPosition getCurrentWayPoint() {
+        return wayPositions.get(currentWayPointIndex);
     }
 
-    public DecimalPosition getDestination() {
-        return destination;
+    public void setupCurrentWayPoint(SyncPhysicalArea syncPhysicalArea) {
+        if (obstacleContainer.isInSight(syncPhysicalArea, wayPositions.get(currentWayPointIndex))) {
+            aheadTrack(syncPhysicalArea);
+        } else {
+            backtrack(syncPhysicalArea);
+        }
     }
 
-    public Path setDestination(DecimalPosition destination) {
-        this.destination = destination;
-        return this;
+    private void aheadTrack(SyncPhysicalArea syncPhysicalArea) {
+        int tmpCurrentWayPointIndex = currentWayPointIndex + 1;
+        while (tmpCurrentWayPointIndex < wayPositions.size()) {
+            if (obstacleContainer.isInSight(syncPhysicalArea, new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
+                currentWayPointIndex = tmpCurrentWayPointIndex;
+                tmpCurrentWayPointIndex++;
+            } else {
+                break;
+            }
+        }
     }
 
-    public double getRange() {
-        return range;
+    private void backtrack(SyncPhysicalArea syncPhysicalArea) {
+        int tmpCurrentWayPointIndex = currentWayPointIndex - 1;
+        while (tmpCurrentWayPointIndex >= 0) {
+            if (obstacleContainer.isInSight(syncPhysicalArea, new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
+                currentWayPointIndex = tmpCurrentWayPointIndex;
+                return;
+            }
+            tmpCurrentWayPointIndex--;
+        }
+        currentWayPointIndex = 0;
     }
 
-    public Path setRange(double range) {
-        this.range = range;
-        return this;
+    public boolean isLastWayPoint() {
+        return currentWayPointIndex >= wayPositions.size() - 1;
     }
 
-    @Deprecated
-    public DecimalPosition getAlternativeDestination() {
-        return null;
+    public double getTotalRange() {
+        return totalRange;
     }
 
-    @Deprecated
-    public boolean isDestinationReachable() {
-        return false;
+    public List<DecimalPosition> getWayPositions() {
+        return wayPositions;
     }
-
-    @Deprecated
-    public void setDestinationAngel(double destinationAngel) {
-    }
-
 }

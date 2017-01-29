@@ -110,7 +110,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
                     if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition2d())) {
                         targetPosition = target.getSyncPhysicalArea().getPosition2d();
-                        getSyncPhysicalMovable().setDestination(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
+                        getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
                     }
                     targetPositionLastCheck = System.currentTimeMillis();
                 }
@@ -186,7 +186,7 @@ public class SyncWeapon extends SyncBaseAbility {
         this.target = target;
         followTarget = attackCommand.isFollowTarget();
         if (followTarget) {
-            getSyncPhysicalMovable().setDestination(attackCommand.getPathToDestination());
+            getSyncPhysicalMovable().setPath(attackCommand.getPathToDestination());
         }
         targetPosition = target.getSyncPhysicalArea().getPosition2d();
         targetPositionLastCheck = System.currentTimeMillis();

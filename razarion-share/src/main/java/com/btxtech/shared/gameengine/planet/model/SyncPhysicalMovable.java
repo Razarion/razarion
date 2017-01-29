@@ -45,10 +45,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second
-    private DecimalPosition destination;
+    private Path path;
     private DecimalPosition velocity;
-    private DecimalPosition lastDestination;
-    private double range;
 
     public void init(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, DecimalPosition position2d, double angle, DecimalPosition velocity) {
         super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.isFixVerticalNorm(), position2d, angle);
@@ -60,13 +58,15 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void setupForTick() {
-        if (destination != null) {
-            double distance = getPosition2d().getDistance(destination) - range;
+        if (path != null) {
+            path.setupCurrentWayPoint(this);
+            double distance = getPosition2d().getDistance(path.getCurrentWayPoint()) - path.getTotalRange() + PathingService.STOP_DETECTION_DISTANCE;
             if (distance <= 0) {
+                path = null;
                 stopNoDestination();
                 return;
             }
-            DecimalPosition desiredVelocity = destination.sub(getPosition2d()).normalize(maxSpeed);
+            DecimalPosition desiredVelocity = path.getCurrentWayPoint().sub(getPosition2d()).normalize(maxSpeed);
             if (velocity == null) {
                 velocity = DecimalPosition.createVector(getAngle(), 0.001);
             }
@@ -155,14 +155,14 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             // Check other destination
             if (otherMovable != null && otherMovable.hasDestination()) {
                 // Similar destination
-                if (otherMovable.destination.sub(destination).magnitude() <= getRadius() + otherMovable.getRadius()) {
+                if (otherMovable.path.getCurrentWayPoint().sub(path.getCurrentWayPoint()).magnitude() <= getRadius() + otherMovable.getRadius()) {
                     return null;
                 }
 
                 // Other moves to destination in same direction
-                DecimalPosition relativeDestination = destination.sub(getPosition2d()).normalize();
+                DecimalPosition relativeDestination = path.getCurrentWayPoint().sub(getPosition2d()).normalize();
 
-                DecimalPosition relativeDestinationOther = otherMovable.destination.sub(otherMovable.getPosition2d()).normalize();
+                DecimalPosition relativeDestinationOther = otherMovable.path.getCurrentWayPoint().sub(otherMovable.getPosition2d()).normalize();
                 double deltaAngle = Math.acos(relativeDestination.dotProduct(relativeDestinationOther));
                 if (deltaAngle < Math.PI / 2.0) {
                     return null;
@@ -170,12 +170,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
 
             //Check if destination is nearer than other
-            if (getPosition2d().getDistance(destination) < getPosition2d().getDistance(other.getPosition2d())) {
-                return null;
-            }
-
-            // ???
-            if (otherMovable != null && !otherMovable.hasDestination() && otherMovable.lastDestination != null && otherMovable.lastDestination.sub(destination).magnitude() <= getRadius() + otherMovable.getRadius()) {
+            if (getPosition2d().getDistance(path.getCurrentWayPoint()) < getPosition2d().getDistance(other.getPosition2d())) {
                 return null;
             }
 
@@ -192,32 +187,24 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public boolean checkDestinationReached(SyncItemContainerService syncItemContainerService) {
         // 1) Position reached directly
-        if (getPosition2d().getDistance(destination) < PathingService.STOP_DETECTION_DISTANCE) {
+        if (path.isLastWayPoint() && getPosition2d().getDistance(path.getCurrentWayPoint()) < PathingService.STOP_DETECTION_DISTANCE) {
             return true;
         }
         // 2) None moving neighbor reached destination
-        if (isDirectNeighborInDestination(syncItemContainerService, destination)) {
+        if (isDirectNeighborInDestination(syncItemContainerService, path.getCurrentWayPoint())) {
             return true;
         }
         // 3) Indirect contact via at least 2 other units to a unit which stand on the destination
-        return isIndirectNeighborInDestination(syncItemContainerService, new ArrayList<>(), destination);
+        return isIndirectNeighborInDestination(syncItemContainerService, new ArrayList<>(), path.getCurrentWayPoint());
     }
 
     @Override
     public boolean hasDestination() {
-        return destination != null;
+        return path != null;
     }
 
-    public void setDestination(DecimalPosition destination) {
-        this.destination = destination;
-        range = 0;
-    }
-
-    public void setDestination(Path path) {
-        destination = path.getDestination();
-        if (path.getRange() > 0) {
-            range = path.getRange() - PathingService.STOP_DETECTION_DISTANCE;
-        }
+    public void setPath(Path path) {
+        this.path = path;
     }
 
     @Override
@@ -226,8 +213,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void stop() {
-        lastDestination = destination;
-        destination = null;
+        path = null;
     }
 
     public boolean isMoving() {

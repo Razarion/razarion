@@ -48,14 +48,6 @@ public abstract class SyncBaseAbility {
         return syncBaseItem.getSyncPhysicalMovable();
     }
 
-    @Deprecated // Just set the path to the SyncPhysicalMovable: getSyncPhysicalMovable().setDestination(path);
-    public void setPathToDestinationIfSyncMovable(Path path) {
-        throw new UnsupportedOperationException();
-//        if (path != null && syncBaseItem.hasSyncMovable()) {
-//            syncBaseItem.getSyncMovable().setPathToDestination(path.getPath(), path.getActualDestinationAngel());
-//        }
-    }
-
     public abstract void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException;
 
     public abstract void fillSyncItemInfo(SyncItemInfo syncItemInfo);

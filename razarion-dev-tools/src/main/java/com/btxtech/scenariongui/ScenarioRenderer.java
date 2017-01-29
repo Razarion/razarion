@@ -23,7 +23,11 @@ public class ScenarioRenderer extends Abstract2dRenderer {
     public void render() {
         preRender();
 
-        scenario.render(createExtendedGraphicsContext());
+        try {
+            scenario.render(createExtendedGraphicsContext());
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
 
         postRender();
     }

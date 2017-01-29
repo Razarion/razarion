@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -20,6 +21,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class Scenario {
     private BaseItemService baseItemService;
     private ResourceService resourceService;
     private BoxService boxService;
+    private PathingService pathingService;
     private PlayerBase playerBase;
     private int slopeId = 1;
     private List<SyncBaseItem> createdSyncBaseItems = new ArrayList<>();
@@ -101,11 +104,12 @@ public class Scenario {
         return playerBase;
     }
 
-    public void setupSyncItems(BaseItemService baseItemService, PlayerBase playerBase, ResourceService resourceService, BoxService boxService) {
+    public void setupSyncItems(BaseItemService baseItemService, PlayerBase playerBase, ResourceService resourceService, BoxService boxService, PathingService pathingService) {
         this.baseItemService = baseItemService;
         this.playerBase = playerBase;
         this.resourceService = resourceService;
         this.boxService = boxService;
+        this.pathingService = pathingService;
         createSyncItems();
     }
 
@@ -113,7 +117,8 @@ public class Scenario {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, angle, playerBase, true);
             if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
-                ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setDestination(destination);
+                Path path = pathingService.setupPathToDestination(syncBaseItem, destination);
+                ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setPath(path);
             }
             createdSyncBaseItems.add(syncBaseItem);
             return syncBaseItem;

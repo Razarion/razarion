@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
 
@@ -166,7 +165,15 @@ public class GeometricUtil {
         }
 
         Rectangle2D startRect = new Rectangle2D(startTile.getX() * rasterSize, startTile.getY() * rasterSize, rasterSize, rasterSize);
+        if (startRect.isLineInside(line)) {
+            tiles.add(startTile);
+            return tiles;
+        }
         Rectangle2D endRect = new Rectangle2D(endTile.getX() * rasterSize, endTile.getY() * rasterSize, rasterSize, rasterSize);
+        if (endRect.isLineInside(line)) {
+            tiles.add(endTile);
+            return tiles;
+        }
         List<DecimalPosition> crossPoints = getFurthestPoints(startRect.getCrossPointsInfiniteLine(line), endRect.getCrossPointsInfiniteLine(line));
         Collection<DecimalPosition> endPointCollection = Collections.singletonList(crossPoints.get(1));
 

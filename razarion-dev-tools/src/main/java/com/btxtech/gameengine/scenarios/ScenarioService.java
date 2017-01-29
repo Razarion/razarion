@@ -1,5 +1,6 @@
 package com.btxtech.gameengine.scenarios;
 
+import com.btxtech.persistence.GameUiControlProviderEmulator;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -31,6 +32,7 @@ import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -80,7 +82,11 @@ public class ScenarioService implements QuestListener {
     @Inject
     private PlanetService planetService;
     @Inject
+    private PathingService pathingService;
+    @Inject
     private Event<GameEngineInitEvent> gameEngineInitEvent;
+    @Inject
+    private GameUiControlProviderEmulator gameUiControlProviderEmulator;
     private List<ScenarioSuite> scenarioSuites = new ArrayList<>();
     private Scenario currentScenario;
 
@@ -248,20 +254,25 @@ public class ScenarioService implements QuestListener {
         }
         currentScenario.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
         UserContext userContext = new UserContext().setUserId(1).setName("User 1").setLevelId(LEVEL_1_ID);
-        gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
-        planetService.initialise(gameEngineConfig.getPlanetConfig());
-        currentScenario.setupBots(botService);
-        planetService.start();
-        PlayerBase playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getUserId(), userContext.getName());
-        currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService);
-        List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
-        currentScenario.setupBotCommands(botCommandConfigs);
-        botService.executeCommands(botCommandConfigs);
-        QuestConfig questConfig = currentScenario.setupQuest();
-        if (questConfig != null) {
-            questService.activateCondition(userContext.getUserId(), questConfig);
+        try {
+            gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
+            planetService.initialise(gameEngineConfig.getPlanetConfig());
+            currentScenario.setupBots(botService);
+            planetService.start();
+            PlayerBase playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getUserId(), userContext.getName());
+            currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService);
+            List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
+            currentScenario.setupBotCommands(botCommandConfigs);
+            botService.executeCommands(botCommandConfigs);
+            QuestConfig questConfig = currentScenario.setupQuest();
+            if (questConfig != null) {
+                questService.activateCondition(userContext.getUserId(), questConfig);
+            }
+            currentScenario.executeCommands(commandService);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            gameUiControlProviderEmulator.gameUiControlConfigToTmpFile(gameEngineConfig);
         }
-        currentScenario.executeCommands(commandService);
     }
 
     public GameEngineConfig setupGameEngineConfig() {

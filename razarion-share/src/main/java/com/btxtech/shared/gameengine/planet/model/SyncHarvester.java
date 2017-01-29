@@ -96,7 +96,7 @@ public class SyncHarvester extends SyncBaseAbility {
     public void executeCommand(HarvestCommand harvestCommand) {
         resource = resourceService.getSyncResourceItem(harvestCommand.getTarget());
         if (!isInRange(resource)) {
-            getSyncPhysicalMovable().setDestination(harvestCommand.getPathToDestination());
+            getSyncPhysicalMovable().setPath(harvestCommand.getPathToDestination());
         }
     }
 

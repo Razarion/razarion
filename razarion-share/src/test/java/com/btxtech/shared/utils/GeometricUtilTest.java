@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,6 +43,12 @@ public class GeometricUtilTest {
         List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(5.625, 4.75), new DecimalPosition(4.375, -34.0)), 8);
         List<Index> positions = Arrays.asList(new Index(0, 0), new Index(0, -1), new Index(0, -2), new Index(0, -3), new Index(0, -4), new Index(0, -5));
         GeometricUtilTest.assertIndices(positions, actual);
+    }
+
+    @Test
+    public void rasterizeLineCornerLine() throws Exception {
+        List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(600.1913417161826, 567.9619397662557), new DecimalPosition(600.0, 568.0)), 8);
+        GeometricUtilTest.assertIndices(Collections.singletonList(new Index(75, 70)), actual);
     }
 
     public static void assertIndices(Collection<Index> expected, Collection<Index> actual) {

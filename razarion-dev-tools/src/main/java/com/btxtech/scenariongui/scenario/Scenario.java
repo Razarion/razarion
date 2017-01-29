@@ -1,11 +1,7 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.persistence.GameUiControlProviderEmulator;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.GameUiControlConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +37,11 @@ public abstract class Scenario {
     }
 
     static {
+        register("Terrain", new TerrainScenario());
+        register("AStar Test", new AStarServiceScenario());
         register("Obstacle Container Test", new ObstacleContainerScenario());
         register("Bresenhams Test", new FillCircleScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
-        register("Terrain", new TerrainScenario());
         register("Rectangle 2D", new Rectangle2DScenario());
         register("Polygon2D Test", new TestPolygon2DScenario());
         register("Triangle2D", new Triangle2DScenario());

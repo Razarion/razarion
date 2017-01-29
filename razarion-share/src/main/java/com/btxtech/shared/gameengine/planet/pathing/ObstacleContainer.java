@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.GeometricUtil;
+import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.Collection;
@@ -62,21 +63,29 @@ public class ObstacleContainer {
     }
 
     private void insertObstacleLine(ObstacleLine obstacleLine) {
-        List<Index> tiles = GeometricUtil.rasterizeLine(offset(obstacleLine.getLine()), TILE_SIZE);
-        for (Index tile : tiles) {
+        for (Index tile : absoluteLineToTiles(obstacleLine.getLine())) {
             getOrCreate(tile).addObstacle(obstacleLine);
         }
     }
 
+    private List<Index> absoluteLineToTiles(Line absoluteLine) {
+        Line line = new Line(absoluteLine.getPoint1().sub(absoluteOffset), absoluteLine.getPoint2().sub(absoluteOffset));
+        return GeometricUtil.rasterizeLine(line, TILE_SIZE);
+    }
+
     private void insertObstacleCircle(ObstacleCircle obstacleCircle) {
-        List<Index> tiles = GeometricUtil.rasterizeCircle(offset(obstacleCircle.getCircle()), TILE_SIZE);
-        for (Index tile : tiles) {
+        for (Index tile : absoluteCircleToTiles(obstacleCircle.getCircle())) {
             getOrCreate(tile).addObstacle(obstacleCircle);
         }
     }
 
+    private List<Index> absoluteCircleToTiles(Circle2D absoluteCircle) {
+        Circle2D circle = new Circle2D(absoluteCircle.getCenter().sub(absoluteOffset), absoluteCircle.getRadius());
+        return GeometricUtil.rasterizeCircle(circle, TILE_SIZE);
+    }
+
     public Iterable<Obstacle> getObstacles(SyncPhysicalArea syncPhysicalArea) {
-        List<Index> tiles = GeometricUtil.rasterizeCircle(offset(new Circle2D(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius())), TILE_SIZE);
+        List<Index> tiles = absoluteCircleToTiles(new Circle2D(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius()));
         Set<Obstacle> obstacles = new HashSet<>();
         for (Index tile : tiles) {
             ObstacleContainerTile obstacleContainerTile = getObstacleContainerTile(tile);
@@ -88,16 +97,15 @@ public class ObstacleContainer {
     }
 
     public DecimalPosition toAbsolute(Index index) {
-        return new DecimalPosition(index.scale(TILE_SIZE)).sub(absoluteOffset);
+        return new DecimalPosition(index.scale(TILE_SIZE)).add(absoluteOffset);
     }
 
-
-    private Circle2D offset(Circle2D circle) {
-        return circle.translate(absoluteOffset);
+    public DecimalPosition toAbsoluteMiddle(Index index) {
+        return toAbsolute(index).add(TILE_SIZE / 2.0, TILE_SIZE / 2.0);
     }
 
-    private Line offset(Line line) {
-        return line.translate(absoluteOffset);
+    public Index toTile(DecimalPosition absolutePosition) {
+        return absolutePosition.sub(absoluteOffset).divide(TILE_SIZE).toIndexFloor();
     }
 
     public ObstacleContainerTile getObstacleContainerTile(Index index) {
@@ -122,5 +130,54 @@ public class ObstacleContainer {
 
     public int getYCount() {
         return yCount;
+    }
+
+    public boolean hasNorthSuccessorNode(int currentTilePositionY) {
+        return currentTilePositionY < yCount - 1;
+    }
+
+    public boolean hasEastSuccessorNode(int currentTilePositionX) {
+        return currentTilePositionX < xCount - 1;
+    }
+
+    public boolean hasSouthSuccessorNode(int currentTilePositionY) {
+        return currentTilePositionY > 0;
+    }
+
+    public boolean hasWestSuccessorNode(int currentTilePositionX) {
+        return currentTilePositionX > 0;
+    }
+
+    public boolean hasBlockingTerrain(int tileX, int tileY) {
+        return obstacleContainerTiles[tileX][tileY] != null;
+    }
+
+    public boolean isInSight(SyncPhysicalArea syncPhysicalArea, DecimalPosition target) {
+        if (syncPhysicalArea.getPosition2d().equals(target)) {
+            return true;
+        }
+        double angel = syncPhysicalArea.getPosition2d().getAngle(target);
+        double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
+        double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
+
+        Line line1 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel1, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel1, syncPhysicalArea.getRadius()));
+        Line line2 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel2, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel2, syncPhysicalArea.getRadius()));
+
+        return !isSightBlocked(syncPhysicalArea, line1) && !isSightBlocked(syncPhysicalArea, line2);
+    }
+
+    private boolean isSightBlocked(SyncPhysicalArea syncPhysicalArea, Line line) {
+        List<Index> tiles = absoluteLineToTiles(line);
+        for (Index tile : tiles) {
+            ObstacleContainerTile obstacleContainerTile = getObstacleContainerTile(tile);
+            if (obstacleContainerTile != null) {
+                for (Obstacle obstacle : obstacleContainerTile.getObstacles()) {
+                    if (obstacle.getDistance(syncPhysicalArea) < 0.0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

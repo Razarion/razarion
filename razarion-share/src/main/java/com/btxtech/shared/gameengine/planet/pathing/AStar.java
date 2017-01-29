@@ -1,0 +1,137 @@
+package com.btxtech.shared.gameengine.planet.pathing;
+
+import com.btxtech.shared.datatypes.Index;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by Beat
+ * 28.01.2017.
+ */
+@Dependent
+public class AStar {
+    @Inject
+    private ObstacleContainer obstacleContainer;
+    private Map<Index, AStarNode> closedList = new HashMap<>();
+    private AStarOpenList openList = new AStarOpenList();
+    private AStarNode destinatioNode;
+    private boolean pathFound;
+    private List<Index> tilePath;
+    private double smallestHeuristic = Double.MAX_VALUE;
+    private AStarNode bestFitNode;
+
+    public void init(Index startTile, Index destinationTile) {
+        destinatioNode = new AStarNode(destinationTile);
+        openList.add(new AStarNode(startTile));
+    }
+
+    public void expandAllNodes() {
+        while (true) {
+            if (openList.isEmpty()) {
+                // Path hot found
+                return;
+            }
+            AStarNode current = openList.removeFirst();
+            if (current.equals(destinatioNode)) {
+                pathFound = true;
+                return;
+            } else {
+                expandNode(current);
+            }
+        }
+    }
+
+    private void expandNode(AStarNode current) {
+        handleAllSuccessorNodes(current);
+        closedList.put(current.getTileIndex(), current);
+    }
+
+    private void handleAllSuccessorNodes(AStarNode current) {
+        // North
+        if (obstacleContainer.hasNorthSuccessorNode(current.getTileIndex().getY())) {
+            handleSuccessorNode(current, current.getTileIndex().add(0, 1));
+        }
+        // East
+        if (obstacleContainer.hasEastSuccessorNode(current.getTileIndex().getX())) {
+            handleSuccessorNode(current, current.getTileIndex().add(1, 0));
+        }
+        // South
+        if (obstacleContainer.hasSouthSuccessorNode(current.getTileIndex().getY())) {
+            handleSuccessorNode(current, current.getTileIndex().add(0, -1));
+        }
+        // West
+        if (obstacleContainer.hasWestSuccessorNode(current.getTileIndex().getX())) {
+            handleSuccessorNode(current, current.getTileIndex().add(-1, 0));
+        }
+    }
+
+    private void handleSuccessorNode(AStarNode current, Index successorTilePosition) {
+        if (obstacleContainer.hasBlockingTerrain(successorTilePosition.getX(), successorTilePosition.getY())) {
+            return;
+        }
+
+        if (!closedList.containsKey(successorTilePosition)) {
+            double tentativeG = current.getG() + current.getTileIndex().getDistanceDouble(successorTilePosition);
+            AStarNode successor = openList.get(successorTilePosition);
+            if (successor == null || tentativeG < successor.getG()) {
+                if (successor == null) {
+                    if (successorTilePosition.equals(destinatioNode.getTileIndex())) {
+                        successor = destinatioNode;
+                    } else {
+                        successor = new AStarNode(successorTilePosition);
+                    }
+                } else {
+                    openList.remove(successorTilePosition);
+                }
+                successor.setPredecessor(current);
+                successor.setG(tentativeG);
+                double heuristic = successorTilePosition.getDistanceDouble(destinatioNode.getTileIndex());
+                successor.setF(tentativeG + heuristic);
+                openList.add(successor);
+                if (smallestHeuristic > heuristic) {
+                    smallestHeuristic = heuristic;
+                    bestFitNode = successor;
+                }
+            }
+        }
+    }
+
+    public boolean isPathFound() {
+        return pathFound;
+    }
+
+    public List<Index> getTilePath() {
+        return tilePath;
+    }
+
+    public Index getBestFitTile() {
+        return bestFitNode.getTileIndex();
+    }
+
+    public List<Index> convertPath() {
+        tilePath = new ArrayList<>();
+        AStarNode tempNode;
+        if (pathFound) {
+            tempNode = destinatioNode.getPredecessor();
+        } else {
+            if (bestFitNode == null) {
+                throw new IllegalStateException("AStarService: bestFitNode == null");
+            }
+            tempNode = bestFitNode.getPredecessor();
+        }
+        // Omit start
+        while (tempNode != null && tempNode.getPredecessor() != null) {
+            tilePath.add(tempNode.getTileIndex());
+            tempNode = tempNode.getPredecessor();
+        }
+        Collections.reverse(tilePath);
+        return tilePath;
+    }
+
+}

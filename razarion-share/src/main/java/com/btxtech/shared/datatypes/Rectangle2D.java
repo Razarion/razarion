@@ -213,6 +213,10 @@ public class Rectangle2D {
         return crossPoints;
     }
 
+    public boolean isLineInside(Line line) {
+        return contains(line.getPoint1()) && contains(line.getPoint2());
+    }
+
     public Line lineW() {
         return new Line(new DecimalPosition(cornerTopLeft()), new DecimalPosition(cornerBottomLeft()));
     }

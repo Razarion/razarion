@@ -117,9 +117,10 @@ public class ExtendedGraphicsContext {
         gc.setLineWidth(strokeWidth);
         for (int i = 0; i < curve.size(); i++) {
             DecimalPosition start = curve.get(i);
-            DecimalPosition end = curve.get(i + 1 < curve.size() ? i + 1 : i - curve.size() + 1);
-
-            gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+            if(i + 1 < curve.size()) {
+                DecimalPosition end = curve.get(i + 1);
+                gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+            }
             if (showPoint) {
                 gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
             }

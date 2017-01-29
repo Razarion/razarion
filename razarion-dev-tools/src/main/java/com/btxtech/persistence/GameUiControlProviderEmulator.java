@@ -1,6 +1,7 @@
 package com.btxtech.persistence;
 
 import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.rest.RestUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,6 +23,7 @@ import java.nio.file.Files;
 public class GameUiControlProviderEmulator {
     private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
     private static final String FILE_NAME = "GameUiControlConfig.json";
+    private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
     private static final String URL = "http://localhost:8080/razarion-server/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH;
 
     public GameUiControlConfig readFromServer() {
@@ -37,6 +39,15 @@ public class GameUiControlProviderEmulator {
         }
     }
 
+    public GameEngineConfig readGameEngineConfigFromFile(String filename) {
+        try {
+            String string = new String(Files.readAllBytes(new File(filename).toPath()));
+            return new ObjectMapper().readValue(string, GameEngineConfig.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void fromServerToFile(String fileName, String url) {
         try {
             Client client = ClientBuilder.newClient();
@@ -47,19 +58,25 @@ public class GameUiControlProviderEmulator {
         }
     }
 
+    public void gameUiControlConfigToFile(String fileName, Object object) {
+        try {
+            File file = getFile(fileName);
+            new ObjectMapper().writeValue(file, object);
+            System.out.println("Written config to: " + file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void gameUiControlConfigToTmpFile(Object object) {
+        gameUiControlConfigToFile(TMP_FILE_NAME, object);
+    }
+
     public void fromServerToFile() {
         fromServerToFile(FILE_NAME, URL);
     }
 
     private File getFile(String fileName) {
         return new File(DEV_TOOL_RESOURCE_DIR, fileName);
-    }
-
-    private FileWriter getFileWriter(String fileName) throws IOException {
-        return new FileWriter(getFile(fileName));
-    }
-
-    private FileReader getFileReader(String fileName) throws IOException {
-        return new FileReader(getFile(fileName));
     }
 }
