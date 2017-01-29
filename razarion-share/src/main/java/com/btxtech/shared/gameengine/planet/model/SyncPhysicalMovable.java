@@ -60,12 +60,18 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     public void setupForTick() {
         if (path != null) {
             path.setupCurrentWayPoint(this);
-            double distance = getPosition2d().getDistance(path.getCurrentWayPoint()) - path.getTotalRange() + PathingService.STOP_DETECTION_DISTANCE;
-            if (distance <= 0) {
-                path = null;
-                stopNoDestination();
-                return;
+            double distance;
+            if (path.isLastWayPoint()) {
+                distance = getPosition2d().getDistance(path.getCurrentWayPoint()) - path.getTotalRange() + PathingService.STOP_DETECTION_DISTANCE;
+                if (distance <= 0) {
+                    path = null;
+                    stopNoDestination();
+                    return;
+                }
+            } else {
+                distance = getPosition2d().getDistance(path.getCurrentWayPoint());
             }
+
             DecimalPosition desiredVelocity = path.getCurrentWayPoint().sub(getPosition2d()).normalize(maxSpeed);
             if (velocity == null) {
                 velocity = DecimalPosition.createVector(getAngle(), 0.001);

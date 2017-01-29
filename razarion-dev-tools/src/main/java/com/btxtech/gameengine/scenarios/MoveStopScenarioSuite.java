@@ -53,11 +53,6 @@ public class MoveStopScenarioSuite extends ScenarioSuite {
                     }
                 }
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
         addScenario(new Scenario("Group move to same position") {
             @Override

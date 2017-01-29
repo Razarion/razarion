@@ -344,7 +344,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         audioConfig.setOnOwnSingleSelection(272527);
         audioConfig.setOnOtherSelection(272528);
         audioConfig.setOnCommandSent(272529);
-        audioConfig.setOnCommandSent(272518);
+        audioConfig.setOnBaseLost(272518);
         return audioConfig;
     }
 
