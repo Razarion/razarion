@@ -74,11 +74,6 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 20, -5, 20, 10));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
         addScenario(new Scenario("Group vs bottle neck") {
             @Override

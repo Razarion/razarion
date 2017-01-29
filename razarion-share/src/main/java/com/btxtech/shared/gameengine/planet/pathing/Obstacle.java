@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
@@ -11,6 +12,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 public abstract class Obstacle {
 
     public abstract DecimalPosition project(DecimalPosition point);
+
+    public abstract boolean isPiercing(Line line);
 
     public Contact hasContact(SyncPhysicalMovable item) {
         // There is no check if the unit is inside the restricted area
@@ -24,7 +27,7 @@ public abstract class Obstacle {
 
     public double getDistance(SyncPhysicalArea item) {
         // There is no check if the unit is inside the restricted area
-        DecimalPosition pointOnLine = project(item.getPosition2d());
-        return pointOnLine.getDistance(item.getPosition2d()) - item.getRadius();
+        DecimalPosition nearestPointOnObstacle = project(item.getPosition2d());
+        return nearestPointOnObstacle.getDistance(item.getPosition2d()) - item.getRadius();
     }
 }

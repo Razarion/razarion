@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.datatypes.Line2I;
 
 /**
  * Created by Beat
@@ -15,8 +14,14 @@ public class ObstacleLine extends Obstacle {
         this.line = line;
     }
 
+    @Override
     public DecimalPosition project(DecimalPosition point) {
         return line.getNearestPointOnLine(point);
+    }
+
+    @Override
+    public boolean isPiercing(Line line) {
+        return this.line.getCrossInclusive(line) != null;
     }
 
     public Line getLine() {

@@ -160,19 +160,20 @@ public class ObstacleContainer {
         double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
         double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
 
+        Line line = new Line(syncPhysicalArea.getPosition2d(), target);
         Line line1 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel1, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel1, syncPhysicalArea.getRadius()));
         Line line2 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel2, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel2, syncPhysicalArea.getRadius()));
 
-        return !isSightBlocked(syncPhysicalArea, line1) && !isSightBlocked(syncPhysicalArea, line2);
+        return !isSightBlocked(line) && !isSightBlocked(line1) && !isSightBlocked(line2);
     }
 
-    private boolean isSightBlocked(SyncPhysicalArea syncPhysicalArea, Line line) {
+    private boolean isSightBlocked(Line line) {
         List<Index> tiles = absoluteLineToTiles(line);
         for (Index tile : tiles) {
             ObstacleContainerTile obstacleContainerTile = getObstacleContainerTile(tile);
             if (obstacleContainerTile != null) {
                 for (Obstacle obstacle : obstacleContainerTile.getObstacles()) {
-                    if (obstacle.getDistance(syncPhysicalArea) < 0.0) {
+                    if (obstacle.isPiercing(line)) {
                         return true;
                     }
                 }

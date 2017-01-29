@@ -90,103 +90,35 @@ public class GeometricUtil {
         return map;
     }
 
-    public static List<DecimalPosition> getNearestPoints(Collection<DecimalPosition> startPoints, Collection<DecimalPosition> endPoints) {
-        List<DecimalPosition> result = new ArrayList<>();
-        if (startPoints.size() == 1 && endPoints.size() == 1) {
-            result.add(CollectionUtils.getFirst(startPoints));
-            result.add(CollectionUtils.getFirst(endPoints));
-            return result;
-        }
-
-        DecimalPosition start = null;
-        DecimalPosition end = null;
-        double distance = Double.MAX_VALUE;
-        for (DecimalPosition startPoint : startPoints) {
-            for (DecimalPosition endPoint : endPoints) {
-                double tmpDistance = startPoint.getDistance(endPoint);
-                if (tmpDistance < distance) {
-                    distance = tmpDistance;
-                    start = startPoint;
-                    end = endPoint;
-                }
-            }
-        }
-        if (start == null) {
-            throw new IllegalArgumentException("No startPoints defined");
-        }
-        if (end == null) {
-            throw new IllegalArgumentException("No endPoints defined");
-        }
-        result.add(start);
-        result.add(end);
-        return result;
-    }
-
-    public static List<DecimalPosition> getFurthestPoints(Collection<DecimalPosition> startPoints, Collection<DecimalPosition> endPoints) {
-        List<DecimalPosition> result = new ArrayList<>();
-        if (startPoints.size() == 1 && endPoints.size() == 1) {
-            result.add(CollectionUtils.getFirst(startPoints));
-            result.add(CollectionUtils.getFirst(endPoints));
-            return result;
-        }
-
-        DecimalPosition start = null;
-        DecimalPosition end = null;
-        double distance = Double.MIN_VALUE;
-        for (DecimalPosition startPoint : startPoints) {
-            for (DecimalPosition endPoint : endPoints) {
-                double tmpDistance = startPoint.getDistance(endPoint);
-                if (tmpDistance > distance) {
-                    distance = tmpDistance;
-                    start = startPoint;
-                    end = endPoint;
-                }
-            }
-        }
-        if (start == null) {
-            throw new IllegalArgumentException("No startPoints defined");
-        }
-        if (end == null) {
-            throw new IllegalArgumentException("No endPoints defined");
-        }
-        result.add(start);
-        result.add(end);
-        return result;
-    }
-
     public static List<Index> rasterizeLine(Line line, int rasterSize) {
         Index startTile = line.getPoint1().divide(rasterSize).toIndexFloor();
         Index endTile = line.getPoint2().divide(rasterSize).toIndexFloor();
-
         List<Index> tiles = new ArrayList<>();
+        tiles.add(startTile);
+
         if (startTile.equals(endTile)) {
-            tiles.add(startTile);
             return tiles;
         }
 
-        Rectangle2D startRect = new Rectangle2D(startTile.getX() * rasterSize, startTile.getY() * rasterSize, rasterSize, rasterSize);
-        if (startRect.isLineInside(line)) {
-            tiles.add(startTile);
-            return tiles;
-        }
-        Rectangle2D endRect = new Rectangle2D(endTile.getX() * rasterSize, endTile.getY() * rasterSize, rasterSize, rasterSize);
-        if (endRect.isLineInside(line)) {
-            tiles.add(endTile);
-            return tiles;
-        }
-        List<DecimalPosition> crossPoints = getFurthestPoints(startRect.getCrossPointsInfiniteLine(line), endRect.getCrossPointsInfiniteLine(line));
-        Collection<DecimalPosition> endPointCollection = Collections.singletonList(crossPoints.get(1));
+        double difX = line.getPoint2().getX() - line.getPoint1().getX();
+        double difY = line.getPoint2().getY() - line.getPoint1().getY();
 
-        Index currentTile = startTile;
-        while (!currentTile.equals(endTile)) {
-            tiles.add(currentTile);
-            Rectangle2D current = new Rectangle2D(currentTile.getX() * rasterSize - 0.1, currentTile.getY() * rasterSize - 0.1, rasterSize + 0.2, rasterSize + 0.2);
-            DecimalPosition crossPoint = getNearestPoints(current.getCrossPointsInfiniteLine(line), endPointCollection).get(0);
-            currentTile = crossPoint.divide(rasterSize).toIndexFloor();
+        double dist = Math.abs(difX) + Math.abs(difY);
+
+        double dx = difX / dist;
+        double dy = difY / dist;
+
+        for (int i = 0; i <= Math.ceil(dist); i++) {
+            int x = (int) Math.floor((line.getPoint1().getX() + dx * i) / rasterSize);
+            int y = (int) Math.floor((line.getPoint1().getY() + dy * i) / rasterSize);
+            Index tile = new Index(x, y);
+            if(!tiles.get(tiles.size() - 1).equals(tile)) {
+                tiles.add(tile);
+            }
         }
-        tiles.add(endTile);
         return tiles;
     }
+
 
     public static List<Index> rasterizeCircle(Circle2D circle2D, int rasterSize) {
         double startX = Math.floor((circle2D.getCenter().getX() - circle2D.getRadius()) / rasterSize) * rasterSize;

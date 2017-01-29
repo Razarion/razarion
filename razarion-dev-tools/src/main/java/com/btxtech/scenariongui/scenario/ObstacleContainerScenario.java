@@ -40,18 +40,7 @@ public class ObstacleContainerScenario extends AbstractTerrainScenario {
             extendedGraphicsContext.strokeVertexList(slope.getMesh().getVertices(), 0.05, Color.BLUE);
         }
 
-        // Draw obstacles
-        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
-            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
-                Index index = new Index(x, y);
-                ObstacleContainerTile obstacleContainerTile = obstacleContainer.getObstacleContainerTile(index);
-                if (obstacleContainerTile != null) {
-                    for (Obstacle obstacle : obstacleContainerTile.getObstacles()) {
-                        extendedGraphicsContext.drawObstacle(obstacle, Color.BEIGE, Color.AZURE);
-                    }
-                }
-            }
-        }
+        drawObstacle(extendedGraphicsContext);
 
         if (mousePosition != null) {
             double radius = 10;

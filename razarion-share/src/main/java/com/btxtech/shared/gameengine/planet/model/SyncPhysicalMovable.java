@@ -207,6 +207,10 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         this.path = path;
     }
 
+    public Path getPath() {
+        return path;
+    }
+
     @Override
     public boolean canMove() {
         return true;

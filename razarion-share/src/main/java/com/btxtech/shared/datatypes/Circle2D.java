@@ -45,4 +45,27 @@ public class Circle2D {
         return new Circle2D(center.add(translation), radius);
     }
 
+    public boolean doesLineCut(Line line) {
+        double a = line.getPoint1().getDistance(center);
+        if (a < radius) {
+            return true;
+        }
+        double b = line.getPoint2().getDistance(center);
+        if (b < radius) {
+            return true;
+        }
+        double minCircleAngle;
+        if (MathHelper.compareWithPrecision(a - radius, 0.0)) {
+            minCircleAngle = MathHelper.QUARTER_RADIANT;
+        } else {
+            minCircleAngle = MathHelper.normaliseAngle(Math.asin(radius / a));
+        }
+
+        double lineAngle = line.getPoint1().getAngle(line.getPoint2());
+        double lineCenterAngle = line.getPoint1().getAngle(center);
+        double insideAngle = MathHelper.normaliseAngle(MathHelper.getAngle(lineAngle, lineCenterAngle));
+
+        return insideAngle < minCircleAngle;
+    }
+
 }

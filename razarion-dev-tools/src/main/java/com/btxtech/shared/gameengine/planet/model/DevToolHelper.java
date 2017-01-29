@@ -7,10 +7,15 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  * 28.01.2017.
  */
 public class DevToolHelper {
+    public static SyncPhysicalArea generateSyncPhysicalArea(DecimalPosition position, double radius) {
+        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea();
+        syncPhysicalArea.init(null, radius, false, position, 0);
+        return syncPhysicalArea;
+    }
+
     public static SyncBaseItem generateSyncBaseItem(DecimalPosition position) {
         SyncBaseItem syncBaseItem = new SyncBaseItem();
-        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea();
-        syncPhysicalArea.setPosition2d(position);
+        SyncPhysicalArea syncPhysicalArea = generateSyncPhysicalArea(position, 0);
         syncBaseItem.init(0, null, syncPhysicalArea);
         return syncBaseItem;
     }

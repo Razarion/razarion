@@ -37,11 +37,12 @@ public abstract class Scenario {
     }
 
     static {
+        register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
+        register("ObstacleContainer InSight", new ObstacleContainerInSightScenario());
         register("Terrain", new TerrainScenario());
         register("AStar Test", new AStarServiceScenario());
         register("Obstacle Container Test", new ObstacleContainerScenario());
         register("Bresenhams Test", new FillCircleScenario());
-        register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
         register("Rectangle 2D", new Rectangle2DScenario());
         register("Polygon2D Test", new TestPolygon2DScenario());
         register("Triangle2D", new Triangle2DScenario());

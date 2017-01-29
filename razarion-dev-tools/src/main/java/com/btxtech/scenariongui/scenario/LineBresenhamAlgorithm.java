@@ -29,7 +29,7 @@ public class LineBresenhamAlgorithm extends Scenario {
 
                 extendedGraphicsContext.getGc().setFill(Color.GREEN);
                 for (Index tile : tiles) {
-                    extendedGraphicsContext.getGc().fillRect(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE - 0.05, TILE_SIZE - 0.05);
+                    extendedGraphicsContext.getGc().fillRect(tile.getX() * TILE_SIZE, tile.getY() * TILE_SIZE, TILE_SIZE - 0.1, TILE_SIZE - 0.1);
                 }
 
                 extendedGraphicsContext.getGc().setStroke(Color.RED);

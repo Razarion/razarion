@@ -1,11 +1,17 @@
 package com.btxtech.scenariongui.scenario;
 
+import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.persistence.GameUiControlProviderEmulator;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.GameEngineInitEvent;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import javafx.scene.paint.Color;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
@@ -19,8 +25,8 @@ public abstract class AbstractTerrainScenario extends Scenario {
     @Override
     public void init() {
         GameUiControlProviderEmulator gameUiControlProviderEmulator = new GameUiControlProviderEmulator();
-        // GameEngineConfig gameEngineConfig = gameUiControlProviderEmulator.readFromFile().getGameEngineConfig();
-        GameEngineConfig gameEngineConfig = gameUiControlProviderEmulator.readGameEngineConfigFromFile("C:\\dev\\projects\\razarion\\code\\tmp\\TmpGameUiControlConfig.json");
+        GameEngineConfig gameEngineConfig = gameUiControlProviderEmulator.readFromFile().getGameEngineConfig();
+        // GameEngineConfig gameEngineConfig = gameUiControlProviderEmulator.readGameEngineConfigFromFile("C:\\dev\\projects\\razarion\\code\\tmp\\TmpGameUiControlConfig.json");
         gameUiControlProviderEmulator.readFromFile();
         Weld weld = new Weld();
         weldContainer = weld.initialize();
@@ -36,5 +42,21 @@ public abstract class AbstractTerrainScenario extends Scenario {
 
     protected <T> T getBean(Class<T> theClass) {
         return weldContainer.instance().select(theClass).get();
+    }
+
+    protected void drawObstacle(ExtendedGraphicsContext extendedGraphicsContext) {
+        ObstacleContainer obstacleContainer = getBean(ObstacleContainer.class);
+
+        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
+            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
+                Index index = new Index(x, y);
+                ObstacleContainerTile obstacleContainerTile = obstacleContainer.getObstacleContainerTile(index);
+                if (obstacleContainerTile != null) {
+                    for (Obstacle obstacle : obstacleContainerTile.getObstacles()) {
+                        extendedGraphicsContext.drawObstacle(obstacle, Color.BROWN, Color.BROWN);
+                    }
+                }
+            }
+        }
     }
 }

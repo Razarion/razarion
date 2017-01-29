@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -198,6 +199,15 @@ public class ExtendedGraphicsContext {
                 gc.setStroke(BASE_ITEM_TYPE_WEAPON_COLOR);
                 gc.setLineWidth(0.5);
                 gc.strokeLine(canonStart.getX(), canonStart.getY(), canonEnd.getX(), canonEnd.getY());
+            }
+            if(syncBaseItem.getSyncPhysicalArea().canMove()) {
+                Path path = syncBaseItem.getSyncPhysicalMovable().getPath();
+                if(path != null) {
+                    strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.BLUE, true);
+                    gc.setStroke(Color.BLUEVIOLET);
+                    gc.setLineWidth(0.5);
+                    gc.strokeLine(syncBaseItem.getSyncPhysicalArea().getPosition2d().getX(), syncBaseItem.getSyncPhysicalArea().getPosition2d().getY(), path.getCurrentWayPoint().getX(), path.getCurrentWayPoint().getY());
+                }
             }
         }
     }
