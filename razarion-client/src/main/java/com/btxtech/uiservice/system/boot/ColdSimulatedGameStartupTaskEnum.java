@@ -35,7 +35,7 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
             return LOAD_MEDIAS;
         }
     },
-    RUN_GAME(RunGameUiControl.class) { // TODO
+    RUN_GAME(RunGameUiControl.class) {
 
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {
