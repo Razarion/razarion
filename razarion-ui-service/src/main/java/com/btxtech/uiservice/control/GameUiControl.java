@@ -179,7 +179,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         if (groundSkeletonConfig.getBottomTextureId() != null) {
             textureIds.add(groundSkeletonConfig.getBottomTextureId());
         }
-
+        if (gameUiControlConfig.getVisualConfig().getBaseItemDemolitionImageId() != null) {
+            textureIds.add(gameUiControlConfig.getVisualConfig().getBaseItemDemolitionImageId());
+        }
         return textureIds;
     }
 
@@ -198,7 +200,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         if (groundSkeletonConfig.getBottomBmId() != null) {
             bumpIds.add(groundSkeletonConfig.getBottomBmId());
         }
-
+        if (gameUiControlConfig.getVisualConfig().getWaterBmId() != null) {
+            bumpIds.add(gameUiControlConfig.getVisualConfig().getWaterBmId());
+        }
         return bumpIds;
     }
 }
