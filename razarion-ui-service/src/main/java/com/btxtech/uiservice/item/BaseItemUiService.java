@@ -162,6 +162,9 @@ public class BaseItemUiService {
                         }
                     }
                 }
+                if (syncBaseItem.getWeaponTurret() != null) {
+                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));
+                }
             }
 
             // Harvesting

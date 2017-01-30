@@ -151,11 +151,18 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
 
     private void demolition(BaseItemType baseItemType, boolean fillBuffer) {
         if (baseItemType.getShape3DId() != null) {
+            String turretMaterialId = null;
+            if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
+                turretMaterialId = baseItemType.getWeaponType().getTurretType().getShape3dMaterialId();
+            }
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer>, AbstractDemolitionVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideDemolitionModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    if (turretMaterialId != null && turretMaterialId.equals(vertexContainer.getMaterialId())) {
+                        continue;
+                    }
                     CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
                     compositeRenderer.setRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(visualUiService.getVisualConfig().getBaseItemDemolitionImageId());
