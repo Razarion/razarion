@@ -35,11 +35,9 @@ public class DevToolsDemolitionVertexContainerDepthBufferRenderUnit extends Abst
     private WebGlEmulator webGlEmulator;
     private WebGlProgramEmulator webGlProgramEmulator;
     private ModelMatrices modelMatrices;
-    private Matrix4 heightMatrix;
-    private double tmpMaxZ;
 
     @Override
-    protected void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionCuttingImageId, Integer baseItemDemolitionLookUpImageId) {
+    protected void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionImageId) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.getVertices()));
     }
@@ -51,20 +49,17 @@ public class DevToolsDemolitionVertexContainerDepthBufferRenderUnit extends Abst
 
     @Override
     public Vertex4 runShader(Vertex vertex) {
-        tmpMaxZ = Math.max(tmpMaxZ, heightMatrix.multiply(vertex, 1.0).getZ());
         Matrix4 matrix4 = shadowUiService.getDepthProjectionTransformation().multiply(shadowUiService.getDepthViewTransformation().multiply(modelMatrices.getModel()));
         return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
     }
 
     @Override
-    protected void prepareDraw(Matrix4 heightMatrix, double maxHeight) {
-        this.heightMatrix = heightMatrix;
+    protected void prepareDraw() {
     }
 
     @Override
     protected void draw(ModelMatrices modelMatrices, double health) {
         this.modelMatrices = modelMatrices;
-        tmpMaxZ = Double.MIN_VALUE;
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 

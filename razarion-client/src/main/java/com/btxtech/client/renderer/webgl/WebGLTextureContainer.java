@@ -73,7 +73,7 @@ public class WebGLTextureContainer {
     protected void setupTextureForBumpMap(int imageId, ImageElement imageElement) {
         WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
         bindTextureForBumpMap(imageElement, webGLTexture);
-        textures.put(imageId, webGLTexture);
+        bumpTextures.put(imageId, webGLTexture);
     }
 
     private void bindTexture(ImageElement imageElement, WebGLTexture webGLTexture) {

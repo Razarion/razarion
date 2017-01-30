@@ -327,7 +327,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         visualConfig.setWaterLightConfig(lightConfig);
         visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         visualConfig.setClipConfigs(clipPersistence.readClipConfigs());
-        visualConfig.setBaseItemDemolitionCuttingImageId(170418).setBaseItemDemolitionLookUpImageId(272510);
+        visualConfig.setBaseItemDemolitionImageId(180848);
         return visualConfig;
     }
 
@@ -667,16 +667,24 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private List<SceneConfig> demolitionVisualization() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(70, 170)).setCameraLocked(false);
-        // Bot
+        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(270, 260)).setCameraLocked(false);
         List<BotConfig> botConfigs = new ArrayList<>();
+        // Bot target
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 246))).setNoSpawn(true).setNoRebuild(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(270, 260))).setNoSpawn(true).setNoRebuild(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        // Bot attacker
+        botEnragementStateConfigs = new ArrayList<>();
+        botItems = new ArrayList<>();
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(220, 260))).setNoSpawn(true).setNoRebuild(true));
+        botConfigs.add(new BotConfig().setId(NPC_BOT_OUTPOST).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Bobby").setNpc(true));
+        List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs = new ArrayList<>();
+        botKillOtherBotCommandConfigs.add(new BotKillOtherBotCommandConfig().setBotId(NPC_BOT_OUTPOST).setTargetBotId(ENEMY_BOT).setDominanceFactor(1).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 220 , 50, 50))));
 
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true).setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 

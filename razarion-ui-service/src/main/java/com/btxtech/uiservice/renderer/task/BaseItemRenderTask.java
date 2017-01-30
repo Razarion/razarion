@@ -154,13 +154,12 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer>, AbstractDemolitionVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideDemolitionModelMatrices(baseItemType));
             Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
-            double maxHeight = Shape3DUtils.getMaxZ(shape3D);
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                     CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
-                    compositeRenderer.setRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(maxHeight, visualUiService.getVisualConfig().getBaseItemDemolitionCuttingImageId(), visualUiService.getVisualConfig().getBaseItemDemolitionLookUpImageId());
-                    compositeRenderer.setDepthBufferRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(maxHeight, visualUiService.getVisualConfig().getBaseItemDemolitionCuttingImageId(), visualUiService.getVisualConfig().getBaseItemDemolitionLookUpImageId());
+                    compositeRenderer.setRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(visualUiService.getVisualConfig().getBaseItemDemolitionImageId());
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {

@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 
@@ -12,14 +11,9 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractDemolitionVertexContainerRenderUnit extends AbstractRenderUnit<VertexContainer> {
     private Logger logger = Logger.getLogger(AbstractDemolitionVertexContainerRenderUnit.class.getName());
-    private Matrix4 heightMatrix;
-    private double maxHeight;
-    private Integer baseItemDemolitionCuttingImageId;
-    private Integer baseItemDemolitionLookUpImageId;
+    private Integer baseItemDemolitionImageId;
 
-    protected abstract void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionCuttingImageId, Integer baseItemDemolitionLookUpImageId);
-
-    protected abstract void prepareDraw(Matrix4 heightMatrix, double maxHeight);
+    protected abstract void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionImageId);
 
     protected abstract void draw(ModelMatrices modelMatrices, double progressZ);
 
@@ -42,26 +36,18 @@ public abstract class AbstractDemolitionVertexContainerRenderUnit extends Abstra
             return;
         }
 
-        heightMatrix = vertexContainer.getShapeTransform().setupMatrix();
-        internalFillBuffers(vertexContainer, baseItemDemolitionCuttingImageId, baseItemDemolitionLookUpImageId);
+        internalFillBuffers(vertexContainer, baseItemDemolitionImageId);
 
         setElementCount(vertexContainer);
     }
 
-    public void setAdditionalData(double maxHeight, Integer baseItemDemolitionCuttingImageId, Integer baseItemDemolitionLookUpImageId) {
-        this.maxHeight = maxHeight;
-        this.baseItemDemolitionCuttingImageId = baseItemDemolitionCuttingImageId;
-        this.baseItemDemolitionLookUpImageId = baseItemDemolitionLookUpImageId;
+    public void setAdditionalData(Integer baseItemDemolitionImageId) {
+        this.baseItemDemolitionImageId = baseItemDemolitionImageId;
     }
 
     @Override
     public String helperString() {
         return getRenderData().createShapeElementVertexContainerTag();
-    }
-
-    @Override
-    protected void prepareDraw() {
-        prepareDraw(heightMatrix, maxHeight);
     }
 
     @Override

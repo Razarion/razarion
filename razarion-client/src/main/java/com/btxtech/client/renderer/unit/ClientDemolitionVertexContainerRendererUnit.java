@@ -6,7 +6,6 @@ import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Color;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.VisualUiService;
@@ -44,7 +43,6 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
     private ShaderTextureCoordinateAttribute textureCoordinateAttribute;
     private WebGlUniformTexture texture;
     private WebGlUniformTexture templateTexture;
-    private WebGlUniformTexture textureGradient;
     private Color ambient;
     private Color diffuse;
 
@@ -63,10 +61,9 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
     }
 
     @Override
-    protected void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionCuttingImageId, Integer baseItemDemolitionLookUpImageId) {
+    protected void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionImageId) {
         texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
-        templateTexture = webGlFacade.createWebGLTexture(baseItemDemolitionCuttingImageId, "uCuttingSampler");
-        textureGradient = webGlFacade.createWebGLTexture(baseItemDemolitionLookUpImageId, "uLookUpSampler");
+        templateTexture = webGlFacade.createWebGLTexture(baseItemDemolitionImageId, "uDemolitionSampler");
         positions.fillBuffer(vertexContainer.getVertices());
         norms.fillBuffer(vertexContainer.getNorms());
         textureCoordinateAttribute.fillBuffer(vertexContainer.getTextureCoordinates());
@@ -76,7 +73,7 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
     }
 
     @Override
-    protected void prepareDraw(Matrix4 heightMatrix, double maxHeight) {
+    protected void prepareDraw() {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
@@ -86,8 +83,6 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
         webGlFacade.uniform3fNoAlpha("uLightingAmbient", ambient);
         webGlFacade.uniform3f("uLightingDirection", visualUiService.getShape3DLightDirection());
         webGlFacade.uniform3fNoAlpha("uLightingDiffuse", diffuse);
-        webGlFacade.uniformMatrix4fv("heightMatrix", heightMatrix);
-        webGlFacade.uniform1f("uMaxHeight", maxHeight);
 
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
@@ -96,7 +91,6 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
 
         texture.activate();
         templateTexture.activate();
-        textureGradient.activate();
         positions.activate();
         norms.activate();
         textureCoordinateAttribute.activate();

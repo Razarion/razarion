@@ -8,15 +8,12 @@ uniform highp mat4 uPMatrix;
 uniform highp mat4 uNMMatrix;
 uniform highp mat4 uNVMatrix;
 uniform highp mat4 uShadowMatrix;
-uniform highp mat4 heightMatrix;
 
 varying vec3 vVertexNormal;
 varying vec2 vTextureCoord;
 varying vec4 vShadowCoord;
-varying float height;
 
 void main(void) {
-    height = (heightMatrix * vec4(aVertexPosition, 1.0)).z;
     gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 1.0);
     vVertexNormal = normalize((uNVMatrix * uNMMatrix * vec4(aVertexNormal, 0.0)).xyz);
     vTextureCoord = aTextureCoord;
