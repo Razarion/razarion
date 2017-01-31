@@ -203,7 +203,7 @@ public class ExtendedGraphicsContext {
             if(syncBaseItem.getSyncPhysicalArea().canMove()) {
                 Path path = syncBaseItem.getSyncPhysicalMovable().getPath();
                 if(path != null) {
-                    strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.BLUE, true);
+                    strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.CADETBLUE, true);
                     gc.setStroke(Color.BLUEVIOLET);
                     gc.setLineWidth(0.5);
                     gc.strokeLine(syncBaseItem.getSyncPhysicalArea().getPosition2d().getX(), syncBaseItem.getSyncPhysicalArea().getPosition2d().getY(), path.getCurrentWayPoint().getX(), path.getCurrentWayPoint().getY());

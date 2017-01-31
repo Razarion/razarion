@@ -89,15 +89,18 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             double originalSpeed = velocity.magnitude();
             double possibleSpeed;
             if (MathHelper.compareWithPrecision(MathHelper.getAngle(desiredAngle, getAngle()), 0.0)) {
-                double tickCountToStop = maxSpeed / (acceleration * PlanetService.TICK_FACTOR);
-                double breakingDistance = tickCountToStop * (maxSpeed / 2.0) * PlanetService.TICK_FACTOR;
-                if (breakingDistance < distance) {
-                    possibleSpeed = maxSpeed;
+                double tickDistance = originalSpeed * PlanetService.TICK_FACTOR;
+                double ticks2Break = maxSpeed / (acceleration * PlanetService.TICK_FACTOR);
+                double breakingDistance = acceleration * PlanetService.TICK_FACTOR * PlanetService.TICK_FACTOR * (ticks2Break * ticks2Break / 2.0);
+                if (tickDistance >= distance) {
+                    possibleSpeed = distance / PlanetService.TICK_FACTOR;
+                } else if (breakingDistance >= distance) {
+                    double ticks2Destination = Math.sqrt(2.0 * distance / acceleration);
+                    possibleSpeed = acceleration * ticks2Destination;
                 } else {
-                    double ticksAwayFromDest = Math.sqrt((2.0 * distance) / acceleration) / PlanetService.TICK_FACTOR;
-                    possibleSpeed = acceleration * ticksAwayFromDest * PlanetService.TICK_FACTOR;
-                    possibleSpeed = Math.min(maxSpeed, possibleSpeed);
+                    possibleSpeed = maxSpeed;
                 }
+                possibleSpeed = Math.min(maxSpeed, possibleSpeed);
             } else {
                 double angle = MathHelper.getAngle(getAngle(), desiredAngle) - MathHelper.QUARTER_RADIANT;
                 double radius = distance / (2.0 * Math.cos(angle));
@@ -193,7 +196,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public boolean checkDestinationReached(SyncItemContainerService syncItemContainerService) {
         // 1) Position reached directly
-        if (path.isLastWayPoint() && getPosition2d().getDistance(path.getCurrentWayPoint()) < PathingService.STOP_DETECTION_DISTANCE) {
+        if (path.isLastWayPoint() && getPosition2d().getDistance(path.getCurrentWayPoint()) < 2.0 * PathingService.STOP_DETECTION_DISTANCE) {
             return true;
         }
         // 2) None moving neighbor reached destination

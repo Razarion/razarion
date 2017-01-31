@@ -19,7 +19,12 @@ public class MoveScenarioSuite extends ScenarioSuite {
             public void createSyncItems() {
                 createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(50, 0));
             }
-
+        });
+        addScenario(new Scenario("Move fast acceleration north east") {
+            @Override
+            public void createSyncItems() {
+                createSyncBaseItem(ScenarioService.SIMPLE_FAST_ACCELERATION_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(30, 10));
+            }
         });
         addScenario(new Scenario("Move strait down") {
             @Override
@@ -31,6 +36,11 @@ public class MoveScenarioSuite extends ScenarioSuite {
             @Override
             public void createSyncItems() {
                 createSyncBaseItem(ScenarioService.SIMPLE_FAST_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, new DecimalPosition(50, 0));
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
         });
         addScenario(new Scenario("Move 90dec") {

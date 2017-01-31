@@ -104,12 +104,6 @@ public class RealGameScenarioSuite extends ScenarioSuite {
                 // Kill human command
                 botCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209 , 80, 70))));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
-
         });
     }
 
