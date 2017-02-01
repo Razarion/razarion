@@ -4,9 +4,13 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.audio.AudioSelectorDialog;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
+import com.btxtech.client.guielements.VertexBox;
 import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ClipConfig;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.clip.EffectService;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -30,7 +34,7 @@ import javax.inject.Inject;
  */
 @Templated("ClipPropertyPanel.html#clip-property-panel")
 public class ClipPropertyPanel extends AbstractPropertyPanel<ClipConfig> {
-    // private Logger logger = Logger.getLogger(Shape3DPropertyPanel.class.getName());
+    // private Logger logger = Logger.getLogger(ClipPropertyPanel.class.getName());
     @Inject
     @AutoBound
     private DataBinder<ClipConfig> dataBinder;
@@ -38,37 +42,40 @@ public class ClipPropertyPanel extends AbstractPropertyPanel<ClipConfig> {
     private ClipCrud clipCrud;
     @Inject
     private Shape3DUiService clipService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
-    @SuppressWarnings("CdiInjectionPointsIn@Bindablespection")
+    @Inject
+    private EffectService effectService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     @Inject
     @Bound
     @DataField
     private Label id;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private TextBox internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Shape3DReferenceFiled shape3DId;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label duration;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     @ListContainer("tbody")
     private ListComponent<Integer, ClipAudioWidget> audioIds;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button createAudioButton;
+    @Inject
+    @DataField
+    private VertexBox testPosition;
+    @Inject
+    @DataField
+    private Button testPlayClipButton;
 
     @Override
     public void init(ClipConfig clipConfig) {
@@ -108,4 +115,17 @@ public class ClipPropertyPanel extends AbstractPropertyPanel<ClipConfig> {
     void changeAudioId(Integer oldId, Integer newId) {
         dataBinder.getModel().getAudioIds().set(dataBinder.getModel().getAudioIds().indexOf(oldId), newId);
     }
+
+    @EventHandler("testPlayClipButton")
+    private void testPlayClipButtonClick(ClickEvent event) {
+        try {
+            Vertex position = testPosition.getVertex();
+            if (position != null) {
+                effectService.playClip(position, dataBinder.getModel().getId(), System.currentTimeMillis());
+            }
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
+    }
+
 }

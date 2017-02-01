@@ -214,12 +214,25 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
                 }
                 if (weaponType.getMuzzleFlashClipId() != null) {
                     ClipConfig clipConfig = effectService.getClipConfig(weaponType.getMuzzleFlashClipId());
-                    if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId())
+                    if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
                         clipRenderTask.changeClip(clipConfig);
+                    }
+                }
+                if (weaponType.getDetonationClipId() != null) {
+                    ClipConfig clipConfig = effectService.getClipConfig(weaponType.getDetonationClipId());
+                    if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
+                        clipRenderTask.changeClip(clipConfig);
+                    }
                 }
             }
-            if(baseItemType.getHarvesterType() != null && baseItemType.getHarvesterType().getAnimationShape3dId() != null && baseItemType.getHarvesterType().getAnimationShape3dId() == shape3D.getDbId()) {
+            if (baseItemType.getHarvesterType() != null && baseItemType.getHarvesterType().getAnimationShape3dId() != null && baseItemType.getHarvesterType().getAnimationShape3dId() == shape3D.getDbId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
+            }
+            if (baseItemType.getExplosionClipId() != null) {
+                ClipConfig clipConfig = effectService.getClipConfig(baseItemType.getExplosionClipId());
+                if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
+                    clipRenderTask.changeClip(clipConfig);
+                }
             }
         }
         // Update ResourceItemType renderer
