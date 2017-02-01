@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.control;
 
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -26,7 +27,6 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
-import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 

@@ -69,7 +69,7 @@ public class TerrainUiService {
                     int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
                     Matrix4 model = objectPosition.createModelMatrix(z);
                     terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices(model));
-                } catch(Throwable t) {
+                } catch (Throwable t) {
                     exceptionHandler.handleException("Placing terrain object failed", t);
                 }
             }
@@ -127,7 +127,11 @@ public class TerrainUiService {
     }
 
     public double calculateLandWaterProportion(Rectangle2D viewField) {
-        return 1.0 - getWater().calculateAabb().coverRatio(viewField);
+        if (getWater().isValid()) {
+            return 1.0 - getWater().calculateAabb().coverRatio(viewField);
+        } else {
+            return 0;
+        }
     }
 
     public Collection<Slope> getSlopes() {

@@ -11,7 +11,10 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.uiservice.system.boot;
+package com.btxtech.client.system.boot;
+
+import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 
 /**
  * User: beat
@@ -35,7 +38,7 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
             return LOAD_MEDIAS;
         }
     },
-    RUN_GAME(RunGameUiControl.class) {
+    RUN_GAME(RunGameUiControlTask.class) {
 
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {

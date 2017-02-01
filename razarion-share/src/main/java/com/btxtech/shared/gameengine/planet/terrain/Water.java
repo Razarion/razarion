@@ -31,6 +31,10 @@ public class Water {
         return level;
     }
 
+    public boolean isValid() {
+        return !vertices.isEmpty();
+    }
+
     public void addTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3) {
         vertices.add(createLevelVertex(vertex1));
         if (vertex1.cross(vertex2, vertex3).getZ() >= 0) {
@@ -77,14 +81,14 @@ public class Water {
         if (aabb != null) {
             return aabb;
         }
-        Polygon2D waterPolygon = new Polygon2D(new ArrayList<>(DecimalPosition.removeSimilarPoints(Vertex.toXY(getVertices()), 1.0)));
+        Polygon2D waterPolygon = new Polygon2D(new ArrayList<>(DecimalPosition.removeSimilarPoints(Vertex.toXY(vertices), 1.0)));
         aabb = waterPolygon.toAabb();
 
         return aabb;
     }
 
     public InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY) {
-        if(!calculateAabb().contains(absoluteXY)) {
+        if (!calculateAabb().contains(absoluteXY)) {
             return null;
         }
 

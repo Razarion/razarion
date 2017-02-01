@@ -23,7 +23,6 @@ public enum WaitForBackgroundComplexTestTaskEnum implements StartupTaskEnum {
     TEST_2_DEFERRED(DeferredStartupTestTask.class),
     TEST_3_DEFERRED_BACKGROUND(DeferredBackgroundStartupTestTask.class),
     TEST_4_DEFERRED_BACKGROUND(DeferredBackgroundStartupTestTask.class) {
-
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {
             return TEST_1_DEFERRED_BACKGROUND;
@@ -31,14 +30,12 @@ public enum WaitForBackgroundComplexTestTaskEnum implements StartupTaskEnum {
     },
     TEST_5_SIMPLE(SimpleStartupTestTask.class),
     TEST_6_SIMPLE(SimpleStartupTestTask.class) {
-
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {
             return TEST_3_DEFERRED_BACKGROUND;
         }
     },
     TEST_7_SIMPLE(SimpleStartupTestTask.class) {
-
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {
             return TEST_4_DEFERRED_BACKGROUND;

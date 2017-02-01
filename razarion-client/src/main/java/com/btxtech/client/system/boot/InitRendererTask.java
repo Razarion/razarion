@@ -1,8 +1,10 @@
-package com.btxtech.uiservice.system.boot;
+package com.btxtech.client.system.boot;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.webgl.WebGLTextureContainer;
 import com.btxtech.uiservice.renderer.RenderService;
+import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

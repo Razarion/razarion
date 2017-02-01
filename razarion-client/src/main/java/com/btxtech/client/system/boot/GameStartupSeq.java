@@ -11,7 +11,10 @@
  *   GNU General Public License for more details.
  */
 
-package com.btxtech.uiservice.system.boot;
+package com.btxtech.client.system.boot;
+
+import com.btxtech.uiservice.system.boot.StartupSeq;
+import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 
 /**
  * User: beat
@@ -23,6 +26,12 @@ public enum GameStartupSeq implements StartupSeq {
         @Override
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return ColdSimulatedGameStartupTaskEnum.values();
+        }
+    },
+    COLD_EXPERIMENTAL(true) {
+        @Override
+        public StartupTaskEnum[] getAbstractStartupTaskEnum() {
+            return ColdExperimentalGameStartupTaskEnum.values();
         }
     };
     private boolean cold;

@@ -1,9 +1,9 @@
 package com.btxtech.client.imageservice;
 
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import com.btxtech.shared.rest.RestUrl;
-import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.google.gwt.dom.client.ImageElement;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;

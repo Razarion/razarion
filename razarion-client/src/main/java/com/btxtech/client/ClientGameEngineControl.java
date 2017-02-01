@@ -1,11 +1,11 @@
 package com.btxtech.client;
 
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.common.ClientUrls;
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
-import com.btxtech.uiservice.system.boot.DeferredStartup;
 import elemental.client.Browser;
 import elemental.events.ErrorEvent;
 import elemental.events.MessageEvent;

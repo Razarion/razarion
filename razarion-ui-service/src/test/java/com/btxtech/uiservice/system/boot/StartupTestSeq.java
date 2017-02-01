@@ -25,6 +25,7 @@ public enum StartupTestSeq implements StartupSeq {
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return SimpleTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;
@@ -35,6 +36,7 @@ public enum StartupTestSeq implements StartupSeq {
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return DeferredTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;
@@ -45,15 +47,18 @@ public enum StartupTestSeq implements StartupSeq {
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return DeferredBackgroundTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;
-        }},
+        }
+    },
     TEST_DEFERRED_FINISH {
         @Override
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return DeferredFinishTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;
@@ -64,6 +69,7 @@ public enum StartupTestSeq implements StartupSeq {
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return DeferredBackgroundFinishTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;
@@ -74,6 +80,7 @@ public enum StartupTestSeq implements StartupSeq {
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return SimpleExceptionTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;
@@ -84,6 +91,7 @@ public enum StartupTestSeq implements StartupSeq {
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return MultiTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;
@@ -94,6 +102,7 @@ public enum StartupTestSeq implements StartupSeq {
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return WaitForBackgroundTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;
@@ -104,6 +113,7 @@ public enum StartupTestSeq implements StartupSeq {
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return WaitForBackgroundComplexTestTaskEnum.values();
         }
+
         @Override
         public boolean isCold() {
             return true;

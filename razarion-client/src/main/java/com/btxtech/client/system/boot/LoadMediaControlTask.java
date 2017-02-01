@@ -1,8 +1,10 @@
-package com.btxtech.uiservice.system.boot;
+package com.btxtech.client.system.boot;
 
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

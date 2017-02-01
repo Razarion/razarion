@@ -1,9 +1,11 @@
-package com.btxtech.uiservice.system.boot;
+package com.btxtech.client.system.boot;
 
 import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.DeferredStartup;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
