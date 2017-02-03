@@ -36,7 +36,7 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.particleFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.particleDeptBufferFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
