@@ -54,13 +54,19 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
         while (svg.hasChildNodes()) {
             svg.removeChild(svg.getFirstChild());
         }
-        gameEngineControl.perfmonRequest(this::drawBar);
+        if (gameEngineControl.isStarted()) {
+            gameEngineControl.perfmonRequest(this::drawBar);
+        } else {
+            drawBar(null);
+        }
     }
 
     private void drawBar(Collection<PerfmonStatistic> workerPerfmonStatistics) {
         Collection<PerfmonStatistic> allStatistics = new ArrayList<>();
         allStatistics.addAll(perfmonService.getPerfmonStatistics());
-        allStatistics.addAll(workerPerfmonStatistics);
+        if (workerPerfmonStatistics != null) {
+            allStatistics.addAll(workerPerfmonStatistics);
+        }
 
         SVGSVGElement svg = (SVGSVGElement) svgElement;
 

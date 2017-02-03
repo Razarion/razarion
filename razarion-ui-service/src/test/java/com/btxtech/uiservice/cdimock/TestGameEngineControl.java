@@ -11,6 +11,12 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class TestGameEngineControl extends GameEngineControl {
+
+    @Override
+    public boolean isStarted() {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
         throw new UnsupportedOperationException();

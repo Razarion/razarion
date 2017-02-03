@@ -16,6 +16,11 @@ public class DevToolGameEngineControl extends GameEngineControl {
     private WorkerEmulator workerEmulator;
 
     @Override
+    public boolean isStarted() {
+        return true;
+    }
+
+    @Override
     protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
         workerEmulator.sendPackage(new GameEngineControlPackage(command, data));
     }
