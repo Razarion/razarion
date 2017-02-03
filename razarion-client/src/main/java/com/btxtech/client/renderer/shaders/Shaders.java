@@ -130,4 +130,7 @@ public interface Shaders extends ClientBundle {
 
     @Source("Particle.frag")
     TextResource particleFragmentShader();
+
+    @Source("ParticleDeptBuffer.frag")
+    TextResource particleDeptBufferFragmentShader();
 }

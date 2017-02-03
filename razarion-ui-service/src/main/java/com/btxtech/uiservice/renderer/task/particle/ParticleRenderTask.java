@@ -27,6 +27,7 @@ public class ParticleRenderTask extends AbstractRenderTask<Void> {
         CommonRenderComposite<AbstractParticleRenderUnit, Void> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(null);
         compositeRenderer.setRenderUnit(AbstractParticleRenderUnit.class);
+        compositeRenderer.setDepthBufferRenderUnit(AbstractParticleRenderUnit.class);
         modelRenderer.add(RenderUnitControl.PARTICLE, compositeRenderer);
         add(modelRenderer);
         compositeRenderer.fillBuffers();

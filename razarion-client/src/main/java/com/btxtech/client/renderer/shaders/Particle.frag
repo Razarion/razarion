@@ -1,6 +1,5 @@
 precision mediump float;
 
-uniform vec4 uColor;
 uniform float uProgress;
 
 void main(void) {
