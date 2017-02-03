@@ -14,6 +14,7 @@ public class RenderUnitControl {
     public static final RenderUnitControl ITEMS = new RenderUnitControl();
     public static final RenderUnitControl NORMAL = new RenderUnitControl();
     public static final RenderUnitControl WATER = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA);
+    public static final RenderUnitControl PARTICLE = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setWriteDepthBuffer(false).setDpDepthTest(true);
     public static final RenderUnitControl SEMI_TRANSPARENT = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA);
     public static final RenderUnitControl SELECTION_FRAME = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
     public static final RenderUnitControl START_POINT_CIRCLE = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setDpDepthTest(false).setWriteDepthBuffer(false);

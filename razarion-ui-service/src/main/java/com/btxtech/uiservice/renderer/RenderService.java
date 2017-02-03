@@ -11,6 +11,7 @@ import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
+import com.btxtech.uiservice.renderer.task.particle.ParticleRenderTask;
 import com.btxtech.uiservice.renderer.task.selection.ItemMarkerRenderTask;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
@@ -64,6 +65,7 @@ public abstract class RenderService {
         addRenderTask(BaseItemPlacerRenderTask.class);
         addRenderTask(SelectionFrameRenderTask.class);
         addRenderTask(TipRenderTask.class);
+        addRenderTask(ParticleRenderTask.class);
 
         fillBuffers();
     }

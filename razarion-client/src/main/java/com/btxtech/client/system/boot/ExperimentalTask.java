@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -45,6 +46,7 @@ public class ExperimentalTask extends AbstractStartupTask {
         gameUiControl.setGameUiControlConfig(setupGameUiControlConfig());
         gameUiControl.init();
         gameCanvas.init();
+        renderService.setup();
         gameCanvas.startRenderLoop();
         gameUiControl.start();
     }
@@ -57,6 +59,7 @@ public class ExperimentalTask extends AbstractStartupTask {
         GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
         gameUiControlConfig.setUserContext(new UserContext().setUserId(1).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.emptyList()));
         gameUiControlConfig.setVisualConfig(defaultVisualConfig());
+        gameUiControlConfig.setAudioConfig(new AudioConfig());
         gameUiControlConfig.setGameEngineConfig(gameEngineConfig);
         gameUiControlConfig.setSceneConfigs(defaultSceneConfigs());
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());
@@ -71,6 +74,19 @@ public class ExperimentalTask extends AbstractStartupTask {
         groundSkeletonConfig.setHeightXCount(1);
         groundSkeletonConfig.setHeightYCount(1);
         groundSkeletonConfig.setHeights(new double[][]{{1, 1}, {1, 1}});
+        groundSkeletonConfig.setTopTextureId(180844);
+        groundSkeletonConfig.setTopTextureScale(0.05);
+        groundSkeletonConfig.setTopBmId(180845);
+        groundSkeletonConfig.setTopBmDepth(5.13);
+        groundSkeletonConfig.setTopBmScale(0.025);
+        groundSkeletonConfig.setBottomTextureId(180847);
+        groundSkeletonConfig.setBottomTextureScale(0.05);
+        groundSkeletonConfig.setBottomBmId(180848);
+        groundSkeletonConfig.setBottomBmDepth(5.04);
+        groundSkeletonConfig.setBottomBmScale(0.025);
+        groundSkeletonConfig.setSplattingId(180846);
+        groundSkeletonConfig.setSplattingScale(0.01);
+        groundSkeletonConfig.setLightConfig(new LightConfig().setRotationX(-0.7853981633974483).setRotationY(-0.7853981633974483).setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(0.5411764705882353, 0.5411764705882353, 0.5411764705882353)));
         return groundSkeletonConfig;
     }
 
@@ -111,6 +127,8 @@ public class ExperimentalTask extends AbstractStartupTask {
 
     private PlanetConfig defaultPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
+        planetConfig.setTerrainSlopePositions(Collections.emptyList());
+        planetConfig.setTerrainObjectPositions(Collections.emptyList());
         planetConfig.setHouseSpace(10);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setPlayGround(new Rectangle2D(50, 40, 310, 320));
