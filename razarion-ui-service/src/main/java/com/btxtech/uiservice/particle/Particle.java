@@ -17,12 +17,13 @@ public class Particle {
     public static final double EDGE_LENGTH = 1;
     public static final double HALF_EDGE = EDGE_LENGTH / 2.0;
     private static final double HALF_HEIGHT = EDGE_LENGTH * Math.sqrt(3.0) / 4.0;
-    private Vertex position;
+    private Vertex startPosition;
     private long startTime;
+    private ModelMatrices modelMatrices;
 
-    public Particle(Vertex position, long startTime) {
+    public Particle(Vertex startPosition, long startTime) {
         this.startTime = startTime;
-        this.position = position;
+        this.startPosition = startPosition;
     }
 
     public static List<Vertex> calculateVertices() {
@@ -40,14 +41,20 @@ public class Particle {
         int delta = (int) (timeStamp - startTime);
         double factor = delta / 1000.0;
         double progress = 1.0 - delta / (double)TIME_TO_LIVE;
-        System.out.println("progress: " + progress);
-        return new ModelMatrices(Matrix4.createTranslation(position.add(VELOCITY.multiply(factor))), progress);
+        Vertex position = this.startPosition.add(VELOCITY.multiply(factor));
+        if(modelMatrices == null) {
+            modelMatrices = new ModelMatrices(Matrix4.createTranslation(position), progress);
+        } else {
+            modelMatrices.setProgress(progress);
+            modelMatrices.getModel().setTranslation(position);
+        }
+        return modelMatrices;
     }
 
     @Override
     public String toString() {
         return "Particle{" +
-                "position=" + position +
+                "startPosition=" + startPosition +
                 ", startTime=" + startTime +
                 '}';
     }

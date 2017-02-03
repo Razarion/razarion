@@ -278,6 +278,17 @@ public class Matrix4 {
     }
 
     /**
+     * Due to performance reasons
+     * Violates the immutable principe
+     * @param position translation
+     */
+    public void setTranslation(Vertex position) {
+        numbers[0][3] = position.getX();
+        numbers[1][3] = position.getY();
+        numbers[2][3] = position.getZ();
+    }
+
+    /**
      * Should only be used be the jaxrs marshaller
      *
      * @return number field
