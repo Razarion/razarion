@@ -8,8 +8,9 @@ import com.btxtech.uiservice.renderer.Camera;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -18,36 +19,46 @@ import java.util.List;
 @ApplicationScoped
 public class ParticleService {
     private static final int GENERATION_DELAY = 100;
-    private static final int GENERATION_COUNT = 15;
+    private static final int GENERATION_COUNT = 150;
     private static final int GENERATION_RANDOM_DISTANCE = 5;
+    private static final int START_DELAY = 2000;
+    private static final int EXPLOSION_DURATION = 5000;
     private static final double EDGE_LENGTH = 3;
     private static final double HALF_EDGE = EDGE_LENGTH / 2.0;
     private static final double HALF_HEIGHT = EDGE_LENGTH * Math.sqrt(3.0) / 4.0;
     @Inject
     private Camera camera;
     private List<Particle> particles = new ArrayList<>();
+    private long startTimeStamp;
     private long lastGenerationTime;
 
     public List<ModelMatrices> provideModelMatrices(long timestamp) {
-        List<ModelMatrices> modelMatricesList = new ArrayList<>();
-        if (lastGenerationTime + GENERATION_DELAY < timestamp) {
-            for (int i = 0; i < GENERATION_COUNT; i++) {
-                double xRand = Math.random() * GENERATION_RANDOM_DISTANCE;
-                double yRand = Math.random() * GENERATION_RANDOM_DISTANCE;
-                particles.add(new Particle(new Vertex(200 + xRand, 200 + yRand, 2), timestamp));
-            }
-            lastGenerationTime = timestamp;
+        if (startTimeStamp == 0) {
+            startTimeStamp = timestamp;
+            return null;
         }
-        for (Iterator<Particle> iterator = particles.iterator(); iterator.hasNext(); ) {
-            Particle particle = iterator.next();
-            ModelMatrices modelMatrices = particle.update(timestamp);
-            if (modelMatrices != null) {
-                modelMatricesList.add(modelMatrices);
-            } else {
-                iterator.remove();
+        if (startTimeStamp + START_DELAY > timestamp) {
+            return null;
+        }
+
+        //////////////////////////////////////////
+        if (startTimeStamp + START_DELAY + EXPLOSION_DURATION > timestamp) {
+            if (lastGenerationTime + GENERATION_DELAY < timestamp) {
+                for (int i = 0; i < GENERATION_COUNT; i++) {
+                    double xRand = Math.random() * GENERATION_RANDOM_DISTANCE;
+                    double yRand = Math.random() * GENERATION_RANDOM_DISTANCE;
+                    particles.add(new Particle(new Vertex(200 + xRand, 200 + yRand, 2), timestamp));
+                }
+                lastGenerationTime = timestamp;
             }
         }
-        return modelMatricesList;
+        particles.removeIf(particle -> !particle.update(timestamp, camera.getMatrix()));
+        Collections.sort(particles);
+        if (particles.isEmpty()) {
+            startTimeStamp = timestamp;
+        }
+
+        return particles.stream().map(Particle::getModelMatrices).collect(Collectors.toList());
     }
 
     public List<Vertex> calculateVertices() {
