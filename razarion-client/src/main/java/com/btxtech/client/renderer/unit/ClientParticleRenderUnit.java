@@ -1,6 +1,7 @@
 package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.ModelMatrices;
@@ -32,6 +33,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     private Camera camera;
     private VertexShaderAttribute positions;
     private VertexShaderAttribute vertexFadeouts;
+    private WebGlUniformTexture colorRamp;
 
     @PostConstruct
     public void init() {
@@ -45,6 +47,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     protected void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts) {
         positions.fillBuffer(vertices);
         this.vertexFadeouts.fillBuffer(vertexFadeouts);
+        colorRamp = webGlFacade.createWebGLTexture(272944, "uColorRamp");
     }
 
     @Override
@@ -56,6 +59,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
 
         positions.activate();
         vertexFadeouts.activate();
+        colorRamp.activate();
     }
 
     @Override

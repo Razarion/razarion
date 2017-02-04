@@ -3,15 +3,19 @@ precision mediump float;
 varying vec3 vVertexFadeout;
 
 uniform float uProgress;
+uniform sampler2D uColorRamp;
 
 void main(void) {
-    float smallest = vVertexFadeout.x;
-    if(smallest > vVertexFadeout.y) {
-        smallest = vVertexFadeout.y;
+    float fadeout = vVertexFadeout.x;
+    if(fadeout > vVertexFadeout.y) {
+        fadeout = vVertexFadeout.y;
     }
-    if(smallest > vVertexFadeout.z) {
-        smallest = vVertexFadeout.z;
+    if(fadeout > vVertexFadeout.z) {
+        fadeout = vVertexFadeout.z;
     }
-    smallest *= 3.0;
-    gl_FragColor = vec4(0.2, 0.2, 0.2, smallest * uProgress);
+    fadeout *= 3.0;
+
+    float yOffset = clamp(uProgress, 0.001, 0.999);
+    vec4 color = texture2D(uColorRamp, vec2(0.05, yOffset));
+    gl_FragColor = vec4(color.r, color.g, color.b, fadeout * color.a);
 }
