@@ -5,11 +5,9 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.particle.Particle;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.particle.AbstractParticleRenderUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
@@ -37,7 +35,7 @@ public class DevToolParticleRenderUnit extends AbstractParticleRenderUnit implem
 
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices) {
+    protected void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertices));
     }

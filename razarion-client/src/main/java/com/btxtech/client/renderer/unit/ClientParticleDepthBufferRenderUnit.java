@@ -3,7 +3,6 @@ package com.btxtech.client.renderer.unit;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
@@ -41,7 +40,7 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
     }
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices) {
+    protected void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts) {
         positions.fillBuffer(vertices);
     }
 

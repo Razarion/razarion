@@ -15,7 +15,7 @@ import java.util.List;
 @ApplicationScoped
 public class ParticleService {
     private static final int GENERATION_DELAY = 100;
-    private static final int GENERATION_COUNT = 50;
+    private static final int GENERATION_COUNT = 15;
     private static final int GENERATION_RANDOM_DISTANCE = 5;
     private List<Particle> particles = new ArrayList<>();
     private long lastGenerationTime;

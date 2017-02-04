@@ -12,9 +12,9 @@ import java.util.List;
  * 02.02.2017.
  */
 public class Particle {
-    private static final Vertex VELOCITY = new Vertex(0, 0, 5);
+    private static final Vertex VELOCITY = new Vertex(0, 0, 10);
     private static final int TIME_TO_LIVE = 4000;
-    public static final double EDGE_LENGTH = 1;
+    public static final double EDGE_LENGTH = 3;
     public static final double HALF_EDGE = EDGE_LENGTH / 2.0;
     private static final double HALF_HEIGHT = EDGE_LENGTH * Math.sqrt(3.0) / 4.0;
     private Vertex startPosition;
@@ -34,15 +34,23 @@ public class Particle {
         return vertices;
     }
 
+    public static List<Vertex> calculateFadeouts() {
+        List<Vertex> fadeouts = new ArrayList<>();
+        fadeouts.add(new Vertex(1, 0, 0));
+        fadeouts.add(new Vertex(0, 1, 0));
+        fadeouts.add(new Vertex(0, 0, 1));
+        return fadeouts;
+    }
+
     public ModelMatrices update(long timeStamp) {
         if (startTime + TIME_TO_LIVE < timeStamp) {
             return null;
         }
         int delta = (int) (timeStamp - startTime);
         double factor = delta / 1000.0;
-        double progress = 1.0 - delta / (double)TIME_TO_LIVE;
+        double progress = 1.0 - delta / (double) TIME_TO_LIVE;
         Vertex position = this.startPosition.add(VELOCITY.multiply(factor));
-        if(modelMatrices == null) {
+        if (modelMatrices == null) {
             modelMatrices = new ModelMatrices(Matrix4.createTranslation(position), progress);
         } else {
             modelMatrices.setProgress(progress);

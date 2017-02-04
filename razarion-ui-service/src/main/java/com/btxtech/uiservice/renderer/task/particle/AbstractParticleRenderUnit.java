@@ -2,10 +2,8 @@ package com.btxtech.uiservice.renderer.task.particle;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.particle.Particle;
-import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 
-import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -13,7 +11,7 @@ import java.util.List;
  * 01.02.2017.
  */
 public abstract class AbstractParticleRenderUnit extends AbstractRenderUnit<Void> {
-    protected abstract void fillBuffers(List<Vertex> vertices);
+    protected abstract void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts);
 
     @Override
     public void setupImages() {
@@ -23,7 +21,7 @@ public abstract class AbstractParticleRenderUnit extends AbstractRenderUnit<Void
     @Override
     public void fillBuffers(Void ignore) {
         List<Vertex> vertices = Particle.calculateVertices();
-        fillBuffers(vertices);
+        fillBuffers(vertices, Particle.calculateFadeouts());
         setElementCount(vertices);
     }
 }

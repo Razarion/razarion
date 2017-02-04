@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.particle.AbstractParticleRenderUnit;
@@ -33,7 +32,7 @@ public class DevToolParticleDepthBufferRenderUnit extends AbstractParticleRender
 
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices) {
+    protected void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertices));
     }

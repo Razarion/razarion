@@ -31,17 +31,20 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     @Inject
     private Camera camera;
     private VertexShaderAttribute positions;
+    private VertexShaderAttribute vertexFadeouts;
 
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.particleFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        vertexFadeouts = webGlFacade.createVertexShaderAttribute("aVertexFadeout");
     }
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices) {
+    protected void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts) {
         positions.fillBuffer(vertices);
+        this.vertexFadeouts.fillBuffer(vertexFadeouts);
     }
 
     @Override
@@ -52,6 +55,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
 
         positions.activate();
+        vertexFadeouts.activate();
     }
 
     @Override

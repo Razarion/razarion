@@ -128,6 +128,9 @@ public interface Shaders extends ClientBundle {
     @Source("RgbaVp.vert")
     TextResource rgbaVpVertexShader();
 
+    @Source("Particle.vert")
+    TextResource particleVertexShader();
+
     @Source("Particle.frag")
     TextResource particleFragmentShader();
 
