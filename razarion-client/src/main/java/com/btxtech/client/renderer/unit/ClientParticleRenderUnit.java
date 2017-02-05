@@ -1,9 +1,11 @@
 package com.btxtech.client.renderer.unit;
 
+import com.btxtech.client.renderer.engine.DecimalPositionShaderAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
@@ -32,7 +34,8 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     @Inject
     private Camera camera;
     private VertexShaderAttribute positions;
-    private VertexShaderAttribute vertexFadeouts;
+    private DecimalPositionShaderAttribute alphaTextureCoordinates;
+    private WebGlUniformTexture alphaTexture;
     private WebGlUniformTexture colorRamp;
 
     @PostConstruct
@@ -40,14 +43,15 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
         webGlFacade.setAbstractRenderUnit(this);
         webGlFacade.createProgram(Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        vertexFadeouts = webGlFacade.createVertexShaderAttribute("aVertexFadeout");
+        alphaTextureCoordinates = webGlFacade.createDecimalPositionShaderAttribute("aAlphaTextureCoordinate");
     }
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts) {
+    protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates) {
         positions.fillBuffer(vertices);
-        this.vertexFadeouts.fillBuffer(vertexFadeouts);
-        colorRamp = webGlFacade.createWebGLTexture(272944, "uColorRamp");
+        this.alphaTextureCoordinates.fillBuffer(alphaTextureCoordinates);
+        alphaTexture = webGlFacade.createWebGLTexture(272945, "uAlphaTextureSampler");
+        colorRamp = webGlFacade.createWebGLTexture(272944, "uColorRampSampler");
     }
 
     @Override
@@ -58,7 +62,9 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
 
         positions.activate();
-        vertexFadeouts.activate();
+        alphaTextureCoordinates.activate();
+
+        alphaTexture.activate();
         colorRamp.activate();
     }
 

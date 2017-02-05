@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.renderer.task.particle;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
@@ -15,7 +16,7 @@ public abstract class AbstractParticleRenderUnit extends AbstractRenderUnit<Void
     @Inject
     private ParticleService particleService;
 
-    protected abstract void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts);
+    protected abstract void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates);
 
     @Override
     public void setupImages() {
@@ -25,7 +26,7 @@ public abstract class AbstractParticleRenderUnit extends AbstractRenderUnit<Void
     @Override
     public void fillBuffers(Void ignore) {
         List<Vertex> vertices = particleService.calculateVertices();
-        fillBuffers(vertices, particleService.calculateFadeouts());
+        fillBuffers(vertices, particleService.calculateAlphaTextureCoordinates());
         setElementCount(vertices);
     }
 }

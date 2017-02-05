@@ -127,11 +127,12 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
+        gameUiControlConfig.setSceneConfigs(setupParticle()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
@@ -443,6 +444,13 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
 
         sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setBotConfigs(botConfigs).setWait4QuestPassedDialog(true));
+        return sceneConfigs;
+    }
+
+    // Tower -----------------------------------------------------------------------------
+    private List<SceneConfig> setupParticle() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        sceneConfigs.add(new SceneConfig().setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(200, 200)).setCameraLocked(false)).setRemoveLoadingCover(true));
         return sceneConfigs;
     }
 

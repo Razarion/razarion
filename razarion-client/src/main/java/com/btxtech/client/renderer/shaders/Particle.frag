@@ -1,21 +1,14 @@
 precision mediump float;
 
-varying vec3 vVertexFadeout;
+varying vec2 vAlphaTextureCoordinate;
 
 uniform float uProgress;
-uniform sampler2D uColorRamp;
+uniform sampler2D uAlphaTextureSampler;
+uniform sampler2D uColorRampSampler;
 
 void main(void) {
-    float fadeout = vVertexFadeout.x;
-    if(fadeout > vVertexFadeout.y) {
-        fadeout = vVertexFadeout.y;
-    }
-    if(fadeout > vVertexFadeout.z) {
-        fadeout = vVertexFadeout.z;
-    }
-    fadeout *= 3.0;
-
     float yOffset = clamp(uProgress, 0.001, 0.999);
-    vec4 color = texture2D(uColorRamp, vec2(0.05, yOffset));
-    gl_FragColor = vec4(color.r, color.g, color.b, fadeout * color.a);
+    vec4 colorRamp = texture2D(uColorRampSampler, vec2(0.05, yOffset));
+    vec4 alphaTexture = texture2D(uAlphaTextureSampler, vAlphaTextureCoordinate);
+    gl_FragColor = vec4(colorRamp.r, colorRamp.g, colorRamp.b, colorRamp.a * alphaTexture.a);
 }

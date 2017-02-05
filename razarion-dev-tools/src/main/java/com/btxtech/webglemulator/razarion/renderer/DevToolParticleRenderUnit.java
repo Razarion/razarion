@@ -1,5 +1,6 @@
 package com.btxtech.webglemulator.razarion.renderer;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
@@ -35,7 +36,7 @@ public class DevToolParticleRenderUnit extends AbstractParticleRenderUnit implem
 
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices, List<Vertex> vertexFadeouts) {
+    protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertices));
     }
