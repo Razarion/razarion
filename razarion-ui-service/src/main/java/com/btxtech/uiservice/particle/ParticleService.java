@@ -34,12 +34,20 @@ public class ParticleService {
     private List<ParticleEmitterConfig> emitterConfigs = new ArrayList<>();
     private Collection<ParticleEmitter> activeEmitters = new ArrayList<>();
     private long startTimeStamp;
+    private long lastTimeStamp;
 
     @PostConstruct
     public void postConstruct() {
-        // emitter für puff, emitter für fire, bewegender emitter
-        // kries partikel mit smoke texture
-        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(200000).setVelocity(new Vertex(0, 0, 0)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
+        // emitter für puff, emitter für fire
+        // TODO , bewegender emitter zeugs wegspicken
+
+        // Fire
+        // emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(200000).setVelocity(new Vertex(0, 0, 0)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
+        // Puff
+        emitterConfigs.add(new ParticleEmitterConfig().setStart(500).setTtl(1000).setVelocity(new Vertex(0, 0, 0)).setEmittingCount(20).setEmittingDelay(100).setGenerationRandomDistance(5));
+
+
+        // OLD
 //        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(20000).setVelocity(new Vertex(10, 10, 10)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
 //        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(20000).setVelocity(new Vertex(10, -10, 10)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
 //        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(20000).setVelocity(new Vertex(-10, 10, 10)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
@@ -49,9 +57,12 @@ public class ParticleService {
     public List<ModelMatrices> provideModelMatrices(long timestamp) {
         if (startTimeStamp == 0) {
             startTimeStamp = timestamp;
+            lastTimeStamp = timestamp;
             return null;
         }
 
+        double factor = (timestamp - lastTimeStamp) / 1000.0;
+        lastTimeStamp = timestamp;
         // Handle emitters
         while (!emitterConfigs.isEmpty() && emitterConfigs.get(0).getStart() + startTimeStamp < timestamp) {
             ParticleEmitter particleEmitter = particleEmitterInstance.get();
@@ -61,7 +72,7 @@ public class ParticleService {
         activeEmitters.removeIf(particle -> !particle.tick(timestamp));
 
         // Handle particles
-        particles.removeIf(particle -> !particle.tick(timestamp, camera.getMatrix()));
+        particles.removeIf(particle -> !particle.tick(timestamp, factor, camera.getMatrix()));
         Collections.sort(particles);
 
         return particles.stream().map(Particle::getModelMatrices).collect(Collectors.toList());

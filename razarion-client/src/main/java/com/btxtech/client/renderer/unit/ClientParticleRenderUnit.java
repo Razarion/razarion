@@ -35,7 +35,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     private Camera camera;
     private VertexShaderAttribute positions;
     private DecimalPositionShaderAttribute alphaTextureCoordinates;
-    private WebGlUniformTexture alphaTexture;
+    private WebGlUniformTexture alphaOffset;
     private WebGlUniformTexture colorRamp;
 
     @PostConstruct
@@ -50,7 +50,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates) {
         positions.fillBuffer(vertices);
         this.alphaTextureCoordinates.fillBuffer(alphaTextureCoordinates);
-        alphaTexture = webGlFacade.createWebGLTexture(272945, "uAlphaTextureSampler");
+        alphaOffset = webGlFacade.createWebGLTexture(272946, "uAlphaOffsetSampler");
         colorRamp = webGlFacade.createWebGLTexture(272944, "uColorRampSampler");
     }
 
@@ -64,7 +64,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
         positions.activate();
         alphaTextureCoordinates.activate();
 
-        alphaTexture.activate();
+        alphaOffset.activate();
         colorRamp.activate();
     }
 

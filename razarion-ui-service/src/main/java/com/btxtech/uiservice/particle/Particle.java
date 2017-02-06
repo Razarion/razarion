@@ -10,20 +10,25 @@ import com.btxtech.shared.datatypes.Vertex;
  */
 public class Particle implements Comparable<Particle> {
     private static final int TIME_TO_LIVE = 2000;
+    private static final int TIME_TO_LIVE_DELTA = 1000;
     private static final double SPEED_XY = 5;
-    private static final double SPEED_Z = 10;
+    private static final double SPEED_Z = 3;
     private static final double PARTICLE_GROW = 1.5;
     private Vertex velocity;
-    private Vertex startPosition;
+    private Vertex position;
     private long startTime;
+    private long lastTime;
     private ModelMatrices modelMatrices;
     private double cameraDistance;
+    private int timeToLive;
 
     public Particle(long startTime, Vertex startPosition, Vertex velocity) {
         this.startTime = startTime;
-        this.startPosition = startPosition;
+        this.position = startPosition;
         // this.velocity = new Vertex(0, 0, 0);
         this.velocity = new Vertex(Math.random() * SPEED_XY * 2.0 - SPEED_XY, Math.random() * SPEED_XY * 2.0 - SPEED_XY, SPEED_Z);
+        timeToLive = (int) (TIME_TO_LIVE - TIME_TO_LIVE_DELTA  + TIME_TO_LIVE_DELTA * Math.random() * 2.0);
+        // timeToLive = TIME_TO_LIVE;
         // this.velocity = velocity;
     }
 
@@ -32,15 +37,13 @@ public class Particle implements Comparable<Particle> {
      * @param viewTransformationMatrix view transformation matrix
      * @return true if particle is not dead
      */
-    public boolean tick(long timeStamp, Matrix4 viewTransformationMatrix) {
-        if (startTime + TIME_TO_LIVE < timeStamp) {
+    public boolean tick(long timeStamp, double factor, Matrix4 viewTransformationMatrix) {
+        if (startTime + timeToLive < timeStamp) {
             return false;
         }
-        int delta = (int) (timeStamp - startTime);
-        double factor = delta / 1000.0;
-        double progress = delta / (double) TIME_TO_LIVE;
+        double progress = (timeStamp - startTime) / (double) timeToLive;
         // velocity = velocity.multiply(0.9);
-        Vertex position = this.startPosition.add(velocity.multiply(factor));
+        position = position.add(velocity.multiply(factor * (1.0 - progress)));
         if (modelMatrices == null) {
             modelMatrices = new ModelMatrices(Matrix4.createTranslation(position), progress);
         } else {
@@ -59,13 +62,5 @@ public class Particle implements Comparable<Particle> {
     @Override
     public int compareTo(Particle o) {
         return Double.compare(cameraDistance, o.cameraDistance);
-    }
-
-    @Override
-    public String toString() {
-        return "Particle{" +
-                "startPosition=" + startPosition +
-                ", startTime=" + startTime +
-                '}';
     }
 }
