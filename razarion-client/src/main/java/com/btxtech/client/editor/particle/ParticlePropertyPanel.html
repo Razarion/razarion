@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="particle-property-panel">
+    <table style="border-spacing: 0; border-collapse: separate;">
+        <tr>
+            <td>Id</td>
+            <td>
+                <div id="id"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>Internal Name</td>
+            <td><input id="internalName" type="text"></td>
+        </tr>
+        <tr>
+            <td>Emitter</td>
+            <td>
+                <table>
+                    <tbody id="dependent">
+                    <tr id="dependentTr">
+                        <td>
+                            <table>
+                                <tr>
+                                    <td colspan="2">
+                                        <span style="font-weight: bold">Particle</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Particle Shape Id</td>
+                                    <td><input id="particleShapeConfigId" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Particle Grow</td>
+                                    <td><input id="particleGrow" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time to Live [ms]</td>
+                                    <td><input id="timeToLive" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time to Live random Part [ms]</td>
+                                    <td><input id="timeToLiveRandomPart" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Speed X</td>
+                                    <td><input id="speedX" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Speed X random Part</td>
+                                    <td><input id="speedXRandomPart" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Speed Y</td>
+                                    <td><input id="speedY" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Speed Y random Part</td>
+                                    <td><input id="speedYRandomPart" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Speed Z</td>
+                                    <td><input id="speedZ" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Speed Z random Part</td>
+                                    <td><input id="speedZRandomPart" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <span style="font-weight: bold">Emitter</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Emitting Delay [ms]</td>
+                                    <td><input id="emittingDelay" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Emitting Count</td>
+                                    <td><input id="emittingCount" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Generation Random Distance</td>
+                                    <td><input id="generationRandomDistance" type="number"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <hr class="hr-left-side-bar">
+            </td>
+        </tr>
+        <tr>
+            <td>Position</td>
+            <td>
+                <div id="testPosition"></div>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button id="testParticleButton">Test</button>
+                <button id="clearParticleButton">Clear</button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

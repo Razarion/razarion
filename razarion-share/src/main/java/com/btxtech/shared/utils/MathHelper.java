@@ -264,4 +264,26 @@ public class MathHelper {
             return null;
         }
     }
+
+    public static double random(Double base, Double variable) {
+        if (base == null) {
+            return 0;
+        }
+        if (variable == null) {
+            return base;
+        }
+
+        return base - variable + Math.random() * 2.0 * variable;
+    }
+
+    public static int random(Integer base, Integer variable) {
+        if (base == null) {
+            return 0;
+        }
+        if (variable == null) {
+            return base;
+        }
+
+        return (int) (base - variable + Math.random() * 2.0 * variable);
+    }
 }

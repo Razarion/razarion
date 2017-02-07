@@ -11,6 +11,7 @@ import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
+import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
@@ -36,73 +37,59 @@ import javax.inject.Inject;
 public class EditorMenuDialog extends Composite implements ModalDialogContent<Void> {
     @Inject
     private LeftSideBarManager leftSideBarManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button perfmonButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button renderEngineButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button gameEngineButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button visualConfigButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button terrainButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button helperButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button slopeButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button groundButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button baseItemButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button resourceItemButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button boxItemButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button terrainObjectButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button imageButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button audioButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button shape3DButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button clipButton;
+    @Inject
+    @DataField
+    private Button particleButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
     @EventHandler("perfmonButton")
@@ -186,6 +173,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("clipButton")
     private void clipButtonClicked(ClickEvent event) {
         openEditor(ClipCrudeSidebar.class);
+    }
+
+    @EventHandler("particleButton")
+    private void particleButtonClicked(ClickEvent event) {
+        openEditor(ParticleCrudeSidebar.class);
     }
 
     @Override

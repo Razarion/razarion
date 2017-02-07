@@ -1,43 +1,21 @@
 package com.btxtech.uiservice.particle;
 
-import com.btxtech.shared.datatypes.Vertex;
-
 /**
  * Created by Beat
  * 05.02.2017.
  */
 public class ParticleEmitterConfig {
-    private int start;
-    private int ttl;
-    private Vertex velocity;
+    private ParticleConfig particleConfig;
     private int emittingDelay;
     private int emittingCount;
     private double generationRandomDistance;
 
-    public int getStart() {
-        return start;
+    public ParticleConfig getParticleConfig() {
+        return particleConfig;
     }
 
-    public ParticleEmitterConfig setStart(int start) {
-        this.start = start;
-        return this;
-    }
-
-    public int getTtl() {
-        return ttl;
-    }
-
-    public ParticleEmitterConfig setTtl(int ttl) {
-        this.ttl = ttl;
-        return this;
-    }
-
-    public Vertex getVelocity() {
-        return velocity;
-    }
-
-    public ParticleEmitterConfig setVelocity(Vertex velocity) {
-        this.velocity = velocity;
+    public ParticleEmitterConfig setParticleConfig(ParticleConfig particleConfig) {
+        this.particleConfig = particleConfig;
         return this;
     }
 

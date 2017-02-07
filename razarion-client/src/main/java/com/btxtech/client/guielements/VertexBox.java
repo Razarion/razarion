@@ -31,4 +31,10 @@ public class VertexBox {
         }
     }
 
+    public void setVertex(Vertex vertex) {
+        xField.setValue(vertex.getX());
+        yField.setValue(vertex.getY());
+        zField.setValue(vertex.getZ());
+    }
+
 }
