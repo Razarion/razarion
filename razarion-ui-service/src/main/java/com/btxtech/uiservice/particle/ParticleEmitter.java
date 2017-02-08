@@ -17,7 +17,7 @@ public abstract class ParticleEmitter {
 
     protected abstract boolean isRunning(long timestamp);
 
-    protected abstract Vertex updatePosition(long timestamp, Vertex position);
+    protected abstract Vertex updatePosition(double factor, Vertex position);
 
     public void init(Vertex position, ParticleEmitterConfig particleEmitterConfig) {
         this.position = position;
@@ -26,14 +26,15 @@ public abstract class ParticleEmitter {
 
     /**
      * @param timestamp timestamp
+     * @param factor
      * @return true if emitter is not dead
      */
-    public boolean tick(long timestamp) {
+    public boolean tick(long timestamp, double factor) {
         if (!isRunning(timestamp)) {
             return false;
         }
 
-        position = updatePosition(timestamp, position);
+        position = updatePosition(factor, position);
 
         // Emit particle
         if (lastGenerationTime + particleEmitterConfig.getEmittingDelay() < timestamp) {

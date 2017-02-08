@@ -1,5 +1,7 @@
 package com.btxtech.uiservice.particle;
 
+import com.btxtech.shared.datatypes.Vertex;
+
 /**
  * Created by Beat
  * 07.02.2017.
@@ -10,12 +12,9 @@ public class ParticleConfig {
     private Double particleGrow;
     private int timeToLive;
     private Integer timeToLiveRandomPart;
-    private Double speedX;
-    private Double speedXRandomPart;
-    private Double speedY;
-    private Double speedYRandomPart;
-    private Double speedZ;
-    private Double speedZRandomPart;
+    private Vertex velocity;
+    private Vertex velocityRandomPart;
+    private Vertex acceleration;
 
     public int getParticleShapeConfigId() {
         return particleShapeConfigId;
@@ -53,61 +52,30 @@ public class ParticleConfig {
         return this;
     }
 
-    public Double getSpeedX() {
-        return speedX;
+    public Vertex getVelocity() {
+        return velocity;
     }
 
-    public ParticleConfig setSpeedX(Double speedX) {
-        this.speedX = speedX;
+    public ParticleConfig setVelocity(Vertex velocity) {
+        this.velocity = velocity;
         return this;
     }
 
-    public Double getSpeedXRandomPart() {
-        return speedXRandomPart;
+    public Vertex getVelocityRandomPart() {
+        return velocityRandomPart;
     }
 
-    public ParticleConfig setSpeedXRandomPart(Double speedXRandomPart) {
-        this.speedXRandomPart = speedXRandomPart;
+    public ParticleConfig setVelocityRandomPart(Vertex velocityRandomPart) {
+        this.velocityRandomPart = velocityRandomPart;
         return this;
     }
 
-    public Double getSpeedY() {
-        return speedY;
+    public Vertex getAcceleration() {
+        return acceleration;
     }
 
-    public ParticleConfig setSpeedY(Double speedY) {
-        this.speedY = speedY;
+    public ParticleConfig setAcceleration(Vertex acceleration) {
+        this.acceleration = acceleration;
         return this;
-    }
-
-    public Double getSpeedYRandomPart() {
-        return speedYRandomPart;
-    }
-
-    public ParticleConfig setSpeedYRandomPart(Double speedYRandomPart) {
-        this.speedYRandomPart = speedYRandomPart;
-        return this;
-    }
-
-    public Double getSpeedZ() {
-        return speedZ;
-    }
-
-    public ParticleConfig setSpeedZ(Double speedZ) {
-        this.speedZ = speedZ;
-        return this;
-    }
-
-    public Double getSpeedZRandomPart() {
-        return speedZRandomPart;
-    }
-
-    public ParticleConfig setSpeedZRandomPart(Double speedZRandomPart) {
-        this.speedZRandomPart = speedZRandomPart;
-        return this;
-    }
-
-    public boolean validSpeed() {
-        return speedX != null || speedY != null || speedZ != null;
     }
 }

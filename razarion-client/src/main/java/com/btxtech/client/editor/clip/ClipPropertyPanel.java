@@ -119,7 +119,7 @@ public class ClipPropertyPanel extends AbstractPropertyPanel<ClipConfig> {
     @EventHandler("testPlayClipButton")
     private void testPlayClipButtonClick(ClickEvent event) {
         try {
-            Vertex position = testPosition.getVertex();
+            Vertex position = testPosition.getValue();
             if (position != null) {
                 effectService.playClip(position, dataBinder.getModel().getId(), System.currentTimeMillis());
             }

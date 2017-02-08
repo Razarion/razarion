@@ -1,20 +1,17 @@
 package com.btxtech.client.editor.particle;
 
-import com.btxtech.client.editor.clip.ClipAudioWidget;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.guielements.VertexBox;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.particle.AutonomousParticleEmitterConfig;
 import com.btxtech.uiservice.particle.DependentParticleEmitterConfig;
-import com.btxtech.uiservice.particle.ParticleEmitterConfig;
 import com.btxtech.uiservice.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.common.client.dom.DOMUtil;
@@ -59,7 +56,12 @@ public class ParticlePropertyPanel extends AbstractPropertyPanel<ParticleEmitter
     @Bound
     @DataField
     @ListContainer("tbody")
-    private ListComponent<DependentParticleEmitterConfig, EmitterPropertyWidget> dependent;
+    private ListComponent<DependentParticleEmitterConfig, DependentParticleEmitterConfigWidget> dependent;
+    @Inject
+    @Bound
+    @DataField
+    @ListContainer("tbody")
+    private ListComponent<AutonomousParticleEmitterConfig, AutonomousParticleEmitterConfigWidget> autonomous;
     @Inject
     @DataField
     private VertexBox testPosition;
@@ -73,9 +75,10 @@ public class ParticlePropertyPanel extends AbstractPropertyPanel<ParticleEmitter
     @Override
     public void init(ParticleEmitterSequenceConfig particleEmitterSequenceConfig) {
         DOMUtil.removeAllElementChildren(dependent.getElement()); // Remove placeholder table row from template.
+        DOMUtil.removeAllElementChildren(autonomous.getElement()); // Remove placeholder table row from template.
         dataBinder.setModel(particleEmitterSequenceConfig);
         onChange(particleEmitterSequenceConfig);
-        testPosition.setVertex(terrainUiService.getPosition3d(terrainScrollHandler.getCurrentViewField().calculateCenter()));
+        testPosition.setValue(terrainUiService.getPosition3d(terrainScrollHandler.getCurrentViewField().calculateCenter()));
     }
 
     @Override
@@ -86,7 +89,7 @@ public class ParticlePropertyPanel extends AbstractPropertyPanel<ParticleEmitter
     @EventHandler("testParticleButton")
     private void testParticleButtonClick(ClickEvent event) {
         try {
-            Vertex position = testPosition.getVertex();
+            Vertex position = testPosition.getValue();
             if (position != null) {
                 particleService.start(System.currentTimeMillis(), position, getConfigObject().getId());
             }

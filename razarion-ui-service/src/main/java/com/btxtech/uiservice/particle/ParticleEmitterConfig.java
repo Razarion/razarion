@@ -5,10 +5,20 @@ package com.btxtech.uiservice.particle;
  * 05.02.2017.
  */
 public class ParticleEmitterConfig {
+    private String internalName;
     private ParticleConfig particleConfig;
     private int emittingDelay;
     private int emittingCount;
     private double generationRandomDistance;
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public ParticleEmitterConfig setInternalName(String internalName) {
+        this.internalName = internalName;
+        return this;
+    }
 
     public ParticleConfig getParticleConfig() {
         return particleConfig;

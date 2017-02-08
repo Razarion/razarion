@@ -11,15 +11,15 @@
         <tr>
             <td>Id</td>
             <td>
-                <div id="id"></div>
+                <div data-field="id"></div>
             </td>
         </tr>
         <tr>
             <td>Internal Name</td>
-            <td><input id="internalName" type="text"></td>
+            <td><input data-field="internalName" type="text"></td>
         </tr>
         <tr>
-            <td>Emitter</td>
+            <td>Dependent</td>
             <td>
                 <table>
                     <tbody id="dependent">
@@ -27,66 +27,132 @@
                         <td>
                             <table>
                                 <tr>
+                                    <td>Emitter (Internal Name)</td>
+                                    <td><input data-field="internalName" type="text"></td>
+                                </tr>
+                                <tr>
+                                    <td>Emitting Delay [ms]</td>
+                                    <td><input data-field="emittingDelay" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Emitting Count</td>
+                                    <td><input data-field="emittingCount" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Generation Random Distance</td>
+                                    <td><input data-field="generationRandomDistance" type="number"></td>
+                                </tr>
+
+                                <tr>
                                     <td colspan="2">
                                         <span style="font-weight: bold">Particle</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Particle Shape Id</td>
-                                    <td><input id="particleShapeConfigId" type="number"></td>
+                                    <td><input data-field="particleShapeConfigId" type="number"></td>
                                 </tr>
                                 <tr>
                                     <td>Particle Grow</td>
-                                    <td><input id="particleGrow" type="number"></td>
+                                    <td><input data-field="particleGrow" type="number"></td>
                                 </tr>
                                 <tr>
                                     <td>Time to Live [ms]</td>
-                                    <td><input id="timeToLive" type="number"></td>
+                                    <td><input data-field="timeToLive" type="number"></td>
                                 </tr>
                                 <tr>
                                     <td>Time to Live random Part [ms]</td>
-                                    <td><input id="timeToLiveRandomPart" type="number"></td>
+                                    <td><input data-field="timeToLiveRandomPart" type="number"></td>
                                 </tr>
                                 <tr>
-                                    <td>Speed X</td>
-                                    <td><input id="speedX" type="number"></td>
+                                    <td>Velocity </td>
+                                    <td><div data-field="velocity"></div></td>
                                 </tr>
                                 <tr>
-                                    <td>Speed X random Part</td>
-                                    <td><input id="speedXRandomPart" type="number"></td>
+                                    <td>Velocity random Part</td>
+                                    <td><div data-field="velocityRandomPart"></div></td>
                                 </tr>
                                 <tr>
-                                    <td>Speed Y</td>
-                                    <td><input id="speedY" type="number"></td>
+                                    <td>Acceleration</td>
+                                    <td><div data-field="acceleration"></div></td>
                                 </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>Autonomous</td>
+            <td>
+                <table>
+                    <tbody id="autonomous">
+                    <tr id="autonomousTr">
+                        <td>
+                            <table>
                                 <tr>
-                                    <td>Speed Y random Part</td>
-                                    <td><input id="speedYRandomPart" type="number"></td>
-                                </tr>
-                                <tr>
-                                    <td>Speed Z</td>
-                                    <td><input id="speedZ" type="number"></td>
-                                </tr>
-                                <tr>
-                                    <td>Speed Z random Part</td>
-                                    <td><input id="speedZRandomPart" type="number"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <span style="font-weight: bold">Emitter</span>
-                                    </td>
+                                    <td>Emitter (Internal Name)</td>
+                                    <td><input data-field="internalName" type="text"></td>
                                 </tr>
                                 <tr>
                                     <td>Emitting Delay [ms]</td>
-                                    <td><input id="emittingDelay" type="number"></td>
+                                    <td><input data-field="emittingDelay" type="number"></td>
                                 </tr>
                                 <tr>
                                     <td>Emitting Count</td>
-                                    <td><input id="emittingCount" type="number"></td>
+                                    <td><input data-field="emittingCount" type="number"></td>
                                 </tr>
                                 <tr>
                                     <td>Generation Random Distance</td>
-                                    <td><input id="generationRandomDistance" type="number"></td>
+                                    <td><input data-field="generationRandomDistance" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Start Time [ms]</td>
+                                    <td><input data-field="startTime" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time to Live [ms]</td>
+                                    <td><input data-field="timeToLive" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Velocity</td>
+                                    <td>
+                                        <div data-field="velocity"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <span style="font-weight: bold">Particle</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Particle Shape Id</td>
+                                    <td><input data-field="particleShapeConfigId" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Particle Grow</td>
+                                    <td><input data-field="particleGrow" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time to Live [ms]</td>
+                                    <td><input data-field="particleConfigTimeToLive" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Time to Live random Part [ms]</td>
+                                    <td><input data-field="timeToLiveRandomPart" type="number"></td>
+                                </tr>
+                                <tr>
+                                    <td>Velocity </td>
+                                    <td><div data-field="particleConfigVelocity"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Velocity random Part</td>
+                                    <td><div data-field="velocityRandomPart"></div></td>
+                                </tr>
+                                <tr>
+                                    <td>Acceleration</td>
+                                    <td><div data-field="acceleration"></div></td>
                                 </tr>
                             </table>
                         </td>

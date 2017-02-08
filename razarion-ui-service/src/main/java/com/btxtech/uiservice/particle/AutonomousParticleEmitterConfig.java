@@ -2,11 +2,14 @@ package com.btxtech.uiservice.particle;
 
 import com.btxtech.shared.datatypes.Vertex;
 
+import java.util.logging.Level;
+
 /**
  * Created by Beat
  * 06.02.2017.
  */
 public class AutonomousParticleEmitterConfig extends ParticleEmitterConfig {
+    // private Logger logger = Logger.getLogger(AutonomousParticleEmitterConfig.class.getName());
     private int startTime;
     private int timeToLive;
     private Vertex velocity;
@@ -15,8 +18,8 @@ public class AutonomousParticleEmitterConfig extends ParticleEmitterConfig {
         return startTime;
     }
 
-    public ParticleEmitterConfig setStart(int start) {
-        this.startTime = start;
+    public AutonomousParticleEmitterConfig setStartTime(int startTime) {
+        this.startTime = startTime;
         return this;
     }
 
@@ -24,8 +27,8 @@ public class AutonomousParticleEmitterConfig extends ParticleEmitterConfig {
         return timeToLive;
     }
 
-    public ParticleEmitterConfig setTtl(int ttl) {
-        this.timeToLive = ttl;
+    public AutonomousParticleEmitterConfig setTimeToLive(int timeToLive) {
+        this.timeToLive = timeToLive;
         return this;
     }
 
@@ -33,10 +36,8 @@ public class AutonomousParticleEmitterConfig extends ParticleEmitterConfig {
         return velocity;
     }
 
-    public ParticleEmitterConfig setVelocity(Vertex velocity) {
+    public AutonomousParticleEmitterConfig setVelocity(Vertex velocity) {
         this.velocity = velocity;
         return this;
     }
-
-
 }

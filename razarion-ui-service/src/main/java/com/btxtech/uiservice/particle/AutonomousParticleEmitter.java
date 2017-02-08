@@ -14,10 +14,10 @@ public class AutonomousParticleEmitter extends ParticleEmitter {
     private long lastTickTimestamp;
     private AutonomousParticleEmitterConfig particleEmitterConfig;
 
-    public void init(long timestamp, Vertex position, AutonomousParticleEmitterConfig particleEmitterConfig) {
-        super.init(position, particleEmitterConfig);
-        this.particleEmitterConfig = particleEmitterConfig;
-        startTimeStamp = timestamp + particleEmitterConfig.getStartTime();
+    public void init(long timestamp, Vertex position, AutonomousParticleEmitterConfig autonomousParticleEmitterConfig) {
+        super.init(position, autonomousParticleEmitterConfig);
+        this.particleEmitterConfig = autonomousParticleEmitterConfig;
+        startTimeStamp = timestamp + autonomousParticleEmitterConfig.getStartTime();
     }
 
     public long getStartTimeStamp() {
@@ -26,17 +26,14 @@ public class AutonomousParticleEmitter extends ParticleEmitter {
 
     @Override
     protected boolean isRunning(long timestamp) {
-        return startTimeStamp + particleEmitterConfig.getTimeToLive() < timestamp;
+        return startTimeStamp + particleEmitterConfig.getTimeToLive() >= timestamp;
     }
 
     @Override
-    protected Vertex updatePosition(long timestamp, Vertex position) {
-        Vertex newPosition = position;
-        if (lastTickTimestamp > 0) {
-            double factor = (timestamp - lastTickTimestamp) / 1000.0;
-            newPosition = position.add(particleEmitterConfig.getVelocity().multiply(factor));
+    protected Vertex updatePosition(double factor, Vertex position) {
+        if (particleEmitterConfig.getVelocity() == null) {
+            return position;
         }
-        lastTickTimestamp = timestamp;
-        return newPosition;
+        return position.add(particleEmitterConfig.getVelocity().multiply(factor));
     }
 }

@@ -1,9 +1,11 @@
 package com.btxtech.client.editor.particle;
 
+import com.btxtech.client.guielements.VertexBox;
 import com.btxtech.uiservice.particle.DependentParticleEmitterConfig;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
+import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Input;
@@ -21,13 +23,29 @@ import javax.inject.Inject;
  * 07.02.2017.
  */
 @Templated("ParticlePropertyPanel.html#dependentTr")
-public class EmitterPropertyWidget implements TakesValue<DependentParticleEmitterConfig>, IsElement {
+public class DependentParticleEmitterConfigWidget implements TakesValue<DependentParticleEmitterConfig>, IsElement {
     @Inject
     @AutoBound
     private DataBinder<DependentParticleEmitterConfig> dataBinder;
     @Inject
     @DataField
     private TableRow dependentTr;
+    @Inject
+    @Bound
+    @DataField
+    private TextBox internalName;
+    @Inject
+    @Bound
+    @DataField
+    private Input emittingDelay;
+    @Inject
+    @Bound
+    @DataField
+    private Input emittingCount;
+    @Inject
+    @Bound
+    @DataField
+    private Input generationRandomDistance;
     @Inject
     @Bound(property = "particleConfig.particleShapeConfigId")
     @DataField
@@ -45,45 +63,21 @@ public class EmitterPropertyWidget implements TakesValue<DependentParticleEmitte
     @DataField
     private Input timeToLiveRandomPart;
     @Inject
-    @Bound(property = "particleConfig.speedX")
+    @Bound(property = "particleConfig.velocity")
     @DataField
-    private Input speedX;
+    private VertexBox velocity;
     @Inject
-    @Bound(property = "particleConfig.speedXRandomPart")
+    @Bound(property = "particleConfig.velocityRandomPart")
     @DataField
-    private Input speedXRandomPart;
+    private VertexBox velocityRandomPart;
     @Inject
-    @Bound(property = "particleConfig.speedY")
+    @Bound(property = "particleConfig.acceleration")
     @DataField
-    private Input speedY;
-    @Inject
-    @Bound(property = "particleConfig.speedYRandomPart")
-    @DataField
-    private Input speedYRandomPart;
-    @Inject
-    @Bound(property = "particleConfig.speedZ")
-    @DataField
-    private Input speedZ;
-    @Inject
-    @Bound(property = "particleConfig.speedZRandomPart")
-    @DataField
-    private Input speedZRandomPart;
-    @Inject
-    @Bound
-    @DataField
-    private Input emittingDelay;
-    @Inject
-    @Bound
-    @DataField
-    private Input emittingCount;
-    @Inject
-    @Bound
-    @DataField
-    private Input generationRandomDistance;
+    private VertexBox acceleration;
 
     @Override
-    public void setValue(DependentParticleEmitterConfig particleEmitterConfig) {
-        dataBinder.setModel(particleEmitterConfig);
+    public void setValue(DependentParticleEmitterConfig dependentParticleEmitterConfig) {
+        dataBinder.setModel(dependentParticleEmitterConfig);
     }
 
     @Override

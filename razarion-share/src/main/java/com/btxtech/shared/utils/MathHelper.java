@@ -1,5 +1,7 @@
 package com.btxtech.shared.utils;
 
+import com.btxtech.shared.datatypes.Vertex;
+
 /**
  * User: beat
  * Date: 23.05.2011
@@ -266,24 +268,43 @@ public class MathHelper {
     }
 
     public static double random(Double base, Double variable) {
-        if (base == null) {
-            return 0;
+        double newBase = 0;
+        if (base != null) {
+            newBase = base;
         }
-        if (variable == null) {
-            return base;
+        if (variable == null || variable == 0) {
+            return newBase;
         }
 
-        return base - variable + Math.random() * 2.0 * variable;
+        return newBase - variable + Math.random() * 2.0 * variable;
     }
 
+
     public static int random(Integer base, Integer variable) {
-        if (base == null) {
-            return 0;
+        int newBase = 0;
+        if (base != null) {
+            newBase = base;
+        }
+        if (variable == null || variable == 0) {
+            return newBase;
+        }
+
+        return (int) (newBase - variable + Math.random() * 2.0 * variable);
+    }
+
+    public static Vertex random(Vertex base, Vertex variable) {
+        if (base == null && variable == null) {
+            return null;
         }
         if (variable == null) {
             return base;
         }
-
-        return (int) (base - variable + Math.random() * 2.0 * variable);
+        Vertex newBase = base;
+        if (newBase == null) {
+            newBase = Vertex.ZERO;
+        }
+        return new Vertex(MathHelper.random(newBase.getX(), variable.getX()),
+                MathHelper.random(newBase.getY(), variable.getY()),
+                MathHelper.random(newBase.getZ(), variable.getZ()));
     }
 }

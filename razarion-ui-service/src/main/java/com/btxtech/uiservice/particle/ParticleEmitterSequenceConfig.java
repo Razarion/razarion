@@ -12,8 +12,8 @@ import java.util.List;
 public class ParticleEmitterSequenceConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
-    private List<AutonomousParticleEmitterConfig> autonomous;
     private List<DependentParticleEmitterConfig> dependent;
+    private List<AutonomousParticleEmitterConfig> autonomous;
 
     public int getId() {
         return id;
@@ -33,20 +33,20 @@ public class ParticleEmitterSequenceConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public List<AutonomousParticleEmitterConfig> getAutonomous() {
-        return autonomous;
-    }
-
-    public void setAutonomous(List<AutonomousParticleEmitterConfig> autonomous) {
-        this.autonomous = autonomous;
-    }
-
     public List<DependentParticleEmitterConfig> getDependent() {
         return dependent;
     }
 
     public void setDependent(List<DependentParticleEmitterConfig> dependent) {
         this.dependent = dependent;
+    }
+
+    public List<AutonomousParticleEmitterConfig> getAutonomous() {
+        return autonomous;
+    }
+
+    public void setAutonomous(List<AutonomousParticleEmitterConfig> autonomous) {
+        this.autonomous = autonomous;
     }
 
     @Override

@@ -16,7 +16,7 @@ public class DependentParticleEmitter extends ParticleEmitter{
     }
 
     @Override
-    protected Vertex updatePosition(long timestamp, Vertex position) {
+    protected Vertex updatePosition(double factor, Vertex position) {
         return position;
     }
 }
