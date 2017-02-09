@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.particle.ParticleShapeConfig;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -36,7 +37,7 @@ public class DevToolParticleRenderUnit extends AbstractParticleRenderUnit implem
 
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates) {
+    protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates, ParticleShapeConfig particleShapeConfig) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertices));
     }

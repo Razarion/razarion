@@ -74,4 +74,8 @@ public class Particle implements Comparable<Particle> {
     public int compareTo(Particle o) {
         return Double.compare(cameraDistance, o.cameraDistance);
     }
+
+    public int getParticleShapeConfigId() {
+        return particleConfig.getParticleShapeConfigId();
+    }
 }

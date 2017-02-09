@@ -8,6 +8,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.particle.ParticleShapeConfig;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -37,6 +38,8 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     private DecimalPositionShaderAttribute alphaTextureCoordinates;
     private WebGlUniformTexture alphaOffset;
     private WebGlUniformTexture colorRamp;
+    private double xColorRampOffset;
+    private double textureOffsetScope;
 
     @PostConstruct
     public void init() {
@@ -47,11 +50,13 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     }
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates) {
+    protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates, ParticleShapeConfig particleShapeConfig) {
         positions.fillBuffer(vertices);
         this.alphaTextureCoordinates.fillBuffer(alphaTextureCoordinates);
-        alphaOffset = webGlFacade.createWebGLTexture(272946, "uAlphaOffsetSampler");
-        colorRamp = webGlFacade.createWebGLTexture(272944, "uColorRampSampler");
+        alphaOffset = webGlFacade.createWebGLTexture(particleShapeConfig.getAlphaOffsetImageId(), "uAlphaOffsetSampler");
+        colorRamp = webGlFacade.createWebGLTexture(particleShapeConfig.getColorRampImageId(), "uColorRampSampler");
+        xColorRampOffset = particleShapeConfig.getColorRampXOffset();
+        textureOffsetScope = particleShapeConfig.getTextureOffsetScope();
     }
 
     @Override
@@ -60,6 +65,8 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
+        webGlFacade.uniform1f("uXColorRampOffset", xColorRampOffset);
+        webGlFacade.uniform1f("uTextureOffsetScope", textureOffsetScope);
 
         positions.activate();
         alphaTextureCoordinates.activate();

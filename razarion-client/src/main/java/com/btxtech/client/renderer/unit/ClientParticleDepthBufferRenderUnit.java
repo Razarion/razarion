@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.particle.ParticleShapeConfig;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
@@ -41,7 +42,7 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
     }
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates) {
+    protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates, ParticleShapeConfig particleShapeConfig) {
         positions.fillBuffer(vertices);
     }
 

@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.renderer.task.particle;
 
 import com.btxtech.uiservice.particle.ParticleService;
+import com.btxtech.uiservice.particle.ParticleShapeConfig;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -22,10 +23,19 @@ public class ParticleRenderTask extends AbstractRenderTask<Void> {
 
     @PostConstruct
     public void postConstruct() {
-        ModelRenderer<Void, CommonRenderComposite<AbstractParticleRenderUnit, Void>, AbstractParticleRenderUnit, Void> modelRenderer = create();
-        modelRenderer.init(null, timeStamp -> particleService.provideModelMatrices(timeStamp));
-        CommonRenderComposite<AbstractParticleRenderUnit, Void> compositeRenderer = modelRenderer.create();
-        compositeRenderer.init(null);
+        particleService.getParticleShapeConfigs().forEach(this::setupParticleConfig);
+    }
+
+    @Override
+    protected void preRender(long timeStamp) {
+        particleService.preRender(timeStamp);
+    }
+
+    private void setupParticleConfig(ParticleShapeConfig particleShapeConfig) {
+        ModelRenderer<Void, CommonRenderComposite<AbstractParticleRenderUnit, ParticleShapeConfig>, AbstractParticleRenderUnit, ParticleShapeConfig> modelRenderer = create();
+        modelRenderer.init(null, timeStamp -> particleService.provideModelMatrices(particleShapeConfig.getId()));
+        CommonRenderComposite<AbstractParticleRenderUnit, ParticleShapeConfig> compositeRenderer = modelRenderer.create();
+        compositeRenderer.init(particleShapeConfig);
         compositeRenderer.setRenderUnit(AbstractParticleRenderUnit.class);
         compositeRenderer.setDepthBufferRenderUnit(AbstractParticleRenderUnit.class);
         modelRenderer.add(RenderUnitControl.PARTICLE, compositeRenderer);

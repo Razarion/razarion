@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.particle;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
@@ -17,7 +16,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -25,7 +23,6 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class ParticleService {
-    private static final double EDGE_LENGTH = 3;
     @Inject
     private Camera camera;
     @Inject
@@ -33,20 +30,24 @@ public class ParticleService {
     @Inject
     private Instance<DependentParticleEmitter> dependentParticleEmitterInstance;
     private Map<Integer, ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs = new HashMap<>();
+    private Map<Integer, ParticleShapeConfig> particleShapeConfigs = new HashMap<>();
     private List<Particle> particles = new ArrayList<>();
     private List<AutonomousParticleEmitter> waitingEmitters = new ArrayList<>();
     private Collection<ParticleEmitter> activeEmitters = new ArrayList<>();
     private long lastTimeStamp;
+    private MapList<Integer, ModelMatrices> modelMatrices = new MapList<>();
 
     @PostConstruct
     public void DELETE_ME() {
         // Particles
+        particleShapeConfigs.put(1, new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setAlphaOffsetImageId(272946).setColorRampImageId(272944).setColorRampXOffset(4.0 / 128.0).setTextureOffsetScope(0.1));
+        particleShapeConfigs.put(2, new ParticleShapeConfig().setId(2).setInternalName("Smoke Particle").setEdgeLength(3).setAlphaOffsetImageId(272946).setColorRampImageId(272944).setColorRampXOffset(12.0 / 128.0).setTextureOffsetScope(0.1));
 
         // Fire
         ParticleEmitterSequenceConfig fire = new ParticleEmitterSequenceConfig().setId(1).setInternalName("Fire");
         DependentParticleEmitterConfig dependentParticleEmitterConfig = new DependentParticleEmitterConfig();
         dependentParticleEmitterConfig.setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3);
-        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setTimeToLive(2000).setParticleGrow(0.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
+        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setTimeToLive(2000).setParticleGrow(0.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
         List<DependentParticleEmitterConfig> dependentParticleEmitterConfigs = new ArrayList<>();
         dependentParticleEmitterConfigs.add(dependentParticleEmitterConfig);
         fire.setDependent(dependentParticleEmitterConfigs);
@@ -61,24 +62,24 @@ public class ParticleService {
         AutonomousParticleEmitterConfig splitter1 = new AutonomousParticleEmitterConfig();
         splitter1.setStartTime(0).setTimeToLive(1000).setVelocity(new Vertex(10, -7, 20)).setInternalName("Splitter 1");
         splitter1.setEmittingCount(5).setEmittingDelay(100).setGenerationRandomDistance(0);
-        splitter1.setParticleConfig(new ParticleConfig().setTimeToLive(1500).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)));
+        splitter1.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setTimeToLive(1500).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)));
         autonomousParticleEmitterConfigs.add(splitter1);
         AutonomousParticleEmitterConfig splitter2 = new AutonomousParticleEmitterConfig();
         splitter2.setStartTime(100).setTimeToLive(1000).setVelocity(new Vertex(-10, -10, 25)).setInternalName("Splitter 2");
         splitter2.setEmittingCount(5).setEmittingDelay(100).setGenerationRandomDistance(0);
-        splitter2.setParticleConfig(new ParticleConfig().setTimeToLive(1000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)));
+        splitter2.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setTimeToLive(1000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)));
         autonomousParticleEmitterConfigs.add(splitter2);
         // Smoke
         AutonomousParticleEmitterConfig smoke = new AutonomousParticleEmitterConfig();
         smoke.setStartTime(0).setTimeToLive(2000).setInternalName("Smoke");
         smoke.setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3);
-        smoke.setParticleConfig(new ParticleConfig().setTimeToLive(4000).setVelocity(new Vertex(0, 0, 8)).setVelocityRandomPart(new Vertex(1, 1, 0)));
+        smoke.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(2).setTimeToLive(4000).setVelocity(new Vertex(0, 0, 8)).setVelocityRandomPart(new Vertex(1, 1, 0)));
         autonomousParticleEmitterConfigs.add(smoke);
         // Main Puff
         AutonomousParticleEmitterConfig mainPuff = new AutonomousParticleEmitterConfig();
         mainPuff.setStartTime(0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 5)).setInternalName("Main Puff");
         mainPuff.setEmittingCount(20).setEmittingDelay(100).setGenerationRandomDistance(5);
-        mainPuff.setParticleConfig(new ParticleConfig().setTimeToLive(2000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)).setAcceleration(new Vertex(0, 0, -3)));
+        mainPuff.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)).setAcceleration(new Vertex(0, 0, -3)));
         autonomousParticleEmitterConfigs.add(mainPuff);
         //-------------------------------------------------------------------------
         particleEmitterSequenceConfigs.put(3, new ParticleEmitterSequenceConfig().setId(3).setInternalName("Detonation"));
@@ -129,10 +130,12 @@ public class ParticleService {
         }
     }
 
-    public List<ModelMatrices> provideModelMatrices(long timestamp) {
+
+    public void preRender(long timestamp) {
+        modelMatrices.clear();
         if (lastTimeStamp == 0) {
             lastTimeStamp = timestamp;
-            return null;
+            return;
         }
 
         double factor = (timestamp - lastTimeStamp) / 1000.0;
@@ -147,34 +150,13 @@ public class ParticleService {
         particles.removeIf(particle -> !particle.tick(timestamp, factor, camera.getMatrix()));
         Collections.sort(particles);
 
-        return particles.stream().map(Particle::getModelMatrices).collect(Collectors.toList());
+        for (Particle particle : particles) {
+            modelMatrices.put(particle.getParticleShapeConfigId(), particle.getModelMatrices());
+        }
     }
 
-    public List<Vertex> calculateVertices() {
-        Matrix4 billboardMatrix = Matrix4.createXRotation(-camera.getRotateX());
-        List<Vertex> vertices = new ArrayList<>();
-        // Triangle 1
-        vertices.add(billboardMatrix.multiply(new Vertex(0, 0, 0), 1.0));
-        vertices.add(billboardMatrix.multiply(new Vertex(EDGE_LENGTH, 0, 0), 1.0));
-        vertices.add(billboardMatrix.multiply(new Vertex(0, 0, EDGE_LENGTH), 1.0));
-        // Triangle 2
-        vertices.add(billboardMatrix.multiply(new Vertex(EDGE_LENGTH, 0, 0), 1.0));
-        vertices.add(billboardMatrix.multiply(new Vertex(EDGE_LENGTH, 0, EDGE_LENGTH), 1.0));
-        vertices.add(billboardMatrix.multiply(new Vertex(0, 0, EDGE_LENGTH), 1.0));
-        return vertices;
-    }
-
-    public List<DecimalPosition> calculateAlphaTextureCoordinates() {
-        List<DecimalPosition> alphaTextureCoordinates = new ArrayList<>();
-        // Triangle 1
-        alphaTextureCoordinates.add(new DecimalPosition(0, 0));
-        alphaTextureCoordinates.add(new DecimalPosition(1, 0));
-        alphaTextureCoordinates.add(new DecimalPosition(0, 1));
-        // Triangle 2
-        alphaTextureCoordinates.add(new DecimalPosition(1, 0));
-        alphaTextureCoordinates.add(new DecimalPosition(1, 1));
-        alphaTextureCoordinates.add(new DecimalPosition(0, 1));
-        return alphaTextureCoordinates;
+    public List<ModelMatrices> provideModelMatrices(int particleShapeConfigId) {
+        return modelMatrices.get(particleShapeConfigId);
     }
 
     public void addParticles(Particle particle) {
@@ -191,6 +173,10 @@ public class ParticleService {
 
     public Collection<ParticleEmitterSequenceConfig> getParticleEmitterSequenceConfigs() {
         return particleEmitterSequenceConfigs.values();
+    }
+
+    public Collection<ParticleShapeConfig> getParticleShapeConfigs() {
+        return particleShapeConfigs.values();
     }
 
     public void clear() {
