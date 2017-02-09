@@ -40,7 +40,7 @@ public class ParticleService {
     @PostConstruct
     public void DELETE_ME() {
         // Particles
-        particleShapeConfig = new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setAlphaOffsetImageId(272946).setColorRampImageId(272944).setColorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0}).setTextureOffsetScope(0.1);
+        particleShapeConfig = new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setAlphaOffsetImageId(272946).setColorRampImageId(272944).setColorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).setTextureOffsetScope(0.1);
 
         // Fire
         ParticleEmitterSequenceConfig fire = new ParticleEmitterSequenceConfig().setId(1).setInternalName("Fire");
@@ -78,7 +78,7 @@ public class ParticleService {
         AutonomousParticleEmitterConfig mainPuff = new AutonomousParticleEmitterConfig();
         mainPuff.setStartTime(0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 5)).setInternalName("Main Puff");
         mainPuff.setEmittingCount(20).setEmittingDelay(100).setGenerationRandomDistance(5);
-        mainPuff.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)).setAcceleration(new Vertex(0, 0, -3)));
+        mainPuff.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(2).setParticleGrow(2.0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)).setAcceleration(new Vertex(0, 0, -3)));
         autonomousParticleEmitterConfigs.add(mainPuff);
         //-------------------------------------------------------------------------
         particleEmitterSequenceConfigs.put(3, new ParticleEmitterSequenceConfig().setId(3).setInternalName("Detonation"));
