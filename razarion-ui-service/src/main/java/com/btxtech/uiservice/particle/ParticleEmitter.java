@@ -39,8 +39,8 @@ public abstract class ParticleEmitter {
         // Emit particle
         if (lastGenerationTime + particleEmitterConfig.getEmittingDelay() < timestamp) {
             for (int i = 0; i < particleEmitterConfig.getEmittingCount(); i++) {
-                double xRand = Math.random() * particleEmitterConfig.getGenerationRandomDistance();
-                double yRand = Math.random() * particleEmitterConfig.getGenerationRandomDistance();
+                double xRand = (Math.random() - 0.5) * particleEmitterConfig.getGenerationRandomDistance();
+                double yRand = (Math.random() - 0.5) * particleEmitterConfig.getGenerationRandomDistance();
                 particleService.addParticles(new Particle(timestamp, new Vertex(position.getX() + xRand, position.getY() + yRand, position.getZ()), particleEmitterConfig.getParticleConfig()));
             }
             lastGenerationTime = timestamp;
