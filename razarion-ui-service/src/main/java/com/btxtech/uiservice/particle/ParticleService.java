@@ -81,7 +81,18 @@ public class ParticleService {
         mainPuff.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(2).setParticleGrow(2.0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)).setAcceleration(new Vertex(0, 0, -3)));
         autonomousParticleEmitterConfigs.add(mainPuff);
         //-------------------------------------------------------------------------
-        particleEmitterSequenceConfigs.put(3, new ParticleEmitterSequenceConfig().setId(3).setInternalName("Detonation"));
+        // Detonation
+        ParticleEmitterSequenceConfig detonation = new ParticleEmitterSequenceConfig().setId(3).setInternalName("Detonation");
+        autonomousParticleEmitterConfigs = new ArrayList<>();
+        detonation.setAutonomous(autonomousParticleEmitterConfigs);
+        particleEmitterSequenceConfigs.put(detonation.getId(), detonation);
+        // Splitter
+        AutonomousParticleEmitterConfig detonationSplitter1 = new AutonomousParticleEmitterConfig();
+        detonationSplitter1.setStartTime(0).setTimeToLive(200).setVelocity(new Vertex(0, 0, 20)).setInternalName("Detonation Splitter 1");
+        detonationSplitter1.setEmittingCount(3).setEmittingDelay(100).setGenerationRandomDistance(0);
+        detonationSplitter1.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setParticleGrow(2.0));
+        autonomousParticleEmitterConfigs.add(detonationSplitter1);
+        //-------------------------------------------------------------------------
         particleEmitterSequenceConfigs.put(4, new ParticleEmitterSequenceConfig().setId(4).setInternalName("Muzzle"));
         /////////////////////////////
 

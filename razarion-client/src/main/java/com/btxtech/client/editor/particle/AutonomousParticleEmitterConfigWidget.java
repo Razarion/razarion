@@ -61,6 +61,10 @@ public class AutonomousParticleEmitterConfigWidget implements TakesValue<Autonom
     @DataField
     private Input particleShapeConfigId;
     @Inject
+    @Bound(property = "particleConfig.particleXColorRampOffsetIndex")
+    @DataField
+    private Input colorRampOffsetIndex;
+    @Inject
     @Bound(property = "particleConfig.particleGrow")
     @DataField
     private Input particleGrow;
