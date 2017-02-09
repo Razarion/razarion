@@ -38,7 +38,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     private DecimalPositionShaderAttribute alphaTextureCoordinates;
     private WebGlUniformTexture alphaOffset;
     private WebGlUniformTexture colorRamp;
-    private double xColorRampOffset;
+    private ParticleShapeConfig particleShapeConfig;
     private double textureOffsetScope;
 
     @PostConstruct
@@ -51,11 +51,11 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
 
     @Override
     protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates, ParticleShapeConfig particleShapeConfig) {
+        this.particleShapeConfig = particleShapeConfig;
         positions.fillBuffer(vertices);
         this.alphaTextureCoordinates.fillBuffer(alphaTextureCoordinates);
         alphaOffset = webGlFacade.createWebGLTexture(particleShapeConfig.getAlphaOffsetImageId(), "uAlphaOffsetSampler");
         colorRamp = webGlFacade.createWebGLTexture(particleShapeConfig.getColorRampImageId(), "uColorRampSampler");
-        xColorRampOffset = particleShapeConfig.getColorRampXOffset();
         textureOffsetScope = particleShapeConfig.getTextureOffsetScope();
     }
 
@@ -65,7 +65,6 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
-        webGlFacade.uniform1f("uXColorRampOffset", xColorRampOffset);
         webGlFacade.uniform1f("uTextureOffsetScope", textureOffsetScope);
 
         positions.activate();
@@ -79,6 +78,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
         webGlFacade.uniform1f("uProgress", modelMatrices.getProgress());
+        webGlFacade.uniform1f("uXColorRampOffset", particleShapeConfig.getColorRampXOffset(modelMatrices.getParticleXColorRampOffsetIndex()));
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

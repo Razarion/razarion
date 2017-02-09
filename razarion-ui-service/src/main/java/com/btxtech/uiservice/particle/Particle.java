@@ -45,6 +45,7 @@ public class Particle implements Comparable<Particle> {
         }
         if (modelMatrices == null) {
             modelMatrices = new ModelMatrices(Matrix4.createTranslation(position), progress);
+            modelMatrices.setParticleXColorRampOffsetIndex(particleConfig.getParticleXColorRampOffsetIndex());
         } else {
             modelMatrices.setProgress(progress);
             // TODO performance modelMatrices.getModel().setTranslation(position);
@@ -73,9 +74,5 @@ public class Particle implements Comparable<Particle> {
     @Override
     public int compareTo(Particle o) {
         return Double.compare(cameraDistance, o.cameraDistance);
-    }
-
-    public int getParticleShapeConfigId() {
-        return particleConfig.getParticleShapeConfigId();
     }
 }

@@ -23,7 +23,7 @@ public class ParticleRenderTask extends AbstractRenderTask<Void> {
 
     @PostConstruct
     public void postConstruct() {
-        particleService.getParticleShapeConfigs().forEach(this::setupParticleConfig);
+        setupParticleConfig(particleService.getParticleShapeConfig());
     }
 
     @Override
@@ -33,7 +33,7 @@ public class ParticleRenderTask extends AbstractRenderTask<Void> {
 
     private void setupParticleConfig(ParticleShapeConfig particleShapeConfig) {
         ModelRenderer<Void, CommonRenderComposite<AbstractParticleRenderUnit, ParticleShapeConfig>, AbstractParticleRenderUnit, ParticleShapeConfig> modelRenderer = create();
-        modelRenderer.init(null, timeStamp -> particleService.provideModelMatrices(particleShapeConfig.getId()));
+        modelRenderer.init(null, timeStamp -> particleService.provideModelMatrices());
         CommonRenderComposite<AbstractParticleRenderUnit, ParticleShapeConfig> compositeRenderer = modelRenderer.create();
         compositeRenderer.init(particleShapeConfig);
         compositeRenderer.setRenderUnit(AbstractParticleRenderUnit.class);

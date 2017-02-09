@@ -17,7 +17,7 @@ public class ParticleShapeConfig {
     private double edgeLength;
     private Integer colorRampImageId;
     private Integer alphaOffsetImageId; // rad canal = alpha, greed canal = offset
-    private double colorRampXOffset; // 0..1 for x part of the texture lookup
+    private double[] colorRampXOffsets; // 0..1 for x part of the texture lookup
     private double textureOffsetScope; // 0 .. 0.5 for scoping the offset change to the colorramp from the green part of the alphaOffsetImage
 
     public int getId() {
@@ -65,12 +65,16 @@ public class ParticleShapeConfig {
         return this;
     }
 
-    public double getColorRampXOffset() {
-        return colorRampXOffset;
+    public double[] getColorRampXOffsets() {
+        return colorRampXOffsets;
     }
 
-    public ParticleShapeConfig setColorRampXOffset(double colorRampXOffset) {
-        this.colorRampXOffset = colorRampXOffset;
+    public double getColorRampXOffset(int index) {
+        return colorRampXOffsets[index];
+    }
+
+    public ParticleShapeConfig setColorRampXOffsets(double[] colorRampXOffsets) {
+        this.colorRampXOffsets = colorRampXOffsets;
         return this;
     }
 
@@ -82,6 +86,7 @@ public class ParticleShapeConfig {
         this.textureOffsetScope = textureOffsetScope;
         return this;
     }
+
 
     public List<Vertex> calculateVertices(double rotationX) {
         Matrix4 billboardMatrix = Matrix4.createXRotation(rotationX);

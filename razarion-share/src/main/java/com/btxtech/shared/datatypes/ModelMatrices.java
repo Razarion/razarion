@@ -9,6 +9,7 @@ public class ModelMatrices {
     private Matrix4 norm;
     private double progress;
     private DecimalPosition interpolatableVelocity;
+    private int particleXColorRampOffsetIndex;
 
     public ModelMatrices(Matrix4 model) {
         this(model, 0);
@@ -57,6 +58,14 @@ public class ModelMatrices {
         } else {
             return this;
         }
+    }
+
+    public int getParticleXColorRampOffsetIndex() {
+        return particleXColorRampOffsetIndex;
+    }
+
+    public void setParticleXColorRampOffsetIndex(int particleXColorRampOffsetIndex) {
+        this.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
     }
 
     public ModelMatrices multiply(ModelMatrices modelMatrices) {

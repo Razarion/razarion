@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.Vertex;
 public class ParticleConfig {
     // private Logger logger = Logger.getLogger(ParticleConfig.class.getName());
     private int particleShapeConfigId;
+    private int particleXColorRampOffsetIndex;
     private Double particleGrow;
     private int timeToLive;
     private Integer timeToLiveRandomPart;
@@ -22,6 +23,15 @@ public class ParticleConfig {
 
     public ParticleConfig setParticleShapeConfigId(int particleShapeConfigId) {
         this.particleShapeConfigId = particleShapeConfigId;
+        return this;
+    }
+
+    public int getParticleXColorRampOffsetIndex() {
+        return particleXColorRampOffsetIndex;
+    }
+
+    public ParticleConfig setParticleXColorRampOffsetIndex(int particleXColorRampOffsetIndex) {
+        this.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
         return this;
     }
 
