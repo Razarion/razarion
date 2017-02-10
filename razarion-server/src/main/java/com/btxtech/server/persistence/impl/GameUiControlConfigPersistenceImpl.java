@@ -49,7 +49,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionShape3D;
+import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
@@ -271,21 +271,21 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         factory.setPrice(200);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
-        List<DemolitionShape3D> demolitionShape3Ds1 = new ArrayList<>();
-        demolitionShape3Ds1.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(-2.1, 0.0, 3.4)));
-        demolitionShape3Ds1.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(2.8, 2.2, 2.0)));
-        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3Ds1));
+        List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
+        demolitionShape3Ds1.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(-2.1, 0.0, 3.4)));
+        demolitionShape3Ds1.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(2.8, 2.2, 2.0)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3Ds1));
         // Demolition 2
-        List<DemolitionShape3D> demolitionShape3D2s = new ArrayList<>();
-        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(2, 2, 2)));
-        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(-2, -2, 2)));
-        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D2s));
+        List<DemolitionParticleConfig> demolitionParticleConfig2s = new ArrayList<>();
+        demolitionParticleConfig2s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(2, 2, 2)));
+        demolitionParticleConfig2s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(-2, -2, 2)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionParticleConfig2s));
         // Demolition 3
-        List<DemolitionShape3D> demolitionShape3D3s = new ArrayList<>();
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(3, 0, 1)));
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(0, 3, 1)));
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(3, 3, 1)));
-        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D3s));
+        List<DemolitionParticleConfig> demolitionShape3D3s = new ArrayList<>();
+        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(3, 0, 1)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(0, 3, 1)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(3, 3, 1)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3D3s));
         factory.setDemolitionStepEffects(demolitionStepEffects);
     }
 
@@ -299,20 +299,20 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         tower.setExplosionParticleEmitterSequenceConfigId(2);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
-        List<DemolitionShape3D> demolitionShape3Ds1 = new ArrayList<>();
-        demolitionShape3Ds1.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(0, 0, 3)));
-        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3Ds1));
+        List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
+        demolitionShape3Ds1.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(0, 0, 3)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3Ds1));
         // Demolition 2
-        List<DemolitionShape3D> demolitionShape3D2s = new ArrayList<>();
-        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(2, 2, 2)));
-        demolitionShape3D2s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(-2, -2, 2)));
-        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D2s));
+        List<DemolitionParticleConfig> demolitionParticleConfig2s = new ArrayList<>();
+        demolitionParticleConfig2s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(2, 2, 2)));
+        demolitionParticleConfig2s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(-2, -2, 2)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionParticleConfig2s));
         // Demolition 3
-        List<DemolitionShape3D> demolitionShape3D3s = new ArrayList<>();
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(3, 0, 1)));
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(0, 3, 1)));
-        demolitionShape3D3s.add(new DemolitionShape3D().setShape3DId(272511).setPosition(new Vertex(3, 3, 1)));
-        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionShape3Ds(demolitionShape3D3s));
+        List<DemolitionParticleConfig> demolitionShape3D3s = new ArrayList<>();
+        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(3, 0, 1)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(0, 3, 1)));
+        demolitionShape3D3s.add(new DemolitionParticleConfig().setParticleEmitterSequenceConfigId(1).setPosition(new Vertex(3, 3, 1)));
+        demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3D3s));
         tower.setDemolitionStepEffects(demolitionStepEffects);
 
     }

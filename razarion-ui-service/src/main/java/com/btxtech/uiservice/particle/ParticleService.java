@@ -107,32 +107,18 @@ public class ParticleService {
         muzzleFlashSplitter.setEmittingCount(1).setEmittingDelay(40).setGenerationRandomDistance(0);
         muzzleFlashSplitter.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(1000).setParticleGrowFrom(0.5).setParticleGrowTo(2.0));
         autonomousParticleEmitterConfigs.add(muzzleFlashSplitter);
-        /////////////////////////////
-
-
-        // emitter für puff, emitter für fire
-        // TODO , bewegender emitter zeugs wegspicken
-
-        // Fire
-        // emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(200000).setVelocity(new Vertex(0, 0, 0)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
-        // Puff
-        //     emitterConfigs.add(new ParticleEmitterConfig().setStart(500).setTtl(1000).setVelocity(new Vertex(0, 0, 0)).setEmittingCount(20).setEmittingDelay(100).setGenerationRandomDistance(5));
-
-
-        // OLD
-//        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(20000).setVelocity(new Vertex(10, 10, 10)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
-//        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(20000).setVelocity(new Vertex(10, -10, 10)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
-//        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(20000).setVelocity(new Vertex(-10, 10, 10)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
-//        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(20000).setVelocity(new Vertex(-10, -10, 10)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
     }
 
-    public void start(long timestamp, Vertex position, Vertex direction, ParticleEmitterSequenceConfig dependentParticleEmitterConfig) {
+    public ParticleEmitterSequenceHandler start(long timestamp, Vertex position, Vertex direction, ParticleEmitterSequenceConfig dependentParticleEmitterConfig) {
         if (dependentParticleEmitterConfig.getAutonomous() != null) {
             start(timestamp, position, direction, dependentParticleEmitterConfig.getAutonomous());
         }
+        ParticleEmitterSequenceHandler handler = null;
         if (dependentParticleEmitterConfig.getDependent() != null) {
-            start(position, dependentParticleEmitterConfig.getDependent());
+            handler = new ParticleEmitterSequenceHandler(this);
+            start(position, dependentParticleEmitterConfig.getDependent(), handler);
         }
+        return handler;
     }
 
     private void start(long timestamp, Vertex position, Vertex direction, List<AutonomousParticleEmitterConfig> autonomousParticleEmitterConfigs) {
@@ -144,11 +130,12 @@ public class ParticleService {
         waitingEmitters.sort(Comparator.comparingLong(AutonomousParticleEmitter::getStartTimeStamp));
     }
 
-    private void start(Vertex position, List<DependentParticleEmitterConfig> dependentParticleEmitterConfigs) {
+    private void start(Vertex position, List<DependentParticleEmitterConfig> dependentParticleEmitterConfigs, ParticleEmitterSequenceHandler handler) {
         for (DependentParticleEmitterConfig dependentParticleEmitterConfig : dependentParticleEmitterConfigs) {
-            DependentParticleEmitter autonomousParticleEmitter = dependentParticleEmitterInstance.get();
-            autonomousParticleEmitter.init(position, dependentParticleEmitterConfig);
-            activeEmitters.add(autonomousParticleEmitter);
+            DependentParticleEmitter dependentParticleEmitter = dependentParticleEmitterInstance.get();
+            dependentParticleEmitter.init(position, dependentParticleEmitterConfig);
+            activeEmitters.add(dependentParticleEmitter);
+            handler.addDependentParticleEmitter(dependentParticleEmitter);
         }
     }
 
@@ -196,6 +183,10 @@ public class ParticleService {
 
     public ParticleShapeConfig getParticleShapeConfig() {
         return particleShapeConfig;
+    }
+
+    public void removeParticleEmitter(ParticleEmitter particleEmitter) {
+        activeEmitters.remove(particleEmitter);
     }
 
     public void clear() {

@@ -5,8 +5,6 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionShape3D;
-import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
@@ -14,7 +12,6 @@ import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
-import com.btxtech.uiservice.renderer.AbstractFireVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -62,7 +59,6 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
         build(baseItemType, fillBuffer);
         alive(baseItemType, fillBuffer);
         demolition(baseItemType, fillBuffer);
-        demolitionEffects(baseItemType, fillBuffer);
         harvest(baseItemType, fillBuffer);
         buildBeam(baseItemType, fillBuffer);
         weaponTurret(baseItemType, fillBuffer);
@@ -277,58 +273,4 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
 
         add(modelRenderer);
     }
-
-    private void demolitionEffects(BaseItemType baseItemType, boolean fillBuffer) {
-        if (baseItemType.getDemolitionStepEffects() == null || baseItemType.getDemolitionStepEffects().isEmpty()) {
-            logger.warning("BaseItemRenderTask: no demolition steps in BaseItemType: " + baseItemType);
-            return;
-        }
-        for (DemolitionStepEffect demolitionStepEffect : baseItemType.getDemolitionStepEffects()) {
-            if(demolitionStepEffect != null) {
-                for (DemolitionShape3D demolitionShape3D : demolitionStepEffect.getDemolitionShape3Ds() ) {
-                    Integer shape3DId = demolitionShape3D.getShape3DId();
-                    if(shape3DId == null) {
-                        continue;
-                    }
-                    if(demolitionShape3DIds.contains(shape3DId)) {
-                        continue;
-                    }
-                    Shape3D shape3D = shape3DUiService.getShape3D(shape3DId);
-                    double maxHeight = Shape3DUtils.getMaxZ(shape3D);
-                    double minHeight = Shape3DUtils.getMinZ(shape3D);
-
-                    ModelRenderer<Shape3D, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-                    modelRenderer.init(shape3D, timeStamp -> baseItemUiService.provideDemolitionEffectModelMatrices(shape3DId));
-                    for (Element3D element3D : shape3D.getElement3Ds()) {
-                        for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                            if (vertexContainer.hasLookUpTextureId()) {
-                                CommonRenderComposite<AbstractFireVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-                                compositeRenderer.init(vertexContainer);
-                                compositeRenderer.setRenderUnit(AbstractFireVertexContainerRenderUnit.class).setAttributes(minHeight, maxHeight);
-                                compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                                modelRenderer.add(RenderUnitControl.SEMI_TRANSPARENT, compositeRenderer);
-                                if (fillBuffer) {
-                                    compositeRenderer.fillBuffers();
-                                }
-                            } else {
-                                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
-                                compositeRenderer.init(vertexContainer);
-                                compositeRenderer.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-                                compositeRenderer.setDepthBufferRenderUnit(AbstractVertexContainerRenderUnit.class);
-                                compositeRenderer.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                                compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                                modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
-                                if (fillBuffer) {
-                                    compositeRenderer.fillBuffers();
-                                }
-                            }
-                        }
-                    }
-                    add(modelRenderer);
-                    demolitionShape3DIds.add(shape3DId);
-                }
-            }
-        }
-    }
-
 }

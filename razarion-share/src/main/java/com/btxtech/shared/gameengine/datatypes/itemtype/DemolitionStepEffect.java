@@ -7,14 +7,14 @@ import java.util.List;
  * 20.12.2016.
  */
 public class DemolitionStepEffect {
-    private List<DemolitionShape3D> demolitionShape3Ds;
+    private List<DemolitionParticleConfig> demolitionParticleConfigs;
 
-    public List<DemolitionShape3D> getDemolitionShape3Ds() {
-        return demolitionShape3Ds;
+    public List<DemolitionParticleConfig> getDemolitionParticleConfigs() {
+        return demolitionParticleConfigs;
     }
 
-    public DemolitionStepEffect setDemolitionShape3Ds(List<DemolitionShape3D> demolitionShape3Ds) {
-        this.demolitionShape3Ds = demolitionShape3Ds;
+    public DemolitionStepEffect setDemolitionParticleConfigs(List<DemolitionParticleConfig> demolitionParticleConfigs) {
+        this.demolitionParticleConfigs = demolitionParticleConfigs;
         return this;
     }
 }

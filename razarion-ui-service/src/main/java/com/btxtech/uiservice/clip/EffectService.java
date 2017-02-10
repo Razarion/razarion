@@ -6,6 +6,8 @@ import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.audio.AudioService;
@@ -47,6 +49,7 @@ public class EffectService {
     private ParticleService particleService;
     private Map<Integer, ClipConfig> clips = new HashMap<>();
     private final Collection<PlayingClip> playingClips = new ArrayList<>();
+    private Map<Integer, DemolitionBaseItemEntry> demolitionBaseItemEntries = new HashMap<>();
 
     public void onVisualConfig(@Observes VisualConfig visualConfig) {
         setShapes3Ds(visualConfig.getClipConfigs());
@@ -99,7 +102,14 @@ public class EffectService {
         }
     }
 
+    public void baseItemRemoved(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            removeBuildingDemolitionEffect(syncBaseItem);
+        }
+    }
+
     private void onSyncBaseItemExplode(SyncBaseItemSimpleDto syncBaseItem, long timeStamp) {
+        removeBuildingDemolitionEffect(syncBaseItem);
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
         Integer explosionParticleEmitterSequenceConfigId = baseItemType.getExplosionParticleEmitterSequenceConfigId();
         if (explosionParticleEmitterSequenceConfigId == null) {
@@ -163,5 +173,30 @@ public class EffectService {
             }
         }
 
+    }
+
+    public void updateBuildingDemolitionEffect(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
+        DemolitionBaseItemEntry demolitionBaseItemEntry = demolitionBaseItemEntries.computeIfAbsent(syncBaseItem.getId(), key -> new DemolitionBaseItemEntry());
+        int step = baseItemType.getDemolitionStep(syncBaseItem.getHealth());
+        if (demolitionBaseItemEntry.getDemolitionStep() == step) {
+            return;
+        }
+
+        demolitionBaseItemEntry.disposePartices();
+        DemolitionStepEffect demolitionStepEffect = baseItemType.getDemolitionStepEffect(step);
+
+        for (DemolitionParticleConfig demolitionParticleConfig : demolitionStepEffect.getDemolitionParticleConfigs()) {
+            ParticleEmitterSequenceConfig particleEmitterSequenceConfig = particleService.getParticleEmitterSequenceConfig(demolitionParticleConfig.getParticleEmitterSequenceConfigId());
+            demolitionBaseItemEntry.addParticleHandler(particleService.start(System.currentTimeMillis(), syncBaseItem.getPosition3d().add(demolitionParticleConfig.getPosition()), null, particleEmitterSequenceConfig));
+        }
+
+        demolitionBaseItemEntry.setDemolitionStep(step);
+    }
+
+    private void removeBuildingDemolitionEffect(SyncBaseItemSimpleDto syncBaseItem) {
+        DemolitionBaseItemEntry demolitionBaseItemEntry = demolitionBaseItemEntries.remove(syncBaseItem.getId());
+        if (demolitionBaseItemEntry != null) {
+            demolitionBaseItemEntry.disposePartices();
+        }
     }
 }

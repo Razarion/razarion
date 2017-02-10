@@ -187,6 +187,7 @@ public abstract class GameEngineControl {
                 gameUiControl.setGameInfo((GameInfo) controlPackage.getData(1));
                 selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
                 selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
+                effectService.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
                 effectService.onSyncBaseItemsExplode((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
                 break;
             case SYNC_ITEM_START_SPAWNED:

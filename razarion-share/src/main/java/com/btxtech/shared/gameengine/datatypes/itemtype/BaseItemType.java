@@ -246,14 +246,14 @@ public class BaseItemType extends ItemType {
         return this;
     }
 
-    public DemolitionStepEffect getDemolitionStepEffect(double health) {
+    public DemolitionStepEffect getDemolitionStepEffect(int step) {
         if (demolitionStepEffects == null) {
-            return null;
+            throw new IllegalStateException("No demolition configured for: " + this);
         }
-        return demolitionStepEffects.get(getDemolitionStep(health));
+        return demolitionStepEffects.get(step);
     }
 
-    private int getDemolitionStep(double health) {
+    public int getDemolitionStep(double health) {
         if (health >= 1.0) {
             throw new IllegalArgumentException("SyncBaseItem must not be healthy");
         }

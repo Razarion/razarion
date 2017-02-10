@@ -2,20 +2,18 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionShape3D;
-import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.clip.EffectService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -58,6 +56,8 @@ public class BaseItemUiService {
     private ItemCockpitService itemCockpitService;
     @Inject
     private ModalDialogManager modalDialogManager;
+    @Inject
+    private EffectService effectService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private Map<Integer, SyncItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
@@ -70,7 +70,6 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> aliveModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> demolitionModelMatrices = new MapList<>();
-    private MapList<Integer, ModelMatrices> demolitionEffectModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> harvestModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
@@ -96,10 +95,6 @@ public class BaseItemUiService {
         return demolitionModelMatrices.get(baseItemType);
     }
 
-    public List<ModelMatrices> provideDemolitionEffectModelMatrices(Integer shape3DId) {
-        return demolitionEffectModelMatrices.get(shape3DId);
-    }
-
     public List<ModelMatrices> provideHarvestAnimationModelMatrices(BaseItemType baseItemType) {
         return harvestModelMatrices.get(baseItemType);
     }
@@ -120,7 +115,6 @@ public class BaseItemUiService {
         buildupModelMatrices.clear();
         aliveModelMatrices.clear();
         demolitionModelMatrices.clear();
-        demolitionEffectModelMatrices.clear();
         harvestModelMatrices.clear();
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
@@ -154,13 +148,8 @@ public class BaseItemUiService {
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && !syncBaseItem.checkHealth()) {
                 ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getHealth()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity());
                 demolitionModelMatrices.put(baseItemType, modelMatrices);
-                DemolitionStepEffect demolitionStepEffect = baseItemType.getDemolitionStepEffect(syncBaseItem.getHealth());
-                if (demolitionStepEffect != null && demolitionStepEffect.getDemolitionShape3Ds() != null) {
-                    for (DemolitionShape3D demolitionShape3D : demolitionStepEffect.getDemolitionShape3Ds()) {
-                        if (demolitionShape3D.getShape3DId() != null) {
-                            demolitionEffectModelMatrices.put(demolitionShape3D.getShape3DId(), modelMatrices.multiply(Matrix4.createTranslation(demolitionShape3D.getPosition())));
-                        }
-                    }
+                if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
+                    effectService.updateBuildingDemolitionEffect(syncBaseItem, baseItemType);
                 }
                 if (syncBaseItem.getWeaponTurret() != null) {
                     weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));
