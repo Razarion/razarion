@@ -229,12 +229,13 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             if (baseItemType.getHarvesterType() != null && baseItemType.getHarvesterType().getAnimationShape3dId() != null && baseItemType.getHarvesterType().getAnimationShape3dId() == shape3D.getDbId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
-            if (baseItemType.getExplosionClipId() != null) {
-                ClipConfig clipConfig = effectService.getClipConfig(baseItemType.getExplosionClipId());
-                if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
-                    clipRenderTask.changeClip(clipConfig);
-                }
-            }
+            // Replaced by particle service
+//            if (baseItemType.getExplosionClipId() != null) {
+//                ClipConfig clipConfig = effectService.getClipConfig(baseItemType.getExplosionClipId());
+//                if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
+//                    clipRenderTask.changeClip(clipConfig);
+//                }
+//            }
         }
         // Update ResourceItemType renderer
         itemTypeService.getResourceItemTypes().stream().filter(resourceItemType -> resourceItemType.getShape3DId() != null && shape3D.getDbId() == resourceItemType.getShape3DId()).forEach(resourceItemType -> resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType));

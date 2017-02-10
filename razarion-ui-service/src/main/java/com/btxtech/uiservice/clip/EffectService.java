@@ -101,12 +101,12 @@ public class EffectService {
 
     private void onSyncBaseItemExplode(SyncBaseItemSimpleDto syncBaseItem, long timeStamp) {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-        Integer explosionClipId = baseItemType.getExplosionClipId();
-        if (explosionClipId == null) {
-            logger.warning("o explosion ClipId configured for: " + System.currentTimeMillis());
+        Integer explosionParticleEmitterSequenceConfigId = baseItemType.getExplosionParticleEmitterSequenceConfigId();
+        if (explosionParticleEmitterSequenceConfigId == null) {
+            logger.warning("No explosionParticleEmitterSequenceConfigId ClipId configured for: " + System.currentTimeMillis());
             return;
         }
-        playClip(syncBaseItem.getPosition3d(), explosionClipId, timeStamp);
+        playParticle(timeStamp, syncBaseItem.getPosition3d(), null, explosionParticleEmitterSequenceConfigId);
     }
 
     public void playClip(Vertex position, int clipId, long timeStamp) {

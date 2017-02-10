@@ -41,7 +41,7 @@ public class BaseItemType extends ItemType {
     private int spawnDurationMillis;
     private Integer spawnShape3DId;
     private Integer spawnAudioId;
-    private Integer explosionClipId;
+    private Integer explosionParticleEmitterSequenceConfigId;
     private List<DemolitionStepEffect> demolitionStepEffects;
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {
@@ -228,12 +228,12 @@ public class BaseItemType extends ItemType {
         return this;
     }
 
-    public Integer getExplosionClipId() {
-        return explosionClipId;
+    public Integer getExplosionParticleEmitterSequenceConfigId() {
+        return explosionParticleEmitterSequenceConfigId;
     }
 
-    public BaseItemType setExplosionClipId(Integer explosionClipId) {
-        this.explosionClipId = explosionClipId;
+    public BaseItemType setExplosionParticleEmitterSequenceConfigId(Integer explosionParticleEmitterSequenceConfigId) {
+        this.explosionParticleEmitterSequenceConfigId = explosionParticleEmitterSequenceConfigId;
         return this;
     }
 
