@@ -47,12 +47,22 @@ public class ParticleService {
         // Fire
         ParticleEmitterSequenceConfig fire = new ParticleEmitterSequenceConfig().setId(1).setInternalName("Fire");
         DependentParticleEmitterConfig dependentParticleEmitterConfig = new DependentParticleEmitterConfig();
-        dependentParticleEmitterConfig.setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3);
-        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setParticleGrowFrom(1.0).setParticleGrowTo(1.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
+        dependentParticleEmitterConfig.setEmittingCount(5).setEmittingDelay(100).setGenerationRandomDistance(3);
+        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(1500).setParticleGrowFrom(1.0).setParticleGrowTo(1.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
         List<DependentParticleEmitterConfig> dependentParticleEmitterConfigs = new ArrayList<>();
         dependentParticleEmitterConfigs.add(dependentParticleEmitterConfig);
         fire.setDependent(dependentParticleEmitterConfigs);
         particleEmitterSequenceConfigs.put(fire.getId(), fire);
+        //-------------------------------------------------------------------------
+        // Smoke
+        ParticleEmitterSequenceConfig smoke = new ParticleEmitterSequenceConfig().setId(5).setInternalName("Smoke");
+        dependentParticleEmitterConfig = new DependentParticleEmitterConfig();
+        dependentParticleEmitterConfig.setEmittingCount(5).setEmittingDelay(100).setGenerationRandomDistance(3);
+        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(1).setTimeToLive(1000).setParticleGrowFrom(1.0).setParticleGrowTo(1.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
+        dependentParticleEmitterConfigs = new ArrayList<>();
+        dependentParticleEmitterConfigs.add(dependentParticleEmitterConfig);
+        smoke.setDependent(dependentParticleEmitterConfigs);
+        particleEmitterSequenceConfigs.put(smoke.getId(), smoke);
         //-------------------------------------------------------------------------
         // Explosion
         ParticleEmitterSequenceConfig explosion = new ParticleEmitterSequenceConfig().setId(2).setInternalName("Explosion");
@@ -71,11 +81,11 @@ public class ParticleService {
         splitter2.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(1000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)));
         autonomousParticleEmitterConfigs.add(splitter2);
         // Smoke
-        AutonomousParticleEmitterConfig smoke = new AutonomousParticleEmitterConfig();
-        smoke.setStartTime(0).setTimeToLive(2000).setInternalName("Smoke");
-        smoke.setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3);
-        smoke.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(1).setTimeToLive(4000).setVelocity(new Vertex(0, 0, 8)).setVelocityRandomPart(new Vertex(1, 1, 0)));
-        autonomousParticleEmitterConfigs.add(smoke);
+        AutonomousParticleEmitterConfig smokeExplosion = new AutonomousParticleEmitterConfig();
+        smokeExplosion.setStartTime(0).setTimeToLive(2000).setInternalName("Smoke");
+        smokeExplosion.setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3);
+        smokeExplosion.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(1).setTimeToLive(4000).setVelocity(new Vertex(0, 0, 8)).setVelocityRandomPart(new Vertex(1, 1, 0)));
+        autonomousParticleEmitterConfigs.add(smokeExplosion);
         // Main Puff
         AutonomousParticleEmitterConfig mainPuff = new AutonomousParticleEmitterConfig();
         mainPuff.setStartTime(0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 5)).setInternalName("Main Puff");
