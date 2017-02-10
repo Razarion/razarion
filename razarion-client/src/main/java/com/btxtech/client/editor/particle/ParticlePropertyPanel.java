@@ -94,7 +94,7 @@ public class ParticlePropertyPanel extends AbstractPropertyPanel<ParticleEmitter
         try {
             Vertex position = testPosition.getValue();
             if (position != null) {
-                particleService.start(System.currentTimeMillis(), position, testDirection.getValue(), getConfigObject().getId());
+                particleService.start(System.currentTimeMillis(), position, testDirection.getValue(), getConfigObject());
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

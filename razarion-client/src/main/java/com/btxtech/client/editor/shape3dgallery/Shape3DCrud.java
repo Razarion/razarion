@@ -212,12 +212,13 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
                 if (weaponType.getProjectileShape3DId() != null && shape3D.getDbId() == weaponType.getProjectileShape3DId()) {
                     projectileRenderTask.onBaseItemTypeChanged(baseItemType);
                 }
-                if (weaponType.getMuzzleFlashClipId() != null) {
-                    ClipConfig clipConfig = effectService.getClipConfig(weaponType.getMuzzleFlashClipId());
-                    if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
-                        clipRenderTask.changeClip(clipConfig);
-                    }
-                }
+                // Replaced by particle service
+//                if (weaponType.getMuzzleFlashClipId() != null) {
+//                    ClipConfig clipConfig = effectService.getClipConfig(weaponType.getMuzzleFlashClipId());
+//                    if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
+//                        clipRenderTask.changeClip(clipConfig);
+//                    }
+//                }
                 if (weaponType.getDetonationClipId() != null) {
                     ClipConfig clipConfig = effectService.getClipConfig(weaponType.getDetonationClipId());
                     if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {

@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
+    // TODO This is may deprecated and has been replaced by ParticleSystem
+
+
     private Logger logger = Logger.getLogger(ClipCrud.class.getName());
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -99,17 +102,18 @@ public class ClipCrud extends AbstractCrudeEditor<ClipConfig> {
 
     @Override
     public void onChange(ClipConfig shape3D) {
+        // Has been replaced by particle
         // Update BaseItemType renderer
-        for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
-            WeaponType weaponType = baseItemType.getWeaponType();
-            if (weaponType != null) {
-                if (weaponType.getMuzzleFlashClipId() != null && weaponType.getMuzzleFlashClipId() == shape3D.getId()) {
-                    baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
-                }
-                if (weaponType.getDetonationClipId() != null && weaponType.getDetonationClipId() == shape3D.getId()) {
-                    baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
-                }
-            }
-        }
+//        for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
+//            WeaponType weaponType = baseItemType.getWeaponType();
+//            if (weaponType != null) {
+//                if (weaponType.getMuzzleFlashClipId() != null && weaponType.getMuzzleFlashClipId() == shape3D.getId()) {
+//                    baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
+//                }
+//                if (weaponType.getDetonationClipId() != null && weaponType.getDetonationClipId() == shape3D.getId()) {
+//                    baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
+//                }
+//            }
+//        }
     }
 }

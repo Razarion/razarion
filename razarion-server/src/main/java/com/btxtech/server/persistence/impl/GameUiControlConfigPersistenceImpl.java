@@ -127,12 +127,12 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(setupParticle()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupParticle()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
@@ -255,7 +255,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
         attacker.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(17.0).setAngularVelocity(Math.toRadians(60));
-        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
+        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionClipId(272485);
         attacker.setPrice(100);
     }
@@ -295,7 +295,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         tower.setI18Name(i18nHelper("Tower"));
         tower.setDescription(i18nHelper("Verteidigungsturm"));
         tower.getPhysicalAreaConfig().setFixVerticalNorm(true);
-        tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashClipId(180836).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
+        tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
         tower.setExplosionClipId(272485);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
@@ -667,7 +667,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(100, 80))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER));
         // div
         ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setBotAttackCommandConfigs(botAttackCommandConfigs));
+        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setBotAttackCommandConfigs(botAttackCommandConfigs).setRemoveLoadingCover(true));
         return sceneConfigs;
     }
 

@@ -14,6 +14,7 @@ public class ParticleEmitterSequenceConfig implements ObjectNameIdProvider {
     private String internalName;
     private List<DependentParticleEmitterConfig> dependent;
     private List<AutonomousParticleEmitterConfig> autonomous;
+    private List<Integer> audioIds;
 
     public int getId() {
         return id;
@@ -37,16 +38,27 @@ public class ParticleEmitterSequenceConfig implements ObjectNameIdProvider {
         return dependent;
     }
 
-    public void setDependent(List<DependentParticleEmitterConfig> dependent) {
+    public ParticleEmitterSequenceConfig setDependent(List<DependentParticleEmitterConfig> dependent) {
         this.dependent = dependent;
+        return this;
     }
 
     public List<AutonomousParticleEmitterConfig> getAutonomous() {
         return autonomous;
     }
 
-    public void setAutonomous(List<AutonomousParticleEmitterConfig> autonomous) {
+    public ParticleEmitterSequenceConfig setAutonomous(List<AutonomousParticleEmitterConfig> autonomous) {
         this.autonomous = autonomous;
+        return this;
+    }
+
+    public List<Integer> getAudioIds() {
+        return audioIds;
+    }
+
+    public ParticleEmitterSequenceConfig setAudioIds(List<Integer> audioIds) {
+        this.audioIds = audioIds;
+        return this;
     }
 
     @Override

@@ -10,6 +10,8 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.particle.ParticleEmitterSequenceConfig;
+import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -41,6 +43,8 @@ public class EffectService {
     private ItemTypeService itemTypeService;
     @Inject
     private BaseItemUiService baseItemUiService;
+    @Inject
+    private ParticleService particleService;
     private Map<Integer, ClipConfig> clips = new HashMap<>();
     private final Collection<PlayingClip> playingClips = new ArrayList<>();
 
@@ -70,12 +74,12 @@ public class EffectService {
     }
 
     public void onProjectileFired(BaseItemType baseItemType, Vertex muzzlePosition, Vertex target) {
-        Integer muzzleClipId = baseItemType.getWeaponType().getMuzzleFlashClipId();
-        if (muzzleClipId == null) {
-            logger.warning("No MuzzleFlashClipId configured for: " + baseItemType);
+        Integer muzzleFlashParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getMuzzleFlashParticleEmitterSequenceConfigId();
+        if (muzzleFlashParticleEmitterSequenceConfigId == null) {
+            logger.warning("No muzzleFlashParticleEmitterSequenceConfigId configured for: " + baseItemType);
             return;
         }
-        playClip(muzzlePosition, target.sub(muzzlePosition), muzzleClipId, System.currentTimeMillis());
+        playParticle(System.currentTimeMillis(), muzzlePosition, target.sub(muzzlePosition), muzzleFlashParticleEmitterSequenceConfigId);
     }
 
     public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
@@ -107,18 +111,25 @@ public class EffectService {
 
     public void playClip(Vertex position, int clipId, long timeStamp) {
         ClipConfig clipConfig = getClipConfig(clipId);
-        playSound(clipConfig, position);
+        playSound(clipConfig.getAudioIds(), position);
         synchronized (playingClips) {
             playingClips.add(new PlayingClip(position, clipConfig, timeStamp));
         }
     }
 
-    public void playClip(Vertex position, Vertex direction, int clipId, long timeStamp) {
+    public void playParticle(Vertex position, int clipId, long timeStamp) {
         ClipConfig clipConfig = getClipConfig(clipId);
-        playSound(clipConfig, position);
+        playSound(clipConfig.getAudioIds(), position);
         synchronized (playingClips) {
-            playingClips.add(new PlayingClip(position, direction, clipConfig, timeStamp));
+            playingClips.add(new PlayingClip(position, clipConfig, timeStamp));
         }
+    }
+
+
+    private void playParticle(long timeStamp, Vertex position, Vertex direction, Integer muzzleFlashParticleEmitterSequenceConfigId) {
+        ParticleEmitterSequenceConfig particleEmitterSequenceConfig = particleService.getParticleEmitterSequenceConfig(muzzleFlashParticleEmitterSequenceConfigId);
+        playSound(particleEmitterSequenceConfig.getAudioIds(), position);
+        particleService.start(timeStamp, position, direction, particleEmitterSequenceConfig);
     }
 
     public List<ModelMatrices> provideModelMatrices(ClipConfig clipConfig, long timeStamp) {
@@ -147,12 +158,11 @@ public class EffectService {
         clips.remove(clipConfig.getId());
     }
 
-    private void playSound(ClipConfig clipConfig, Vertex position) {
+    private void playSound(List<Integer> audioIs, Vertex position) {
         if (!terrainScrollHandler.getCurrentViewField().isInside(position.toXY())) {
             return;
         }
 
-        List<Integer> audioIs = clipConfig.getAudioIds();
         if (audioIs != null && !audioIs.isEmpty()) {
             if (audioIs.size() == 1) {
                 audioService.onClip(audioIs.get(0));

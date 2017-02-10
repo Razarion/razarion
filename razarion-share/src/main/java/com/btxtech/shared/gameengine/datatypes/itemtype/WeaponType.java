@@ -14,8 +14,6 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
-import com.btxtech.shared.datatypes.Vertex;
-
 import java.util.Collection;
 import java.util.Map;
 
@@ -33,7 +31,7 @@ public class WeaponType {
     private Map<Integer, Double> itemTypeFactors;
     private Double projectileSpeed; // Pixel per second
     private Integer projectileShape3DId;
-    private Integer muzzleFlashClipId;
+    private Integer muzzleFlashParticleEmitterSequenceConfigId;
     private Integer detonationClipId;
     private TurretType turretType;
 
@@ -113,12 +111,12 @@ public class WeaponType {
         return this;
     }
 
-    public Integer getMuzzleFlashClipId() {
-        return muzzleFlashClipId;
+    public Integer getMuzzleFlashParticleEmitterSequenceConfigId() {
+        return muzzleFlashParticleEmitterSequenceConfigId;
     }
 
-    public WeaponType setMuzzleFlashClipId(Integer muzzleFlashClipId) {
-        this.muzzleFlashClipId = muzzleFlashClipId;
+    public WeaponType setMuzzleFlashParticleEmitterSequenceConfigId(Integer muzzleFlashParticleEmitterSequenceConfigId) {
+        this.muzzleFlashParticleEmitterSequenceConfigId = muzzleFlashParticleEmitterSequenceConfigId;
         return this;
     }
 
