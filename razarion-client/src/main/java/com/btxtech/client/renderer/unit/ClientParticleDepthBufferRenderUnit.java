@@ -39,7 +39,6 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
     private WebGlUniformTexture alphaOffset;
     private WebGlUniformTexture colorRamp;
     private ParticleShapeConfig particleShapeConfig;
-    private double textureOffsetScope;
 
     @PostConstruct
     public void init() {
@@ -56,7 +55,6 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
         this.alphaTextureCoordinates.fillBuffer(alphaTextureCoordinates);
         alphaOffset = webGlFacade.createWebGLTexture(particleShapeConfig.getAlphaOffsetImageId(), "uAlphaOffsetSampler");
         colorRamp = webGlFacade.createWebGLTexture(particleShapeConfig.getColorRampImageId(), "uColorRampSampler");
-        textureOffsetScope = particleShapeConfig.getTextureOffsetScope();
     }
 
     @Override
