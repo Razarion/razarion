@@ -10,7 +10,8 @@ public class ParticleConfig {
     // private Logger logger = Logger.getLogger(ParticleConfig.class.getName());
     private int particleShapeConfigId;
     private int particleXColorRampOffsetIndex;
-    private Double particleGrow;
+    private Double particleGrowTo;
+    private Double particleGrowFrom;
     private int timeToLive;
     private Integer timeToLiveRandomPart;
     private Vertex velocity;
@@ -35,12 +36,21 @@ public class ParticleConfig {
         return this;
     }
 
-    public Double getParticleGrow() {
-        return particleGrow;
+    public Double getParticleGrowTo() {
+        return particleGrowTo;
     }
 
-    public ParticleConfig setParticleGrow(Double particleGrow) {
-        this.particleGrow = particleGrow;
+    public ParticleConfig setParticleGrowTo(Double particleGrowTo) {
+        this.particleGrowTo = particleGrowTo;
+        return this;
+    }
+
+    public Double getParticleGrowFrom() {
+        return particleGrowFrom;
+    }
+
+    public ParticleConfig setParticleGrowFrom(Double particleGrowFrom) {
+        this.particleGrowFrom = particleGrowFrom;
         return this;
     }
 

@@ -11,10 +11,11 @@ import javax.enterprise.context.Dependent;
 @Dependent
 public class AutonomousParticleEmitter extends ParticleEmitter {
     private long startTimeStamp;
-    private long lastTickTimestamp;
     private AutonomousParticleEmitterConfig particleEmitterConfig;
+    private Vertex direction;
 
-    public void init(long timestamp, Vertex position, AutonomousParticleEmitterConfig autonomousParticleEmitterConfig) {
+    public void init(long timestamp, Vertex position, Vertex direction, AutonomousParticleEmitterConfig autonomousParticleEmitterConfig) {
+        this.direction = direction;
         super.init(position, autonomousParticleEmitterConfig);
         this.particleEmitterConfig = autonomousParticleEmitterConfig;
         startTimeStamp = timestamp + autonomousParticleEmitterConfig.getStartTime();
@@ -31,6 +32,13 @@ public class AutonomousParticleEmitter extends ParticleEmitter {
 
     @Override
     protected Vertex updatePosition(double factor, Vertex position) {
+        if (direction != null && particleEmitterConfig.getDirectionSpeed() == null) {
+            throw new IllegalStateException("AutonomousParticleEmitter.updatePosition() direction != null && particleEmitterConfig.getDirectionSpeed() == null");
+        }
+        if (direction != null) {
+            return position.add(direction.normalize(factor * particleEmitterConfig.getDirectionSpeed()));
+        }
+
         if (particleEmitterConfig.getVelocity() == null) {
             return position;
         }

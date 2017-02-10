@@ -67,6 +67,9 @@ public class ParticlePropertyPanel extends AbstractPropertyPanel<ParticleEmitter
     private VertexBox testPosition;
     @Inject
     @DataField
+    private VertexBox testDirection;
+    @Inject
+    @DataField
     private Button testParticleButton;
     @Inject
     @DataField
@@ -91,7 +94,7 @@ public class ParticlePropertyPanel extends AbstractPropertyPanel<ParticleEmitter
         try {
             Vertex position = testPosition.getValue();
             if (position != null) {
-                particleService.start(System.currentTimeMillis(), position, getConfigObject().getId());
+                particleService.start(System.currentTimeMillis(), position, testDirection.getValue(), getConfigObject().getId());
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

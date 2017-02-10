@@ -91,14 +91,15 @@ public class ParticleShapeConfig {
     public List<Vertex> calculateVertices(double rotationX) {
         Matrix4 billboardMatrix = Matrix4.createXRotation(rotationX);
         List<Vertex> vertices = new ArrayList<>();
+        double halfEdge = edgeLength / 2.0;
         // Triangle 1
-        vertices.add(billboardMatrix.multiply(new Vertex(0, 0, 0), 1.0));
-        vertices.add(billboardMatrix.multiply(new Vertex(edgeLength, 0, 0), 1.0));
-        vertices.add(billboardMatrix.multiply(new Vertex(0, 0, edgeLength), 1.0));
+        vertices.add(billboardMatrix.multiply(new Vertex(-halfEdge, 0, -halfEdge), 1.0));
+        vertices.add(billboardMatrix.multiply(new Vertex(halfEdge, 0, -halfEdge), 1.0));
+        vertices.add(billboardMatrix.multiply(new Vertex(-halfEdge, 0, halfEdge), 1.0));
         // Triangle 2
-        vertices.add(billboardMatrix.multiply(new Vertex(edgeLength, 0, 0), 1.0));
-        vertices.add(billboardMatrix.multiply(new Vertex(edgeLength, 0, edgeLength), 1.0));
-        vertices.add(billboardMatrix.multiply(new Vertex(0, 0, edgeLength), 1.0));
+        vertices.add(billboardMatrix.multiply(new Vertex(halfEdge, 0, -halfEdge), 1.0));
+        vertices.add(billboardMatrix.multiply(new Vertex(halfEdge, 0, halfEdge), 1.0));
+        vertices.add(billboardMatrix.multiply(new Vertex(-halfEdge, 0, halfEdge), 1.0));
         return vertices;
     }
 

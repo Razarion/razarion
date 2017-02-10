@@ -42,11 +42,12 @@ public class ParticleService {
         // Particles
         particleShapeConfig = new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setAlphaOffsetImageId(272946).setColorRampImageId(272944).setColorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).setTextureOffsetScope(0.1);
 
+        //-------------------------------------------------------------------------
         // Fire
         ParticleEmitterSequenceConfig fire = new ParticleEmitterSequenceConfig().setId(1).setInternalName("Fire");
         DependentParticleEmitterConfig dependentParticleEmitterConfig = new DependentParticleEmitterConfig();
         dependentParticleEmitterConfig.setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3);
-        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setParticleGrow(0.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
+        dependentParticleEmitterConfig.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setParticleGrowFrom(1.0).setParticleGrowTo(1.5).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(3, 3, 0)).setAcceleration(new Vertex(-1, -1, 2)));
         List<DependentParticleEmitterConfig> dependentParticleEmitterConfigs = new ArrayList<>();
         dependentParticleEmitterConfigs.add(dependentParticleEmitterConfig);
         fire.setDependent(dependentParticleEmitterConfigs);
@@ -78,7 +79,7 @@ public class ParticleService {
         AutonomousParticleEmitterConfig mainPuff = new AutonomousParticleEmitterConfig();
         mainPuff.setStartTime(0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 5)).setInternalName("Main Puff");
         mainPuff.setEmittingCount(20).setEmittingDelay(100).setGenerationRandomDistance(5);
-        mainPuff.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(2).setParticleGrow(2.0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)).setAcceleration(new Vertex(0, 0, -3)));
+        mainPuff.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(2).setParticleGrowFrom(1.0).setParticleGrowTo(2.0).setTimeToLive(2000).setVelocity(new Vertex(0, 0, 10)).setVelocityRandomPart(new Vertex(2, 2, 0)).setAcceleration(new Vertex(0, 0, -3)));
         autonomousParticleEmitterConfigs.add(mainPuff);
         //-------------------------------------------------------------------------
         // Detonation
@@ -90,10 +91,20 @@ public class ParticleService {
         AutonomousParticleEmitterConfig detonationSplitter1 = new AutonomousParticleEmitterConfig();
         detonationSplitter1.setStartTime(0).setTimeToLive(200).setVelocity(new Vertex(0, 0, 20)).setInternalName("Detonation Splitter 1");
         detonationSplitter1.setEmittingCount(3).setEmittingDelay(100).setGenerationRandomDistance(0);
-        detonationSplitter1.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setParticleGrow(2.0));
+        detonationSplitter1.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setParticleGrowFrom(1.0).setParticleGrowTo(2.0));
         autonomousParticleEmitterConfigs.add(detonationSplitter1);
         //-------------------------------------------------------------------------
-        particleEmitterSequenceConfigs.put(4, new ParticleEmitterSequenceConfig().setId(4).setInternalName("Muzzle"));
+        // Muzzle flash
+        ParticleEmitterSequenceConfig muzzleFlash = new ParticleEmitterSequenceConfig().setId(4).setInternalName("Muzzle Flash");
+        autonomousParticleEmitterConfigs = new ArrayList<>();
+        muzzleFlash.setAutonomous(autonomousParticleEmitterConfigs);
+        particleEmitterSequenceConfigs.put(muzzleFlash.getId(), muzzleFlash);
+        // Splitter
+        AutonomousParticleEmitterConfig muzzleFlashSplitter = new AutonomousParticleEmitterConfig();
+        muzzleFlashSplitter.setStartTime(0).setTimeToLive(400).setDirectionSpeed(10.0).setInternalName("Muzzle Flash Splitter 1");
+        muzzleFlashSplitter.setEmittingCount(1).setEmittingDelay(80).setGenerationRandomDistance(0);
+        muzzleFlashSplitter.setParticleConfig(new ParticleConfig().setParticleShapeConfigId(1).setParticleXColorRampOffsetIndex(0).setTimeToLive(2000).setParticleGrowFrom(0.5).setParticleGrowTo(2.0));
+        autonomousParticleEmitterConfigs.add(muzzleFlashSplitter);
         /////////////////////////////
 
 
@@ -113,20 +124,20 @@ public class ParticleService {
 //        emitterConfigs.add(new ParticleEmitterConfig().setStart(1000).setTtl(20000).setVelocity(new Vertex(-10, -10, 10)).setEmittingCount(10).setEmittingDelay(100).setGenerationRandomDistance(3));
     }
 
-    public void start(long timestamp, Vertex position, int dependentParticleEmitterConfigId) {
+    public void start(long timestamp, Vertex position, Vertex direction, int dependentParticleEmitterConfigId) {
         ParticleEmitterSequenceConfig sequenceConfig = getParticleEmitterSequenceConfig(dependentParticleEmitterConfigId);
         if (sequenceConfig.getAutonomous() != null) {
-            start(timestamp, position, sequenceConfig.getAutonomous());
+            start(timestamp, position, direction, sequenceConfig.getAutonomous());
         }
         if (sequenceConfig.getDependent() != null) {
             start(position, sequenceConfig.getDependent());
         }
     }
 
-    public void start(long timestamp, Vertex position, List<AutonomousParticleEmitterConfig> autonomousParticleEmitterConfigs) {
+    public void start(long timestamp, Vertex position, Vertex direction, List<AutonomousParticleEmitterConfig> autonomousParticleEmitterConfigs) {
         for (AutonomousParticleEmitterConfig autonomousParticleEmitterConfig : autonomousParticleEmitterConfigs) {
             AutonomousParticleEmitter autonomousParticleEmitter = autonomousParticleEmitterInstance.get();
-            autonomousParticleEmitter.init(timestamp, position, autonomousParticleEmitterConfig);
+            autonomousParticleEmitter.init(timestamp, position, direction, autonomousParticleEmitterConfig);
             waitingEmitters.add(autonomousParticleEmitter);
         }
         waitingEmitters.sort(Comparator.comparingLong(AutonomousParticleEmitter::getStartTimeStamp));

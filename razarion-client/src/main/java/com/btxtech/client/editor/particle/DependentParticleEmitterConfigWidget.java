@@ -55,9 +55,13 @@ public class DependentParticleEmitterConfigWidget implements TakesValue<Dependen
     @DataField
     private Input colorRampOffsetIndex;
     @Inject
-    @Bound(property = "particleConfig.particleGrow")
+    @Bound(property = "particleConfig.particleGrowFrom")
     @DataField
-    private Input particleGrow;
+    private Input particleGrowFrom;
+    @Inject
+    @Bound(property = "particleConfig.particleGrowTo")
+    @DataField
+    private Input particleGrowTo;
     @Inject
     @Bound(property = "particleConfig.timeToLive")
     @DataField

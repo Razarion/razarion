@@ -44,24 +44,12 @@ public class Particle implements Comparable<Particle> {
             }
         }
         if (modelMatrices == null) {
-            modelMatrices = new ModelMatrices(Matrix4.createTranslation(position), progress);
+            modelMatrices = new ModelMatrices(addScaleTransformation(Matrix4.createTranslation(position), progress), progress);
             modelMatrices.setParticleXColorRampOffsetIndex(particleConfig.getParticleXColorRampOffsetIndex());
         } else {
             modelMatrices.setProgress(progress);
             // TODO performance modelMatrices.getModel().setTranslation(position);
-            Matrix4 transformation = Matrix4.createTranslation(position);
-            boolean valid = true;
-            if (particleConfig.getParticleGrow() != null) {
-                double scale = 1 + progress * particleConfig.getParticleGrow();
-                if (scale > 0) {
-                    transformation = transformation.multiply(Matrix4.createScale(scale));
-                } else {
-                    valid = false;
-                }
-            }
-            if (valid) {
-                modelMatrices.setModel(transformation);
-            }
+            modelMatrices.setModel(addScaleTransformation(Matrix4.createTranslation(position), progress));
         }
         cameraDistance = viewTransformationMatrix.multiply(position, 1.0).getZ();
         return true;
@@ -74,5 +62,18 @@ public class Particle implements Comparable<Particle> {
     @Override
     public int compareTo(Particle o) {
         return Double.compare(cameraDistance, o.cameraDistance);
+    }
+
+    private Matrix4 addScaleTransformation(Matrix4 input, double progress) {
+        if (particleConfig.getParticleGrowFrom() != null && particleConfig.getParticleGrowTo() != null) {
+            double scale = progress * (particleConfig.getParticleGrowTo() - particleConfig.getParticleGrowFrom()) + particleConfig.getParticleGrowFrom();
+            if (scale > 0) {
+                return input.multiply(Matrix4.createScale(scale));
+            } else {
+                throw new IllegalStateException("Particle.addScaleTransformation() Scale is negative: " + scale);
+            }
+        } else {
+            return input;
+        }
     }
 }

@@ -57,6 +57,10 @@ public class AutonomousParticleEmitterConfigWidget implements TakesValue<Autonom
     @DataField
     private VertexBox velocity;
     @Inject
+    @Bound
+    @DataField
+    private Input directionSpeed;
+    @Inject
     @Bound(property = "particleConfig.particleShapeConfigId")
     @DataField
     private Input particleShapeConfigId;
@@ -65,9 +69,13 @@ public class AutonomousParticleEmitterConfigWidget implements TakesValue<Autonom
     @DataField
     private Input colorRampOffsetIndex;
     @Inject
-    @Bound(property = "particleConfig.particleGrow")
+    @Bound(property = "particleConfig.particleGrowFrom")
     @DataField
-    private Input particleGrow;
+    private Input particleGrowFrom;
+    @Inject
+    @Bound(property = "particleConfig.particleGrowTo")
+    @DataField
+    private Input particleGrowTo;
     @Inject
     @Bound(property = "particleConfig.timeToLive")
     @DataField
