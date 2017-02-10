@@ -12,7 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
-import com.btxtech.uiservice.clip.EffectService;
+import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
@@ -58,7 +58,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     @Inject
     private TerrainObjectRenderTask terrainObjectRenderTask;
     @Inject
-    private EffectService effectService;
+    private EffectVisualizationService effectVisualizationService;
     private Map<Integer, Shape3DConfig> changes = new HashMap<>();
 
     @Override
@@ -196,30 +196,10 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
                 if (weaponType.getProjectileShape3DId() != null && shape3D.getDbId() == weaponType.getProjectileShape3DId()) {
                     projectileRenderTask.onBaseItemTypeChanged(baseItemType);
                 }
-                // Replaced by particle service
-//                if (weaponType.getMuzzleFlashClipId() != null) {
-//                    ClipConfig clipConfig = effectService.getClipConfig(weaponType.getMuzzleFlashClipId());
-//                    if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
-//                        clipRenderTask.changeClip(clipConfig);
-//                    }
-//                }
-//                if (weaponType.getDetonationClipId() != null) {
-//                    ClipConfig clipConfig = effectService.getClipConfig(weaponType.getDetonationClipId());
-//                    if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
-//                        clipRenderTask.changeClip(clipConfig);
-//                    }
-//                }
             }
             if (baseItemType.getHarvesterType() != null && baseItemType.getHarvesterType().getAnimationShape3dId() != null && baseItemType.getHarvesterType().getAnimationShape3dId() == shape3D.getDbId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
-            // Replaced by particle service
-//            if (baseItemType.getExplosionClipId() != null) {
-//                ClipConfig clipConfig = effectService.getClipConfig(baseItemType.getExplosionClipId());
-//                if (clipConfig.getShape3DId() != null && shape3D.getDbId() == clipConfig.getShape3DId()) {
-//                    clipRenderTask.changeClip(clipConfig);
-//                }
-//            }
         }
         // Update ResourceItemType renderer
         itemTypeService.getResourceItemTypes().stream().filter(resourceItemType -> resourceItemType.getShape3DId() != null && shape3D.getDbId() == resourceItemType.getShape3DId()).forEach(resourceItemType -> resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType));

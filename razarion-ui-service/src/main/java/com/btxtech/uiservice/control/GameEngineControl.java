@@ -21,7 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleD
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.clip.EffectService;
+import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
@@ -57,7 +57,7 @@ public abstract class GameEngineControl {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private EffectService effectService;
+    private EffectVisualizationService effectVisualizationService;
     @Inject
     private ProjectileUiService projectileUiService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
@@ -187,8 +187,8 @@ public abstract class GameEngineControl {
                 gameUiControl.setGameInfo((GameInfo) controlPackage.getData(1));
                 selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
                 selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
-                effectService.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
-                effectService.onSyncBaseItemsExplode((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
+                effectVisualizationService.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
+                effectVisualizationService.onSyncBaseItemsExplode((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
                 break;
             case SYNC_ITEM_START_SPAWNED:
                 audioService.onSpawnSyncItem((SyncBaseItemSimpleDto) controlPackage.getSingleData());
@@ -225,7 +225,7 @@ public abstract class GameEngineControl {
                 projectileUiService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1), (Vertex) controlPackage.getData(2));
                 break;
             case PROJECTILE_DETONATION:
-                effectService.onProjectileDetonation((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
+                effectVisualizationService.onProjectileDetonation((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
                 break;
             case PERFMON_RESPONSE:
                 onPerfmonResponse((Collection<PerfmonStatistic>) controlPackage.getData(0));

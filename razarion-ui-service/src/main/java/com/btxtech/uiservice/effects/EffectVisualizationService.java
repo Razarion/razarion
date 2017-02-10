@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.clip;
+package com.btxtech.uiservice.effects;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -26,8 +26,8 @@ import java.util.logging.Logger;
  * 14.10.2016.
  */
 @ApplicationScoped
-public class EffectService {
-    private Logger logger = Logger.getLogger(EffectService.class.getName());
+public class EffectVisualizationService {
+    private Logger logger = Logger.getLogger(EffectVisualizationService.class.getName());
     @Inject
     private Shape3DUiService shape3DUiService;
     @SuppressWarnings("CdiInjectionPointsInspection")
@@ -80,7 +80,7 @@ public class EffectService {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
         Integer explosionParticleEmitterSequenceConfigId = baseItemType.getExplosionParticleEmitterSequenceConfigId();
         if (explosionParticleEmitterSequenceConfigId == null) {
-            logger.warning("No explosionParticleEmitterSequenceConfigId ClipId configured for: " + System.currentTimeMillis());
+            logger.warning("No explosionParticleEmitterSequenceConfigId configured for: " + System.currentTimeMillis());
             return;
         }
         playParticle(timeStamp, syncBaseItem.getPosition3d(), null, explosionParticleEmitterSequenceConfigId);
@@ -99,10 +99,10 @@ public class EffectService {
 
         if (audioIs != null && !audioIs.isEmpty()) {
             if (audioIs.size() == 1) {
-                audioService.onClip(audioIs.get(0));
+                audioService.onParticle(audioIs.get(0));
             } else {
                 int index = (int) (audioIs.size() * Math.random());
-                audioService.onClip(audioIs.get(index));
+                audioService.onParticle(audioIs.get(index));
             }
         }
 

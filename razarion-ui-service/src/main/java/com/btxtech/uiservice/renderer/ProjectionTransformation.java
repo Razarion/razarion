@@ -169,7 +169,7 @@ public class ProjectionTransformation {
     /**
      * Creates the pick ray for converting the mouse position to the model position
      *
-     * @param clip clip coordinates (-1 to 1)
+     * @param clip effects coordinates (-1 to 1)
      */
     public Ray3d createPickRay(DecimalPosition clip) {
         double zNear = getZNear();

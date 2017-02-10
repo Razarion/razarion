@@ -13,7 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.clip.EffectService;
+import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -57,7 +57,7 @@ public class BaseItemUiService {
     @Inject
     private ModalDialogManager modalDialogManager;
     @Inject
-    private EffectService effectService;
+    private EffectVisualizationService effectVisualizationService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private Map<Integer, SyncItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
@@ -149,7 +149,7 @@ public class BaseItemUiService {
                 ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getHealth()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity());
                 demolitionModelMatrices.put(baseItemType, modelMatrices);
                 if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
-                    effectService.updateBuildingDemolitionEffect(syncBaseItem, baseItemType);
+                    effectVisualizationService.updateBuildingDemolitionEffect(syncBaseItem, baseItemType);
                 }
                 if (syncBaseItem.getWeaponTurret() != null) {
                     weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));

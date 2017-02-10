@@ -72,7 +72,7 @@ public abstract class AudioService implements TerrainScrollListener {
         }
     }
 
-    public void onClip(int audioId) {
+    public void onParticle(int audioId) {
         playAudio(audioId);
     }
 

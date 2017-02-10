@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.uiservice.clip.EffectService;
+import com.btxtech.uiservice.effects.EffectVisualizationService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,7 +21,7 @@ import java.util.List;
 @ApplicationScoped
 public class ProjectileUiService {
     @Inject
-    private EffectService effectService;
+    private EffectVisualizationService effectVisualizationService;
     @Inject
     private ItemTypeService itemTypeService;
     private final Collection<ProjectileUi> projectiles = new ArrayList<>();
@@ -33,7 +33,7 @@ public class ProjectileUiService {
         synchronized (projectiles) {
             projectiles.add(projectileUi);
         }
-        effectService.onProjectileFired(baseItemType, muzzlePosition, target);
+        effectVisualizationService.onProjectileFired(baseItemType, muzzlePosition, target);
     }
 
     public void preRender(long timeStamp) {

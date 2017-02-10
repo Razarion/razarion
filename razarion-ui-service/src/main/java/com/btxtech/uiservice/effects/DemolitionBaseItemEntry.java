@@ -1,4 +1,4 @@
-package com.btxtech.uiservice.clip;
+package com.btxtech.uiservice.effects;
 
 import com.btxtech.uiservice.particle.ParticleEmitterSequenceHandler;
 
