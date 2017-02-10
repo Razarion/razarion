@@ -84,12 +84,12 @@ public class EffectService {
 
     public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
-        Integer detonationClipId = baseItemType.getWeaponType().getDetonationClipId();
-        if (detonationClipId == null) {
-            logger.warning("No projectile detonation configured for: " + baseItemType);
+        Integer detonationParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getDetonationParticleEmitterSequenceConfigId();
+        if (detonationParticleEmitterSequenceConfigId == null) {
+            logger.warning("No projectile detonationParticleEmitterSequenceConfigId configured for: " + baseItemType);
             return;
         }
-        playClip(position, detonationClipId, System.currentTimeMillis());
+        playParticle(System.currentTimeMillis(), position, null, detonationParticleEmitterSequenceConfigId);
     }
 
     public void onSyncBaseItemsExplode(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
@@ -116,15 +116,6 @@ public class EffectService {
             playingClips.add(new PlayingClip(position, clipConfig, timeStamp));
         }
     }
-
-    public void playParticle(Vertex position, int clipId, long timeStamp) {
-        ClipConfig clipConfig = getClipConfig(clipId);
-        playSound(clipConfig.getAudioIds(), position);
-        synchronized (playingClips) {
-            playingClips.add(new PlayingClip(position, clipConfig, timeStamp));
-        }
-    }
-
 
     private void playParticle(long timeStamp, Vertex position, Vertex direction, Integer muzzleFlashParticleEmitterSequenceConfigId) {
         ParticleEmitterSequenceConfig particleEmitterSequenceConfig = particleService.getParticleEmitterSequenceConfig(muzzleFlashParticleEmitterSequenceConfigId);

@@ -255,7 +255,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
         attacker.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(17.0).setAngularVelocity(Math.toRadians(60));
-        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
+        attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationParticleEmitterSequenceConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionClipId(272485);
         attacker.setPrice(100);
     }
@@ -295,7 +295,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         tower.setI18Name(i18nHelper("Tower"));
         tower.setDescription(i18nHelper("Verteidigungsturm"));
         tower.getPhysicalAreaConfig().setFixVerticalNorm(true);
-        tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationClipId(180842).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
+        tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationParticleEmitterSequenceConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
         tower.setExplosionClipId(272485);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1

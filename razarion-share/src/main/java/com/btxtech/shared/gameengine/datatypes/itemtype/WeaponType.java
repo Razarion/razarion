@@ -32,7 +32,7 @@ public class WeaponType {
     private Double projectileSpeed; // Pixel per second
     private Integer projectileShape3DId;
     private Integer muzzleFlashParticleEmitterSequenceConfigId;
-    private Integer detonationClipId;
+    private Integer detonationParticleEmitterSequenceConfigId;
     private TurretType turretType;
 
     public double getRange() {
@@ -120,12 +120,12 @@ public class WeaponType {
         return this;
     }
 
-    public Integer getDetonationClipId() {
-        return detonationClipId;
+    public Integer getDetonationParticleEmitterSequenceConfigId() {
+        return detonationParticleEmitterSequenceConfigId;
     }
 
-    public WeaponType setDetonationClipId(Integer detonationClipId) {
-        this.detonationClipId = detonationClipId;
+    public WeaponType setDetonationParticleEmitterSequenceConfigId(Integer detonationParticleEmitterSequenceConfigId) {
+        this.detonationParticleEmitterSequenceConfigId = detonationParticleEmitterSequenceConfigId;
         return this;
     }
 
