@@ -1,6 +1,8 @@
 package com.btxtech.client.renderer.unit;
 
+import com.btxtech.client.renderer.engine.DecimalPositionShaderAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.DecimalPosition;
@@ -33,17 +35,28 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
     @Inject
     private Camera camera;
     private VertexShaderAttribute positions;
+    private DecimalPositionShaderAttribute alphaTextureCoordinates;
+    private WebGlUniformTexture alphaOffset;
+    private WebGlUniformTexture colorRamp;
+    private ParticleShapeConfig particleShapeConfig;
+    private double textureOffsetScope;
 
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.particleDeptBufferFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleDeptBufferFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        alphaTextureCoordinates = webGlFacade.createDecimalPositionShaderAttribute("aAlphaTextureCoordinate");
     }
 
     @Override
     protected void fillBuffers(List<Vertex> vertices, List<DecimalPosition> alphaTextureCoordinates, ParticleShapeConfig particleShapeConfig) {
+        this.particleShapeConfig = particleShapeConfig;
         positions.fillBuffer(vertices);
+        this.alphaTextureCoordinates.fillBuffer(alphaTextureCoordinates);
+        alphaOffset = webGlFacade.createWebGLTexture(particleShapeConfig.getAlphaOffsetImageId(), "uAlphaOffsetSampler");
+        colorRamp = webGlFacade.createWebGLTexture(particleShapeConfig.getColorRampImageId(), "uColorRampSampler");
+        textureOffsetScope = particleShapeConfig.getTextureOffsetScope();
     }
 
     @Override
@@ -54,11 +67,19 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.getDepthProjectionTransformation());
 
         positions.activate();
+        alphaTextureCoordinates.activate();
+
+        alphaOffset.activate();
+        colorRamp.activate();
     }
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
+
+        webGlFacade.uniform1f("uProgress", modelMatrices.getProgress());
+        webGlFacade.uniform1f("uXColorRampOffset", particleShapeConfig.getColorRampXOffset(modelMatrices.getParticleXColorRampOffsetIndex()));
+
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

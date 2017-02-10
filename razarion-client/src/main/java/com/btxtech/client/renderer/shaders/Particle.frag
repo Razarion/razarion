@@ -14,5 +14,4 @@ void main(void) {
     float yOffset = clamp(uProgress + greenOffset, 0.001, 0.999);
     vec4 colorRamp = texture2D(uColorRampSampler, vec2(uXColorRampOffset, yOffset));
     gl_FragColor = vec4(colorRamp.r, colorRamp.g, colorRamp.b, colorRamp.a * alphaOffset.r);
-    // gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }
