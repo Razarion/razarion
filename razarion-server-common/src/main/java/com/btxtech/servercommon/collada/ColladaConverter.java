@@ -36,7 +36,6 @@ public class ColladaConverter {
                     String materialId = vertexContainer.getMaterialId();
                     if (materialId != null) {
                         vertexContainer.setTextureId(colladaConverterMapper.getTextureId(materialId));
-                        vertexContainer.setLookUpTextureId(colladaConverterMapper.getLookupTextureId(materialId));
                     }
                 }
             }

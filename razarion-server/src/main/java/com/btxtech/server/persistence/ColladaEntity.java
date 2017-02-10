@@ -30,9 +30,6 @@ public class ColladaEntity implements ColladaConverterMapper {
     @ManyToMany
     @CollectionTable(name = "COLLADA_TEXTURES")
     private Map<String, ImageLibraryEntity> textures;
-    @ManyToMany
-    @CollectionTable(name = "COLLADA_LOOKUP_TEXTURES")
-    private Map<String, ImageLibraryEntity> lookUpTextures;
     @ElementCollection
     @CollectionTable(name = "COLLADA_ANIMATIONS")
     @Enumerated(EnumType.STRING)
@@ -61,16 +58,6 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     @Override
-    public Integer getLookupTextureId(String materialId) {
-        ImageLibraryEntity imageLibraryEntity = lookUpTextures.get(materialId);
-        if (imageLibraryEntity != null) {
-            return imageLibraryEntity.getId().intValue();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public AnimationTrigger getAnimationTrigger(String animationId) {
         return animations.get(animationId);
     }
@@ -78,11 +65,6 @@ public class ColladaEntity implements ColladaConverterMapper {
     public void setTextures(Map<String, ImageLibraryEntity> textures) {
         this.textures.clear();
         this.textures.putAll(textures);
-    }
-
-    public void setLookUpTextures(Map<String, ImageLibraryEntity> lookUpTextures) {
-        this.lookUpTextures.clear();
-        this.lookUpTextures.putAll(lookUpTextures);
     }
 
     public void setAnimations(Map<String, AnimationTrigger> animations) {

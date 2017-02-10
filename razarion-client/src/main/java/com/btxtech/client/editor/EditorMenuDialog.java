@@ -4,7 +4,6 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
-import com.btxtech.client.editor.clip.ClipCrudeSidebar;
 import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.helper.HelperSideBar;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
@@ -86,9 +85,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button shape3DButton;
     @Inject
     @DataField
-    private Button clipButton;
-    @Inject
-    @DataField
     private Button particleButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
@@ -168,11 +164,6 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("shape3DButton")
     private void onShape3DButtonClicked(ClickEvent event) {
         openEditor(Shape3DCrudeSidebar.class);
-    }
-
-    @EventHandler("clipButton")
-    private void clipButtonClicked(ClickEvent event) {
-        openEditor(ClipCrudeSidebar.class);
     }
 
     @EventHandler("particleButton")

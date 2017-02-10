@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence.impl;
 
-import com.btxtech.server.persistence.ClipPersistence;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.TerrainElementPersistence;
@@ -101,8 +100,6 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private Shape3DPersistence shape3DPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
-    @Inject
-    private ClipPersistence clipPersistence;
 
     @Override
     @Transactional
@@ -127,7 +124,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
@@ -140,7 +137,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(harvest()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
         return gameUiControlConfig;
     }
 
@@ -325,7 +322,6 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
         visualConfig.setWaterLightConfig(lightConfig);
         visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
-        visualConfig.setClipConfigs(clipPersistence.readClipConfigs());
         visualConfig.setBaseItemDemolitionImageId(180848);
         return visualConfig;
     }

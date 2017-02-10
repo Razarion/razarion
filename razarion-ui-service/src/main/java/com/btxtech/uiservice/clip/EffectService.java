@@ -1,9 +1,6 @@
 package com.btxtech.uiservice.clip;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.ClipConfig;
-import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig;
@@ -17,12 +14,9 @@ import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -47,34 +41,7 @@ public class EffectService {
     private BaseItemUiService baseItemUiService;
     @Inject
     private ParticleService particleService;
-    private Map<Integer, ClipConfig> clips = new HashMap<>();
-    private final Collection<PlayingClip> playingClips = new ArrayList<>();
     private Map<Integer, DemolitionBaseItemEntry> demolitionBaseItemEntries = new HashMap<>();
-
-    public void onVisualConfig(@Observes VisualConfig visualConfig) {
-        setShapes3Ds(visualConfig.getClipConfigs());
-    }
-
-    public void setShapes3Ds(List<ClipConfig> clipConfigs) {
-        clips.clear();
-        if (clipConfigs != null) {
-            for (ClipConfig clipConfig : clipConfigs) {
-                clips.put(clipConfig.getId(), clipConfig);
-            }
-        }
-    }
-
-    public Collection<ClipConfig> getClipConfigs() {
-        return clips.values();
-    }
-
-    public ClipConfig getClipConfig(int clipId) {
-        ClipConfig clipConfig = clips.get(clipId);
-        if (clipConfig == null) {
-            throw new IllegalArgumentException("No ClipConfig for id: " + clipId);
-        }
-        return clipConfig;
-    }
 
     public void onProjectileFired(BaseItemType baseItemType, Vertex muzzlePosition, Vertex target) {
         Integer muzzleFlashParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getMuzzleFlashParticleEmitterSequenceConfigId();
@@ -119,44 +86,10 @@ public class EffectService {
         playParticle(timeStamp, syncBaseItem.getPosition3d(), null, explosionParticleEmitterSequenceConfigId);
     }
 
-    public void playClip(Vertex position, int clipId, long timeStamp) {
-        ClipConfig clipConfig = getClipConfig(clipId);
-        playSound(clipConfig.getAudioIds(), position);
-        synchronized (playingClips) {
-            playingClips.add(new PlayingClip(position, clipConfig, timeStamp));
-        }
-    }
-
     private void playParticle(long timeStamp, Vertex position, Vertex direction, Integer muzzleFlashParticleEmitterSequenceConfigId) {
         ParticleEmitterSequenceConfig particleEmitterSequenceConfig = particleService.getParticleEmitterSequenceConfig(muzzleFlashParticleEmitterSequenceConfigId);
         playSound(particleEmitterSequenceConfig.getAudioIds(), position);
         particleService.start(timeStamp, position, direction, particleEmitterSequenceConfig);
-    }
-
-    public List<ModelMatrices> provideModelMatrices(ClipConfig clipConfig, long timeStamp) {
-        List<ModelMatrices> result = new ArrayList<>();
-        synchronized (playingClips) {
-            for (Iterator<PlayingClip> iterator = playingClips.iterator(); iterator.hasNext(); ) {
-                PlayingClip playingClip = iterator.next();
-                if (clipConfig.equals(playingClip.getClipConfig())) {
-                    ModelMatrices modelMatrices = playingClip.provideModelMatrices(timeStamp);
-                    if (modelMatrices != null) {
-                        result.add(modelMatrices);
-                    } else {
-                        iterator.remove();
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    public void override(ClipConfig clipConfig) {
-        clips.put(clipConfig.getId(), clipConfig);
-    }
-
-    public void remove(ClipConfig clipConfig) {
-        clips.remove(clipConfig.getId());
     }
 
     private void playSound(List<Integer> audioIs, Vertex position) {

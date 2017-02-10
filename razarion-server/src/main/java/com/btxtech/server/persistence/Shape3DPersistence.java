@@ -77,13 +77,6 @@ public class Shape3DPersistence {
             }
             colladaEntity.setTextures(imageLibraryEntityMap);
         }
-        if (shape3DConfig.getLookUpTextures() != null) {
-            Map<String, ImageLibraryEntity> imageLookUpLibraryEntityMap = new HashMap<>();
-            for (Map.Entry<String, Integer> entry : shape3DConfig.getLookUpTextures().entrySet()) {
-                imageLookUpLibraryEntityMap.put(entry.getKey(), imagePersistence.getImageLibraryEntity(entry.getValue()));
-            }
-            colladaEntity.setLookUpTextures(imageLookUpLibraryEntityMap);
-        }
         if (shape3DConfig.getAnimations() != null) {
             Map<String, AnimationTrigger> animations = new HashMap<>();
             for (Map.Entry<String, AnimationTrigger> entry : shape3DConfig.getAnimations().entrySet()) {

@@ -4,7 +4,6 @@ import com.btxtech.client.editor.framework.AbstractCrudeEditor;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
-import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -16,7 +15,6 @@ import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.clip.EffectService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
-import com.btxtech.uiservice.renderer.task.ClipRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
@@ -61,8 +59,6 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     private TerrainObjectRenderTask terrainObjectRenderTask;
     @Inject
     private EffectService effectService;
-    @Inject
-    private ClipRenderTask clipRenderTask;
     private Map<Integer, Shape3DConfig> changes = new HashMap<>();
 
     @Override
@@ -107,7 +103,6 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             public void callback(Shape3D shape3D) {
                 shape3D.setDbId(originalShape3D.getDbId());
                 Shape3DUtils.saveTextureIds(originalShape3D, shape3D);
-                Shape3DUtils.saveLookUpTextureIds(originalShape3D, shape3D);
                 Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3D);
                 addChangesCollada(originalShape3D.getDbId(), colladaText);
                 shape3DUiService.override(shape3D);
@@ -126,17 +121,6 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
         Map<String, Integer> textureMap = new HashMap<>();
         Shape3DUtils.getAllVertexContainers(shape3D).stream().filter(vertexContainer -> vertexContainer.getTextureId() != null).forEach(vertexContainer -> textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId()));
         shape3DConfig.setTextures(textureMap);
-        shape3DUiService.override(shape3D);
-        fireChange(shape3D);
-    }
-
-    public void updateLookUpTexture(Shape3D shape3D, String materialId, Integer lookUpTextureId) {
-        Shape3DUtils.replaceLookUpTextureId(shape3D, materialId, lookUpTextureId);
-        // Update changes set
-        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
-        Map<String, Integer> lookUpTextureMap = new HashMap<>();
-        Shape3DUtils.getAllVertexContainers(shape3D).stream().filter(vertexContainer -> vertexContainer.getLookUpTextureId() != null).forEach(vertexContainer -> lookUpTextureMap.put(vertexContainer.getMaterialId(), vertexContainer.getLookUpTextureId()));
-        shape3DConfig.setLookUpTextures(lookUpTextureMap);
         shape3DUiService.override(shape3D);
         fireChange(shape3D);
     }

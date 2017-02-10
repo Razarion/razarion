@@ -1,20 +1,14 @@
 package com.btxtech.client.editor.particle;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
-import com.btxtech.shared.dto.ClipConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.uiservice.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.uiservice.particle.ParticleService;
-import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +23,7 @@ public class ParticleCrud extends AbstractCrudeEditor<ParticleEmitterSequenceCon
 
     @Override
     public void create() {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

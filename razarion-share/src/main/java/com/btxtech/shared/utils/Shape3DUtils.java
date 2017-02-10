@@ -111,29 +111,6 @@ public class Shape3DUtils {
         }
     }
 
-    public static void saveLookUpTextureIds(Shape3D source, Shape3D target) {
-        Map<String, Integer> materials = new HashMap<>();
-        for (VertexContainer vertexContainer : getAllVertexContainers(source)) {
-            materials.put(vertexContainer.getMaterialId(), vertexContainer.getLookUpTextureId());
-        }
-        for (VertexContainer vertexContainer : getAllVertexContainers(target)) {
-            vertexContainer.setLookUpTextureId(materials.get(vertexContainer.getMaterialId()));
-        }
-    }
-
-    public static void replaceLookUpTextureId(Shape3D shape3D, String materialId, Integer lookUpTextureId) {
-        boolean found = false;
-        for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
-            if (vertexContainer.getMaterialId() != null && vertexContainer.getMaterialId().equals(materialId)) {
-                vertexContainer.setLookUpTextureId(lookUpTextureId);
-                found = true;
-            }
-        }
-        if (!found) {
-            throw new IllegalArgumentException("MaterialId not found: " + materialId);
-        }
-    }
-
     public static void saveAnimationTriggers(Shape3D source, Shape3D target) {
         if (source.getModelMatrixAnimations() == null) {
             return;

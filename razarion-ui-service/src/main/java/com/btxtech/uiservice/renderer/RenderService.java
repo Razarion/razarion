@@ -5,7 +5,6 @@ import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
-import com.btxtech.uiservice.renderer.task.ClipRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
@@ -61,7 +60,6 @@ public abstract class RenderService {
         addRenderTask(BoxItemRenderTask.class);
         addRenderTask(WaterRenderTask.class);
         addRenderTask(ProjectileRenderTask.class);
-        addRenderTask(ClipRenderTask.class);
         addRenderTask(BaseItemPlacerRenderTask.class);
         addRenderTask(SelectionFrameRenderTask.class);
         addRenderTask(TipRenderTask.class);

@@ -9,7 +9,5 @@ import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 public interface ColladaConverterMapper {
     Integer getTextureId(String materialId);
 
-    Integer getLookupTextureId(String materialId);
-
     AnimationTrigger getAnimationTrigger(String animationId);
 }

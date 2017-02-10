@@ -17,7 +17,7 @@ public class ParticleShapeConfig {
     private double edgeLength;
     private Integer colorRampImageId;
     private Integer alphaOffsetImageId; // rad canal = alpha, greed canal = offset
-    private double[] colorRampXOffsets; // 0..1 for x part of the texture lookup
+    private double[] colorRampXOffsets; // 0..1 for x part of the colorramp lookup
     private double textureOffsetScope; // 0 .. 0.5 for scoping the offset change to the colorramp from the green part of the alphaOffsetImage
 
     public int getId() {

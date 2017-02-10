@@ -22,7 +22,6 @@ public class VisualConfig {
     private double waterBmDepth;
     private double waterGroundLevel;
     private List<Shape3D> shape3Ds;
-    private List<ClipConfig> clipConfigs;
     private Integer baseItemDemolitionImageId;
 
     public double getShadowRotationX() {
@@ -130,15 +129,6 @@ public class VisualConfig {
 
     public VisualConfig setShape3Ds(List<Shape3D> shape3Ds) {
         this.shape3Ds = shape3Ds;
-        return this;
-    }
-
-    public List<ClipConfig> getClipConfigs() {
-        return clipConfigs;
-    }
-
-    public VisualConfig setClipConfigs(List<ClipConfig> clipConfigs) {
-        this.clipConfigs = clipConfigs;
         return this;
     }
 
