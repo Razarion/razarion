@@ -37,6 +37,13 @@ button:disabled {
     background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #3D4850), color-stop(4%, #313d45), color-stop(100%, #232B30)); /* webkit */
 }
 
+.glass-panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: default;
+}
+
 /** -------------------------- COMMON ENDS -------------------------- */
 /** -------------------------- Cover ENDS -------------------------- */
 
@@ -56,7 +63,8 @@ button:disabled {
     top: 50%;
     font-size: 300%;
     color: #d8d0d0;
-    transform: translate(-50%, -50%);}
+    transform: translate(-50%, -50%);
+}
 
 /** -------------------------- Cover -------------------------- */
 
