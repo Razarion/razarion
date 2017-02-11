@@ -1,5 +1,6 @@
 package com.btxtech.shared.utils;
 
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 
 /**
@@ -147,6 +148,9 @@ public class MathHelper {
         return MathHelper.getAngle(startAngle, endAngle, true) < getAngle(startAngle, endAngle, false);
     }
 
+    public static double getRandomAngle() {
+        return ONE_RADIANT * Math.random();
+    }
 
     public static double gradToRad(double grad) {
         return grad / 360.0 * ONE_RADIANT;

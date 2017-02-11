@@ -232,7 +232,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         bulldozer.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
         bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
         bulldozer.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2);
-        bulldozer.setPrice(100);
+        bulldozer.setPrice(100).setWreckageShape3DId(272947);
     }
 
     private void finalizeHarvester(BaseItemType harvester) {
@@ -243,7 +243,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         harvester.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(15.0).setAngularVelocity(Math.toRadians(60));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(272941).setAnimationOrigin(new Vertex(1.654, 0, 0.685)));
         harvester.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2).setBuildup(2);
-        harvester.setPrice(100);
+        harvester.setPrice(100).setWreckageShape3DId(272947);
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
@@ -254,7 +254,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         attacker.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(17.0).setAngularVelocity(Math.toRadians(60));
         attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationParticleEmitterSequenceConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2);
-        attacker.setPrice(100);
+        attacker.setPrice(100).setWreckageShape3DId(272947);
     }
 
     private void finalizeFactory(BaseItemType factory) {
@@ -265,7 +265,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         factory.setExplosionParticleEmitterSequenceConfigId(2).setBuildup(2);
         factory.getPhysicalAreaConfig().setFixVerticalNorm(true);
         factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER, BASE_ITEM_TYPE_ATTACKER)));
-        factory.setPrice(200);
+        factory.setPrice(200).setWreckageShape3DId(272949);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
@@ -291,7 +291,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         tower.setDescription(i18nHelper("Verteidigungsturm"));
         tower.getPhysicalAreaConfig().setFixVerticalNorm(true);
         tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationParticleEmitterSequenceConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
-        tower.setExplosionParticleEmitterSequenceConfigId(2);
+        tower.setExplosionParticleEmitterSequenceConfigId(2).setWreckageShape3DId(272949);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();

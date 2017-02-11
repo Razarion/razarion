@@ -43,6 +43,7 @@ public class BaseItemType extends ItemType {
     private Integer spawnAudioId;
     private Integer explosionParticleEmitterSequenceConfigId;
     private List<DemolitionStepEffect> demolitionStepEffects;
+    private Integer wreckageShape3DId;
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {
         return physicalAreaConfig;
@@ -270,5 +271,14 @@ public class BaseItemType extends ItemType {
         } else {
             return demolitionStepEffects.size() - 1;
         }
+    }
+
+    public Integer getWreckageShape3DId() {
+        return wreckageShape3DId;
+    }
+
+    public BaseItemType setWreckageShape3DId(Integer wreckageShape3DId) {
+        this.wreckageShape3DId = wreckageShape3DId;
+        return this;
     }
 }

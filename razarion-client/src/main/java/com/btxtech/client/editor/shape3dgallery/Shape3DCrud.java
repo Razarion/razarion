@@ -13,11 +13,13 @@ import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
+import com.btxtech.uiservice.effects.TrailService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
+import com.btxtech.uiservice.renderer.task.TrailRenderTask;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -47,6 +49,8 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     private ItemTypeService itemTypeService;
     @Inject
     private BaseItemRenderTask baseItemRenderTask;
+    @Inject
+    private TrailRenderTask trailRenderTask;
     @Inject
     private ProjectileRenderTask projectileRenderTask;
     @Inject
@@ -199,6 +203,9 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             }
             if (baseItemType.getHarvesterType() != null && baseItemType.getHarvesterType().getAnimationShape3dId() != null && baseItemType.getHarvesterType().getAnimationShape3dId() == shape3D.getDbId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
+            }
+            if (baseItemType.getWreckageShape3DId() != null && shape3D.getDbId() == baseItemType.getWreckageShape3DId()) {
+                trailRenderTask.onWreckageChanged(baseItemType);
             }
         }
         // Update ResourceItemType renderer

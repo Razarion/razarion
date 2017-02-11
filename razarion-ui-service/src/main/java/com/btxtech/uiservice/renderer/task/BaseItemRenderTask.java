@@ -21,7 +21,6 @@ import com.btxtech.uiservice.renderer.RenderUnitControl;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.HashSet;
 import java.util.logging.Logger;
 
 /**
@@ -37,7 +36,6 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     private Shape3DUiService shape3DUiService;
     @Inject
     private VisualUiService visualUiService;
-    private HashSet<Integer> demolitionShape3DIds = new HashSet<>();
 
     @PostConstruct
     public void postConstruct() {

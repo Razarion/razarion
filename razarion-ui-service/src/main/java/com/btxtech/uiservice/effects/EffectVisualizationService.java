@@ -41,6 +41,8 @@ public class EffectVisualizationService {
     private BaseItemUiService baseItemUiService;
     @Inject
     private ParticleService particleService;
+    @Inject
+    private TrailService trailService;
     private Map<Integer, DemolitionBaseItemEntry> demolitionBaseItemEntries = new HashMap<>();
 
     public void onProjectileFired(BaseItemType baseItemType, Vertex muzzlePosition, Vertex target) {
@@ -77,6 +79,7 @@ public class EffectVisualizationService {
 
     private void onSyncBaseItemExplode(SyncBaseItemSimpleDto syncBaseItem, long timeStamp) {
         removeBuildingDemolitionEffect(syncBaseItem);
+        trailService.addWreckage(syncBaseItem);
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
         Integer explosionParticleEmitterSequenceConfigId = baseItemType.getExplosionParticleEmitterSequenceConfigId();
         if (explosionParticleEmitterSequenceConfigId == null) {
