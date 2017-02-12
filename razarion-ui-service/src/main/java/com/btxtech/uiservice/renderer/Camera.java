@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 
 import javax.annotation.PostConstruct;
@@ -135,10 +135,10 @@ public class Camera {
         normMatrix4 = matrix4.normTransformation();
     }
 
-    public Ray3d toWorld(Ray3d pickRay) {
-        Vertex start = getMatrix().invert().multiply(pickRay.getStart(), 1);
+    public Line3d toWorld(Line3d pickRay) {
+        Vertex start = getMatrix().invert().multiply(pickRay.getPoint(), 1);
         Vertex direction = getNormMatrix().invert().multiply(pickRay.getDirection(), 1);
-        return new Ray3d(start, direction);
+        return new Line3d(start, direction);
     }
 
     public void testPrint() {

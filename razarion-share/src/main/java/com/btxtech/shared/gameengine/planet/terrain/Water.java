@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
@@ -88,6 +89,15 @@ public class Water {
     }
 
     public InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY) {
+        if (!calculateAabb().contains(absoluteXY)) {
+            return null;
+        }
+
+        return GeometricUtil.getInterpolatedVertexData(absoluteXY, vertices, norms::get, tangents::get, value -> 0);
+    }
+
+    public InterpolatedTerrainTriangle getInterpolatedVertexData(Line3d worldPickRa) {
+        DecimalPosition absoluteXY = worldPickRa.calculatePositionOnHeightLevel(level).toXY();
         if (!calculateAabb().contains(absoluteXY)) {
             return null;
         }

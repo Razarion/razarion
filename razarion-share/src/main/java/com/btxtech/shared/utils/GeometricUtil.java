@@ -5,15 +5,16 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 import com.btxtech.shared.datatypes.Triangle2d;
+import com.btxtech.shared.datatypes.Triangle3D;
 import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -112,7 +113,7 @@ public class GeometricUtil {
             int x = (int) Math.floor((line.getPoint1().getX() + dx * i) / rasterSize);
             int y = (int) Math.floor((line.getPoint1().getY() + dy * i) / rasterSize);
             Index tile = new Index(x, y);
-            if(!tiles.get(tiles.size() - 1).equals(tile)) {
+            if (!tiles.get(tiles.size() - 1).equals(tile)) {
                 tiles.add(tile);
             }
         }
@@ -155,6 +156,25 @@ public class GeometricUtil {
                 interpolatedTerrainTriangle.setCornerC(new TerrainTriangleCorner(vertices.get(i + 2), normProvider.apply(i + 2), tangentsProvider.apply(i + 2), splattingProvider.applyAsDouble(i + 2)));
                 interpolatedTerrainTriangle.setupInterpolation(absoluteXY);
                 return interpolatedTerrainTriangle;
+            }
+        }
+        return null;
+    }
+
+    public static Vertex calculateCrossOnTriangles(Line3d worldPickRay, List<Vertex> vertices) {
+        for (int i = 0; i < vertices.size(); i += 3) {
+            Vertex pointA = vertices.get(i);
+            Vertex pointB = vertices.get(i + 1);
+            Vertex pointC = vertices.get(i + 2);
+
+            if (pointA.equals(pointB) || pointB.equals(pointC) || pointC.equals(pointA)) {
+                continue;
+            }
+
+            Triangle3D triangle3d = new Triangle3D(pointA, pointB, pointC);
+            Vertex cross = triangle3d.calculateCross(worldPickRay);
+            if (cross != null) {
+                return cross;
             }
         }
         return null;

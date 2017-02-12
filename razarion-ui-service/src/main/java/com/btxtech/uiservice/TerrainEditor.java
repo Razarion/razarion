@@ -1,6 +1,5 @@
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 
 /**

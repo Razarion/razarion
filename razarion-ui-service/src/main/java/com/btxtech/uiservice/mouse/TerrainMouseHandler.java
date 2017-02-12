@@ -1,8 +1,7 @@
 package com.btxtech.uiservice.mouse;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Ray3d;
-import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
@@ -83,15 +82,14 @@ public class TerrainMouseHandler {
         try {
             terrainScrollHandler.handleMouseMoveScroll(x, y, width, height);
 
-            Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
-            Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
+            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
             if (terrainEditor != null) {
                 terrainEditor.onMouseMove(terrainPosition);
                 return;
             }
 
             if (baseItemPlacerService.isActive()) {
-                baseItemPlacerService.onMouseMoveEvent(terrainPosition.toXY());
+                baseItemPlacerService.onMouseMoveEvent(terrainPosition);
                 return;
             }
 
@@ -137,8 +135,7 @@ public class TerrainMouseHandler {
 
     public void onMouseDown(int x, int y, int width, int height, boolean primaryButtonPressed, boolean secondaryButtonPressed, boolean middleButtonPressed, boolean ctrlKey, boolean shiftKey) {
         try {
-            Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
-            Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
+            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
             if (shiftKey) {
                 logger.severe("Terrain Position: " + terrainPosition);
             }
@@ -149,7 +146,7 @@ public class TerrainMouseHandler {
 
             if (baseItemPlacerService.isActive()) {
                 if (primaryButtonPressed) {
-                    baseItemPlacerService.onMouseDownEvent(terrainPosition.toXY());
+                    baseItemPlacerService.onMouseDownEvent(terrainPosition);
                 }
                 return;
             }
@@ -211,8 +208,7 @@ public class TerrainMouseHandler {
 
     public void onMouseUp(int x, int y, int width, int height, boolean primaryButtonReleased) {
         try {
-            Ray3d worldPickRay = setupTerrainRay3d(x, y, width, height);
-            Vertex terrainPosition = terrainUiService.calculatePositionGroundMesh(worldPickRay);
+            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
 
             if (terrainEditor != null) {
                 terrainEditor.onMouseUp();
@@ -223,7 +219,7 @@ public class TerrainMouseHandler {
                 if (groupSelectionFrame != null) {
                     renderTask.stop();
                     groupSelectionFrame.onMove(terrainPosition.toXY());
-                    if(groupSelectionFrame.getRectangle() != null) {
+                    if (groupSelectionFrame.getRectangle() != null) {
                         selectionHandler.selectRectangle(groupSelectionFrame.getRectangle());
                     } else {
                         selectionHandler.selectPosition(groupSelectionFrame.getStart());
@@ -253,12 +249,13 @@ public class TerrainMouseHandler {
         this.terrainEditor = terrainEditor;
     }
 
-    private Ray3d setupTerrainRay3d(int x, int y, int width, int height) {
+    private Vertex setupTerrainPosition(int x, int y, int width, int height) {
         DecimalPosition webglClipPosition = new DecimalPosition((double) x / (double) width, 1.0 - (double) y / (double) height);
-        webglClipPosition = webglClipPosition.multiply(2.0);
-        webglClipPosition = webglClipPosition.sub(1, 1);
-        Ray3d pickRay = projectionTransformation.createPickRay(webglClipPosition);
-        return camera.toWorld(pickRay);
+        webglClipPosition = webglClipPosition.multiply(2.0).sub(1, 1);
+        Line3d pickRay = projectionTransformation.createPickRay(webglClipPosition);
+        Line3d worldPickRay = camera.toWorld(pickRay);
+
+        return terrainUiService.calculatePositionGroundMesh(worldPickRay);
     }
 
     private void executeMoveCommand(DecimalPosition position) {

@@ -1,10 +1,10 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GameUiControlConfig;
@@ -154,10 +154,8 @@ public class TerrainUiService {
         return new Vertex(absoluteXY, terrainService.getInterpolatedTerrainTriangle(absoluteXY).getHeight());
     }
 
-    public Vertex calculatePositionGroundMesh(Ray3d worldPickRay) {
-        DecimalPosition zeroLevel = terrainService.calculatePositionOnZeroLevel(worldPickRay).toXY();
-        double height = terrainService.getInterpolatedTerrainTriangle(zeroLevel).getHeight();
-        return new Vertex(zeroLevel, height);
+    public Vertex calculatePositionGroundMesh(Line3d worldPickRay) {
+        return terrainService.calculatePositionGroundMesh(worldPickRay);
     }
 
 }

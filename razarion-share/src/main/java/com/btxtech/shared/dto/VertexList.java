@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
@@ -242,6 +243,10 @@ public class VertexList {
 
     public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {
         return GeometricUtil.getInterpolatedVertexData(absoluteXY, vertices, normVertices::get, tangentVertices::get, splattings::get);
+    }
+
+    public Vertex getCrossPositionOnMesh(Line3d worldPickRay) {
+        return GeometricUtil.calculateCrossOnTriangles(worldPickRay, vertices);
     }
 
     @Override

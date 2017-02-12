@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain.ground;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Polygon2I;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.VertexList;
@@ -46,6 +47,7 @@ public class GroundSlopeConnector {
             topMesh = new GroundMesh();
             topMesh.setGroundMeshDimension(groundMesh.getGroundMeshDimension());
             topMesh.setEdgeLength(groundMesh.getEdgeLength());
+            topMesh.setHeight(slope.getHeight());
             topIndices = new ArrayList<>();
         }
         bottomIndices = new ArrayList<>();
@@ -297,5 +299,20 @@ public class GroundSlopeConnector {
         }
 
         return null;
+    }
+
+    public Vertex calculatePositionOnGroundPlateauConnector(Line3d worldPickRay) {
+        if (topMesh != null) {
+            DecimalPosition topXY = topMesh.calculatePositionOnHeightLevel(worldPickRay).toXY();
+            InterpolatedTerrainTriangle terrainTriangle = topMesh.getInterpolatedTerrainTriangle(topXY);
+            if (terrainTriangle != null) {
+                return terrainTriangle.crossPoint(worldPickRay);
+            }
+            Vertex cross = innerConnectionVertexList.getCrossPositionOnMesh(worldPickRay);
+            if (cross != null) {
+                return cross;
+            }
+        }
+        return outerConnectionVertexList.getCrossPositionOnMesh(worldPickRay);
     }
 }

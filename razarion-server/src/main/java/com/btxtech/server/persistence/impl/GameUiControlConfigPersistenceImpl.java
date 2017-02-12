@@ -479,7 +479,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         Map<Integer, Integer> startTypeCount = new HashMap<>();
         startTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(startTypeCount));
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true).setRemoveLoadingCover(true));
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);

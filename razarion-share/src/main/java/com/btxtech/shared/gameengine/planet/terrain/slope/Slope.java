@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -292,6 +293,15 @@ public class Slope {
             return interpolatedTerrainTriangle;
         }
         return mesh.getInterpolatedVertexData(absoluteXY);
+    }
+
+    public Vertex calculatePositionOnSlope(Line3d worldPickRay) {
+        Vertex groundPlateauConnectorPosition = groundPlateauConnector.calculatePositionOnGroundPlateauConnector(worldPickRay);
+        if (groundPlateauConnectorPosition != null) {
+            return groundPlateauConnectorPosition;
+        }
+
+        return mesh.getCrossPositionOnMesh(worldPickRay);
     }
 
     public boolean isInSlope(DecimalPosition position) {

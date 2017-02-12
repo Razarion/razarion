@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -171,17 +171,11 @@ public class ProjectionTransformation {
      *
      * @param clip effects coordinates (-1 to 1)
      */
-    public Ray3d createPickRay(DecimalPosition clip) {
-        double zNear = getZNear();
+    public Line3d createPickRay(DecimalPosition clip) {
         double top = zNear * Math.tan(fovY / 2.0);
         double y = top * clip.getY();
-        double x = clip.getX() * top * aspectRatio;
-        double rotateY = -Math.atan(x / zNear);
-        double rotateX = Math.atan(y / zNear);
-        Vertex direction = new Vertex(0, 0, -1);
-        Matrix4 rotation = Matrix4.createXRotation(rotateX).multiply(Matrix4.createYRotation(rotateY));
-        direction = rotation.multiply(direction, 1.0);
-        return new Ray3d(new Vertex(0, 0, 0), direction);
+        double x = top * aspectRatio * clip.getX();
+        return new Line3d(new Vertex(0, 0, 0), new Vertex(x, y, -zNear).normalize(1));
     }
 
     public DecimalPosition viewFieldCenterToCamera(DecimalPosition position, double z) {

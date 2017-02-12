@@ -44,28 +44,31 @@ public class WebGlEmulator {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         gc.save();
-        // Normalized device coordinates
-        // E.g.: left=-1, right=1, top=1, bottom=-1, center=0
-        double xScale = canvasWidth / 2.0;
-        double xOffset = canvasWidth / 2.0;
-        double yScale = -canvasHeight / 2.0;
-        double yOffset = canvasHeight / 2.0;
+        try {
+            // Normalized device coordinates
+            // E.g.: left=-1, right=1, top=1, bottom=-1, center=0
+            double xScale = canvasWidth / 2.0;
+            double xOffset = canvasWidth / 2.0;
+            double yScale = -canvasHeight / 2.0;
+            double yOffset = canvasHeight / 2.0;
 
-        gc.translate(xOffset, yOffset);
-        gc.scale(xScale, yScale);
-        gc.setLineWidth(1.0 / Math.min(Math.abs(xScale), Math.abs(yScale)));
+            gc.translate(xOffset, yOffset);
+            gc.scale(xScale, yScale);
+            gc.setLineWidth(1.0 / Math.min(Math.abs(xScale), Math.abs(yScale)));
 
-        switch (webGlProgramEmulator.getRenderMode()) {
-            case TRIANGLES:
-                drawTriangles(gc, webGlProgramEmulator);
-                break;
-            case LINES:
-                drawLines(gc, webGlProgramEmulator);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown render mode: " + webGlProgramEmulator.getRenderMode());
+            switch (webGlProgramEmulator.getRenderMode()) {
+                case TRIANGLES:
+                    drawTriangles(gc, webGlProgramEmulator);
+                    break;
+                case LINES:
+                    drawLines(gc, webGlProgramEmulator);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown render mode: " + webGlProgramEmulator.getRenderMode());
+            }
+        } finally {
+            gc.restore();
         }
-        gc.restore();
     }
 
     private void drawLines(GraphicsContext gc, WebGlProgramEmulator webGlProgramEmulator) {

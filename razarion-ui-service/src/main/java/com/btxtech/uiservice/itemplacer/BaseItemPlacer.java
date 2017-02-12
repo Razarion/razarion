@@ -33,7 +33,7 @@ public class BaseItemPlacer {
     private TerrainService terrainService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
-    private DecimalPosition position;
+    private Vertex position;
     private BaseItemType baseItemType;
     private String errorText;
     private List<Vertex> vertexes;
@@ -44,16 +44,16 @@ public class BaseItemPlacer {
         Circle2D circle2D = new Circle2D(new DecimalPosition(0, 0), baseItemPlacerChecker.getEnemyFreeRadius());
         vertexes = circle2D.triangulation(20, 0);
         if (baseItemPlacerConfig.getSuggestedPosition() != null) {
-            onMove(baseItemPlacerConfig.getSuggestedPosition());
+            onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
         } else {
             DecimalPosition cameraCenter = terrainScrollHandler.getCurrentViewField().calculateCenter();
-            onMove(cameraCenter);
+            onMove(new Vertex(cameraCenter, 0));
         }
         return this;
     }
 
-    void onMove(DecimalPosition position) {
-        baseItemPlacerChecker.check(position);
+    void onMove(Vertex position) {
+        baseItemPlacerChecker.check(position.toXY());
         setupErrorText();
         this.position = position;
     }
@@ -75,18 +75,18 @@ public class BaseItemPlacer {
     }
 
     Collection<DecimalPosition> setupAbsolutePositions() {
-        return baseItemPlacerChecker.setupAbsolutePositions(position);
+        return baseItemPlacerChecker.setupAbsolutePositions(position.toXY());
     }
 
     public List<ModelMatrices> provideCircleModelMatrices() {
-        Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), 0); // TODO get terrain z
+        Matrix4 model = Matrix4.createTranslation(position);
         return Collections.singletonList(new ModelMatrices(model));
     }
 
     public List<ModelMatrices> provideItemModelMatrices() {
         List<ModelMatrices> result = new ArrayList<>();
         for (DecimalPosition position : setupAbsolutePositions()) {
-            Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), 0);// TODO get terrain z
+            Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), this.position.getZ());
             result.add(new ModelMatrices(model));
         }
         return result;

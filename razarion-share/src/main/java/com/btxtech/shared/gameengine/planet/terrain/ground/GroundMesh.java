@@ -3,13 +3,12 @@ package com.btxtech.shared.gameengine.planet.terrain.ground;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.VertexList;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -24,6 +23,7 @@ public class GroundMesh {
     private Map<Index, VertexData> grid = new HashMap<>();
     private int edgeLength;
     private Rectangle groundMeshDimension;
+    private double height;
 
     public interface VertexVisitor {
         void onVisit(Index index, Vertex vertex);
@@ -37,13 +37,14 @@ public class GroundMesh {
         return groundMeshDimension;
     }
 
-    public void reset(int edgeLength, Rectangle groundMeshDimension, double z) {
+    public void reset(int edgeLength, Rectangle groundMeshDimension, double height) {
         this.edgeLength = edgeLength;
         this.groundMeshDimension = groundMeshDimension;
+        this.height = height;
         grid.clear();
         for (int x = groundMeshDimension.startX(); x < groundMeshDimension.endX(); x++) {
             for (int y = groundMeshDimension.startY(); y < groundMeshDimension.endY(); y++) {
-                createVertexData(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, z));
+                createVertexData(new Index(x, y), new Vertex(x * edgeLength, y * edgeLength, height));
             }
         }
     }
@@ -56,6 +57,7 @@ public class GroundMesh {
         GroundMesh groundMesh = new GroundMesh();
         groundMesh.edgeLength = edgeLength;
         groundMesh.groundMeshDimension = groundMeshDimension;
+        groundMesh.height = height;
         for (Map.Entry<Index, VertexData> entry : grid.entrySet()) {
             groundMesh.grid.put(entry.getKey(), new VertexData(entry.getValue()));
         }
@@ -64,6 +66,10 @@ public class GroundMesh {
 
     private void createVertexData(Index index, Vertex vertex) {
         grid.put(index, new VertexData(vertex));
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 
     public void createVertexData(Index index, GroundMesh groundMesh) {
@@ -232,16 +238,16 @@ public class GroundMesh {
 
         DoubleStream.Builder doubleStreamBuilder = DoubleStream.builder();
 
-        if(vertexDataBL != null) {
+        if (vertexDataBL != null) {
             doubleStreamBuilder.add(vertexDataBL.getVertex().getZ());
         }
-        if(vertexDataBR != null) {
+        if (vertexDataBR != null) {
             doubleStreamBuilder.add(vertexDataBR.getVertex().getZ());
         }
-        if(vertexDataTR != null) {
+        if (vertexDataTR != null) {
             doubleStreamBuilder.add(vertexDataTR.getVertex().getZ());
         }
-        if(vertexDataTL != null) {
+        if (vertexDataTL != null) {
             doubleStreamBuilder.add(vertexDataTL.getVertex().getZ());
         }
 
@@ -270,6 +276,10 @@ public class GroundMesh {
         }
 
         return new Index(indexX, indexY);
+    }
+
+    public Vertex calculatePositionOnHeightLevel(Line3d worldPickRay) {
+        return worldPickRay.calculatePositionOnHeightLevel(height);
     }
 
 }

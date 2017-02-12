@@ -13,7 +13,25 @@ public class Line3d {
         this.direction = direction;
     }
 
-//    public Vertex projectOnInfiniteLine(Vertex source) {
+    public Vertex getPoint() {
+        return point;
+    }
+
+    public Vertex getDirection() {
+        return direction;
+    }
+
+    public Vertex calculatePoint(double multiplier) {
+        return point.add(direction.multiply(multiplier));
+    }
+
+    public Vertex calculatePositionOnHeightLevel(double height) {
+        double m = (height - point.getZ()) / direction.getZ();
+        return calculatePoint(m);
+    }
+
+
+    //    public Vertex projectOnInfiniteLine(Vertex source) {
 //        Vertex relativePoint2 = point2.sub(point1);
 //        Vertex relativeSource = source.sub(point1);
 //

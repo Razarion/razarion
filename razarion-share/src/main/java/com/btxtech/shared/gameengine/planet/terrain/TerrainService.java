@@ -1,10 +1,9 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
-import com.btxtech.shared.datatypes.Ray3d;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
@@ -18,10 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
-import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
-import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundModeler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
@@ -30,7 +26,6 @@ import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeWater;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -193,19 +188,6 @@ public class TerrainService {
         return false;
     }
 
-    public Vertex calculatePositionOnZeroLevel(Ray3d worldPickRay) {
-        // Find multiplier where the ray hits the ground (z = 0). start + m*direction -> z = 0
-        double m = -worldPickRay.getStart().getZ() / worldPickRay.getDirection().getZ();
-        return worldPickRay.getPoint(m);
-//        logger.severe("Point On Ground: " + pointOnGround);
-//        VertexData vertexData = originalGroundMesh.getVertexFromAbsoluteXY(pointOnGround.toXY());
-//        if (vertexData != null) {
-//            logger.severe("Ground VertexData: " + vertexData);
-//        } else {
-//            logger.severe("Position not on ground");
-//        }
-    }
-
     public double getHighestZInRegion(DecimalPosition center, double radius) {
         DoubleStream.Builder doubleStreamBuilder = DoubleStream.builder();
 
@@ -289,6 +271,29 @@ public class TerrainService {
         }
         // Nothing found
         throw new NoInterpolatedTerrainTriangleException(absoluteXY);
+    }
+
+    public Vertex calculatePositionGroundMesh(Line3d worldPickRay) {
+        // Water
+        InterpolatedTerrainTriangle interpolatedTerrainTriangle = water.getInterpolatedVertexData(worldPickRay);
+        if (interpolatedTerrainTriangle != null) {
+            return interpolatedTerrainTriangle.crossPoint(worldPickRay);
+        }
+        // Ground
+        DecimalPosition groundXY = groundMesh.calculatePositionOnHeightLevel(worldPickRay).toXY();
+        interpolatedTerrainTriangle = groundMesh.getInterpolatedTerrainTriangle(groundXY);
+        if (interpolatedTerrainTriangle != null) {
+            return interpolatedTerrainTriangle.crossPoint(worldPickRay);
+        }
+        // Slope
+        for (Slope slope : getSlopes()) {
+            Vertex slopePosition = slope.calculatePositionOnSlope(worldPickRay);
+            if (slopePosition != null) {
+                return slopePosition;
+            }
+        }
+        // Nothing found
+        throw new NoInterpolatedTerrainTriangleException(worldPickRay);
     }
 
     // -------------------------------------------------

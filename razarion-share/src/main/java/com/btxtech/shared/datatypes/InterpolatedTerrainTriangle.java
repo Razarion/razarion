@@ -55,4 +55,9 @@ public class InterpolatedTerrainTriangle {
     public Vertex getTangent() {
         return cornerA.getTangent().multiply(interpolation.getX()).add(cornerB.getTangent().multiply(interpolation.getY()).add(cornerC.getTangent().multiply(interpolation.getZ())));
     }
+
+    public Vertex crossPoint(Line3d line) {
+        Plane3d plane3d = new Plane3d(cornerA.getVertex(), cornerB.getVertex(), cornerC.getVertex());
+        return plane3d.crossPoint(line);
+    }
 }

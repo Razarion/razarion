@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain.slope;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -266,5 +267,9 @@ public class Mesh {
 
     public InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY) {
         return GeometricUtil.getInterpolatedVertexData(absoluteXY, vertices, norms::get, tangents::get, index -> splatting.get(index).doubleValue());
+    }
+
+    public Vertex getCrossPositionOnMesh(Line3d worldPickRay) {
+        return GeometricUtil.calculateCrossOnTriangles(worldPickRay, vertices);
     }
 }
