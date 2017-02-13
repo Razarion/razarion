@@ -10,7 +10,6 @@ public class ModelMatrices {
     private double progress;
     private DecimalPosition interpolatableVelocity;
     private int particleXColorRampOffsetIndex;
-    private double radius;
 
     public ModelMatrices(Matrix4 model) {
         this(model, 0);
@@ -52,10 +51,14 @@ public class ModelMatrices {
         return this;
     }
 
+    public DecimalPosition getInterpolatableVelocity() {
+        return interpolatableVelocity;
+    }
+
     public ModelMatrices interpolateVelocity(double factor) {
         if (interpolatableVelocity != null && factor != 0.0) {
             DecimalPosition interpolation = interpolatableVelocity.multiply(factor);
-            return new ModelMatrices(Matrix4.createTranslation(interpolation.getX(), interpolation.getY(), 0).multiply(model), progress).setRadius(radius);
+            return new ModelMatrices(Matrix4.createTranslation(interpolation.getX(), interpolation.getY(), 0).multiply(model), progress);
         } else {
             return this;
         }
@@ -67,15 +70,6 @@ public class ModelMatrices {
 
     public void setParticleXColorRampOffsetIndex(int particleXColorRampOffsetIndex) {
         this.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public ModelMatrices setRadius(double radius) {
-        this.radius = radius;
-        return this;
     }
 
     public ModelMatrices multiply(ModelMatrices modelMatrices) {

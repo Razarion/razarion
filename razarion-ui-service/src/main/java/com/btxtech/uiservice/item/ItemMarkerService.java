@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.item;
 
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -21,6 +22,8 @@ import java.util.List;
 @ApplicationScoped
 public class ItemMarkerService {
     private static final double FACTOR = 1.1;
+    private static final Color SELECTION = new Color(0.0, 1.0, 0.0, 0.5);
+    private static final Color HOVER = new Color(0.5, 0.5, 0.5, 0.5);
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -68,8 +71,7 @@ public class ItemMarkerService {
 
     private void createModelMatrices(SyncItemMonitor syncItemMonitor) {
         monitors.add(syncItemMonitor);
-        ModelMatrices modelMatrices = new ModelMatrices(setupMatrix(syncItemMonitor));
-        modelMatrices.setRadius(syncItemMonitor.getRadius());
+        ItemMarkerModelMatrices modelMatrices = new ItemMarkerModelMatrices(setupMatrix(syncItemMonitor), SELECTION, syncItemMonitor.getRadius());
         modelMatrices.setInterpolatableVelocity(syncItemMonitor.getInterpolatableVelocity());
         selectedModelMatrices.add(modelMatrices);
         syncItemMonitor.setPositionChangeListener(changedSyncItemMonitor -> {

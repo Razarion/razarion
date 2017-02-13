@@ -4,9 +4,9 @@ import com.btxtech.client.renderer.engine.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.item.ItemMarkerModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -25,7 +25,6 @@ import java.util.List;
 @Dependent
 @ColorBufferRenderer
 public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRendererUnit {
-    private static final Color COLOR = new Color(0.0, 1.0, 0.0, 0.5);
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -62,9 +61,10 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, COLOR);
-        webGlFacade.uniform1f("uRadius", modelMatrices.getRadius());
+        ItemMarkerModelMatrices itemMarkerModelMatrices = (ItemMarkerModelMatrices) modelMatrices;
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, itemMarkerModelMatrices.getModel());
+        webGlFacade.uniform4f(WebGlFacade.U_COLOR, itemMarkerModelMatrices.getColor());
+        webGlFacade.uniform1f("uRadius", itemMarkerModelMatrices.getRadius());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }
