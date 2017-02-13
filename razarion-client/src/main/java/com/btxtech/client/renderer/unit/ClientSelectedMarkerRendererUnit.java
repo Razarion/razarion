@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.unit;
 
+import com.btxtech.client.renderer.engine.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -24,7 +25,7 @@ import java.util.List;
 @Dependent
 @ColorBufferRenderer
 public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRendererUnit {
-    private static final Color COLOR = new Color(1.0, 1.0, 0.0, 0.5);
+    private static final Color COLOR = new Color(0.0, 1.0, 0.0, 0.5);
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -32,17 +33,20 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
     @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
+    private FloatShaderAttribute visibilityAttribute;
 
     @PostConstruct
     public void postConstruct() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.itemMarkerVertexShader(), Shaders.INSTANCE.itemMarkerFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
     }
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices) {
+    protected void fillBuffers(List<Vertex> vertices, List<Double> visibilities) {
         positions.fillBuffer(vertices);
+        visibilityAttribute.fillDoubleBuffer(visibilities);
     }
 
     @Override
@@ -53,12 +57,14 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
 
         positions.activate();
+        visibilityAttribute.activate();
     }
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
         webGlFacade.uniform4f(WebGlFacade.U_COLOR, COLOR);
+        webGlFacade.uniform1f("uRadius", modelMatrices.getRadius());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

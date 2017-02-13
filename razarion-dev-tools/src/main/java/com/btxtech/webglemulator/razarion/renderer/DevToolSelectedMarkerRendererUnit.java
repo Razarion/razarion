@@ -33,7 +33,7 @@ public class DevToolSelectedMarkerRendererUnit extends AbstractSelectedMarkerRen
     private ModelMatrices modelMatrices;
 
     @Override
-    protected void fillBuffers(List<Vertex> vertices) {
+    protected void fillBuffers(List<Vertex> vertices, List<Double> visibilities) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setVertexShader(this);
         webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertices));
     }

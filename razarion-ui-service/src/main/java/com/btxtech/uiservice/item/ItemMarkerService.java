@@ -20,6 +20,7 @@ import java.util.List;
  */
 @ApplicationScoped
 public class ItemMarkerService {
+    private static final double FACTOR = 1.1;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -68,6 +69,7 @@ public class ItemMarkerService {
     private void createModelMatrices(SyncItemMonitor syncItemMonitor) {
         monitors.add(syncItemMonitor);
         ModelMatrices modelMatrices = new ModelMatrices(setupMatrix(syncItemMonitor));
+        modelMatrices.setRadius(syncItemMonitor.getRadius());
         modelMatrices.setInterpolatableVelocity(syncItemMonitor.getInterpolatableVelocity());
         selectedModelMatrices.add(modelMatrices);
         syncItemMonitor.setPositionChangeListener(changedSyncItemMonitor -> {
@@ -77,6 +79,6 @@ public class ItemMarkerService {
     }
 
     private Matrix4 setupMatrix(SyncItemMonitor syncItemMonitor) {
-        return Matrix4.createTranslation(syncItemMonitor.getPosition3d()).multiply(Matrix4.createScale(syncItemMonitor.getRadius()));
+        return Matrix4.createTranslation(syncItemMonitor.getPosition3d()).multiply(Matrix4.createScale(syncItemMonitor.getRadius() * FACTOR));
     }
 }
