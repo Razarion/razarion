@@ -227,7 +227,7 @@ public class BaseItemUiService {
     }
 
     public boolean isEnemy(SyncBaseItemSimpleDto syncBaseItem) {
-        return getBase(syncBaseItem).getCharacter().isEnemy(getMyBase().getCharacter());
+        return getBase(syncBaseItem).getCharacter().isEnemy(myBase.getCharacter());
     }
 
     public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {

@@ -45,6 +45,6 @@ public class ItemMarkerRenderTask extends AbstractRenderTask<Void> {
 
     @Override
     protected boolean isActive() {
-        return itemMarkerService.haSelection();
+        return itemMarkerService.hasMarkedItems();
     }
 }

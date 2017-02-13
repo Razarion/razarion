@@ -18,6 +18,7 @@ import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
+import com.btxtech.uiservice.item.ItemMarkerService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -45,7 +46,6 @@ public class TerrainMouseHandler {
     private Camera camera;
     @Inject
     private TerrainUiService terrainUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private CursorService cursorService;
     @Inject
@@ -54,7 +54,6 @@ public class TerrainMouseHandler {
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
     private SelectionHandler selectionHandler;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
@@ -69,12 +68,12 @@ public class TerrainMouseHandler {
     private ResourceUiService resourceUiService;
     @Inject
     private BoxUiService boxUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private AudioService audioService;
+    @Inject
+    private ItemMarkerService itemMarkerService;
     private GroupSelectionFrame groupSelectionFrame;
     private TerrainEditor terrainEditor;
 
@@ -104,19 +103,23 @@ public class TerrainMouseHandler {
                 SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncBaseItem != null) {
                     cursorService.handleMouseOverBaseItem(syncBaseItem, terrainPosition.toXY());
+                    itemMarkerService.onHover(syncBaseItem);
                     return;
                 }
                 SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncResourceItem != null) {
                     cursorService.handleMouseOverResourceItem();
+                    itemMarkerService.onHover(syncResourceItem);
                     return;
                 }
                 SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncBoxItem != null) {
                     cursorService.handleMouseOverBoxItem();
+                    itemMarkerService.onHover(syncBoxItem);
                     return;
                 }
                 cursorService.handleMouseOverTerrain(terrainPosition.toXY());
+                itemMarkerService.onHover(null);
             }
         } catch (NoInterpolatedTerrainTriangleException e) {
             logger.warning(e.getMessage());
