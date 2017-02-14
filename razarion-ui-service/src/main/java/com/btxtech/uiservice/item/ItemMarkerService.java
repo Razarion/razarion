@@ -119,6 +119,9 @@ public class ItemMarkerService {
                 statusBarModelMatricesFinal.setInterpolatableVelocity(changedSyncItemMonitor.getInterpolatableVelocity());
             }
         });
+        if (statusBarModelMatricesFinal != null) {
+            ((SyncBaseItemMonitor) syncItemMonitor).setHealthChangeListener(syncItemMonitor1 -> statusBarModelMatricesFinal.setProgress(((SyncBaseItemMonitor) syncItemMonitor1).getHealth()));
+        }
     }
 
     private void setupHoverModelMatrices(SyncItemSimpleDto syncItem) {
@@ -138,6 +141,9 @@ public class ItemMarkerService {
                 hoverHealthModelMatrices.setInterpolatableVelocity(changedSyncItemMonitor.getInterpolatableVelocity());
             }
         });
+        if (hoverSyncItemMonitor instanceof SyncBaseItemMonitor) {
+            ((SyncBaseItemMonitor) hoverSyncItemMonitor).setHealthChangeListener(syncItemMonitor1 -> hoverHealthModelMatrices.setProgress(((SyncBaseItemMonitor) syncItemMonitor1).getHealth()));
+        }
 
         setupAllMarkerModelMatrices();
         setupAllStatusBarModelMatrices();

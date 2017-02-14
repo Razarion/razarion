@@ -17,6 +17,10 @@ public class SyncItemMonitor {
         this.syncItemState = syncItemState;
     }
 
+    public SyncItemState getSyncItemState() {
+        return syncItemState;
+    }
+
     public int getSyncItemId() {
         return syncItemState.getSyncItemId();
     }

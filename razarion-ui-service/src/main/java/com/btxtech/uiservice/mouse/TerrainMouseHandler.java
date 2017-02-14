@@ -172,7 +172,7 @@ public class TerrainMouseHandler {
                             }
                         }
                     } else {
-                        if (baseItemUiService.isEnemy(syncBaseItem)) {
+                        if (baseItemUiService.isMyEnemy(syncBaseItem)) {
                             Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
                             if (!attackers.isEmpty()) {
                                 audioService.onCommandSent();

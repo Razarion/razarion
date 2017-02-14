@@ -70,7 +70,7 @@ public abstract class CursorService {
                     setPointerCursor();
                 }
             }
-        } else if (baseItemUiService.isEnemy(syncBaseItem)) {
+        } else if (baseItemUiService.isMyEnemy(syncBaseItem)) {
             Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
             if (!attackers.isEmpty()) {
                 setCursor(CursorType.ATTACK, true);

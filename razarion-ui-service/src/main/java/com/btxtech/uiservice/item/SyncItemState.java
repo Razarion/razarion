@@ -32,6 +32,11 @@ public class SyncItemState {
         this.releaseMonitorCallback = releaseMonitorCallback;
     }
 
+    // Override in subclasses
+    protected SyncItemMonitor createMonitor() {
+        return new SyncItemMonitor(this);
+    }
+
     public int getSyncItemId() {
         return syncItemId;
     }
@@ -53,20 +58,23 @@ public class SyncItemState {
     }
 
     public SyncItemMonitor createSyncItemMonitor() {
-        SyncItemMonitor syncItemMonitor = new SyncItemMonitor(this);
+        SyncItemMonitor syncItemMonitor = createMonitor();
         monitors.add(syncItemMonitor);
         return syncItemMonitor;
     }
 
-    public void update(SyncBaseItemSimpleDto syncItemSimpleDto, DecimalPosition interpolatableVelocity) {
-        if (position2d.equals(syncItemSimpleDto.getPosition2d()) && Objects.equals(this.interpolatableVelocity, interpolatableVelocity)) {
-            return;
-        }
-        position2d = syncItemSimpleDto.getPosition2d();
-        position3d = syncItemSimpleDto.getPosition3d();
-        this.interpolatableVelocity = interpolatableVelocity;
-        for (SyncItemMonitor monitor : monitors) {
-            monitor.onPositionChanged();
+    protected Collection<SyncItemMonitor> getMonitors() {
+        return monitors;
+    }
+
+    public void update(SyncItemSimpleDto syncItemSimpleDto, DecimalPosition interpolatableVelocity) {
+        if (!position2d.equals(syncItemSimpleDto.getPosition2d()) || !Objects.equals(this.interpolatableVelocity, interpolatableVelocity)) {
+            position2d = syncItemSimpleDto.getPosition2d();
+            position3d = syncItemSimpleDto.getPosition3d();
+            this.interpolatableVelocity = interpolatableVelocity;
+            for (SyncItemMonitor monitor : monitors) {
+                monitor.onPositionChanged();
+            }
         }
     }
 

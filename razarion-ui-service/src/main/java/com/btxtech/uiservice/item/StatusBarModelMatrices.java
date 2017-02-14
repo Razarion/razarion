@@ -34,6 +34,11 @@ public class StatusBarModelMatrices extends ModelMatrices {
         return progress;
     }
 
+    @Override
+    public void setProgress(double progress) {
+        this.progress = progress;
+    }
+
     public Color getColor() {
         return color;
     }

@@ -35,7 +35,6 @@ public class ItemUiService {
         }
     }
 
-
     public Color color4SyncItem(SyncItemSimpleDto syncItem) {
         if (syncItem instanceof SyncBoxItemSimpleDto) {
             return Colors.NONE_BASE;
@@ -43,7 +42,7 @@ public class ItemUiService {
             SyncBaseItemSimpleDto syncBaseItemSimpleDto = (SyncBaseItemSimpleDto) syncItem;
             if (baseItemUiService.isMyOwnProperty(syncBaseItemSimpleDto)) {
                 return Colors.OWN;
-            } else if (baseItemUiService.isEnemy(syncBaseItemSimpleDto)) {
+            } else if (baseItemUiService.isMyEnemy(syncBaseItemSimpleDto)) {
                 return Colors.ENEMY;
             } else {
                 return Colors.FRIEND;

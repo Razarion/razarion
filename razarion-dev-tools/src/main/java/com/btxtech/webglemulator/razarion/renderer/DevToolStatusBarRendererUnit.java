@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Colors;
+import com.btxtech.uiservice.item.StatusBarModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -60,5 +61,6 @@ public class DevToolStatusBarRendererUnit extends AbstractStatusBarRendererUnit 
     protected void draw(ModelMatrices modelMatrices) {
         this.modelMatrices = modelMatrices;
         webGlEmulator.drawArrays(webGlProgramEmulator);
+        System.out.println("StatusBarModelMatrices: " + ((StatusBarModelMatrices) modelMatrices).getProgress());
     }
 }

@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
@@ -59,7 +60,7 @@ public class BaseItemUiService {
     @Inject
     private EffectVisualizationService effectVisualizationService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
-    private Map<Integer, SyncItemState> syncItemStates = new HashMap<>();
+    private Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
     private int resources;
     private int usedHouseSpace;
@@ -226,8 +227,8 @@ public class BaseItemUiService {
         return myBase != null && syncBaseItem.getBaseId() == myBase.getBaseId();
     }
 
-    public boolean isEnemy(SyncBaseItemSimpleDto syncBaseItem) {
-        return getBase(syncBaseItem).getCharacter().isEnemy(myBase.getCharacter());
+    public boolean isMyEnemy(SyncBaseItemSimpleDto syncBaseItem) {
+        return getBase(syncBaseItem).getCharacter() == Character.BOT;
     }
 
     public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
@@ -265,10 +266,10 @@ public class BaseItemUiService {
         return result;
     }
 
-    public SyncItemMonitor monitorSyncItem(SyncBaseItemSimpleDto syncBaseItemSimpleDto) {
+    public SyncBaseItemMonitor monitorSyncItem(SyncBaseItemSimpleDto syncBaseItemSimpleDto) {
         double radius = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId()).getPhysicalAreaConfig().getRadius();
-        SyncItemState syncItemState = syncItemStates.computeIfAbsent(syncBaseItemSimpleDto.getId(), k -> new SyncItemState(syncBaseItemSimpleDto, syncBaseItemSimpleDto.getInterpolatableVelocity(), radius, this::releaseSyncItemMonitor));
-        return syncItemState.createSyncItemMonitor();
+        SyncBaseItemState syncBaseItemState = syncItemStates.computeIfAbsent(syncBaseItemSimpleDto.getId(), k -> new SyncBaseItemState(syncBaseItemSimpleDto, syncBaseItemSimpleDto.getInterpolatableVelocity(), radius, this::releaseSyncItemMonitor));
+        return (SyncBaseItemMonitor) syncBaseItemState.createSyncItemMonitor();
     }
 
     private void releaseSyncItemMonitor(SyncItemState syncItemState) {
@@ -292,8 +293,8 @@ public class BaseItemUiService {
         }
     }
 
-    public SyncItemMonitor monitorEnemyItemWithPlace(PlaceConfig placeConfig) {
-        SyncBaseItemSimpleDto enemy = findEnemyItemWithPlace(placeConfig);
+    public SyncItemMonitor monitorMyEnemyItemWithPlace(PlaceConfig placeConfig) {
+        SyncBaseItemSimpleDto enemy = findMyEnemyItemWithPlace(placeConfig);
         if (enemy != null) {
             return monitorSyncItem(enemy);
         } else {
@@ -350,9 +351,9 @@ public class BaseItemUiService {
         return null;
     }
 
-    private SyncBaseItemSimpleDto findEnemyItemWithPlace(PlaceConfig placeConfig) {
+    private SyncBaseItemSimpleDto findMyEnemyItemWithPlace(PlaceConfig placeConfig) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (!isEnemy(syncBaseItem)) {
+            if (!isMyEnemy(syncBaseItem)) {
                 continue;
             }
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
