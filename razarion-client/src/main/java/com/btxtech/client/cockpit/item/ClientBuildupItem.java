@@ -117,7 +117,9 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
 
     @EventHandler("buildItemTd")
     public void onClick(final ClickEvent event) {
-        buildupItem.onBuild();
+        if (enableState.isEnabled()) {
+            buildupItem.onBuild();
+        }
     }
 
     Rectangle getBuildButtonLocation() {
