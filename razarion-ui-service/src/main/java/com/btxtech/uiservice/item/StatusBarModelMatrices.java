@@ -8,31 +8,37 @@ import com.btxtech.shared.datatypes.ModelMatrices;
  * Created by Beat
  * 13.02.2017.
  */
-public class ItemMarkerModelMatrices extends ModelMatrices {
-    private double radius;
+public class StatusBarModelMatrices extends ModelMatrices {
+    private double progress;
     private Color color;
+    private Color bgColor;
 
-    public ItemMarkerModelMatrices(Matrix4 model, Color color, double radius) {
+    public StatusBarModelMatrices(Matrix4 model, Color color, Color bgColor, double progress) {
         super(model);
         this.color = color;
-        this.radius = radius;
+        this.bgColor = bgColor;
+        this.progress = progress;
     }
 
     @Override
     public ModelMatrices interpolateVelocity(double factor) {
         if (getInterpolatableVelocity() != null && factor != 0.0) {
-            return new ItemMarkerModelMatrices(interpolateVelocityMatrix(factor), color, radius);
+            return new StatusBarModelMatrices(interpolateVelocityMatrix(factor), color, bgColor, progress);
         } else {
             return this;
         }
     }
 
-
-    public double getRadius() {
-        return radius;
+    @Override
+    public double getProgress() {
+        return progress;
     }
 
     public Color getColor() {
         return color;
+    }
+
+    public Color getBgColor() {
+        return bgColor;
     }
 }

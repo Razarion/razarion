@@ -6,11 +6,12 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.uiservice.item.ItemMarkerModelMatrices;
+import com.btxtech.uiservice.Colors;
+import com.btxtech.uiservice.item.StatusBarModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.task.selection.AbstractSelectedMarkerRendererUnit;
+import com.btxtech.uiservice.renderer.task.selection.AbstractStatusBarRendererUnit;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 @Dependent
 @ColorBufferRenderer
-public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRendererUnit {
+public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -37,7 +38,7 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
     @PostConstruct
     public void postConstruct() {
         webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.itemMarkerFragmentShader());
+        webGlFacade.createProgram(Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.statusBarFragmentShader());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
     }
@@ -61,10 +62,11 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        ItemMarkerModelMatrices itemMarkerModelMatrices = (ItemMarkerModelMatrices) modelMatrices;
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, itemMarkerModelMatrices.getModel());
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, itemMarkerModelMatrices.getColor());
-        webGlFacade.uniform1f("uRadius", itemMarkerModelMatrices.getRadius());
+        StatusBarModelMatrices statusBarModelMatrices = (StatusBarModelMatrices) modelMatrices;
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, statusBarModelMatrices.getModel());
+        webGlFacade.uniform4f(WebGlFacade.U_COLOR, statusBarModelMatrices.getColor());
+        webGlFacade.uniform4f("uBgColor", statusBarModelMatrices.getBgColor());
+        webGlFacade.uniform1f("uProgress", statusBarModelMatrices.getProgress());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

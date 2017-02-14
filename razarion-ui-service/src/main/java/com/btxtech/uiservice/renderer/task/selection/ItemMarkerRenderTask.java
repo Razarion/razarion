@@ -25,6 +25,7 @@ public class ItemMarkerRenderTask extends AbstractRenderTask<Void> {
     @PostConstruct
     public void postConstruct() {
         setupItemMarker();
+        setupStatusBar();
     }
 
     @Override
@@ -39,6 +40,17 @@ public class ItemMarkerRenderTask extends AbstractRenderTask<Void> {
         compositeRenderer.init(null);
         compositeRenderer.setRenderUnit(AbstractSelectedMarkerRendererUnit.class);
         modelRenderer.add(RenderUnitControl.SELECTED_ITEM, compositeRenderer);
+        add(modelRenderer);
+        compositeRenderer.fillBuffers();
+    }
+
+    private void setupStatusBar() {
+        ModelRenderer<Void, CommonRenderComposite<AbstractStatusBarRendererUnit, Void>, AbstractStatusBarRendererUnit, Void> modelRenderer = create();
+        modelRenderer.init(null, timeStamp -> itemMarkerService.provideStatusBarModelMatrices());
+        CommonRenderComposite<AbstractStatusBarRendererUnit, Void> compositeRenderer = modelRenderer.create();
+        compositeRenderer.init(null);
+        compositeRenderer.setRenderUnit(AbstractStatusBarRendererUnit.class);
+        modelRenderer.add(RenderUnitControl.STATUS_BAR, compositeRenderer);
         add(modelRenderer);
         compositeRenderer.fillBuffers();
     }

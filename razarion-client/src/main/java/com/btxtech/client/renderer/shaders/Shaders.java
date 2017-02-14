@@ -125,9 +125,12 @@ public interface Shaders extends ClientBundle {
     @Source("ParticleDeptBuffer.frag")
     TextResource particleDeptBufferFragmentShader();
 
-    @Source("ItemMarker.vert")
-    TextResource itemMarkerVertexShader();
+    @Source("CommonVisibility.vert")
+    TextResource commonVisibilityVertexShader();
 
     @Source("ItemMarker.frag")
     TextResource itemMarkerFragmentShader();
+
+    @Source("StatusBar.frag")
+    TextResource statusBarFragmentShader();
 }

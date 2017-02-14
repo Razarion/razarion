@@ -57,11 +57,15 @@ public class ModelMatrices {
 
     public ModelMatrices interpolateVelocity(double factor) {
         if (interpolatableVelocity != null && factor != 0.0) {
-            DecimalPosition interpolation = interpolatableVelocity.multiply(factor);
-            return new ModelMatrices(Matrix4.createTranslation(interpolation.getX(), interpolation.getY(), 0).multiply(model), progress);
+            return new ModelMatrices(interpolateVelocityMatrix(factor), progress);
         } else {
             return this;
         }
+    }
+
+    protected Matrix4 interpolateVelocityMatrix(double factor) {
+        DecimalPosition interpolation = interpolatableVelocity.multiply(factor);
+        return Matrix4.createTranslation(interpolation.getX(), interpolation.getY(), 0).multiply(model);
     }
 
     public int getParticleXColorRampOffsetIndex() {
