@@ -134,7 +134,7 @@ public class Group {
         Collection<SyncBaseItemSimpleDto> builder = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (baseItemType.getBuilderType() != null) {
+            if (baseItemType.getBuilderType() == null) {
                 continue;
             }
             if (!baseItemType.getBuilderType().checkAbleToBuild(toBeBuiltItemTypeId)) {
