@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.sidebar;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.utils.GwtUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -49,10 +50,11 @@ public class SideBarPanel extends Composite {
     @PostConstruct
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.EDITOR_SIDE_BAR);
+        GwtUtils.preventContextMenu(this);
     }
 
     void setContent(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
-        if(leftSideBarContent != null) {
+        if (leftSideBarContent != null) {
             leftSideBarContent.onClose();
         }
         leftSideBarContent = leftSideBarContentInstance.select(leftSideBarContentClass).get();

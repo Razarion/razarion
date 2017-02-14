@@ -1,5 +1,8 @@
 package com.btxtech.client.utils;
 
+import com.google.gwt.user.client.ui.Widget;
+import elemental.dom.Element;
+import elemental.events.Event;
 import elemental.events.MouseEvent;
 
 /**
@@ -25,5 +28,13 @@ public class GwtUtils {
 
     public static boolean isButtonDown(MouseEvent event, int button) {
         return (getButtons(event) & button) == button;
+    }
+
+    public static void preventContextMenu(Widget widget) {
+        preventContextMenu(castElementToElement(widget.getElement()));
+    }
+
+    public static void preventContextMenu(Element widget) {
+        widget.addEventListener(Event.CONTEXTMENU, Event::preventDefault, true);
     }
 }

@@ -19,7 +19,6 @@ import elemental.events.MouseEvent;
 import elemental.events.WheelEvent;
 import elemental.html.WebGLRenderingContext;
 import elemental.js.html.JsUint8Array;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -53,7 +52,7 @@ public class GameCanvas {
 
     public void init() {
         canvas = Canvas.createIfSupported();
-        if(canvas == null) {
+        if (canvas == null) {
             throw new IllegalStateException("Canvas is not supported");
         }
 
@@ -128,7 +127,7 @@ public class GameCanvas {
             terrainMouseHandler.onMouseWheel(wheelEvent.getWheelDeltaY());
             wheelEvent.preventDefault();
         }, true);
-        getCanvasElement().addEventListener(Event.CONTEXTMENU, Event::preventDefault, true);
+        GwtUtils.preventContextMenu(canvas);
     }
 
     public void startRenderLoop() {

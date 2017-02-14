@@ -1,6 +1,7 @@
 package com.btxtech.client.cockpit.quest;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -28,6 +29,7 @@ public class QuestSidebar extends Composite {
     @PostConstruct
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.QUEST_SIDE_BAR);
+        GwtUtils.preventContextMenu(this);
         setStyleName("quest-sidebar");
     }
 

@@ -3,6 +3,7 @@ package com.btxtech.client.cockpit;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.inventory.InventoryDialog;
 import com.btxtech.client.editor.EditorMenuDialog;
+import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.SideCockpit;
 import com.btxtech.uiservice.dialog.DialogButton;
@@ -51,6 +52,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @PostConstruct
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.MAIN_COCKPIT);
+        GwtUtils.preventContextMenu(this);
     }
 
     @Override

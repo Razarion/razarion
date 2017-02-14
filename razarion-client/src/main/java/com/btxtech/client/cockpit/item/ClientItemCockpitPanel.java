@@ -1,6 +1,7 @@
 package com.btxtech.client.cockpit.item;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitPanel;
 import com.google.gwt.user.client.ui.Composite;
@@ -13,6 +14,7 @@ import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 /**
@@ -29,6 +31,11 @@ public class ClientItemCockpitPanel extends Composite implements ItemCockpitPane
     @Inject
     @DataField
     private Div buildupItemPanel;
+
+    @PostConstruct
+    public void postConstruct() {
+        GwtUtils.preventContextMenu(this);
+    }
 
     @Override
     public void cleanPanels() {

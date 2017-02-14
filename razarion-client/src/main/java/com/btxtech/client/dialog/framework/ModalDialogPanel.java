@@ -1,6 +1,7 @@
 package com.btxtech.client.dialog.framework;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -45,6 +46,7 @@ public class ModalDialogPanel<T> extends Composite {
     @PostConstruct
     public void postConstruct() {
         getElement().getStyle().setZIndex(ZIndexConstants.DIALOG);
+        GwtUtils.preventContextMenu(this);
     }
 
     public void init(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, DialogButton.Button... dialogButtons) {
