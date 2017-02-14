@@ -8,6 +8,7 @@ import java.util.function.Consumer;
  */
 public class SyncBaseItemMonitor extends SyncItemMonitor {
     private Consumer<SyncItemMonitor> healthChangeListener;
+    private Consumer<SyncItemMonitor> constructingChangeListener;
 
     public SyncBaseItemMonitor(SyncBaseItemState syncBaseItemState) {
         super(syncBaseItemState);
@@ -17,13 +18,31 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
         return ((SyncBaseItemState) getSyncItemState()).getHealth();
     }
 
+    public double getConstructing() {
+        return ((SyncBaseItemState) getSyncItemState()).getConstructing();
+    }
+
+    public boolean checkConstructing() {
+        return ((SyncBaseItemState) getSyncItemState()).checkConstructing();
+    }
+
     public void setHealthChangeListener(Consumer<SyncItemMonitor> healthChangeListener) {
         this.healthChangeListener = healthChangeListener;
+    }
+
+    public void setConstructingChangeListener(Consumer<SyncItemMonitor> constructingChangeListener) {
+        this.constructingChangeListener = constructingChangeListener;
     }
 
     public void onHealthChanged() {
         if (healthChangeListener != null) {
             healthChangeListener.accept(this);
+        }
+    }
+
+    public void onConstructingChanged() {
+        if (constructingChangeListener != null) {
+            constructingChangeListener.accept(this);
         }
     }
 

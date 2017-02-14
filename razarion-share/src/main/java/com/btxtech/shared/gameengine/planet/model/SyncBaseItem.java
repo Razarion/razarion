@@ -38,10 +38,10 @@ import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceEx
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 
 import javax.enterprise.context.Dependent;
@@ -656,8 +656,12 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
         if (syncBuilder != null && syncBuilder.isBuilding()) {
             simpleDto.setBuildingPosition(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d());
+            simpleDto.setConstructing(syncBuilder.getCurrentBuildup().getBuildup());
         }
-        if(getSyncPhysicalArea().canMove()) {
+        if (syncFactory != null && syncFactory.isActive()) {
+            simpleDto.setConstructing(syncFactory.getBuildup());
+        }
+        if (getSyncPhysicalArea().canMove()) {
             simpleDto.setInterpolatableVelocity(getSyncPhysicalMovable().setupInterpolatableVelocity());
         }
         return simpleDto;

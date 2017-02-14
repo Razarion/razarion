@@ -137,6 +137,10 @@ public class SyncFactory extends SyncBaseAbility {
         }
     }
 
+    public double getBuildup() {
+        return buildup;
+    }
+
     private void setupRallyPoint() {
         double maxRadius = Double.MIN_VALUE;
         for (int ableToBuildId : factoryType.getAbleToBuildId()) {

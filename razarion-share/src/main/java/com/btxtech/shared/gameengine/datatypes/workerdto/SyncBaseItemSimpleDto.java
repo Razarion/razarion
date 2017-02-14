@@ -21,6 +21,7 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
     private double spawning;
     private double buildup;
     private double health;
+    private double constructing;
     private Vertex harvestingResourcePosition;
     private Vertex buildingPosition;
     private DecimalPosition interpolatableVelocity;
@@ -75,6 +76,18 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
 
     public boolean checkHealth() {
         return health >= 1.0;
+    }
+
+    public double getConstructing() {
+        return constructing;
+    }
+
+    public void setConstructing(double constructing) {
+        this.constructing = constructing;
+    }
+
+    public boolean checkConstructing() {
+        return constructing > 0.0;
     }
 
     public Vertex getHarvestingResourcePosition() {

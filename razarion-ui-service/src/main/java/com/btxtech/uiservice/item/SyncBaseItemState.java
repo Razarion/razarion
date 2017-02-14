@@ -12,10 +12,12 @@ import java.util.function.Consumer;
  */
 public class SyncBaseItemState extends SyncItemState {
     private double health;
+    private double constructing;
 
     public SyncBaseItemState(SyncBaseItemSimpleDto syncBaseItem, DecimalPosition interpolatableVelocity, double radius, Consumer<SyncItemState> releaseMonitorCallback) {
         super(syncBaseItem, interpolatableVelocity, radius, releaseMonitorCallback);
         health = syncBaseItem.getHealth();
+        constructing = syncBaseItem.getConstructing();
     }
 
     @Override
@@ -25,6 +27,14 @@ public class SyncBaseItemState extends SyncItemState {
 
     public double getHealth() {
         return health;
+    }
+
+    public double getConstructing() {
+        return constructing;
+    }
+
+    public boolean checkConstructing() {
+        return constructing > 0.0;
     }
 
     @Override
@@ -39,6 +49,12 @@ public class SyncBaseItemState extends SyncItemState {
             }
         }
 
+        if (constructing != syncBaseItem.getConstructing()) {
+            constructing = syncBaseItem.getConstructing();
+            for (SyncItemMonitor monitor : getMonitors()) {
+                ((SyncBaseItemMonitor) monitor).onConstructingChanged();
+            }
+        }
 
     }
 

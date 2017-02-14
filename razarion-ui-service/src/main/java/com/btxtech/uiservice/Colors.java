@@ -21,5 +21,6 @@ public interface Colors {
     double HOVER_ALPHA = 0.4;
 
     Color HEALTH_BAR = new Color(0.0, 1.0, 0.0, 1.0);
+    Color CONSTRUCTING_BAR = new Color(0.4, 0.4, 1.0, 1.0);
     Color BAR_BG = new Color(0.2, 0.2, 0.2, 1.0);
 }
