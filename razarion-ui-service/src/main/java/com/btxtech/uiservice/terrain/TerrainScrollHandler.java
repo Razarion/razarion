@@ -275,16 +275,24 @@ public class TerrainScrollHandler {
             double deltaX = position.getX() - camera.getTranslateX();
             double deltaY = position.getY() - camera.getTranslateY();
             Rectangle2D viewFiledAabb = currentViewField.calculateAabbRectangle().translate(deltaX, deltaY);
-            if (playGround.startX() > viewFiledAabb.startX()) {
-                correctedXPosition += playGround.startX() - viewFiledAabb.startX();
-            } else if (playGround.endX() < viewFiledAabb.endX()) {
-                correctedXPosition -= viewFiledAabb.endX() - playGround.endX();
+            if (viewFiledAabb.width() >= playGround.width()) {
+                correctedXPosition = projectionTransformation.viewFieldCenterToCamera(playGround.center(), 0).getX();
+            } else {
+                if (playGround.startX() > viewFiledAabb.startX()) {
+                    correctedXPosition += playGround.startX() - viewFiledAabb.startX();
+                } else if (playGround.endX() < viewFiledAabb.endX()) {
+                    correctedXPosition -= viewFiledAabb.endX() - playGround.endX();
+                }
             }
 
-            if (playGround.startY() > viewFiledAabb.startY()) {
-                correctedYPosition += playGround.startY() - viewFiledAabb.startY();
-            } else if (playGround.endY() < viewFiledAabb.endY()) {
-                correctedYPosition -= viewFiledAabb.endY() - playGround.endY();
+            if (viewFiledAabb.height() >= playGround.height()) {
+                correctedYPosition = projectionTransformation.viewFieldCenterToCamera(playGround.center(), 0).getY();
+            } else {
+                if (playGround.startY() > viewFiledAabb.startY()) {
+                    correctedYPosition += playGround.startY() - viewFiledAabb.startY();
+                } else if (playGround.endY() < viewFiledAabb.endY()) {
+                    correctedYPosition -= viewFiledAabb.endY() - playGround.endY();
+                }
             }
         }
         camera.setTranslateXY(correctedXPosition, correctedYPosition);

@@ -47,7 +47,7 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
             // Camera view filed
             ViewField cameraView = projectionTransformation.calculateViewField(0);
             if (!cameraView.hasNullPosition()) {
-                egc.strokeCurveDecimalPosition(cameraView.toList(), 0.5, Color.BLACK, false);
+                egc.strokePolygon(cameraView.toList(), 2.0, Color.BLACK, false);
             }
 
             // Ground Mesh
