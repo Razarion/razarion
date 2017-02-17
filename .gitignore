@@ -29,5 +29,7 @@ razarion-client-worker/razarion-client-worker.iml
 razarion-client-common/razarion-client-common.iml
 razarion-liferay/razarion-liferay.iml
 razarion-liferay/targt
+razarion-liferay/src/main/resources/META-INF/resources/razarion_client
+razarion-liferay/src/main/resources/META-INF/resources/razarion_client_worker
 
 

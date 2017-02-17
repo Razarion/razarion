@@ -1,78 +1,96 @@
-<?xml version="1.0"?>
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.btxtech</groupId>
     <artifactId>razarion-liferay</artifactId>
-    <packaging>war</packaging>
-    <name>razarion-liferay</name>
+    <name>Razarion Portlet for Liferay</name>
     <version>1.0-SNAPSHOT</version>
-    <properties>
-        <faces.api.version>2.2</faces.api.version>
-        <liferay.faces.bridge.ext.version>5.0.0</liferay.faces.bridge.ext.version>
-        <liferay.faces.bridge.version>4.0.0</liferay.faces.bridge.version>
-        <mojarra.version>2.2.13</mojarra.version>
-    </properties>
+
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>default-bnd-process</id>
+                        <goals>
+                            <goal>bnd-process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>biz.aQute.bnd</groupId>
+                        <artifactId>biz.aQute.bndlib</artifactId>
+                        <version>3.1.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.liferay</groupId>
+                        <artifactId>com.liferay.ant.bnd</artifactId>
+                        <version>2.0.19</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.liferay</groupId>
+                <artifactId>com.liferay.css.builder</artifactId>
+                <version>1.0.17</version>
+                <executions>
+                    <execution>
+                        <id>default-build-css</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>build-css</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <encoding>UTF-8</encoding>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <portalCommonDirName>/</portalCommonDirName>
+                    <docrootDirName>src/main/resources/META-INF/resources</docrootDirName>
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
                 <configuration>
-                    <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                    <excludes>
+                        <exclude>**/META-INF/resources/**/.sass-cache/</exclude>
+                    </excludes>
+                    <outputDirectory>C:\dev\tech\liferay\liferay-ce-portal-7.0-ga3\deploy</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+
     <dependencies>
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3.1</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>javax.faces</groupId>
-            <artifactId>javax.faces-api</artifactId>
-            <version>${faces.api.version}</version>
+            <groupId>com.liferay.portal</groupId>
+            <artifactId>com.liferay.portal.kernel</artifactId>
+            <version>2.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.faces</artifactId>
-            <version>${mojarra.version}</version>
-            <scope>runtime</scope>
+            <groupId>javax.portlet</groupId>
+            <artifactId>portlet-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.liferay.faces</groupId>
-            <artifactId>com.liferay.faces.bridge.ext</artifactId>
-            <version>${liferay.faces.bridge.ext.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.liferay.faces</groupId>
-            <artifactId>com.liferay.faces.bridge.impl</artifactId>
-            <version>${liferay.faces.bridge.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.14</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
+            <version>1.3.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
+
 </project>
