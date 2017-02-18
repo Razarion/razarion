@@ -18,6 +18,7 @@
 
 <script type="text/javascript">erraiBusRemoteCommunicationEnabled = false;</script>
 <script type="text/javascript">erraiJaxRsJacksonMarshallingActive = true;</script>
+<script type="text/javascript">razarionRquestContextPath = "<%=request.getContextPath()%>";</script>
 <script src="<%=request.getContextPath()%>/razarion_client/razarion_client.nocache.js"></script>
 
 <p>
