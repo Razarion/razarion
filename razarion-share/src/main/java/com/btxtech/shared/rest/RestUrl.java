@@ -5,8 +5,10 @@ package com.btxtech.shared.rest;
  * 16.06.2016.
  */
 public class RestUrl {
+    public static final String DOMAIN = "razarion-server";
     public static final String APPLICATION_PATH = "rest";
     public static final String REMOTE_LOGGING = "remote_logging";
+    public static final String LOGGING_SIMPLE = "simple";
     public static final String IMAGE_SERVICE_PATH = "image";
     public static final String AUDIO_SERVICE_PATH = "audio";
     public static final String GAME_UI_CONTROL_PATH = "gameuicontrol";
@@ -17,6 +19,11 @@ public class RestUrl {
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id) + "?t=" + System.currentTimeMillis();
+    }
+
+    public static String getSimpleLoggingUrl() {
+        // DOMAIN is needed in the worker. Worker adds always worker JS dir to the path
+        return "/" + DOMAIN + "/" + APPLICATION_PATH + "/" + REMOTE_LOGGING + "/" + LOGGING_SIMPLE;
     }
 
     public static String getImageServiceUrlSafe(Integer id) {

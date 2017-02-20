@@ -34,7 +34,7 @@ public class BoxUiService {
 
     public void addBox(SyncBoxItemSimpleDto syncBoxItem) {
         synchronized (boxes) {
-            if (boxes.put(syncBoxItem.getId(), syncBoxItem) == null) {
+            if (boxes.put(syncBoxItem.getId(), syncBoxItem) != null) {
                 logger.warning("Box already exists: " + syncBoxItem);
             }
         }

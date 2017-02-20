@@ -36,7 +36,7 @@ public class ResourceUiService {
 
     public void addResource(SyncResourceItemSimpleDto syncResourceItem) {
         synchronized (resources) {
-            if (resources.put(syncResourceItem.getId(), syncResourceItem) == null) {
+            if (resources.put(syncResourceItem.getId(), syncResourceItem) != null) {
                 logger.warning("Resource already exists: " + syncResourceItem);
             }
         }
