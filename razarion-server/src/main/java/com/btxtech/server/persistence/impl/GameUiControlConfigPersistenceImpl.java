@@ -29,7 +29,7 @@ import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ScrollUiQuest;
-import com.btxtech.shared.dto.ViewPositionConfig;
+import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
@@ -400,11 +400,11 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(104, 80));
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(1).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden")));
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(1).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden")));
         // Move quest
         Map<Integer, Integer> itemTypeCount = new HashMap<>();
         itemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
@@ -426,7 +426,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // Tower bot
         // Setup killer bot
         List<BotConfig> botConfigs = new ArrayList<>();
@@ -437,27 +437,27 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
 
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setBotConfigs(botConfigs).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setBotConfigs(botConfigs).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 
     // Tower -----------------------------------------------------------------------------
     private List<SceneConfig> setupParticle() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(200, 200)).setCameraLocked(false)).setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(200, 200)).setCameraLocked(false)).setRemoveLoadingCover(true));
         return sceneConfigs;
     }
 
     // User InventoryItem -----------------------------------------------------------------------------
     private List<SceneConfig> useInventoryItem() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true));
         // Use inventory item quest
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.INVENTORY_ITEM_PLACED).setComparisonConfig(new ComparisonConfig().setCount(1));
         // Tip
@@ -473,13 +473,13 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     // Build base -----------------------------------------------------------------------------
     private List<SceneConfig> buildBase() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
         Map<Integer, Integer> startTypeCount = new HashMap<>();
         startTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(startTypeCount));
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true).setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true).setRemoveLoadingCover(true));
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);
@@ -509,7 +509,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setBaseItemCount(1).setEnemyFreeRadius(10).setAllowedArea(new Rectangle2D(40, 210, 100, 100).toPolygon());
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // Player base place
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
         resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(64, 219)).setRotationZ(Math.toRadians(0)));
@@ -519,7 +519,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100));
         QuestConfig questConfig = new QuestConfig().setTitle("Sammle").setDescription("Sammle razarion um eine Armee zu bauen").setConditionConfig(conditionConfig);
 
-        sceneConfigs.add(new SceneConfig().setStartPointPlacerConfig(baseItemPlacerConfig).setViewPositionConfig(viewPositionConfig).setResourceItemTypePositions(resourceItemTypePositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setStartPointPlacerConfig(baseItemPlacerConfig).setViewFieldConfig(viewFieldConfig).setResourceItemTypePositions(resourceItemTypePositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 
@@ -531,8 +531,8 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true));
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true));
         // Setup killer bot
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -563,8 +563,8 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigss = new ArrayList<>();
         botKillOtherBotCommandConfigss.add(new BotKillOtherBotCommandConfig().setBotId(ENEMY_BOT).setTargetBotId(NPC_BOT_OUTPOST).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(250, 100, 50, 50).toPolygon())));
         // Camera
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigss));
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setBotConfigs(botConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigss));
         return sceneConfigs;
     }
 
@@ -587,7 +587,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(ENEMY_BOT).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(244, 187))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(ENEMY_BOT).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(264, 182))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
         // Camera
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(243, 80));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
@@ -596,7 +596,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
 
         Map<Integer, Integer> killItemTypeCount = new HashMap<>();
         killItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER, 1);
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true).setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs).setResourceItemTypePositions(resourceItemTypePositions).setStartPointPlacerConfig(baseItemPlacerConfig));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true).setViewFieldConfig(viewFieldConfig).setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs).setResourceItemTypePositions(resourceItemTypePositions).setStartPointPlacerConfig(baseItemPlacerConfig));
         sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(killItemTypeCount))).setTitle("Kill").setDescription("Kill 2")).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
@@ -608,9 +608,9 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         List<BoxItemPosition> boxItemPositions = new ArrayList<>();
         boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(BOX_ITEM_TYPE).setPosition(new DecimalPosition(110, 80)));
         // Camera
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
 
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setBoxItemPositions(boxItemPositions).setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setBoxItemPositions(boxItemPositions).setRemoveLoadingCover(true));
         addUserSpawnScene(sceneConfigs);
 
         QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
@@ -635,8 +635,8 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipConfig.setTip(GameTipConfig.Tip.SCROLL);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(305, 175));
         // div
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true));
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setViewFieldConfig(viewFieldConfig).setBotConfigs(botConfigs).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 
@@ -660,8 +660,8 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(100, 80))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER));
         // div
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setBotAttackCommandConfigs(botAttackCommandConfigs).setRemoveLoadingCover(true));
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(104, 32)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setBotConfigs(botConfigs).setBotAttackCommandConfigs(botAttackCommandConfigs).setRemoveLoadingCover(true));
         return sceneConfigs;
     }
 
@@ -669,7 +669,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private List<SceneConfig> demolitionVisualization() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(270, 260)).setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(270, 260)).setCameraLocked(false);
         List<BotConfig> botConfigs = new ArrayList<>();
         // Bot target
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -686,7 +686,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs = new ArrayList<>();
         botKillOtherBotCommandConfigs.add(new BotKillOtherBotCommandConfig().setBotId(NPC_BOT_OUTPOST).setTargetBotId(ENEMY_BOT).setDominanceFactor(1).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 220, 50, 50))));
 
-        sceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true).setViewPositionConfig(viewPositionConfig).setBotConfigs(botConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true).setViewFieldConfig(viewFieldConfig).setBotConfigs(botConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 
@@ -788,7 +788,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
 
     private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig().setIntroText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
-        sceneConfig.setViewPositionConfig(new ViewPositionConfig().setFromPosition(new DecimalPosition(270, 275)).setToPosition(new DecimalPosition(116, 84)).setSpeed(50.0).setCameraLocked(true));
+        sceneConfig.setViewFieldConfig(new ViewFieldConfig().setFromPosition(new DecimalPosition(270, 275)).setToPosition(new DecimalPosition(116, 84)).setSpeed(50.0).setCameraLocked(true).setBottomWidth(120.0));
         sceneConfigs.add(sceneConfig);
     }
 
@@ -817,15 +817,15 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setToPosition(new DecimalPosition(205, 102)).setSpeed(50.0).setCameraLocked(true);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(205, 102)).setSpeed(50.0).setCameraLocked(true);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotId(NPC_BOT_INSTRUCTOR).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setTargetPosition(new DecimalPosition(188, 90)));
-        sceneConfigs.add(new SceneConfig().setViewPositionConfig(viewPositionConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
     }
 
     private void addScrollToOwnScene(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig().setIntroText("Fahre deine Einheit zum Vorposten");
-        sceneConfig.setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(160, 100)).setSpeed(50.0).setCameraLocked(true));
+        sceneConfig.setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(160, 100)).setSpeed(50.0).setCameraLocked(true));
         sceneConfigs.add(sceneConfig);
     }
 
@@ -845,7 +845,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
 
     private void addNpcHarvestAttack(List<SceneConfig> sceneConfigs) {
         SceneConfig sceneConfig = new SceneConfig();
-        sceneConfig.setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(212, 144)).setSpeed(50.0).setCameraLocked(true));
+        sceneConfig.setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(212, 144)).setSpeed(50.0).setCameraLocked(true));
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER).setTargetSelection(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(190, 124, 40, 40))));
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(ENEMY_BOT).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER).setTargetSelection(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(190, 124, 40, 40))));
@@ -857,7 +857,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // Scroll Quest
         ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setXp(1).setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(250, 290, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
         // div
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig().setCameraLocked(false);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setCameraLocked(false);
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotId(ENEMY_BOT).setResourceItemTypeId(RESOURCE_ITEM_TYPE).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(212, 144))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER));
         // Tip
@@ -865,7 +865,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipConfig.setTip(GameTipConfig.Tip.SCROLL);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(270, 310));
 
-        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setViewPositionConfig(viewPositionConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
+        sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setViewFieldConfig(viewFieldConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
     }
 
     private void addPickBoxTask(List<SceneConfig> sceneConfigs) {
@@ -919,11 +919,11 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // Kill human command
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
         botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotId(ENEMY_BOT).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209, 80, 70))));
-        sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000).setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(212, 160)).setSpeed(50.0)));
+        sceneConfigs.add(new SceneConfig().setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000));
     }
 
     private void addWaitForDeadTask(List<SceneConfig> sceneConfigs) {
-        sceneConfigs.add(new SceneConfig().setWaitForBaseLostDialog(true).setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(212, 130)).setSpeed(50.0)));
+        sceneConfigs.add(new SceneConfig().setWaitForBaseLostDialog(true));
     }
 
     private void addNpcEscapeTask(List<SceneConfig> sceneConfigs) {
@@ -1024,7 +1024,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // Attack command
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotId(NPC_BOT_OUTPOST_2).setTargetItemTypeId(BASE_ITEM_TYPE_TOWER).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(190, 242))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER));
-        sceneConfigs.add(new SceneConfig().setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(5000).setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(190, 242)).setSpeed(50.0)));
+        sceneConfigs.add(new SceneConfig().setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(5000).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(190, 242)).setSpeed(50.0)));
     }
 
     private void addNpcTooWeakCommand(List<SceneConfig> sceneConfigs) {

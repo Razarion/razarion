@@ -61,6 +61,5 @@ public class DevToolStatusBarRendererUnit extends AbstractStatusBarRendererUnit 
     protected void draw(ModelMatrices modelMatrices) {
         this.modelMatrices = modelMatrices;
         webGlEmulator.drawArrays(webGlProgramEmulator);
-        System.out.println("StatusBarModelMatrices: " + ((StatusBarModelMatrices) modelMatrices).getProgress());
     }
 }

@@ -6,17 +6,18 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  * Created by Beat
  * 05.07.2016.
  */
-public class ViewPositionConfig {
+public class ViewFieldConfig {
     private DecimalPosition fromPosition;
     private DecimalPosition toPosition;
     private Double speed;
     private boolean cameraLocked;
+    private Double bottomWidth;
 
     public DecimalPosition getFromPosition() {
         return fromPosition;
     }
 
-    public ViewPositionConfig setFromPosition(DecimalPosition fromPosition) {
+    public ViewFieldConfig setFromPosition(DecimalPosition fromPosition) {
         this.fromPosition = fromPosition;
         return this;
     }
@@ -25,7 +26,7 @@ public class ViewPositionConfig {
         return toPosition;
     }
 
-    public ViewPositionConfig setToPosition(DecimalPosition toPosition) {
+    public ViewFieldConfig setToPosition(DecimalPosition toPosition) {
         this.toPosition = toPosition;
         return this;
     }
@@ -34,7 +35,7 @@ public class ViewPositionConfig {
         return speed;
     }
 
-    public ViewPositionConfig setSpeed(Double speed) {
+    public ViewFieldConfig setSpeed(Double speed) {
         this.speed = speed;
         return this;
     }
@@ -43,8 +44,17 @@ public class ViewPositionConfig {
         return cameraLocked;
     }
 
-    public ViewPositionConfig setCameraLocked(boolean cameraLocked) {
+    public ViewFieldConfig setCameraLocked(boolean cameraLocked) {
         this.cameraLocked = cameraLocked;
+        return this;
+    }
+
+    public Double getBottomWidth() {
+        return bottomWidth;
+    }
+
+    public ViewFieldConfig setBottomWidth(Double bottomWidth) {
+        this.bottomWidth = bottomWidth;
         return this;
     }
 }

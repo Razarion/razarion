@@ -15,7 +15,7 @@ import com.btxtech.shared.datatypes.Vertex;
  * <p>
  * GWT strips of unused methods. Getter and setter are not available
  */
-public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snapshot
+public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snapshot or volatile
     private int baseId;
     private Matrix4 weaponTurret;
     private double spawning;

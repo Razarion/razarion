@@ -12,7 +12,7 @@ import java.util.List;
 public class SceneConfig {
     private String introText;
     private QuestConfig questConfig;
-    private ViewPositionConfig viewPositionConfig;
+    private ViewFieldConfig viewFieldConfig;
     private List<BotConfig> botConfigs;
     private List<BotMoveCommandConfig> botMoveCommandConfigs;
     private List<BotHarvestCommandConfig> botHarvestCommandConfigs;
@@ -41,12 +41,12 @@ public class SceneConfig {
         return this;
     }
 
-    public ViewPositionConfig getViewPositionConfig() {
-        return viewPositionConfig;
+    public ViewFieldConfig getViewFieldConfig() {
+        return viewFieldConfig;
     }
 
-    public SceneConfig setViewPositionConfig(ViewPositionConfig viewPositionConfig) {
-        this.viewPositionConfig = viewPositionConfig;
+    public SceneConfig setViewFieldConfig(ViewFieldConfig viewFieldConfig) {
+        this.viewFieldConfig = viewFieldConfig;
         return this;
     }
 

@@ -2,7 +2,7 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.ViewPositionConfig;
+import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -83,11 +83,17 @@ public class TerrainScrollHandler {
         }
     }
 
-    public void setScrollDisabled(boolean scrollDisabled) {
+    public void setScrollDisabled(boolean scrollDisabled, Double bottomWidth) {
         this.scrollDisabled = scrollDisabled;
-        projectionTransformation.setDisableFovYChange(scrollDisabled);
         if (scrollDisabled) {
             simpleScheduledFuture.cancel();
+            if (bottomWidth != null) {
+                projectionTransformation.setViewFieldBottomWidth(bottomWidth);
+            } else {
+                projectionTransformation.setViewFieldBottomWidthFromCurrent();
+            }
+        } else {
+            projectionTransformation.setViewFieldBottomWidth(null);
         }
     }
 
@@ -196,56 +202,47 @@ public class TerrainScrollHandler {
         setCameraPosition(cameraPosition);
     }
 
-    public void executeViewPositionConfig(ViewPositionConfig viewPositionConfig, Optional<Runnable> completionCallback) {
-        projectionTransformation.setDefaultFovY();
-        if (viewPositionConfig.getSpeed() != null) {
-            setScrollDisabled(true);
-            if (viewPositionConfig.getFromPosition() != null) {
-                setViewFieldCenterPosition(viewPositionConfig.getFromPosition());
+    public void executeViewFieldConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {
+        if (viewFieldConfig.getSpeed() != null) {
+            setScrollDisabled(true, viewFieldConfig.getBottomWidth());
+            if (viewFieldConfig.getFromPosition() != null) {
+                setCameraPosition(setupPossibleCameraPosition(viewFieldConfig.getFromPosition()));
             }
-            if (viewPositionConfig.getToPosition() != null) {
+            if (viewFieldConfig.getToPosition() != null) {
                 if (moveHandler != null) {
                     moveHandler.cancel();
                     moveHandler = null;
                 }
                 lastAutoScrollTimeStamp = System.currentTimeMillis();
                 moveHandler = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, true, () -> {
-                    double distance = setupScrollDistance(viewPositionConfig.getSpeed());
-                    if (currentAabb.center().getDistance(viewPositionConfig.getToPosition()) < distance) {
-                        setViewFieldCenterPosition(viewPositionConfig.getToPosition());
-                        finishExecuteViewPositionConfig(viewPositionConfig, completionCallback);
+                    double distance = setupScrollDistance(viewFieldConfig.getSpeed());
+                    DecimalPosition possibleCameraPosition = setupPossibleCameraPosition(viewFieldConfig.getToPosition());
+                    if (camera.getPosition().toXY().getDistance(possibleCameraPosition) < distance) {
+                        setCameraPosition(possibleCameraPosition);
+                        finishExecuteViewPositionConfig(viewFieldConfig, completionCallback);
                     } else {
-                        DecimalPosition newViewFieldCenter = currentAabb.center().getPointWithDistance(distance, viewPositionConfig.getToPosition(), false);
-                        if (setViewFieldCenterPosition(newViewFieldCenter)) {
-                            // Desired view fields can not be reached
-                            finishExecuteViewPositionConfig(viewPositionConfig, completionCallback);
-                        }
+                        setCameraPosition(camera.getPosition().toXY().getPointWithDistance(distance, possibleCameraPosition, false));
                     }
                 }, SimpleExecutorService.Type.UNSPECIFIED);
             }
         } else {
-            setScrollDisabled(viewPositionConfig.isCameraLocked());
-            if (viewPositionConfig.getToPosition() != null) {
-                setViewFieldCenterPosition(viewPositionConfig.getToPosition());
+            setScrollDisabled(viewFieldConfig.isCameraLocked(), viewFieldConfig.getBottomWidth());
+            if (viewFieldConfig.getToPosition() != null) {
+                setCameraPosition(setupPossibleCameraPosition(viewFieldConfig.getToPosition()));
             }
         }
     }
 
-    private void finishExecuteViewPositionConfig(ViewPositionConfig viewPositionConfig, Optional<Runnable> completionCallback) {
-        setScrollDisabled(viewPositionConfig.isCameraLocked());
+    private void finishExecuteViewPositionConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {
+        setScrollDisabled(viewFieldConfig.isCameraLocked(), viewFieldConfig.getBottomWidth());
         moveHandler.cancel();
         moveHandler = null;
         completionCallback.ifPresent(Runnable::run);
     }
 
-    /**
-     * @param viewFieldCenterPosition desired psotion
-     * @return if desired view file can not be reached due to play ground restriction
-     */
-    private boolean setViewFieldCenterPosition(DecimalPosition viewFieldCenterPosition) {
+    private DecimalPosition setupPossibleCameraPosition(DecimalPosition viewFieldCenterPosition) {
         if (playGround == null) {
-            setCameraPosition(projectionTransformation.viewFieldCenterToCamera(viewFieldCenterPosition, 0));
-            return false;
+            return projectionTransformation.viewFieldCenterToCamera(viewFieldCenterPosition, 0);
         }
         Rectangle2D viewFieldAabb;
         if (currentAabb != null) {
@@ -255,13 +252,10 @@ public class TerrainScrollHandler {
         }
         Rectangle2D possibleViewFieldCenterRect = new Rectangle2D(playGround.startX() + viewFieldAabb.width() / 2.0, playGround.startY() + viewFieldAabb.height() / 2.0, playGround.width() - viewFieldAabb.width(), playGround.height() - viewFieldAabb.height());
         if (possibleViewFieldCenterRect.contains(viewFieldCenterPosition)) {
-            setCameraPosition(projectionTransformation.viewFieldCenterToCamera(viewFieldCenterPosition, 0));
-            return false;
+            return projectionTransformation.viewFieldCenterToCamera(viewFieldCenterPosition, 0);
         }
         DecimalPosition possibleViewFieldCenter = possibleViewFieldCenterRect.getNearestPoint(viewFieldCenterPosition);
-        setCameraPosition(projectionTransformation.viewFieldCenterToCamera(possibleViewFieldCenter, 0));
-
-        return true;
+        return projectionTransformation.viewFieldCenterToCamera(possibleViewFieldCenter, 0);
     }
 
     private void setCameraPosition(DecimalPosition position) {

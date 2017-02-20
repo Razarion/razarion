@@ -13,7 +13,7 @@ import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.shared.dto.ViewPositionConfig;
+import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -139,7 +139,7 @@ public class ExperimentalTask extends AbstractStartupTask {
 
     private List<SceneConfig> defaultSceneConfigs() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        sceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true).setViewPositionConfig(new ViewPositionConfig().setToPosition(new DecimalPosition(200, 200))));
+        sceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(200, 200))));
         return sceneConfigs;
     }
 }

@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.dto.ViewPositionConfig;
+import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.SceneConfig;
 
 import javax.persistence.AttributeOverride;
@@ -45,12 +45,12 @@ public class SceneEntity {
         SceneConfig sceneConfig = new SceneConfig();
         sceneConfig.setIntroText(introText);
         // TODO sceneConfig.setShowQuestSideBar(showQuestSideBar);
-        ViewPositionConfig viewPositionConfig = new ViewPositionConfig();
-        // TODO viewPositionConfig.setFromPosition(cameraConfigFromPosition);
-        // TODO viewPositionConfig.setToPosition(cameraConfigToPosition);
-        // TODO viewPositionConfig.setSmooth(cameraConfigSmooth);
-        viewPositionConfig.setCameraLocked(cameraConfigCameraLocked);
-        sceneConfig.setViewPositionConfig(viewPositionConfig);
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig();
+        // TODO viewFieldConfig.setFromPosition(cameraConfigFromPosition);
+        // TODO viewFieldConfig.setToPosition(cameraConfigToPosition);
+        // TODO viewFieldConfig.setSmooth(cameraConfigSmooth);
+        viewFieldConfig.setCameraLocked(cameraConfigCameraLocked);
+        sceneConfig.setViewFieldConfig(viewFieldConfig);
         return sceneConfig;
     }
 

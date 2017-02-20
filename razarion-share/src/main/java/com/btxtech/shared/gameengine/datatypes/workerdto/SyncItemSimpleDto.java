@@ -8,7 +8,7 @@ import com.btxtech.shared.datatypes.Vertex;
  * Created by Beat
  * 06.01.2017.
  */
-public abstract class SyncItemSimpleDto { // Rename to Snapshot
+public abstract class SyncItemSimpleDto { // Rename to Snapshot or volatile
     protected int id;
     private int itemTypeId;
     private DecimalPosition position2d;

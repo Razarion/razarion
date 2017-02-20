@@ -2,7 +2,7 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.shared.dto.ViewPositionConfig;
+import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -71,7 +71,7 @@ public class Scene implements TerrainScrollListener {
     }
 
     public void run() {
-        setupCameraConfig(sceneConfig.getViewPositionConfig());
+        setupViewFieldConfig(sceneConfig.getViewFieldConfig());
         if (sceneConfig.isRemoveLoadingCover()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
@@ -162,16 +162,16 @@ public class Scene implements TerrainScrollListener {
         }
     }
 
-    private void setupCameraConfig(ViewPositionConfig viewPositionConfig) {
-        if (viewPositionConfig == null) {
+    private void setupViewFieldConfig(ViewFieldConfig viewFieldConfig) {
+        if (viewFieldConfig == null) {
             return;
         }
 
-        if (viewPositionConfig.getSpeed() != null && viewPositionConfig.getToPosition() != null) {
+        if (viewFieldConfig.getSpeed() != null && viewFieldConfig.getToPosition() != null) {
             hasCompletionCallback = true;
             completionCallbackCount++;
         }
-        terrainScrollHandler.executeViewPositionConfig(viewPositionConfig, Optional.of(this::onComplete));
+        terrainScrollHandler.executeViewFieldConfig(viewFieldConfig, Optional.of(this::onComplete));
     }
 
     @Override

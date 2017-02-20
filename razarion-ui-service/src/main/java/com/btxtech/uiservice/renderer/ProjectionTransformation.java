@@ -36,25 +36,50 @@ public class ProjectionTransformation {
     private double zNear;
     private double zFar;
     private boolean fovYConstrain = true;
-    private boolean disableFovYChange;
+    private Double bottomWidth;
 
     public double getFovY() {
         return fovY;
     }
 
+    /**
+     * Does not check the FovY constraints. Should only be used in editors.
+     *
+     * @param fovY field of view Y on radiants
+     */
     public void setFovY(double fovY) {
         this.fovY = fovY;
         setupMatrices();
     }
 
-    public void setDefaultFovY() {
-        setFovY(DEFAULT_FOV_Y);
+    public void setViewFieldBottomWidth(Double bottomWidth) {
+        this.bottomWidth = bottomWidth;
+        if (bottomWidth != null) {
+            setupFovYFromBottomWidth();
+        }
     }
 
-    public void setConstrainedFovY(double fovY) {
-        if (disableFovYChange) {
+    public void setViewFieldBottomWidthFromCurrent() {
+        double camera2BottomViewFiled = camera.getTranslateZ() / Math.cos(camera.getRotateX() - fovY / 2.0);
+        double fovXHalf = Math.atan(Math.tan(fovY / 2.0) * aspectRatio);
+        bottomWidth = Math.tan(fovXHalf) * camera2BottomViewFiled * 2.0;
+    }
+
+    private void setupFovYFromBottomWidth() {
+        double camera2BottomViewFiled = camera.getTranslateZ() / Math.cos(camera.getRotateX() - fovY / 2.0);
+        double fovX = 2.0 * Math.atan(bottomWidth / 2.0 / camera2BottomViewFiled);
+        double fovY = 2.0 * Math.atan(Math.tan(fovX / 2.0) / aspectRatio);
+        setConstrainedFovY(fovY);
+    }
+
+    public void setFovYSave(double fovY) {
+        if (bottomWidth != null) {
             return;
         }
+        setConstrainedFovY(fovY);
+    }
+
+    private void setConstrainedFovY(double fovY) {
         if (fovYConstrain) {
             setFovY(MathHelper.clamp(fovY, MIN_FOV_Y, MAX_FOV_Y));
         } else {
@@ -68,6 +93,9 @@ public class ProjectionTransformation {
 
     public void setAspectRatio(double aspectRatio) {
         this.aspectRatio = aspectRatio;
+        if (bottomWidth != null) {
+            setupFovYFromBottomWidth();
+        }
         setupMatrices();
     }
 
@@ -187,10 +215,6 @@ public class ProjectionTransformation {
 
     public void disableFovYConstrain() {
         fovYConstrain = false;
-    }
-
-    public void setDisableFovYChange(boolean disableFovYChange) {
-        this.disableFovYChange = disableFovYChange;
     }
 
     @Override

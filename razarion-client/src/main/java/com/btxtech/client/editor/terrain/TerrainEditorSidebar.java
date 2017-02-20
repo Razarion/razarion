@@ -148,7 +148,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
     private void topViewButtonClick(ClickEvent event) {
         projectionTransformation.disableFovYConstrain();
         terrainScrollHandler.setPlayGround(null);
-        terrainScrollHandler.setScrollDisabled(false);
+        terrainScrollHandler.setScrollDisabled(false, null);
         camera.setTop();
         terrainScrollHandler.update();
     }
