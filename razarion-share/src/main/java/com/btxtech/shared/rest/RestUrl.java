@@ -6,6 +6,7 @@ package com.btxtech.shared.rest;
  */
 public class RestUrl {
     public static final String APPLICATION_PATH = "rest";
+    public static final String REMOTE_LOGGING = "remote_logging";
     public static final String IMAGE_SERVICE_PATH = "image";
     public static final String AUDIO_SERVICE_PATH = "audio";
     public static final String GAME_UI_CONTROL_PATH = "gameuicontrol";

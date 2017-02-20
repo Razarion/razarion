@@ -36,7 +36,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     public void loadWorker(DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
         try {
-            worker = Browser.getWindow().newWorker(ClientUrls.CLIENT_WORKER_SCRIPT);
+            worker = Browser.getWindow().newWorker(getRazarionRquestContextPath() + "/" + ClientUrls.CLIENT_WORKER_SCRIPT);
             worker.setOnmessage(event -> {
                 try {
                     MessageEvent messageEvent = (MessageEvent) event;
@@ -71,4 +71,9 @@ public class ClientGameEngineControl extends GameEngineControl {
         deferredStartup.finished();
         deferredStartup = null;
     }
+
+    public native String getRazarionRquestContextPath() /*-{
+        return $wnd.razarionRquestContextPath;
+    }-*/;
+
 }

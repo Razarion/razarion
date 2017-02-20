@@ -1,0 +1,6 @@
+Bundle-Version: 1.0.0
+Include-Resource: configuration=src/main/resources/configuration
+ConfigurationPath: /configuration
+-jsp: *.jsp
+-plugin.bundle: com.liferay.ant.bnd.resource.bundle.ResourceBundleLoaderAnalyzerPlugin
+-plugin.jsp: com.liferay.ant.bnd.jsp.JspAnalyzerPlugin

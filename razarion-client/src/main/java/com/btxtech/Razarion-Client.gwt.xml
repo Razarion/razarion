@@ -20,6 +20,13 @@
     <!--<set-property name="phonegap.logging.consoleHandler"-->
                   <!--value="DISABLED" />-->
 
+    <replace-with class="com.btxtech.common.system.logging.RestRemoteLogHandler">
+        <when-type-is class="com.google.gwt.logging.client.SimpleRemoteLogHandler" />
+        <any>
+            <when-property-is name="gwt.logging.enabled" value="TRUE" />
+            <when-property-is name="gwt.logging.simpleRemoteHandler" value="ENABLED" />
+        </any>
+    </replace-with>
     <set-property name="gwt.logging.enabled" value="TRUE"/>
     <set-property name="gwt.logging.logLevel" value="WARNING"/>
     <set-property name="gwt.logging.simpleRemoteHandler" value="ENABLED" />
