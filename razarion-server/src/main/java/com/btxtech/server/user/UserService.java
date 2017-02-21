@@ -24,15 +24,14 @@ public class UserService {
     private EntityManager entityManager;
     @Inject
     private Logger logger;
+    @Inject
+    private UserSession userSession;
 
     public UserContext setUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
         // TODO verify facebook signedRequest
-        if (facebookUserLoginInfo == null) {
-            logger.warning("facebookUserLoginInfo == null");
-            return createUserContext(null);
-        }
+
+        // facebookUserLoginInfo is never null. Errai Jackson JAX-RS does not accept null value in POST rest call
         if (facebookUserLoginInfo.getUserId() == null) {
-            logger.warning("facebookUserLoginInfo.getUserId() == null");
             return createUserContext(null);
         }
 
@@ -43,9 +42,7 @@ public class UserService {
 
 
         UserContext userContext = createUserContext(userEntity);
-
-        // TODO set insession
-
+        userSession.setUserContext(userContext);
         return userContext;
     }
 
@@ -53,6 +50,7 @@ public class UserService {
         UserContext userContext = new UserContext();
         if (userEntity != null) {
             userContext.setUserId(userEntity.getId().intValue());
+            userContext.setAdmin(userEntity.isAdmin());
         } else {
             userContext.setUserId(999999999); // TODO
         }

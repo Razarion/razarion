@@ -3,6 +3,7 @@ package com.btxtech.common.system.logging;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.rest.LoggingProvider;
 import com.btxtech.shared.utils.ExceptionUtil;
+import com.google.gwt.logging.impl.StackTracePrintStream;
 import org.jboss.errai.enterprise.client.jaxrs.api.ResponseCallback;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
@@ -15,7 +16,6 @@ import java.util.logging.LogRecord;
 public class JsonLogService {
     public static void doLog(LogRecord logRecord) {
         RestClient.create(LoggingProvider.class, (ResponseCallback) response -> {
-
         }, (message, throwable) -> {
             FallbackLog.fallbackXhrLog("Error callback: JSON log failed: " + ExceptionUtil.setupStackTrace(message + "", throwable) + " Original log record: " + FallbackLog.toString(logRecord));
             return false;
@@ -31,7 +31,11 @@ public class JsonLogService {
         logRecordInfo.setMessage(logRecord.getMessage());
         // TODO not available in GWT logRecordInfo.setThreadID(logRecord.getThreadID());
         logRecordInfo.setMillis(Long.toString(logRecord.getMillis()));
-        // TODO logRecordInfo.setThrown(logRecord.getThrown());
+        if (logRecord.getThrown() != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            logRecord.getThrown().printStackTrace(new StackTracePrintStream(stringBuilder));
+            logRecordInfo.setThrown(stringBuilder.toString());
+        }
         logRecordInfo.setLoggerName(logRecord.getLoggerName());
         return logRecordInfo;
     }

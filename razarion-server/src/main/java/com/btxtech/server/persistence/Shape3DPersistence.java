@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
@@ -48,6 +49,7 @@ public class Shape3DPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public Shape3D create() throws ParserConfigurationException, SAXException, IOException {
         ColladaEntity colladaEntity = new ColladaEntity();
         entityManager.persist(colladaEntity);
@@ -64,6 +66,7 @@ public class Shape3DPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void save(Shape3DConfig shape3DConfig) throws ParserConfigurationException, SAXException, IOException {
         ColladaEntity colladaEntity = entityManager.find(ColladaEntity.class, (long) shape3DConfig.getDbId());
         if (shape3DConfig.getColladaString() != null) {
@@ -88,6 +91,7 @@ public class Shape3DPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void delete(int id) {
         entityManager.remove(entityManager.find(ColladaEntity.class, (long) id));
     }

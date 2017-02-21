@@ -13,6 +13,7 @@ import java.util.Set;
 public class UserContext {
     private int userId;
     private String name;
+    private boolean admin;
     private int levelId;
     private int xp;
     private int crystals;
@@ -37,6 +38,15 @@ public class UserContext {
 
     public UserContext setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public UserContext setAdmin(boolean admin) {
+        this.admin = admin;
         return this;
     }
 

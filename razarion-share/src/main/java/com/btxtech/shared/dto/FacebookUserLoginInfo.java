@@ -6,7 +6,7 @@ package com.btxtech.shared.dto;
  */
 public class FacebookUserLoginInfo {
     private String accessToken;
-    private int expiresIn;
+    private Integer expiresIn;
     private String signedRequest;
     private String userId;
 
@@ -19,11 +19,11 @@ public class FacebookUserLoginInfo {
         return this;
     }
 
-    public int getExpiresIn() {
+    public Integer getExpiresIn() {
         return expiresIn;
     }
 
-    public FacebookUserLoginInfo setExpiresIn(int expiresIn) {
+    public FacebookUserLoginInfo setExpiresIn(Integer expiresIn) {
         this.expiresIn = expiresIn;
         return this;
     }

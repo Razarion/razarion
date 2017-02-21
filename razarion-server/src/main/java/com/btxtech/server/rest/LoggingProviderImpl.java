@@ -23,6 +23,9 @@ public class LoggingProviderImpl implements LoggingProvider {
     public void jsonLogger(LogRecordInfo logRecordInfo) {
         try {
             logger.log(toLogRecord(logRecordInfo));
+            if (logRecordInfo.getThrown() != null) {
+                logger.severe(logRecordInfo.getThrown());
+            }
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Logging from client failed. LogRecordInfo: " + logRecordInfo, throwable);
         }
@@ -43,7 +46,6 @@ public class LoggingProviderImpl implements LoggingProvider {
         // TODO not available in GWT logRecord.setThreadID(logRecordInfo.getThreadID());
 
         logRecord.setMillis(Long.parseLong(logRecordInfo.getMillis()));
-        // TODO stacktrace
         logRecord.setLoggerName(logRecordInfo.getLoggerName());
         return logRecord;
     }

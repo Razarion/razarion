@@ -1,6 +1,7 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.client.editor.terrain.TerrainEditorImpl;
+import com.btxtech.shared.dto.FacebookUserLoginInfo;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -34,6 +35,10 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
+        FacebookUserLoginInfo facebookUserLoginInfo = userUiService.getFacebookUserLoginInfo();
+        if(facebookUserLoginInfo == null) {
+            facebookUserLoginInfo = new FacebookUserLoginInfo(); // Errai Jackson JAX-RS does not accept null value in POST rest call
+        }
         serviceCaller.call(new RemoteCallback<GameUiControlConfig>() {
             @Override
             public void callback(GameUiControlConfig gameUiControlConfig) {
@@ -44,6 +49,6 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
             logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
             deferredStartup.failed(throwable);
             return false;
-        }).loadGameUiControlConfig(userUiService.getFacebookUserLoginInfo());
+        }).loadGameUiControlConfig(facebookUserLoginInfo);
     }
 }

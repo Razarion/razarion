@@ -6,6 +6,7 @@ import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -60,6 +61,7 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public GroundConfig saveGroundConfig(GroundConfig groundConfig) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
@@ -82,6 +84,7 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public SlopeConfig createSlopeConfig() {
         SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
         slopeConfigEntity.setDefault();
@@ -117,6 +120,7 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void updateSlopeConfig(SlopeConfig slopeConfig) {
         SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) slopeConfig.getId());
         slopeConfigEntity.fromSlopeConfig(slopeConfig, imagePersistence);
@@ -124,6 +128,7 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void deleteSlopeConfig(int id) {
         SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) id);
         entityManager.remove(slopeConfigEntity);
@@ -157,18 +162,21 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void saveTerrainObject(TerrainObjectConfig terrainObjectConfig) {
         TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
         terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, shape3DPersistence.getColladaEntity(terrainObjectConfig.getShape3DId()));
     }
 
     @Transactional
+    @SecurityCheck
     public void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
         TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
         entityManager.remove(terrainObjectEntity);
     }
 
     @Transactional
+    @SecurityCheck
     public TerrainObjectConfig createTerrainObjectConfig() {
         TerrainObjectEntity terrainObjectEntity = new TerrainObjectEntity();
         entityManager.persist(terrainObjectEntity);

@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.DataUrlDecoder;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.AudioItemConfig;
 
 import javax.inject.Singleton;
@@ -54,6 +55,7 @@ public class AudioPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void createAudio(DataUrlDecoder dataUrlDecoder) {
         AudioLibraryEntity audioLibraryEntity = new AudioLibraryEntity();
         audioLibraryEntity.setType(dataUrlDecoder.getType());
@@ -63,6 +65,7 @@ public class AudioPersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void save(List<AudioItemConfig> audioItemConfigs) {
         for (AudioItemConfig audioItemConfig : audioItemConfigs) {
             AudioLibraryEntity audioLibraryEntity = entityManager.find(AudioLibraryEntity.class, (long) audioItemConfig.getId());

@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.DataUrlDecoder;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ImageGalleryItem;
 
 import javax.inject.Singleton;
@@ -55,6 +56,7 @@ public class ImagePersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void createImage(DataUrlDecoder dataUrlDecoder) {
         ImageLibraryEntity imageLibraryEntity = new ImageLibraryEntity();
         imageLibraryEntity.setType(dataUrlDecoder.getType());
@@ -64,6 +66,7 @@ public class ImagePersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void save(int id, DataUrlDecoder dataUrlDecoder) {
         ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, (long) id);
         imageLibraryEntity.setType(dataUrlDecoder.getType());

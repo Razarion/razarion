@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.Shape3DPersistence;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -32,6 +33,7 @@ public class ItemTypePersistence {
     private Shape3DPersistence shape3DPersistence;
 
     @Transactional
+    @SecurityCheck
     public BaseItemType createBaseItemType() {
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
         entityManager.persist(baseItemTypeEntity);
@@ -50,6 +52,7 @@ public class ItemTypePersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void updateBaseItemType(BaseItemType baseItemType) {
         BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, (long) baseItemType.getId());
         baseItemTypeEntity.fromBaseItemType(baseItemType);
@@ -59,11 +62,13 @@ public class ItemTypePersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void deleteBaseItemType(int id) {
         entityManager.remove(entityManager.find(BaseItemTypeEntity.class, (long) id));
     }
 
     @Transactional
+    @SecurityCheck
     public ResourceItemType createResourceItemType() {
         ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
         entityManager.persist(resourceItemTypeEntity);
@@ -82,6 +87,7 @@ public class ItemTypePersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void updateResourceItemType(ResourceItemType resourceItemType) {
         ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, (long) resourceItemType.getId());
         resourceItemTypeEntity.fromBaseItemType(resourceItemType);
@@ -90,12 +96,14 @@ public class ItemTypePersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void deleteResourceItemType(int id) {
         entityManager.remove(entityManager.find(ResourceItemTypeEntity.class, (long) id));
     }
 
     @Transactional
-   public BoxItemType createBoxItemType() {
+    @SecurityCheck
+    public BoxItemType createBoxItemType() {
         BoxItemTypeEntity boxItemTypeEntity = new BoxItemTypeEntity();
         entityManager.persist(boxItemTypeEntity);
         return boxItemTypeEntity.toBoxItemType();
@@ -113,11 +121,13 @@ public class ItemTypePersistence {
     }
 
     @Transactional
+    @SecurityCheck
     public void deleteBoxItemType(int id) {
         entityManager.remove(entityManager.find(BoxItemTypeEntity.class, (long) id));
     }
 
     @Transactional
+    @SecurityCheck
     public void updateBoxItemType(BoxItemType boxItemType) {
         BoxItemTypeEntity boxItemTypeEntity = entityManager.find(BoxItemTypeEntity.class, (long) boxItemType.getId());
         boxItemTypeEntity.fromBoxItemType(boxItemType);

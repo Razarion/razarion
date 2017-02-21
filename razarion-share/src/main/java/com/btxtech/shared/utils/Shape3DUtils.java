@@ -77,6 +77,9 @@ public class Shape3DUtils {
     public static Set<Integer> getAllTextures(Collection<Shape3D> shape3Ds) {
         Set<Integer> textureIds = new HashSet<>();
         for (Shape3D shape3D : shape3Ds) {
+            if(shape3D.getElement3Ds() == null) {
+                continue;
+            }
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                     if (vertexContainer.getTextureId() != null) {

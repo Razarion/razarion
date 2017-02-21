@@ -2,6 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
@@ -29,6 +30,7 @@ public class PlanetPersistenceService {
     private EntityManager entityManager;
 
     @Transactional
+    @SecurityCheck
     public void createTerrainObjectPositions(List<TerrainObjectPosition> createdTerrainObjects) {
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
         for (TerrainObjectPosition terrainObjectPosition : createdTerrainObjects) {
@@ -46,6 +48,7 @@ public class PlanetPersistenceService {
     }
 
     @Transactional
+    @SecurityCheck
     public void updateTerrainObjectPositions(List<TerrainObjectPosition> updatedTerrainObjects) {
         PlanetEntity planetEntity = loadPlanet();
         for (TerrainObjectPosition terrainObjectPosition : updatedTerrainObjects) {
@@ -59,6 +62,7 @@ public class PlanetPersistenceService {
     }
 
     @Transactional
+    @SecurityCheck
     public void deleteTerrainObjectPositionIds(List<Integer> deletedTerrainIds) {
         PlanetEntity planetEntity = loadPlanet();
         for (int terrainSlopePositionId : deletedTerrainIds) {
@@ -67,6 +71,7 @@ public class PlanetPersistenceService {
     }
 
     @Transactional
+    @SecurityCheck
     public void updateTerrainSlopePositions(List<TerrainSlopePosition> updatedSlopes) {
         PlanetEntity planetEntity = loadPlanet();
         for (TerrainSlopePosition terrainSlopePosition : updatedSlopes) {
@@ -79,6 +84,7 @@ public class PlanetPersistenceService {
     }
 
     @Transactional
+    @SecurityCheck
     public void createTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions) {
         List<TerrainSlopePositionEntity> terrainSlopePositionEntities = new ArrayList<>();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
@@ -94,6 +100,7 @@ public class PlanetPersistenceService {
     }
 
     @Transactional
+    @SecurityCheck
     public void deleteTerrainSlopePositions(Collection<Integer> terrainSlopePositionIds) {
         PlanetEntity planetEntity = loadPlanet();
         for (int terrainSlopePositionId : terrainSlopePositionIds) {
