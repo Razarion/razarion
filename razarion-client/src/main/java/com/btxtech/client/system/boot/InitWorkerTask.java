@@ -24,6 +24,6 @@ public class InitWorkerTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         deferredStartup.setBackground();
 
-        gameEngineControl.init(gameUiControl.getGameUiControlConfig().getGameEngineConfig(), gameUiControl.getUserContext(), deferredStartup);
+        gameEngineControl.init(gameUiControl.getGameUiControlConfig().getGameEngineConfig(), deferredStartup);
     }
 }

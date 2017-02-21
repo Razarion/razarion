@@ -29,6 +29,7 @@ import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
+import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -60,6 +61,8 @@ public abstract class GameEngineControl {
     private EffectVisualizationService effectVisualizationService;
     @Inject
     private ProjectileUiService projectileUiService;
+    @Inject
+    private UserUiService userUiService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup initializationReferredStartup;
 
@@ -73,9 +76,9 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.START);
     }
 
-    public void init(GameEngineConfig gameEngineConfig, UserContext userContext, DeferredStartup initializationReferredStartup) {
+    public void init(GameEngineConfig gameEngineConfig, DeferredStartup initializationReferredStartup) {
         this.initializationReferredStartup = initializationReferredStartup;
-        sendToWorker(GameEngineControlPackage.Command.INITIALIZE, gameEngineConfig, userContext);
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE, gameEngineConfig, userUiService.getUserContext());
     }
 
     void startBots(List<BotConfig> botConfigs) {
@@ -90,8 +93,14 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.CREATE_RESOURCES, resourceItemTypePositions);
     }
 
-    void createHumanBaseWithBaseItem(int levelId, int userId, String name, int baseItemTypeId, DecimalPosition position) {
-        sendToWorker(GameEngineControlPackage.Command.CREATE_HUMAN_BASE_WITH_BASE_ITEM, levelId, userId, name, baseItemTypeId, position);
+    // Needs to be public or userUiService is not set
+    public void createHumanBaseWithBaseItem(int baseItemTypeId, DecimalPosition position) {
+        sendToWorker(GameEngineControlPackage.Command.CREATE_HUMAN_BASE_WITH_BASE_ITEM,
+                userUiService.getUserContext().getLevelId(),
+                userUiService.getUserContext().getUserId(),
+                userUiService.getUserContext().getName(),
+                baseItemTypeId,
+                position);
     }
 
     public void spawnSyncBaseItem(BaseItemType baseItemType, Collection<DecimalPosition> decimalPositions) {
@@ -219,7 +228,7 @@ public abstract class GameEngineControl {
                 gameUiControl.onQuestPassed();
                 break;
             case BOX_PICKED:
-                gameUiControl.onOnBoxPicked((BoxContent) controlPackage.getSingleData());
+                userUiService.onOnBoxPicked((BoxContent) controlPackage.getSingleData());
                 break;
             case PROJECTILE_FIRED:
                 projectileUiService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1), (Vertex) controlPackage.getData(2));

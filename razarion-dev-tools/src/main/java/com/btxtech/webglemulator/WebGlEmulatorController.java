@@ -10,7 +10,6 @@ import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.control.GameEngineControl;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -21,6 +20,7 @@ import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.GameTipService;
+import com.btxtech.uiservice.user.UserUiService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -120,7 +120,7 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private InventoryUiService inventoryUiService;
     @Inject
-    private GameUiControl gameUiControl;
+    private UserUiService userUiService;
     @Inject
     private PerfmonService perfmonService;
     @Inject
@@ -376,7 +376,7 @@ public class WebGlEmulatorController implements Initializable {
             alert.setHeaderText("Inventory Items");
             alert.setContentText("Choose your option.");
 
-            for (InventoryItemModel inventoryItemModel : inventoryUiService.gatherInventoryItemModels(gameUiControl.getUserContext())) {
+            for (InventoryItemModel inventoryItemModel : inventoryUiService.gatherInventoryItemModels(userUiService.getUserContext())) {
                 alert.getButtonTypes().add(new ButtonType(Integer.toString(inventoryItemModel.getInventoryItem().getId())));
             }
 

@@ -8,11 +8,13 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.SideCockpit;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.tip.GameTipService;
+import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.jboss.errai.common.client.dom.Span;
+import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -29,8 +31,13 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Inject
     private GameTipService gameTipService;
     @Inject
+    private UserUiService userUiService;
+    @Inject
     @DataField
     private Button inventoryButton;
+    @Inject
+    @DataField
+    private TableRow editorTableRow;
     @Inject
     @DataField
     private Button editorButton;
@@ -53,6 +60,9 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.MAIN_COCKPIT);
         GwtUtils.preventContextMenu(this);
+        if(userUiService.isAdmin()) {
+
+        }
     }
 
     @Override

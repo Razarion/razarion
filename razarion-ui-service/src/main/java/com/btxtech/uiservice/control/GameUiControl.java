@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.control;
 
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -8,18 +7,14 @@ import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
-import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
-import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
@@ -37,8 +32,6 @@ import java.util.logging.Logger;
 public class GameUiControl { // Equivalent worker class is PlanetService
     private Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @Inject
-    private GameEngineControl gameEngineControl;
-    @Inject
     private VisualUiService visualUiService;
     @Inject
     private AudioService audioService;
@@ -49,8 +42,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private CockpitService cockpitService;
     @Inject
-    private ItemCockpitService itemCockpitService;
-    @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private TerrainTypeService terrainTypeService;
@@ -59,17 +50,16 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private InventoryService inventoryService;
     @Inject
-    private ModalDialogManager dialogManager;
+    private UserUiService userUiService;
     @Inject
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
     private GameUiControlConfig gameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
-    private UserContext userContext;
 
     public void setGameUiControlConfig(GameUiControlConfig gameUiControlConfig) {
         this.gameUiControlConfig = gameUiControlConfig;
-        userContext = gameUiControlConfig.getUserContext();
+        userUiService.setUserContext(gameUiControlConfig.getUserContext());
     }
 
     public void init() {
@@ -86,17 +76,13 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         runScene();
     }
 
-    public UserContext getUserContext() {
-        return userContext;
-    }
-
     private void runScene() {
         if (currentScene != null) {
             currentScene.cleanup();
         }
         currentScene = sceneInstance.get();
         logger.warning("Run Scene: " + currentScene);
-        currentScene.init(userContext, gameUiControlConfig.getSceneConfigs().get(nextSceneNumber));
+        currentScene.init(gameUiControlConfig.getSceneConfigs().get(nextSceneNumber));
         currentScene.run();
     }
 
@@ -129,36 +115,12 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void setGameInfo(GameInfo gameInfo) {
         baseItemUiService.updateGameInfo(gameInfo);
         if (gameInfo.getXpFromKills() > 0) {
-            increaseXp(gameInfo.getXpFromKills());
+            userUiService.increaseXp(gameInfo.getXpFromKills());
         }
-    }
-
-    public void increaseXp(int deltaXp) {
-        int xp = userContext.getXp() + deltaXp;
-        LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());
-        if (xp >= levelConfig.getXp2LevelUp()) {
-            LevelConfig newLevelConfig = levelService.getNextLevel(levelConfig);
-            userContext.setLevelId(newLevelConfig.getLevelId());
-            userContext.setXp(0);
-            gameEngineControl.updateLevel(newLevelConfig.getLevelId());
-            cockpitService.updateLevelAndXp(userContext);
-            itemCockpitService.onStateChanged();
-            dialogManager.onLevelPassed(userContext, levelConfig, newLevelConfig);
-        } else {
-            userContext.setXp(xp);
-            cockpitService.updateLevelAndXp(userContext);
-        }
-    }
-
-    public void onOnBoxPicked(BoxContent boxContent) {
-        for (InventoryItem inventoryItem : boxContent.getInventoryItems()) {
-            userContext.addInventoryItem(inventoryItem.getId());
-        }
-        dialogManager.showBoxPicked(boxContent);
     }
 
     public int getMyLimitation4ItemType(int itemTypeId) {
-        int levelCount = levelService.getLevel(userContext.getLevelId()).limitation4ItemType(itemTypeId);
+        int levelCount = levelService.getLevel(userUiService.getUserContext().getLevelId()).limitation4ItemType(itemTypeId);
         int planetCount = getPlanetConfig().imitation4ItemType(itemTypeId);
         return Math.min(levelCount, planetCount);
     }

@@ -21,6 +21,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -59,6 +60,8 @@ public class BaseItemUiService {
     private ModalDialogManager modalDialogManager;
     @Inject
     private EffectVisualizationService effectVisualizationService;
+    @Inject
+    private UserUiService userUiService;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
@@ -182,7 +185,7 @@ public class BaseItemUiService {
             if (bases.put(playerBase.getBaseId(), playerBase) != null) {
                 logger.warning("Base already exists: " + playerBase);
             }
-            if (playerBase.getUserId() != null && playerBase.getUserId() == gameUiControl.getUserContext().getUserId()) {
+            if (playerBase.getUserId() != null && playerBase.getUserId() == userUiService.getUserContext().getUserId()) {
                 myBase = playerBase;
             }
         }
