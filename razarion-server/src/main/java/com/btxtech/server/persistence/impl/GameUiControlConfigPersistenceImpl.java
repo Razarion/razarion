@@ -119,7 +119,6 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         Root<GameUiControlConfigEntity> from = userQuery.from(GameUiControlConfigEntity.class);
         CriteriaQuery<GameUiControlConfigEntity> userSelect = userQuery.select(from);
         GameUiControlConfig gameUiControlConfig = entityManager.createQuery(userSelect).getSingleResult().toGameUiControlConfig(gameEngineConfig);
-        gameUiControlConfig.setUserContext(new UserContext().setUserId(1).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.singletonList(INVENTORY_ITEM)));  // TODO mode to DB
         gameUiControlConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB

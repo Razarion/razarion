@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebServlet;
  * Created by Beat
  * 18.04.2015.
  */
+@Deprecated
 @WebServlet(urlPatterns = "/razarion_client_worker/remote_logging")
 public class WorkerGwtSuperDevModeLoggingServlet extends AbstractGwtSuperDevModeLoggingServlet {
     private final static String MODULE_NAME = "com.btxtech.Razarion-Client-Worker";

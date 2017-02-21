@@ -3,12 +3,14 @@ package com.btxtech.server;
 import com.google.gwt.logging.server.RemoteLoggingServiceImpl;
 import com.google.gwt.user.client.rpc.SerializationException;
 
+import javax.enterprise.context.Dependent;
 import java.io.File;
 
 /**
  * Created by Beat
  * 01.01.2017.
  */
+@Deprecated
 public abstract class AbstractGwtSuperDevModeLoggingServlet extends RemoteLoggingServiceImpl {
     private final static String TEMP_DIR = "C:\\Users\\Beat\\AppData\\Local\\Temp";
     private String path = null;

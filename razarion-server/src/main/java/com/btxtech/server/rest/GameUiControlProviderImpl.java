@@ -1,7 +1,9 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.user.UserService;
 import com.btxtech.servercommon.GameUiControlConfigPersistence;
 import com.btxtech.servercommon.collada.ColladaException;
+import com.btxtech.shared.dto.FacebookUserLoginInfo;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -22,12 +24,16 @@ public class GameUiControlProviderImpl implements GameUiControlProvider {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private UserService userService;
 
     @Override
     @Transactional
-    public GameUiControlConfig loadGameUiControlConfig() {
+    public GameUiControlConfig loadGameUiControlConfig(FacebookUserLoginInfo facebookUserLoginInfo) {
         try {
-            return gameUiControlConfigPersistence.load();
+            GameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load();
+            gameUiControlConfig.setUserContext(userService.setUserLoginInfo(facebookUserLoginInfo));
+            return gameUiControlConfig;
         } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

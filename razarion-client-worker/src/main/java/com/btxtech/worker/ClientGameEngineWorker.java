@@ -4,9 +4,11 @@ package com.btxtech.worker;
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
+import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental.events.MessageEvent;
 import elemental.js.html.JsDedicatedWorkerGlobalScope;
+import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +26,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
 
     @PostConstruct
     public void onModuleLoad() {
+        RestClient.setApplicationRoot(RestUrl.getWorkerApplicationRoot());
         getDedicatedWorkerGlobalScope().setOnmessage(evt -> {
             Object data = null;
             try {

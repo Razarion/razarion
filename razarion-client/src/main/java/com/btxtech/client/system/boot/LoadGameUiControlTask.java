@@ -6,6 +6,7 @@ import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.uiservice.user.UserUiService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -26,6 +27,8 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     private TerrainEditorImpl terrainEditor;
     @Inject
     private Caller<GameUiControlProvider> serviceCaller;
+    @Inject
+    private UserUiService userUiService;
     private Logger logger = Logger.getLogger(LoadGameUiControlTask.class.getName());
 
     @Override
@@ -41,6 +44,6 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
             logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
             deferredStartup.failed(throwable);
             return false;
-        }).loadGameUiControlConfig();
+        }).loadGameUiControlConfig(userUiService.getFacebookUserLoginInfo());
     }
 }

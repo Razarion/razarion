@@ -1,16 +1,17 @@
 package com.btxtech.client;
 
 import com.btxtech.client.clientI18n.ClientI18nConstants;
+import com.btxtech.client.system.boot.GameStartupSeq;
+import com.btxtech.client.user.Facebook;
+import com.btxtech.shared.datatypes.I18nString;
+import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.ClientRunner;
-import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupSeq;
 import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
-import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.rest.RestUrl;
-import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.LocaleInfo;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
@@ -81,6 +82,7 @@ public class Client {
                 logger.severe("onStartupFailed: " + taskInfo + " totalTime:" + totalTime);
             }
         });
+
     }
 
     @AfterInitialization
