@@ -44,6 +44,10 @@ button:disabled {
     cursor: default;
 }
 
+.image-button {
+    padding: 1px 6px 0 6px;
+}
+
 /** -------------------------- COMMON ENDS -------------------------- */
 
 /** -------------------------- MAIN -------------------------- */

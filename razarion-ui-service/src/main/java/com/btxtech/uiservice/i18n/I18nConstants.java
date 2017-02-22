@@ -238,6 +238,8 @@ public interface I18nConstants {
 
     String tooltipInventory();
 
+    String tooltipFullscreen();
+
     String tooltipFacebookCommunity();
 
     String tooltipFacebookInvite();
