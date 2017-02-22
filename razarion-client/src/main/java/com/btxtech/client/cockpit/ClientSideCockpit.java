@@ -42,6 +42,9 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @DataField
     private Button editorButton;
     @Inject
+    @DataField
+    private Button fullScreenButton;
+    @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     @DataField
@@ -60,14 +63,12 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.MAIN_COCKPIT);
         GwtUtils.preventContextMenu(this);
-        if(userUiService.isAdmin()) {
-
-        }
     }
 
     @Override
     public void show() {
         RootPanel.get().add(this);
+        editorTableRow.getStyle().setProperty("display", userUiService.isAdmin() ? "table-row" : "none");
     }
 
     @EventHandler("inventoryButton")
@@ -78,6 +79,11 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @EventHandler("editorButton")
     private void onEditorButtonClick(ClickEvent event) {
         modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null, null, DialogButton.Button.CLOSE);
+    }
+
+    @EventHandler("fullScreenButton")
+    private void onFullScreenButtonClick(ClickEvent event) {
+        GwtUtils.toggleFullscreen(RootPanel.get().getElement());
     }
 
     @Override

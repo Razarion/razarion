@@ -37,4 +37,32 @@ public class GwtUtils {
     public static void preventContextMenu(Element widget) {
         widget.addEventListener(Event.CONTEXTMENU, Event::preventDefault, true);
     }
+
+    public static native void toggleFullscreen(com.google.gwt.dom.client.Element element) /*-{
+        if (element.requestFullscreen) {
+            if ($doc.fullScreenElement) {
+                $doc.cancelFullScreen();
+            } else {
+                element.requestFullscreen();
+            }
+        } else if (element.msRequestFullscreen) {
+            if ($doc.msFullscreenElement) {
+                $doc.msExitFullscreen();
+            } else {
+                element.msRequestFullscreen();
+            }
+        } else if (element.mozRequestFullScreen) {
+            if ($doc.mozFullScreenElement) {
+                $doc.mozCancelFullScreen();
+            } else {
+                element.mozRequestFullScreen();
+            }
+        } else if (element.webkitRequestFullscreen) {
+            if ($doc.webkitFullscreenElement || $doc.webkitCurrentFullScreenElement) {
+                $doc.webkitCancelFullScreen();
+            } else {
+                element.webkitRequestFullscreen();
+            }
+        }
+    }-*/;
 }
