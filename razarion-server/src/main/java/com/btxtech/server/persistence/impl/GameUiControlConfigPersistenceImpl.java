@@ -314,7 +314,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
         VisualConfig visualConfig = new VisualConfig();
         visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
-        visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
+        visualConfig.setShape3DLightRotateX(Math.toRadians(60)).setShape3DLightRotateZ(Math.toRadians(260));
         visualConfig.setWaterGroundLevel(-2).setWaterBmDepth(10).setWaterTransparency(0.65).setWaterBmId(272480).setWaterBmDepth(20).setWaterBmScale(0.01);
         LightConfig lightConfig = new LightConfig();
         lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));

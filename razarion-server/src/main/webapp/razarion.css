@@ -455,13 +455,8 @@ button:disabled {
 /** -------------------------- EDITOR -------------------------- */
 /** --- Gallery table --- */
 .generic-gallery-table {
-    border-width: 1px;
-    border-spacing: 0;
     overflow: hidden;
-    background-color: #d2cccc;
     border-collapse: collapse;
-    font-size: 75%;
-    font-weight: bold;
 }
 
 .generic-gallery-table-row {
@@ -474,8 +469,12 @@ button:disabled {
     /* font-weight: bold; */
 }
 
+.generic-gallery-table-cell {
+    border: 1px solid #3289bd;
+}
+
 .generic-gallery-table-row-selected {
-    background-color: #060606;
+    background-color: #3289bd;
     color: white;
 }
 
