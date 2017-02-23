@@ -30,9 +30,9 @@ public class DevToolSideCockpit implements SideCockpit {
     }
 
     @Override
-    public void displayXps(int xp) {
+    public void displayXps(int xp, int xp2LevelUp) {
         Platform.runLater(() -> {
-            webGlEmulatorController.displayXp(xp);
+            webGlEmulatorController.displayXp(xp, xp2LevelUp);
         });
     }
 

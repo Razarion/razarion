@@ -412,8 +412,8 @@ public class WebGlEmulatorController implements Initializable {
         resourceLabel.setText("Res: " + resource);
     }
 
-    public void displayXp(int xp) {
-        xpLabel.setText("XP: " + xp);
+    public void displayXp(int xp, int xp2LevelUp) {
+        xpLabel.setText("XP: " + xp + " / " + xp2LevelUp);
     }
 
     public void displayLevel(int levelNumber) {

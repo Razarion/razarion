@@ -100,8 +100,8 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     }
 
     @Override
-    public void displayXps(int xp) {
-        xpLabel.setTextContent(Integer.toString(xp));
+    public void displayXps(int xp, int xp2LevelUp) {
+        xpLabel.setTextContent(xp + " / " + xp2LevelUp);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.btxtech.uiservice.cockpit;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.uiservice.control.GameUiControl;
 
@@ -39,8 +40,9 @@ public class CockpitService {
     }
 
     public void updateLevelAndXp(UserContext userContext) {
-        sideCockpit.displayXps(userContext.getXp());
-        sideCockpit.displayLevel(levelService.getLevel(userContext.getLevelId()).getNumber());
+        LevelConfig levelConfig = levelService.getLevel(userContext.getLevelId());
+        sideCockpit.displayXps(userContext.getXp(), levelConfig.getXp2LevelUp());
+        sideCockpit.displayLevel(levelConfig.getNumber());
     }
 
     public void updateResource(int resource) {

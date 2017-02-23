@@ -11,7 +11,7 @@ public interface SideCockpit {
 
     void displayResources(int resources);
 
-    void displayXps(int xp);
+    void displayXps(int xp, int xp2LevelUp);
 
     void displayLevel(int levelNumber);
 
