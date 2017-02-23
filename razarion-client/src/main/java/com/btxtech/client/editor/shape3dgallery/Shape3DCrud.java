@@ -204,6 +204,9 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             if (baseItemType.getHarvesterType() != null && baseItemType.getHarvesterType().getAnimationShape3dId() != null && baseItemType.getHarvesterType().getAnimationShape3dId() == shape3D.getDbId()) {
                 baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
             }
+            if (baseItemType.getBuilderType() != null && baseItemType.getBuilderType().getAnimationShape3dId() != null && baseItemType.getBuilderType().getAnimationShape3dId() == shape3D.getDbId()) {
+                baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
+            }
             if (baseItemType.getWreckageShape3DId() != null && shape3D.getDbId() == baseItemType.getWreckageShape3DId()) {
                 trailRenderTask.onWreckageChanged(baseItemType);
             }
