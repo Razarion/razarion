@@ -229,7 +229,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         bulldozer.setI18Name(i18nHelper("Bulldozer Name"));
         bulldozer.setDescription(i18nHelper("Bulldozer Description"));
         bulldozer.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
-        bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(2.3051, 0, 1.7)));
+        bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(1.63196, 0, 3.04829)));
         bulldozer.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2).setBuildup(30);
         bulldozer.setPrice(100).setWreckageShape3DId(272947);
     }
