@@ -14,11 +14,11 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
@@ -66,8 +66,8 @@ public class BaseItemUiService {
     private Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
     private int resources;
-    private int usedHouseSpace;
     private int houseSpace;
+    private int usedHouseSpace;
     private int itemCount;
     private Collection<SyncBaseItemSimpleDto> syncBaseItems = new ArrayList<>();
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
@@ -175,9 +175,13 @@ public class BaseItemUiService {
         }
         if (itemCount != tmpItemCount) {
             itemCount = tmpItemCount;
-            cockpitService.onItemCountChanged(itemCount);
+            updateItemCountOnSideCockput();
             itemCockpitService.onStateChanged();
         }
+    }
+
+    private void updateItemCountOnSideCockput() {
+        cockpitService.onItemCountChanged(itemCount, getMyTotalHouseSpace());
     }
 
     public void addBase(PlayerBaseDto playerBase) {
@@ -318,6 +322,7 @@ public class BaseItemUiService {
         if (houseSpace != gameInfo.getHouseSpace()) {
             houseSpace = gameInfo.getHouseSpace();
             itemCockpitService.onStateChanged();
+            updateItemCountOnSideCockput();
         }
         if (usedHouseSpace != gameInfo.getUsedHouseSpace()) {
             usedHouseSpace = gameInfo.getUsedHouseSpace();
@@ -330,7 +335,11 @@ public class BaseItemUiService {
     }
 
     public boolean isMyHouseSpaceExceeded(BaseItemType toBeBuiltType, int itemCount2Add) {
-        return usedHouseSpace + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > houseSpace + gameUiControl.getPlanetConfig().getHouseSpace();
+        return usedHouseSpace + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > getMyTotalHouseSpace();
+    }
+
+    public int getMyTotalHouseSpace() {
+        return houseSpace + gameUiControl.getPlanetConfig().getHouseSpace();
     }
 
     public double setupInterpolationFactor() {

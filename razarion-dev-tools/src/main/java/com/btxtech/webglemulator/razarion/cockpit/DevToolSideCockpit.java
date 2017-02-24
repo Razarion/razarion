@@ -49,7 +49,7 @@ public class DevToolSideCockpit implements SideCockpit {
     }
 
     @Override
-    public void displayItemCount(int itemCount) {
-        System.out.println("++++ item count: " + itemCount);
+    public void displayItemCount(int itemCount, int houseSpace) {
+        System.out.println("++++ item count: " + itemCount + " / " + houseSpace);
     }
 }

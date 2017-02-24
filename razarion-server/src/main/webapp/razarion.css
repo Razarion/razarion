@@ -180,7 +180,6 @@ button:disabled {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100px;
     background-image: url('images/DialogBackground.png');
     border: 8px solid transparent;
     border-image-source: url('images/Border.png');

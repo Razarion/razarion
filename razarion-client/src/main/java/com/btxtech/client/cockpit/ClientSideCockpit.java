@@ -92,8 +92,8 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     }
 
     @Override
-    public void displayItemCount(int itemCount) {
-        itemCountLabel.setTextContent(Integer.toString(itemCount));
+    public void displayItemCount(int itemCount, int houseSpace) {
+        itemCountLabel.setTextContent(itemCount + " / " + houseSpace);
     }
 
     @Override
