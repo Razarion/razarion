@@ -6,32 +6,33 @@
 </head>
 <body>
 
-<div id="cockpit" class="main-cockpit">
+<!-- data-field needed as fragment identifier od i18n is not working-->
+<div data-field="cockpit" class="main-cockpit">
     <table>
         <tr>
             <td>Razarion</td>
-            <td><span id="resourceLabel"></span></td>
+            <td><span id="resourceLabel" title="resourceTooltip"></span></td>
         </tr>
         <tr>
             <td>Items</td>
-            <td><span id="itemCountLabel"></span></td>
+            <td><span id="itemCountLabel" title="itemCountLabelTooltip"></span></td>
         </tr>
         <tr>
             <td>XP</td>
-            <td><span id="xpLabel"></span></td>
+            <td><span id="xpLabel" title="xpTooltip"></span></td>
         </tr>
         <tr>
             <td>Level</td>
-            <td><span id="levelLabel"></span></td>
+            <td><span id="levelLabel" title="levelTooltip"></span></td>
         </tr>
         <tr>
             <td>
-                <button id="fullScreenButton" class="image-button">
+                <button data-field="fullScreenButton" class="image-button" title="foolscreentooltip">
                     <img src="images/Fullscreen16.png">
                 </button>
             </td>
             <td>
-                <button id="inventoryButton" class="image-button">
+                <button id="inventoryButton" class="image-button" title="inventorytooltip">
                     <img src="images/Inventory16.png">
                 </button>
             </td>

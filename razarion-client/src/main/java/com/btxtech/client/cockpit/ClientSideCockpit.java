@@ -7,7 +7,6 @@ import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.SideCockpit;
 import com.btxtech.uiservice.dialog.DialogButton;
-import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -64,8 +63,6 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.MAIN_COCKPIT);
         GwtUtils.preventContextMenu(this);
-        inventoryButton.setTitle(I18nHelper.getConstants().tooltipInventory());
-        fullScreenButton.setTitle(I18nHelper.getConstants().tooltipFullscreen());
     }
 
     @Override

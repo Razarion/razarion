@@ -61,10 +61,6 @@ public interface I18nConstants {
 
     String planet();
 
-    String items();
-
-    String money();
-
     String filter();
 
     String activate();
@@ -82,8 +78,6 @@ public interface I18nConstants {
     String time();
 
     String event();
-
-    String level();
 
     String save();
 
@@ -224,10 +218,6 @@ public interface I18nConstants {
     String chooseNickName();
 
     // Side Cockpit
-    String tooltipMoney();
-
-    String tooltipUnitsAmount();
-
     String tooltipEnergy();
 
     String tooltipSell();
@@ -235,10 +225,6 @@ public interface I18nConstants {
     String tooltipMute();
 
     String tooltipHighScore();
-
-    String tooltipInventory();
-
-    String tooltipFullscreen();
 
     String tooltipFacebookCommunity();
 
@@ -249,12 +235,6 @@ public interface I18nConstants {
     String tooltipAbortMission();
 
     String multiplayer();
-
-    String tooltipLevel();
-
-    String tooltipXp();
-
-    String xp();
 
     // Quests
     String quests();
