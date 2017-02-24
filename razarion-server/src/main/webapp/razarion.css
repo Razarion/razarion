@@ -451,6 +451,20 @@ button:disabled {
 
 /** -------------------------- DIALOG INVENTORY ENDS -------------------------- */
 
+/** -------------------------- DIALOG BOX CONTENT  -------------------------- */
+.box-content-inventory-item {
+    border: 1px solid #3289bd;
+    border-radius: 3px;
+    background-color: rgba(12, 38, 47, 0.66);
+    display: inline-block
+}
+
+.box-content-description {
+    padding-bottom: 1em;
+}
+
+/** -------------------------- DIALOG BOX CONTENT ENDS -------------------------- */
+
 /** -------------------------- EDITOR -------------------------- */
 /** --- Gallery table --- */
 .generic-gallery-table {

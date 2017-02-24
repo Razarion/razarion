@@ -5,12 +5,12 @@
     <title>Title</title>
     <link rel="stylesheet" href="../../../../../../../../../razarion-server/src/main/webapp/razarion.css">
 </head>
-<body class="dummy-local-test">
+<body>
 
-<div id="inventory-dialog">
-    <div class="inventory-dialog-crystal" data-field="crystalsLabel"></div>
-    <div data-field="inventoryItemTable" class="inventory-item-table">
-        <div data-field="inventoryItem" class="inventory-item">
+<div data-field="box-picked-dialog">
+    <div class="box-content-description">You picket a box. The items below are added to your inventory</div>
+    <div data-field="inventoryItemTable">
+        <div data-field="inventoryItem" class="box-content-inventory-item">
             <table>
                 <tr>
                     <td colspan="2">
@@ -21,14 +21,12 @@
                     <td>
                         <img class="inventory-item-image" data-field="inventoryItemImage" src="">
                     </td>
-                    <td>
-                        <div class="inventory-item-own" data-field="inventoryItemCount"></div>
-                        <button type="button" class="gwt-Button" data-field="inventoryItemUseButton">inventoryItemUseButton</button>
-                    </td>
                 </tr>
             </table>
         </div>
     </div>
+
+
 </div>
 
 </body>

@@ -1,6 +1,6 @@
 package com.btxtech.client.dialog.framework;
 
-import com.btxtech.client.cockpit.BoxContentDialog;
+import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
 import com.btxtech.client.cockpit.level.LevelUpDialog;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
 import com.btxtech.client.dialog.common.MessageDialog;

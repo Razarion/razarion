@@ -1,11 +1,18 @@
-package com.btxtech.client.cockpit;
+package com.btxtech.client.dialog.boxcontent;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+
+import javax.inject.Inject;
 
 /**
  * Created by Beat
@@ -13,9 +20,15 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
  */
 @Templated("BoxContentDialog.html#box-picked-dialog")
 public class BoxContentDialog extends Composite implements ModalDialogContent<BoxContent> {
+    @Inject
+    @DataField
+    @ListContainer("div")
+    private ListComponent<InventoryItem, InventoryItemComponent> inventoryItemTable;
+
     @Override
     public void init(BoxContent boxContent) {
-
+        DOMUtil.removeAllElementChildren(inventoryItemTable.getElement()); // Remove placeholder table row from template.
+        inventoryItemTable.setValue(boxContent.getInventoryItems());
     }
 
     @Override
