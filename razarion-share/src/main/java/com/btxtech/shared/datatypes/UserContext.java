@@ -81,6 +81,10 @@ public class UserContext {
         inventoryItemIds.add(inventoryItemId);
     }
 
+    public void removeInventoryItem(int inventoryItemId) {
+        inventoryItemIds.remove((Integer)inventoryItemId);
+    }
+
     public List<Integer> getInventoryArtifactIds() {
         return inventoryArtifactIds;
     }

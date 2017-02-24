@@ -2,7 +2,6 @@ package com.btxtech.client.dialog.inventory;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.inventory.InventoryItemModel;
@@ -46,12 +45,11 @@ public class InventoryDialog extends Composite implements ModalDialogContent<Voi
 
     @Override
     public void init(Void aVoid) {
-        UserContext userContext = userUiService.getUserContext();
-        crystalsLabel.setText(I18nHelper.getConstants().crystalAmount(userContext.getCrystals()));
+        crystalsLabel.setText(I18nHelper.getConstants().crystalAmount(userUiService.getUserContext().getCrystals()));
 
         DOMUtil.removeAllElementChildren(inventoryItemTable.getElement()); // Remove placeholder table row from template.
         inventoryItemTable.addComponentCreationHandler(inventoryItemWidget -> inventoryItemWidget.setInventoryDialog(this));
-        inventoryItemTable.setValue(inventoryUiService.gatherInventoryItemModels(userContext));
+        inventoryItemTable.setValue(inventoryUiService.gatherInventoryItemModels());
         cockpitService.onInventoryDialogOpened(inventoryItemId -> {
             for (InventoryItemModel inventoryItemModel : inventoryItemTable.getValue()) {
                 if (inventoryItemModel.getInventoryItem().getId() == (int) inventoryItemId) {

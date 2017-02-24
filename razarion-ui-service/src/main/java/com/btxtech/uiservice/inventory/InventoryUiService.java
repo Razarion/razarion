@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.inventory;
 
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -15,6 +14,7 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.tip.GameTipService;
+import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -35,10 +35,8 @@ public class InventoryUiService {
     private ItemTypeService itemTypeService;
     @Inject
     private GameUiControl gameUiControl;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ModalDialogManager modalDialogManager;
     @Inject
@@ -51,13 +49,14 @@ public class InventoryUiService {
     private GameTipService gameTipService;
     @Inject
     private BaseItemUiService baseItemUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GameEngineControl gameEngineControl;
+    @Inject
+    private UserUiService userUiService;
 
-    public List<InventoryItemModel> gatherInventoryItemModels(UserContext userContext) {
+    public List<InventoryItemModel> gatherInventoryItemModels() {
         Map<Integer, InventoryItemModel> inventoryItemModels = new HashMap<>();
-        for (Integer inventoryItemId : userContext.getInventoryItemIds()) {
+        for (Integer inventoryItemId : userUiService.getUserContext().getInventoryItemIds()) {
             InventoryItemModel model = inventoryItemModels.computeIfAbsent(inventoryItemId, k -> new InventoryItemModel(inventoryService.getInventoryItem(inventoryItemId)));
             model.increaseItemCount();
         }
@@ -78,7 +77,10 @@ public class InventoryUiService {
                     baseItemPlacerConfig.setBaseItemTypeId(baseItemType.getId());
                     baseItemPlacerConfig.setBaseItemCount(inventoryItem.getBaseItemTypeCount());
                     baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getItemFreeRange());
-                    baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> gameEngineControl.spawnSyncBaseItem(baseItemType, decimalPositions));
+                    baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
+                        gameEngineControl.spawnSyncBaseItem(baseItemType, decimalPositions);
+                        userUiService.getUserContext().removeInventoryItem(inventoryItem.getId());
+                    });
                     gameTipService.onInventoryItemPlacerActivated(inventoryItem);
                 }
             } catch (Throwable e) {
