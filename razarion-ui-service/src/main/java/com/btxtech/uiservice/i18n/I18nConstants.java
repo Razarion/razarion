@@ -255,7 +255,9 @@ public interface I18nConstants {
 
     String tooltipStartMission();
 
-    String reward(int gold, int xp);
+    String reward();
+
+    String xpRewards(int xp);
 
     String activeQuest();
 

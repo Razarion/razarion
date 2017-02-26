@@ -612,7 +612,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setBoxItemPositions(boxItemPositions).setRemoveLoadingCover(true).setRemoveLoadingCover(true));
         addUserSpawnScene(sceneConfigs);
 
-        QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
+        QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1))).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden");
         sceneConfigs.add(new SceneConfig().setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }

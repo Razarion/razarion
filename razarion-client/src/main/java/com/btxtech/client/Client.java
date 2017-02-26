@@ -2,9 +2,9 @@ package com.btxtech.client;
 
 import com.btxtech.client.clientI18n.ClientI18nConstants;
 import com.btxtech.client.system.boot.GameStartupSeq;
-import com.btxtech.client.user.Facebook;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.ClientRunner;
@@ -17,6 +17,7 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
 
 import javax.annotation.PostConstruct;
@@ -34,6 +35,8 @@ public class Client {
     private Logger logger = Logger.getLogger(Client.class.getName());
     @Inject
     private ClientRunner clientRunner;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
     public Client() {
         GWT.setUncaughtExceptionHandler(e -> {
@@ -48,8 +51,13 @@ public class Client {
 
     @PostConstruct
     public void postConstruct() {
-        I18nHelper.setLanguage(I18nString.convert(LocaleInfo.getCurrentLocale().getLocaleName()));
-        I18nHelper.setConstants(GWT.create(ClientI18nConstants.class));
+        try {
+            I18nHelper.setLanguage(I18nString.convert(LocaleInfo.getCurrentLocale().getLocaleName()));
+            I18nHelper.setConstants(GWT.create(ClientI18nConstants.class));
+            TranslationService.setCurrentLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
 
         clientRunner.addStartupProgressListener(new StartupProgressListener() {
             @Override

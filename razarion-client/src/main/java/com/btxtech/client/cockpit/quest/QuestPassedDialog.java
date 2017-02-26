@@ -3,6 +3,8 @@ package com.btxtech.client.cockpit.quest;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
+import com.btxtech.uiservice.i18n.I18nHelper;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -17,20 +19,21 @@ import javax.inject.Inject;
  */
 @Templated("QuestPassedDialog.html#quest-passed-dialog")
 public class QuestPassedDialog extends Composite implements ModalDialogContent<QuestDescriptionConfig> {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label questPassedLabel;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label rewardLabel;
 
-
     @Override
     public void init(QuestDescriptionConfig questDescriptionConfig) {
-        questPassedLabel.setText(questDescriptionConfig.getPassedMessage());
-        rewardLabel.setText("Belohnung: " + questDescriptionConfig.getXp() + "XP");
+        if (questDescriptionConfig.getPassedMessage() != null) {
+            questPassedLabel.setText(questDescriptionConfig.getPassedMessage());
+        } else {
+            questPassedLabel.getElement().getStyle().setDisplay(Style.Display.NONE);
+        }
+        rewardLabel.setText(I18nHelper.getConstants().reward() + ": " + I18nHelper.getConstants().xpRewards(questDescriptionConfig.getXp()));
     }
 
     @Override

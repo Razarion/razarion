@@ -48,6 +48,11 @@ button:disabled {
     padding: 1px 6px 0 6px;
 }
 
+
+.make-space-below {
+    padding-bottom: 1em;
+}
+
 /** -------------------------- COMMON ENDS -------------------------- */
 
 /** -------------------------- MAIN -------------------------- */
@@ -457,10 +462,6 @@ button:disabled {
     border-radius: 3px;
     background-color: rgba(12, 38, 47, 0.66);
     display: inline-block
-}
-
-.box-content-description {
-    padding-bottom: 1em;
 }
 
 /** -------------------------- DIALOG BOX CONTENT ENDS -------------------------- */
