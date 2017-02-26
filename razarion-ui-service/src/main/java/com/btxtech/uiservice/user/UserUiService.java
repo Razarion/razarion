@@ -80,7 +80,7 @@ public class UserUiService {
             gameEngineControl.updateLevel(newLevelConfig.getLevelId());
             cockpitService.updateLevelAndXp(userContext);
             itemCockpitService.onStateChanged();
-            dialogManager.onLevelPassed(userContext, levelConfig, newLevelConfig);
+            dialogManager.onLevelPassed(newLevelConfig);
         } else {
             userContext.setXp(xp);
             cockpitService.updateLevelAndXp(userContext);

@@ -129,11 +129,11 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupParticle()); // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
+        gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(harvest()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
@@ -478,7 +478,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         Map<Integer, Integer> startTypeCount = new HashMap<>();
         startTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(startTypeCount));
-        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true).setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setXp(100).setTitle("Platzieren").setDescription("Start").setConditionConfig(startConditionConfig)).setWait4QuestPassedDialog(true).setRemoveLoadingCover(true));
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY, 1);

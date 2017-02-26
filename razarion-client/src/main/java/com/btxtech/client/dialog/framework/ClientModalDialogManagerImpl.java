@@ -1,13 +1,14 @@
 package com.btxtech.client.dialog.framework;
 
-import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
-import com.btxtech.client.cockpit.level.LevelUpDialog;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
+import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
 import com.btxtech.client.dialog.common.MessageDialog;
-import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.client.dialog.levelup.LevelUpDialog;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -37,6 +38,8 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     private Instance<ModalDialogPanel<Object>> containerInstance;
     @Inject
     private AudioService audioService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private ModalDialogPanel activeDialog;
     private List<DialogParameters> dialogQueue = new ArrayList<>();
     private List<ModalDialogPanel> stackedDialogs = new ArrayList<>();
@@ -47,8 +50,8 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     }
 
     @Override
-    protected void showLevelUp(UserContext userContext, Runnable closeListener) {
-        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, null, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnLevelUp(), DialogButton.Button.CLOSE);
+    protected void showLevelUp(LevelConfig newLevelConfig, Runnable closeListener) {
+        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, newLevelConfig, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnLevelUp(), DialogButton.Button.CLOSE);
     }
 
     @Override
@@ -103,17 +106,25 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     }
 
     private void showDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
-        ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
-        modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
-        this.activeDialog = modalDialogPanel;
-        showDialog(activeDialog, shownCallback, audioId);
+        try {
+            ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
+            modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
+            this.activeDialog = modalDialogPanel;
+            showDialog(activeDialog, shownCallback, audioId);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
     }
 
     private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
-        ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
-        modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
-        stackedDialogs.add(modalDialogPanel);
-        showDialog(modalDialogPanel, shownCallback, audioId);
+        try {
+            ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
+            modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
+            stackedDialogs.add(modalDialogPanel);
+            showDialog(modalDialogPanel, shownCallback, audioId);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
     }
 
     private void showDialog(ModalDialogPanel modalDialogPanel, Runnable shownCallback, Integer audioId) {

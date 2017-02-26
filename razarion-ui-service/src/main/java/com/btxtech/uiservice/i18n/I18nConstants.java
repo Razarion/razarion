@@ -846,4 +846,7 @@ public interface I18nConstants {
     String apply();
 
     String ok();
+
+    // Level up dialog
+    String youReachedLevel(int level);
 }

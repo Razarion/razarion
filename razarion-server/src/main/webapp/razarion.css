@@ -48,10 +48,28 @@ button:disabled {
     padding: 1px 6px 0 6px;
 }
 
-
 .make-space-below {
     padding-bottom: 1em;
 }
+
+/** -------------------------- COMMON TABLE -------------------------- */
+.common-table {
+    border-collapse: collapse;
+}
+
+.common-table-row:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.09)
+}
+
+.common-table-row:nth-child(odd) {
+    background-color: rgba(0, 0, 0, 0.29)
+}
+
+.common-table-cell {
+    border: 1px solid rgba(131, 143, 150, 0.51);
+}
+
+/** -------------------------- COMMON TABLE ENDS -------------------------- */
 
 /** -------------------------- COMMON ENDS -------------------------- */
 

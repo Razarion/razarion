@@ -2,6 +2,7 @@ package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -35,7 +36,7 @@ public class TestModalDialogManager extends ModalDialogManager {
     }
 
     @Override
-    protected void showLevelUp(UserContext userContext, Runnable closeListener) {
+    protected void showLevelUp(LevelConfig newLevelConfig, Runnable closeListener) {
         throw new UnsupportedOperationException();
     }
 
