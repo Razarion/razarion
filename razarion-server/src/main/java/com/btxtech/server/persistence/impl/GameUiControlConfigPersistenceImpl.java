@@ -11,7 +11,6 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
@@ -123,14 +122,15 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
         completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
+        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupParticle()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(setupThankYouForward()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(setupThankYouForward()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(humanKillBotBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
@@ -568,6 +568,28 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         return sceneConfigs;
     }
 
+    // Human kill bot base -----------------------------------------------------------------------------
+    private List<SceneConfig> humanKillBotBase() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // Setup target bot
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_HARVESTER).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(235, 170))).setNoSpawn(true).setNoRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        // Camera
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setViewFieldConfig(viewFieldConfig).setBotConfigs(botConfigs).setRemoveLoadingCover(true));
+        // User span
+        addUserSpawnScene(sceneConfigs);
+        // Kill bot base quest
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Kill Bot").setTitle("Zerstöre den Bot").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)))).setWait4QuestPassedDialog(true));
+        // Go to than you page
+        sceneConfigs.add(new SceneConfig().setForwardUrl("ThankYou.html"));
+        return sceneConfigs;
+    }
+
     // Kill enemy harvester -----------------------------------------------------------------------------
     private List<SceneConfig> killEnemyHarvester() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
@@ -740,6 +762,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         addNpcTooWeakCommand(sceneConfigs);
         addBuildViperTask2(sceneConfigs);
         addKillTower(sceneConfigs);
+        addKillBotEndForward(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -1072,6 +1095,13 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(190, 242)));
 
         sceneConfigs.add(new SceneConfig().setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+    }
+
+    private void addKillBotEndForward(List<SceneConfig> sceneConfigs) {
+        // Kill bot base quest
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Kill Razar Industries").setDescription("Vertreibe Razar Industries von diesem Planeten").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)))).setWait4QuestPassedDialog(true));
+        // Go to than you page
+        sceneConfigs.add(new SceneConfig().setForwardUrl("ThankYou.html"));
     }
 
 }

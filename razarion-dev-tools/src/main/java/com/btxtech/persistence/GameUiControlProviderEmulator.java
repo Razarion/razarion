@@ -8,10 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -24,7 +23,8 @@ public class GameUiControlProviderEmulator {
     private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
     private static final String FILE_NAME = "GameUiControlConfig.json";
     private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
-    private static final String URL = "http://localhost:8080/razarion-server/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH;
+    private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH;
+    private static final String FACEBOOK_USER_LOGIN_INFO_STRING = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": null}";
 
     public GameUiControlConfig readFromServer() {
         return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(GameUiControlConfig.class);
@@ -51,7 +51,7 @@ public class GameUiControlProviderEmulator {
     public void fromServerToFile(String fileName, String url) {
         try {
             Client client = ClientBuilder.newClient();
-            String text = client.target(url).request(MediaType.APPLICATION_JSON).get(String.class);
+            String text = client.target(url).request(MediaType.APPLICATION_JSON).post(Entity.entity(FACEBOOK_USER_LOGIN_INFO_STRING, MediaType.APPLICATION_JSON_TYPE), String.class);
             Files.write(getFile(fileName).toPath(), text.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);

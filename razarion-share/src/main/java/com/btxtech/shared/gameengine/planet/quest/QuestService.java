@@ -154,6 +154,14 @@ public class QuestService {
         triggerValue(userId, ConditionTrigger.HARVEST, amount);
     }
 
+    public void onBaseKilled(SyncBaseItem actor) {
+        Integer userId = actor.getBase().getUserId();
+        if (userId == null) {
+            return;
+        }
+        triggerValue(userId, ConditionTrigger.BASE_KILLED, 1.0);
+    }
+
     public void addQuestListener(QuestListener questListener) {
         questListeners.add(questListener);
     }
@@ -182,8 +190,7 @@ public class QuestService {
                     throw new UnsupportedOperationException();
                 }
             }
-            case BOX_PICKED:
-            case HARVEST:
+            case COUNT:
                 if (comparisonConfig.getCount() != null) {
                     CountComparison countComparison = instance.select(CountComparison.class).get();
                     countComparison.init(comparisonConfig.getCount());

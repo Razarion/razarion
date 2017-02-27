@@ -99,6 +99,7 @@ public class GameLogicService {
 
     public void onBaseKilled(PlayerBase playerBase, SyncBaseItem actor) {
         System.out.println("GameLogicService.onBaseKilled(). base: " + playerBase + " killed by: " + actor);
+        questService.onBaseKilled(actor);
         gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase));
     }
 

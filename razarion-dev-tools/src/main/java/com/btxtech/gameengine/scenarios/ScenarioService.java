@@ -119,7 +119,7 @@ public class ScenarioService implements QuestListener {
         SIMPLE_FIX_ITEM_TYPE = simpleFix;
 
         BaseItemType harvester = new BaseItemType();
-        harvester.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Harvester");
+        harvester.setHealth(10).setSpawnDurationMillis(1000).setBuildup(10).setName("Harvester");
         harvester.setId(++itemId);
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
@@ -374,6 +374,7 @@ public class ScenarioService implements QuestListener {
         addScenarioSuite(new BuildScenarioSuite());
         addScenarioSuite(new FabricateScenarioSuite());
         addScenarioSuite(new RealGameScenarioSuite());
+        addScenarioSuite(new QuestScenarioSuit());
     }
 
     @Override

@@ -32,7 +32,7 @@ public enum ConditionTrigger {
             return new BaseItemConditionProgress(this, abstractComparison);
         }
     },
-    HARVEST(Type.HARVEST, true) {
+    HARVEST(Type.COUNT, true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new ValueConditionProgress(this, abstractComparison);
@@ -50,12 +50,12 @@ public enum ConditionTrigger {
 //            return new ValueConditionProgress(this, abstractComparison);
 //        }
 //    },
-//    BASE_KILLED(true) {
-//        @Override
-//        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-//            return new ValueConditionProgress(this, abstractComparison);
-//        }
-//    },
+    BASE_KILLED(Type.COUNT, true) {
+        @Override
+        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
+            return new ValueConditionProgress(this, abstractComparison);
+        }
+    },
 //    TUTORIAL(false) {
 //        @Override
 //        public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
@@ -80,7 +80,7 @@ public enum ConditionTrigger {
 //            return new ArtifactItemIdConditionTrigger(this, abstractComparison);
 //        }
 //    },
-    BOX_PICKED(Type.BOX_PICKED, true) {
+    BOX_PICKED(Type.COUNT, true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new ValueConditionProgress(this, abstractComparison);
@@ -96,8 +96,7 @@ public enum ConditionTrigger {
     public enum Type {
         BASE_ITEM,
         INVENTORY_ITEM,
-        BOX_PICKED,
-        HARVEST
+        COUNT
     }
 
     private Type type;
