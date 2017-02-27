@@ -60,9 +60,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}</finalName>
-        <outputDirectory>src/main/webapp/WEB-INF/classes</outputDirectory>
-
+        <finalName>ROOT</finalName>
         <plugins>
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
