@@ -76,7 +76,7 @@ public class Scene implements TerrainScrollListener {
             hasCompletionCallback = true;
             completionCallbackCount++;
             screenCover.fadeOutLoadingCover();
-            simpleExecutorService.schedule(ScreenCover.LOADING_FADE_DURATION, () -> {
+            simpleExecutorService.schedule(ScreenCover.FADE_DURATION, () -> {
                 screenCover.removeLoadingCover();
                 onComplete();
             }, SimpleExecutorService.Type.UNSPECIFIED);
@@ -155,6 +155,11 @@ public class Scene implements TerrainScrollListener {
         }
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.start(sceneConfig.getGameTipConfig());
+        }
+        if(sceneConfig.getForwardUrl() != null) {
+            screenCover.fadeOutAndForward(sceneConfig.getForwardUrl());
+            completionCallbackCount++;
+            hasCompletionCallback = true;
         }
 
         if (!hasCompletionCallback) {

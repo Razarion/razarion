@@ -31,6 +31,7 @@ public class SceneConfig {
     private List<BoxItemPosition> boxItemPositions;
     private GameTipConfig gameTipConfig;
     private boolean removeLoadingCover;
+    private String forwardUrl;
 
     public String getIntroText() {
         return introText;
@@ -218,6 +219,15 @@ public class SceneConfig {
 
     public SceneConfig setRemoveLoadingCover(boolean removeLoadingCover) {
         this.removeLoadingCover = removeLoadingCover;
+        return this;
+    }
+
+    public String getForwardUrl() {
+        return forwardUrl;
+    }
+
+    public SceneConfig setForwardUrl(String forwardUrl) {
+        this.forwardUrl = forwardUrl;
         return this;
     }
 }

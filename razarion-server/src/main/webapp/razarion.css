@@ -119,7 +119,7 @@ button:disabled {
     width: 100%;
     height: 100%;
     background-color: black;
-    transition: opacity 2s ease-in-out; /* Edit in com.btxtech.uiservice.cockpit.ScreenCover.LOADING_FADE_DURATION*/
+    transition: opacity 2s ease-in-out; /* Edit in com.btxtech.uiservice.cockpit.ScreenCover.FADE_DURATION*/
     opacity: 1;
 }
 
@@ -130,6 +130,19 @@ button:disabled {
     font-size: 300%;
     color: #d8d0d0;
     transform: translate(-50%, -50%);
+}
+
+.empty-cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    transition: opacity 2s ease-in-out; /* Edit in com.btxtech.uiservice.cockpit.ScreenCover.FADE_DURATION*/
+    opacity: 0;
+}
+
+.empty-cover-opacity {
+    opacity: 1.0;
 }
 
 /** -------------------------- Cover ENDS-------------------------- */

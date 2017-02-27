@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit;
 
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.google.gwt.user.client.ui.RootPanel;
 import elemental.client.Browser;
@@ -19,6 +20,10 @@ public class ClientScreenCoverImpl implements ScreenCover {
     // private Logger logger = Logger.getLogger(ClientScreenCoverImpl.class.getName());
     @Inject
     private Instance<StoryCoverPanel> storyCoverPanelInstance;
+    @Inject
+    private Instance<EmptyCover> emptyCoverInstance;
+    @Inject
+    private SimpleExecutorService simpleExecutorService;
     private StoryCoverPanel storyCoverPanel;
 
     @Override
@@ -48,5 +53,13 @@ public class ClientScreenCoverImpl implements ScreenCover {
     public void fadeOutLoadingCover() {
         Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
         element.getStyle().setOpacity(0);
+    }
+
+    @Override
+    public void fadeOutAndForward(String url) {
+        EmptyCover emptyCover = emptyCoverInstance.get();
+        RootPanel.get().add(emptyCover);
+        emptyCover.startFadeout();
+        simpleExecutorService.schedule(FADE_DURATION, () -> Browser.getWindow().getLocation().setHref(url), SimpleExecutorService.Type.UNSPECIFIED);
     }
 }

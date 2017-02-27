@@ -29,4 +29,9 @@ public class TestScreenCover implements ScreenCover {
     public void fadeOutLoadingCover() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void fadeOutAndForward(String url) {
+        throw new UnsupportedOperationException();
+    }
 }
