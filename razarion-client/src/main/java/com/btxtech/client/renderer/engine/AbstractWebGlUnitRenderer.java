@@ -1,19 +1,17 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import com.btxtech.client.imageservice.ImageLoader;
 import com.btxtech.client.utils.GwtUtils;
-import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.uiservice.renderer.AbstractRenderUnit;
+import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.TextResource;
 import elemental.html.WebGLRenderingContext;
@@ -22,8 +20,6 @@ import elemental.html.WebGLUniformLocation;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -46,7 +42,7 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
     String U_MODEL_NORM_MATRIX = "uNMatrix";
     // Uniform Light
     String U_LIGHT_DIRECTION = "uLightDirection";
-    String U_LIGHT_DIFFUSE= "uLightDiffuse";
+    String U_LIGHT_DIFFUSE = "uLightDiffuse";
     String U_LIGHT_AMBIENT = "uLightAmbient";
     String U_LIGHT_SPECULAR_INTENSITY = "uLightSpecularIntensity";
     String U_LIGHT_SPECULAR_HARDNESS = "uLightSpecularHardness";
@@ -139,22 +135,6 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
         WebGlUtil.checkLastWebGlError("uniform1b", gameCanvas.getCtx3d());
     }
 
-    protected WebGlUniformTexture_OLD createWebGLTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
-        return new WebGlUniformTexture_OLD(gameCanvas.getCtx3d(), this, setupTexture(imageDescriptor), samplerUniformName, textureIdHandler.create());
-    }
-
-    protected WebGlUniformTexture_OLD createWebGLTexture(int imageId, String samplerUniformName) {
-        return new WebGlUniformTexture_OLD(gameCanvas.getCtx3d(), this, setupTexture(imageId), samplerUniformName, textureIdHandler.create());
-    }
-
-    protected WebGlUniformTexture_OLD createWebGLBumpMapTexture(ImageDescriptor imageDescriptor, String samplerUniformName) {
-        return new WebGlUniformTexture_OLD(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageDescriptor), samplerUniformName, textureIdHandler.create());
-    }
-
-    protected WebGlUniformTexture_OLD createWebGLBumpMapTexture(int imageId, String samplerUniformName) {
-        return new WebGlUniformTexture_OLD(gameCanvas.getCtx3d(), this, setupTextureForBumpMap(imageId), samplerUniformName, textureIdHandler.create());
-    }
-
     protected TextureIdHandler.WebGlTextureId createWebGlTextureId() {
         return textureIdHandler.create();
     }
@@ -168,27 +148,6 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
         uniform3fNoAlpha("uLightAmbient" + postfix, lightConfig.getAmbient());
         uniform1f("uLightSpecularIntensity" + postfix, lightConfig.getSpecularIntensity());
         uniform1f("uLightSpecularHardness" + postfix, lightConfig.getSpecularHardness());
-    }
-
-    protected WebGLTexture setupTexture(final ImageDescriptor imageDescriptor) {
-        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
-        ImageLoader<WebGLTexture> textureLoader = new ImageLoader<>();
-        textureLoader.addImageUrl(imageDescriptor.getUrl(), webGLTexture);
-        textureLoader.startLoading(new ImageLoader.Listener<WebGLTexture>() {
-            @Override
-            public void onLoaded(Map<WebGLTexture, ImageElement> loadedImageElements, Collection<WebGLTexture> failed) {
-                if (!failed.isEmpty()) {
-                    throw new IllegalStateException("Failed loading texture: " + imageDescriptor.getUrl());
-                }
-                ImageElement imageElement = loadedImageElements.get(webGLTexture);
-                if (imageElement == null) {
-                    throw new IllegalStateException("Failed loading texture: " + imageDescriptor.getUrl());
-                }
-
-                bindTexture(imageElement, webGLTexture);
-            }
-        });
-        return webGLTexture;
     }
 
     protected WebGLTexture setupTexture(int imageId) {
@@ -210,26 +169,6 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
         WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
     }
 
-    protected WebGLTexture setupTextureForBumpMap(ImageDescriptor imageDescriptor) {
-        final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
-        ImageLoader<WebGLTexture> textureLoader = new ImageLoader<>();
-        textureLoader.addImageUrl(imageDescriptor.getUrl(), webGLTexture);
-        textureLoader.startLoading(new ImageLoader.Listener<WebGLTexture>() {
-            @Override
-            public void onLoaded(Map<WebGLTexture, ImageElement> loadedImageElements, Collection<WebGLTexture> failed) {
-                if (!failed.isEmpty()) {
-                    throw new IllegalStateException("Failed loading texture");
-                }
-                ImageElement imageElement = loadedImageElements.get(webGLTexture);
-                if (imageElement == null) {
-                    throw new IllegalStateException("Failed loading texture");
-                }
-
-                bindTextureForBumpMap(imageElement, webGLTexture);
-            }
-        });
-        return webGLTexture;
-    }
 
     protected WebGLTexture setupTextureForBumpMap(int imageId) {
         final WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();

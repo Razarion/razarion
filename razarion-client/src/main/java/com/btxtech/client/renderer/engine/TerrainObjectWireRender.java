@@ -3,7 +3,6 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.uiservice.ImageDescriptor;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 
@@ -49,7 +48,7 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
 
     @Override
     public void setupImages() {
-        webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, SAMPLER_UNIFORM_NAME);
+        // webGLTexture = createWebGLTexture(ImageDescriptor.CHESS_TEXTURE_08, SAMPLER_UNIFORM_NAME);
     }
 
     @Override
