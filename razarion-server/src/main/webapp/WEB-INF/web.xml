@@ -3,18 +3,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
-    <!--<servlet>-->
-        <!--<servlet-name>remoteLogging</servlet-name>-->
-        <!--<servlet-class>com.btxtech.server.ClientGwtSuperDevModeLoggingServletervlet</servlet-class>-->
-    <!--</servlet>-->
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>remoteLogging</servlet-name>-->
-        <!--<url-pattern>/webgl/remote_logging</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <!-- Faces Servlet -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
-    <!-- Default page to serve -->
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>/faces/*</url-pattern>
+    </servlet-mapping>
+
     <welcome-file-list>
-        <welcome-file>razarion.html</welcome-file>
+        <welcome-file>faces/main.xhtml</welcome-file>
     </welcome-file-list>
 
 </web-app>
