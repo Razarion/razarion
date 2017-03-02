@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.VertexList;
@@ -158,4 +159,7 @@ public class TerrainUiService {
         return terrainService.calculatePositionGroundMesh(worldPickRay);
     }
 
+    public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
+        terrainService.overrideSlopeSkeletonConfig(slopeSkeletonConfig);
+    }
 }

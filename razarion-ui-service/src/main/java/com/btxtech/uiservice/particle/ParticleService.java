@@ -41,7 +41,7 @@ public class ParticleService {
     @PostConstruct
     public void DELETE_ME() {
         // Particles
-        particleShapeConfig = new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setAlphaOffsetImageId(272946).setColorRampImageId(272944).setColorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).setTextureOffsetScope(0.1);
+        particleShapeConfig = new ParticleShapeConfig().setId(1).setInternalName("Fire Particle").setEdgeLength(3).setAlphaOffsetImageId(272951).setColorRampImageId(272952).setColorRampXOffsets(new double[]{4.0 / 128.0, 12.0 / 128.0, 20.0 / 128.0}).setTextureOffsetScope(0.1);
 
         //-------------------------------------------------------------------------
         // Fire
@@ -68,6 +68,7 @@ public class ParticleService {
         ParticleEmitterSequenceConfig explosion = new ParticleEmitterSequenceConfig().setId(2).setInternalName("Explosion");
         List<AutonomousParticleEmitterConfig> autonomousParticleEmitterConfigs = new ArrayList<>();
         explosion.setAutonomous(autonomousParticleEmitterConfigs);
+        explosion.setAudioIds(Collections.singletonList(284041));
         particleEmitterSequenceConfigs.put(explosion.getId(), explosion);
         // Splitter
         AutonomousParticleEmitterConfig splitter1 = new AutonomousParticleEmitterConfig();
@@ -95,6 +96,7 @@ public class ParticleService {
         //-------------------------------------------------------------------------
         // Detonation
         ParticleEmitterSequenceConfig detonation = new ParticleEmitterSequenceConfig().setId(3).setInternalName("Detonation");
+        detonation.setAudioIds(Arrays.asList(284042, 284043));
         autonomousParticleEmitterConfigs = new ArrayList<>();
         detonation.setAutonomous(autonomousParticleEmitterConfigs);
         particleEmitterSequenceConfigs.put(detonation.getId(), detonation);

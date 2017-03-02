@@ -296,6 +296,14 @@ public class TerrainService {
         throw new NoInterpolatedTerrainTriangleException(worldPickRay);
     }
 
+    public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
+        for (Slope slope : slopeMap.values()) {
+            if(slope.getSlopeSkeletonConfig().getId() == slopeSkeletonConfig.getId()) {
+                slope.updateSlopeSkeleton(slopeSkeletonConfig);
+            }
+        }
+    }
+
     // -------------------------------------------------
     // TODO TerrainSettings getTerrainSettings();
 

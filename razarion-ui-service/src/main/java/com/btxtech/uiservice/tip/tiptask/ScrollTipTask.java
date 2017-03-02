@@ -77,7 +77,7 @@ public class ScrollTipTask extends AbstractTipTask implements TerrainScrollListe
 
     @Override
     public AbstractGuiTipVisualization createGuiTipVisualization() {
-        splashTipVisualization = new SplashTipVisualization(getGameTipVisualConfig().getSplashImageId(), splashVisible);
+        splashTipVisualization = new SplashTipVisualization(getGameTipVisualConfig().getSplashScrollImageId(), splashVisible);
         return splashTipVisualization;
     }
 
