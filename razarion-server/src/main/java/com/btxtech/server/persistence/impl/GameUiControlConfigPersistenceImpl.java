@@ -159,7 +159,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipVisualConfig.setWestLeftMouseGuiImageId(272506);
         gameTipVisualConfig.setSouthLeftMouseGuiImageId(272507);
         gameTipVisualConfig.setDirectionShape3DId(272503);
-        gameTipVisualConfig.setSplashImageId(272508);
+        gameTipVisualConfig.setSplashScrollImageId(272508);
         return gameTipVisualConfig;
     }
 
@@ -229,10 +229,10 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         bulldozer.setTerrainType(TerrainType.LAND).setThumbnail(272504);
         bulldozer.setI18Name(i18nHelper("Bulldozer Name"));
         bulldozer.setDescription(i18nHelper("Bulldozer Description"));
-        bulldozer.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
+        bulldozer.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
         bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(1.63196, 0, 3.04829)));
         bulldozer.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2).setBuildup(30);
-        bulldozer.setPrice(100).setWreckageShape3DId(272947);
+        bulldozer.setPrice(100).setWreckageShape3DId(272944);
     }
 
     private void finalizeHarvester(BaseItemType harvester) {
@@ -241,9 +241,9 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         harvester.setI18Name(i18nHelper("Harvester Name"));
         harvester.setDescription(i18nHelper("Harvester Description"));
         harvester.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(15.0).setAngularVelocity(Math.toRadians(60));
-        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(272941).setAnimationOrigin(new Vertex(1.654, 0, 0.685)));
+        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(272950).setAnimationOrigin(new Vertex(1.654, 0, 0.685)));
         harvester.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2).setBuildup(20);
-        harvester.setPrice(100).setWreckageShape3DId(272947);
+        harvester.setPrice(100).setWreckageShape3DId(272944);
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
@@ -254,7 +254,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         attacker.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(17.0).setAngularVelocity(Math.toRadians(60));
         attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationParticleEmitterSequenceConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2).setBuildup(15);
-        attacker.setPrice(100).setWreckageShape3DId(272947);
+        attacker.setPrice(100).setWreckageShape3DId(272944);
     }
 
     private void finalizeFactory(BaseItemType factory) {
@@ -265,7 +265,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         factory.setExplosionParticleEmitterSequenceConfigId(2).setBuildup(30);
         factory.getPhysicalAreaConfig().setFixVerticalNorm(true);
         factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER, BASE_ITEM_TYPE_ATTACKER)));
-        factory.setPrice(200).setWreckageShape3DId(272949);
+        factory.setPrice(200).setWreckageShape3DId(272943);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
@@ -291,7 +291,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         tower.setDescription(i18nHelper("Verteidigungsturm"));
         tower.getPhysicalAreaConfig().setFixVerticalNorm(true);
         tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(180837).setMuzzleFlashParticleEmitterSequenceConfigId(4).setDetonationParticleEmitterSequenceConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
-        tower.setExplosionParticleEmitterSequenceConfigId(2).setWreckageShape3DId(272949).setBuildup(45);
+        tower.setExplosionParticleEmitterSequenceConfigId(2).setWreckageShape3DId(272943).setBuildup(45);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
         List<DemolitionParticleConfig> demolitionShape3Ds1 = new ArrayList<>();
@@ -316,7 +316,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         VisualConfig visualConfig = new VisualConfig();
         visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
         visualConfig.setShape3DLightRotateX(Math.toRadians(60)).setShape3DLightRotateZ(Math.toRadians(260));
-        visualConfig.setWaterGroundLevel(-2).setWaterBmDepth(10).setWaterTransparency(0.65).setWaterBmId(272480).setWaterBmDepth(20).setWaterBmScale(0.01);
+        visualConfig.setWaterGroundLevel(-2).setWaterBmDepth(7).setWaterTransparency(0.65).setWaterBmId(272480).setWaterBmDepth(20).setWaterBmScale(0.02);
         LightConfig lightConfig = new LightConfig();
         lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
         lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
@@ -339,7 +339,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         audioConfig.setOnOwnSingleSelection(272527);
         audioConfig.setOnOtherSelection(272528);
         audioConfig.setOnCommandSent(272529);
-        audioConfig.setOnBaseLost(272518);
+        audioConfig.setOnBaseLost(284040);
         return audioConfig;
     }
 
@@ -1099,7 +1099,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
 
     private void addKillBotEndForward(List<SceneConfig> sceneConfigs) {
         // Kill bot base quest
-        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setTitle("Kill Razar Industries").setDescription("Vertreibe Razar Industries von diesem Planeten").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)))).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setQuestConfig(new QuestConfig().setXp(20).setTitle("Kill Razar Industries").setDescription("Vertreibe Razar Industries von diesem Planeten").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)))).setWait4QuestPassedDialog(true));
         // Go to than you page
         sceneConfigs.add(new SceneConfig().setForwardUrl("ThankYou.html"));
     }
