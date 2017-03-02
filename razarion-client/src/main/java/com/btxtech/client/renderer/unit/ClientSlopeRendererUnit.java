@@ -18,6 +18,7 @@ import elemental.html.WebGLRenderingContext;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -108,7 +109,9 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         slopeFactors.activate();
         groundSplatting.activate();
 
+        slopeTexture.overrideScale(slope.getSlopeSkeletonConfig().getTextureScale());
         slopeTexture.activate();
+        uSlopeBm.overrideScale(slope.getSlopeSkeletonConfig().getBmScale());
         uSlopeBm.activate();
         groundSplattingTexture.activate();
         groundTopTexture.activate();

@@ -10,6 +10,7 @@ import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.common.client.dom.Input;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -32,7 +33,6 @@ public class VisualConfigPanel extends LeftSideBarContent {
     @Inject
     @AutoBound
     private DataBinder<VisualConfig> visualConfigDataBinder;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label shadowDirectionLabel;
@@ -62,16 +62,19 @@ public class VisualConfigPanel extends LeftSideBarContent {
     @Inject
     @Bound
     @DataField
-    private DoubleBox waterTransparency;
+    private Input waterTransparency;
     @Inject
     @Bound
     @DataField
-    private DoubleBox waterBmDepth;
+    private Input waterBmScale;
     @Inject
     @Bound
     @DataField
-    private DoubleBox waterGroundLevel;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private Input waterBmDepth;
+    @Inject
+    @Bound
+    @DataField
+    private Input waterGroundLevel;
     @Inject
     @DataField
     private Label shape3DDirectionLabel;

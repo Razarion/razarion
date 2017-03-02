@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import org.jboss.errai.common.client.dom.Input;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.api.handler.property.PropertyChangeEvent;
 import org.jboss.errai.databinding.client.api.handler.property.PropertyChangeHandler;
@@ -58,11 +59,11 @@ public class LightWidget extends Composite {
     @Inject
     @Bound
     @DataField
-    private DoubleBox specularIntensity;
+    private Input specularIntensity;
     @Inject
     @Bound
     @DataField
-    private DoubleBox specularHardness;
+    private Input specularHardness;
 
     public void setModel(LightConfig lightConfig) {
         lightConfigDataBinder.setModel(lightConfig);

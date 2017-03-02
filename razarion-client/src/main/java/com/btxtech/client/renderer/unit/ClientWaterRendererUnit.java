@@ -84,6 +84,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         norms.activate();
         tangents.activate();
 
+        bumpMap.overrideScale(visualUiService.getVisualConfig().getWaterBmScale());
         bumpMap.activate();
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);

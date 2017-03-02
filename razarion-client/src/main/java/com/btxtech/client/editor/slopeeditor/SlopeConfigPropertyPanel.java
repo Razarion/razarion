@@ -5,24 +5,25 @@ import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
+import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import elemental.client.Browser;
+import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -46,51 +47,45 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
-    private TerrainService terrainService;
-    @Inject
     private SlopeRenderTask slopeRenderTask;
+    @Inject
+    private TerrainUiService terrainUiService;
     @Inject
     @AutoBound
     private DataBinder<SlopeConfig> slopeConfigDataBinder;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private Label id;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private TextBox internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private LightWidget lightConfig;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private ImageItemWidget textureId;
     @Inject
     @Bound(property = "slopeSkeletonConfig.textureScale")
     @DataField
-    private DoubleBox textureScale;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private NumberInput textureScale;
     @Inject
     @DataField
     private ImageItemWidget bmId;
     @Inject
     @Bound(property = "slopeSkeletonConfig.bmScale")
     @DataField
-    private DoubleBox bmScale;
+    private NumberInput bmScale;
     @Inject
     @Bound(property = "slopeSkeletonConfig.bmDepth")
     @DataField
-    private DoubleBox bmDepth;
+    private NumberInput bmDepth;
     @Inject
     @Bound(property = "slopeSkeletonConfig.verticalSpace")
     @DataField
-    private DoubleBox verticalSpace;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private NumberInput verticalSpace;
     @Inject
     @DataField
     private Button fractalFieldButton;
@@ -100,11 +95,9 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private CheckBox slopeOriented;
     @DataField
     private Element svgElement = (Element) Browser.getDocument().createSVGElement();
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button zoomIn;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button zoomOut;
@@ -112,25 +105,22 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private ShapeEditor shapeEditor;
     @Inject
     @DataField
-    private DoubleBox helperLine;
+    private CommaDoubleBox helperLine;
     @Inject
     @DataField
-    private DoubleBox selectedXPos;
+    private CommaDoubleBox selectedXPos;
     @Inject
     @DataField
-    private DoubleBox selectedYPos;
+    private CommaDoubleBox selectedYPos;
     @Inject
     @DataField
-    private DoubleBox selectedSlopeFactor;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private CommaDoubleBox selectedSlopeFactor;
     @Inject
     @DataField
     private Button deleteSelected;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button sculpt;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button update;
@@ -139,6 +129,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @Override
     public void init(SlopeConfig slopeConfig) {
         slopeConfigDataBinder.setModel(slopeConfig);
+        terrainUiService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
         textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId));
         bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setBmId(imageId));
         lightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getLightConfig());
@@ -157,7 +148,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
             fractalFieldConfig = slopeConfig.toFractalFiledConfig();
         }
         modalDialogManager.show("Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
-            if(button == DialogButton.Button.APPLY) {
+            if (button == DialogButton.Button.APPLY) {
                 SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
                 slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
             }
@@ -217,15 +208,17 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
 
     @EventHandler("update")
     private void updateButtonClick(ClickEvent event) {
-        SlopeConfig slopeConfig = getConfigObject();
-        terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
-        terrainService.setupGround(); // TODO does not work anymore. TerrainService is in Worker now
-        terrainService.setupPlateaus(); // TODO does not work anymore. TerrainService is in Worker now
-        slopeRenderTask.onChanged();
+        // TODO This method does not make any sense
+//        SlopeConfig slopeConfig = getConfigObject();
+//        terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
+//        terrainService.setupGround(); // TODO does not work anymore. TerrainService is in Worker now
+//        terrainService.setupPlateaus(); // TODO does not work anymore. TerrainService is in Worker now
+//        slopeRenderTask.onChanged();
     }
 
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
+        // TODO This method has not been touched for a long time
         SlopeConfig slopeConfig = getConfigObject();
         FractalFieldConfig fractalFieldConfig = this.fractalFieldConfig;
         if (fractalFieldConfig == null) {

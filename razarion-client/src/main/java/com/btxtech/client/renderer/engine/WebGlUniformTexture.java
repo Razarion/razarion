@@ -45,6 +45,10 @@ public class WebGlUniformTexture {
         }
     }
 
+    public void overrideScale(double scale) {
+        this.scale = scale;
+    }
+
     public void activate() {
         WebGLUniformLocation tUniform = webGlFacade.getUniformLocation(samplerUniformName);
         ctx3d.uniform1i(tUniform, webGlTextureId.getUniformValue());
