@@ -18,6 +18,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -25,7 +27,8 @@ import java.util.Date;
  * Date: 12.01.2010
  * Time: 22:45:47
  */
-@Entity(name = "TRACKER_PAGE")
+@Entity
+@Table(name = "TRACKER_PAGE", indexes = { @Index(columnList = "sessionId") })
 public class PageTrackerEntity {
     @Id
     @GeneratedValue

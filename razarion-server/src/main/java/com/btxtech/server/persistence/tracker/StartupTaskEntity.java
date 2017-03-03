@@ -13,7 +13,6 @@
 
 package com.btxtech.server.persistence.tracker;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,30 +27,20 @@ import java.util.Date;
  * Time: 22:45:47
  */
 @Entity
-@Table(name = "TRACKER_SESSION", indexes = { @Index(columnList = "sessionId") })
-public class SessionTrackerEntity {
+@Table(name = "TRACKER_STARTUP_TASK", indexes = { @Index(columnList = "sessionId"),  @Index(columnList = "gameSessionUuid") })
+public class StartupTaskEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(nullable = false)
-    private Date timeStamp;
-    @Column(nullable = false)
     private String sessionId;
-    @Column(length = 10000)
-    private String userAgent;
-    private String language;
-    private String remoteHost;
-    private String remoteAddr;
+    private String gameSessionUuid;
+    private String taskEnum;
+    @Column(nullable = false)
+    private Date startTime;
+    private Date clientStartTime;
+    private int duration;
     @Column(length = 50000)
-    private String referer;
-
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
-    }
+    private String error;
 
     public String getSessionId() {
         return sessionId;
@@ -61,44 +50,52 @@ public class SessionTrackerEntity {
         this.sessionId = sessionId;
     }
 
-    public String getUserAgent() {
-        return userAgent;
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
     }
 
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
+    public void setGameSessionUuid(String gameSessionUuid) {
+        this.gameSessionUuid = gameSessionUuid;
     }
 
-    public String getLanguage() {
-        return language;
+    public String getTaskEnum() {
+        return taskEnum;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setTaskEnum(String taskEnum) {
+        this.taskEnum = taskEnum;
     }
 
-    public String getRemoteHost() {
-        return remoteHost;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public void setRemoteHost(String remoteHost) {
-        this.remoteHost = remoteHost;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
-    public String getRemoteAddr() {
-        return remoteAddr;
+    public Date getClientStartTime() {
+        return clientStartTime;
     }
 
-    public void setRemoteAddr(String remoteAddr) {
-        this.remoteAddr = remoteAddr;
+    public void setClientStartTime(Date clientStartTime) {
+        this.clientStartTime = clientStartTime;
     }
 
-    public String getReferer() {
-        return referer;
+    public int getDuration() {
+        return duration;
     }
 
-    public void setReferer(String referer) {
-        this.referer = referer;
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     @Override
@@ -110,7 +107,8 @@ public class SessionTrackerEntity {
             return false;
         }
 
-        SessionTrackerEntity that = (SessionTrackerEntity) o;
+        StartupTaskEntity that = (StartupTaskEntity) o;
+
         return id != null && id.equals(that.id);
     }
 

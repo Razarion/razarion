@@ -17,6 +17,7 @@ public class RestUrl {
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
     public static final String SHAPE_3D_PROVIDER = "shape3dprovider";
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
+    public static final String TRACKER_PATH = "tracker";
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id) + "?t=" + System.currentTimeMillis();

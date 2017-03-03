@@ -184,11 +184,12 @@ public class MathHelper {
     }
 
     public static String generateUuid() {
-        char[] uuid = new char[16];
-        for (int i = 0; i < uuid.length; i++) {
-            uuid[i] = CHARS[(int) (Math.random() * CHARS.length)];
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            stringBuilder.append(CHARS[(int) (Math.random() * CHARS.length)]);
         }
-        return new String(uuid);
+        stringBuilder.append(System.currentTimeMillis());
+        return stringBuilder.toString();
     }
 
     /**

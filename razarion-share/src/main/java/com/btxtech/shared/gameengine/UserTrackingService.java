@@ -74,7 +74,7 @@ public class UserTrackingService {
 
     // TODO DbEventTrackingStart getDbEventTrackingStart(String startUuid);
 
-    // TODO void saveStartupTask(StartupTaskInfo startupTaskInfo, String startUuid, Integer levelTaskId);
+    // TODO void saveStartupTask(StartupTaskJson startupTaskInfo, String startUuid, Integer levelTaskId);
 
     // TODO void saveStartupTerminated(boolean successful, long totalTime, String startUuid, Integer levelTaskId);
 

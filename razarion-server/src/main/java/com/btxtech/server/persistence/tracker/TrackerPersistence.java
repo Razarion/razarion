@@ -1,6 +1,8 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.web.Session;
+import com.btxtech.shared.dto.StartupTaskJson;
+import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -66,11 +68,35 @@ public class TrackerPersistence {
                     params.append("|");
                 }
             }
-            if(iterator.hasNext()) {
+            if (iterator.hasNext()) {
                 params.append("||");
             }
         }
         pageTrackerEntity.setParams(params.toString());
         entityManager.persist(pageTrackerEntity);
+    }
+
+    @Transactional
+    public void onStartupTask(StartupTaskJson startupTaskJson) {
+        StartupTaskEntity startupTaskEntity = new StartupTaskEntity();
+        startupTaskEntity.setStartTime(new Date());
+        startupTaskEntity.setSessionId(session.getId());
+        startupTaskEntity.setGameSessionUuid(startupTaskJson.getGameSessionUuid());
+        startupTaskEntity.setClientStartTime(startupTaskJson.getStartTime());
+        startupTaskEntity.setDuration(startupTaskJson.getDuration());
+        startupTaskEntity.setTaskEnum(startupTaskJson.getTaskEnum());
+        startupTaskEntity.setError(startupTaskJson.getError());
+        entityManager.persist(startupTaskEntity);
+    }
+
+    @Transactional
+    public void onStartupTerminated(StartupTerminatedJson startupTerminatedJson) {
+        StartupTerminatedEntity startupTerminatedEntity = new StartupTerminatedEntity();
+        startupTerminatedEntity.setTimeStamp(new Date());
+        startupTerminatedEntity.setSessionId(session.getId());
+        startupTerminatedEntity.setGameSessionUuid(startupTerminatedJson.getGameSessionUuid());
+        startupTerminatedEntity.setTotalTime(startupTerminatedJson.getTotalTime());
+        startupTerminatedEntity.setSuccessful(startupTerminatedJson.isSuccessful());
+        entityManager.persist(startupTerminatedEntity);
     }
 }

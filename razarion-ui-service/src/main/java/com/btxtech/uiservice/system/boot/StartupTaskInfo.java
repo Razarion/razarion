@@ -20,7 +20,7 @@ import java.io.Serializable;
  * Date: 05.12.2010
  * Time: 23:23:42
  */
-public class StartupTaskInfo implements Serializable {
+public class StartupTaskInfo {
     private StartupTaskEnum taskEnum;
     private long startTime;
     private long duration;

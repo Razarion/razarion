@@ -4,9 +4,9 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.MathHelper;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * Date: 04.12.2010
  * Time: 10:56:33
  */
-@Singleton
+@ApplicationScoped
 public class ClientRunner {
     private Logger logger = Logger.getLogger(ClientRunner.class.getName());
     private Collection<StartupProgressListener> listeners = new ArrayList<>();
@@ -27,7 +27,7 @@ public class ClientRunner {
     private List<AbstractStartupTask> finishedTasks = new ArrayList<>();
     private AbstractStartupTask waitingTask;
     private boolean failed;
-    private String startUuid;
+    private String gameSessionUuid;
     @Inject
     private Instance<AbstractStartupTask> taskInstance;
     @Inject
@@ -42,7 +42,7 @@ public class ClientRunner {
     }
 
     public void start(StartupSeq startupSeq) {
-        startUuid = MathHelper.generateUuid();
+        gameSessionUuid = MathHelper.generateUuid();
         failed = false;
         for (StartupProgressListener listener : listeners) {
             listener.onStart(startupSeq);
@@ -210,7 +210,7 @@ public class ClientRunner {
         }
     }
 
-    public String getStartUuid() {
-        return startUuid;
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
     }
 }

@@ -13,8 +13,6 @@
 
 package com.btxtech.server.persistence.tracker;
 
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -28,30 +26,16 @@ import java.util.Date;
  * Time: 22:45:47
  */
 @Entity
-@Table(name = "TRACKER_SESSION", indexes = { @Index(columnList = "sessionId") })
-public class SessionTrackerEntity {
+@Table(name = "TRACKER_STARTUP_TERMINATED", indexes = { @Index(columnList = "sessionId"),  @Index(columnList = "gameSessionUuid") })
+public class StartupTerminatedEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(nullable = false)
-    private Date timeStamp;
-    @Column(nullable = false)
     private String sessionId;
-    @Column(length = 10000)
-    private String userAgent;
-    private String language;
-    private String remoteHost;
-    private String remoteAddr;
-    @Column(length = 50000)
-    private String referer;
-
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
-    }
+    private String gameSessionUuid;
+    private boolean successful;
+    private int totalTime;
+    private Date timeStamp;
 
     public String getSessionId() {
         return sessionId;
@@ -61,44 +45,36 @@ public class SessionTrackerEntity {
         this.sessionId = sessionId;
     }
 
-    public String getUserAgent() {
-        return userAgent;
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
     }
 
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
+    public void setGameSessionUuid(String gameSessionUuid) {
+        this.gameSessionUuid = gameSessionUuid;
     }
 
-    public String getLanguage() {
-        return language;
+    public boolean isSuccessful() {
+        return successful;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
     }
 
-    public String getRemoteHost() {
-        return remoteHost;
+    public int getTotalTime() {
+        return totalTime;
     }
 
-    public void setRemoteHost(String remoteHost) {
-        this.remoteHost = remoteHost;
+    public void setTotalTime(int totalTime) {
+        this.totalTime = totalTime;
     }
 
-    public String getRemoteAddr() {
-        return remoteAddr;
+    public Date getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setRemoteAddr(String remoteAddr) {
-        this.remoteAddr = remoteAddr;
-    }
-
-    public String getReferer() {
-        return referer;
-    }
-
-    public void setReferer(String referer) {
-        this.referer = referer;
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     @Override
@@ -110,7 +86,8 @@ public class SessionTrackerEntity {
             return false;
         }
 
-        SessionTrackerEntity that = (SessionTrackerEntity) o;
+        StartupTerminatedEntity that = (StartupTerminatedEntity) o;
+
         return id != null && id.equals(that.id);
     }
 
