@@ -241,7 +241,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         harvester.setI18Name(i18nHelper("Harvester Name"));
         harvester.setDescription(i18nHelper("Harvester Description"));
         harvester.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(15.0).setAngularVelocity(Math.toRadians(60));
-        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(272950).setAnimationOrigin(new Vertex(1.654, 0, 0.685)));
+        harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(272950).setAnimationOrigin(new Vertex(2.5, 0, 1.25)));
         harvester.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2).setBuildup(20);
         harvester.setPrice(100).setWreckageShape3DId(272944);
     }
