@@ -132,8 +132,8 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         // gameUiControlConfig.setSceneConfigs(setupThankYouForward()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(humanKillBotBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(kilEnemyBotBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(kilHumanBase()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(killEnemyBotBase()); // TODO mode to DB
+        // gameUiControlConfig.setSceneConfigs(killHumanBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(harvest()); // TODO mode to DB
         // gameUiControlConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
@@ -351,11 +351,11 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         levelConfigs.add(new LevelConfig().setLevelId(1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(level1Limitation));
         Map<Integer, Integer> level2Limitation = new HashMap<>();
         level2Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        level2Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
+        level2Limitation.put(BASE_ITEM_TYPE_ATTACKER, 3);
         levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(13).setItemTypeLimitation(level2Limitation));
         Map<Integer, Integer> level3Limitation = new HashMap<>();
         level3Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        level3Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
+        level3Limitation.put(BASE_ITEM_TYPE_ATTACKER, 3);
         level3Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
         level3Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
         levelConfigs.add(new LevelConfig().setLevelId(3).setNumber(3).setXp2LevelUp(30).setItemTypeLimitation(level3Limitation));
@@ -512,19 +512,19 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(40, 170)).setCameraLocked(false);
         // Player base place
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
-        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(64, 219)).setRotationZ(Math.toRadians(0)));
-        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(77, 220)).setRotationZ(Math.toRadians(80)));
-        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(94, 225)).setRotationZ(Math.toRadians(160)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(118, 262)).setRotationZ(Math.toRadians(0)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(121, 262)).setRotationZ(Math.toRadians(80)));
+        resourceItemTypePositions.add(new ResourceItemPosition().setId(1).setResourceItemTypeId(180829).setPosition(new DecimalPosition(124, 262)).setRotationZ(Math.toRadians(160)));
         // Harvest quest
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100));
         QuestConfig questConfig = new QuestConfig().setTitle("Sammle").setDescription("Sammle razarion um eine Armee zu bauen").setConditionConfig(conditionConfig);
 
-        sceneConfigs.add(new SceneConfig().setId(-2).setStartPointPlacerConfig(baseItemPlacerConfig).setViewFieldConfig(viewFieldConfig).setResourceItemTypePositions(resourceItemTypePositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setId(-2).setStartPointPlacerConfig(baseItemPlacerConfig).setViewFieldConfig(viewFieldConfig).setResourceItemTypePositions(resourceItemTypePositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true).setRemoveLoadingCover(true));
         return sceneConfigs;
     }
 
     // Kill human base -----------------------------------------------------------------------------
-    private List<SceneConfig> kilHumanBase() {
+    private List<SceneConfig> killHumanBase() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER).setBaseItemCount(1).setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(243, 120));
@@ -549,7 +549,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     }
 
     // Kill enemy bot base -----------------------------------------------------------------------------
-    private List<SceneConfig> kilEnemyBotBase() {
+    private List<SceneConfig> killEnemyBotBase() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         addNpcBot(sceneConfigs);
         // Setup killer bot
@@ -909,7 +909,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     private void addPickBoxTask(List<SceneConfig> sceneConfigs) {
         // Drop box
         List<BoxItemPosition> boxItemPositions = new ArrayList<>();
-        boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(BOX_ITEM_TYPE).setPosition(new DecimalPosition(180, 115)));
+        boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(BOX_ITEM_TYPE).setPosition(new DecimalPosition(180, 120)));
         // Pick box quest
         QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
         // Tip
@@ -932,7 +932,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.SPAN_INVENTORY_ITEM);
         gameTipConfig.setInventoryItemId(INVENTORY_ITEM);
-        gameTipConfig.setTerrainPositionHint(new DecimalPosition(216, 132));
+        gameTipConfig.setTerrainPositionHint(new DecimalPosition(216, 125));
         sceneConfigs.add(new SceneConfig().setId(14).setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setXp(1).setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotMoveCommandConfigs(botMoveCommandConfigs));
     }
 
@@ -1006,7 +1006,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipConfig.setTip(GameTipConfig.Tip.BUILD);
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_FACTORY);
-        gameTipConfig.setTerrainPositionHint(new DecimalPosition(107, 285));
+        gameTipConfig.setTerrainPositionHint(new DecimalPosition(112, 285));
 
         sceneConfigs.add(new SceneConfig().setId(10).setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Baue eine Fabrik mit deinem Bulldozer").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
