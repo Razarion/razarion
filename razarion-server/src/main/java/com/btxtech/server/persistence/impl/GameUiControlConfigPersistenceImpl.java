@@ -236,7 +236,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     }
 
     private void finalizeHarvester(BaseItemType harvester) {
-        harvester.setSpawnAudioId(272520);
+        harvester.setSpawnAudioId(272520).setThumbnail(284046);
         harvester.setTerrainType(TerrainType.LAND);
         harvester.setI18Name(i18nHelper("Harvester Name"));
         harvester.setDescription(i18nHelper("Harvester Description"));
@@ -247,7 +247,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
-        attacker.setSpawnAudioId(272520);
+        attacker.setSpawnAudioId(272520).setThumbnail(284045);
         attacker.setTerrainType(TerrainType.LAND);
         attacker.setI18Name(i18nHelper("Attacker Name"));
         attacker.setDescription(i18nHelper("Attacker Description"));
@@ -285,7 +285,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
     }
 
     private void finalizeTower(BaseItemType tower) {
-        tower.setSpawnAudioId(272520);
+        tower.setSpawnAudioId(272520).setThumbnail(284047);
         tower.setTerrainType(TerrainType.LAND);
         tower.setI18Name(i18nHelper("Tower"));
         tower.setDescription(i18nHelper("Verteidigungsturm"));
