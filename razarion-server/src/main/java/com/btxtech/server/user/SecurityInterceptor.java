@@ -1,5 +1,7 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.web.Session;
+
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -13,16 +15,16 @@ import javax.interceptor.InvocationContext;
 @SecurityCheck
 public class SecurityInterceptor {
     @Inject
-    private UserSession userSession;
+    private Session session;
 
     @AroundInvoke
     public Object logMethodEntry(InvocationContext invocationContext) throws Exception {
-        if (userSession.getUserContext() == null) {
-            throw new SecurityException("userSession.getUserContext() == null", invocationContext.getMethod());
+        if(session.getUser() == null) {
+            throw new SecurityException("session.getUser() == null", invocationContext.getMethod());
         }
 
-        if (!userSession.getUserContext().isAdmin()) {
-            throw new SecurityException(userSession, invocationContext.getMethod());
+        if (!session.getUser().isAdmin()) {
+            throw new SecurityException(session.getUser(), invocationContext.getMethod());
         }
 
         return invocationContext.proceed();

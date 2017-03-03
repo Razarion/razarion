@@ -32,8 +32,8 @@ public class UserEntity {
         registerDate = new Date();
     }
 
-    public boolean isAdmin() {
-        return admin;
+    public User createUser() {
+        return new User(id, admin);
     }
 
     @Override

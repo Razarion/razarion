@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.web.Session;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
@@ -25,7 +26,7 @@ public class UserService {
     @Inject
     private Logger logger;
     @Inject
-    private UserSession userSession;
+    private Session session;
 
     public UserContext setUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
         // TODO verify facebook signedRequest
@@ -39,18 +40,16 @@ public class UserService {
         if (userEntity == null) {
             userEntity = createUser(facebookUserLoginInfo);
         }
-
-
-        UserContext userContext = createUserContext(userEntity);
-        userSession.setUserContext(userContext);
-        return userContext;
+        User user = userEntity.createUser();
+        session.setUser(user);
+        return createUserContext(user);
     }
 
-    private UserContext createUserContext(UserEntity userEntity) {
+    private UserContext createUserContext(User user) {
         UserContext userContext = new UserContext();
-        if (userEntity != null) {
-            userContext.setUserId(userEntity.getId().intValue());
-            userContext.setAdmin(userEntity.isAdmin());
+        if (user != null) {
+            userContext.setUserId((int) user.getUserId());
+            userContext.setAdmin(user.isAdmin());
         } else {
             userContext.setUserId(999999999); // TODO
         }
