@@ -1,6 +1,8 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.web.Session;
+import com.btxtech.shared.dto.GameUiControlTrackerInfo;
+import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -98,5 +100,28 @@ public class TrackerPersistence {
         startupTerminatedEntity.setTotalTime(startupTerminatedJson.getTotalTime());
         startupTerminatedEntity.setSuccessful(startupTerminatedJson.isSuccessful());
         entityManager.persist(startupTerminatedEntity);
+    }
+
+    @Transactional
+    public void onGameUiControlTrackerInfo(GameUiControlTrackerInfo gameUiControlTrackerInfo) {
+        GameUiControlTrackerEntity gameUiControlTrackerEntity = new GameUiControlTrackerEntity();
+        gameUiControlTrackerEntity.setTimeStamp(new Date());
+        gameUiControlTrackerEntity.setSessionId(session.getId());
+        gameUiControlTrackerEntity.setClientStartTime(gameUiControlTrackerInfo.getStartTime());
+        gameUiControlTrackerEntity.setGameSessionUuid(gameUiControlTrackerInfo.getGameSessionUuid());
+        gameUiControlTrackerEntity.setDuration(gameUiControlTrackerInfo.getDuration());
+        entityManager.persist(gameUiControlTrackerEntity);
+    }
+
+    @Transactional
+    public void onSceneTrackerInfo(SceneTrackerInfo sceneTrackerInfo) {
+        SceneTrackerEntity sceneTrackerEntity = new SceneTrackerEntity();
+        sceneTrackerEntity.setTimeStamp(new Date());
+        sceneTrackerEntity.setSessionId(session.getId());
+        sceneTrackerEntity.setClientStartTime(sceneTrackerInfo.getStartTime());
+        sceneTrackerEntity.setGameSessionUuid(sceneTrackerInfo.getGameSessionUuid());
+        sceneTrackerEntity.setSceneId(sceneTrackerInfo.getSceneId());
+        sceneTrackerEntity.setDuration(sceneTrackerInfo.getDuration());
+        entityManager.persist(sceneTrackerEntity);
     }
 }

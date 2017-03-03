@@ -2,6 +2,7 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -10,16 +11,19 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.utils.Shape3DUtils;
+import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -52,10 +56,16 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private UserUiService userUiService;
     @Inject
+    private ClientRunner clientRunner;
+    @Inject
+    private TrackerService trackerService;
+    @Inject
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
     private GameUiControlConfig gameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
+    private Date startTimeStamp;
+    private Date sceneStartTimeStamp;
 
     public void setGameUiControlConfig(GameUiControlConfig gameUiControlConfig) {
         this.gameUiControlConfig = gameUiControlConfig;
@@ -71,6 +81,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void start() {
+        startTimeStamp = new Date();
         cockpitService.show();
         nextSceneNumber = 0;
         runScene();
@@ -78,11 +89,13 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     private void runScene() {
         if (currentScene != null) {
+            sceneFinished();
             currentScene.cleanup();
         }
         currentScene = sceneInstance.get();
-        logger.warning("Run Scene: " + currentScene);
-        currentScene.init(gameUiControlConfig.getSceneConfigs().get(nextSceneNumber));
+        SceneConfig sceneConfig = gameUiControlConfig.getSceneConfigs().get(nextSceneNumber);
+        currentScene.init(sceneConfig);
+        sceneStartTimeStamp = new Date();
         currentScene.run();
     }
 
@@ -92,10 +105,30 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             runScene();
         } else {
             if (currentScene != null) {
+                sceneFinished();
                 currentScene.cleanup();
                 currentScene = null;
             }
+            finished();
         }
+    }
+
+    private void sceneFinished() {
+        if (sceneStartTimeStamp == null) {
+            logger.warning("sceneStartTimeStamp == null");
+            return;
+        }
+        trackerService.trackScene(sceneStartTimeStamp, currentScene.getSceneConfig().getId());
+        sceneStartTimeStamp = null;
+    }
+
+    public void finished() {
+        if (startTimeStamp == null) {
+            logger.warning("startTimeStamp == null");
+            return;
+        }
+        trackerService.trackGameUiControl(startTimeStamp);
+        startTimeStamp = null;
     }
 
     public GameUiControlConfig getGameUiControlConfig() {

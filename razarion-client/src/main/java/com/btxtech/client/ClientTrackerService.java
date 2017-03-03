@@ -1,8 +1,11 @@
-package com.btxtech.client.system.boot;
+package com.btxtech.client;
 
+import com.btxtech.shared.dto.GameUiControlTrackerInfo;
+import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.rest.TrackerProvider;
+import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
@@ -11,7 +14,7 @@ import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import org.jboss.errai.common.client.api.Caller;
 
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
@@ -22,13 +25,40 @@ import java.util.logging.Logger;
  * Created by Beat
  * 03.03.2017.
  */
-@Dependent
-public class StartupProgressListenerImpl implements StartupProgressListener {
-    private Logger logger = Logger.getLogger(StartupProgressListenerImpl.class.getName());
+@ApplicationScoped
+public class ClientTrackerService implements TrackerService, StartupProgressListener {
+    private Logger logger = Logger.getLogger(ClientTrackerService.class.getName());
     @Inject
     private Caller<TrackerProvider> providerCaller;
     @Inject
     private ClientRunner clientRunner;
+
+    @Override
+    public void trackGameUiControl(Date startTimeStamp) {
+        GameUiControlTrackerInfo gameUiControlTrackerInfo = new GameUiControlTrackerInfo();
+        gameUiControlTrackerInfo.setStartTime(startTimeStamp);
+        gameUiControlTrackerInfo.setGameSessionUuid(clientRunner.getGameSessionUuid());
+        gameUiControlTrackerInfo.setDuration((int) (startTimeStamp.getTime() - System.currentTimeMillis()));
+        providerCaller.call(response -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "startupTask failed: " + message, throwable);
+            return false;
+        }).gameUiControlTrackerInfo(gameUiControlTrackerInfo);
+    }
+
+    @Override
+    public void trackScene(Date startTimeStamp, int sceneId) {
+        SceneTrackerInfo sceneTrackerInfo = new SceneTrackerInfo();
+        sceneTrackerInfo.setStartTime(startTimeStamp);
+        sceneTrackerInfo.setSceneId(sceneId);
+        sceneTrackerInfo.setGameSessionUuid(clientRunner.getGameSessionUuid());
+        sceneTrackerInfo.setDuration((int) (System.currentTimeMillis() - startTimeStamp.getTime()));
+        providerCaller.call(response -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "startupTask failed: " + message, throwable);
+            return false;
+        }).sceneTrackerInfo(sceneTrackerInfo);
+    }
 
     @Override
     public void onStart(StartupSeq startupSeq) {

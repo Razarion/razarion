@@ -160,6 +160,7 @@ public class Scene implements TerrainScrollListener {
             screenCover.fadeOutAndForward(sceneConfig.getForwardUrl());
             completionCallbackCount++;
             hasCompletionCallback = true;
+            gameUiControl.finished();
         }
 
         if (!hasCompletionCallback) {
@@ -233,5 +234,9 @@ public class Scene implements TerrainScrollListener {
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.stop();
         }
+    }
+
+    public SceneConfig getSceneConfig() {
+        return sceneConfig;
     }
 }

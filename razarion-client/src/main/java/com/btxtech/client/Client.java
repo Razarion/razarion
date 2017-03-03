@@ -2,7 +2,6 @@ package com.btxtech.client;
 
 import com.btxtech.client.clientI18n.ClientI18nConstants;
 import com.btxtech.client.system.boot.GameStartupSeq;
-import com.btxtech.client.system.boot.StartupProgressListenerImpl;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -17,7 +16,6 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +32,7 @@ public class Client {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private Instance<StartupProgressListenerImpl> startupListenerInstance;
+    private ClientTrackerService clientTrackerService;
 
     public Client() {
         GWT.setUncaughtExceptionHandler(e -> {
@@ -57,7 +55,7 @@ public class Client {
             exceptionHandler.handleException(throwable);
         }
 
-        clientRunner.addStartupProgressListener(startupListenerInstance.get());
+        clientRunner.addStartupProgressListener(clientTrackerService);
     }
 
     @AfterInitialization

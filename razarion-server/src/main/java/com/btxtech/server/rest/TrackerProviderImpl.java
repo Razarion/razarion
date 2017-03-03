@@ -1,6 +1,8 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
+import com.btxtech.shared.dto.GameUiControlTrackerInfo;
+import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.rest.TrackerProvider;
@@ -32,6 +34,26 @@ public class TrackerProviderImpl implements TrackerProvider {
     public void startupTerminated(StartupTerminatedJson startupTerminatedJson) {
         try {
             trackerPersistence.onStartupTerminated(startupTerminatedJson);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void gameUiControlTrackerInfo(GameUiControlTrackerInfo gameUiControlTrackerInfo) {
+        try {
+            trackerPersistence.onGameUiControlTrackerInfo(gameUiControlTrackerInfo);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void sceneTrackerInfo(SceneTrackerInfo sceneTrackerInfo) {
+        try {
+            trackerPersistence.onSceneTrackerInfo(sceneTrackerInfo);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

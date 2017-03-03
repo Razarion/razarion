@@ -1,5 +1,7 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.dto.GameUiControlTrackerInfo;
+import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 
@@ -24,5 +26,13 @@ public interface TrackerProvider {
     @Consumes(MediaType.APPLICATION_JSON)
     void startupTerminated(StartupTerminatedJson startupTerminatedJson);
 
+    @POST
+    @Path("gameUiControlTrackerInfo")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void gameUiControlTrackerInfo(GameUiControlTrackerInfo gameUiControlTrackerInfo);
 
+    @POST
+    @Path("sceneTrackerInfo")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void sceneTrackerInfo(SceneTrackerInfo sceneTrackerInfo);
 }

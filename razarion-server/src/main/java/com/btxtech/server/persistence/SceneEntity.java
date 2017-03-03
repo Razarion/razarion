@@ -43,6 +43,7 @@ public class SceneEntity {
 
     public SceneConfig toSceneConfig() {
         SceneConfig sceneConfig = new SceneConfig();
+        sceneConfig.setId(id.intValue());
         sceneConfig.setIntroText(introText);
         // TODO sceneConfig.setShowQuestSideBar(showQuestSideBar);
         ViewFieldConfig viewFieldConfig = new ViewFieldConfig();

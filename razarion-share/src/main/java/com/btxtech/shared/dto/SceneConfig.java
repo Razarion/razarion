@@ -10,6 +10,7 @@ import java.util.List;
  * 05.07.2016.
  */
 public class SceneConfig {
+    private int id;
     private String introText;
     private QuestConfig questConfig;
     private ViewFieldConfig viewFieldConfig;
@@ -32,6 +33,15 @@ public class SceneConfig {
     private GameTipConfig gameTipConfig;
     private boolean removeLoadingCover;
     private String forwardUrl;
+
+    public int getId() {
+        return id;
+    }
+
+    public SceneConfig setId(int id) {
+        this.id = id;
+        return this;
+    }
 
     public String getIntroText() {
         return introText;
