@@ -9,6 +9,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
     private String description;
     private int xp;
     private String passedMessage;
+    private boolean waitButHidePassedDialog; // Shit solution
 
     public String getTitle() {
         return title;
@@ -16,7 +17,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
 
     public T setTitle(String title) {
         this.title = title;
-        return (T)this;
+        return (T) this;
     }
 
     public String getDescription() {
@@ -25,7 +26,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
 
     public T setDescription(String description) {
         this.description = description;
-        return (T)this;
+        return (T) this;
     }
 
     public int getXp() {
@@ -34,7 +35,7 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
 
     public T setXp(int xp) {
         this.xp = xp;
-        return (T)this;
+        return (T) this;
     }
 
     public String getPassedMessage() {
@@ -43,6 +44,15 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
 
     public T setPassedMessage(String passedMessage) {
         this.passedMessage = passedMessage;
-        return (T)this;
+        return (T) this;
+    }
+
+    public boolean isWaitButHidePassedDialog() {
+        return waitButHidePassedDialog;
+    }
+
+    public T setWaitButHidePassedDialog(boolean waitButHidePassedDialog) {
+        this.waitButHidePassedDialog = waitButHidePassedDialog;
+        return (T) this;
     }
 }

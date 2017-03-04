@@ -993,7 +993,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
         killBotCommandConfigs.add(new KillBotCommandConfig().setBotId(NPC_BOT_INSTRUCTOR));
         // Build factory Quest
-        sceneConfigs.add(new SceneConfig().setId(19).setGameTipConfig(gameTipConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Basis").setDescription("Platziere deinen Bulldozer und baue Basis auf um Razarion Industries zu besiegen.").setPassedMessage("Ist dieser Dialg notwendig`?").setConditionConfig(conditionConfig).setXp(0)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs));
+        sceneConfigs.add(new SceneConfig().setId(19).setGameTipConfig(gameTipConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Basis").setDescription("Platziere deinen Bulldozer und baue eine Basis auf um Razarion Industries zu besiegen.").setWaitButHidePassedDialog(true).setConditionConfig(conditionConfig).setXp(0)).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs));
     }
 
     private void addBuildFactoryTask(List<SceneConfig> sceneConfigs) {

@@ -139,6 +139,10 @@ public class Scene implements TerrainScrollListener {
             completionCallbackCount++;
             modalDialogManager.setBaseLostCallback(this::onComplete);
         }
+        if (sceneConfig.getQuestConfig() != null && sceneConfig.getQuestConfig().isWaitButHidePassedDialog()) {
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+        }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
             completionCallbackCount++;
@@ -156,7 +160,7 @@ public class Scene implements TerrainScrollListener {
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.start(sceneConfig.getGameTipConfig());
         }
-        if(sceneConfig.getForwardUrl() != null) {
+        if (sceneConfig.getForwardUrl() != null) {
             screenCover.fadeOutAndForward(sceneConfig.getForwardUrl());
             completionCallbackCount++;
             hasCompletionCallback = true;
@@ -223,16 +227,27 @@ public class Scene implements TerrainScrollListener {
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
             questVisualizer.showSideBar(null);
-            modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
+            if (sceneConfig.getQuestConfig().isWaitButHidePassedDialog()) {
+                onComplete();
+            } else {
+                modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
+                if (sceneConfig.getGameTipConfig() != null) {
+                    gameTipService.stop();
+                }
+            }
             userUiService.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questVisualizer.showSideBar(null);
-            modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
+            if (sceneConfig.getScrollUiQuest().isWaitButHidePassedDialog()) {
+                onComplete();
+            } else {
+                modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
+                if (sceneConfig.getGameTipConfig() != null) {
+                    gameTipService.stop();
+                }
+            }
             userUiService.increaseXp(sceneConfig.getScrollUiQuest().getXp());
-        }
-        if (sceneConfig.getGameTipConfig() != null) {
-            gameTipService.stop();
         }
     }
 
