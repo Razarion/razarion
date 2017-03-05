@@ -526,7 +526,7 @@ a:active {
     position: absolute;
     left: 50%;
     top: 30%;
-    white-space:nowrap;
+    white-space: nowrap;
     text-align: center;
     transform: translate(-50%, -30%);
 }
