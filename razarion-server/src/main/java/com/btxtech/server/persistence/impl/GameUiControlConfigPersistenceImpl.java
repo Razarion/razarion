@@ -404,7 +404,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setInternalName("_setupMove").setViewFieldConfig(viewFieldConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(1).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden")));
+        sceneConfigs.add(new SceneConfig().setInternalName("_setupMove").setViewFieldConfig(viewFieldConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quest geben Erfarungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten level. In der oberen linek Menu siehst du deine Erfahrungspubnkte.")));
         // Move quest
         Map<Integer, Integer> itemTypeCount = new HashMap<>();
         itemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER, 1);
@@ -416,7 +416,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(200, 100));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("_setupMove").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Fahre zum Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setWait4LevelUpDialog(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("_setupMove").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Fahre zum Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setWait4LevelUpDialog(true));
 
         return sceneConfigs;
     }
@@ -635,7 +635,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         sceneConfigs.add(new SceneConfig().setInternalName("_setupPickBox 1").setViewFieldConfig(viewFieldConfig).setBoxItemPositions(boxItemPositions).setRemoveLoadingCover(true));
         addUserSpawnScene(sceneConfigs);
 
-        QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1))).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden");
+        QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1))).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden.");
         sceneConfigs.add(new SceneConfig().setInternalName("_setupPickBox 2").setQuestConfig(questConfig).setWait4QuestPassedDialog(true));
         sceneConfigs.add(new SceneConfig().setInternalName("_setupPickBox 3").setForwardUrl("ThankYou.html"));
         return sceneConfigs;
@@ -666,7 +666,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         attackerEnragement.add(new BotEnragementStateConfig().setName("Normal").setBotItems(attackerBotItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragement).setName("Kenny").setNpc(false));
         // Scroll Quest
-        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
+        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(300, 170, 10, 10)).setXp(1).setPassedMessage("Gratuliere, du hast die gegnerische Basis gefunden");
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();
         gameTipConfig.setTip(GameTipConfig.Tip.SCROLL);
@@ -851,7 +851,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_BULLDOZER);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(135, 85));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: spawn 1").setGameTipConfig(gameTipConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, Du hast soeben deinen ersten Quest bestanden")));
+        sceneConfigs.add(new SceneConfig().setInternalName("user: spawn 1").setGameTipConfig(gameTipConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte.")));
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
@@ -878,7 +878,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(180, 108));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: move").setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege Deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("user: move").setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true));
     }
 
     private void addNpcHarvestAttack(List<SceneConfig> sceneConfigs) {
@@ -893,7 +893,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
 
     private void addFindEnemyBase(List<SceneConfig> sceneConfigs) {
         // Scroll Quest
-        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setXp(1).setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(250, 290, 10, 10)).setXp(1).setPassedMessage("Gratuliere, Du hast die gegnerische Basis gefunden");
+        ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setXp(1).setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(250, 290, 10, 10)).setXp(1).setPassedMessage("Gratuliere, du hast die gegnerische Basis gefunden");
         // div
         ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setCameraLocked(false);
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
