@@ -18,6 +18,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -32,13 +33,16 @@ public class StartupTaskEntity {
     @Id
     @GeneratedValue
     private Long id;
+    @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String sessionId;
+    @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String gameSessionUuid;
     private String taskEnum;
     @Column(nullable = false)
     private Date startTime;
     private Date clientStartTime;
     private int duration;
+    @Lob
     @Column(length = 50000)
     private String error;
 

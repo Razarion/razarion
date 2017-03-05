@@ -2,6 +2,7 @@ package com.btxtech.server.user;
 
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,6 +20,7 @@ public class UserEntity {
     @Id
     @GeneratedValue
     private Long id;
+    @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String facebookUserId;
     private Date registerDate;
     private boolean admin;

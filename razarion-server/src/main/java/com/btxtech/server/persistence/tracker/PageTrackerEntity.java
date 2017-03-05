@@ -19,6 +19,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -28,17 +29,18 @@ import java.util.Date;
  * Time: 22:45:47
  */
 @Entity
-@Table(name = "TRACKER_PAGE", indexes = { @Index(columnList = "sessionId") })
+@Table(name = "TRACKER_PAGE", indexes = {@Index(columnList = "sessionId")})
 public class PageTrackerEntity {
     @Id
     @GeneratedValue
     private Long id;
     @Column(nullable = false)
     private Date timeStamp;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String sessionId;
     private String page;
     private String uri;
+    @Lob
     @Column(length = 50000)
     private String params;
 

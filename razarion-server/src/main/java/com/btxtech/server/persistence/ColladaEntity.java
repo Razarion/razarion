@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import java.util.Map;
 
@@ -28,10 +29,12 @@ public class ColladaEntity implements ColladaConverterMapper {
     @Lob
     private String colladaString;
     @ManyToMany
+    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     @CollectionTable(name = "COLLADA_TEXTURES")
     private Map<String, ImageLibraryEntity> textures;
     @ElementCollection
     @CollectionTable(name = "COLLADA_ANIMATIONS")
+    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     @Enumerated(EnumType.STRING)
     private Map<String, AnimationTrigger> animations;
 
