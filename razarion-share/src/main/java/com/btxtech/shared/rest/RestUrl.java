@@ -20,7 +20,7 @@ public class RestUrl {
     public static final String TRACKER_PATH = "tracker";
 
     public static String getImageServiceUrl(int id) {
-        return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id) + "?t=" + System.currentTimeMillis();
+        return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache
     }
 
     public static String getSimpleLoggingUrl() {
@@ -42,7 +42,7 @@ public class RestUrl {
     }
 
     public static String getAudioServiceUrl(int id) {
-        return APPLICATION_PATH + "/" + AUDIO_SERVICE_PATH + "/" + Integer.toString(id) + "?t=" + System.currentTimeMillis();
+        return APPLICATION_PATH + "/" + AUDIO_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/;// TODO image cache
     }
 
 }
