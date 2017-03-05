@@ -7,17 +7,17 @@ import java.util.Date;
  * 03.03.2017.
  */
 public class SceneTrackerInfo {
-    private int sceneId;
+    private String internalName;
     private String gameSessionUuid;
     private Date startTime;
     private int duration;
 
-    public int getSceneId() {
-        return sceneId;
+    public String getInternalName() {
+        return internalName;
     }
 
-    public SceneTrackerInfo setSceneId(int sceneId) {
-        this.sceneId = sceneId;
+    public SceneTrackerInfo setInternalName(String internalName) {
+        this.internalName = internalName;
         return this;
     }
 

@@ -15,7 +15,7 @@ public class TestTrackerService implements TrackerService {
     }
 
     @Override
-    public void trackScene(Date startTimeStamp, int sceneId) {
+    public void trackScene(Date startTimeStamp, String sceneInternalName) {
         throw new UnsupportedOperationException();
     }
 }

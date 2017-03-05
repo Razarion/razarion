@@ -47,10 +47,10 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     }
 
     @Override
-    public void trackScene(Date startTimeStamp, int sceneId) {
+    public void trackScene(Date startTimeStamp, String sceneInternalName) {
         SceneTrackerInfo sceneTrackerInfo = new SceneTrackerInfo();
         sceneTrackerInfo.setStartTime(startTimeStamp);
-        sceneTrackerInfo.setSceneId(sceneId);
+        sceneTrackerInfo.setInternalName(sceneInternalName);
         sceneTrackerInfo.setGameSessionUuid(clientRunner.getGameSessionUuid());
         sceneTrackerInfo.setDuration((int) (System.currentTimeMillis() - startTimeStamp.getTime()));
         providerCaller.call(response -> {

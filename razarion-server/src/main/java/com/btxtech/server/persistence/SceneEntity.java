@@ -23,6 +23,7 @@ public class SceneEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private String internalName;
     private String introText;
     @Deprecated
     private boolean showQuestSideBar;
@@ -43,7 +44,7 @@ public class SceneEntity {
 
     public SceneConfig toSceneConfig() {
         SceneConfig sceneConfig = new SceneConfig();
-        sceneConfig.setId(id.intValue());
+        sceneConfig.setInternalName(internalName);
         sceneConfig.setIntroText(introText);
         // TODO sceneConfig.setShowQuestSideBar(showQuestSideBar);
         ViewFieldConfig viewFieldConfig = new ViewFieldConfig();

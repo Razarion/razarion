@@ -1,8 +1,5 @@
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.dto.GameUiControlTrackerInfo;
-import com.btxtech.shared.dto.SceneTrackerInfo;
-
 import java.util.Date;
 
 /**
@@ -12,5 +9,5 @@ import java.util.Date;
 public interface TrackerService {
     void trackGameUiControl(Date startTimeStamp);
 
-    void trackScene(Date startTimeStamp, int sceneId);
+    void trackScene(Date startTimeStamp, String sceneInternalName);
 }

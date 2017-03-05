@@ -120,7 +120,7 @@ public class TrackerPersistence {
         sceneTrackerEntity.setSessionId(session.getId());
         sceneTrackerEntity.setClientStartTime(sceneTrackerInfo.getStartTime());
         sceneTrackerEntity.setGameSessionUuid(sceneTrackerInfo.getGameSessionUuid());
-        sceneTrackerEntity.setSceneId(sceneTrackerInfo.getSceneId());
+        sceneTrackerEntity.setInternalName(sceneTrackerInfo.getInternalName());
         sceneTrackerEntity.setDuration(sceneTrackerInfo.getDuration());
         entityManager.persist(sceneTrackerEntity);
     }

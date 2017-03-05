@@ -15,7 +15,7 @@ public class DevToolTrackerService implements TrackerService {
     }
 
     @Override
-    public void trackScene(Date startTimeStamp, int sceneId) {
-        System.out.println("DevToolTrackerService.trackScene() startTimeStamp: " + startTimeStamp + " sceneId: " + sceneId);
+    public void trackScene(Date startTimeStamp, String sceneInternalName) {
+        System.out.println("DevToolTrackerService.trackScene() startTimeStamp: " + startTimeStamp + " sceneInternalName: " + sceneInternalName);
     }
 }

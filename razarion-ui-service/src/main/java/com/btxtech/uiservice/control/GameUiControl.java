@@ -118,7 +118,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             logger.warning("sceneStartTimeStamp == null");
             return;
         }
-        trackerService.trackScene(sceneStartTimeStamp, currentScene.getSceneConfig().getId());
+        trackerService.trackScene(sceneStartTimeStamp, currentScene.getSceneConfig().getInternalName());
         sceneStartTimeStamp = null;
     }
 

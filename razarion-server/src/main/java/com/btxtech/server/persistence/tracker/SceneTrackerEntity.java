@@ -23,7 +23,7 @@ public class SceneTrackerEntity {
     @Column(nullable = false)
     private Date timeStamp;
     private Date clientStartTime;
-    private int sceneId;
+    private String internalName;
     private int duration;
 
     public String getSessionId() {
@@ -58,12 +58,12 @@ public class SceneTrackerEntity {
         this.clientStartTime = clientStartTime;
     }
 
-    public int getSceneId() {
-        return sceneId;
+    public String getInternalName() {
+        return internalName;
     }
 
-    public void setSceneId(int sceneId) {
-        this.sceneId = sceneId;
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
     }
 
     public int getDuration() {

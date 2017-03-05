@@ -139,7 +139,7 @@ public class ExperimentalTask extends AbstractStartupTask {
 
     private List<SceneConfig> defaultSceneConfigs() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        sceneConfigs.add(new SceneConfig().setId(-1).setRemoveLoadingCover(true).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(200, 200))));
+        sceneConfigs.add(new SceneConfig().setInternalName("_experimental default scene").setRemoveLoadingCover(true).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(200, 200))));
         return sceneConfigs;
     }
 }
