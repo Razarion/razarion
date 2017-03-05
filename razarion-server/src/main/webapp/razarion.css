@@ -469,6 +469,12 @@ a:active {
 
 /** -------------------------- DIALOG FRAMEWORK ENDS -------------------------- */
 
+/** -------------------------- DIALOG QUEST PASSED  -------------------------- */
+/** -------------------------- DIALOG QUEST PASSED ENDS -------------------------- */
+.quest-passed-dialog {
+    max-width: 30em;
+}
+
 /** -------------------------- DIALOG INVENTORY  -------------------------- */
 .inventory-item-table {
 
