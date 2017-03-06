@@ -44,6 +44,10 @@ public abstract class AbstractStartupTask {
         return startTime;
     }
 
+    protected void overrideStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
     public long getDuration() {
         return duration;
     }
