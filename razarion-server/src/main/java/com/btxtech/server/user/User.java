@@ -20,4 +20,12 @@ public class User {
     public boolean isAdmin() {
         return admin;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", admin=" + admin +
+                '}';
+    }
 }
