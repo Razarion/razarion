@@ -2,6 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import elemental.html.Float32Array;
 import elemental.html.WebGLBuffer;
 import elemental.html.WebGLRenderingContext;
 
@@ -24,6 +25,13 @@ abstract public class AbstractShaderAttribute {
         attributeLocation = webGlProgram.getAttributeLocation(attributeName);
         webGlBuffer = ctx3d.createBuffer();
         WebGlUtil.checkLastWebGlError("createBuffer", ctx3d);
+    }
+
+    public void fillFloat32Array(Float32Array float32Array) {
+        ctx3d.bindBuffer(WebGLRenderingContext.ARRAY_BUFFER, webGlBuffer);
+        WebGlUtil.checkLastWebGlError("bindBuffer", ctx3d);
+        ctx3d.bufferData(WebGLRenderingContext.ARRAY_BUFFER, float32Array, WebGLRenderingContext.STATIC_DRAW);
+        WebGlUtil.checkLastWebGlError("bufferData", ctx3d);
     }
 
     public void fillDoubleBuffer(List<Double> doubleList) {

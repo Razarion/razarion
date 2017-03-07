@@ -105,7 +105,6 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
         caller.call(new RemoteCallback<Shape3D>() {
             @Override
             public void callback(Shape3D shape3D) {
-                shape3D.setDbId(originalShape3D.getDbId());
                 Shape3DUtils.saveTextureIds(originalShape3D, shape3D);
                 Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3D);
                 addChangesCollada(originalShape3D.getDbId(), colladaText);

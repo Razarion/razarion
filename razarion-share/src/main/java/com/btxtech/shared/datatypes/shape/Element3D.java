@@ -1,5 +1,7 @@
 package com.btxtech.shared.datatypes.shape;
 
+import com.btxtech.shared.utils.Shape3DUtils;
+
 import java.util.List;
 
 /**
@@ -19,9 +21,9 @@ public class Element3D {
         return this;
     }
 
-    public void updateVertexContainerHelperName(String shape3DInternalName) {
+    public void updateVertexContainerKey(Shape3D shape3D) {
         for (VertexContainer vertexContainer : vertexContainers) {
-            vertexContainer.setShapeElementInternalName(shape3DInternalName + "|" + id);
+            vertexContainer.setKey(Shape3DUtils.generateVertexContainerKey(shape3D, this, vertexContainer));
         }
     }
 

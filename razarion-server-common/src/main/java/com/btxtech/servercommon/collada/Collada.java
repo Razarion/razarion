@@ -44,14 +44,14 @@ public class Collada extends ColladaXml {
         LOGGER.finest("scene: " + scene);
     }
 
-    public Shape3D convert() {
+    public Shape3D create(int id) {
         LOGGER.finest("convert");
         VisualScene visualScene = visualScenes.get(scene.getVisualSceneUrl());
         if (visualScene == null) {
             throw new ColladaRuntimeException("No visual scene found for url: " + scene.getVisualSceneUrl());
         }
 
-        Shape3D shape3D = visualScene.convert(geometries, materials, effects);
+        Shape3D shape3D = visualScene.create(id, geometries, materials, effects);
         List<ModelMatrixAnimation> modelMatrixAnimations = new ArrayList<>();
 
         for (Animation animation : animations) {

@@ -1,10 +1,11 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec2Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
@@ -38,9 +39,11 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     private VisualUiService visualUiService;
     @Inject
     private BaseItemUiService baseItemUiService;
-    private VertexShaderAttribute positions;
-    private VertexShaderAttribute norms;
-    private ShaderTextureCoordinateAttribute textureCoordinateAttribute;
+    @Inject
+    private ClientShape3DUiService shape3DUiService;
+    private Vec3Float32ArrayShaderAttribute positions;
+    private Vec3Float32ArrayShaderAttribute norms;
+    private Vec2Float32ArrayShaderAttribute textureCoordinateAttribute;
     private WebGlUniformTexture texture;
     private Color ambient;
     private Color diffuse;
@@ -49,9 +52,9 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
         webGlFacade.createProgram(Shaders.INSTANCE.vertexContainerVertexShader(), Shaders.INSTANCE.vertexContainerFragmentShader());
-        positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        norms = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
-        textureCoordinateAttribute = webGlFacade.createShaderTextureCoordinateAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
+        positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
+        textureCoordinateAttribute = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
         webGlFacade.enableReceiveShadow();
     }
 
@@ -62,9 +65,9 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
         texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
-        positions.fillBuffer(vertexContainer.getVertices());
-        norms.fillBuffer(vertexContainer.getNorms());
-        textureCoordinateAttribute.fillBuffer(vertexContainer.getTextureCoordinates());
+        positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
+        norms.fillFloat32Array(shape3DUiService.getNormFloat32Array(vertexContainer));
+        textureCoordinateAttribute.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
 
         ambient = vertexContainer.getAmbient();
         diffuse = vertexContainer.getDiffuse();

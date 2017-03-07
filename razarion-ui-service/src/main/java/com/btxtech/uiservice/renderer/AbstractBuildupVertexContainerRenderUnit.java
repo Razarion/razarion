@@ -13,7 +13,6 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractRenderUnit<VertexContainer> {
     private Logger logger = Logger.getLogger(AbstractBuildupVertexContainerRenderUnit.class.getName());
-    private double maxZ;
     private Matrix4 buildupMatrix;
 
     protected abstract void internalFillBuffers(VertexContainer vertexContainer);
@@ -24,28 +23,12 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
 
     @Override
     public void fillBuffers(VertexContainer vertexContainer) {
-        if (vertexContainer == null || vertexContainer.empty()) {
-            logger.warning("No vertices to render");
-            return;
-        }
-        if (vertexContainer.checkWrongTextureSize()) {
-            logger.warning("TextureCoordinate has not same size as vertices: " + vertexContainer.createShapeElementVertexContainerTag());
-            return;
-        }
-        if (vertexContainer.checkWrongNormSize()) {
-            logger.warning("Normal has not same size as vertices: " + vertexContainer.createShapeElementVertexContainerTag());
-            return;
-        }
         if (!vertexContainer.hasTextureId()) {
-            logger.warning("No texture id: " + vertexContainer.createShapeElementVertexContainerTag());
+            logger.warning("No texture id: " + vertexContainer.getKey());
             return;
         }
 
-        maxZ = Double.MIN_VALUE;
         buildupMatrix = vertexContainer.getShapeTransform().setupMatrix();
-        for (Vertex vertex : vertexContainer.getVertices()) {
-            maxZ = Math.max(buildupMatrix.multiply(vertex, 1.0).getZ(), maxZ);
-        }
         internalFillBuffers(vertexContainer);
 
         setElementCount(vertexContainer);
@@ -53,7 +36,7 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
 
     @Override
     public String helperString() {
-        return getRenderData().createShapeElementVertexContainerTag();
+        return getRenderData().getKey();
     }
 
     @Override
@@ -63,6 +46,6 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        draw(modelMatrices, modelMatrices.getProgress() * maxZ);
+        draw(modelMatrices, modelMatrices.getProgress());
     }
 }

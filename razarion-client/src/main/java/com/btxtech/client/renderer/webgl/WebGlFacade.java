@@ -7,6 +7,8 @@ import com.btxtech.client.renderer.engine.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.IntegerShaderAttribute;
 import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
+import com.btxtech.client.renderer.engine.Vec2Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.shared.datatypes.Color;
@@ -83,6 +85,14 @@ public class WebGlFacade {
 
     public VertexShaderAttribute createVertexShaderAttribute(String attributeName) {
         return new VertexShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
+    }
+
+    public Vec3Float32ArrayShaderAttribute createVec3Float32ArrayShaderAttribute(String attributeName) {
+        return new Vec3Float32ArrayShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
+    }
+
+    public Vec2Float32ArrayShaderAttribute createVec2Float32ArrayShaderAttribute(String attributeName) {
+        return new Vec2Float32ArrayShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
     }
 
     public DecimalPositionShaderAttribute createDecimalPositionShaderAttribute(String attributeName) {

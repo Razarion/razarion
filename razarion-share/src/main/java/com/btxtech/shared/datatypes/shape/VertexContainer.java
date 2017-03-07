@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,8 +11,10 @@ import java.util.List;
  * 14.05.2016.
  */
 public class VertexContainer {
+    private String key;
     private String materialId;
     private String materialName;
+    private int verticesCount;
     private List<Vertex> vertices;
     private List<Vertex> norms;
     private List<TextureCoordinate> textureCoordinates;
@@ -23,7 +24,15 @@ public class VertexContainer {
     private Color specular;
     private Color emission;
     private Integer textureId;
-    private String shapeElementInternalName;
+
+    public String getKey() {
+        return key;
+    }
+
+    public VertexContainer setKey(String key) {
+        this.key = key;
+        return this;
+    }
 
     public VertexContainer setMaterialId(String materialId) {
         this.materialId = materialId;
@@ -32,6 +41,11 @@ public class VertexContainer {
 
     public VertexContainer setMaterialName(String materialName) {
         this.materialName = materialName;
+        return this;
+    }
+
+    public VertexContainer setVerticesCount(int verticesCount) {
+        this.verticesCount = verticesCount;
         return this;
     }
 
@@ -79,11 +93,6 @@ public class VertexContainer {
         return this;
     }
 
-    public VertexContainer setShapeElementInternalName(String shapeElementInternalName) {
-        this.shapeElementInternalName = shapeElementInternalName;
-        return this;
-    }
-
     public List<Vertex> getVertices() {
         return vertices;
     }
@@ -94,20 +103,6 @@ public class VertexContainer {
 
     public List<TextureCoordinate> getTextureCoordinates() {
         return textureCoordinates;
-    }
-
-    public int verticesCount() {
-        return vertices.size();
-    }
-
-    public List<Vertex> generateBarycentric() {
-        List<Vertex> barycentric = new ArrayList<>();
-        for (int i = 0; i < vertices.size() / 3; i++) {
-            barycentric.add(new Vertex(1, 0, 0));
-            barycentric.add(new Vertex(0, 1, 0));
-            barycentric.add(new Vertex(0, 0, 1));
-        }
-        return barycentric;
     }
 
     public Color getAmbient() {
@@ -146,24 +141,8 @@ public class VertexContainer {
         return materialName;
     }
 
-    public String getShapeElementInternalName() {
-        return shapeElementInternalName;
-    }
-
-    public boolean empty() {
-        return vertices.isEmpty();
-    }
-
-    public boolean checkWrongTextureSize() {
-        return textureCoordinates == null || textureCoordinates.size() != verticesCount();
-    }
-
-    public boolean checkWrongNormSize() {
-        return norms == null || norms.size() != verticesCount();
-    }
-
-    public String createShapeElementVertexContainerTag() {
-        return shapeElementInternalName + "|" + materialId + ":" + materialName;
+    public int getVerticesCount() {
+        return verticesCount;
     }
 
     @Override
@@ -171,9 +150,7 @@ public class VertexContainer {
         return "VertexContainer{" +
                 "materialId=" + materialId +
                 ", materialName=" + materialName +
-                ", vertices=" + vertices +
-                ", norms=" + norms +
-                ", textureCoordinates=" + textureCoordinates +
+                ", verticesCount=" + verticesCount +
                 ", ambient=" + ambient +
                 ", diffuse=" + diffuse +
                 ", specular=" + specular +

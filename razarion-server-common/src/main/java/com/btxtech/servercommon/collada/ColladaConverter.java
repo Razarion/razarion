@@ -22,11 +22,11 @@ import java.util.logging.Logger;
 public class ColladaConverter {
     private static Logger LOGGER = Logger.getLogger(ColladaConverter.class.getName());
 
-    public static Shape3D convertShape3D(String colladaText, ColladaConverterMapper colladaConverterMapper) throws IOException, SAXException, ParserConfigurationException {
+    public static Shape3D convertShape3D(int id, String colladaText, ColladaConverterMapper colladaConverterMapper) throws IOException, SAXException, ParserConfigurationException {
         if (colladaText == null || colladaText.isEmpty()) {
             return new Shape3D();
         }
-        Shape3D shape3D = createCollada(colladaText).convert();
+        Shape3D shape3D = createCollada(colladaText).create(id);
         if (colladaConverterMapper != null) {
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 if (element3D.getVertexContainers() == null) {

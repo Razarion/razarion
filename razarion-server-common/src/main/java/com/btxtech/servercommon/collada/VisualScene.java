@@ -28,15 +28,16 @@ public class VisualScene extends NameIdColladaXml {
         }
     }
 
-    public Shape3D convert(Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
+    public Shape3D create(int id, Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
         Shape3D shape3D = new Shape3D();
+        shape3D.setDbId(id);
         shape3D.setInternalName(getId() + ":" + getName());
         List<Element3D> element3Ds = new ArrayList<>();
         for (NodeScene nodeScene : nodeScenes.values()) {
             LOGGER.finest("-:convert node : " + nodeScene);
             Element3D element3D = nodeScene.convert(geometries, materials, effects);
             if (element3D != null) {
-                element3D.updateVertexContainerHelperName(shape3D.getInternalName());
+                element3D.updateVertexContainerKey(shape3D);
                 element3Ds.add(element3D);
             }
         }

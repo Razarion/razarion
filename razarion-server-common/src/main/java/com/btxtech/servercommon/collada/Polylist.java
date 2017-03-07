@@ -83,6 +83,7 @@ public class Polylist extends ColladaXml {
 
         }
         VertexContainer vertexContainer = new VertexContainer();
+        vertexContainer.setVerticesCount(verticesDest.size());
         vertexContainer.setVertices(verticesDest).setNorms(normsDest);
         if (!textureCoordinatesDest.isEmpty()) {
             vertexContainer.setTextureCoordinates(textureCoordinatesDest);

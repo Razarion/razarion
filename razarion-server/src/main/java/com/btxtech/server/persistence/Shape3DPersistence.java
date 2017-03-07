@@ -42,7 +42,7 @@ public class Shape3DPersistence {
 
         List<Shape3D> shape3Ds = new ArrayList<>();
         for (ColladaEntity slopeConfigEntity : entityManager.createQuery(userSelect).getResultList()) {
-            shape3Ds.add(ColladaConverter.convertShape3D(slopeConfigEntity.getColladaString(), slopeConfigEntity).setDbId(slopeConfigEntity.getId().intValue()));
+            shape3Ds.add(ColladaConverter.convertShape3D(slopeConfigEntity.getId().intValue(), slopeConfigEntity.getColladaString(), slopeConfigEntity));
         }
 
         return shape3Ds;
@@ -70,7 +70,7 @@ public class Shape3DPersistence {
     public void save(Shape3DConfig shape3DConfig) throws ParserConfigurationException, SAXException, IOException {
         ColladaEntity colladaEntity = entityManager.find(ColladaEntity.class, (long) shape3DConfig.getDbId());
         if (shape3DConfig.getColladaString() != null) {
-            ColladaConverter.convertShape3D(shape3DConfig.getColladaString(), null); // Verification
+            ColladaConverter.convertShape3D(0, shape3DConfig.getColladaString(), null); // Verification
             colladaEntity.setColladaString(shape3DConfig.getColladaString());
         }
         if (shape3DConfig.getTextures() != null) {

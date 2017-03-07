@@ -12,6 +12,9 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.Element3D;
+import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
@@ -321,7 +324,23 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
         lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
         visualConfig.setWaterLightConfig(lightConfig);
-        visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
+        /// TODO remove
+        List<Shape3D> shape3DS = shape3DPersistence.getShape3Ds();
+        for (Shape3D shape3D : shape3DS) {
+            if (shape3D.getElement3Ds() != null) {
+                for (Element3D element3D : shape3D.getElement3Ds()) {
+                    if (element3D.getVertexContainers() != null) {
+                        for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                            vertexContainer.setVertices(null);
+                            vertexContainer.setNorms(null);
+                            vertexContainer.setTextureCoordinates(null);
+                        }
+                    }
+                }
+            }
+        }
+        visualConfig.setShape3Ds(shape3DS);
+        /// TODO remove ends
         visualConfig.setBaseItemDemolitionImageId(180848);
         return visualConfig;
     }

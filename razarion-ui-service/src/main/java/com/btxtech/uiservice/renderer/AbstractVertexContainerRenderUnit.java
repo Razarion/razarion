@@ -15,20 +15,12 @@ public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUn
 
     @Override
     public void fillBuffers(VertexContainer vertexContainer) {
-        if (vertexContainer == null || vertexContainer.empty()) {
+        if (vertexContainer == null) {
             logger.warning("No vertices to render");
             return;
         }
-        if (vertexContainer.checkWrongTextureSize()) {
-            logger.warning("TextureCoordinate has not same size as vertices: " + vertexContainer.createShapeElementVertexContainerTag());
-            return;
-        }
-        if (vertexContainer.checkWrongNormSize()) {
-            logger.warning("Normal has not same size as vertices: "+ vertexContainer.createShapeElementVertexContainerTag());
-            return;
-        }
         if (!vertexContainer.hasTextureId()) {
-            logger.warning("No texture id: "+ vertexContainer.createShapeElementVertexContainerTag());
+            logger.warning("No texture id: "+ vertexContainer.getKey());
             return;
         }
 
@@ -39,6 +31,6 @@ public abstract class AbstractVertexContainerRenderUnit extends AbstractRenderUn
 
     @Override
     public String helperString() {
-        return getRenderData().createShapeElementVertexContainerTag();
+        return getRenderData().getKey();
     }
 }

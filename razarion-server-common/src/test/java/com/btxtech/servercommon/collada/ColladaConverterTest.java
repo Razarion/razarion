@@ -27,13 +27,13 @@ public class ColladaConverterTest {
 
     @Test
     public void testSimplePlane1() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestSimplePlane01.dae", getClass()), null);
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestSimplePlane01.dae", getClass()), null);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
         Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
         Assert.assertEquals(1, planeElement.getVertexContainers().size());
         VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
-        Assert.assertEquals("Test-Simple-Plane-01:Test-Simple-Plane-01|Plane_Id|PlaneMat-material:PlaneMat", vertexContainer.createShapeElementVertexContainerTag());
+        Assert.assertEquals("0-Plane_Id-PlaneMat-material", vertexContainer.getKey());
         List<Vertex> vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
         List<Vertex> norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupMatrix().normTransformation());
         Assert.assertArrayEquals(new double[]{1.00, -1.00, 0.00, 1.00, 1.00, 0.00, -1.00, 1.00, 0.00, -1.00, -1.00, 0.00, 1.00, -1.00, 0.00, -1.00, 1.00, 0.00}, TestHelper.vertices2DoubleArray(vertices), 0.01);
@@ -42,13 +42,13 @@ public class ColladaConverterTest {
 
     @Test
     public void testSimpleSphere3x3() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestSphere3x3.dae", getClass()), null);
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestSphere3x3.dae", getClass()), null);
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
         Element3D planeElement = Shape3DUtils.getElement3D("Element", shape3D);
         Assert.assertEquals(1, planeElement.getVertexContainers().size());
         VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
 
-        Assert.assertEquals(12 * 3, vertexContainer.verticesCount());
+        Assert.assertEquals(12 * 3, vertexContainer.getVerticesCount());
         Assert.assertEquals(12 * 3, vertexContainer.getNorms().size());
 
         // Assert vertices
@@ -80,7 +80,7 @@ public class ColladaConverterTest {
 
     @Test
     public void testPlaneTranslation() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneTranslation.dae", getClass()), null);
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestPlaneTranslation.dae", getClass()), null);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
         Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
@@ -94,7 +94,7 @@ public class ColladaConverterTest {
 
     @Test
     public void testPlaneRotate() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneRotate.dae", getClass()), null);
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestPlaneRotate.dae", getClass()), null);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
         Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
@@ -108,7 +108,7 @@ public class ColladaConverterTest {
 
     @Test
     public void testPlaneScale() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneScale.dae", getClass()), null);
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestPlaneScale.dae", getClass()), null);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
         Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
@@ -122,7 +122,7 @@ public class ColladaConverterTest {
 
     @Test
     public void testPlaneTranslRotScale() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneTranslRotScale.dae", getClass()), null);
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestPlaneTranslRotScale.dae", getClass()), null);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
         Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
@@ -136,7 +136,7 @@ public class ColladaConverterTest {
 
     @Test
     public void testPlaneTranslRotScaleAnimation() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestPlaneTranslRotScaleAnimation.dae", getClass()), null);
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestPlaneTranslRotScaleAnimation.dae", getClass()), null);
         Assert.assertEquals(3, shape3D.getModelMatrixAnimations().size());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
         Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
@@ -151,7 +151,7 @@ public class ColladaConverterTest {
 
     @Test
     public void testReadItemType1() throws Exception {
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestItemType1.dae", getClass()), null);
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestItemType1.dae", getClass()), null);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(2, shape3D.getElement3Ds().size());
 
@@ -166,7 +166,7 @@ public class ColladaConverterTest {
         Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
         Assert.assertEquals(new Color(0.64, 0.64, 0.64), vertexContainer.getDiffuse());
         Assert.assertEquals(new Color(0.5, 0.5, 0.5), vertexContainer.getSpecular());
-        Assert.assertEquals(42, vertexContainer.verticesCount());
+        Assert.assertEquals(42, vertexContainer.getVerticesCount());
         List<Vertex> vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
         List<Vertex> norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupMatrix().normTransformation());
         Assert.assertArrayEquals(TestHelper.readArrayFromFile(getClass().getResourceAsStream("TestItem1Chassis1Vertex.arr")), TestHelper.vertices2DoubleArray(vertices), 0.01);
@@ -184,7 +184,7 @@ public class ColladaConverterTest {
         Assert.assertNull(vertexContainer.getEmission());
         Assert.assertNull(vertexContainer.getDiffuse());
         Assert.assertNull(vertexContainer.getSpecular());
-        Assert.assertEquals(57, vertexContainer.verticesCount());
+        Assert.assertEquals(57, vertexContainer.getVerticesCount());
         vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
         norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupMatrix().normTransformation());
         Assert.assertArrayEquals(TestHelper.readArrayFromFile(getClass().getResourceAsStream("TestItem1Wheel1Vertex.arr")), TestHelper.vertices2DoubleArray(vertices), 0.01);
@@ -196,7 +196,7 @@ public class ColladaConverterTest {
     public void testTerrainObject1() throws Exception {
         Map<String, Integer> textures = new HashMap<>();
         textures.put("Material-material", 99);
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null));
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null));
 
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
@@ -212,7 +212,7 @@ public class ColladaConverterTest {
         Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
         Assert.assertEquals(new Color(0.64, 0.64, 0.64), vertexContainer.getDiffuse());
         Assert.assertEquals(new Color(0.5, 0.5, 0.5), vertexContainer.getSpecular());
-        Assert.assertEquals(6, vertexContainer.verticesCount());
+        Assert.assertEquals(6, vertexContainer.getVerticesCount());
         List<Vertex> vertices = GeometricUtil.transform(vertexContainer.getVertices(), vertexContainer.getShapeTransform().setupMatrix());
         List<Vertex> norms = GeometricUtil.transformNorm(vertexContainer.getNorms(), vertexContainer.getShapeTransform().setupMatrix().normTransformation());
         Assert.assertArrayEquals(new double[]{-10.0, 10.0, 10.0, -10.0, -10.0, 10.0, 10.0, -10.0, 10.0, 10.0, 10.0, 10.0, -10.0, 10.0, 10.0, 10.0, -10.0, 10.0}, TestHelper.vertices2DoubleArray(vertices), 0.0001);
@@ -224,7 +224,7 @@ public class ColladaConverterTest {
         Map<String, Integer> textures = new HashMap<>();
         textures.put("Material-material", 101);
         textures.put("Material_002-material", 201);
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, null));
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, null));
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(2, shape3D.getElement3Ds().size());
 
@@ -279,7 +279,7 @@ public class ColladaConverterTest {
         animationTriggers.put("RotPlane_rotation_euler_X", AnimationTrigger.SINGLE_RUN);
         animationTriggers.put("RotPlane_rotation_euler_Y", AnimationTrigger.SINGLE_RUN);
 
-        Shape3D shape3D = ColladaConverter.convertShape3D(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, animationTriggers));
+        Shape3D shape3D = ColladaConverter.convertShape3D(0, TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, animationTriggers));
         Assert.assertEquals(9, shape3D.getModelMatrixAnimations().size());
         Assert.assertEquals(3, shape3D.getElement3Ds().size());
 

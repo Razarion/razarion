@@ -25,8 +25,6 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private TerrainEditorImpl terrainEditor;
-    @Inject
     private Caller<GameUiControlProvider> serviceCaller;
     @Inject
     private UserUiService userUiService;

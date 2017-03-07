@@ -31,7 +31,8 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
             return CALL_FACEBOOK;
         }
     },
-    LOAD_MEDIAS(LoadMediaControlTask.class),
+    LOAD_SHAPE3D_BUFFER(LoadShape3DBufferTask.class),
+    LOAD_MEDIAS(LoadMediaControlTask.class), // TODO run in background
     INIT_WORKER(InitWorkerTask.class) {
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {
@@ -46,7 +47,6 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
         }
     },
     RUN_GAME(RunGameUiControlTask.class) {
-
         @Override
         public StartupTaskEnum getWaitForBackgroundTask() {
             return INIT_WORKER;

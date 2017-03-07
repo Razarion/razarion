@@ -34,7 +34,7 @@ public abstract class AbstractRenderUnit<D> {
     }
 
     protected void setElementCount(VertexContainer vertexContainer) {
-        elementCount = vertexContainer.verticesCount();
+        elementCount = vertexContainer.getVerticesCount();
     }
 
     protected void setElementCount(VertexList vertexList) {

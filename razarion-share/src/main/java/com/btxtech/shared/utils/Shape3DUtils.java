@@ -77,7 +77,7 @@ public class Shape3DUtils {
     public static Set<Integer> getAllTextures(Collection<Shape3D> shape3Ds) {
         Set<Integer> textureIds = new HashSet<>();
         for (Shape3D shape3D : shape3Ds) {
-            if(shape3D.getElement3Ds() == null) {
+            if (shape3D.getElement3Ds() == null) {
                 continue;
             }
             for (Element3D element3D : shape3D.getElement3Ds()) {
@@ -137,37 +137,7 @@ public class Shape3DUtils {
         throw new IllegalArgumentException("AnimationId not found: " + animationId);
     }
 
-    public static double getMaxZ(Shape3D shape3D) {
-        if (shape3D.getElement3Ds() != null) {
-            double maxZ = Double.MIN_VALUE;
-            for (Element3D element3D : shape3D.getElement3Ds()) {
-                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                    Matrix4 buildupMatrix = vertexContainer.getShapeTransform().setupMatrix();
-                    for (Vertex vertex : vertexContainer.getVertices()) {
-                        maxZ = Math.max(buildupMatrix.multiply(vertex, 1.0).getZ(), maxZ);
-                    }
-                }
-            }
-            return maxZ;
-        }
-        throw new IllegalArgumentException("No vertices in vertex container");
+    public static String generateVertexContainerKey(Shape3D shape3D, Element3D element3D, VertexContainer vertexContainer) {
+        return Integer.toString(shape3D.getDbId()) + "-" + element3D.getId() + "-" + vertexContainer.getMaterialId();
     }
-
-
-    public static double getMinZ(Shape3D shape3D) {
-        if (shape3D.getElement3Ds() != null) {
-            double minZ = Double.MAX_VALUE;
-            for (Element3D element3D : shape3D.getElement3Ds()) {
-                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                    Matrix4 buildupMatrix = vertexContainer.getShapeTransform().setupMatrix();
-                    for (Vertex vertex : vertexContainer.getVertices()) {
-                        minZ = Math.min(buildupMatrix.multiply(vertex, 1.0).getZ(), minZ);
-                    }
-                }
-            }
-            return minZ;
-        }
-        throw new IllegalArgumentException("No vertices in vertex container");
-    }
-
 }

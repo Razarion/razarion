@@ -1,8 +1,9 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.VisualUiService;
@@ -11,7 +12,6 @@ import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.RenderUtil;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -36,13 +36,15 @@ public class ClientVertexContainerNormRendererUnit extends AbstractVertexContain
     private VisualUiService visualUiService;
     @Inject
     private BaseItemUiService baseItemUiService;
-    private VertexShaderAttribute vertices;
+    @Inject
+    private ClientShape3DUiService shape3DUiService;
+    private Vec3Float32ArrayShaderAttribute vertices;
 
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
         webGlFacade.createProgram(Shaders.INSTANCE.debugVectorVertexShader(), Shaders.INSTANCE.debugVectorFragmentShader());
-        vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class ClientVertexContainerNormRendererUnit extends AbstractVertexContain
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
-        vertices.fillDoubleBuffer(RenderUtil.setupNormDoubles(vertexContainer.getVertices(), vertexContainer.getNorms()));
+        vertices.fillFloat32Array(ClientRenderUtil.setupNormFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer), shape3DUiService.getNormFloat32Array(vertexContainer)));
     }
 
     @Override

@@ -15,6 +15,7 @@ public class RestUrl {
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
     public static final String SHAPE_3D_PROVIDER = "shape3dprovider";
+    public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
 
@@ -32,6 +33,10 @@ public class RestUrl {
         return "/" + APPLICATION_PATH;
     }
 
+    public static String loadShape3dBufferUrl() {
+        return "/" + APPLICATION_PATH + "/" + SHAPE_3D_PROVIDER + "/" + SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
+    }
+
     public static String getImageServiceUrlSafe(Integer id) {
         if (id != null) {
             return getImageServiceUrl(id);
@@ -43,5 +48,4 @@ public class RestUrl {
     public static String getAudioServiceUrl(int id) {
         return APPLICATION_PATH + "/" + AUDIO_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/;// TODO image cache
     }
-
 }

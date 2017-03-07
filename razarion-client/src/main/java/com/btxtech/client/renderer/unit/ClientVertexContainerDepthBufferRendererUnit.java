@@ -1,10 +1,11 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec2Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
@@ -28,16 +29,18 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
     private WebGlFacade webGlFacade;
     @Inject
     private ShadowUiService shadowUiService;
-    private VertexShaderAttribute positions;
-    private ShaderTextureCoordinateAttribute textureCoordinate;
+    @Inject
+    private ClientShape3DUiService shape3DUiService;
+    private Vec3Float32ArrayShaderAttribute positions;
+    private Vec2Float32ArrayShaderAttribute textureCoordinate;
     private WebGlUniformTexture webGLTexture;
 
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
         webGlFacade.createProgram(Shaders.INSTANCE.vertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.vertexContainerDeptBufferFragmentShader());
-        positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        textureCoordinate = webGlFacade.createShaderTextureCoordinateAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
+        positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        textureCoordinate = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
     }
 
     @Override
@@ -47,8 +50,8 @@ public class ClientVertexContainerDepthBufferRendererUnit extends AbstractVertex
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
-        positions.fillBuffer(vertexContainer.getVertices());
-        textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
+        positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
+        textureCoordinate.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
         webGLTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uTexture");
     }
 
