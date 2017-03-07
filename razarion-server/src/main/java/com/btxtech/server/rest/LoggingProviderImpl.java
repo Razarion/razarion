@@ -1,8 +1,10 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.web.Session;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.rest.LoggingProvider;
 
+import javax.inject.Inject;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -13,16 +15,21 @@ import java.util.logging.Logger;
  */
 public class LoggingProviderImpl implements LoggingProvider {
     private Logger logger = Logger.getLogger(LoggingProviderImpl.class.getName());
+    @Inject
+    private Session session;
 
     @Override
     public void simpleLogger(String logString) {
+        logger.severe("SimpleLogger: SessionId: " + session.getId() + " User " + session.getUser());
         logger.severe("SimpleLogger: " + logString);
     }
 
     @Override
     public void jsonLogger(LogRecordInfo logRecordInfo) {
         try {
-            logger.log(toLogRecord(logRecordInfo));
+            LogRecord logRecord = toLogRecord(logRecordInfo);
+            logger.log(logRecord.getLevel(), "jsonLogger: SessionId: " + session.getId() + " User " + session.getUser());
+            logger.log(logRecord);
             if (logRecordInfo.getThrown() != null) {
                 logger.severe(logRecordInfo.getThrown());
             }
