@@ -1,9 +1,9 @@
 package com.btxtech.servercommon.collada;
 
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 import org.w3c.dom.Node;
@@ -33,12 +33,12 @@ public class NodeScene extends NameIdColladaXml {
         }
     }
 
-    public Element3D convert(Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
+    public Element3DBuilder create(Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
         if (instanceGeometries.isEmpty()) {
             return null;
         }
 
-        List<VertexContainer> vertexContainers = new ArrayList<>();
+        Element3DBuilder element3DBuilder = new Element3DBuilder(getId());
         for (InstanceGeometry instanceGeometry : instanceGeometries) {
             Geometry geometry = geometries.get(instanceGeometry.getUrl());
             if (geometry == null) {
@@ -58,21 +58,21 @@ public class NodeScene extends NameIdColladaXml {
             }
 
             LOGGER.finest("--:convert:  " + geometry);
-            VertexContainer vertexContainer = geometry.getMesh().createVertexContainer();
+            VertexContainerBuffer vertexContainerBuffer = geometry.getMesh().createVertexContainerBuffer();
+            VertexContainer vertexContainer = new VertexContainer();
             vertexContainer.setShapeTransform(transform);
             vertexContainer.setMaterialId(materialId);
             vertexContainer.setMaterialName(materialName);
+            vertexContainer.setVerticesCount(vertexContainerBuffer.calculateVertexCount());
             if (effect != null && effect.getTechnique() != null) {
                 vertexContainer.setAmbient(effect.getTechnique().getAmbient());
                 vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
                 vertexContainer.setSpecular(effect.getTechnique().getSpecular());
                 vertexContainer.setEmission(effect.getTechnique().getEmission());
             }
-            vertexContainers.add(vertexContainer);
+            element3DBuilder.addVertexContainer(vertexContainer, vertexContainerBuffer);
         }
-        Element3D element3D = new Element3D();
-        element3D.setId(getId()).setVertexContainers(vertexContainers);
-        return element3D;
+        return element3DBuilder;
     }
 
     private void setupShapeTransform(Node node) {

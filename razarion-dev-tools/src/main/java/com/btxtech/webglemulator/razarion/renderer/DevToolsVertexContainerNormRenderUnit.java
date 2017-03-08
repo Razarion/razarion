@@ -36,7 +36,7 @@ public class DevToolsVertexContainerNormRenderUnit extends AbstractVertexContain
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLUE).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(vertexContainer.getVertices(), vertexContainer.getNorms()));
+        webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(vertexContainer.OLDgetVertices(), vertexContainer.OLDgetNorms()));
     }
 
     @Override

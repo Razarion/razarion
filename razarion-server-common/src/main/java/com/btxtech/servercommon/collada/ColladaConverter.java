@@ -1,9 +1,5 @@
 package com.btxtech.servercommon.collada;
 
-import com.btxtech.shared.datatypes.shape.Element3D;
-import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
-import com.btxtech.shared.datatypes.shape.Shape3D;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -22,38 +18,18 @@ import java.util.logging.Logger;
 public class ColladaConverter {
     private static Logger LOGGER = Logger.getLogger(ColladaConverter.class.getName());
 
-    public static Shape3D convertShape3D(int id, String colladaText, ColladaConverterMapper colladaConverterMapper) throws IOException, SAXException, ParserConfigurationException {
+    public static Shape3DBuilder createShape3DBuilder(String colladaText, ColladaConverterMapper colladaConverterMapper) throws IOException, SAXException, ParserConfigurationException {
         if (colladaText == null || colladaText.isEmpty()) {
-            return new Shape3D();
+            return new Shape3DBuilder();
         }
-        Shape3D shape3D = createCollada(colladaText).create(id);
-        if (colladaConverterMapper != null) {
-            for (Element3D element3D : shape3D.getElement3Ds()) {
-                if (element3D.getVertexContainers() == null) {
-                    continue;
-                }
-                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                    String materialId = vertexContainer.getMaterialId();
-                    if (materialId != null) {
-                        vertexContainer.setTextureId(colladaConverterMapper.getTextureId(materialId));
-                    }
-                }
-            }
-            if (shape3D.getModelMatrixAnimations() != null) {
-                for (ModelMatrixAnimation modelMatrixAnimation : shape3D.getModelMatrixAnimations()) {
-                    modelMatrixAnimation.setAnimationTrigger(colladaConverterMapper.getAnimationTrigger(modelMatrixAnimation.getId()));
-                }
-            }
-        }
-        return shape3D;
-    }
 
-    private static Collada createCollada(String colladaString) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(new InputSource(new StringReader(colladaString)));
+        Document doc = db.parse(new InputSource(new StringReader(colladaText)));
 
         LOGGER.finest("Start Parsing");
-        return new Collada(doc);
+        Shape3DBuilder shape3DBuilder = new Collada(doc).create();
+        shape3DBuilder.setColladaConverterMapper(colladaConverterMapper);
+        return shape3DBuilder;
     }
 }

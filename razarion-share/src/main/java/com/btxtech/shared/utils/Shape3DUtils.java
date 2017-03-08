@@ -1,7 +1,5 @@
 package com.btxtech.shared.utils;
 
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
@@ -137,7 +135,7 @@ public class Shape3DUtils {
         throw new IllegalArgumentException("AnimationId not found: " + animationId);
     }
 
-    public static String generateVertexContainerKey(Shape3D shape3D, Element3D element3D, VertexContainer vertexContainer) {
-        return Integer.toString(shape3D.getDbId()) + "-" + element3D.getId() + "-" + vertexContainer.getMaterialId();
+    public static String generateVertexContainerKey(int shape3DId, String element3DId, VertexContainer vertexContainer) {
+        return Integer.toString(shape3DId) + "-" + element3DId + "-" + vertexContainer.getMaterialId();
     }
 }

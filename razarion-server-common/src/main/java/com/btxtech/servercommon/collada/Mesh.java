@@ -2,6 +2,7 @@ package com.btxtech.servercommon.collada;
 
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class Mesh extends ColladaXml {
         polylist = new Polylist(getChild(node, ELEMENT_POLYLIST));
     }
 
-    public VertexContainer createVertexContainer() {
+    public VertexContainerBuffer createVertexContainerBuffer() {
         return polylist.createVertexContainer(sources, vertices);
     }
 

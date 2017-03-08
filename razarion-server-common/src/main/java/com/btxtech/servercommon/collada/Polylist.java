@@ -3,6 +3,7 @@ package com.btxtech.servercommon.collada;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class Polylist extends ColladaXml {
         primitiveIndices = getElementAsIntegerList(getChild(node, ELEMENT_P));
     }
 
-    public VertexContainer createVertexContainer(Map<String, Source> sources, Vertices positionVertex) {
+    public VertexContainerBuffer createVertexContainer(Map<String, Source> sources, Vertices positionVertex) {
         for (Integer polygonPrimitiveCount : polygonPrimitiveCounts) {
             if (polygonPrimitiveCount != 3) {
                 throw new ColladaRuntimeException("Only polygon with 3 vertices supported (triangle). Given vertices: " + polygonPrimitiveCount);
@@ -70,24 +71,33 @@ public class Polylist extends ColladaXml {
             textureOffset = textcoordInput.getOffset();
         }
 
-        List<Vertex> verticesDest = new ArrayList<>();
-        List<Vertex> normsDest = new ArrayList<>();
-        List<TextureCoordinate> textureCoordinatesDest = new ArrayList<>();
+        List<Float> verticesDest = new ArrayList<>();
+        List<Float> normsDest = new ArrayList<>();
+        List<Float> textureCoordinatesDest = new ArrayList<>();
         for (int i = 0; i < primitiveIndices.size() / step; i++) {
             int baseIndex = i * step;
-            verticesDest.add(vertices.get(primitiveIndices.get(baseIndex + vertexOffset)));
-            normsDest.add(norms.get(primitiveIndices.get(baseIndex + normOffset)));
+            Vertex vertex = vertices.get(primitiveIndices.get(baseIndex + vertexOffset));
+            verticesDest.add((float) vertex.getX());
+            verticesDest.add((float) vertex.getY());
+            verticesDest.add((float) vertex.getZ());
+            Vertex norm = norms.get(primitiveIndices.get(baseIndex + normOffset));
+            normsDest.add((float) norm.getX());
+            normsDest.add((float) norm.getY());
+            normsDest.add((float) norm.getZ());
             if (textureCoordinates != null) {
-                textureCoordinatesDest.add(textureCoordinates.get(primitiveIndices.get(baseIndex + textureOffset)));
+                TextureCoordinate textureCoordinate = textureCoordinates.get(primitiveIndices.get(baseIndex + textureOffset));
+                textureCoordinatesDest.add((float) textureCoordinate.getS());
+                textureCoordinatesDest.add((float) textureCoordinate.getT());
             }
 
         }
-        VertexContainer vertexContainer = new VertexContainer();
-        vertexContainer.setVerticesCount(verticesDest.size());
-        vertexContainer.setVertices(verticesDest).setNorms(normsDest);
+        VertexContainerBuffer vertexContainerBuffer = new VertexContainerBuffer();
+        vertexContainerBuffer.setVertexData(verticesDest);
+        vertexContainerBuffer.setNormData(normsDest);
+
         if (!textureCoordinatesDest.isEmpty()) {
-            vertexContainer.setTextureCoordinates(textureCoordinatesDest);
+            vertexContainerBuffer.setTextureCoordinate(textureCoordinatesDest);
         }
-        return vertexContainer;
+        return vertexContainerBuffer;
     }
 }

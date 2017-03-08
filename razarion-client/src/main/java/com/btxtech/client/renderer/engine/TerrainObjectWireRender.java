@@ -63,7 +63,7 @@ public class TerrainObjectWireRender extends AbstractWebGlUnitRenderer {
 //  TODO          logger.warning("No vertices to render");
 //  TODO          return;
 //  TODO      }
-//  TODO      positions.fillBuffer(vertexContainer.getVertices());
+//  TODO      positions.fillBuffer(vertexContainer.OLDgetVertices());
 //  TODO      barycentric.fillBuffer(vertexContainer.generateBarycentric());
 //  TODO      textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 //

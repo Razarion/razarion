@@ -64,7 +64,7 @@ public class ClientShape3DUiService extends Shape3DUiService {
                     JsArray array = JsonUtils.safeEval(responseText);
                     for (int i = 0; i < array.length(); i++) {
                         JavaScriptObject jsonObject = array.get(i);
-                        buffer.put(getId(jsonObject), new Shape3DBuffer(getVertexData(jsonObject), getNormData(jsonObject), getTextureCoordinate(jsonObject)));
+                        buffer.put(getKey(jsonObject), new Shape3DBuffer(getVertexData(jsonObject), getNormData(jsonObject), getTextureCoordinate(jsonObject)));
                     }
                     deferredStartup.finished();
                 } catch (Throwable t) {
@@ -75,8 +75,8 @@ public class ClientShape3DUiService extends Shape3DUiService {
         });
     }
 
-    private native String getId(JavaScriptObject jsonObject) /*-{
-        return jsonObject.id;
+    private native String getKey(JavaScriptObject jsonObject) /*-{
+        return jsonObject.key;
     }-*/;
 
     private native Float32Array getVertexData(JavaScriptObject jsonObject) /*-{

@@ -55,7 +55,7 @@ public class ItemWireUnitRenderer extends AbstractWebGlUnitRenderer {
 //            return;
 //        }
 //
-//        positions.fillBuffer(vertexContainer.getVertices());
+//        positions.fillBuffer(vertexContainer.OLDgetVertices());
 //        barycentrics.fillBuffer(vertexContainer.generateBarycentric());
 //        textureCoordinate.fillBuffer(vertexContainer.getTextureCoordinates());
 //

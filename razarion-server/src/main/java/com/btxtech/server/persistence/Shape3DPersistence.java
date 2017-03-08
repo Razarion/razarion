@@ -5,6 +5,7 @@ import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
+import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -34,18 +35,30 @@ public class Shape3DPersistence {
     private ImagePersistence imagePersistence;
 
     @Transactional
-    public List<Shape3D> getShape3Ds() throws ParserConfigurationException, SAXException, IOException {
+    public List<ColladaEntity> readColladaEntities() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<ColladaEntity> userQuery = criteriaBuilder.createQuery(ColladaEntity.class);
         Root<ColladaEntity> root = userQuery.from(ColladaEntity.class);
         CriteriaQuery<ColladaEntity> userSelect = userQuery.select(root);
+        return entityManager.createQuery(userSelect).getResultList();
+    }
 
+    @Transactional
+    public List<Shape3D> getShape3Ds() throws ParserConfigurationException, SAXException, IOException {
         List<Shape3D> shape3Ds = new ArrayList<>();
-        for (ColladaEntity slopeConfigEntity : entityManager.createQuery(userSelect).getResultList()) {
-            shape3Ds.add(ColladaConverter.convertShape3D(slopeConfigEntity.getId().intValue(), slopeConfigEntity.getColladaString(), slopeConfigEntity));
+        for (ColladaEntity colladaEntity : readColladaEntities()) {
+            shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createShape3D(colladaEntity.getId().intValue()));
         }
-
         return shape3Ds;
+    }
+
+    @Transactional
+    public List<VertexContainerBuffer> getVertexContainerBuffers() throws ParserConfigurationException, SAXException, IOException {
+        List<VertexContainerBuffer> vertexContainerBuffers = new ArrayList<>();
+        for (ColladaEntity colladaEntity : readColladaEntities()) {
+            vertexContainerBuffers.addAll(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createVertexContainerBuffer(colladaEntity.getId().intValue()));
+        }
+        return vertexContainerBuffers;
     }
 
     @Transactional
@@ -70,7 +83,7 @@ public class Shape3DPersistence {
     public void save(Shape3DConfig shape3DConfig) throws ParserConfigurationException, SAXException, IOException {
         ColladaEntity colladaEntity = entityManager.find(ColladaEntity.class, (long) shape3DConfig.getDbId());
         if (shape3DConfig.getColladaString() != null) {
-            ColladaConverter.convertShape3D(0, shape3DConfig.getColladaString(), null); // Verification
+            ColladaConverter.createShape3DBuilder(shape3DConfig.getColladaString(), null); // Verification
             colladaEntity.setColladaString(shape3DConfig.getColladaString());
         }
         if (shape3DConfig.getTextures() != null) {

@@ -8,7 +8,6 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
@@ -42,7 +41,7 @@ public class DevToolsBuildupVertexContainerDepthBufferRenderUnit extends Abstrac
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.getVertices()));
+        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.OLDgetVertices()));
     }
 
     @Override

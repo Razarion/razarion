@@ -62,22 +62,6 @@ public class GeometricUtil {
         return new DecimalPosition(maxX, maxY);
     }
 
-    public static List<Vertex> transform(List<Vertex> input, Matrix4 transformation) {
-        List<Vertex> output = new ArrayList<>();
-        for (Vertex vertex : input) {
-            output.add(transformation.multiply(vertex, 1.0));
-        }
-        return output;
-    }
-
-    public static List<Vertex> transformNorm(List<Vertex> input, Matrix4 transformation) {
-        List<Vertex> output = new ArrayList<>();
-        for (Vertex vertex : input) {
-            output.add(transformation.multiply(vertex, 0.0).normalize(1.0));
-        }
-        return output;
-    }
-
     public static Map<Vertex, Integer> groupVertices(Collection<Vertex> input, double delta) {
         Map<Vertex, Integer> map = new TreeMap<>(Vertex.createVertexComparator1(delta));
         for (Vertex vertex : input) {

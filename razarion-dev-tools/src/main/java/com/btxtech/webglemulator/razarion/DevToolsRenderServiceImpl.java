@@ -76,14 +76,14 @@ public class DevToolsRenderServiceImpl extends RenderService {
     protected void setupRenderers() {
 //        // Ground
 //        webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, terrainUiService.getGroundVertexList().createPositionDoubles(), Color.BLUE);
-//       TODO  webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainUiService.getGroundVertexList().getVertices(), terrainUiService.getGroundVertexList().getNormVertices()), Color.BROWN);
+//       TODO  webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainUiService.getGroundVertexList().OLDgetVertices(), terrainUiService.getGroundVertexList().getNormVertices()), Color.BROWN);
 //        webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, terrainUiService.getGroundVertexList().createPositionDoubles(), Color.BLUE);
 //        // Slopes
 //        for (Integer slopeId : terrainUiService.getSlopeIds()) {
 //            Mesh mesh = terrainUiService.getSlope(slopeId).getMesh();
-//            webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
-//   TODO         webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(mesh.getVertices(), mesh.getNorms()), Color.GREEN);
-//            webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, CollectionUtils.verticesToDoubles(mesh.getVertices()), Color.RED);
+//            webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, CollectionUtils.verticesToDoubles(mesh.OLDgetVertices()), Color.RED);
+//   TODO         webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(mesh.OLDgetVertices(), mesh.OLDgetNorms()), Color.GREEN);
+//            webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, CollectionUtils.verticesToDoubles(mesh.OLDgetVertices()), Color.RED);
 //        }
     }
 }

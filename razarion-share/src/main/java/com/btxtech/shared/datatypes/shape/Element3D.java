@@ -21,12 +21,6 @@ public class Element3D {
         return this;
     }
 
-    public void updateVertexContainerKey(Shape3D shape3D) {
-        for (VertexContainer vertexContainer : vertexContainers) {
-            vertexContainer.setKey(Shape3DUtils.generateVertexContainerKey(shape3D, this, vertexContainer));
-        }
-    }
-
     public List<VertexContainer> getVertexContainers() {
         return vertexContainers;
     }

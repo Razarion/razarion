@@ -22,9 +22,9 @@ public class SlopeTest {
 //        plateau.wrap(null);
 //        Mesh mesh = plateau.getMesh();
 //
-//        Assert.assertEquals(18, mesh.getVertices().size());
+//        Assert.assertEquals(18, mesh.OLDgetVertices().size());
 //
-//        List<Vertex> vertices = mesh.getVertices();
+//        List<Vertex> vertices = mesh.OLDgetVertices();
 //        assertTriangle(vertices, 0, new Vertex(0.0, 0.0, 0.0), new Vertex(200.0, 0.0, 0.0), new Vertex(0.0, 0.0, 100.0));
 //        assertTriangle(vertices, 1, new Vertex(200.0, 0.0, 0.0), new Vertex(200.0, 0.0, 100.0), new Vertex(0.0, 0.0, 100.0));
 //        assertTriangle(vertices, 2, new Vertex(200.0, 0.0, 0.0), new Vertex(200.0, 200.0, 0.0), new Vertex(200.0, 0.0, 100.0));
@@ -42,9 +42,9 @@ public class SlopeTest {
 //        plateau.wrap(null);
 //        Mesh mesh = plateau.getMesh();
 //
-//        Assert.assertEquals(24, mesh.getVertices().size());
+//        Assert.assertEquals(24, mesh.OLDgetVertices().size());
 //
-//        List<Vertex> vertices = mesh.getVertices();
+//        List<Vertex> vertices = mesh.OLDgetVertices();
 //        assertTriangle(vertices, 0, new Vertex(0.0, 0.0, 0.0), new Vertex(200.0, 0.0, 0.0), new Vertex(0.0, 0.0, 100.0));
 //        assertTriangle(vertices, 1, new Vertex(200.0, 0.0, 0.0), new Vertex(200.0, 0.0, 100.0), new Vertex(0.0, 0.0, 100.0));
 //        assertTriangle(vertices, 2, new Vertex(200.0, 0.0, 0.0), new Vertex(200.0, 200.0, 0.0), new Vertex(200.0, 0.0, 100.0));
@@ -54,7 +54,7 @@ public class SlopeTest {
 //        assertTriangle(vertices, 6, new Vertex(0.0, 200.0, 0.0), new Vertex(0.0, 0.0, 0.0), new Vertex(0.0, 200.0, 100.0));
 //        assertTriangle(vertices, 7, new Vertex(0.0, 0.0, 0.0), new Vertex(0.0, 0.0, 100.0), new Vertex(0.0, 200.0, 100.0));
 //
-//        List<Vertex> norms = mesh.getNorms();
+//        List<Vertex> norms = mesh.OLDgetNorms();
 //        assertTriangle(norms, 0, new Vertex(-0.7071, -0.7071, 0.0000), new Vertex(0.7071, -0.7071, 0.0000), new Vertex(-0.7071, -0.7071, 0.0000));
 //        assertTriangle(norms, 1, new Vertex(0.7071, -0.7071, 0.0000), new Vertex(0.7071, -0.7071, 0.0000), new Vertex(-0.7071, -0.7071, 0.0000));
 //        assertTriangle(norms, 2, new Vertex(0.7071, -0.7071, 0.0000), new Vertex(0.7071, 0.7071, 0.0000), new Vertex(0.7071, -0.7071, 0.0000));
@@ -84,7 +84,7 @@ public class SlopeTest {
 //        plateau.wrap(null);
 //        Mesh mesh = plateau.getMesh();
 //
-//        Assert.assertEquals(96, mesh.getVertices().size());
+//        Assert.assertEquals(96, mesh.OLDgetVertices().size());
 //
 //       // dumpTriangleAsserts(vertices);
     }

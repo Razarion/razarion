@@ -22,7 +22,7 @@ public class TerrainScenario extends AbstractTerrainScenario {
         for (Slope slope : getTerrainService().getSlopes()) {
 
             try {
-//            context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
+//            context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().OLDgetVertices(), 2, Color.color(1.0F, 0.078431375F, 0.5764706F, 0.3));
                 context.fillVertexList(slope.getGroundPlateauConnector().getOuterConnectionVertexList().getVertices(), 0.1, Color.RED);
             } catch (Throwable t) {
                 t.printStackTrace();

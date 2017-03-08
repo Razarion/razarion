@@ -1,12 +1,8 @@
 package com.btxtech.servercommon.collada;
 
-import com.btxtech.shared.datatypes.shape.Element3D;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -28,21 +24,17 @@ public class VisualScene extends NameIdColladaXml {
         }
     }
 
-    public Shape3D create(int id, Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
-        Shape3D shape3D = new Shape3D();
-        shape3D.setDbId(id);
-        shape3D.setInternalName(getId() + ":" + getName());
-        List<Element3D> element3Ds = new ArrayList<>();
+    public Shape3DBuilder create(Map<String, Geometry> geometries, Map<String, Material> materials, Map<String, Effect> effects) {
+        Shape3DBuilder shape3DBuilder = new Shape3DBuilder();
+        shape3DBuilder.setInternalName(getId() + ":" + getName());
         for (NodeScene nodeScene : nodeScenes.values()) {
             LOGGER.finest("-:convert node : " + nodeScene);
-            Element3D element3D = nodeScene.convert(geometries, materials, effects);
-            if (element3D != null) {
-                element3D.updateVertexContainerKey(shape3D);
-                element3Ds.add(element3D);
+            Element3DBuilder element3DBuilder = nodeScene.create(geometries, materials, effects);
+            if (element3DBuilder != null) {
+                shape3DBuilder.addElement3DBuilder(element3DBuilder);
             }
         }
-        shape3D.setElement3Ds(element3Ds);
-        return shape3D;
+        return shape3DBuilder;
     }
 
     public NodeScene getNodeScene(String id) {

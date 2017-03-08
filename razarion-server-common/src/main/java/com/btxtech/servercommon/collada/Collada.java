@@ -1,14 +1,11 @@
 package com.btxtech.servercommon.collada;
 
-import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,23 +41,16 @@ public class Collada extends ColladaXml {
         LOGGER.finest("scene: " + scene);
     }
 
-    public Shape3D create(int id) {
+    public Shape3DBuilder create() {
         LOGGER.finest("convert");
         VisualScene visualScene = visualScenes.get(scene.getVisualSceneUrl());
         if (visualScene == null) {
             throw new ColladaRuntimeException("No visual scene found for url: " + scene.getVisualSceneUrl());
         }
 
-        Shape3D shape3D = visualScene.create(id, geometries, materials, effects);
-        List<ModelMatrixAnimation> modelMatrixAnimations = new ArrayList<>();
-
-        for (Animation animation : animations) {
-            modelMatrixAnimations.add(animation.convert(shape3D));
-        }
-        if (!modelMatrixAnimations.isEmpty()) {
-            shape3D.setModelMatrixAnimations(modelMatrixAnimations);
-        }
-        return shape3D;
+        Shape3DBuilder shape3DBuilder = visualScene.create(geometries, materials, effects);
+        shape3DBuilder.setAnimations(animations);
+        return shape3DBuilder;
     }
 
     private void readAsset(Document doc) {

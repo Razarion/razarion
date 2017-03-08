@@ -1,4 +1,4 @@
-package com.btxtech.shared.dto;
+package com.btxtech.shared.datatypes.shape;
 
 import java.util.List;
 
@@ -6,18 +6,19 @@ import java.util.List;
  * Created by Beat
  * 07.03.2017.
  */
-public class FastVertexContainer {
-    private String id;
+// This class is not handled ba Errai JAX-RS due to performance issues
+public class VertexContainerBuffer {
+    private String key;
     private List<Float> vertexData;
     private List<Float> normData;
     private List<Float> textureCoordinate;
 
-    public String getId() {
-        return id;
+    public String getKey() {
+        return key;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public List<Float> getVertexData() {
@@ -42,5 +43,9 @@ public class FastVertexContainer {
 
     public void setTextureCoordinate(List<Float> textureCoordinate) {
         this.textureCoordinate = textureCoordinate;
+    }
+
+    public int calculateVertexCount() {
+        return vertexData.size() / 3;
     }
 }

@@ -39,7 +39,7 @@ public class DevToolsDemolitionVertexContainerDepthBufferRenderUnit extends Abst
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer, Integer baseItemDemolitionImageId) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.getVertices()));
+        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.OLDgetVertices()));
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.btxtech.test;
 
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.VertexList;
@@ -73,12 +72,10 @@ public class TestHelper {
         return doubleArray;
     }
 
-    public static double[] textureCoordinates2DoubleArray(List<TextureCoordinate> textureCoordinates) {
-        double[] doubleArray = new double[textureCoordinates.size() * 2];
+    public static double[] floatList2DoubleArray(List<Float> textureCoordinates) {
+        double[] doubleArray = new double[textureCoordinates.size()];
         for (int i = 0; i < textureCoordinates.size(); i++) {
-            TextureCoordinate textureCoordinate = textureCoordinates.get(i);
-            doubleArray[i * 2] = textureCoordinate.getS();
-            doubleArray[i * 2 + 1] = textureCoordinate.getT();
+            doubleArray[i] = textureCoordinates.get(i);
         }
         return doubleArray;
     }
@@ -141,5 +138,30 @@ public class TestHelper {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static double[] transform(List<Float> input, Matrix4 transformation) {
+        double[] output = new double[input.size()];
+        for (int i = 0; i < input.size(); i += 3) {
+            Vertex vertex = new Vertex(input.get(i), input.get(i + 1), input.get(i + 2));
+            Vertex transformedVertex = transformation.multiply(vertex, 1.0);
+            output[i] = transformedVertex.getX();
+            output[i + 1] = transformedVertex.getY();
+            output[i + 2] = transformedVertex.getZ();
+        }
+        return output;
+
+    }
+
+    public static double[] transformNorm(List<Float> input, Matrix4 transformation) {
+        double[] output = new double[input.size()];
+        for (int i = 0; i < input.size(); i += 3) {
+            Vertex vertex = new Vertex(input.get(i), input.get(i + 1), input.get(i + 2));
+            Vertex transformedVertex = transformation.multiply(vertex, 0.0).normalize(1.0);
+            output[i] = transformedVertex.getX();
+            output[i + 1] = transformedVertex.getY();
+            output[i + 2] = transformedVertex.getZ();
+        }
+        return output;
     }
 }

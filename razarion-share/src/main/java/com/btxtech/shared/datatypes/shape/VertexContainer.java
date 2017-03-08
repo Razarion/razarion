@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Vertex;
 
+import javax.enterprise.context.Dependent;
 import java.util.List;
 
 /**
@@ -15,9 +16,6 @@ public class VertexContainer {
     private String materialId;
     private String materialName;
     private int verticesCount;
-    private List<Vertex> vertices;
-    private List<Vertex> norms;
-    private List<TextureCoordinate> textureCoordinates;
     private ShapeTransform shapeTransform;
     private Color ambient;
     private Color diffuse;
@@ -46,21 +44,6 @@ public class VertexContainer {
 
     public VertexContainer setVerticesCount(int verticesCount) {
         this.verticesCount = verticesCount;
-        return this;
-    }
-
-    public VertexContainer setVertices(List<Vertex> vertices) {
-        this.vertices = vertices;
-        return this;
-    }
-
-    public VertexContainer setNorms(List<Vertex> norms) {
-        this.norms = norms;
-        return this;
-    }
-
-    public VertexContainer setTextureCoordinates(List<TextureCoordinate> textureCoordinates) {
-        this.textureCoordinates = textureCoordinates;
         return this;
     }
 
@@ -93,16 +76,16 @@ public class VertexContainer {
         return this;
     }
 
-    public List<Vertex> getVertices() {
-        return vertices;
+    @Deprecated
+    public List<Vertex> OLDgetVertices() {
+        // TODO
+        throw new UnsupportedOperationException();
     }
 
-    public List<Vertex> getNorms() {
-        return norms;
-    }
-
-    public List<TextureCoordinate> getTextureCoordinates() {
-        return textureCoordinates;
+    @Deprecated
+    public List<Vertex> OLDgetNorms() {
+        // TODO
+        throw new UnsupportedOperationException();
     }
 
     public Color getAmbient() {

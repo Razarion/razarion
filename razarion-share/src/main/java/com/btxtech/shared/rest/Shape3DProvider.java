@@ -2,7 +2,7 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
-import com.btxtech.shared.dto.FastVertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -23,7 +23,7 @@ public interface Shape3DProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path(RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER)
-    List<FastVertexContainer> getVertexBuffer();
+    List<VertexContainerBuffer> getVertexBuffer();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
