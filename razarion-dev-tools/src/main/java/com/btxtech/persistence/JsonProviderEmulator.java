@@ -1,8 +1,10 @@
 package com.btxtech.persistence;
 
+import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.rest.RestUrl;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Singleton;
@@ -13,17 +15,20 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 /**
  * Created by Beat
  * 07.07.2016.
  */
 @Singleton
-public class GameUiControlProviderEmulator {
+public class JsonProviderEmulator {
     private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
     private static final String FILE_NAME = "GameUiControlConfig.json";
+    private static final String VERTEX_CONTAINER_BUFFERS_FILE_NAME = "VertexContainerBuffers.json";
     private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
     private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH;
+    private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.SHAPE_3D_PROVIDER + "/" + RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     private static final String FACEBOOK_USER_LOGIN_INFO_STRING = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": null}";
 
     public GameUiControlConfig readFromServer() {
@@ -39,6 +44,16 @@ public class GameUiControlProviderEmulator {
         }
     }
 
+    public List<VertexContainerBuffer> readVertexContainerBuffersFromFile() {
+        try {
+            String string = new String(Files.readAllBytes(getFile(VERTEX_CONTAINER_BUFFERS_FILE_NAME).toPath()));
+            return new ObjectMapper().readValue(string, new TypeReference<List<VertexContainerBuffer>>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public GameEngineConfig readGameEngineConfigFromFile(String filename) {
         try {
             String string = new String(Files.readAllBytes(new File(filename).toPath()));
@@ -48,10 +63,20 @@ public class GameUiControlProviderEmulator {
         }
     }
 
-    public void fromServerToFile(String fileName, String url) {
+    public void fromServerToFilePost(String fileName, String url) {
         try {
             Client client = ClientBuilder.newClient();
             String text = client.target(url).request(MediaType.APPLICATION_JSON).post(Entity.entity(FACEBOOK_USER_LOGIN_INFO_STRING, MediaType.APPLICATION_JSON_TYPE), String.class);
+            Files.write(getFile(fileName).toPath(), text.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void fromServerToFileGet(String fileName, String url) {
+        try {
+            Client client = ClientBuilder.newClient();
+            String text = client.target(url).request(MediaType.APPLICATION_JSON).get(String.class);
             Files.write(getFile(fileName).toPath(), text.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -73,7 +98,11 @@ public class GameUiControlProviderEmulator {
     }
 
     public void fromServerToFile() {
-        fromServerToFile(FILE_NAME, URL);
+        fromServerToFilePost(FILE_NAME, URL);
+    }
+
+    public void fromServerToFileVertexContainerBuffer() {
+        fromServerToFileGet(VERTEX_CONTAINER_BUFFERS_FILE_NAME, URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME);
     }
 
     private File getFile(String fileName) {

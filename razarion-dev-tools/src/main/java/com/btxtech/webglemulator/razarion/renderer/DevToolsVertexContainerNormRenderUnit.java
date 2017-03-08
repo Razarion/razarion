@@ -10,6 +10,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderUtil;
+import com.btxtech.webglemulator.razarion.DevToolShape3DUiService;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -30,13 +31,15 @@ public class DevToolsVertexContainerNormRenderUnit extends AbstractVertexContain
     private Camera camera;
     @Inject
     private WebGlEmulator webGlEmulator;
+    @Inject
+    private DevToolShape3DUiService shape3DUiService;
     private WebGlProgramEmulator webGlProgramEmulator;
     private ModelMatrices modelMatrices;
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLUE).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(RenderUtil.setupNormDoubles(vertexContainer.OLDgetVertices(), vertexContainer.OLDgetNorms()));
+        webGlProgramEmulator.setDoubles(DevToolRenderUtil.setupNormDoubles(shape3DUiService.getVertexArray(vertexContainer), shape3DUiService.getNormFloat32Array(vertexContainer)));
     }
 
     @Override

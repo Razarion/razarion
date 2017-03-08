@@ -1,7 +1,7 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.persistence.GameUiControlProviderEmulator;
+import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.GameEngineInitEvent;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -24,10 +24,9 @@ public abstract class AbstractTerrainScenario extends Scenario {
 
     @Override
     public void init() {
-        GameUiControlProviderEmulator gameUiControlProviderEmulator = new GameUiControlProviderEmulator();
-        GameEngineConfig gameEngineConfig = gameUiControlProviderEmulator.readFromFile().getGameEngineConfig();
-        // GameEngineConfig gameEngineConfig = gameUiControlProviderEmulator.readGameEngineConfigFromFile("C:\\dev\\projects\\razarion\\code\\tmp\\TmpGameUiControlConfig.json");
-        gameUiControlProviderEmulator.readFromFile();
+        JsonProviderEmulator jsonProviderEmulator = new JsonProviderEmulator();
+        GameEngineConfig gameEngineConfig = jsonProviderEmulator.readFromFile().getGameEngineConfig();
+        // GameEngineConfig gameEngineConfig = jsonProviderEmulator.readGameEngineConfigFromFile("C:\\dev\\projects\\razarion\\code\\tmp\\TmpGameUiControlConfig.json");
         Weld weld = new Weld();
         weldContainer = weld.initialize();
         TerrainTypeService terrainTypeService = weldContainer.instance().select(TerrainTypeService.class).get();

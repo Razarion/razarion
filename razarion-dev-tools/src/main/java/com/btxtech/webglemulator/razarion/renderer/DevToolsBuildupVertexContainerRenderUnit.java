@@ -5,11 +5,11 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.webglemulator.razarion.DevToolShape3DUiService;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -30,6 +30,8 @@ public class DevToolsBuildupVertexContainerRenderUnit extends AbstractBuildupVer
     private Camera camera;
     @Inject
     private WebGlEmulator webGlEmulator;
+    @Inject
+    private DevToolShape3DUiService shape3DUiService;
     private WebGlProgramEmulator webGlProgramEmulator;
     private ModelMatrices modelMatrices;
     private Matrix4 buildupMatrix;
@@ -38,7 +40,7 @@ public class DevToolsBuildupVertexContainerRenderUnit extends AbstractBuildupVer
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.OLDgetVertices()));
+        webGlProgramEmulator.setDoubles(shape3DUiService.getVertexArray(vertexContainer));
     }
 
     @Override

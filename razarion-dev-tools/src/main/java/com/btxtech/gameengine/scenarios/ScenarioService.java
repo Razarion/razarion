@@ -1,6 +1,6 @@
 package com.btxtech.gameengine.scenarios;
 
-import com.btxtech.persistence.GameUiControlProviderEmulator;
+import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -87,7 +87,7 @@ public class ScenarioService implements QuestListener {
     @Inject
     private Event<GameEngineInitEvent> gameEngineInitEvent;
     @Inject
-    private GameUiControlProviderEmulator gameUiControlProviderEmulator;
+    private JsonProviderEmulator jsonProviderEmulator;
     private List<ScenarioSuite> scenarioSuites = new ArrayList<>();
     private Scenario currentScenario;
 
@@ -276,7 +276,7 @@ public class ScenarioService implements QuestListener {
             currentScenario.executeCommands(commandService);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            gameUiControlProviderEmulator.gameUiControlConfigToTmpFile(gameEngineConfig);
+            jsonProviderEmulator.gameUiControlConfigToTmpFile(gameEngineConfig);
         }
     }
 

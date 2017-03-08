@@ -1,12 +1,11 @@
 package com.btxtech.gameengine.scenarios;
 
-import com.btxtech.persistence.GameUiControlProviderEmulator;
+import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BotKillHumanCommandConfig;
 import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
-import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -48,7 +47,7 @@ public class RealGameScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Bot attack") {
             @Override
             public GameEngineConfig setupGameEngineConfig() {
-                return new GameUiControlProviderEmulator().readFromFile().getGameEngineConfig();
+                return new JsonProviderEmulator().readFromFile().getGameEngineConfig();
             }
 
             @Override

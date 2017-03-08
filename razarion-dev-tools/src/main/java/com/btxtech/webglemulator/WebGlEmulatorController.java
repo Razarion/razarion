@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator;
 
-import com.btxtech.persistence.GameUiControlProviderEmulator;
+import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.InventoryService;
@@ -113,7 +113,7 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private TerrainMouseHandler terrainMouseHandler;
     @Inject
-    private GameUiControlProviderEmulator gameUiControlProviderEmulator;
+    private JsonProviderEmulator jsonProviderEmulator;
     @Inject
     private InventoryService inventoryService;
     @Inject
@@ -358,7 +358,8 @@ public class WebGlEmulatorController implements Initializable {
 
     public void getJsonButtonClicked() {
         System.out.println("---------- Start loading JSON from server ----------");
-        gameUiControlProviderEmulator.fromServerToFile();
+        jsonProviderEmulator.fromServerToFile();
+        jsonProviderEmulator.fromServerToFileVertexContainerBuffer();
         System.out.println("---------- JSON loaded ----------");
     }
 

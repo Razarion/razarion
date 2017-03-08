@@ -9,6 +9,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.webglemulator.razarion.DevToolShape3DUiService;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -27,13 +28,15 @@ public class DevToolsVertexContainerDepthBufferRenderUnit extends AbstractVertex
     private ShadowUiService shadowUiService;
     @Inject
     private WebGlEmulator webGlEmulator;
+    @Inject
+    private DevToolShape3DUiService shape3DUiService;
     private WebGlProgramEmulator webGlProgramEmulator;
     private ModelMatrices modelMatrices;
 
     @Override
     protected void internalFillBuffers(VertexContainer vertexContainer) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(vertexContainer.OLDgetVertices()));
+        webGlProgramEmulator.setDoubles(shape3DUiService.getVertexArray(vertexContainer));
     }
 
     @Override

@@ -76,18 +76,6 @@ public class VertexContainer {
         return this;
     }
 
-    @Deprecated
-    public List<Vertex> OLDgetVertices() {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
-    @Deprecated
-    public List<Vertex> OLDgetNorms() {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
     public Color getAmbient() {
         return ambient;
     }
