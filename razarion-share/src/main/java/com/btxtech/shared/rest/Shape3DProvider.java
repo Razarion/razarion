@@ -1,6 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 
@@ -36,10 +37,10 @@ public interface Shape3DProvider {
     Shape3D create();
 
     @POST
-    @Consumes(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("colladaConvert")
-    Shape3D colladaConvert(String colladaString);
+    @Path("colladaConvert/{id}")
+    Shape3DComposite colladaConvert(@PathParam("id") int id, String colladaString);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

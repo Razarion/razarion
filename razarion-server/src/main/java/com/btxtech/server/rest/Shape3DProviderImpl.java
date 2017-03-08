@@ -2,7 +2,9 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.servercommon.collada.ColladaConverter;
+import com.btxtech.servercommon.collada.Shape3DBuilder;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.rest.Shape3DProvider;
@@ -64,9 +66,10 @@ public class Shape3DProviderImpl implements Shape3DProvider {
     }
 
     @Override
-    public Shape3D colladaConvert(String colladaString) {
+    public Shape3DComposite colladaConvert(int id, String colladaString) {
         try {
-            return ColladaConverter.createShape3DBuilder(colladaString, null).createShape3D(111); // TODO
+            Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(colladaString, null);
+            return new Shape3DComposite().setShape3D(shape3DBuilder.createShape3D(id)).setVertexContainerBuffers(shape3DBuilder.createVertexContainerBuffer(id));
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

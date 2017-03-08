@@ -1,6 +1,9 @@
 package com.btxtech.client.shape3d;
 
+import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;
@@ -47,6 +50,15 @@ public class ClientShape3DUiService extends Shape3DUiService {
             throw new IllegalArgumentException("No Shape3DBuffer for key: " + vertexContainer.getKey());
         }
         return shape3DBuffer;
+    }
+
+    public void override(Shape3DComposite shape3DComposite) {
+        override(shape3DComposite.getShape3D());
+        for (VertexContainerBuffer vertexContainerBuffer : shape3DComposite.getVertexContainerBuffers()) {
+            buffer.put(vertexContainerBuffer.getKey(), new Shape3DBuffer(WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getVertexData()),
+                    WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getNormData()),
+                    WebGlUtil.createArrayBufferOfFloat32(vertexContainerBuffer.getTextureCoordinate())));
+        }
     }
 
     public void loadBuffer(DeferredStartup deferredStartup) {

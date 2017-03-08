@@ -7,6 +7,7 @@ import java.util.List;
  * 07.03.2017.
  */
 // This class is not handled ba Errai JAX-RS due to performance issues
+// Only editor is using this class via Errai JAX-RS
 public class VertexContainerBuffer {
     private String key;
     private List<Float> vertexData;

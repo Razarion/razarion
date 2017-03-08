@@ -1,8 +1,10 @@
 package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -44,7 +46,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     @Inject
     private Caller<Shape3DProvider> caller;
     @Inject
-    private Shape3DUiService shape3DUiService;
+    private ClientShape3DUiService shape3DUiService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -102,19 +104,19 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     }
 
     public void updateCollada(Shape3D originalShape3D, String colladaText) {
-        caller.call(new RemoteCallback<Shape3D>() {
+        caller.call(new RemoteCallback<Shape3DComposite>() {
             @Override
-            public void callback(Shape3D shape3D) {
-                Shape3DUtils.saveTextureIds(originalShape3D, shape3D);
-                Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3D);
+            public void callback(Shape3DComposite shape3DComposite) {
+                Shape3DUtils.saveTextureIds(originalShape3D, shape3DComposite.getShape3D());
+                Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3DComposite.getShape3D());
                 addChangesCollada(originalShape3D.getDbId(), colladaText);
-                shape3DUiService.override(shape3D);
-                fireChange(shape3D);
+                shape3DUiService.override(shape3DComposite);
+                fireChange(shape3DComposite.getShape3D());
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
             return false;
-        }).colladaConvert(colladaText);
+        }).colladaConvert(originalShape3D.getDbId(), colladaText);
     }
 
     public void updateTexture(Shape3D shape3D, String materialId, int imageId) {
