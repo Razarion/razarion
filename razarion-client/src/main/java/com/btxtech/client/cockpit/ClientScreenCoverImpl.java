@@ -1,22 +1,31 @@
 package com.btxtech.client.cockpit;
 
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
+import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.StartupProgressListener;
+import com.btxtech.uiservice.system.boot.StartupSeq;
+import com.btxtech.uiservice.system.boot.StartupTaskEnum;
+import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.google.gwt.user.client.ui.RootPanel;
 import elemental.client.Browser;
 import elemental.dom.Element;
+import elemental.html.ProgressElement;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 
 /**
  * Created by Beat
  * 10.07.2016.
  */
 @Singleton
-public class ClientScreenCoverImpl implements ScreenCover {
+public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListener {
     private static final String LOADING_COVER_ID = "RAZARION_LOADING_COVER";
+    private static final String LOADING_PROGRESS_ID = "RAZARION_LOADING_PROGRESS";
     // private Logger logger = Logger.getLogger(ClientScreenCoverImpl.class.getName());
     @Inject
     private Instance<StoryCoverPanel> storyCoverPanelInstance;
@@ -24,7 +33,11 @@ public class ClientScreenCoverImpl implements ScreenCover {
     private Instance<EmptyCover> emptyCoverInstance;
     @Inject
     private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private StoryCoverPanel storyCoverPanel;
+    private int totalStartupTasks;
+    private int finishedStartupTasks;
 
     @Override
     public void showStoryCover(String text) {
@@ -61,5 +74,41 @@ public class ClientScreenCoverImpl implements ScreenCover {
         RootPanel.get().add(emptyCover);
         emptyCover.startFadeout();
         simpleExecutorService.schedule(FADE_DURATION, () -> Browser.getWindow().getLocation().setHref(url), SimpleExecutorService.Type.UNSPECIFIED);
+    }
+
+    @Override
+    public void onStart(StartupSeq startupSeq) {
+        totalStartupTasks = startupSeq.getAbstractStartupTaskEnum().length;
+    }
+
+    @Override
+    public void onNextTask(StartupTaskEnum taskEnum) {
+        // Ignore
+    }
+
+    @Override
+    public void onTaskFinished(AbstractStartupTask task) {
+        try {
+            finishedStartupTasks++;
+            double progress = (double) finishedStartupTasks / (double) totalStartupTasks;
+            ((ProgressElement)Browser.getDocument().getElementById(LOADING_PROGRESS_ID)).setValue(progress);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
+    @Override
+    public void onTaskFailed(AbstractStartupTask task, String error, Throwable t) {
+        // Ignore
+    }
+
+    @Override
+    public void onStartupFinished(List<StartupTaskInfo> taskInfo, long totalTime) {
+        // Ignore
+    }
+
+    @Override
+    public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
+        // Ignore
     }
 }

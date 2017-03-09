@@ -1,6 +1,7 @@
 package com.btxtech.client;
 
 import com.btxtech.client.clientI18n.ClientI18nConstants;
+import com.btxtech.client.cockpit.ClientScreenCoverImpl;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.rest.RestUrl;
@@ -33,6 +34,8 @@ public class Client {
     private ExceptionHandler exceptionHandler;
     @Inject
     private ClientTrackerService clientTrackerService;
+    @Inject
+    private ClientScreenCoverImpl clientScreenCover;
 
     public Client() {
         GWT.setUncaughtExceptionHandler(e -> {
@@ -56,6 +59,7 @@ public class Client {
         }
 
         clientRunner.addStartupProgressListener(clientTrackerService);
+        clientRunner.addStartupProgressListener(clientScreenCover);
     }
 
     @AfterInitialization

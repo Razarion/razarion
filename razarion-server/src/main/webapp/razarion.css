@@ -141,14 +141,31 @@ a:active {
     opacity: 1;
 }
 
-.inner-loading-cover {
+@keyframes loadingAnimation {
+    from {
+        opacity: 0.2;
+    }
+}
+
+.inner-loading-center-container {
     left: 50%;
     position: absolute;
     top: 50%;
     font-size: 300%;
     color: #d8d0d0;
     transform: translate(-50%, -50%);
+    text-align: center;
 }
+
+.inner-loading-text {
+    animation: loadingAnimation 0.5s linear infinite alternate;
+}
+
+.inner-loading-progress {
+    width: 6em;
+    height: 15px;
+}
+
 
 .empty-cover {
     position: absolute;
