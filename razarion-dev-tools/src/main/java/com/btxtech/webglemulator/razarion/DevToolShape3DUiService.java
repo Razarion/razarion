@@ -53,4 +53,8 @@ public class DevToolShape3DUiService extends Shape3DUiService {
         return doubles;
     }
 
+    @Override
+    public double getMaxZ(VertexContainer vertexContainer) {
+        return 1.0; // Not used in DevTool
+    }
 }

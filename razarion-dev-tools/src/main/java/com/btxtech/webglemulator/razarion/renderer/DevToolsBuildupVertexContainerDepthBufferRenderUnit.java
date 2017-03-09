@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
@@ -42,7 +41,7 @@ public class DevToolsBuildupVertexContainerDepthBufferRenderUnit extends Abstrac
     private double tmpMaxZ;
 
     @Override
-    protected void internalFillBuffers(VertexContainer vertexContainer) {
+    protected void internalFillBuffers(VertexContainer vertexContainer, Matrix4 buildupMatrix, int buildupTextureId) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(shape3DUiService.getVertexArray(vertexContainer));
     }

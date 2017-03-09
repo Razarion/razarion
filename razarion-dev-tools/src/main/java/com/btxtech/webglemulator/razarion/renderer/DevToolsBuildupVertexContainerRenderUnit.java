@@ -38,7 +38,7 @@ public class DevToolsBuildupVertexContainerRenderUnit extends AbstractBuildupVer
     private double tmpMaxZ;
 
     @Override
-    protected void internalFillBuffers(VertexContainer vertexContainer) {
+    protected void internalFillBuffers(VertexContainer vertexContainer, Matrix4 buildupMatrix, int buildupTextureId) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.BLACK).setVertexShader(this);
         webGlProgramEmulator.setDoubles(shape3DUiService.getVertexArray(vertexContainer));
     }
