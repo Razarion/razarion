@@ -1,6 +1,8 @@
 package com.btxtech.client.shape3d;
 
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
@@ -85,6 +87,21 @@ public class ClientShape3DUiService extends Shape3DUiService {
                 }
             }
         });
+    }
+
+    @Override
+    public double getMaxZ(VertexContainer vertexContainer) {
+        double maxZ = Double.MIN_VALUE;
+
+        Float32Array vertices = getShape3DBuffer(vertexContainer).getVertex();
+        Matrix4 matrix = vertexContainer.getShapeTransform().setupMatrix();
+
+        for (int i = 0; i < vertices.length(); i += 3) {
+            Vertex vertex = new Vertex(vertices.numberAt(i), vertices.numberAt(i + 1), vertices.numberAt(i + 2));
+            maxZ = Math.max(matrix.multiply(vertex, 1.0).getZ(), maxZ);
+        }
+
+        return maxZ;
     }
 
     private native String getKey(JavaScriptObject jsonObject) /*-{

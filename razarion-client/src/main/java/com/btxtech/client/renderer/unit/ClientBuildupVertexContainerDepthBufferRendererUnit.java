@@ -40,7 +40,8 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     private ClientShape3DUiService shape3DUiService;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec2Float32ArrayShaderAttribute textureCoordinate;
-    private WebGlUniformTexture webGLTexture;
+    private WebGlUniformTexture finishTexture;
+    private WebGlUniformTexture buildupTexture;
 
     @PostConstruct
     public void init() {
@@ -55,10 +56,11 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     }
 
     @Override
-    protected void internalFillBuffers(VertexContainer vertexContainer) {
+    protected void internalFillBuffers(VertexContainer vertexContainer, Matrix4 buildupMatrix, int buildupTextureId) {
         positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
         textureCoordinate.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
-        webGLTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), WebGlFacade.U_TEXTURE);
+        finishTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uFinishTextureSampler");
+        buildupTexture = webGlFacade.createWebGLTexture(buildupTextureId, "uBuildupTextureSampler");
     }
 
     @Override
@@ -72,7 +74,8 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
 
         positions.activate();
         textureCoordinate.activate();
-        webGLTexture.activate();
+        finishTexture.activate();
+        buildupTexture.activate();
     }
 
     @Override

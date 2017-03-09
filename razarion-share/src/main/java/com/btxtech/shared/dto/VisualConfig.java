@@ -23,6 +23,7 @@ public class VisualConfig {
     private double waterGroundLevel;
     private List<Shape3D> shape3Ds;
     private Integer baseItemDemolitionImageId;
+    private Integer buildupTextureId;
 
     public double getShadowRotationX() {
         return shadowRotationX;
@@ -138,6 +139,15 @@ public class VisualConfig {
 
     public VisualConfig setBaseItemDemolitionImageId(Integer baseItemDemolitionImageId) {
         this.baseItemDemolitionImageId = baseItemDemolitionImageId;
+        return this;
+    }
+
+    public Integer getBuildupTextureId() {
+        return buildupTextureId;
+    }
+
+    public VisualConfig setBuildupTextureId(Integer buildupTextureId) {
+        this.buildupTextureId = buildupTextureId;
         return this;
     }
 }

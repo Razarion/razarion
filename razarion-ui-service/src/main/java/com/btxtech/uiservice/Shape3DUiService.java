@@ -1,9 +1,9 @@
 package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.dto.VisualConfig;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +17,8 @@ import java.util.Map;
 public abstract class Shape3DUiService {
     // private Logger logger = Logger.getLogger(Shape3DUiService.class.getName());
     private Map<Integer, Shape3D> shape3Ds = new HashMap<>();
+
+    public abstract double getMaxZ(VertexContainer vertexContainer);
 
     // Global methods  ----------------------------------------------------
     public void onVisualConfig(@Observes VisualConfig visualConfig) {

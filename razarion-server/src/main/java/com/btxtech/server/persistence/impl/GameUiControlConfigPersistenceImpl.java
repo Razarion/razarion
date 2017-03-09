@@ -323,6 +323,7 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         visualConfig.setWaterLightConfig(lightConfig);
         visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         visualConfig.setBaseItemDemolitionImageId(180848);
+        visualConfig.setBuildupTextureId(180818);
         return visualConfig;
     }
 

@@ -88,17 +88,30 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
     }
 
     private void build(BaseItemType baseItemType, boolean fillBuffer) {
+        if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+            return; // Startup Performance
+        }
+
         if (baseItemType.getShape3DId() != null) {
+
+            Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
+            double maxZ = Double.MIN_VALUE;
+
+            for (Element3D element3D : shape3D.getElement3Ds()) {
+                for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
+                    maxZ = Math.max(maxZ, shape3DUiService.getMaxZ(vertexContainer));
+                }
+            }
+
             ModelRenderer<BaseItemType, CommonRenderComposite<AbstractBuildupVertexContainerRenderUnit, VertexContainer>, AbstractBuildupVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
             modelRenderer.init(baseItemType, timeStamp -> baseItemUiService.provideBuildupModelMatrices(baseItemType));
-            Shape3D shape3D = shape3DUiService.getShape3D(baseItemType.getShape3DId());
             for (Element3D element3D : shape3D.getElement3Ds()) {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                     CommonRenderComposite<AbstractBuildupVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
-                    compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
-                    compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class);
-                    compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
+                    compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ);
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ);
+                    compositeRenderer.setupNoAnimation(vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {
                         compositeRenderer.fillBuffers();

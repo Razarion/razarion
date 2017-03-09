@@ -16,6 +16,7 @@ import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import elemental.html.Float32Array;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -45,7 +46,8 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute norms;
     private Vec2Float32ArrayShaderAttribute textureCoordinateAttribute;
-    private WebGlUniformTexture texture;
+    private WebGlUniformTexture finishTexture;
+    private WebGlUniformTexture buildupTexture;
     private Color ambient;
     private Color diffuse;
 
@@ -64,9 +66,11 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     }
 
     @Override
-    protected void internalFillBuffers(VertexContainer vertexContainer) {
-        texture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uSampler");
-        positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
+    protected void internalFillBuffers(VertexContainer vertexContainer, Matrix4 buildupMatrix, int buildupTextureId) {
+        finishTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uFinishTextureSampler");
+        buildupTexture = webGlFacade.createWebGLTexture(buildupTextureId, "uBuildupTextureSampler");
+        Float32Array vertices = shape3DUiService.getVertexFloat32Array(vertexContainer);
+        positions.fillFloat32Array(vertices);
         norms.fillFloat32Array(shape3DUiService.getNormFloat32Array(vertexContainer));
         textureCoordinateAttribute.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
 
@@ -91,7 +95,8 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
 
         webGlFacade.activateReceiveShadow();
 
-        texture.activate();
+        finishTexture.activate();
+        buildupTexture.activate();
         positions.activate();
         norms.activate();
         textureCoordinateAttribute.activate();

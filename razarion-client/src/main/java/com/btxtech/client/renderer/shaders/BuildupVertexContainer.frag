@@ -5,7 +5,8 @@ varying vec2 vTextureCoord;
 varying float buildupZ;
 
 uniform highp mat4 uNVMatrix;
-uniform sampler2D uSampler;
+uniform sampler2D uFinishTextureSampler;
+uniform sampler2D uBuildupTextureSampler;
 uniform vec3 uLightingAmbient;
 uniform vec3 uLightingDiffuse;
 uniform vec3 uLightingDirection;
@@ -27,17 +28,20 @@ float calculateShadowFactor() {
 }
 
 void main(void) {
-    vec4 textureColor = texture2D(uSampler, vTextureCoord.st);
+    vec4 textureColor;
     if(buildupZ > progressZ) {
-        discard;
-        // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        textureColor = texture2D(uBuildupTextureSampler, vTextureCoord.st);
     } else {
-        vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightingDirection, 1.0)).xyz);
-        float shadowFactor = calculateShadowFactor();
+       textureColor = texture2D(uFinishTextureSampler, vTextureCoord.st);
+    }
+    if(textureColor.a < 0.5) {
+       discard;
+    }
 
-        vec3 ambient = uLightingAmbient * textureColor.rgb;
-        vec3 diffuse = max(dot(vVertexNormal, -correctedLightDirection), 0.0) * uLightingDiffuse * textureColor.rgb;
-        gl_FragColor = vec4(ambient + diffuse * shadowFactor, 1.0);
-        // gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
-   }
+    vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightingDirection, 1.0)).xyz);
+    float shadowFactor = calculateShadowFactor();
+
+    vec3 ambient = uLightingAmbient * textureColor.rgb;
+    vec3 diffuse = max(dot(vVertexNormal, -correctedLightDirection), 0.0) * uLightingDiffuse * textureColor.rgb;
+    gl_FragColor = vec4(ambient + diffuse * shadowFactor, 1.0);
 }

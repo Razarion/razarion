@@ -66,6 +66,10 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         this.shapeTransform = shapeTransform;
     }
 
+    public void setupNoAnimation(ShapeTransform shapeTransform) {
+        this.shapeTransform = shapeTransform;
+    }
+
     @Deprecated
     public void setId(int id) {
         this.id = id;

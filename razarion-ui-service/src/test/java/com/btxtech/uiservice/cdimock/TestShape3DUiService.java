@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.Shape3DUiService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,4 +11,8 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class TestShape3DUiService extends Shape3DUiService {
+    @Override
+    public double getMaxZ(VertexContainer vertexContainer) {
+        throw new UnsupportedOperationException();
+    }
 }
