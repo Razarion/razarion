@@ -29,6 +29,7 @@ public class LoadShape3DBufferTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
+        deferredStartup.setBackground();
         clientShape3DUiService.loadBuffer(deferredStartup);
     }
 }

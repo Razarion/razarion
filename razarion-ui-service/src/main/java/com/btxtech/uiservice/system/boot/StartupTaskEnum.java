@@ -23,7 +23,7 @@ public interface StartupTaskEnum {
 
     String name();
 
-    default StartupTaskEnum getWaitForBackgroundTask() {
+    default StartupTaskEnum[] getWaitForBackgroundTasks() {
         return null;
     }
 }

@@ -25,31 +25,31 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
     LOAD_START_JS(LoadStartJsTask.class),
     CALL_FACEBOOK(CallFacebookTask.class),
     LOAD_AND_START_WORKER(LoadWorkerTask.class),
+    LOAD_SHAPE3D_BUFFER(LoadShape3DBufferTask.class),
     LOAD_GAME_UI_CONTROL_CONFIG(LoadGameUiControlTask.class) {
         @Override
-        public StartupTaskEnum getWaitForBackgroundTask() {
-            return CALL_FACEBOOK;
+        public StartupTaskEnum[] getWaitForBackgroundTasks() {
+            return new StartupTaskEnum[]{CALL_FACEBOOK};
         }
     },
-    LOAD_SHAPE3D_BUFFER(LoadShape3DBufferTask.class),
-    LOAD_MEDIAS(LoadMediaControlTask.class), // TODO run in background
+    LOAD_MEDIAS(LoadMediaControlTask.class),
     INIT_WORKER(InitWorkerTask.class) {
         @Override
-        public StartupTaskEnum getWaitForBackgroundTask() {
-            return LOAD_AND_START_WORKER;
+        public StartupTaskEnum[] getWaitForBackgroundTasks() {
+            return new StartupTaskEnum[]{LOAD_AND_START_WORKER};
         }
     },
     INIT_GAME_UI(InitGameUiTask.class),
     INIT_RENDERER(InitRendererTask.class) {
         @Override
-        public StartupTaskEnum getWaitForBackgroundTask() {
-            return LOAD_MEDIAS;
+        public StartupTaskEnum[] getWaitForBackgroundTasks() {
+            return new StartupTaskEnum[]{LOAD_MEDIAS, LOAD_SHAPE3D_BUFFER};
         }
     },
     RUN_GAME(RunGameUiControlTask.class) {
         @Override
-        public StartupTaskEnum getWaitForBackgroundTask() {
-            return INIT_WORKER;
+        public StartupTaskEnum[] getWaitForBackgroundTasks() {
+            return new StartupTaskEnum[]{INIT_WORKER};
         }
     };
 

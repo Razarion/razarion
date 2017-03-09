@@ -23,8 +23,8 @@ public enum WaitForBackgroundTestTaskEnum implements StartupTaskEnum {
     TEST_2_SIMPLE(SimpleStartupTestTask.class),
     TEST_3_SIMPLE_WAIT_FOR_BACKGROUND(SimpleWaitForBackgroundStartupTestTask.class) {
         @Override
-        public StartupTaskEnum getWaitForBackgroundTask() {
-            return TEST_1_BACKGROUND;
+        public StartupTaskEnum[] getWaitForBackgroundTasks() {
+            return new StartupTaskEnum[]{TEST_1_BACKGROUND};
         }
     },
     TEST_4_SIMPLE(SimpleStartupTestTask.class);

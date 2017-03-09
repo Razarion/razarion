@@ -58,16 +58,10 @@ public class ClientRunner {
         if (startupList.isEmpty()) {
             onStartupFinish();
         } else {
-            waitingTask = null;
             AbstractStartupTask task = startupList.remove(0);
-            StartupTaskEnum waitForBackgroundTaskEnum = task.getWaitForBackgroundTask();
-            if (waitForBackgroundTaskEnum != null) {
-                DeferredStartup toWaitForDeferredStartup = getBackgroundTask(waitForBackgroundTaskEnum);
-                if (toWaitForDeferredStartup.isFinished()) {
-                    runTask(task);
-                } else {
-                    waitingTask = task;
-                }
+            task.removeFinishedBackgroundTasks(deferredBackgroundStartups);
+            if (task.isWaitingForBackgroundTasks()) {
+                waitingTask = task;
             } else {
                 runTask(task);
             }
@@ -90,6 +84,9 @@ public class ClientRunner {
             return;
         }
         if (deferredStartup.isDeferred()) {
+            if (deferredStartup.isBackground()) {
+                deferredBackgroundStartups.add(deferredStartup);
+            }
             if (deferredStartup.isFinished()) {
                 onTaskFinished(task);
             } else {
@@ -97,21 +94,11 @@ public class ClientRunner {
             }
 
             if (deferredStartup.isBackground()) {
-                deferredBackgroundStartups.add(deferredStartup);
                 runNextTask();
             }
         } else {
             onTaskFinished(task);
         }
-    }
-
-    private DeferredStartup getBackgroundTask(StartupTaskEnum waitForBackgroundTaskEnum) {
-        for (DeferredStartup deferredBackgroundStartup : deferredBackgroundStartups) {
-            if (deferredBackgroundStartup.getStartupTaskEnum() == waitForBackgroundTaskEnum) {
-                return deferredBackgroundStartup;
-            }
-        }
-        throw new IllegalStateException("No deferred background task found for: " + waitForBackgroundTaskEnum);
     }
 
     private void cleanup() {
@@ -167,8 +154,13 @@ public class ClientRunner {
         }
 
         finishedTasks.add(abstractStartupTask);
-        if (waitingTask != null && waitingTask.getWaitForBackgroundTask() == abstractStartupTask.getTaskEnum()) {
-            runTask(waitingTask);
+        if (waitingTask != null) {
+            waitingTask.removeFinishedBackgroundTask(abstractStartupTask.getTaskEnum());
+            if (!waitingTask.isWaitingForBackgroundTasks()) {
+                AbstractStartupTask nextTask = waitingTask;
+                waitingTask = null;
+                runTask(nextTask);
+            }
         } else if (!abstractStartupTask.isBackground()) {
             runNextTask();
         } else if (startupList.isEmpty()) {

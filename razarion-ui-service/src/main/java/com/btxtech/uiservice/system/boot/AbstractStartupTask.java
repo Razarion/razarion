@@ -13,6 +13,10 @@
 
 package com.btxtech.uiservice.system.boot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * User: beat
  * Date: 04.12.2010
@@ -23,11 +27,15 @@ public abstract class AbstractStartupTask {
     private long duration;
     private StartupTaskEnum taskEnum;
     private boolean isBackground = false;
+    private List<StartupTaskEnum> waitForBackgroundTasks;
 
     protected abstract void privateStart(DeferredStartup deferredStartup);
 
     public void setTaskEnum(StartupTaskEnum taskEnum) {
         this.taskEnum = taskEnum;
+        if (taskEnum.getWaitForBackgroundTasks() != null) {
+            waitForBackgroundTasks = new ArrayList<>(Arrays.asList(taskEnum.getWaitForBackgroundTasks()));
+        }
     }
 
     public void start(DeferredStartup deferredStartup) {
@@ -74,13 +82,33 @@ public abstract class AbstractStartupTask {
         return isBackground;
     }
 
-    public StartupTaskEnum getWaitForBackgroundTask() {
-        return taskEnum.getWaitForBackgroundTask();
+    public boolean isWaitingForBackgroundTasks() {
+        return waitForBackgroundTasks != null && !waitForBackgroundTasks.isEmpty();
+    }
+
+    public void removeFinishedBackgroundTask(StartupTaskEnum taskEnum) {
+        if (isWaitingForBackgroundTasks()) {
+            waitForBackgroundTasks.remove(taskEnum);
+        }
+    }
+
+    public void removeFinishedBackgroundTasks(List<DeferredStartup> deferredBackgroundStartups) {
+        if (isWaitingForBackgroundTasks()) {
+            waitForBackgroundTasks.removeIf(startupTaskEnum -> getBackgroundTask(deferredBackgroundStartups, startupTaskEnum).isFinished());
+        }
+    }
+
+    private DeferredStartup getBackgroundTask(List<DeferredStartup> deferredBackgroundStartups, StartupTaskEnum waitForBackgroundTaskEnum) {
+        for (DeferredStartup deferredBackgroundStartup : deferredBackgroundStartups) {
+            if (deferredBackgroundStartup.getStartupTaskEnum() == waitForBackgroundTaskEnum) {
+                return deferredBackgroundStartup;
+            }
+        }
+        throw new IllegalStateException("No deferred background task found for: " + waitForBackgroundTaskEnum);
     }
 
     @Override
     public String toString() {
         return getClass().getName() + " {" + taskEnum + " duration: " + (duration / 1000.0) + "s}";
     }
-
 }
