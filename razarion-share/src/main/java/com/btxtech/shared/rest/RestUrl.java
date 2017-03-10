@@ -6,15 +6,16 @@ package com.btxtech.shared.rest;
  */
 public class RestUrl {
     public static final String APPLICATION_PATH = "rest";
+    public static final String G_ZIPPED = "gz"; // Must be configured on the webserver. (Wildfly standalone.xml set gzipFilter)
     public static final String REMOTE_LOGGING = "remote_logging";
     public static final String LOGGING_SIMPLE = "simple";
     public static final String LOGGING_JSON = "json";
     public static final String IMAGE_SERVICE_PATH = "image";
     public static final String AUDIO_SERVICE_PATH = "audio";
-    public static final String GAME_UI_CONTROL_PATH = "gameuicontrol";
+    public static final String GAME_UI_CONTROL_PATH = G_ZIPPED + "/" + "gameuicontrol";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
-    public static final String SHAPE_3D_PROVIDER = "shape3dprovider";
+    public static final String SHAPE_3D_PROVIDER = G_ZIPPED + "/" + "shape3dprovider";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
