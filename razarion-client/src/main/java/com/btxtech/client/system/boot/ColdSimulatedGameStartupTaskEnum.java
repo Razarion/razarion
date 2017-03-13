@@ -43,15 +43,10 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
     INIT_RENDERER(InitRendererTask.class) {
         @Override
         public StartupTaskEnum[] getWaitForBackgroundTasks() {
-            return new StartupTaskEnum[]{LOAD_MEDIAS, LOAD_SHAPE3D_BUFFER};
+            return new StartupTaskEnum[]{LOAD_MEDIAS, LOAD_SHAPE3D_BUFFER, INIT_WORKER};
         }
     },
-    RUN_GAME(RunGameUiControlTask.class) {
-        @Override
-        public StartupTaskEnum[] getWaitForBackgroundTasks() {
-            return new StartupTaskEnum[]{INIT_WORKER};
-        }
-    };
+    RUN_GAME(RunGameUiControlTask.class);
 
     private Class<? extends AbstractStartupTask> taskClass;
 
