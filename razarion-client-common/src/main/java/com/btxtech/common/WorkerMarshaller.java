@@ -3,6 +3,8 @@ package com.btxtech.common;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
@@ -10,12 +12,16 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
+import elemental.js.util.JsArrayOfNumber;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,7 +43,6 @@ public class WorkerMarshaller {
         switch (controlPackage.getCommand()) {
             // No data
             case LOADED:
-            case INITIALIZED:
             case START:
             case QUEST_PASSED:
             case PERFMON_REQUEST:
@@ -89,13 +94,17 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 break;
-            // Quintuple  JSON data
+            // Quintuple JSON data
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
+                break;
+            // Native marshal slopes
+            case INITIALIZED:
+                array.set(DATA_OFFSET_0, marshallSlope(controlPackage.getData(0)));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -111,7 +120,6 @@ public class WorkerMarshaller {
         switch (command) {
             // No data
             case LOADED:
-            case INITIALIZED:
             case START:
             case QUEST_PASSED:
             case PERFMON_REQUEST:
@@ -225,6 +233,11 @@ public class WorkerMarshaller {
             case PERFMON_RESPONSE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 break;
+            // Native marshal slopes
+            case INITIALIZED:
+                data.add(demarshallNativeSlope(array.getObject(DATA_OFFSET_0)));
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);
         }
@@ -249,4 +262,95 @@ public class WorkerMarshaller {
             RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         }
     }
+
+    public static JavaScriptObject marshallSlope(Object input) {
+        JsArrayMixed array = JavaScriptObject.createArray().cast();
+        for (Slope slope : (Collection<Slope>) input) {
+            array.push(marshallSlope(slope));
+        }
+        return array;
+    }
+
+    private static JavaScriptObject marshallSlope(Slope slope) {
+        Mesh mesh = slope.getMesh();
+        return marshallNativeSlope(slope.getSlopeSkeletonConfig().getId(),
+                mesh.size(),
+                vertices2JsArrayOfNumber(mesh.getVertices()),
+                vertices2JsArrayOfNumber(mesh.getNorms()),
+                vertices2JsArrayOfNumber(mesh.getTangents()),
+                floats2JsArrayOfNumber(mesh.getSplatting()),
+                floats2JsArrayOfNumber(mesh.getSlopeFactors()));
+    }
+
+    private static JsArrayOfNumber vertices2JsArrayOfNumber(List<Vertex> vertices) {
+        JsArrayOfNumber numberArray = JsArrayOfNumber.create();
+        for (Vertex vertex : vertices) {
+            numberArray.push(vertex.getX());
+            numberArray.push(vertex.getY());
+            numberArray.push(vertex.getZ());
+        }
+        return numberArray;
+    }
+
+    private static JsArrayOfNumber floats2JsArrayOfNumber(List<Float> floats) {
+        JsArrayOfNumber numberArray = JsArrayOfNumber.create();
+        for (float floatValue : floats) {
+            numberArray.push(floatValue);
+        }
+        return numberArray;
+    }
+
+    private static Object demarshallNativeSlope(JavaScriptObject javaScriptObject) {
+        Collection<SlopeUi> slopeBuffers = new ArrayList<>();
+        JsArrayMixed array = ((JavaScriptObject) javaScriptObject).cast();
+        for (int i = 0; i < array.length(); i++) {
+            JavaScriptObject slopeJsData = array.getObject(i);
+            slopeBuffers.add(new SlopeUi(demarshallNativeSlopeId(slopeJsData), demarshallNativeSlopeElementCount(slopeJsData), demarshallNativeSlopeVertices(slopeJsData), demarshallNativeSlopeNorms(slopeJsData),
+                    demarshallNativeSlopeTangents(slopeJsData), demarshallNativeSlopeSplattings(slopeJsData), demarshallNativeSlopeSlopeFactors(slopeJsData)));
+        }
+        return slopeBuffers;
+    }
+
+    // The structured clone algorithm
+    private native static JavaScriptObject marshallNativeSlope(int id, int elementCount, JsArrayOfNumber vertices, JsArrayOfNumber norms, JsArrayOfNumber tangents, JsArrayOfNumber splattings, JsArrayOfNumber slopeFactors) /*-{
+        return {
+            "id": id,
+            "elementCount": elementCount,
+            "vertices": new Float32Array(vertices),
+            "norms": new Float32Array(norms),
+            "tangents": new Float32Array(tangents),
+            "splattings": new Float32Array(splattings),
+            "slopeFactors": new Float32Array(slopeFactors)
+        };
+    }-*/;
+
+    private native static int demarshallNativeSlopeId(JavaScriptObject slopeJsData) /*-{
+        return slopeJsData.id;
+    }-*/;
+
+    private native static int demarshallNativeSlopeElementCount(JavaScriptObject slopeJsData) /*-{
+        return slopeJsData.elementCount;
+    }-*/;
+
+    private native static Float32ArrayEmu demarshallNativeSlopeVertices(JavaScriptObject slopeJsData) /*-{
+        return slopeJsData.vertices;
+    }-*/;
+
+    private native static Float32ArrayEmu demarshallNativeSlopeNorms(JavaScriptObject slopeJsData) /*-{
+        return slopeJsData.norms;
+    }-*/;
+
+    private native static Float32ArrayEmu demarshallNativeSlopeTangents(JavaScriptObject slopeJsData) /*-{
+        return slopeJsData.tangents;
+    }-*/;
+
+    private native static Float32ArrayEmu demarshallNativeSlopeSplattings(JavaScriptObject slopeJsData) /*-{
+        return slopeJsData.splattings;
+    }-*/;
+
+
+    private native static Float32ArrayEmu demarshallNativeSlopeSlopeFactors(JavaScriptObject slopeJsData) /*-{
+        return slopeJsData.slopeFactors;
+    }-*/;
+
 }

@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.shared.datatypes.shape.Float32ArrayEmu;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -61,6 +62,10 @@ public class ExtendedGraphicsContext {
             gc.strokeLine(vertexC.getX(), vertexC.getY(), vertexA.getX(), vertexA.getY());
         }
 
+    }
+
+    public void strokeVertexList(Float32ArrayEmu vertices, double lineWidth, Paint color) {
+        throw new UnsupportedOperationException();
     }
 
     public void fillVertexList(List<Vertex> vertices, double lineWidth, Color color) {
@@ -118,7 +123,7 @@ public class ExtendedGraphicsContext {
         gc.setLineWidth(strokeWidth);
         for (int i = 0; i < curve.size(); i++) {
             DecimalPosition start = curve.get(i);
-            if(i + 1 < curve.size()) {
+            if (i + 1 < curve.size()) {
                 DecimalPosition end = curve.get(i + 1);
                 gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
             }
@@ -215,9 +220,9 @@ public class ExtendedGraphicsContext {
                 gc.setLineWidth(0.5);
                 gc.strokeLine(canonStart.getX(), canonStart.getY(), canonEnd.getX(), canonEnd.getY());
             }
-            if(syncBaseItem.getSyncPhysicalArea().canMove()) {
+            if (syncBaseItem.getSyncPhysicalArea().canMove()) {
                 Path path = syncBaseItem.getSyncPhysicalMovable().getPath();
-                if(path != null) {
+                if (path != null) {
                     strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.CADETBLUE, true);
                     gc.setStroke(Color.BLUEVIOLET);
                     gc.setLineWidth(0.5);

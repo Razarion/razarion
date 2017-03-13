@@ -31,6 +31,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
@@ -71,6 +72,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private PerfmonService perfmonService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private TerrainService terrainService;
     private UserContext userContext;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
     private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
@@ -151,7 +154,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
             planetService.initialise(gameEngineConfig.getPlanetConfig());
             planetService.addTickListener(this);
-            sendToClient(GameEngineControlPackage.Command.INITIALIZED);
+            sendToClient(GameEngineControlPackage.Command.INITIALIZED, terrainService.getSlopes());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));

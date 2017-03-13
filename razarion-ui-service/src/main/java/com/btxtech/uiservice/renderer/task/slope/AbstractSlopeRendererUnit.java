@@ -3,9 +3,8 @@ package com.btxtech.uiservice.renderer.task.slope;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;
@@ -14,29 +13,28 @@ import java.util.logging.Logger;
  * Created by Beat
  * 07.08.2016.
  */
-public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<Slope> {
+public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<SlopeUi> {
     private Logger logger = Logger.getLogger(AbstractSlopeRendererUnit.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
 
-    protected abstract void fillBuffer(Slope slope, Mesh mesh, GroundSkeletonConfig groundSkeletonConfig);
+    protected abstract void fillBuffer(SlopeUi slopeUi, GroundSkeletonConfig groundSkeletonConfig);
 
-    protected abstract void draw(Slope slope, GroundSkeletonConfig groundSkeletonConfig);
+    protected abstract void draw(SlopeUi slopeUi, GroundSkeletonConfig groundSkeletonConfig);
 
     @Override
-    public void fillBuffers(Slope slope) {
-        if(slope.getSlopeSkeletonConfig().getTextureId() == null) {
+    public void fillBuffers(SlopeUi slopeUi) {
+        if (slopeUi.getTextureId() == null) {
             logger.warning("No Texture Id in AbstractSlopeRendererUnit for: " + helperString());
             return;
-        };
-        if(slope.getSlopeSkeletonConfig().getBmId() == null) {
+        }
+        if (slopeUi.getBmId() == null) {
             logger.warning("No BM Id in AbstractSlopeRendererUnit for: " + helperString());
             return;
-        };
+        }
 
-        Mesh mesh = slope.getMesh();
-        fillBuffer(slope, mesh, terrainTypeService.getGroundSkeletonConfig());
-        setElementCount(mesh);
+        fillBuffer(slopeUi, terrainTypeService.getGroundSkeletonConfig());
+        setElementCount(slopeUi);
     }
 
     @Override
@@ -51,6 +49,6 @@ public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<Slope
 
     @Override
     public String helperString() {
-        return "Slope: " + getRenderData().getSlopeSkeletonConfig().createObjectNameId();
+        return "Slope: " + getRenderData().getObjectNameId();
     }
 }

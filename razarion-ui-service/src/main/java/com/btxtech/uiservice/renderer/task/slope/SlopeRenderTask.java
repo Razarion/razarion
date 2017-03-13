@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.renderer.task.slope;
 
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
@@ -9,6 +8,7 @@ import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.annotation.PostConstruct;
@@ -45,10 +45,10 @@ public class SlopeRenderTask extends AbstractRenderTask<Slope> {
     }
 
     private void setupSlopes(boolean fillBuffer) {
-        for (Slope slope : terrainUiService.getSlopes()) {
-            ModelRenderer<Slope, CommonRenderComposite<AbstractSlopeRendererUnit, Slope>, AbstractSlopeRendererUnit, Slope> modelRenderer = create();
-            CommonRenderComposite<AbstractSlopeRendererUnit, Slope> renderComposite = modelRenderer.create();
-            renderComposite.init(slope);
+        for (SlopeUi slopeUi : terrainUiService.getSlopes()) {
+            ModelRenderer<Slope, CommonRenderComposite<AbstractSlopeRendererUnit, SlopeUi>, AbstractSlopeRendererUnit, SlopeUi> modelRenderer = create();
+            CommonRenderComposite<AbstractSlopeRendererUnit, SlopeUi> renderComposite = modelRenderer.create();
+            renderComposite.init(slopeUi);
             renderComposite.setRenderUnit(rendererInstance.get());
             renderComposite.setDepthBufferRenderUnit(depthBufferRendererInstance.get());
             renderComposite.setNormRenderUnit(normRendererInstance.get());

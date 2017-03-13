@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
@@ -27,6 +26,8 @@ import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.user.UserUiService;
@@ -63,6 +64,8 @@ public abstract class GameEngineControl {
     private ProjectileUiService projectileUiService;
     @Inject
     private UserUiService userUiService;
+    @Inject
+    private TerrainUiService terrainUiService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup initializationReferredStartup;
 
@@ -166,7 +169,8 @@ public abstract class GameEngineControl {
         }
     }
 
-    private void onInitialized() {
+    private void onInitialized(Collection<SlopeUi> slopeUis) {
+        terrainUiService.setTerrainBuffers(slopeUis);
         if (initializationReferredStartup != null) {
             initializationReferredStartup.finished();
             initializationReferredStartup = null;
@@ -186,7 +190,7 @@ public abstract class GameEngineControl {
                 onLoaded();
                 break;
             case INITIALIZED:
-                onInitialized();
+                onInitialized((Collection<SlopeUi>)controlPackage.getData(0));
                 break;
             case INITIALISING_FAILED:
                 onInitialisingFailed((String) controlPackage.getSingleData());

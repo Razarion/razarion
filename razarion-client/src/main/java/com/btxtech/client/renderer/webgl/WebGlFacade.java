@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.webgl;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.DecimalPositionShaderAttribute;
+import com.btxtech.client.renderer.engine.Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.IntegerShaderAttribute;
 import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
@@ -85,6 +86,10 @@ public class WebGlFacade {
 
     public VertexShaderAttribute createVertexShaderAttribute(String attributeName) {
         return new VertexShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
+    }
+
+    public Float32ArrayShaderAttribute createFloat32ArrayShaderAttribute(String attributeName) {
+        return new Float32ArrayShaderAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
     }
 
     public Vec3Float32ArrayShaderAttribute createVec3Float32ArrayShaderAttribute(String attributeName) {

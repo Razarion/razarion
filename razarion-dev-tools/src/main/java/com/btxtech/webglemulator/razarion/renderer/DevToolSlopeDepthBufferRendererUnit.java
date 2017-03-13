@@ -4,15 +4,10 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
-import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -34,13 +29,13 @@ public class DevToolSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUn
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
-    protected void fillBuffer(Slope slope, Mesh mesh, GroundSkeletonConfig groundSkeletonConfig) {
+    protected void fillBuffer(SlopeUi slopeUi, GroundSkeletonConfig groundSkeletonConfig) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.GRAY).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(CollectionUtils.verticesToDoubles(mesh.getVertices()));
+        webGlProgramEmulator.setDoubles(DevToolRenderUtil.toDoubles(slopeUi.getVertices()));
     }
 
     @Override
-    protected void draw(Slope slope, GroundSkeletonConfig groundSkeletonConfig) {
+    protected void draw(SlopeUi slopeUi, GroundSkeletonConfig groundSkeletonConfig) {
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 

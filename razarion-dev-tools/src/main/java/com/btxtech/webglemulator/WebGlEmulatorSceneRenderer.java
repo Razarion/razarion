@@ -7,12 +7,12 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import javafx.scene.paint.Color;
 
@@ -73,8 +73,8 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
         egc.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 0.2, Color.BLUE);
 
         // Slopes
-        for (Slope slope : terrainUiService.getSlopes()) {
-            egc.strokeVertexList(slope.getMesh().getVertices(), 0.2, Color.RED);
+        for (SlopeUi slope : terrainUiService.getSlopes()) {
+            egc.strokeVertexList(slope.getVertices(), 0.2, Color.RED);
         }
 
         // Terrain objects

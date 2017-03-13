@@ -1,14 +1,13 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
@@ -24,7 +23,7 @@ import javax.inject.Inject;
 @Dependent
 public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUnit {
     // private Logger logger = Logger.getLogger(ClientSlopeDepthBufferRendererUnit.class.getName());
-    private VertexShaderAttribute vertices;
+    private Vec3Float32ArrayShaderAttribute vertices;
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
@@ -36,7 +35,7 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
         webGlFacade.createProgram(Shaders.INSTANCE.depthBufferVPVertexShader(), Shaders.INSTANCE.depthBufferVPFragmentShader());
-        vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
     @Override
@@ -45,12 +44,12 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
     }
 
     @Override
-    protected void fillBuffer(Slope slope, Mesh mesh, GroundSkeletonConfig groundSkeletonConfig) {
-        vertices.fillBuffer(slope.getMesh().getVertices());
+    protected void fillBuffer(SlopeUi slopeUi, GroundSkeletonConfig groundSkeletonConfig) {
+        vertices.fillFloat32ArrayEmu(slopeUi.getVertices());
     }
 
     @Override
-    protected void draw(Slope slope, GroundSkeletonConfig groundSkeletonConfig) {
+    protected void draw(SlopeUi slopeUi, GroundSkeletonConfig groundSkeletonConfig) {
         webGlFacade.useProgram();
         // Projection uniform
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.getDepthProjectionTransformation());

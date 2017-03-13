@@ -7,10 +7,12 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -28,6 +30,7 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +50,7 @@ public class TerrainUiService {
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
+    private Map<Integer, SlopeUi> slopeUis = new HashMap<>();
 
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
@@ -55,11 +59,22 @@ public class TerrainUiService {
     }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+        slopeUis.clear();
+        for (TerrainSlopePosition terrainSlopePosition : gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions()) {
+            int id = terrainSlopePosition.getSlopeId();
+            slopeUis.put(id, new SlopeUi(id, terrainTypeService.getSlopeSkeleton(id), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getWaterLevel()));
+        }
         init(gameUiControlInitEvent.getGameUiControlConfig());
     }
 
     public void init(GameUiControlConfig gameUiControlConfig) {
         terrainService.init(gameUiControlConfig.getGameEngineConfig().getPlanetConfig(), terrainTypeService);
+    }
+
+    public void setTerrainBuffers(Collection<SlopeUi> slopeUis) {
+        for (SlopeUi slopeUi : slopeUis) {
+            this.slopeUis.get(slopeUi.getId()).setBuffers(slopeUi);
+        }
     }
 
     public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
@@ -135,8 +150,8 @@ public class TerrainUiService {
         }
     }
 
-    public Collection<Slope> getSlopes() {
-        return terrainService.getSlopes();
+    public Collection<SlopeUi> getSlopes() {
+        return slopeUis.values();
     }
 
     public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {

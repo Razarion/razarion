@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.dto.VertexList;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
+import com.btxtech.shared.datatypes.shape.SlopeUi;
 
 import java.util.List;
 
@@ -41,8 +41,8 @@ public abstract class AbstractRenderUnit<D> {
         elementCount = vertexList.getVerticesCount();
     }
 
-    protected void setElementCount(Mesh mesh) {
-        elementCount = mesh.size();
+    protected void setElementCount(SlopeUi slopeUi) {
+        elementCount = slopeUi.getElementCount();
     }
 
     protected void setElementCount(List<Vertex> vertices) {
