@@ -1,5 +1,6 @@
-package com.btxtech.shared.datatypes.shape;
+package com.btxtech.shared.datatypes.terrain;
 
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 

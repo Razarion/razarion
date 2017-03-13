@@ -12,7 +12,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.shared.datatypes.shape.SlopeUi;
+import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import javafx.scene.paint.Color;
 
@@ -70,7 +70,7 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
 
     private void drawTerrain(ExtendedGraphicsContext egc) {
         // Ground mesh
-        egc.strokeVertexList(terrainUiService.getGroundVertexList().getVertices(), 0.2, Color.BLUE);
+        egc.strokeVertexList(terrainUiService.getGroundUi().getVertices(), 0.2, Color.BLUE);
 
         // Slopes
         for (SlopeUi slope : terrainUiService.getSlopes()) {

@@ -7,7 +7,8 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.SlopeUi;
+import com.btxtech.shared.datatypes.terrain.GroundUi;
+import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -51,6 +52,7 @@ public class TerrainUiService {
     private double lowestPointInView; // Should be calculated
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
     private Map<Integer, SlopeUi> slopeUis = new HashMap<>();
+    private GroundUi groundUi;
 
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
@@ -65,13 +67,15 @@ public class TerrainUiService {
             slopeUis.put(id, new SlopeUi(id, terrainTypeService.getSlopeSkeleton(id), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getWaterLevel()));
         }
         init(gameUiControlInitEvent.getGameUiControlConfig());
+        groundUi = new GroundUi(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig());
     }
 
     public void init(GameUiControlConfig gameUiControlConfig) {
         terrainService.init(gameUiControlConfig.getGameEngineConfig().getPlanetConfig(), terrainTypeService);
     }
 
-    public void setTerrainBuffers(Collection<SlopeUi> slopeUis) {
+    public void setBuffers(GroundUi groundUi, Collection<SlopeUi> slopeUis) {
+        this.groundUi.setBuffers(groundUi);
         for (SlopeUi slopeUi : slopeUis) {
             this.slopeUis.get(slopeUi.getId()).setBuffers(slopeUi);
         }
@@ -100,21 +104,8 @@ public class TerrainUiService {
         return lowestPointInView;
     }
 
-    public VertexList getGroundVertexList() {
-        VertexList vertexList;
-        if (terrainService.getGroundMesh() != null) {
-            vertexList = terrainService.getGroundMesh().provideVertexList();
-        } else {
-            vertexList = new VertexList();
-        }
-        for (Slope slope : terrainService.getSlopes()) {
-            if (!slope.hasWater()) {
-                vertexList.append(slope.getGroundPlateauConnector().getTopMesh().provideVertexList());
-                vertexList.append(slope.getGroundPlateauConnector().getInnerConnectionVertexList());
-            }
-            vertexList.append(slope.getGroundPlateauConnector().getOuterConnectionVertexList());
-        }
-        return vertexList;
+    public GroundUi getGroundUi() {
+        return groundUi;
     }
 
     public Water getWater() {

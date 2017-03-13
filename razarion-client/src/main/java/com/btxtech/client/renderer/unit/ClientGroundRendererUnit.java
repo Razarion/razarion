@@ -1,20 +1,15 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.engine.FloatShaderAttribute;
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.VertexList;
-import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -30,21 +25,15 @@ import javax.inject.Inject;
 public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
-    private TerrainTypeService terrainTypeService;
-    @Inject
-    private TerrainUiService terrainUiService;
-    @Inject
-    private GameCanvas gameCanvas;
-    @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
     private Camera camera;
-    private VertexShaderAttribute vertices;
-    private VertexShaderAttribute normals;
-    private VertexShaderAttribute tangents;
-    private FloatShaderAttribute splattings;
+    private Vec3Float32ArrayShaderAttribute vertices;
+    private Vec3Float32ArrayShaderAttribute normals;
+    private Vec3Float32ArrayShaderAttribute tangents;
+    private Float32ArrayShaderAttribute splattings;
     private WebGlUniformTexture topTexture;
     private WebGlUniformTexture topBm;
     private WebGlUniformTexture splattingTexture;
@@ -55,10 +44,10 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
         webGlFacade.createProgram(Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader());
-        vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        normals = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
-        tangents = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
-        splattings = webGlFacade.createFloatShaderAttribute(WebGlFacade.A_GROUND_SPLATTING);
+        vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
+        tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
+        splattings = webGlFacade.createFloat32ArrayShaderAttribute(WebGlFacade.A_GROUND_SPLATTING);
         webGlFacade.enableReceiveShadow();
     }
 
@@ -67,31 +56,29 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     }
 
     @Override
-    protected void fillBuffers(VertexList vertexList, GroundSkeletonConfig groundSkeletonConfig) {
-        vertexList.verify();
+    protected void fillBuffersInternal(GroundUi groundUi) {
+        topTexture = webGlFacade.createWebGLTexture(groundUi.getTopTextureId(), "uTopTexture", "uTopTextureScale", groundUi.getTopTextureScale());
+        topBm = webGlFacade.createWebGLBumpMapTexture(groundUi.getTopBmId(), "uTopBm", "uTopBmScale", groundUi.getTopBmScale(), "uTopBmOnePixel");
+        splattingTexture = webGlFacade.createWebGLTexture(groundUi.getSplattingId(), "uSplatting", "uSplattingScale", groundUi.getSplattingScale());
+        bottomTexture = webGlFacade.createWebGLTexture(groundUi.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", groundUi.getBottomTextureScale());
+        bottomBm = webGlFacade.createWebGLBumpMapTexture(groundUi.getBottomBmId(), "uBottomBm", "uBottomBmScale", groundUi.getBottomBmScale(), "uBottomBmOnePixel");
 
-        topTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getTopTextureId(), "uTopTexture", "uTopTextureScale", groundSkeletonConfig.getTopTextureScale());
-        topBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getTopBmId(), "uTopBm", "uTopBmScale", groundSkeletonConfig.getTopBmScale(), "uTopBmOnePixel");
-        splattingTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getSplattingId(), "uSplatting", "uSplattingScale", groundSkeletonConfig.getSplattingScale());
-        bottomTexture = webGlFacade.createWebGLTexture(groundSkeletonConfig.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", groundSkeletonConfig.getBottomTextureScale());
-        bottomBm = webGlFacade.createWebGLBumpMapTexture(groundSkeletonConfig.getBottomBmId(), "uBottomBm", "uBottomBmScale", groundSkeletonConfig.getBottomBmScale(), "uBottomBmOnePixel");
-
-        vertices.fillBuffer(vertexList.getVertices());
-        normals.fillBuffer(vertexList.getNormVertices());
-        tangents.fillBuffer(vertexList.getTangentVertices());
-        splattings.fillDoubleBuffer(vertexList.getSplattings());
+        vertices.fillFloat32ArrayEmu(groundUi.getVertices());
+        normals.fillFloat32ArrayEmu(groundUi.getNorms());
+        tangents.fillFloat32ArrayEmu(groundUi.getTangents());
+        splattings.fillFloat32ArrayEmu(groundUi.getSplattings());
     }
 
     @Override
-    public void draw(ModelMatrices modelMatrices) {
+    public void draw(GroundUi groundUi) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.getNormMatrix());
 
-        webGlFacade.setLightUniforms(null, terrainTypeService.getGroundSkeletonConfig().getLightConfig());
-        webGlFacade.uniform1f("uTopBmDepth", terrainTypeService.getGroundSkeletonConfig().getTopBmDepth());
-        webGlFacade.uniform1f("uBottomBmDepth", terrainTypeService.getGroundSkeletonConfig().getBottomBmDepth());
+        webGlFacade.setLightUniforms(null, groundUi.getLightConfig());
+        webGlFacade.uniform1f("uTopBmDepth", groundUi.getTopBmDepth());
+        webGlFacade.uniform1f("uBottomBmDepth", groundUi.getBottomBmDepth());
 
         webGlFacade.activateReceiveShadow();
 

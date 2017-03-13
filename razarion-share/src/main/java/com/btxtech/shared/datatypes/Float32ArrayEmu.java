@@ -1,4 +1,4 @@
-package com.btxtech.shared.datatypes.shape;
+package com.btxtech.shared.datatypes;
 
 /**
  * Created by Beat

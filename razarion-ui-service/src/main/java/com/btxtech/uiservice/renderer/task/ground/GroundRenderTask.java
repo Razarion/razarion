@@ -1,11 +1,13 @@
 package com.btxtech.uiservice.renderer.task.ground;
 
+import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -18,7 +20,7 @@ import javax.inject.Singleton;
 @Singleton
 public class GroundRenderTask extends AbstractRenderTask<GroundSkeletonConfig> {
     @Inject
-    private TerrainTypeService terrainTypeService;
+    private TerrainUiService terrainUiService;
 
     @PostConstruct
     public void postConstruct() {
@@ -31,9 +33,9 @@ public class GroundRenderTask extends AbstractRenderTask<GroundSkeletonConfig> {
     }
 
     private void setup(boolean fillBuffer) {
-        ModelRenderer<GroundSkeletonConfig, CommonRenderComposite<AbstractGroundRendererUnit, GroundSkeletonConfig>, AbstractGroundRendererUnit, GroundSkeletonConfig> modelRenderer = create();
-        CommonRenderComposite<AbstractGroundRendererUnit, GroundSkeletonConfig> renderComposite = modelRenderer.create();
-        renderComposite.init(terrainTypeService.getGroundSkeletonConfig());
+        ModelRenderer<GroundUi, CommonRenderComposite<AbstractGroundRendererUnit, GroundUi>, AbstractGroundRendererUnit, GroundUi> modelRenderer = create();
+        CommonRenderComposite<AbstractGroundRendererUnit, GroundUi> renderComposite = modelRenderer.create();
+        renderComposite.init(terrainUiService.getGroundUi());
         renderComposite.setRenderUnit(AbstractGroundRendererUnit.class);
         renderComposite.setDepthBufferRenderUnit(AbstractGroundRendererUnit.class);
         renderComposite.setNormRenderUnit(AbstractGroundRendererUnit.class);

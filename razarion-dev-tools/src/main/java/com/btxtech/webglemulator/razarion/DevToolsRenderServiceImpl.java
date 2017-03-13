@@ -75,9 +75,9 @@ public class DevToolsRenderServiceImpl extends RenderService {
     @Deprecated
     protected void setupRenderers() {
 //        // Ground
-//        webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, terrainUiService.getGroundVertexList().createPositionDoubles(), Color.BLUE);
-//       TODO  webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainUiService.getGroundVertexList().OLDgetVertices(), terrainUiService.getGroundVertexList().getNormVertices()), Color.BROWN);
-//        webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, terrainUiService.getGroundVertexList().createPositionDoubles(), Color.BLUE);
+//        webGlEmulator.fillBufferAndShader(RenderMode.TRIANGLES, terrainShader, terrainUiService.createGroundVertexList().createPositionDoubles(), Color.BLUE);
+//       TODO  webGlEmulator.fillBufferAndShader(RenderMode.LINES, terrainShader, setupNormDoubles(terrainUiService.createGroundVertexList().OLDgetVertices(), terrainUiService.createGroundVertexList().getNormVertices()), Color.BROWN);
+//        webGlEmulatorShadow.fillBufferAndShader(RenderMode.TRIANGLES, terrainShaderShadow, terrainUiService.createGroundVertexList().createPositionDoubles(), Color.BLUE);
 //        // Slopes
 //        for (Integer slopeId : terrainUiService.getSlopeIds()) {
 //            Mesh mesh = terrainUiService.getSlope(slopeId).getMesh();

@@ -3,8 +3,9 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.shared.dto.VertexList;
-import com.btxtech.shared.datatypes.shape.SlopeUi;
+import com.btxtech.shared.datatypes.terrain.SlopeUi;
 
 import java.util.List;
 
@@ -43,6 +44,10 @@ public abstract class AbstractRenderUnit<D> {
 
     protected void setElementCount(SlopeUi slopeUi) {
         elementCount = slopeUi.getElementCount();
+    }
+
+    protected void setElementCount(GroundUi groundUi) {
+        elementCount = groundUi.getElementCount();
     }
 
     protected void setElementCount(List<Vertex> vertices) {

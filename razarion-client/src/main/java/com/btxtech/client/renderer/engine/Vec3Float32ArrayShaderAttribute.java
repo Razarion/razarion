@@ -2,7 +2,7 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.ClientRenderUtil;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
-import com.btxtech.shared.datatypes.shape.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import elemental.html.WebGLRenderingContext;
 
 /**

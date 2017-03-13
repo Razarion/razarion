@@ -12,6 +12,7 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -298,10 +299,27 @@ public class TerrainService {
 
     public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
         for (Slope slope : slopeMap.values()) {
-            if(slope.getSlopeSkeletonConfig().getId() == slopeSkeletonConfig.getId()) {
+            if (slope.getSlopeSkeletonConfig().getId() == slopeSkeletonConfig.getId()) {
                 slope.updateSlopeSkeleton(slopeSkeletonConfig);
             }
         }
+    }
+
+    public VertexList createGroundVertexList() {
+        VertexList vertexList;
+        if (groundMesh != null) {
+            vertexList = groundMesh.provideVertexList();
+        } else {
+            vertexList = new VertexList();
+        }
+        for (Slope slope : slopeMap.values()) {
+            if (!slope.hasWater()) {
+                vertexList.append(slope.getGroundPlateauConnector().getTopMesh().provideVertexList());
+                vertexList.append(slope.getGroundPlateauConnector().getInnerConnectionVertexList());
+            }
+            vertexList.append(slope.getGroundPlateauConnector().getOuterConnectionVertexList());
+        }
+        return vertexList;
     }
 
     // -------------------------------------------------

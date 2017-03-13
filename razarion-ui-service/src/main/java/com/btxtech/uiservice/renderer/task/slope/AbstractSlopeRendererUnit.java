@@ -1,10 +1,10 @@
 package com.btxtech.uiservice.renderer.task.slope;
 
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.datatypes.terrain.GroundUi;
+import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import com.btxtech.shared.datatypes.shape.SlopeUi;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;
@@ -16,11 +16,11 @@ import java.util.logging.Logger;
 public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<SlopeUi> {
     private Logger logger = Logger.getLogger(AbstractSlopeRendererUnit.class.getName());
     @Inject
-    private TerrainTypeService terrainTypeService;
+    private TerrainUiService terrainUiService;
 
-    protected abstract void fillBuffer(SlopeUi slopeUi, GroundSkeletonConfig groundSkeletonConfig);
+    protected abstract void fillBuffer(SlopeUi slopeUi, GroundUi groundUi);
 
-    protected abstract void draw(SlopeUi slopeUi, GroundSkeletonConfig groundSkeletonConfig);
+    protected abstract void draw(SlopeUi slopeUi, GroundUi groundUi);
 
     @Override
     public void fillBuffers(SlopeUi slopeUi) {
@@ -33,7 +33,7 @@ public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<Slope
             return;
         }
 
-        fillBuffer(slopeUi, terrainTypeService.getGroundSkeletonConfig());
+        fillBuffer(slopeUi, terrainUiService.getGroundUi());
         setElementCount(slopeUi);
     }
 
@@ -44,7 +44,7 @@ public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<Slope
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        draw(getRenderData(), terrainTypeService.getGroundSkeletonConfig());
+        draw(getRenderData(), terrainUiService.getGroundUi());
     }
 
     @Override

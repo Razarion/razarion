@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer;
 
-import com.btxtech.shared.datatypes.shape.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import elemental.html.Float32Array;
 
 import java.util.List;
@@ -19,9 +19,9 @@ public class ClientRenderUtil {
 //        }
     }
 
-    public static List<Double> setupNormFloat32Array(Float32ArrayEmu vertices, Float32ArrayEmu norms) {
+    public static Float32ArrayEmu setupNormFloat32Array(Float32ArrayEmu vertices, Float32ArrayEmu norms) {
         // TODO fix
-        return null;
+        throw new UnsupportedOperationException();
     }
 
 

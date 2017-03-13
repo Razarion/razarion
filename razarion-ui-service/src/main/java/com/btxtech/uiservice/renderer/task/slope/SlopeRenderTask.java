@@ -8,7 +8,7 @@ import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
-import com.btxtech.shared.datatypes.shape.SlopeUi;
+import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.annotation.PostConstruct;

@@ -1,15 +1,14 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
-import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.shared.dto.VertexList;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -27,21 +26,19 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
-    private TerrainUiService terrainUiService;
-    @Inject
     private ShadowUiService shadowUiService;
-    private VertexShaderAttribute vertices;
+    private Vec3Float32ArrayShaderAttribute vertices;
 
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
         webGlFacade.createProgram(Shaders.INSTANCE.depthBufferVPVertexShader(), Shaders.INSTANCE.depthBufferVPFragmentShader());
-        vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
     @Override
-    protected void fillBuffers(VertexList vertexList, GroundSkeletonConfig groundSkeletonConfig) {
-        vertices.fillBuffer(vertexList.getVertices());
+    protected void fillBuffersInternal(GroundUi groundUi) {
+        vertices.fillFloat32ArrayEmu(groundUi.getVertices());
     }
 
     @Override
@@ -50,12 +47,7 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     }
 
     @Override
-    protected void prepareDraw() {
-
-    }
-
-    @Override
-    public void draw(ModelMatrices modelMatrices) {
+    public void draw(GroundUi groundUi) {
         webGlFacade.useProgram();
 
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.getDepthProjectionTransformation());

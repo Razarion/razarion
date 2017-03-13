@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator.razarion.renderer;
 
-import com.btxtech.shared.datatypes.shape.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 
 import java.util.List;
 

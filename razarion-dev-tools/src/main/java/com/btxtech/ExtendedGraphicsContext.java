@@ -17,7 +17,7 @@ import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
 import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.shared.datatypes.shape.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;

@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer.task.ground;
 
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.VertexList;
+import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
@@ -12,43 +12,47 @@ import java.util.logging.Logger;
  * Created by Beat
  * 07.08.2016.
  */
-public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<GroundSkeletonConfig> {
+public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<GroundUi> {
     private Logger logger = Logger.getLogger(AbstractGroundRendererUnit.class.getName());
-    @Inject
-    private TerrainUiService terrainUiService;
 
-    protected abstract void fillBuffers(VertexList vertexList, GroundSkeletonConfig groundSkeletonConfig);
+    protected abstract void fillBuffersInternal(GroundUi groundUi);
+
+    protected abstract void draw(GroundUi groundUi);
 
     @Override
-    public void fillBuffers(GroundSkeletonConfig groundSkeletonConfig) {
-        if(groundSkeletonConfig.getTopTextureId() == null) {
+    public void fillBuffers(GroundUi groundUi) {
+        if (groundUi.getTopTextureId() == null) {
             logger.warning("No TopTextureId in AbstractGroundRendererUnit for: " + helperString());
             return;
-        };
-        if(groundSkeletonConfig.getTopBmId() == null) {
+        }
+        if (groundUi.getTopBmId() == null) {
             logger.warning("No TopBmId in AbstractGroundRendererUnit for: " + helperString());
             return;
-        };
-        if(groundSkeletonConfig.getSplattingId() == null) {
+        }
+        if (groundUi.getSplattingId() == null) {
             logger.warning("No SplattingId in AbstractGroundRendererUnit for: " + helperString());
             return;
-        };
-        if(groundSkeletonConfig.getBottomTextureId() == null) {
+        }
+        if (groundUi.getBottomTextureId() == null) {
             logger.warning("No BottomTextureId in AbstractGroundRendererUnit for: " + helperString());
             return;
-        };
-        if(groundSkeletonConfig.getBottomBmId() == null) {
+        }
+        if (groundUi.getBottomBmId() == null) {
             logger.warning("No BottomBmId in AbstractGroundRendererUnit for: " + helperString());
             return;
-        };
-        VertexList vertexList = terrainUiService.getGroundVertexList();
-        fillBuffers(vertexList, groundSkeletonConfig);
-        setElementCount(vertexList);
+        }
+        fillBuffersInternal(groundUi);
+        setElementCount(groundUi);
     }
 
     @Override
     protected void prepareDraw() {
         // Ignore
+    }
+
+    @Override
+    protected void draw(ModelMatrices modelMatrices) {
+        draw(getRenderData());
     }
 
     @Override

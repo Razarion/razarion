@@ -1,10 +1,12 @@
 package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.Float32ArrayEmu;
-import com.btxtech.shared.datatypes.shape.SlopeUi;
+import com.btxtech.shared.datatypes.terrain.GroundUi;
+import com.btxtech.shared.datatypes.terrain.SlopeUi;
+import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
@@ -36,6 +38,13 @@ public class WorkerMarshaller {
     private static final int DATA_OFFSET_2 = 3;
     private static final int DATA_OFFSET_3 = 4;
     private static final int DATA_OFFSET_4 = 5;
+    private static final String ID_KEY = "id";
+    private static final String ELEMENT_COUNT_KEY = "elementCount";
+    private static final String VERTICES_KEY = "vertices";
+    private static final String NORMS_KEY = "norms";
+    private static final String TANGENTS_KEY = "tangents";
+    private static final String SPLATTINGS_KEY = "splattings";
+    private static final String SLOPE_FACTOR_KEY = "slopeFactor";
 
     public static JavaScriptObject marshall(GameEngineControlPackage controlPackage) {
         JsArrayMixed array = JavaScriptObject.createArray().cast();
@@ -102,9 +111,10 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
                 break;
-            // Native marshal slopes
+            // Native marshal terrain buffers
             case INITIALIZED:
-                array.set(DATA_OFFSET_0, marshallSlope(controlPackage.getData(0)));
+                array.set(DATA_OFFSET_0, marshallGroundBuffers((VertexList) controlPackage.getData(0)));
+                array.set(DATA_OFFSET_1, marshallSlopeBuffers((Collection<Slope>) controlPackage.getData(1)));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -233,9 +243,10 @@ public class WorkerMarshaller {
             case PERFMON_RESPONSE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 break;
-            // Native marshal slopes
+            // Native demarshal terrain buffers
             case INITIALIZED:
-                data.add(demarshallNativeSlope(array.getObject(DATA_OFFSET_0)));
+                data.add(demarshallGroundBuffers(array.getObject(DATA_OFFSET_0)));
+                data.add(demarshallSlopeBuffers(array.getObject(DATA_OFFSET_1)));
                 break;
 
             default:
@@ -263,9 +274,26 @@ public class WorkerMarshaller {
         }
     }
 
-    public static JavaScriptObject marshallSlope(Object input) {
+    private static JavaScriptObject marshallGroundBuffers(VertexList groundVertexList) {
+        JavaScriptObject javaScriptObject = JavaScriptObject.createObject();
+        setIntProperty(javaScriptObject, ELEMENT_COUNT_KEY, groundVertexList.getVerticesCount());
+        setFloat32ArrayProperty(javaScriptObject, VERTICES_KEY, vertices2JsArrayOfVertices(groundVertexList.getVertices()));
+        setFloat32ArrayProperty(javaScriptObject, NORMS_KEY, vertices2JsArrayOfVertices(groundVertexList.getNormVertices()));
+        setFloat32ArrayProperty(javaScriptObject, TANGENTS_KEY, vertices2JsArrayOfVertices(groundVertexList.getTangentVertices()));
+        setFloat32ArrayProperty(javaScriptObject, SPLATTINGS_KEY, doubles2JsArrayOfNumber(groundVertexList.getSplattings()));
+        return javaScriptObject;
+    }
+
+    private static Object demarshallGroundBuffers(JavaScriptObject javaScriptObject) {
+        return new GroundUi(getIntProperty(javaScriptObject, ELEMENT_COUNT_KEY),
+                getFloat32ArrayEmuProperty(javaScriptObject, VERTICES_KEY), getFloat32ArrayEmuProperty(javaScriptObject, NORMS_KEY),
+                getFloat32ArrayEmuProperty(javaScriptObject, TANGENTS_KEY), getFloat32ArrayEmuProperty(javaScriptObject, SPLATTINGS_KEY));
+    }
+
+
+    private static JavaScriptObject marshallSlopeBuffers(Collection<Slope> slopes) {
         JsArrayMixed array = JavaScriptObject.createArray().cast();
-        for (Slope slope : (Collection<Slope>) input) {
+        for (Slope slope : slopes) {
             array.push(marshallSlope(slope));
         }
         return array;
@@ -273,16 +301,18 @@ public class WorkerMarshaller {
 
     private static JavaScriptObject marshallSlope(Slope slope) {
         Mesh mesh = slope.getMesh();
-        return marshallNativeSlope(slope.getSlopeSkeletonConfig().getId(),
-                mesh.size(),
-                vertices2JsArrayOfNumber(mesh.getVertices()),
-                vertices2JsArrayOfNumber(mesh.getNorms()),
-                vertices2JsArrayOfNumber(mesh.getTangents()),
-                floats2JsArrayOfNumber(mesh.getSplatting()),
-                floats2JsArrayOfNumber(mesh.getSlopeFactors()));
+        JavaScriptObject javaScriptObject = JavaScriptObject.createObject();
+        setIntProperty(javaScriptObject, ID_KEY, slope.getSlopeSkeletonConfig().getId());
+        setIntProperty(javaScriptObject, ELEMENT_COUNT_KEY, mesh.size());
+        setFloat32ArrayProperty(javaScriptObject, VERTICES_KEY, vertices2JsArrayOfVertices(mesh.getVertices()));
+        setFloat32ArrayProperty(javaScriptObject, NORMS_KEY, vertices2JsArrayOfVertices(mesh.getNorms()));
+        setFloat32ArrayProperty(javaScriptObject, TANGENTS_KEY, vertices2JsArrayOfVertices(mesh.getTangents()));
+        setFloat32ArrayProperty(javaScriptObject, SPLATTINGS_KEY, floats2JsArrayOfNumber(mesh.getSplatting()));
+        setFloat32ArrayProperty(javaScriptObject, SLOPE_FACTOR_KEY, floats2JsArrayOfNumber(mesh.getSlopeFactors()));
+        return javaScriptObject;
     }
 
-    private static JsArrayOfNumber vertices2JsArrayOfNumber(List<Vertex> vertices) {
+    private static JsArrayOfNumber vertices2JsArrayOfVertices(List<Vertex> vertices) {
         JsArrayOfNumber numberArray = JsArrayOfNumber.create();
         for (Vertex vertex : vertices) {
             numberArray.push(vertex.getX());
@@ -300,57 +330,40 @@ public class WorkerMarshaller {
         return numberArray;
     }
 
-    private static Object demarshallNativeSlope(JavaScriptObject javaScriptObject) {
+    private static JsArrayOfNumber doubles2JsArrayOfNumber(List<Double> doubles) {
+        JsArrayOfNumber numberArray = JsArrayOfNumber.create();
+        for (double doubleValue : doubles) {
+            numberArray.push(doubleValue);
+        }
+        return numberArray;
+    }
+
+    private static Object demarshallSlopeBuffers(JavaScriptObject javaScriptObject) {
         Collection<SlopeUi> slopeBuffers = new ArrayList<>();
         JsArrayMixed array = ((JavaScriptObject) javaScriptObject).cast();
         for (int i = 0; i < array.length(); i++) {
             JavaScriptObject slopeJsData = array.getObject(i);
-            slopeBuffers.add(new SlopeUi(demarshallNativeSlopeId(slopeJsData), demarshallNativeSlopeElementCount(slopeJsData), demarshallNativeSlopeVertices(slopeJsData), demarshallNativeSlopeNorms(slopeJsData),
-                    demarshallNativeSlopeTangents(slopeJsData), demarshallNativeSlopeSplattings(slopeJsData), demarshallNativeSlopeSlopeFactors(slopeJsData)));
+            slopeBuffers.add(new SlopeUi(getIntProperty(slopeJsData, ID_KEY), getIntProperty(slopeJsData, ELEMENT_COUNT_KEY),
+                    getFloat32ArrayEmuProperty(slopeJsData, VERTICES_KEY), getFloat32ArrayEmuProperty(slopeJsData, NORMS_KEY),
+                    getFloat32ArrayEmuProperty(slopeJsData, TANGENTS_KEY), getFloat32ArrayEmuProperty(slopeJsData, SPLATTINGS_KEY),
+                    getFloat32ArrayEmuProperty(slopeJsData, SLOPE_FACTOR_KEY)));
         }
         return slopeBuffers;
     }
 
-    // The structured clone algorithm
-    private native static JavaScriptObject marshallNativeSlope(int id, int elementCount, JsArrayOfNumber vertices, JsArrayOfNumber norms, JsArrayOfNumber tangents, JsArrayOfNumber splattings, JsArrayOfNumber slopeFactors) /*-{
-        return {
-            "id": id,
-            "elementCount": elementCount,
-            "vertices": new Float32Array(vertices),
-            "norms": new Float32Array(norms),
-            "tangents": new Float32Array(tangents),
-            "splattings": new Float32Array(splattings),
-            "slopeFactors": new Float32Array(slopeFactors)
-        };
+    private native static int getIntProperty(JavaScriptObject javaScriptObject, String propertyName) /*-{
+        return javaScriptObject[propertyName];
     }-*/;
 
-    private native static int demarshallNativeSlopeId(JavaScriptObject slopeJsData) /*-{
-        return slopeJsData.id;
+    private native static Float32ArrayEmu getFloat32ArrayEmuProperty(JavaScriptObject javaScriptObject, String propertyName) /*-{
+        return javaScriptObject[propertyName];
     }-*/;
 
-    private native static int demarshallNativeSlopeElementCount(JavaScriptObject slopeJsData) /*-{
-        return slopeJsData.elementCount;
+    private native static void setIntProperty(JavaScriptObject javaScriptObject, String propertyName, int number) /*-{
+        return javaScriptObject[propertyName] = number;
     }-*/;
 
-    private native static Float32ArrayEmu demarshallNativeSlopeVertices(JavaScriptObject slopeJsData) /*-{
-        return slopeJsData.vertices;
+    private native static void setFloat32ArrayProperty(JavaScriptObject javaScriptObject, String propertyName, JsArrayOfNumber array) /*-{
+        return javaScriptObject[propertyName] = new Float32Array(array);
     }-*/;
-
-    private native static Float32ArrayEmu demarshallNativeSlopeNorms(JavaScriptObject slopeJsData) /*-{
-        return slopeJsData.norms;
-    }-*/;
-
-    private native static Float32ArrayEmu demarshallNativeSlopeTangents(JavaScriptObject slopeJsData) /*-{
-        return slopeJsData.tangents;
-    }-*/;
-
-    private native static Float32ArrayEmu demarshallNativeSlopeSplattings(JavaScriptObject slopeJsData) /*-{
-        return slopeJsData.splattings;
-    }-*/;
-
-
-    private native static Float32ArrayEmu demarshallNativeSlopeSlopeFactors(JavaScriptObject slopeJsData) /*-{
-        return slopeJsData.slopeFactors;
-    }-*/;
-
 }
