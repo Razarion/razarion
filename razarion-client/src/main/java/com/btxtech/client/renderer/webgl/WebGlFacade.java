@@ -23,7 +23,6 @@ import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
@@ -62,13 +61,13 @@ public class WebGlFacade {
     // private Logger logger = Logger.getLogger(AbstractWebGlUnitRenderer.class.getName());
     private WebGlProgram webGlProgram;
     @Inject
-    private Instance<WebGlProgram> webGlProgramInstance;
-    @Inject
     private GameCanvas gameCanvas;
     @Inject
     private ShadowUiService shadowUiService;
     @Inject
     private ClientRenderServiceImpl renderService;
+    @Inject
+    private WebGlProgramService webGlProgramService;
     @Inject
     private WebGLTextureContainer textureContainer;
     private AbstractRenderUnit abstractRenderUnit;
@@ -80,8 +79,7 @@ public class WebGlFacade {
     }
 
     public void createProgram(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
-        webGlProgram = webGlProgramInstance.get();
-        webGlProgram.createProgram(vertexShaderCode.getText(), fragmentShaderCode.getText());
+        webGlProgram = webGlProgramService.getWebGlProgram(vertexShaderCode.getText(), fragmentShaderCode.getText());
     }
 
     public VertexShaderAttribute createVertexShaderAttribute(String attributeName) {

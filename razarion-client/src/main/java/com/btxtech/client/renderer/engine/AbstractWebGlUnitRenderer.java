@@ -64,9 +64,11 @@ public abstract class AbstractWebGlUnitRenderer extends AbstractRenderUnit {
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
 
+    @Deprecated
     protected void createProgram(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
         webGlProgram = webGlProgramInstance.get();
         webGlProgram.createProgram(vertexShaderCode.getText(), fragmentShaderCode.getText());
+        throw new UnsupportedOperationException("Not used anymore due to the excessive webGlProgram.createProgram() usage");
     }
 
     protected VertexShaderAttribute createVertexShaderAttribute(String attributeName) {

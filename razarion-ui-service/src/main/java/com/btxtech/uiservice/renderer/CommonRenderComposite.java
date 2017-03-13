@@ -44,9 +44,11 @@ public class CommonRenderComposite<U extends AbstractRenderUnit<D>, D> extends A
     }
 
     public U setNormRenderUnit(Class<U> clazz) {
-        U u = normInstance.select(clazz).get();
-        setNormRenderUnit(u);
-        return u;
+        // Ignore norm tue to startup performance
+        return null;
+        // U u = normInstance.select(clazz).get();
+        // setNormRenderUnit(u);
+        // return u;
     }
 
 }
