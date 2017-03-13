@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.renderer.task.water;
 
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.Water;
+import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -17,15 +16,15 @@ import javax.inject.Singleton;
  * 31.08.2016.
  */
 @Singleton
-public class WaterRenderTask extends AbstractRenderTask<Water> {
+public class WaterRenderTask extends AbstractRenderTask<WaterUi> {
     @Inject
     private TerrainUiService terrainUiService;
 
     @PostConstruct
     public void postConstruct() {
-        ModelRenderer<Water, CommonRenderComposite<AbstractWaterRendererUnit, Water>, AbstractWaterRendererUnit, Water> modelRenderer = create();
-        CommonRenderComposite<AbstractWaterRendererUnit, Water> renderComposite = modelRenderer.create();
-        renderComposite.init(terrainUiService.getWater());
+        ModelRenderer<WaterUi, CommonRenderComposite<AbstractWaterRendererUnit, WaterUi>, AbstractWaterRendererUnit, WaterUi> modelRenderer = create();
+        CommonRenderComposite<AbstractWaterRendererUnit, WaterUi> renderComposite = modelRenderer.create();
+        renderComposite.init(terrainUiService.getWaterUi());
         renderComposite.setRenderUnit(AbstractWaterRendererUnit.class);
         renderComposite.setNormRenderUnit(AbstractWaterRendererUnit.class);
         modelRenderer.add(RenderUnitControl.WATER, renderComposite);

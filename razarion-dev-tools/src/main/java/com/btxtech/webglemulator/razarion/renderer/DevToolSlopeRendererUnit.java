@@ -3,7 +3,6 @@ package com.btxtech.webglemulator.razarion.renderer;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -32,13 +31,13 @@ public class DevToolSlopeRendererUnit extends AbstractSlopeRendererUnit implemen
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
-    protected void fillBuffer(SlopeUi slopeUi, GroundUi groundUi) {
+    protected void fillBuffer(SlopeUi slopeUi) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.GRAY).setVertexShader(this);
         webGlProgramEmulator.setDoubles(DevToolRenderUtil.toDoubles(slopeUi.getVertices()));
     }
 
     @Override
-    protected void draw(SlopeUi slopeUi, GroundUi groundUi) {
+    protected void draw(SlopeUi slopeUi) {
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 

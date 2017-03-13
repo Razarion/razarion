@@ -1,18 +1,16 @@
 package com.btxtech.client.renderer.unit;
 
+import com.btxtech.client.renderer.ClientRenderUtil;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
-import com.btxtech.shared.dto.VisualConfig;
-import com.btxtech.shared.gameengine.planet.terrain.Water;
+import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.RenderUtil;
 import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
@@ -41,13 +39,13 @@ public class ClientWaterNormRendererUnit extends AbstractWaterRendererUnit {
     private Camera camera;
     @Inject
     private WebGlFacade webGlFacade;
-    private VertexShaderAttribute vertices;
+    private Vec3Float32ArrayShaderAttribute vertices;
 
     @PostConstruct
     public void init() {
         webGlFacade.setAbstractRenderUnit(this);
         webGlFacade.createProgram(Shaders.INSTANCE.debugVectorVertexShader(), Shaders.INSTANCE.debugVectorFragmentShader());
-        vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
     @Override
@@ -55,12 +53,12 @@ public class ClientWaterNormRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
-    protected void fillInternalBuffers(Water water, VisualConfig visualConfig) {
-        vertices.fillDoubleBuffer(RenderUtil.setupNormDoubles(water.getVertices(), water.getNorms()));
+    protected void fillInternalBuffers(WaterUi waterUi) {
+        vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(waterUi.getVertices(), waterUi.getNorms()));
     }
 
     @Override
-    public void draw(ModelMatrices modelMatrices) {
+    public void draw(WaterUi waterUi) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());

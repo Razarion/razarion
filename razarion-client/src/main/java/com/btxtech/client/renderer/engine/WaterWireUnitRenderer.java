@@ -19,11 +19,13 @@ public class WaterWireUnitRenderer extends AbstractViewPerspectiveWireUnitRender
 
     @Override
     protected List<Vertex> getVertexList() {
-        return terrainUiService.getWater().getVertices();
+        // return terrainUiService.getWater().getVertices();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected List<Vertex> getBarycentricList() {
-        return terrainUiService.getWater().getBarycentric();
+        // return terrainUiService.getWater().getBarycentric();
+        throw new UnsupportedOperationException();
     }
 }

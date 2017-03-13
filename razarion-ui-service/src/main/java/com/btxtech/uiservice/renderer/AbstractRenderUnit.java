@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
+import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
 
@@ -48,6 +49,10 @@ public abstract class AbstractRenderUnit<D> {
 
     protected void setElementCount(GroundUi groundUi) {
         elementCount = groundUi.getElementCount();
+    }
+
+    protected void setElementCount(WaterUi waterUi) {
+        elementCount = waterUi.getElementCount();
     }
 
     protected void setElementCount(List<Vertex> vertices) {

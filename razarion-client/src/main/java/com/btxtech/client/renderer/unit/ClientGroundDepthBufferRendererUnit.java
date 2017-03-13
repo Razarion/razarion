@@ -3,12 +3,10 @@ package com.btxtech.client.renderer.unit;
 import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;

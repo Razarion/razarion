@@ -9,7 +9,6 @@ import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.RenderUtil;
 import com.btxtech.webglemulator.razarion.DevToolShape3DUiService;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;

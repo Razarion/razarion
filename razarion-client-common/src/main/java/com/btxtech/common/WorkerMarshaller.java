@@ -2,10 +2,12 @@ package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
+import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -14,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -45,6 +48,10 @@ public class WorkerMarshaller {
     private static final String TANGENTS_KEY = "tangents";
     private static final String SPLATTINGS_KEY = "splattings";
     private static final String SLOPE_FACTOR_KEY = "slopeFactor";
+    private static final String RECT_X_KEY = "rectX";
+    private static final String RECT_Y_KEY = "rectY";
+    private static final String RECT_WIDTH_KEY = "rectWidth";
+    private static final String RECT_HEIGHT_KEY = "rectHeight";
 
     public static JavaScriptObject marshall(GameEngineControlPackage controlPackage) {
         JsArrayMixed array = JavaScriptObject.createArray().cast();
@@ -115,6 +122,7 @@ public class WorkerMarshaller {
             case INITIALIZED:
                 array.set(DATA_OFFSET_0, marshallGroundBuffers((VertexList) controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, marshallSlopeBuffers((Collection<Slope>) controlPackage.getData(1)));
+                array.set(DATA_OFFSET_2, marshallWaterBuffers((Water) controlPackage.getData(2)));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -247,6 +255,7 @@ public class WorkerMarshaller {
             case INITIALIZED:
                 data.add(demarshallGroundBuffers(array.getObject(DATA_OFFSET_0)));
                 data.add(demarshallSlopeBuffers(array.getObject(DATA_OFFSET_1)));
+                data.add(demarshallWaterBuffers(array.getObject(DATA_OFFSET_2)));
                 break;
 
             default:
@@ -284,7 +293,7 @@ public class WorkerMarshaller {
         return javaScriptObject;
     }
 
-    private static Object demarshallGroundBuffers(JavaScriptObject javaScriptObject) {
+    private static GroundUi demarshallGroundBuffers(JavaScriptObject javaScriptObject) {
         return new GroundUi(getIntProperty(javaScriptObject, ELEMENT_COUNT_KEY),
                 getFloat32ArrayEmuProperty(javaScriptObject, VERTICES_KEY), getFloat32ArrayEmuProperty(javaScriptObject, NORMS_KEY),
                 getFloat32ArrayEmuProperty(javaScriptObject, TANGENTS_KEY), getFloat32ArrayEmuProperty(javaScriptObject, SPLATTINGS_KEY));
@@ -310,6 +319,38 @@ public class WorkerMarshaller {
         setFloat32ArrayProperty(javaScriptObject, SPLATTINGS_KEY, floats2JsArrayOfNumber(mesh.getSplatting()));
         setFloat32ArrayProperty(javaScriptObject, SLOPE_FACTOR_KEY, floats2JsArrayOfNumber(mesh.getSlopeFactors()));
         return javaScriptObject;
+    }
+
+    private static Collection<SlopeUi> demarshallSlopeBuffers(JavaScriptObject javaScriptObject) {
+        Collection<SlopeUi> slopeBuffers = new ArrayList<>();
+        JsArrayMixed array = ((JavaScriptObject) javaScriptObject).cast();
+        for (int i = 0; i < array.length(); i++) {
+            JavaScriptObject slopeJsData = array.getObject(i);
+            slopeBuffers.add(new SlopeUi(getIntProperty(slopeJsData, ID_KEY), getIntProperty(slopeJsData, ELEMENT_COUNT_KEY),
+                    getFloat32ArrayEmuProperty(slopeJsData, VERTICES_KEY), getFloat32ArrayEmuProperty(slopeJsData, NORMS_KEY),
+                    getFloat32ArrayEmuProperty(slopeJsData, TANGENTS_KEY), getFloat32ArrayEmuProperty(slopeJsData, SPLATTINGS_KEY),
+                    getFloat32ArrayEmuProperty(slopeJsData, SLOPE_FACTOR_KEY)));
+        }
+        return slopeBuffers;
+    }
+
+    private static JavaScriptObject marshallWaterBuffers(Water water) {
+        JavaScriptObject javaScriptObject = JavaScriptObject.createObject();
+        setIntProperty(javaScriptObject, ELEMENT_COUNT_KEY, water.getVertices().size());
+        setFloat32ArrayProperty(javaScriptObject, VERTICES_KEY, vertices2JsArrayOfVertices(water.getVertices()));
+        setFloat32ArrayProperty(javaScriptObject, NORMS_KEY, vertices2JsArrayOfVertices(water.getNorms()));
+        setFloat32ArrayProperty(javaScriptObject, TANGENTS_KEY, vertices2JsArrayOfVertices(water.getTangents()));
+        setDoubleProperty(javaScriptObject, RECT_X_KEY, water.calculateAabb().startX());
+        setDoubleProperty(javaScriptObject, RECT_Y_KEY, water.calculateAabb().startY());
+        setDoubleProperty(javaScriptObject, RECT_WIDTH_KEY, water.calculateAabb().width());
+        setDoubleProperty(javaScriptObject, RECT_HEIGHT_KEY, water.calculateAabb().height());
+        return javaScriptObject;
+    }
+
+    private static WaterUi demarshallWaterBuffers(JavaScriptObject waterJsData) {
+        Rectangle2D aabb = new Rectangle2D(getDoubleProperty(waterJsData, RECT_X_KEY), getDoubleProperty(waterJsData, RECT_Y_KEY), getDoubleProperty(waterJsData, RECT_WIDTH_KEY), getDoubleProperty(waterJsData, RECT_HEIGHT_KEY));
+        return new WaterUi(getIntProperty(waterJsData, ELEMENT_COUNT_KEY), getFloat32ArrayEmuProperty(waterJsData, VERTICES_KEY), getFloat32ArrayEmuProperty(waterJsData, NORMS_KEY),
+                getFloat32ArrayEmuProperty(waterJsData, TANGENTS_KEY), aabb);
     }
 
     private static JsArrayOfNumber vertices2JsArrayOfVertices(List<Vertex> vertices) {
@@ -338,20 +379,11 @@ public class WorkerMarshaller {
         return numberArray;
     }
 
-    private static Object demarshallSlopeBuffers(JavaScriptObject javaScriptObject) {
-        Collection<SlopeUi> slopeBuffers = new ArrayList<>();
-        JsArrayMixed array = ((JavaScriptObject) javaScriptObject).cast();
-        for (int i = 0; i < array.length(); i++) {
-            JavaScriptObject slopeJsData = array.getObject(i);
-            slopeBuffers.add(new SlopeUi(getIntProperty(slopeJsData, ID_KEY), getIntProperty(slopeJsData, ELEMENT_COUNT_KEY),
-                    getFloat32ArrayEmuProperty(slopeJsData, VERTICES_KEY), getFloat32ArrayEmuProperty(slopeJsData, NORMS_KEY),
-                    getFloat32ArrayEmuProperty(slopeJsData, TANGENTS_KEY), getFloat32ArrayEmuProperty(slopeJsData, SPLATTINGS_KEY),
-                    getFloat32ArrayEmuProperty(slopeJsData, SLOPE_FACTOR_KEY)));
-        }
-        return slopeBuffers;
-    }
-
     private native static int getIntProperty(JavaScriptObject javaScriptObject, String propertyName) /*-{
+        return javaScriptObject[propertyName];
+    }-*/;
+
+    private native static double getDoubleProperty(JavaScriptObject javaScriptObject, String propertyName) /*-{
         return javaScriptObject[propertyName];
     }-*/;
 
@@ -360,6 +392,10 @@ public class WorkerMarshaller {
     }-*/;
 
     private native static void setIntProperty(JavaScriptObject javaScriptObject, String propertyName, int number) /*-{
+        return javaScriptObject[propertyName] = number;
+    }-*/;
+
+    private native static void setDoubleProperty(JavaScriptObject javaScriptObject, String propertyName, double number) /*-{
         return javaScriptObject[propertyName] = number;
     }-*/;
 

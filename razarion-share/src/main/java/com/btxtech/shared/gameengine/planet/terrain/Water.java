@@ -32,10 +32,6 @@ public class Water {
         return level;
     }
 
-    public boolean isValid() {
-        return !vertices.isEmpty();
-    }
-
     public void addTriangle(Vertex vertex1, Vertex vertex2, Vertex vertex3) {
         vertices.add(createLevelVertex(vertex1));
         if (vertex1.cross(vertex2, vertex3).getZ() >= 0) {

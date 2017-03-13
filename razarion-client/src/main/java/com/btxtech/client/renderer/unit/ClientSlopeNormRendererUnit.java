@@ -6,14 +6,11 @@ import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
-import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -28,10 +25,6 @@ import javax.inject.Inject;
 @Dependent
 public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     // private Logger logger = Logger.getLogger(ClientSlopeNormRendererUnit.class.getName());
-    @Inject
-    private TerrainTypeService terrainTypeService;
-    @Inject
-    private TerrainUiService terrainUiService;
     @Inject
     private GameCanvas gameCanvas;
     @Inject
@@ -54,12 +47,12 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     }
 
     @Override
-    protected void fillBuffer(SlopeUi slopeUi, GroundUi groundUi) {
+    protected void fillBuffer(SlopeUi slopeUi) {
         vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(slopeUi.getVertices(), slopeUi.getNorms()));
     }
 
     @Override
-    protected void draw(SlopeUi slopeUi, GroundUi groundUi) {
+    protected void draw(SlopeUi slopeUi) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());

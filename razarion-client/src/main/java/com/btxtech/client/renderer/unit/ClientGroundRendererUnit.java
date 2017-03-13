@@ -76,7 +76,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.getNormMatrix());
 
-        webGlFacade.setLightUniforms(null, groundUi.getLightConfig());
+        webGlFacade.setLightUniforms(null, groundUi.getGroundLightConfig());
         webGlFacade.uniform1f("uTopBmDepth", groundUi.getTopBmDepth());
         webGlFacade.uniform1f("uBottomBmDepth", groundUi.getBottomBmDepth());
 

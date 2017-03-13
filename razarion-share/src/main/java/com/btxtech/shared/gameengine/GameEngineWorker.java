@@ -154,7 +154,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
             planetService.initialise(gameEngineConfig.getPlanetConfig());
             planetService.addTickListener(this);
-            sendToClient(GameEngineControlPackage.Command.INITIALIZED, terrainService.createGroundVertexList(), terrainService.getSlopes());
+            sendToClient(GameEngineControlPackage.Command.INITIALIZED, terrainService.createGroundVertexList(), terrainService.getSlopes(), terrainService.getWater());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));

@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
+import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -53,6 +54,7 @@ public class TerrainUiService {
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
     private Map<Integer, SlopeUi> slopeUis = new HashMap<>();
     private GroundUi groundUi;
+    private WaterUi waterUi;
 
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
@@ -64,21 +66,23 @@ public class TerrainUiService {
         slopeUis.clear();
         for (TerrainSlopePosition terrainSlopePosition : gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions()) {
             int id = terrainSlopePosition.getSlopeId();
-            slopeUis.put(id, new SlopeUi(id, terrainTypeService.getSlopeSkeleton(id), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getWaterLevel()));
+            slopeUis.put(id, new SlopeUi(id, terrainTypeService.getSlopeSkeleton(id), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getWaterLevel(), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig()));
         }
         init(gameUiControlInitEvent.getGameUiControlConfig());
         groundUi = new GroundUi(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig());
+        waterUi = new WaterUi(gameUiControlInitEvent.getGameUiControlConfig().getVisualConfig());
     }
 
     public void init(GameUiControlConfig gameUiControlConfig) {
         terrainService.init(gameUiControlConfig.getGameEngineConfig().getPlanetConfig(), terrainTypeService);
     }
 
-    public void setBuffers(GroundUi groundUi, Collection<SlopeUi> slopeUis) {
+    public void setBuffers(GroundUi groundUi, Collection<SlopeUi> slopeUis, WaterUi waterUi) {
         this.groundUi.setBuffers(groundUi);
         for (SlopeUi slopeUi : slopeUis) {
             this.slopeUis.get(slopeUi.getId()).setBuffers(slopeUi);
         }
+        this.waterUi.setBuffers(waterUi);
     }
 
     public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
@@ -108,20 +112,8 @@ public class TerrainUiService {
         return groundUi;
     }
 
-    public Water getWater() {
-        return terrainService.getWater();
-    }
-
-    public double getWaterAnimation() {
-        return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
-    }
-
-    public double getWaterAnimation2() {
-        return getWaterAnimation(System.currentTimeMillis(), 2000, 500);
-    }
-
-    private double getWaterAnimation(long millis, int durationMs, int offsetMs) {
-        return Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT);
+    public WaterUi getWaterUi() {
+        return waterUi;
     }
 
     public List<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {
@@ -134,8 +126,8 @@ public class TerrainUiService {
     }
 
     public double calculateLandWaterProportion(Rectangle2D viewField) {
-        if (getWater().isValid()) {
-            return 1.0 - getWater().calculateAabb().coverRatio(viewField);
+        if (waterUi.isValid()) {
+            return 1.0 - waterUi.getAabb().coverRatio(viewField);
         } else {
             return 0;
         }

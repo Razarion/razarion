@@ -8,12 +8,8 @@ import com.btxtech.shared.dto.LightConfig;
  * Created by Beat
  * 13.03.2017.
  */
-public class GroundUi {
+public class GroundUi extends TerrainUi {
     private GroundSkeletonConfig groundSkeletonConfig;
-    private int elementCount;
-    private Float32ArrayEmu vertices;
-    private Float32ArrayEmu norms;
-    private Float32ArrayEmu tangents;
     private Float32ArrayEmu splattings;
 
     public GroundUi(GroundSkeletonConfig groundSkeletonConfig) {
@@ -21,35 +17,8 @@ public class GroundUi {
     }
 
     public GroundUi(int elementCount, Float32ArrayEmu vertices, Float32ArrayEmu norms, Float32ArrayEmu tangents, Float32ArrayEmu splattings) {
-        this.elementCount = elementCount;
-        this.vertices = vertices;
-        this.norms = norms;
-        this.tangents = tangents;
+        super(elementCount, vertices, norms, tangents);
         this.splattings = splattings;
-    }
-
-    public Float32ArrayEmu getVertices() {
-        return vertices;
-    }
-
-    public void setVertices(Float32ArrayEmu vertices) {
-        this.vertices = vertices;
-    }
-
-    public Float32ArrayEmu getNorms() {
-        return norms;
-    }
-
-    public void setNorms(Float32ArrayEmu norms) {
-        this.norms = norms;
-    }
-
-    public Float32ArrayEmu getTangents() {
-        return tangents;
-    }
-
-    public void setTangents(Float32ArrayEmu tangents) {
-        this.tangents = tangents;
     }
 
     public Float32ArrayEmu getSplattings() {
@@ -96,11 +65,7 @@ public class GroundUi {
         return groundSkeletonConfig.getBottomBmScale();
     }
 
-    public int getElementCount() {
-        return elementCount;
-    }
-
-    public LightConfig getLightConfig() {
+    public LightConfig getGroundLightConfig() {
         return groundSkeletonConfig.getLightConfig();
     }
 
@@ -113,10 +78,7 @@ public class GroundUi {
     }
 
     public void setBuffers(GroundUi groundUi) {
-        elementCount = groundUi.getElementCount();
-        vertices = groundUi.getVertices();
-        norms = groundUi.getNorms();
-        tangents = groundUi.getTangents();
+        super.setBuffers(groundUi);
         splattings = groundUi.getSplattings();
     }
 }
