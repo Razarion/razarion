@@ -18,10 +18,12 @@ import java.util.logging.Logger;
 public class FilePropertiesService {
     private static final String PROPERTY_FILE_NAME = "razarion.properties";
     private static final String FACEBOOK_APP_ID = "facebook.appid";
+    private static final String DEVELOPER_MODE = "system.dev-mode";
     private Logger logger = Logger.getLogger(FilePropertiesService.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     private Properties properties;
+    private boolean developerMode;
 
     @PostConstruct
     public void postConstruct() {
@@ -31,6 +33,10 @@ public class FilePropertiesService {
             Properties tmpProperties = new Properties();
             tmpProperties.load(new FileInputStream(file));
             properties = tmpProperties;
+            developerMode = Boolean.parseBoolean(properties.getProperty(DEVELOPER_MODE));
+            if (developerMode) {
+                logger.warning("Running in developer mode");
+            }
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }
@@ -38,6 +44,10 @@ public class FilePropertiesService {
 
     public String getFacebookAppId() {
         return getPropertyThrows(FACEBOOK_APP_ID);
+    }
+
+    public boolean isDeveloperMode() {
+        return developerMode;
     }
 
     private String getPropertyThrows(String key) {

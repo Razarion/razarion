@@ -2,9 +2,12 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.web.Session;
 import com.btxtech.shared.dto.LogRecordInfo;
+import com.btxtech.shared.dto.StackTraceElementLogInfo;
+import com.btxtech.shared.dto.ThrownLogInfo;
 import com.btxtech.shared.rest.LoggingProvider;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -14,9 +17,14 @@ import java.util.logging.Logger;
  * 18.02.2017.
  */
 public class LoggingProviderImpl implements LoggingProvider {
+    //    private final static String TEMP_DIR = "C:\\Users\\Beat\\AppData\\Local\\Temp";/
+//    private final static String MODULE_NAME = "com.btxtech.Razarion-Client";
+//    private final static String SIMPLE_MODULE_NAME = "razarion_client";
     private Logger logger = Logger.getLogger(LoggingProviderImpl.class.getName());
     @Inject
     private Session session;
+    // @Inject
+    // private FilePropertiesService filePropertiesService;
 
     @Override
     public void simpleLogger(String logString) {
@@ -28,11 +36,8 @@ public class LoggingProviderImpl implements LoggingProvider {
     public void jsonLogger(LogRecordInfo logRecordInfo) {
         try {
             LogRecord logRecord = toLogRecord(logRecordInfo);
-            logger.log(logRecord.getLevel(), "jsonLogger: SessionId: " + session.getId() + " User " + session.getUser());
+            logger.log(logRecord.getLevel(), "jsonLogger: GWT Modul: " + logRecordInfo.getGwtModuleName() + " SessionId: " + session.getId() + " User " + session.getUser());
             logger.log(logRecord);
-            if (logRecordInfo.getThrown() != null) {
-                logger.severe(logRecordInfo.getThrown());
-            }
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Logging from client failed. LogRecordInfo: " + logRecordInfo, throwable);
         }
@@ -54,7 +59,105 @@ public class LoggingProviderImpl implements LoggingProvider {
 
         logRecord.setMillis(Long.parseLong(logRecordInfo.getMillis()));
         logRecord.setLoggerName(logRecordInfo.getLoggerName());
+        logRecord.setThrown(handleThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtStrongName()));
         return logRecord;
     }
+
+    private Throwable handleThrown(ThrownLogInfo thrownLogInfo, String strongName) {
+        Throwable throwable = setupThrown(thrownLogInfo);
+        if (throwable == null) {
+            return null;
+        }
+//        import com.google.gwt.core.server.StackTraceDeobfuscator;
+//        StackTraceDeobfuscator stackTraceDeobfuscator = getStackTraceDeobfuscator();
+//        if (stackTraceDeobfuscator != null) {
+//            stackTraceDeobfuscator.deobfuscateStackTrace(throwable, strongName);
+//        }
+        return throwable;
+    }
+
+    private Throwable setupThrown(ThrownLogInfo thrownLogInfo) {
+        if (thrownLogInfo == null) {
+            return null;
+        }
+        Throwable throwable;
+        if (thrownLogInfo.getCause() != null) {
+            throwable = new Throwable(thrownLogInfo.getClassInfo() + ": " + thrownLogInfo.getMessage(), setupThrown(thrownLogInfo.getCause()));
+        } else {
+            throwable = new Throwable(thrownLogInfo.getClassInfo() + ": " + thrownLogInfo.getMessage());
+        }
+        throwable.setStackTrace(setupStackTrace(thrownLogInfo.getStackTrace()));
+        return throwable;
+    }
+
+    private StackTraceElement[] setupStackTrace(List<StackTraceElementLogInfo> elementLogInfos) {
+        if (elementLogInfos == null || elementLogInfos.isEmpty()) {
+            return null;
+        }
+        StackTraceElement[] stackTraceElements = new StackTraceElement[elementLogInfos.size()];
+        for (int i = 0; i < elementLogInfos.size(); i++) {
+            StackTraceElementLogInfo elementLogInfo = elementLogInfos.get(i);
+            stackTraceElements[i] = new StackTraceElement(elementLogInfo.getDeclaringClass(), elementLogInfo.getMethodName(), elementLogInfo.getFileName(), elementLogInfo.getLineNumber());
+        }
+        return stackTraceElements;
+    }
+
+//    private StackTraceDeobfuscator getStackTraceDeobfuscator() {
+//        if (!filePropertiesService.isDeveloperMode()) {
+//            return null;
+//        }
+//
+//        String filePath = getFilePath();
+//        if (filePath == null) {
+//            return null;
+//        }
+//        return new StackTraceDeobfuscator() {
+//            protected InputStream openInputStream(String fileName) throws IOException {
+//                return new FileInputStream(new File(filePath, fileName));
+//            }
+//        };
+//    }
+
+
+//    private String getFilePath() {
+//        try {
+//            File[] tmpFiles = new File(TEMP_DIR).listFiles();
+//            if (tmpFiles == null) {
+//                System.out.println("Invalid temp file: " + TEMP_DIR);
+//                return null;
+//            }
+//
+//            File last = null;
+//            for (File f : tmpFiles) {
+//                if (f.getName().startsWith("gwt-codeserver-") && (last == null || f.lastModified() > last.lastModified())) {
+//                    last = f;
+//                }
+//            }
+//
+//            File lastCompile = null;
+//            if (last != null) {
+//                File[] moduleFiles = new File(last.getPath(), MODULE_NAME).listFiles();
+//                if (moduleFiles == null) {
+//                    System.out.println("Invalid module file: " + new File(last.getPath(), MODULE_NAME));
+//                    return null;
+//                }
+//                for (File f : moduleFiles) {
+//                    if (f.getName().startsWith("compile-") && (lastCompile == null || f.lastModified() > lastCompile.lastModified())) {
+//                        File file = new File(f.getPath() + "\\extras\\" + SIMPLE_MODULE_NAME + "\\symbolMaps\\");
+//                        if (file.exists()) {
+//                            lastCompile = f;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if (lastCompile != null) {
+//                return lastCompile.getPath() + "\\extras\\" + SIMPLE_MODULE_NAME + "\\symbolMaps\\";
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
 }

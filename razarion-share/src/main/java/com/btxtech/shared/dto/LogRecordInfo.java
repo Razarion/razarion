@@ -1,8 +1,5 @@
 package com.btxtech.shared.dto;
 
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-
 /**
  * Created by Beat
  * 21.02.2017.
@@ -15,8 +12,10 @@ public class LogRecordInfo {
     private String message;
     private int threadID;
     private String millis;
-    private String thrown;
+    private ThrownLogInfo thrown;
     private String loggerName;
+    private String gwtStrongName;
+    private String gwtModuleName;
 
     public String getLevel() {
         return level;
@@ -74,11 +73,11 @@ public class LogRecordInfo {
         this.millis = millis;
     }
 
-    public String getThrown() {
+    public ThrownLogInfo getThrown() {
         return thrown;
     }
 
-    public void setThrown(String thrown) {
+    public void setThrown(ThrownLogInfo thrown) {
         this.thrown = thrown;
     }
 
@@ -88,6 +87,22 @@ public class LogRecordInfo {
 
     public void setLoggerName(String loggerName) {
         this.loggerName = loggerName;
+    }
+
+    public String getGwtStrongName() {
+        return gwtStrongName;
+    }
+
+    public void setGwtStrongName(String gwtStrongName) {
+        this.gwtStrongName = gwtStrongName;
+    }
+
+    public String getGwtModuleName() {
+        return gwtModuleName;
+    }
+
+    public void setGwtModuleName(String gwtModuleName) {
+        this.gwtModuleName = gwtModuleName;
     }
 
     @Override

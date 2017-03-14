@@ -31,12 +31,6 @@
             <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- GWT -->
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <version>${gwt.version}</version>
-        </dependency>
         <!-- JPA meta model generator -->
         <dependency>
             <groupId>org.hibernate</groupId>
