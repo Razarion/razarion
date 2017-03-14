@@ -16,7 +16,7 @@ public interface DevToolRenderUtil {
     }
 
     static List<Double> toDoubles(Float32ArrayEmu vertices) {
-        throw new UnsupportedOperationException();
+        return ((DevToolFloat32ArrayEmu) vertices).getDoubles();
     }
 
     static List<Double> setupNormDoubles(Float32ArrayEmu vertices, Float32ArrayEmu norms) {
