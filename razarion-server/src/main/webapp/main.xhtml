@@ -9,7 +9,7 @@
     <!-- Errai configuration                                          -->
     <script type="text/javascript">erraiBusRemoteCommunicationEnabled = false;</script>
     <script type="text/javascript">erraiJaxRsJacksonMarshallingActive = true;</script>
-    <meta name="gwt:property" content="locale=de_DE"/>
+    <meta name="gwt:property" content="locale=#{mainPageBean.language}"/>
     <script type="text/javascript" language="javascript" src="razarion_client/razarion_client.nocache.js"></script>
 </h:head>
 <h:body styleClass="main-page">
@@ -17,7 +17,7 @@
         window.RAZ_startTime = new Date().getTime();
         window.fbAsyncInit = function () {
             FB.init({
-                appId: '195335357236873',
+                appId: '#{mainPageBean.facebookAppId}',
                 // appId: '321838644575219', // Test
                 xfbml: true,
                 version: 'v2.8'

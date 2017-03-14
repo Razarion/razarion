@@ -34,6 +34,7 @@ public class HttpSessionMonitor implements HttpSessionListener {
                 logger.warning("Session already set: " + session);
             }
             session.setId(se.getSession().getId());
+            session.setLocale(httpRequest.getLocale());
             trackerPersistence.onNewSession(httpRequest);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);

@@ -4,6 +4,7 @@ import com.btxtech.server.user.User;
 
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * Created by Beat
@@ -13,6 +14,7 @@ import java.io.Serializable;
 public class Session implements Serializable {
     private String id;
     private User user;
+    private Locale locale;
 
     public String getId() {
         return id;
@@ -28,6 +30,14 @@ public class Session implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     @Override
