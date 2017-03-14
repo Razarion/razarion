@@ -25,6 +25,11 @@
 
     <set-property name='user.agent' value='safari' />
 
+    <!--<set-property name="compiler.emulatedStack" value="true"/>-->
+    <!--<set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="true"/>-->
+    <!--<set-configuration-property name="compiler.emulatedStack.recordFileNames" value="true"/>-->
+    <!--<set-property name="compiler.useSourceMaps" value="true" />-->
+
     <define-linker name="webworkerlinker" class="com.btxtech.linker.WorkerLinker"/>
     <add-linker name="webworkerlinker"/>
 </module>

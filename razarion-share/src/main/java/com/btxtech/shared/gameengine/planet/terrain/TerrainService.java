@@ -13,6 +13,7 @@ import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.VertexList;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -43,6 +44,8 @@ public class TerrainService {
     private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private ItemTypeService itemTypeService;
     @Inject
     private ObstacleContainer obstacleContainer;
     private Water water;
@@ -180,7 +183,8 @@ public class TerrainService {
         return false;
     }
 
-    public boolean overlap(Collection<DecimalPosition> positions, BaseItemType baseItemType) {
+    public boolean overlap(Collection<DecimalPosition> positions, int baseItemTypeId) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
         for (DecimalPosition position : positions) {
             if (overlap(position, baseItemType.getPhysicalAreaConfig().getRadius())) {
                 return true;

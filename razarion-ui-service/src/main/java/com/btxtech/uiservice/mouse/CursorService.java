@@ -119,7 +119,7 @@ public abstract class CursorService {
         } else {
             Collection<SyncBaseItemSimpleDto> movables = selectionHandler.getOwnSelection().getMovables();
             if (!movables.isEmpty()) {
-                setCursor(CursorType.GO, !terrainUiService.overlap(terrainPosition));
+                terrainUiService.overlap(terrainPosition, overlaps -> setCursor(CursorType.GO, !overlaps));
             } else {
                 setPointerCursor();
             }

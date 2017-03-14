@@ -11,8 +11,11 @@ import com.btxtech.shared.datatypes.Vertex;
 public class InGamePositionTipVisualization extends InGameTipVisualization {
     private Vertex position;
 
-    public InGamePositionTipVisualization(Vertex position, double moveDistance, long duration, double cornerLength, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId) {
+    public InGamePositionTipVisualization(double moveDistance, long duration, double cornerLength, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId) {
         super(cornerLength, moveDistance, duration, cornerColor, shape3DId, outOfViewShape3DId);
+    }
+
+    public void setPosition(Vertex position) {
         this.position = position;
     }
 
@@ -33,6 +36,6 @@ public class InGamePositionTipVisualization extends InGameTipVisualization {
 
     @Override
     boolean checkReady() {
-        return true;
+        return position != null;
     }
 }

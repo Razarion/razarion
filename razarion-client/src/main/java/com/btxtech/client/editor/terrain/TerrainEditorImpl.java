@@ -273,9 +273,10 @@ public class TerrainEditorImpl implements TerrainEditor {
         PlanetConfig planetConfig = gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig();
         planetConfig.setTerrainSlopePositions(modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList()));
         planetConfig.setTerrainObjectPositions(modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList()));
-        terrainUiService.init(gameUiControl.getGameUiControlConfig());
+        // TODO terrainUiService.init(gameUiControl.getGameUiControlConfig());
         renderService.setup();
         modalDialogManager.showMessageDialog("Attention", "Terrain is overridden. Reload browser. Reopen editor will fail!");
+        throw new UnsupportedOperationException("FIXME: The required data is in the worker now");
     }
 
     public void save() {

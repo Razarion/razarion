@@ -10,19 +10,15 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.shared.datatypes.terrain.WaterUi;
-import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.Water;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
@@ -35,6 +31,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -42,11 +41,13 @@ import java.util.Map;
  */
 @Singleton
 public class TerrainUiService {
+    private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private TerrainService terrainService;
+    @Inject
+    private GameEngineControl gameEngineControl;
     private static final double HIGHEST_POINT_IN_VIEW = 20;
     private static final double LOWEST_POINT_IN_VIEW = -2;
     private double highestPointInView; // Should be calculated
@@ -55,11 +56,15 @@ public class TerrainUiService {
     private Map<Integer, SlopeUi> slopeUis = new HashMap<>();
     private GroundUi groundUi;
     private WaterUi waterUi;
+    private List<TerrainObjectPosition> terrainObjectPositions;
+    private MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
+    private MapCollection<Line3d, Consumer<Vertex>> worldPickRayConsumers = new MapCollection<>();
+    private MapCollection<DecimalPosition, Consumer<Boolean>> overlapConsumers = new MapCollection<>();
+    private Map<Integer, Consumer<Boolean>> overlapTypeConsumers = new HashMap<>();
 
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
         lowestPointInView = LOWEST_POINT_IN_VIEW;
-        terrainService = new TerrainService();
     }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
@@ -68,13 +73,9 @@ public class TerrainUiService {
             int id = terrainSlopePosition.getSlopeId();
             slopeUis.put(id, new SlopeUi(id, terrainTypeService.getSlopeSkeleton(id), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getWaterLevel(), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig()));
         }
-        init(gameUiControlInitEvent.getGameUiControlConfig());
         groundUi = new GroundUi(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig());
         waterUi = new WaterUi(gameUiControlInitEvent.getGameUiControlConfig().getVisualConfig());
-    }
-
-    public void init(GameUiControlConfig gameUiControlConfig) {
-        terrainService.init(gameUiControlConfig.getGameEngineConfig().getPlanetConfig(), terrainTypeService);
+        terrainObjectPositions = gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions();
     }
 
     public void setBuffers(GroundUi groundUi, Collection<SlopeUi> slopeUis, WaterUi waterUi) {
@@ -87,15 +88,18 @@ public class TerrainUiService {
 
     public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
         terrainObjectConfigModelMatrices = new MapCollection<>();
-        for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainService.getTerrainObjectPositions().getMap().entrySet()) {
-            for (TerrainObjectPosition objectPosition : entry.getValue()) {
-                try {
-                    int z = (int) terrainService.getInterpolatedTerrainTriangle(new DecimalPosition(objectPosition.getPosition())).getHeight();
-                    Matrix4 model = objectPosition.createModelMatrix(z);
-                    terrainObjectConfigModelMatrices.put(entry.getKey(), new ModelMatrices(model));
-                } catch (Throwable t) {
-                    exceptionHandler.handleException("Placing terrain object failed", t);
-                }
+        for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
+            try {
+                getTerrainZ(terrainObjectPosition.getPosition(), (position, z) -> {
+                    if (z != null) {
+                        Matrix4 model = terrainObjectPosition.createModelMatrix(z);
+                        terrainObjectConfigModelMatrices.put(terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()), new ModelMatrices(model));
+                    } else {
+                        logger.warning("TerrainUiService: Can not place TerrainObjectPosition with id: " + terrainObjectPosition.getId());
+                    }
+                });
+            } catch (Throwable t) {
+                exceptionHandler.handleException("Placing terrain object failed", t);
             }
         }
     }
@@ -138,26 +142,89 @@ public class TerrainUiService {
     }
 
     public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {
-        return terrainService.getTerrainObjectPositions();
+        throw new UnsupportedOperationException("FIXME: The required data is in the worker now");
+        // return terrainService.getTerrainObjectPositions();
     }
 
-    public boolean overlap(DecimalPosition position) {
-        return terrainService.overlap(position);
+    public void overlap(DecimalPosition position, Consumer<Boolean> callback) {
+        boolean contains = overlapConsumers.containsKey(position);
+        overlapConsumers.put(position, callback);
+        if (contains) {
+            return;
+        }
+        gameEngineControl.askOverlap(position);
     }
 
-    public boolean overlap(Collection<DecimalPosition> positions, BaseItemType baseItemType) {
-        return terrainService.overlap(positions, baseItemType);
+    public void overlap(Collection<DecimalPosition> positions, BaseItemType baseItemType, Consumer<Boolean> callback) {
+        int uuid = MathHelper.generateSimpleUuid();
+        overlapTypeConsumers.put(uuid, callback);
+        gameEngineControl.askOverlapType(uuid, positions, baseItemType.getId());
     }
 
-    public Vertex getPosition3d(DecimalPosition absoluteXY) {
-        return new Vertex(absoluteXY, terrainService.getInterpolatedTerrainTriangle(absoluteXY).getHeight());
-    }
-
-    public Vertex calculatePositionGroundMesh(Line3d worldPickRay) {
-        return terrainService.calculatePositionGroundMesh(worldPickRay);
+    public void calculatePositionGroundMesh(Line3d worldPickRay, Consumer<Vertex> positionConsumer) {
+        boolean contains = worldPickRayConsumers.containsKey(worldPickRay);
+        worldPickRayConsumers.put(worldPickRay, positionConsumer);
+        if (contains) {
+            return;
+        }
+        gameEngineControl.askTerrainPosition(worldPickRay);
     }
 
     public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
-        terrainService.overrideSlopeSkeletonConfig(slopeSkeletonConfig);
+        // terrainService.overrideSlopeSkeletonConfig(slopeSkeletonConfig);
+        throw new UnsupportedOperationException("FIXME: The required data is in the worker now");
     }
+
+    public void getTerrainZ(DecimalPosition position, BiConsumer<DecimalPosition, Double> callback) {
+        boolean contains = terrainZConsumers.containsKey(position);
+        terrainZConsumers.put(position, callback);
+        if (contains) {
+            return;
+        }
+        gameEngineControl.askTerrainZ(position);
+    }
+
+    public void getTerrainPosition(DecimalPosition position, Consumer<Vertex> callback) {
+        getTerrainZ(position, (position1, z) -> callback.accept(new Vertex(position, z)));
+    }
+
+    public void onTerrainZAnswer(DecimalPosition position, double z) {
+        Collection<BiConsumer<DecimalPosition, Double>> consumers = terrainZConsumers.remove(position);
+        for (BiConsumer<DecimalPosition, Double> consumer : consumers) {
+            consumer.accept(position, z);
+        }
+    }
+
+    public void onTerrainZAnswerFail(DecimalPosition position) {
+        Collection<BiConsumer<DecimalPosition, Double>> consumers = terrainZConsumers.remove(position);
+        for (BiConsumer<DecimalPosition, Double> consumer : consumers) {
+            consumer.accept(position, null);
+        }
+    }
+
+    public void onTerrainPositionPickRayAnswer(Line3d worldPickRay, Vertex terrainPosition) {
+        Collection<Consumer<Vertex>> consumers = worldPickRayConsumers.remove(worldPickRay);
+        for (Consumer<Vertex> consumer : consumers) {
+            consumer.accept(terrainPosition);
+        }
+    }
+
+    public void onTerrainPositionPickRayAnswerFail(Line3d worldPickRay) {
+        Collection<Consumer<Vertex>> consumers = worldPickRayConsumers.remove(worldPickRay);
+        for (Consumer<Vertex> consumer : consumers) {
+            consumer.accept(null);
+        }
+    }
+
+    public void onOverlapAnswer(DecimalPosition position, boolean overlap) {
+        Collection<Consumer<Boolean>> consumers = overlapConsumers.remove(position);
+        for (Consumer<Boolean> consumer : consumers) {
+            consumer.accept(overlap);
+        }
+    }
+
+    public void onOverlapTypeAnswer(int uuid, boolean overlaps) {
+        overlapTypeConsumers.remove(uuid).accept(overlaps);
+    }
+
 }

@@ -4,7 +4,6 @@ import com.btxtech.client.editor.renderer.TerrainMarkerRenderTask;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -63,11 +62,12 @@ public class HelperSideBar extends LeftSideBarContent {
         if (rectX.getValue() != null && rectY.getValue() != null && rectWidth.getValue() != null && rectHeight.getValue() != null && rectWidth.getValue() > 0.0 && rectHeight.getValue() > 0.0) {
             Rectangle2D rect = new Rectangle2D(rectX.getValue(), rectY.getValue(), rectWidth.getValue(), rectHeight.getValue());
             List<Vertex> polygon = new ArrayList<>();
-            polygon.add(terrainUiService.getPosition3d(rect.cornerBottomLeft()));
-            polygon.add(terrainUiService.getPosition3d(rect.cornerBottomRight()));
-            polygon.add(terrainUiService.getPosition3d(rect.cornerTopRight()));
-            polygon.add(terrainUiService.getPosition3d(rect.cornerTopLeft()));
+            // TODO polygon.add(terrainUiService.getPosition3d(rect.cornerBottomLeft()));
+            // TODO polygon.add(terrainUiService.getPosition3d(rect.cornerBottomRight()));
+            // TODO polygon.add(terrainUiService.getPosition3d(rect.cornerTopRight()));
+            // TODO polygon.add(terrainUiService.getPosition3d(rect.cornerTopLeft()));
             terrainMarkerRenderTask.showPolygon(polygon);
+            throw new UnsupportedOperationException("FIXME: The required data is in the worker now");
         } else {
             terrainMarkerRenderTask.hidePolygon();
         }

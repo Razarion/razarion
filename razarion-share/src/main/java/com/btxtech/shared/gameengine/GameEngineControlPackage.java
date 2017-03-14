@@ -49,7 +49,18 @@ public class GameEngineControlPackage {
         QUEST_PASSED,
         // Projectile
         PROJECTILE_FIRED,
-        PROJECTILE_DETONATION
+        PROJECTILE_DETONATION,
+        // Terrain
+        SINGLE_Z_TERRAIN,
+        SINGLE_Z_TERRAIN_ANSWER,
+        SINGLE_Z_TERRAIN_ANSWER_FAIL,
+        TERRAIN_PICK_RAY,
+        TERRAIN_PICK_RAY_ANSWER,
+        TERRAIN_PICK_RAY_ANSWER_FAIL,
+        TERRAIN_OVERLAP,
+        TERRAIN_OVERLAP_ANSWER,
+        TERRAIN_OVERLAP_TYPE,
+        TERRAIN_OVERLAP_TYPE_ANSWER
     }
 
     private Command command;

@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
-import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.GroupSelectionFrame;
@@ -30,6 +29,7 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -80,49 +80,51 @@ public class TerrainMouseHandler {
     public void onMouseMove(int x, int y, int width, int height, boolean primaryButtonDown) {
         try {
             terrainScrollHandler.handleMouseMoveScroll(x, y, width, height);
+            setupTerrainPosition(x, y, width, height, terrainPosition -> {
+                if (terrainPosition == null) {
+                    return;
+                }
 
-            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
-            if (terrainEditor != null) {
-                terrainEditor.onMouseMove(terrainPosition);
-                return;
-            }
+                if (terrainEditor != null) {
+                    terrainEditor.onMouseMove(terrainPosition);
+                    return;
+                }
 
-            if (baseItemPlacerService.isActive()) {
-                baseItemPlacerService.onMouseMoveEvent(terrainPosition);
-                return;
-            }
+                if (baseItemPlacerService.isActive()) {
+                    baseItemPlacerService.onMouseMoveEvent(terrainPosition);
+                    return;
+                }
 
-            if (primaryButtonDown) {
-                if (groupSelectionFrame != null) {
-                    groupSelectionFrame.onMove(terrainPosition.toXY());
-                    renderTask.onMove(groupSelectionFrame);
+                if (primaryButtonDown) {
+                    if (groupSelectionFrame != null) {
+                        groupSelectionFrame.onMove(terrainPosition.toXY());
+                        renderTask.onMove(groupSelectionFrame);
+                    } else {
+                        logger.warning("TerrainMouseHandler.onMouseMove(): groupSelectionFrame != null");
+                    }
                 } else {
-                    logger.warning("TerrainMouseHandler.onMouseMove(): groupSelectionFrame != null");
+                    SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
+                    if (syncBaseItem != null) {
+                        cursorService.handleMouseOverBaseItem(syncBaseItem, terrainPosition.toXY());
+                        itemMarkerService.onHover(syncBaseItem);
+                        return;
+                    }
+                    SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
+                    if (syncResourceItem != null) {
+                        cursorService.handleMouseOverResourceItem();
+                        itemMarkerService.onHover(syncResourceItem);
+                        return;
+                    }
+                    SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
+                    if (syncBoxItem != null) {
+                        cursorService.handleMouseOverBoxItem();
+                        itemMarkerService.onHover(syncBoxItem);
+                        return;
+                    }
+                    cursorService.handleMouseOverTerrain(terrainPosition.toXY());
+                    itemMarkerService.onHover(null);
                 }
-            } else {
-                SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
-                if (syncBaseItem != null) {
-                    cursorService.handleMouseOverBaseItem(syncBaseItem, terrainPosition.toXY());
-                    itemMarkerService.onHover(syncBaseItem);
-                    return;
-                }
-                SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
-                if (syncResourceItem != null) {
-                    cursorService.handleMouseOverResourceItem();
-                    itemMarkerService.onHover(syncResourceItem);
-                    return;
-                }
-                SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
-                if (syncBoxItem != null) {
-                    cursorService.handleMouseOverBoxItem();
-                    itemMarkerService.onHover(syncBoxItem);
-                    return;
-                }
-                cursorService.handleMouseOverTerrain(terrainPosition.toXY());
-                itemMarkerService.onHover(null);
-            }
-        } catch (NoInterpolatedTerrainTriangleException e) {
-            logger.warning(e.getMessage());
+            });
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -138,72 +140,75 @@ public class TerrainMouseHandler {
 
     public void onMouseDown(int x, int y, int width, int height, boolean primaryButtonPressed, boolean secondaryButtonPressed, boolean middleButtonPressed, boolean ctrlKey, boolean shiftKey) {
         try {
-            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
-            if (shiftKey) {
-                logger.severe("Terrain Position: " + terrainPosition);
-            }
-            if (terrainEditor != null) {
-                terrainEditor.onMouseDown(terrainPosition);
-                return;
-            }
+            setupTerrainPosition(x, y, width, height, terrainPosition -> {
+                if (terrainPosition == null) {
+                    return;
+                }
 
-            if (baseItemPlacerService.isActive()) {
+                if (shiftKey) {
+                    logger.severe("Terrain Position: " + terrainPosition);
+                }
+                if (terrainEditor != null) {
+                    terrainEditor.onMouseDown(terrainPosition);
+                    return;
+                }
+
+                if (baseItemPlacerService.isActive()) {
+                    if (primaryButtonPressed) {
+                        baseItemPlacerService.onMouseDownEvent(terrainPosition);
+                    }
+                    return;
+                }
+
                 if (primaryButtonPressed) {
-                    baseItemPlacerService.onMouseDownEvent(terrainPosition);
-                }
-                return;
-            }
-
-            if (primaryButtonPressed) {
-                groupSelectionFrame = new GroupSelectionFrame(terrainPosition.toXY());
-                renderTask.startGroupSelection(groupSelectionFrame);
-            } else if (secondaryButtonPressed) {
-                if (!selectionHandler.hasOwnSelection()) {
-                    return;
-                }
-                SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
-                if (syncBaseItem != null) {
-                    if (baseItemUiService.isMyOwnProperty(syncBaseItem)) {
-                        if (!syncBaseItem.checkBuildup()) {
-                            Collection<SyncBaseItemSimpleDto> builders = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
-                            if (!builders.isEmpty()) {
-                                audioService.onCommandSent();
-                                gameEngineControl.finalizeBuildCmd(builders, syncBaseItem);
+                    groupSelectionFrame = new GroupSelectionFrame(terrainPosition.toXY());
+                    renderTask.startGroupSelection(groupSelectionFrame);
+                } else if (secondaryButtonPressed) {
+                    if (!selectionHandler.hasOwnSelection()) {
+                        return;
+                    }
+                    SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
+                    if (syncBaseItem != null) {
+                        if (baseItemUiService.isMyOwnProperty(syncBaseItem)) {
+                            if (!syncBaseItem.checkBuildup()) {
+                                Collection<SyncBaseItemSimpleDto> builders = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
+                                if (!builders.isEmpty()) {
+                                    audioService.onCommandSent();
+                                    gameEngineControl.finalizeBuildCmd(builders, syncBaseItem);
+                                }
+                            }
+                        } else {
+                            if (baseItemUiService.isMyEnemy(syncBaseItem)) {
+                                Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
+                                if (!attackers.isEmpty()) {
+                                    audioService.onCommandSent();
+                                    gameEngineControl.attackCmd(attackers, syncBaseItem);
+                                }
                             }
                         }
-                    } else {
-                        if (baseItemUiService.isMyEnemy(syncBaseItem)) {
-                            Collection<SyncBaseItemSimpleDto> attackers = selectionHandler.getOwnSelection().getAttackers(syncBaseItem);
-                            if (!attackers.isEmpty()) {
-                                audioService.onCommandSent();
-                                gameEngineControl.attackCmd(attackers, syncBaseItem);
-                            }
+                        return;
+                    }
+                    SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
+                    if (syncResourceItem != null) {
+                        Collection<SyncBaseItemSimpleDto> harvesters = selectionHandler.getOwnSelection().getHarvesters();
+                        if (!harvesters.isEmpty()) {
+                            audioService.onCommandSent();
+                            gameEngineControl.harvestCmd(harvesters, syncResourceItem);
                         }
+                        return;
                     }
-                    return;
-                }
-                SyncResourceItemSimpleDto syncResourceItem = resourceUiService.findItemAtPosition(terrainPosition.toXY());
-                if (syncResourceItem != null) {
-                    Collection<SyncBaseItemSimpleDto> harvesters = selectionHandler.getOwnSelection().getHarvesters();
-                    if (!harvesters.isEmpty()) {
-                        audioService.onCommandSent();
-                        gameEngineControl.harvestCmd(harvesters, syncResourceItem);
+                    SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
+                    if (syncBoxItem != null) {
+                        Collection<SyncBaseItemSimpleDto> pickers = selectionHandler.getOwnSelection().getMovables();
+                        if (!pickers.isEmpty()) {
+                            audioService.onCommandSent();
+                            gameEngineControl.pickBoxCmd(pickers, syncBoxItem);
+                        }
+                        return;
                     }
-                    return;
+                    executeMoveCommand(terrainPosition.toXY());
                 }
-                SyncBoxItemSimpleDto syncBoxItem = boxUiService.findItemAtPosition(terrainPosition.toXY());
-                if (syncBoxItem != null) {
-                    Collection<SyncBaseItemSimpleDto> pickers = selectionHandler.getOwnSelection().getMovables();
-                    if (!pickers.isEmpty()) {
-                        audioService.onCommandSent();
-                        gameEngineControl.pickBoxCmd(pickers, syncBoxItem);
-                    }
-                    return;
-                }
-                executeMoveCommand(terrainPosition.toXY());
-            }
-        } catch (NoInterpolatedTerrainTriangleException e) {
-            logger.warning(e.getMessage());
+            });
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -211,29 +216,31 @@ public class TerrainMouseHandler {
 
     public void onMouseUp(int x, int y, int width, int height, boolean primaryButtonReleased) {
         try {
-            Vertex terrainPosition = setupTerrainPosition(x, y, width, height);
-
-            if (terrainEditor != null) {
-                terrainEditor.onMouseUp();
-                return;
-            }
-
-            if (primaryButtonReleased) {
-                if (groupSelectionFrame != null) {
-                    renderTask.stop();
-                    groupSelectionFrame.onMove(terrainPosition.toXY());
-                    if (groupSelectionFrame.getRectangle() != null) {
-                        selectionHandler.selectRectangle(groupSelectionFrame.getRectangle());
-                    } else {
-                        selectionHandler.selectPosition(groupSelectionFrame.getStart());
-                    }
-                    groupSelectionFrame = null;
-                } else {
-                    logger.warning("TerrainMouseHandler.onMouseUp(): groupSelectionFrame != null");
+            setupTerrainPosition(x, y, width, height, terrainPosition -> {
+                if (terrainPosition == null) {
+                    return;
                 }
-            }
-        } catch (NoInterpolatedTerrainTriangleException e) {
-            logger.warning(e.getMessage());
+
+                if (terrainEditor != null) {
+                    terrainEditor.onMouseUp();
+                    return;
+                }
+
+                if (primaryButtonReleased) {
+                    if (groupSelectionFrame != null) {
+                        renderTask.stop();
+                        groupSelectionFrame.onMove(terrainPosition.toXY());
+                        if (groupSelectionFrame.getRectangle() != null) {
+                            selectionHandler.selectRectangle(groupSelectionFrame.getRectangle());
+                        } else {
+                            selectionHandler.selectPosition(groupSelectionFrame.getStart());
+                        }
+                        groupSelectionFrame = null;
+                    } else {
+                        logger.warning("TerrainMouseHandler.onMouseUp(): groupSelectionFrame != null");
+                    }
+                }
+            });
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -252,13 +259,13 @@ public class TerrainMouseHandler {
         this.terrainEditor = terrainEditor;
     }
 
-    private Vertex setupTerrainPosition(int x, int y, int width, int height) {
+    private void setupTerrainPosition(int x, int y, int width, int height, Consumer<Vertex> positionConsumer) {
         DecimalPosition webglClipPosition = new DecimalPosition((double) x / (double) width, 1.0 - (double) y / (double) height);
         webglClipPosition = webglClipPosition.multiply(2.0).sub(1, 1);
         Line3d pickRay = projectionTransformation.createPickRay(webglClipPosition);
         Line3d worldPickRay = camera.toWorld(pickRay);
 
-        return terrainUiService.calculatePositionGroundMesh(worldPickRay);
+        terrainUiService.calculatePositionGroundMesh(worldPickRay, positionConsumer);
     }
 
     private void executeMoveCommand(DecimalPosition position) {

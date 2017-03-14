@@ -2,6 +2,8 @@ package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -79,6 +81,11 @@ public class WorkerMarshaller {
             case UPDATE_LEVEL:
             case PERFMON_RESPONSE:
             case INITIALISING_FAILED:
+            case SINGLE_Z_TERRAIN:
+            case TERRAIN_PICK_RAY:
+            case TERRAIN_OVERLAP:
+            case SINGLE_Z_TERRAIN_ANSWER_FAIL:
+            case TERRAIN_PICK_RAY_ANSWER_FAIL:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -93,12 +100,17 @@ public class WorkerMarshaller {
             case BASE_DELETED:
             case SPAWN_BASE_ITEMS:
             case PROJECTILE_DETONATION:
+            case SINGLE_Z_TERRAIN_ANSWER:
+            case TERRAIN_PICK_RAY_ANSWER:
+            case TERRAIN_OVERLAP_ANSWER:
+            case TERRAIN_OVERLAP_TYPE_ANSWER:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
             // Triple JSON data
             case COMMAND_BUILD:
             case PROJECTILE_FIRED:
+            case TERRAIN_OVERLAP_TYPE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
@@ -251,13 +263,48 @@ public class WorkerMarshaller {
             case PERFMON_RESPONSE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 break;
+            case SINGLE_Z_TERRAIN:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
+                break;
+            case SINGLE_Z_TERRAIN_ANSWER:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Double.class));
+                break;
+            case SINGLE_Z_TERRAIN_ANSWER_FAIL:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
+                break;
+            case TERRAIN_PICK_RAY:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Line3d.class));
+                break;
+            case TERRAIN_PICK_RAY_ANSWER:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Line.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Vertex.class));
+                break;
+            case TERRAIN_PICK_RAY_ANSWER_FAIL:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Line.class));
+                break;
+            case TERRAIN_OVERLAP:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
+                break;
+            case TERRAIN_OVERLAP_ANSWER:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Boolean.class));
+                break;
+            case TERRAIN_OVERLAP_TYPE:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), List.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_2), Integer.class));
+                break;
+            case TERRAIN_OVERLAP_TYPE_ANSWER:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Boolean.class));
+                break;
             // Native demarshal terrain buffers
             case INITIALIZED:
                 data.add(demarshallGroundBuffers(array.getObject(DATA_OFFSET_0)));
                 data.add(demarshallSlopeBuffers(array.getObject(DATA_OFFSET_1)));
                 data.add(demarshallWaterBuffers(array.getObject(DATA_OFFSET_2)));
                 break;
-
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);
         }

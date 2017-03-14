@@ -81,7 +81,7 @@ public class ParticlePropertyPanel extends AbstractPropertyPanel<ParticleEmitter
         DOMUtil.removeAllElementChildren(autonomous.getElement()); // Remove placeholder table row from template.
         dataBinder.setModel(particleEmitterSequenceConfig);
         onChange(particleEmitterSequenceConfig);
-        testPosition.setValue(terrainUiService.getPosition3d(terrainScrollHandler.getCurrentViewField().calculateCenter()));
+        // TODO terrain position is in worker now testPosition.setValue(terrainUiService.getPosition3d(terrainScrollHandler.getCurrentViewField().calculateCenter()));
     }
 
     @Override

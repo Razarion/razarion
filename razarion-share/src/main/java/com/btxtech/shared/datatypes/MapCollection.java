@@ -4,41 +4,35 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 /**
  * Created by Beat
  * 09.08.2016.
  */
-public class MapCollection<T, U> {
-    private final Map<T, Collection<U>> map = new HashMap<>();
+public class MapCollection<K, C> {
+    private final Map<K, Collection<C>> map = new HashMap<>();
 
-    public void put(T key, U value) {
-        Collection<U> collection = map.get(key);
-        if (collection == null) {
-            collection = new ArrayList<>();
-            map.put(key, collection);
-        }
+    public void put(K key, C value) {
+        Collection<C> collection = map.computeIfAbsent(key, k -> new ArrayList<>());
         collection.add(value);
     }
 
-    public Collection<U> get(T key) {
+    public Collection<C> get(K key) {
         return map.get(key);
     }
 
-    public Collection<U> getAll() {
-        Collection<U> all = new ArrayList<>();
-        for (Collection<U> list : map.values()) {
+    public Collection<C> getAll() {
+        Collection<C> all = new ArrayList<>();
+        for (Collection<C> list : map.values()) {
             all.addAll(list);
         }
         return all;
     }
 
-    public Collection<U> getSave(T key) {
-        Collection<U> values = get(key);
+    public Collection<C> getSave(K key) {
+        Collection<C> values = get(key);
         if (values != null) {
             return values;
         } else {
@@ -46,16 +40,16 @@ public class MapCollection<T, U> {
         }
     }
 
-    public Map<T, Collection<U>> getMap() {
+    public Map<K, Collection<C>> getMap() {
         return map;
     }
 
-    public void remove(T key) {
-        map.remove(key);
+    public Collection<C> remove(K key) {
+        return map.remove(key);
     }
 
-    public void remove(T key, U value) {
-        Collection<U> collection = map.get(key);
+    public void remove(K key, C value) {
+        Collection<C> collection = map.get(key);
         if (collection == null) {
             return;
         }
@@ -71,10 +65,10 @@ public class MapCollection<T, U> {
      *
      * @param callback callback
      */
-    public void iterate(BiFunction<T, U, Boolean> callback) {
-        for (Map.Entry<T, Collection<U>> entry : map.entrySet()) {
-            for (U u : entry.getValue()) {
-                if(!callback.apply(entry.getKey(), u)) {
+    public void iterate(BiFunction<K, C, Boolean> callback) {
+        for (Map.Entry<K, Collection<C>> entry : map.entrySet()) {
+            for (C c : entry.getValue()) {
+                if (!callback.apply(entry.getKey(), c)) {
                     return;
                 }
             }
@@ -82,6 +76,10 @@ public class MapCollection<T, U> {
     }
 
     public void clear() {
-        map.clear();;
+        map.clear();
+    }
+
+    public boolean containsKey(K key) {
+        return map.containsKey(key);
     }
 }

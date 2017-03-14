@@ -8,6 +8,12 @@ public class Line3d {
     private Vertex point;
     private Vertex direction;
 
+    /**
+     * Used by Errai marshaller
+     */
+    public Line3d() {
+    }
+
     public Line3d(Vertex point, Vertex direction) {
         this.point = point;
         this.direction = direction;
@@ -44,6 +50,27 @@ public class Line3d {
 
 //    public Vertex getCross(Line3d line2) {
 //    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Line3d line3d = (Line3d) o;
+        return point.equals(line3d.point) && direction.equals(line3d.direction);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = point.hashCode();
+        result = 31 * result + direction.hashCode();
+        return result;
+    }
 
     @Override
     public String toString() {

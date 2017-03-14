@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
@@ -164,6 +165,22 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.PERFMON_REQUEST);
     }
 
+    public void askTerrainZ(DecimalPosition position) {
+        sendToWorker(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN, position);
+    }
+
+    public void askTerrainPosition(Line3d worldPickRay) {
+        sendToWorker(GameEngineControlPackage.Command.TERRAIN_PICK_RAY, worldPickRay);
+    }
+
+    public void askOverlap(DecimalPosition position) {
+        sendToWorker(GameEngineControlPackage.Command.TERRAIN_OVERLAP, position);
+    }
+
+    public void askOverlapType(int uuid, Collection<DecimalPosition> positions, int baseItemTypeId) {
+        sendToWorker(GameEngineControlPackage.Command.TERRAIN_OVERLAP_TYPE, uuid, new ArrayList<>(positions), baseItemTypeId);
+    }
+
     private void onPerfmonResponse(Collection<PerfmonStatistic> statisticEntries) {
         if (perfmonConsumer != null) {
             perfmonConsumer.accept(statisticEntries);
@@ -244,6 +261,24 @@ public abstract class GameEngineControl {
                 break;
             case PERFMON_RESPONSE:
                 onPerfmonResponse((Collection<PerfmonStatistic>) controlPackage.getData(0));
+                break;
+            case SINGLE_Z_TERRAIN_ANSWER:
+                terrainUiService.onTerrainZAnswer((DecimalPosition) controlPackage.getData(0), (double) controlPackage.getData(1));
+                break;
+            case SINGLE_Z_TERRAIN_ANSWER_FAIL:
+                terrainUiService.onTerrainZAnswerFail((DecimalPosition) controlPackage.getData(0));
+                break;
+            case TERRAIN_PICK_RAY_ANSWER:
+                terrainUiService.onTerrainPositionPickRayAnswer((Line3d) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
+                break;
+            case TERRAIN_PICK_RAY_ANSWER_FAIL:
+                terrainUiService.onTerrainPositionPickRayAnswerFail((Line3d) controlPackage.getData(0));
+                break;
+            case TERRAIN_OVERLAP_ANSWER:
+                terrainUiService.onOverlapAnswer((DecimalPosition) controlPackage.getData(0), (boolean) controlPackage.getData(1));
+                break;
+            case TERRAIN_OVERLAP_TYPE_ANSWER:
+                terrainUiService.onOverlapTypeAnswer((int) controlPackage.getData(0), (boolean) controlPackage.getData(1));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

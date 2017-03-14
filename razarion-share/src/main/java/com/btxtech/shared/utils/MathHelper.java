@@ -1,6 +1,5 @@
 package com.btxtech.shared.utils;
 
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 
 /**
@@ -190,6 +189,10 @@ public class MathHelper {
         }
         stringBuilder.append(System.currentTimeMillis());
         return stringBuilder.toString();
+    }
+
+    public static int generateSimpleUuid() {
+        return (int) System.currentTimeMillis() + (int) (Math.random() * Integer.MAX_VALUE);
     }
 
     /**

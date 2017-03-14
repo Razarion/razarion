@@ -55,9 +55,10 @@ public class BaseItemPlacerChecker {
         if (isEnemiesOk) {
             isItemsOk = !syncItemContainerService.hasItemsInRange(absoluteItemPositions, baseItemType.getPhysicalAreaConfig().getRadius());
         }
-        isTerrainOk = false;
         if (isItemsOk) {
-            isTerrainOk = !terrainUiService.overlap(absoluteItemPositions, baseItemType);
+            terrainUiService.overlap(absoluteItemPositions, baseItemType, overlap -> isTerrainOk = !overlap);
+        } else {
+            isTerrainOk = false;
         }
     }
 

@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
@@ -31,6 +32,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -42,12 +44,14 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 18.07.2016.
  */
 public abstract class GameEngineWorker implements PlanetTickListener, QuestListener, GameLogicListener {
+    private Logger logger = Logger.getLogger(GameEngineWorker.class.getName());
     @Inject
     private PlanetService planetService;
     @Inject
@@ -74,6 +78,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private ExceptionHandler exceptionHandler;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private ItemTypeService itemTypeService;
     private UserContext userContext;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
     private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
@@ -142,6 +148,18 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case PERFMON_REQUEST:
                 onPerfmonRequest();
+                break;
+            case SINGLE_Z_TERRAIN:
+                getTerrainZ((DecimalPosition) controlPackage.getData(0));
+                break;
+            case TERRAIN_PICK_RAY:
+                getTerrainPosition((Line3d) controlPackage.getData(0));
+                break;
+            case TERRAIN_OVERLAP:
+                getTerrainOverlap((DecimalPosition) controlPackage.getData(0));
+                break;
+            case TERRAIN_OVERLAP_TYPE:
+                getTerrainOverlapBaseItemType((int) controlPackage.getData(0), (List<DecimalPosition>) controlPackage.getData(1), (int) controlPackage.getData(2));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -295,5 +313,34 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void onPerfmonRequest() {
         sendToClient(GameEngineControlPackage.Command.PERFMON_RESPONSE, perfmonService.getPerfmonStatistics());
+    }
+
+    private void getTerrainZ(DecimalPosition position) {
+        try {
+            double z = terrainService.getInterpolatedTerrainTriangle(position).getHeight();
+            sendToClient(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN_ANSWER, position, z);
+        } catch (NoInterpolatedTerrainTriangleException e) {
+            logger.warning("GameEngineWorker.getTerrainZ() " + e.getMessage());
+            sendToClient(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN_ANSWER_FAIL, position);
+        }
+    }
+
+    private void getTerrainPosition(Line3d worldPickRay) {
+        try {
+            Vertex vertex = terrainService.calculatePositionGroundMesh(worldPickRay);
+            sendToClient(GameEngineControlPackage.Command.TERRAIN_PICK_RAY_ANSWER, worldPickRay, vertex);
+        } catch (NoInterpolatedTerrainTriangleException e) {
+            logger.warning("GameEngineWorker.getTerrainZ() " + e.getMessage());
+            sendToClient(GameEngineControlPackage.Command.TERRAIN_PICK_RAY_ANSWER_FAIL, worldPickRay);
+        }
+    }
+
+    private void getTerrainOverlap(DecimalPosition position) {
+        sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_ANSWER, position, terrainService.overlap(position));
+    }
+
+    private void getTerrainOverlapBaseItemType(int uuid, List<DecimalPosition> positions, int baseItemType) {
+        boolean overlaps = terrainService.overlap(positions, baseItemType);
+        sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_TYPE_ANSWER, uuid, overlaps);
     }
 }
