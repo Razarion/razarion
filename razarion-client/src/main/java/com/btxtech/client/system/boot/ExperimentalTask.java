@@ -15,6 +15,7 @@ import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -116,13 +117,18 @@ public class ExperimentalTask extends AbstractStartupTask {
         VisualConfig visualConfig = new VisualConfig();
         visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
         visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
-        visualConfig.setWaterGroundLevel(-2).setWaterBmDepth(10).setWaterTransparency(0.65).setWaterBmId(272480).setWaterBmDepth(20).setWaterBmScale(0.01);
+        visualConfig.setWaterConfig(defaultWaterConfig());
+        visualConfig.setBaseItemDemolitionImageId(180848);
+        return visualConfig;
+    }
+
+    private WaterConfig defaultWaterConfig() {
+        WaterConfig waterConfig = new WaterConfig();
+        waterConfig.setGroundLevel(-2).setBmDepth(7).setTransparency(0.65).setBmId(272480).setBmDepth(20).setBmScale(0.02);
         LightConfig lightConfig = new LightConfig();
         lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
         lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
-        visualConfig.setWaterLightConfig(lightConfig);
-        visualConfig.setBaseItemDemolitionImageId(180848);
-        return visualConfig;
+        return waterConfig.setLightConfig(lightConfig);
     }
 
     private PlanetConfig defaultPlanetConfig() {

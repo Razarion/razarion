@@ -58,25 +58,6 @@ public class VisualConfigPanel extends LeftSideBarContent {
     private DoubleBox shadowAlpha;
     @Inject
     @DataField
-    private LightWidget waterLightConfig;
-    @Inject
-    @Bound
-    @DataField
-    private Input waterTransparency;
-    @Inject
-    @Bound
-    @DataField
-    private Input waterBmScale;
-    @Inject
-    @Bound
-    @DataField
-    private Input waterBmDepth;
-    @Inject
-    @Bound
-    @DataField
-    private Input waterGroundLevel;
-    @Inject
-    @DataField
     private Label shape3DDirectionLabel;
     @Inject
     @Bound(property = "shape3DLightRotateX", converter = GradToRadConverter.class)
@@ -100,7 +81,6 @@ public class VisualConfigPanel extends LeftSideBarContent {
         // Shadow
         visualConfigDataBinder.setModel(visualUiService.getVisualConfig());
         visualConfigDataBinder.addPropertyChangeHandler(event -> displayLightDirectionLabels());
-        waterLightConfig.setModel(visualUiService.getVisualConfig().getWaterLightConfig());
         displayLightDirectionLabels();
     }
 

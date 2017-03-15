@@ -195,8 +195,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         if (groundSkeletonConfig.getBottomBmId() != null) {
             bumpIds.add(groundSkeletonConfig.getBottomBmId());
         }
-        if (gameUiControlConfig.getVisualConfig().getWaterBmId() != null) {
-            bumpIds.add(gameUiControlConfig.getVisualConfig().getWaterBmId());
+        if (gameUiControlConfig.getVisualConfig().getWaterConfig().getBmId() != null) {
+            bumpIds.add(gameUiControlConfig.getVisualConfig().getWaterConfig().getBmId());
         }
         return bumpIds;
     }

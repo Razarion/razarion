@@ -1,18 +1,15 @@
 package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.ClientRenderUtil;
-import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.terrain.WaterUi;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -27,12 +24,6 @@ import javax.inject.Inject;
 @Dependent
 public class ClientWaterNormRendererUnit extends AbstractWaterRendererUnit {
     // private Logger logger = Logger.getLogger(TerrainSurfaceWireRender.class.getName());
-    @Inject
-    private GameCanvas gameCanvas;
-    @Inject
-    private TerrainUiService terrainUiService;
-    @Inject
-    private VisualUiService visualUiService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

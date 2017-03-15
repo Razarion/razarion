@@ -15,12 +15,7 @@ public class VisualConfig {
     private double shadowAlpha;
     private double shape3DLightRotateX;
     private double shape3DLightRotateZ;
-    private LightConfig waterLightConfig;
-    private double waterTransparency;
-    private Integer waterBmId;
-    private double waterBmScale;
-    private double waterBmDepth;
-    private double waterGroundLevel;
+    private WaterConfig waterConfig;
     private List<Shape3D> shape3Ds;
     private Integer baseItemDemolitionImageId;
     private Integer buildupTextureId;
@@ -70,57 +65,12 @@ public class VisualConfig {
         return this;
     }
 
-    public LightConfig getWaterLightConfig() {
-        return waterLightConfig;
+    public WaterConfig getWaterConfig() {
+        return waterConfig;
     }
 
-    public VisualConfig setWaterLightConfig(LightConfig waterLightConfig) {
-        this.waterLightConfig = waterLightConfig;
-        return this;
-    }
-
-    public double getWaterTransparency() {
-        return waterTransparency;
-    }
-
-    public VisualConfig setWaterTransparency(double waterTransparency) {
-        this.waterTransparency = waterTransparency;
-        return this;
-    }
-
-    public Integer getWaterBmId() {
-        return waterBmId;
-    }
-
-    public VisualConfig setWaterBmId(Integer waterBmId) {
-        this.waterBmId = waterBmId;
-        return this;
-    }
-
-    public double getWaterBmScale() {
-        return waterBmScale;
-    }
-
-    public VisualConfig setWaterBmScale(double waterBmScale) {
-        this.waterBmScale = waterBmScale;
-        return this;
-    }
-
-    public double getWaterBmDepth() {
-        return waterBmDepth;
-    }
-
-    public VisualConfig setWaterBmDepth(double waterBmDepth) {
-        this.waterBmDepth = waterBmDepth;
-        return this;
-    }
-
-    public double getWaterGroundLevel() {
-        return waterGroundLevel;
-    }
-
-    public VisualConfig setWaterGroundLevel(double waterGroundLevel) {
-        this.waterGroundLevel = waterGroundLevel;
+    public VisualConfig setWaterConfig(WaterConfig waterConfig) {
+        this.waterConfig = waterConfig;
         return this;
     }
 

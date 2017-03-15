@@ -3,7 +3,7 @@ package com.btxtech.shared.datatypes.terrain;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.LightConfig;
-import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.utils.MathHelper;
 
 /**
@@ -11,21 +11,11 @@ import com.btxtech.shared.utils.MathHelper;
  * 13.03.2017.
  */
 public class WaterUi extends TerrainUi {
-    private double groundLevel;
-    private Integer bmId;
-    private Double bmScale;
-    private double bmDepth;
-    private double transparency;
-    private LightConfig lightConfig;
+    private WaterConfig waterConfig;
     private Rectangle2D aabb;
 
-    public WaterUi(VisualConfig visualConfig) {
-        groundLevel = visualConfig.getWaterGroundLevel();
-        bmId = visualConfig.getWaterBmId();
-        bmDepth = visualConfig.getWaterBmDepth();
-        bmScale = visualConfig.getWaterBmScale();
-        transparency = visualConfig.getWaterTransparency();
-        lightConfig = visualConfig.getWaterLightConfig();
+    public WaterUi(WaterConfig waterConfig) {
+        this.waterConfig = waterConfig;
     }
 
     public WaterUi(int elementCount, Float32ArrayEmu vertices, Float32ArrayEmu norms, Float32ArrayEmu tangents, Rectangle2D aabb) {
@@ -42,23 +32,23 @@ public class WaterUi extends TerrainUi {
     }
 
     public double getGroundLevel() {
-        return groundLevel;
+        return waterConfig.getGroundLevel();
     }
 
     public Integer getBmId() {
-        return bmId;
+        return waterConfig.getBmId();
     }
 
     public Double getBmScale() {
-        return bmScale;
+        return waterConfig.getBmScale();
     }
 
     public double getTransparency() {
-        return transparency;
+        return waterConfig.getTransparency();
     }
 
     public double getBmDepth() {
-        return bmDepth;
+        return waterConfig.getBmDepth();
     }
 
     public double getWaterAnimation() {
@@ -74,15 +64,15 @@ public class WaterUi extends TerrainUi {
     }
 
     public LightConfig getLightConfig() {
-        return lightConfig;
-    }
-
-    public void setLightConfig(LightConfig lightConfig) {
-        this.lightConfig = lightConfig;
+        return waterConfig.getLightConfig();
     }
 
     public void setBuffers(WaterUi waterUi) {
         super.setBuffers(waterUi);
         aabb = waterUi.getAabb();
+    }
+
+    public void setWaterConfig(WaterConfig waterConfig) {
+        this.waterConfig = waterConfig;
     }
 }

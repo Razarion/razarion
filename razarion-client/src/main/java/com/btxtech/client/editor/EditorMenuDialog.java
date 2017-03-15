@@ -18,6 +18,7 @@ import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
+import com.btxtech.client.editor.water.WaterSidebar;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -62,6 +63,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button groundButton;
+    @Inject
+    @DataField
+    private Button waterButton;
     @Inject
     @DataField
     private Button baseItemButton;
@@ -127,6 +131,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("groundButton")
     private void onGroundButtonClicked(ClickEvent event) {
         openEditor(GroundSidebar.class);
+    }
+
+    @EventHandler("waterButton")
+    private void onWaterButtonClicked(ClickEvent event) {
+        openEditor(WaterSidebar.class);
     }
 
     @EventHandler("baseItemButton")

@@ -30,6 +30,7 @@ import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ScrollUiQuest;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -316,15 +317,20 @@ public class GameUiControlConfigPersistenceImpl implements GameUiControlConfigPe
         VisualConfig visualConfig = new VisualConfig();
         visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
         visualConfig.setShape3DLightRotateX(Math.toRadians(60)).setShape3DLightRotateZ(Math.toRadians(260));
-        visualConfig.setWaterGroundLevel(-2).setWaterBmDepth(7).setWaterTransparency(0.65).setWaterBmId(272480).setWaterBmDepth(20).setWaterBmScale(0.02);
-        LightConfig lightConfig = new LightConfig();
-        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
-        lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
-        visualConfig.setWaterLightConfig(lightConfig);
         visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         visualConfig.setBaseItemDemolitionImageId(180848);
         visualConfig.setBuildupTextureId(180818);
+        visualConfig.setWaterConfig(defaultWaterConfig());
         return visualConfig;
+    }
+
+    private WaterConfig defaultWaterConfig() {
+        WaterConfig waterConfig = new WaterConfig();
+        waterConfig.setGroundLevel(-2).setBmDepth(7).setTransparency(0.65).setBmId(272480).setBmDepth(20).setBmScale(0.02);
+        LightConfig lightConfig = new LightConfig();
+        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
+        lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
+        return waterConfig.setLightConfig(lightConfig);
     }
 
     private AudioConfig defaultAudioConfig() {

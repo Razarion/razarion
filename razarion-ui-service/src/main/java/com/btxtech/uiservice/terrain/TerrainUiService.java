@@ -15,6 +15,7 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -75,7 +76,7 @@ public class TerrainUiService {
             slopeUis.put(id, new SlopeUi(id, terrainTypeService.getSlopeSkeleton(id), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getWaterLevel(), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig()));
         }
         groundUi = new GroundUi(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig());
-        waterUi = new WaterUi(gameUiControlInitEvent.getGameUiControlConfig().getVisualConfig());
+        waterUi = new WaterUi(gameUiControlInitEvent.getGameUiControlConfig().getVisualConfig().getWaterConfig());
         terrainObjectPositions = gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions();
     }
 
@@ -230,5 +231,9 @@ public class TerrainUiService {
 
     public void enableEditMode(SlopeSkeletonConfig slopeSkeletonConfig) {
         slopeUis.values().stream().filter(slopeUi -> slopeUi.getId() == slopeSkeletonConfig.getId()).forEach(slopeUi -> slopeUi.setSlopeSkeletonConfig(slopeSkeletonConfig));
+    }
+
+    public void enableEditMode(WaterConfig waterConfig) {
+        waterUi.setWaterConfig(waterConfig);
     }
 }
