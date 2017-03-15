@@ -21,6 +21,10 @@ public class GroundUi extends TerrainUi {
         this.splattings = splattings;
     }
 
+    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
+        this.groundSkeletonConfig = groundSkeletonConfig;
+    }
+
     public Float32ArrayEmu getSplattings() {
         return splattings;
     }

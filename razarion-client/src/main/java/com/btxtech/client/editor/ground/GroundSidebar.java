@@ -9,16 +9,15 @@ import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DoubleBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -39,18 +38,13 @@ import java.util.logging.Logger;
 public class GroundSidebar extends LeftSideBarContent {
     private Logger logger = Logger.getLogger(GroundSidebar.class.getName());
     @Inject
-    private TerrainService terrainService;
-    @Inject
     private TerrainUiService terrainUiService;
     @Inject
     private TerrainTypeService terrainTypeService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientRenderServiceImpl renderService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<TerrainElementEditorProvider> terrainEditorService;
     @Inject
@@ -58,79 +52,61 @@ public class GroundSidebar extends LeftSideBarContent {
     @Inject
     @AutoBound
     private DataBinder<GroundConfig> groundConfigDataBinder;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private LightWidget lightConfig;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private ImageItemWidget topTextureId;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Bound(property = "groundSkeletonConfig.topTextureScale")
     @Inject
     @DataField
-    private DoubleBox topTextureScale;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private NumberInput topTextureScale;
     @Inject
     @DataField
     private ImageItemWidget topBmId;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Bound(property = "groundSkeletonConfig.topBmScale")
     @Inject
     @DataField
-    private DoubleBox topBmScale;
+    private NumberInput topBmScale;
     @Inject
     @Bound(property = "groundSkeletonConfig.topBmDepth")
     @DataField
-    private DoubleBox topBmDepth;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private NumberInput topBmDepth;
     @Inject
     @DataField
     private ImageItemWidget bottomTextureId;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Bound(property = "groundSkeletonConfig.bottomTextureScale")
     @Inject
     @DataField
-    private DoubleBox bottomTextureScale;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private NumberInput bottomTextureScale;
     @Inject
     @DataField
     private ImageItemWidget bottomBmId;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Bound(property = "groundSkeletonConfig.bottomBmScale")
     @Inject
     @DataField
-    private DoubleBox bottomBmScale;
+    private NumberInput bottomBmScale;
     @Inject
     @Bound(property = "groundSkeletonConfig.bottomBmDepth")
     @DataField
-    private DoubleBox bottomBmDepth;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private NumberInput bottomBmDepth;
     @Inject
     @DataField
     private ImageItemWidget splattingId;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Bound(property = "groundSkeletonConfig.splattingScale")
     @Inject
     @DataField
-    private DoubleBox splattingScale;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private NumberInput splattingScale;
     @Inject
     @DataField
     private Button fractalSplatting;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button fractalHeight;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button sculptButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    @DataField
-    private Button updateButton;
 
     @PostConstruct
     public void init() {
@@ -144,6 +120,7 @@ public class GroundSidebar extends LeftSideBarContent {
                 bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId));
                 bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId));
                 splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> groundConfig.getGroundSkeletonConfig().setSplattingId(imageId));
+                terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "loadGroundConfig failed: " + message, throwable);
@@ -158,21 +135,13 @@ public class GroundSidebar extends LeftSideBarContent {
             public void callback(GroundConfig groundConfig) {
                 groundConfigDataBinder.setModel(groundConfig);
                 lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
+                terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "saveGroundConfig failed: " + message, throwable);
             return false;
         }).saveGroundConfig(groundConfigDataBinder.getModel()));
         enableSaveButton(true);
-    }
-
-    @EventHandler("updateButton")
-    private void updateButtonClick(ClickEvent event) {
-        GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        terrainTypeService.setGroundSkeletonConfig(groundConfig.getGroundSkeletonConfig());
-        terrainService.setupGround(); // TODO does not work anymore. TerrainService is in Worker now
-        terrainService.setupPlateaus(); // TODO does not work anymore. TerrainService is in Worker now
-        groundRenderTask.onChanged();
     }
 
     @EventHandler("sculptButton")

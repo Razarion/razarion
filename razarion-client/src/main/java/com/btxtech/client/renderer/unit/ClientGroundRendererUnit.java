@@ -87,10 +87,15 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         tangents.activate();
         splattings.activate();
 
+        topTexture.overrideScale(groundUi.getTopTextureScale());
         topTexture.activate();
+        topBm.overrideScale(groundUi.getTopBmScale());
         topBm.activate();
+        splattingTexture.overrideScale(groundUi.getSplattingScale());
         splattingTexture.activate();
+        bottomTexture.overrideScale(groundUi.getBottomTextureScale());
         bottomTexture.activate();
+        bottomBm.overrideScale(groundUi.getBottomBmScale());
         bottomBm.activate();
 
         // Draw

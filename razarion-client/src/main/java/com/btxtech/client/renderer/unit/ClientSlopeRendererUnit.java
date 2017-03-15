@@ -110,11 +110,17 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         slopeTexture.activate();
         uSlopeBm.overrideScale(slopeUi.getBmScale());
         uSlopeBm.activate();
-        groundSplattingTexture.activate();
+
+        groundTopTexture.overrideScale(slopeUi.getTopTextureScale());
         groundTopTexture.activate();
-        groundBottomTexture.activate();
-        groundBottomBm.activate();
+        groundTopBm.overrideScale(slopeUi.getTopBmScale());
         groundTopBm.activate();
+        groundSplattingTexture.overrideScale(slopeUi.getSplattingScale());
+        groundSplattingTexture.activate();
+        groundBottomTexture.overrideScale(slopeUi.getBottomTextureScale());
+        groundBottomTexture.activate();
+        groundBottomBm.overrideScale(slopeUi.getBottomBmScale());
+        groundBottomBm.activate();
 
         webGlFacade.activateReceiveShadow();
 

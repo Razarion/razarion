@@ -10,6 +10,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.shared.datatypes.terrain.WaterUi;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -227,4 +228,10 @@ public class TerrainUiService {
         overlapTypeConsumers.remove(uuid).accept(overlaps);
     }
 
+    public void enableEditMode(GroundSkeletonConfig groundSkeletonConfig) {
+        groundUi.setGroundSkeletonConfig(groundSkeletonConfig);
+        for (SlopeUi slopeUi : slopeUis.values()) {
+            slopeUi.setGroundSkeletonConfig(groundSkeletonConfig);
+        }
+    }
 }
