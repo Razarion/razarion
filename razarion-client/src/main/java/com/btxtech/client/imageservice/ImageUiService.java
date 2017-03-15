@@ -26,6 +26,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class ImageUiService {
+    // This service is too complex
     // TODO export the CRUD part tp the CRUD service
 
     public interface ImageListener {

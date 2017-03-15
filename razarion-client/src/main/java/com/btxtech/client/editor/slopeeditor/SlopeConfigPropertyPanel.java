@@ -121,15 +121,12 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @Inject
     @DataField
     private Button sculpt;
-    @Inject
-    @DataField
-    private Button update;
     private FractalFieldConfig fractalFieldConfig;
 
     @Override
     public void init(SlopeConfig slopeConfig) {
         slopeConfigDataBinder.setModel(slopeConfig);
-        terrainUiService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
+        terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
         textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId));
         bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setBmId(imageId));
         lightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getLightConfig());
@@ -204,16 +201,6 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @EventHandler("deleteSelected")
     public void deleteSelectedButtonClick(ClickEvent e) {
         shapeEditor.deleteSelectedCorner();
-    }
-
-    @EventHandler("update")
-    private void updateButtonClick(ClickEvent event) {
-        // TODO This method does not make any sense
-//        SlopeConfig slopeConfig = getConfigObject();
-//        terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
-//        terrainService.setupGround(); // TODO does not work anymore. TerrainService is in Worker now
-//        terrainService.setupPlateaus(); // TODO does not work anymore. TerrainService is in Worker now
-//        slopeRenderTask.onChanged();
     }
 
     @EventHandler("sculpt")

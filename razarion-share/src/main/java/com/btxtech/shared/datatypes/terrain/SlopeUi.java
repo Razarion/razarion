@@ -87,4 +87,8 @@ public class SlopeUi extends GroundUi {
         splatting = slopeUi.getSplatting();
         slopeFactors = slopeUi.getSlopeFactors();
     }
+
+    public void setSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
+        this.slopeSkeletonConfig = slopeSkeletonConfig;
+    }
 }

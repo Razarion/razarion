@@ -171,11 +171,6 @@ public class TerrainUiService {
         gameEngineControl.askTerrainPosition(worldPickRay);
     }
 
-    public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
-        // terrainService.overrideSlopeSkeletonConfig(slopeSkeletonConfig);
-        throw new UnsupportedOperationException("FIXME: The required data is in the worker now");
-    }
-
     public void getTerrainZ(DecimalPosition position, BiConsumer<DecimalPosition, Double> callback) {
         boolean contains = terrainZConsumers.containsKey(position);
         terrainZConsumers.put(position, callback);
@@ -230,8 +225,10 @@ public class TerrainUiService {
 
     public void enableEditMode(GroundSkeletonConfig groundSkeletonConfig) {
         groundUi.setGroundSkeletonConfig(groundSkeletonConfig);
-        for (SlopeUi slopeUi : slopeUis.values()) {
-            slopeUi.setGroundSkeletonConfig(groundSkeletonConfig);
-        }
+        slopeUis.values().forEach(slopeUi -> slopeUi.setGroundSkeletonConfig(groundSkeletonConfig));
+    }
+
+    public void enableEditMode(SlopeSkeletonConfig slopeSkeletonConfig) {
+        slopeUis.values().stream().filter(slopeUi -> slopeUi.getId() == slopeSkeletonConfig.getId()).forEach(slopeUi -> slopeUi.setSlopeSkeletonConfig(slopeSkeletonConfig));
     }
 }
