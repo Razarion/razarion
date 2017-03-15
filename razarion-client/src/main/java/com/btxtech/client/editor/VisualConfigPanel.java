@@ -1,16 +1,14 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
-import org.jboss.errai.common.client.dom.Input;
+import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -55,7 +53,7 @@ public class VisualConfigPanel extends LeftSideBarContent {
     @Inject
     @Bound
     @DataField
-    private DoubleBox shadowAlpha;
+    private NumberInput shadowAlpha;
     @Inject
     @DataField
     private Label shape3DDirectionLabel;
@@ -80,7 +78,10 @@ public class VisualConfigPanel extends LeftSideBarContent {
     public void init() {
         // Shadow
         visualConfigDataBinder.setModel(visualUiService.getVisualConfig());
-        visualConfigDataBinder.addPropertyChangeHandler(event -> displayLightDirectionLabels());
+        visualConfigDataBinder.addPropertyChangeHandler(event -> {
+            displayLightDirectionLabels();
+            shadowUiService.setupMatrices();
+        });
         displayLightDirectionLabels();
     }
 
@@ -88,4 +89,5 @@ public class VisualConfigPanel extends LeftSideBarContent {
         shadowDirectionLabel.setText(DisplayUtils.formatVertex(shadowUiService.getLightDirection()));
         shape3DDirectionLabel.setText(DisplayUtils.formatVertex(visualUiService.getShape3DLightDirection()));
     }
+
 }
