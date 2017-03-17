@@ -15,11 +15,6 @@
     <name>Razarion Server common Code</name>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>razarion-share</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>

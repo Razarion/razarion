@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.collada.ColladaConverter;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.servercommon.collada.ColladaConverter;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;

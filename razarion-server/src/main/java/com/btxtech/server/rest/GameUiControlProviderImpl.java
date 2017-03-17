@@ -1,8 +1,7 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.persistence.impl.GameUiControlConfigPersistence;
 import com.btxtech.server.user.UserService;
-import com.btxtech.servercommon.GameUiControlConfigPersistence;
-import com.btxtech.servercommon.collada.ColladaException;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlProvider;
@@ -34,7 +33,7 @@ public class GameUiControlProviderImpl implements GameUiControlProvider {
             GameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load();
             gameUiControlConfig.setUserContext(userService.setUserLoginInfo(facebookUserLoginInfo));
             return gameUiControlConfig;
-        } catch (ParserConfigurationException | ColladaException | SAXException | IOException e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);
         } catch (Throwable e) {

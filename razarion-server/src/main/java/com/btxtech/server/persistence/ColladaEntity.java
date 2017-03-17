@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.servercommon.collada.ColladaConverterMapper;
+import com.btxtech.server.collada.ColladaConverterMapper;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 
 import javax.persistence.CollectionTable;

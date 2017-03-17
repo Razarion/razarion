@@ -1,6 +1,6 @@
 package com.btxtech.server.web;
 
-import com.btxtech.server.system.FilePropertiesService;
+import com.btxtech.servercommon.FilePropertiesService;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;

@@ -38,7 +38,7 @@ public class JsonLogService {
 
         logRecordInfo.setThrown(setupThrownLogInfo(logRecord.getThrown()));
         logRecordInfo.setLoggerName(logRecord.getLoggerName());
-        logRecordInfo.setGwtStrongName(GWT.getPermutationStrongName());
+        // logRecordInfo.setGwtStrongName(GWT.getPermutationStrongName()); does not work
         logRecordInfo.setGwtModuleName(GWT.getModuleName());
         return logRecordInfo;
     }

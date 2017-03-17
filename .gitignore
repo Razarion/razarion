@@ -4,32 +4,19 @@
 razarion.iml
 target/
 razarion-ui-service/razarion-ui-service.iml
-razarion-ui-service/target/
 razarion-dev-tools/razarion-dev-tools.iml
-razarion-dev-tools/target/
 razarion-server/razarion-server.iml
-razarion-server/target/
 razarion-server/src/main/webapp/WEB-INF/classes/
 razarion-server/src/main/webapp/razarion_client
 razarion-server/src/main/webapp/razarion_client_worker
-razarion-server/src/main/webapp/WEB-INF/lib
 razarion-server/src/main/webapp/WEB-INF/deploy
 razarion-server/src/main/gwt-unitCache
-razarion-server-common/target/
 razarion-server-common/razarion-server-common.iml
 razarion-share/razarion-share.iml
-razarion-share/target/
 razarion-test/razarion-test.iml
-razarion-test/target/
-razarion-server-emulation/razarion-server-emulation.iml
-razarion-server-emulation/target/
 razarion-client/razarion-client.iml
-razarion-client/target/
 razarion-client-worker/razarion-client-worker.iml
 razarion-client-common/razarion-client-common.iml
-razarion-liferay/razarion-liferay.iml
-razarion-liferay/targt
-razarion-liferay/src/main/resources/META-INF/resources/razarion_client
-razarion-liferay/src/main/resources/META-INF/resources/razarion_client_worker
+razarion-facebook-marketing/razarion-facebook-marketing.iml
 
 

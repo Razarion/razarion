@@ -1,8 +1,8 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.collada.ColladaConverter;
+import com.btxtech.server.collada.Shape3DBuilder;
 import com.btxtech.server.persistence.Shape3DPersistence;
-import com.btxtech.servercommon.collada.ColladaConverter;
-import com.btxtech.servercommon.collada.Shape3DBuilder;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
