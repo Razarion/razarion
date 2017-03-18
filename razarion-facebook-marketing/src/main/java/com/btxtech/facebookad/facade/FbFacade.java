@@ -3,6 +3,8 @@ package com.btxtech.facebookad.facade;
 import com.btxtech.servercommon.FilePropertiesService;
 import com.facebook.ads.sdk.APIContext;
 import com.facebook.ads.sdk.APIException;
+import com.facebook.ads.sdk.APINode;
+import com.facebook.ads.sdk.APINodeList;
 import com.facebook.ads.sdk.Ad;
 import com.facebook.ads.sdk.AdAccount;
 import com.facebook.ads.sdk.AdCreative;
@@ -105,7 +107,6 @@ public class FbFacade {
         new AdSet.APIRequestDelete(Long.toString(adSetId), context).execute();
     }
 
-
     private void createAdd(AdAccount account, long adSetId) throws APIException {
 //        AdImage image = account.createAdImage()
 //                .addUploadFile("file", new File(IMAGE_DIR, "TestAdImage.jpg"))
@@ -117,7 +118,7 @@ public class FbFacade {
                 .setObjectStorySpec(new AdCreativeObjectStorySpec().setFieldPageId(filePropertiesService.getFacebookAppPageId())
                         .setFieldLinkData(new AdCreativeLinkData()
                                 .setFieldLink("https://apps.facebook.com/razarion/")
-                                .setFieldMessage("Razarion ist eine wahre Rarität im Bereich der Browsergames.")
+                                .setFieldMessage("Razarion vereint packende Echtzeit-Schlachten mit komplexer Strategie")
                                 .setFieldImageHash("6d95067d9a6d30c3b6341eb59b5d2782")
                                 .setFieldCallToAction(new AdCreativeLinkDataCallToAction()
                                         .setFieldType(AdCreativeLinkDataCallToAction.EnumType.VALUE_PLAY_GAME)
@@ -129,7 +130,8 @@ public class FbFacade {
                         )
                 )
                 // TODO .setImageHash(image.getFieldHash())
-                .setImageHash("6d95067d9a6d30c3b6341eb59b5d2782")
+                .setImageHash("f889056506d773565829a57eff09e095")
+                .setUrlTags("fbAdRazTrack=0001")
                 .execute();
         Ad ad = account.createAd()
                 .setName("Automated Ad")
@@ -138,6 +140,42 @@ public class FbFacade {
                 .setStatus(Ad.EnumStatus.VALUE_PAUSED)
                 .setRedownload(true)
                 .execute();
+    }
+
+    public void printAllAdSets() {
+        try {
+            System.out.println("--------- print all add sets ---------");
+            Campaign campaign = new Campaign(CAMPAIGN_ID, getContext()).get().requestAllFields().execute();
+            print("Campaign", campaign);
+            APINodeList<AdSet> adSets = campaign.getAdSets().requestAllFields().execute();
+            while (adSets != null) {
+                for (AdSet adSet : adSets) {
+                    print("AdSet", adSet);
+                    APINodeList<Ad> ads = adSet.getAds().requestAllFields().execute();
+                    while (ads != null) {
+                        for (Ad ad : ads) {
+                            print("Ad", ad);
+                            APINodeList<AdCreative> adCreatives = ad.getAdCreatives().requestAllFields().execute();
+                            while (adCreatives != null) {
+                                for (AdCreative adCreative : adCreatives) {
+                                    print("AdCreative", adCreative);
+                                }
+                                adCreatives = adCreatives.nextPage();
+                            }
+                        }
+                        ads = ads.nextPage();
+                    }
+                }
+                adSets = adSets.nextPage();
+            }
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+        System.out.println("--------- print all add sets ends---------");
+    }
+
+    private void print(String message, APINode apiNode) {
+        System.out.println(message + ": " + apiNode.getRawResponse());
     }
 
 }

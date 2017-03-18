@@ -22,7 +22,8 @@ public class FacebookAd {
 
     public void start() {
         try {
-            fbFacade.createAd();
+            // fbFacade.createAd();
+            fbFacade.printAllAdSets();
         } catch (Throwable t) {
             t.printStackTrace();
         }
