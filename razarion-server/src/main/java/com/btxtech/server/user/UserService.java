@@ -1,6 +1,7 @@
 package com.btxtech.server.user;
 
 import com.btxtech.server.web.Session;
+import com.btxtech.servercommon.FilePropertiesService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
@@ -27,6 +28,8 @@ public class UserService {
     private Logger logger;
     @Inject
     private Session session;
+    @Inject
+    private FilePropertiesService filePropertiesService;
 
     public UserContext setUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
         // TODO verify facebook signedRequest
@@ -52,6 +55,9 @@ public class UserService {
             userContext.setAdmin(user.isAdmin());
         } else {
             userContext.setUserId(999999999); // TODO
+        }
+        if(filePropertiesService.isDeveloperMode()) {
+            userContext.setAdmin(true);
         }
         userContext.setName("Emulator Name");// TODO
         userContext.setLevelId(1);
