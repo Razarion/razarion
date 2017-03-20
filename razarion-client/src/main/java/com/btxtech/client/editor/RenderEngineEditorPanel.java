@@ -3,7 +3,6 @@ package com.btxtech.client.editor;
 import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.utils.DisplayUtils;
-import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -14,9 +13,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
-import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.ui.shared.api.annotations.AutoBound;
-import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -30,7 +26,6 @@ import javax.inject.Inject;
  */
 @Templated("RenderEngineEditorPanel.html#render-engine-editor-panel")
 public class RenderEngineEditorPanel extends LeftSideBarContent {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private RenderService renderService;
     @Inject
@@ -51,23 +46,18 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     @Inject
     @DataField
     private CheckBox showNorm;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label rendererCount;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("topButton")
     private Button topButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("frontButton")
     private Button frontButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("gameButton")
     private Button gameButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("dumpPositionButton")
     private Button dumpPositionButton;
@@ -92,7 +82,6 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     @Inject
     @DataField
     private DoubleBox rotateZBox;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label directionLabel;
@@ -112,7 +101,11 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
         displayLightDirectionLabel();
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
         openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
+        rotateZBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateZ())));
+        rotateZSlider.setValue(Math.toDegrees(camera.getRotateZ()));
         rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
+        rotateXBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateX())));
+        rotateXSlider.setValue(Math.toDegrees(camera.getRotateX()));
     }
 
 
@@ -143,6 +136,30 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     private void displayLightDirectionLabel() {
         Vertex direction = camera.getDirection();
         directionLabel.setText(DisplayUtils.formatVertex(direction));
+    }
+
+    @EventHandler("rotateXSlider")
+    public void rotateXSliderChanged(ChangeEvent e) {
+        camera.setRotateX(Math.toRadians(rotateXSlider.getValue()));
+        rotateXBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateX())));
+    }
+
+    @EventHandler("rotateXBox")
+    public void rotateXBoxChanged(ChangeEvent e) {
+        camera.setRotateX(Math.toRadians(rotateXBox.getValue()));
+        rotateXSlider.setValue(Math.toDegrees(camera.getRotateX()));
+    }
+
+    @EventHandler("rotateZSlider")
+    public void rotateZSliderChanged(ChangeEvent e) {
+        camera.setRotateZ(Math.toRadians(rotateZSlider.getValue()));
+        rotateZBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateZ())));
+    }
+
+    @EventHandler("rotateZBox")
+    public void rotateZBoxChanged(ChangeEvent e) {
+        camera.setRotateZ(Math.toRadians(rotateZBox.getValue()));
+        rotateZSlider.setValue(Math.toDegrees(camera.getRotateZ()));
     }
 
     @EventHandler("openingAngleYSlider")
