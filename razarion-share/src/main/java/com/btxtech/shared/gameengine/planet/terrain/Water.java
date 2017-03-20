@@ -41,14 +41,12 @@ public class Water {
             vertices.add(createLevelVertex(vertex3));
             vertices.add(createLevelVertex(vertex2));
         }
-        Vertex norm = new Vertex(1, 0, 0);
-        norms.add(norm);
-        norms.add(norm);
-        norms.add(norm);
-        Vertex tangent = new Vertex(0, 0, 1);
-        tangents.add(tangent);
-        tangents.add(tangent);
-        tangents.add(tangent);
+        norms.add(Vertex.Z_NORM);
+        norms.add(Vertex.Z_NORM);
+        norms.add(Vertex.Z_NORM);
+        tangents.add(Vertex.X_NORM);
+        tangents.add(Vertex.X_NORM);
+        tangents.add(Vertex.X_NORM);
         barycentric.add(new Vertex(1, 0, 0));
         barycentric.add(new Vertex(0, 1, 0));
         barycentric.add(new Vertex(0, 0, 1));

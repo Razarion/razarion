@@ -22,7 +22,7 @@ uniform float animation;
 uniform float animation2;
 
 const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
-const vec3 WATER_COLOR = vec3(0.0, 0.0, 0.7);
+const vec3 WATER_COLOR = vec3(0.05, 0.32, 0.63);
 
 vec3 bumpMapNorm(float scale) {
     vec3 normal = normalize(vVertexNormal);
@@ -45,7 +45,7 @@ vec3 bumpMapNorm(float scale) {
 vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
      vec3 reflectionDirection = normalize(reflect(correctedLightDirection, normalize(correctedNorm)));
      vec3 eyeDirection = normalize(-vVertexPosition.xyz);
-     float factor = max(pow(dot(reflectionDirection, eyeDirection), hardness), 0.0) * intensity;
+     float factor = pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
      return SPECULAR_LIGHT_COLOR * factor;
 }
 
@@ -55,7 +55,7 @@ void main(void) {
 
     vec3 ambient = uLightAmbient * WATER_COLOR;
     vec3 diffuse = max(dot(normalize(norm), normalize(-correctedLigtDirection)), 0.0)* uLightDiffuse * WATER_COLOR /* * shadowFactor */ ;
-    vec3 specular = setupSpecularLight(correctedLigtDirection, norm, uLightSpecularHardness, uLightSpecularIntensity) /* * shadowFactor */;
+    vec3 specular = setupSpecularLight(correctedLigtDirection, norm, uLightSpecularIntensity, uLightSpecularHardness) /* * shadowFactor */;
     gl_FragColor = vec4(ambient + diffuse + specular, uTransparency);
 }
 

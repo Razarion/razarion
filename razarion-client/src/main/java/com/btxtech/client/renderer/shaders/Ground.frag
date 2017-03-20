@@ -33,7 +33,7 @@ uniform float uBottomBmScale;
 uniform float uBottomBmOnePixel;
 uniform float uBottomBmDepth;
 
-const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
+const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 const float BIAS = 0.001;
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
@@ -74,8 +74,8 @@ float calculateShadowFactor() {
 vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
      vec3 reflectionDirection = normalize(reflect(correctedLightDirection, normalize(correctedNorm)));
      vec3 eyeDirection = normalize(-vVertexPosition.xyz);
-     float factor = max(pow(dot(reflectionDirection, eyeDirection), hardness), 0.0) * intensity;
-     return SPECULAR_LIGHT_COLOR * factor;
+     float factor = pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
+     return vec4(SPECULAR_LIGHT_COLOR * factor, 1.0);
 }
 
 void main(void) {

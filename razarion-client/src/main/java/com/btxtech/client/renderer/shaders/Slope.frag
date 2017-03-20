@@ -55,7 +55,7 @@ uniform bool uHasWater;
 uniform float uWaterLevel;
 uniform float uWaterGround;
 
-const vec4 SPECULAR_LIGHT_COLOR = vec4(1.0, 1.0, 1.0, 1.0);
+const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 const float SLOPE_FACTOR_BIAS = 0.001;
 const float GROUND_FACTOR_BIAS = 0.001;
 const float SLOPE_WATER_STRIPE_FADEOUT = 2.0;
@@ -93,8 +93,8 @@ vec3 bumpMapNorm(sampler2D sampler, float bumpMapDepth, float scale, float onePi
 vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
      vec3 reflectionDirection = normalize(reflect(correctedLightDirection, normalize(correctedNorm)));
      vec3 eyeDirection = normalize(-vVertexPosition.xyz);
-     float factor = max(pow(dot(reflectionDirection, eyeDirection), hardness), 0.0) * intensity;
-     return SPECULAR_LIGHT_COLOR * factor;
+     float factor = pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
+     return vec4(SPECULAR_LIGHT_COLOR * factor, 1.0);
 }
 
 
@@ -150,7 +150,7 @@ void main(void) {
         specular = setupSpecularLight(correctedLightGround, correctedNorm, uLightSpecularIntensityGround, uLightSpecularHardnessGround);
         ambient = vec4(uLightAmbientGround, 1.0) * textureColor;
         diffuse = vec4(max(dot(normalize(correctedNorm), -correctedLightGround), 0.0) * uLightDiffuseGround * textureColor.rgb, 1.0);
-  } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
+    } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
         // Slope
         if(uHasWater) {
             float z = vVertexPositionCoord.z;

@@ -324,10 +324,10 @@ public class GameUiControlConfigPersistence {
 
     private WaterConfig defaultWaterConfig() {
         WaterConfig waterConfig = new WaterConfig();
-        waterConfig.setGroundLevel(-2).setBmDepth(7).setTransparency(0.65).setBmId(272480).setBmDepth(20).setBmScale(0.02);
+        waterConfig.setGroundLevel(-2).setBmDepth(7).setTransparency(0.5).setBmId(272480).setBmDepth(2).setBmScale(0.02);
         LightConfig lightConfig = new LightConfig();
-        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
-        lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
+        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(0.38, 0.38, 0.38));
+        lightConfig.setRotationX(Math.toRadians(-33)).setRotationY(Math.toRadians(0)).setSpecularIntensity(0.75).setSpecularHardness(30);
         return waterConfig.setLightConfig(lightConfig);
     }
 
