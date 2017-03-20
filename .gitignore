@@ -11,12 +11,10 @@ razarion-server/src/main/webapp/razarion_client
 razarion-server/src/main/webapp/razarion_client_worker
 razarion-server/src/main/webapp/WEB-INF/deploy
 razarion-server/src/main/gwt-unitCache
-razarion-server-common/razarion-server-common.iml
 razarion-share/razarion-share.iml
 razarion-test/razarion-test.iml
 razarion-client/razarion-client.iml
 razarion-client-worker/razarion-client-worker.iml
 razarion-client-common/razarion-client-common.iml
-razarion-facebook-marketing/razarion-facebook-marketing.iml
 
 
