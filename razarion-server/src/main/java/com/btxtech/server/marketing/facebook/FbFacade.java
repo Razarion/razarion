@@ -1,6 +1,7 @@
-package com.btxtech.facebookad.facade;
+package com.btxtech.server.marketing.facebook;
 
-import com.btxtech.servercommon.FilePropertiesService;
+import com.btxtech.server.marketing.AdSetInsight;
+import com.btxtech.server.system.FilePropertiesService;
 import com.facebook.ads.sdk.APIContext;
 import com.facebook.ads.sdk.APIException;
 import com.facebook.ads.sdk.APINode;
@@ -13,6 +14,7 @@ import com.facebook.ads.sdk.AdCreativeLinkDataCallToAction;
 import com.facebook.ads.sdk.AdCreativeLinkDataCallToActionValue;
 import com.facebook.ads.sdk.AdCreativeObjectStorySpec;
 import com.facebook.ads.sdk.AdSet;
+import com.facebook.ads.sdk.AdsInsights;
 import com.facebook.ads.sdk.Campaign;
 import com.facebook.ads.sdk.FlexibleTargeting;
 import com.facebook.ads.sdk.IDName;
@@ -21,8 +23,13 @@ import com.facebook.ads.sdk.TargetingGeoLocation;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 
 /**
  * Created by Beat
@@ -30,6 +37,7 @@ import java.util.Collections;
  */
 @ApplicationScoped
 public class FbFacade {
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     private static final long CAMPAIGN_ID = 6065518817021L;
     @Inject
     private FilePropertiesService filePropertiesService;
@@ -140,6 +148,30 @@ public class FbFacade {
                 .setStatus(Ad.EnumStatus.VALUE_PAUSED)
                 .setRedownload(true)
                 .execute();
+    }
+
+    public Collection<AdSetInsight> getInsight() {
+        try {
+            System.out.println("--------- Insight ---------");
+            AdSet adSet = new AdSet(6065557047421L, getContext());
+            APINodeList<AdsInsights> adsInsightss = adSet.getInsights().setFields("date_start, date_stop, spend, clicks, impressions").execute();
+            Collection<AdSetInsight> adSetInsights = new ArrayList<AdSetInsight>();
+            while (adsInsightss != null) {
+                for (AdsInsights adsInsights : adsInsightss) {
+                    AdSetInsight adSetInsight = new AdSetInsight();
+                    adSetInsight.setDateStart(DATE_FORMAT.parse(adsInsights.getFieldDateStart()));
+                    adSetInsight.setDateStop(DATE_FORMAT.parse(adsInsights.getFieldDateStop())); // Wrong data from facebook
+                    adSetInsight.setClicks(Integer.parseInt(adsInsights.getFieldClicks()));
+                    adSetInsight.setImpressions(Integer.parseInt(adsInsights.getFieldImpressions()));
+                    adSetInsight.setSpent(Double.parseDouble(adsInsights.getFieldSpend()));
+                    adSetInsights.add(adSetInsight);
+                }
+                adsInsightss = adsInsightss.nextPage();
+            }
+            return adSetInsights;
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
     public void printAllAdSets() {

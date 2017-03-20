@@ -1,7 +1,7 @@
 package com.btxtech.server.user;
 
 import com.btxtech.server.web.Session;
-import com.btxtech.servercommon.FilePropertiesService;
+import com.btxtech.server.system.FilePropertiesService;
 
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;

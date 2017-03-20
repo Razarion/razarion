@@ -38,6 +38,12 @@
             <version>5.0.9.Final</version>
             <scope>provided</scope>
         </dependency>
+        <!--   Facebook marketing API   -->
+        <dependency>
+            <groupId>com.facebook.ads.sdk</groupId>
+            <artifactId>facebook-java-ads-sdk</artifactId>
+            <version>0.4.0</version>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -1,4 +1,4 @@
-package com.btxtech.servercommon;
+package com.btxtech.server.system;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;

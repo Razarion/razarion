@@ -1,4 +1,4 @@
-package com.btxtech.servercommon;
+package com.btxtech.server.system;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;

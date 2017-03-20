@@ -1,7 +1,7 @@
 package com.btxtech.server.user;
 
 import com.btxtech.server.web.Session;
-import com.btxtech.servercommon.FilePropertiesService;
+import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
