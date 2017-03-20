@@ -31,7 +31,7 @@ public class UserService {
     @Inject
     private FilePropertiesService filePropertiesService;
 
-    public UserContext setUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
+    public UserContext handleUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
         // TODO verify facebook signedRequest
 
         // facebookUserLoginInfo is never null. Errai Jackson JAX-RS does not accept null value in POST rest call
