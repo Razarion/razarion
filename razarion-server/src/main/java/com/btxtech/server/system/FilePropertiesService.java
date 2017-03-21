@@ -1,7 +1,10 @@
 package com.btxtech.server.system;
 
+import com.btxtech.shared.system.ExceptionHandler;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
@@ -22,8 +25,8 @@ public class FilePropertiesService {
     private static final String FACEBOOK_MARKETING_ACCOUNT_ID = "facebook.marketing_account_id";
     private static final String DEVELOPER_MODE = "system.dev-mode";
     private Logger logger = Logger.getLogger(FilePropertiesService.class.getName());
-    //    @Inject
-//    private ExceptionHandler exceptionHandler; // Use exception handler id the share module is spilt in share and game engine
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Properties properties;
     private boolean developerMode;
 
@@ -40,8 +43,7 @@ public class FilePropertiesService {
                 logger.warning("Running in developer mode");
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            // exceptionHandler.handleException(e);
+            exceptionHandler.handleException(e);
         }
     }
 

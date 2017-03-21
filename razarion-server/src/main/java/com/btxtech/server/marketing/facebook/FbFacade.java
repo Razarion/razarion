@@ -1,6 +1,6 @@
 package com.btxtech.server.marketing.facebook;
 
-import com.btxtech.server.marketing.AdSetInsight;
+import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.system.FilePropertiesService;
 import com.facebook.ads.sdk.APIContext;
 import com.facebook.ads.sdk.APIException;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -70,18 +71,24 @@ public class FbFacade {
     }
 
 
-    public void createAd() {
+    public long createAd(List<Interest> interests) {
         try {
             APIContext context = getContext();
             AdAccount adAccount = getAdAccount(context);
-            long adSetId = createAddSet(context, adAccount, getCampaignId());
+            long adSetId = createAddSet(context, adAccount, getCampaignId(), interests);
             createAdd(adAccount, adSetId);
+            return adSetId;
         } catch (APIException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private long createAddSet(APIContext context, AdAccount account, long campaignId) throws APIException {
+    private long createAddSet(APIContext context, AdAccount account, long campaignId, Collection<Interest> interests) throws APIException {
+        List<IDName> fbInterests = new ArrayList<>();
+        for (Interest interest : interests) {
+            fbInterests.add(new IDName().setFieldId(interest.getId()).setFieldName(interest.getName()));
+        }
+
         Targeting targeting = new Targeting()
                 .setFieldDevicePlatforms(Collections.singletonList(Targeting.EnumDevicePlatforms.VALUE_DESKTOP))
                 .setFieldPublisherPlatforms(Collections.singletonList("facebook"))
@@ -89,11 +96,7 @@ public class FbFacade {
                 .setFieldExcludedConnections(Collections.singletonList(new IDName().setFieldId(filePropertiesService.getFacebookAppId()).setFieldName("Razarion")))
                 .setFieldGeoLocations(new TargetingGeoLocation().setFieldCountries(Arrays.asList("CH", "AT", "DE")))
                 .setFieldLocales(Collections.singletonList(5L))
-                .setFieldFlexibleSpec(Collections.singletonList(new FlexibleTargeting().setFieldInterests(Arrays.asList(
-                        new IDName().setFieldId("6003057392644").setFieldName("Gaming"),
-                        new IDName().setFieldId("6003253267911").setFieldName("Command & Conquer"),
-                        new IDName().setFieldId("6003066189670").setFieldName("Trump"),
-                        new IDName().setFieldId("6003582500438").setFieldName("Strategy games")))));
+                .setFieldFlexibleSpec(Collections.singletonList(new FlexibleTargeting().setFieldInterests(fbInterests)));
         Campaign campaign = new Campaign(campaignId, context).get().execute();
         AdSet adSet = account.createAdSet()
                 .setName("Automated Ad AdSet")
@@ -107,12 +110,23 @@ public class FbFacade {
                 .setTargeting(targeting)
                 .setRedownload(true)
                 .execute();
-        System.out.println("Ad set created. Id: " + adSet.getId());
         return Long.parseLong(adSet.getId());
     }
 
-    private void deleteAddSet(APIContext context, long adSetId) throws APIException {
-        new AdSet.APIRequestDelete(Long.toString(adSetId), context).execute();
+    public void deleteAddSet(long adSetId) {
+        try {
+            new AdSet.APIRequestDelete(Long.toString(adSetId), getContext()).execute();
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    public void stopAddSet(long adSetId) {
+        try {
+            new AdSet.APIRequestUpdate(Long.toString(adSetId), getContext()).setStatus(AdSet.EnumStatus.VALUE_PAUSED).execute();
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
     private void createAdd(AdAccount account, long adSetId) throws APIException {
@@ -127,7 +141,7 @@ public class FbFacade {
                         .setFieldLinkData(new AdCreativeLinkData()
                                 .setFieldLink("https://apps.facebook.com/razarion/")
                                 .setFieldMessage("Razarion vereint packende Echtzeit-Schlachten mit komplexer Strategie")
-                                .setFieldImageHash("6d95067d9a6d30c3b6341eb59b5d2782")
+                                .setFieldImageHash("f889056506d773565829a57eff09e095")
                                 .setFieldCallToAction(new AdCreativeLinkDataCallToAction()
                                         .setFieldType(AdCreativeLinkDataCallToAction.EnumType.VALUE_PLAY_GAME)
                                         .setFieldValue(new AdCreativeLinkDataCallToActionValue().setFieldApplication(filePropertiesService.getFacebookAppId())
@@ -137,11 +151,9 @@ public class FbFacade {
                                 )
                         )
                 )
-                // TODO .setImageHash(image.getFieldHash())
-                .setImageHash("f889056506d773565829a57eff09e095")
                 .setUrlTags("fbAdRazTrack=0001")
                 .execute();
-        Ad ad = account.createAd()
+        account.createAd()
                 .setName("Automated Ad")
                 .setAdsetId(adSetId)
                 .setCreative(creative)
@@ -150,47 +162,46 @@ public class FbFacade {
                 .execute();
     }
 
-    public Collection<AdSetInsight> getInsight() {
+    public Collection<AdSetInsight> getInsight(long adSetId) {
         try {
-            System.out.println("--------- Insight ---------");
-            AdSet adSet = new AdSet(6065557047421L, getContext());
+            AdSet adSet = new AdSet(adSetId, getContext());
             APINodeList<AdsInsights> adsInsightss = adSet.getInsights().setFields("date_start, date_stop, spend, clicks, impressions").execute();
-            Collection<AdSetInsight> adSetInsights = new ArrayList<AdSetInsight>();
+            Collection<AdSetInsight> adSetInsightEntities = new ArrayList<>();
             while (adsInsightss != null) {
                 for (AdsInsights adsInsights : adsInsightss) {
-                    AdSetInsight adSetInsight = new AdSetInsight();
-                    adSetInsight.setDateStart(DATE_FORMAT.parse(adsInsights.getFieldDateStart()));
-                    adSetInsight.setDateStop(DATE_FORMAT.parse(adsInsights.getFieldDateStop())); // Wrong data from facebook
-                    adSetInsight.setClicks(Integer.parseInt(adsInsights.getFieldClicks()));
-                    adSetInsight.setImpressions(Integer.parseInt(adsInsights.getFieldImpressions()));
-                    adSetInsight.setSpent(Double.parseDouble(adsInsights.getFieldSpend()));
-                    adSetInsights.add(adSetInsight);
+                    AdSetInsight historyAdEntity = new AdSetInsight();
+                    historyAdEntity.setFacebookDateStart(DATE_FORMAT.parse(adsInsights.getFieldDateStart()));
+                    historyAdEntity.setFacebookDateStop(DATE_FORMAT.parse(adsInsights.getFieldDateStop())); // Wrong data from facebook
+                    historyAdEntity.setClicks(Integer.parseInt(adsInsights.getFieldClicks()));
+                    historyAdEntity.setImpressions(Integer.parseInt(adsInsights.getFieldImpressions()));
+                    historyAdEntity.setSpent(Double.parseDouble(adsInsights.getFieldSpend()));
+                    adSetInsightEntities.add(historyAdEntity);
                 }
                 adsInsightss = adsInsightss.nextPage();
             }
-            return adSetInsights;
+            return adSetInsightEntities;
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
     }
 
-    public void printAllAdSets() {
+    public String getCurrentAdSetAsString() {
+        StringBuilder stringBuilder = new StringBuilder();
         try {
-            System.out.println("--------- print all add sets ---------");
             Campaign campaign = new Campaign(CAMPAIGN_ID, getContext()).get().requestAllFields().execute();
-            print("Campaign", campaign);
+            append("Campaign", campaign, stringBuilder);
             APINodeList<AdSet> adSets = campaign.getAdSets().requestAllFields().execute();
             while (adSets != null) {
                 for (AdSet adSet : adSets) {
-                    print("AdSet", adSet);
+                    append("AdSet", adSet, stringBuilder);
                     APINodeList<Ad> ads = adSet.getAds().requestAllFields().execute();
                     while (ads != null) {
                         for (Ad ad : ads) {
-                            print("Ad", ad);
+                            append("Ad", ad, stringBuilder);
                             APINodeList<AdCreative> adCreatives = ad.getAdCreatives().requestAllFields().execute();
                             while (adCreatives != null) {
                                 for (AdCreative adCreative : adCreatives) {
-                                    print("AdCreative", adCreative);
+                                    append("AdCreative", adCreative, stringBuilder);
                                 }
                                 adCreatives = adCreatives.nextPage();
                             }
@@ -203,11 +214,12 @@ public class FbFacade {
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
-        System.out.println("--------- print all add sets ends---------");
+
+        return stringBuilder.toString();
     }
 
-    private void print(String message, APINode apiNode) {
-        System.out.println(message + ": " + apiNode.getRawResponse());
+    private void append(String message, APINode apiNode, StringBuilder stringBuilder) {
+        stringBuilder.append(message).append(": ").append(apiNode.getRawResponse()).append("<br /><br />");
     }
 
 }

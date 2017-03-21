@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Created by IntelliJ IDEA.
+  User: Beat
+  Date: 21.03.2017
+  Time: 10:50
+-->
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+    <title>Razarion Marketing</title>
+</h:head>
+
+<h:body>
+    <h:form>
+        <h:commandButton value="Show Current Ads" action="#{marketingPageBean.readCurrentAds()}">
+            <f:ajax execute="@this" render="currentAdDisplay"/>
+        </h:commandButton>
+    </h:form>
+    <br/>
+    <h:outputText id="currentAdDisplay" value="#{marketingPageBean.currentAds}" escape="false"/>
+    <hr/>
+
+    <h:form>
+        <h:inputText id="sinsightAdSet" value="#{marketingPageBean.adSetId}"/>
+        <h:commandButton value="Show Insights" action="#{marketingPageBean.readInsights()}">
+            <f:ajax execute="sinsightAdSet" render="insightDisplay"/>
+        </h:commandButton>
+    </h:form>
+    <br/>
+    <h:outputText id="insightDisplay" value="#{marketingPageBean.insights}" escape="false"/>
+    <hr/>
+
+    <h:form>
+        <h:inputText id="stopAdSet" value="#{marketingPageBean.adSetId}"/>
+        <h:commandButton value="Stop Ad" action="#{marketingPageBean.stopAd()}">
+            <f:ajax execute="stopAdSet" render="adSetStopDisplay"/>
+        </h:commandButton>
+    </h:form>
+    <br/>
+    <h:outputText id="adSetStopDisplay" value="#{marketingPageBean.state}" escape="false"/>
+    <hr/>
+
+    <h:form>
+        <h:inputText id="deleteAndHisotizeAdSet" value="#{marketingPageBean.adSetId}"/>
+        <h:commandButton value="Delete Ad and Historize" action="#{marketingPageBean.deleteAdAndHistorize()}">
+            <f:ajax execute="deleteAndHisotizeAdSet" render="deleteAndHisotizeAdSetDisplay"/>
+        </h:commandButton>
+    </h:form>
+    <br/>
+    <h:outputText id="deleteAndHisotizeAdSetDisplay" value="#{marketingPageBean.state}" escape="false"/>
+    <hr/>
+
+</h:body>
+
+
+</html>
