@@ -53,9 +53,13 @@ public class MarketingService {
     @Transactional
     @SecurityCheck
     public void stopAd(long adSetId) {
+        CurrentAdEntity currentAdEntity = getCurrentAdEntity(adSetId);
+        if (currentAdEntity.getState() == CurrentAdEntity.State.WAITING_FOR_DELETION) {
+            throw new IllegalStateException("Ad is already stopped: " + currentAdEntity.getState());
+        }
+
         fbFacade.stopAddSet(adSetId);
 
-        CurrentAdEntity currentAdEntity = getCurrentAdEntity(adSetId);
         currentAdEntity.setDateStop(new Date());
         currentAdEntity.setState(CurrentAdEntity.State.WAITING_FOR_DELETION);
         entityManager.merge(currentAdEntity);
