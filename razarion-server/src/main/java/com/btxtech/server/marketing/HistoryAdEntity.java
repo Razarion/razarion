@@ -23,7 +23,9 @@ public class HistoryAdEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private long campaignId;
     private long adSetId;
+    private long adId;
     private Date dateStart;
     private Date dateStop; // Wrong data from facebook
     private Date facebookDateStart;
@@ -40,7 +42,9 @@ public class HistoryAdEntity {
 
 
     public void fill(CurrentAdEntity currentAdEntity, AdSetInsight adSetInsight) {
+        campaignId = currentAdEntity.getCampaignId();
         adSetId = currentAdEntity.getAdSetId();
+        adId = currentAdEntity.getAdId();
         dateStart = currentAdEntity.getDateStart();
         dateStop = currentAdEntity.getDateStop();
         interests = new ArrayList<>();

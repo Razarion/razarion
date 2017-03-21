@@ -1,5 +1,7 @@
 package com.btxtech.server.marketing;
 
+import com.btxtech.server.marketing.facebook.CreationData;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -9,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +26,7 @@ public class CurrentAdEntity {
         RUNNING,
         WAITING_FOR_DELETION
     }
+
     @Id
     @GeneratedValue
     private Long id;
@@ -30,11 +34,14 @@ public class CurrentAdEntity {
     private State state;
     private Date dateStart;
     private Date dateStop;
+    private long campaignId;
     private long adSetId;
+    private long adId;
+
     @ElementCollection
     @CollectionTable(
-            name="FB_MARKETING_CURRENT_AD_INTEREST",
-            joinColumns=@JoinColumn(name="currentAdEntityId")
+            name = "FB_MARKETING_CURRENT_AD_INTEREST",
+            joinColumns = @JoinColumn(name = "currentAdEntityId")
     )
     private List<Interest> interests;
 
@@ -62,12 +69,22 @@ public class CurrentAdEntity {
         this.dateStop = dateStop;
     }
 
+    public long getCampaignId() {
+        return campaignId;
+    }
+
     public long getAdSetId() {
         return adSetId;
     }
 
-    public void setAdSetId(long adSetId) {
-        this.adSetId = adSetId;
+    public long getAdId() {
+        return adId;
+    }
+
+    public void setIds(CreationData creationData) {
+        campaignId = creationData.getCampaignId();
+        adSetId = creationData.getAdSetId();
+        adId = creationData.getAdId();
     }
 
     public List<Interest> getInterests() {
@@ -75,7 +92,12 @@ public class CurrentAdEntity {
     }
 
     public void setInterests(List<Interest> interests) {
-        this.interests = interests;
+        if (this.interests != null) {
+            this.interests.clear();
+        } else {
+            this.interests = new ArrayList<>();
+        }
+        this.interests.addAll(interests);
     }
 
     @Override

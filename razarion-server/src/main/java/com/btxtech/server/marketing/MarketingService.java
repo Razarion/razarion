@@ -1,6 +1,8 @@
 package com.btxtech.server.marketing;
 
+import com.btxtech.server.marketing.facebook.AdInterest;
 import com.btxtech.server.marketing.facebook.AdSetInsight;
+import com.btxtech.server.marketing.facebook.CreationData;
 import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -13,10 +15,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -27,6 +29,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class MarketingService {
+    private Logger logger = Logger.getLogger(MarketingService.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -34,31 +37,27 @@ public class MarketingService {
 
     @Transactional
     @SecurityCheck
-    public void startAd() {
-        List<Interest> interests = new ArrayList<>();
-        interests.add(new Interest().setId("6003057392644").setName("Gaming"));
-        interests.add(new Interest().setId("6003253267911").setName("Command & Conquer"));
-        interests.add(new Interest().setId("6003066189670").setName("Trump"));
-        interests.add(new Interest().setId("6003582500438").setName("Strategy games"));
-
-        long adSetId = fbFacade.createAd(interests);
+    public CreationData startAd(List<Interest> interests) {
+        CreationData creationData = fbFacade.createAd(interests);
 
         CurrentAdEntity currentAdEntity = new CurrentAdEntity();
         currentAdEntity.setState(CurrentAdEntity.State.RUNNING);
-        currentAdEntity.setAdSetId(adSetId);
+        currentAdEntity.setIds(creationData);
         currentAdEntity.setDateStart(new Date());
+        currentAdEntity.setInterests(interests);
         entityManager.persist(currentAdEntity);
+        return creationData;
     }
 
     @Transactional
     @SecurityCheck
-    public void stopAd(long adSetId) {
-        CurrentAdEntity currentAdEntity = getCurrentAdEntity(adSetId);
+    public void stopCampaigns(long campaignId) {
+        CurrentAdEntity currentAdEntity = getCurrentAdEntity(campaignId);
         if (currentAdEntity.getState() == CurrentAdEntity.State.WAITING_FOR_DELETION) {
             throw new IllegalStateException("Ad is already stopped: " + currentAdEntity.getState());
         }
 
-        fbFacade.stopAddSet(adSetId);
+        fbFacade.stopCampaign(campaignId);
 
         currentAdEntity.setDateStop(new Date());
         currentAdEntity.setState(CurrentAdEntity.State.WAITING_FOR_DELETION);
@@ -67,48 +66,65 @@ public class MarketingService {
 
     @Transactional
     @SecurityCheck
-    public void deleteAdAndHistorize(long adSetId) {
-        CurrentAdEntity currentAdEntity = getCurrentAdEntity(adSetId);
+    public void deleteCampaignAndHistorize(long campaignId) {
+        CurrentAdEntity currentAdEntity = getCurrentAdEntity(campaignId);
         if (currentAdEntity.getState() != CurrentAdEntity.State.WAITING_FOR_DELETION) {
             throw new IllegalStateException("Can not delete running ad with id: " + currentAdEntity.getState());
         }
 
-        Collection<AdSetInsight> adSetInsights = fbFacade.getInsight(adSetId);
+        Collection<AdSetInsight> adSetInsights = fbFacade.getInsight(currentAdEntity.getAdSetId());
+        AdSetInsight adSetInsight;
         if (adSetInsights.size() != 1) {
-            throw new IllegalStateException("More then one AdSetInsight received: " + adSetInsights.size() + " for Facebook AdSet: " + adSetId);
+            adSetInsight = new AdSetInsight();
+            logger.warning("More then one AdSetInsight received: " + adSetInsights.size() + " for Facebook AdSet: " + currentAdEntity.getAdSetId());
+        } else {
+            adSetInsight = CollectionUtils.getFirst(adSetInsights);
         }
 
         HistoryAdEntity historyAdEntity = new HistoryAdEntity();
-        historyAdEntity.fill(currentAdEntity, CollectionUtils.getFirst(adSetInsights));
+        historyAdEntity.fill(currentAdEntity, adSetInsight);
         entityManager.persist(historyAdEntity);
 
-        fbFacade.deleteAddSet(adSetId);
+        fbFacade.deleteCampaign(campaignId);
         entityManager.remove(currentAdEntity);
     }
 
-    private CurrentAdEntity getCurrentAdEntity(long adSetId) {
+    private CurrentAdEntity getCurrentAdEntity(long campaignId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CurrentAdEntity> userQuery = criteriaBuilder.createQuery(CurrentAdEntity.class);
         Root<CurrentAdEntity> from = userQuery.from(CurrentAdEntity.class);
         CriteriaQuery<CurrentAdEntity> userSelect = userQuery.select(from);
-        userSelect.where(criteriaBuilder.equal(from.get(CurrentAdEntity_.adSetId), adSetId));
+        userSelect.where(criteriaBuilder.equal(from.get(CurrentAdEntity_.campaignId), campaignId));
         return entityManager.createQuery(userQuery).getSingleResult();
     }
 
     @SecurityCheck
-    public String getCurrentAdAsString() {
-        return fbFacade.getCurrentAdSetAsString();
+    public void deleteCampaign(long campaignId) {
+        fbFacade.deleteCampaign(campaignId);
+    }
+
+    @SecurityCheck
+    public String getCurrentCampaignsString() {
+        return fbFacade.getCurrentCampaignsString();
     }
 
     @SecurityCheck
     public String getAdInsight(long adSetId) {
         StringBuilder stringBuilder = new StringBuilder();
         Collection<AdSetInsight> adSetInsights = fbFacade.getInsight(adSetId);
-        for (AdSetInsight adSetInsight : adSetInsights) {
-            stringBuilder.append(adSetInsight);
-            stringBuilder.append("<br />");
-
+        if (adSetInsights.isEmpty()) {
+            return "No insights";
+        } else {
+            for (AdSetInsight adSetInsight : adSetInsights) {
+                stringBuilder.append(adSetInsight);
+                stringBuilder.append("<br />");
+            }
+            return stringBuilder.toString();
         }
-        return stringBuilder.toString();
+    }
+
+    @SecurityCheck
+    public List<AdInterest> queryAdInterest(String query) {
+        return fbFacade.queryAdInterest(query);
     }
 }

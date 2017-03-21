@@ -1,11 +1,17 @@
 package com.btxtech.server.web;
 
+import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.marketing.MarketingService;
+import com.btxtech.server.marketing.facebook.AdInterest;
+import com.btxtech.server.marketing.facebook.CreationData;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Created by Beat
@@ -18,40 +24,43 @@ public class MarketingPageBean {
     private MarketingService marketingService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private String currentAds;
+    private String currentCampaigns;
     private String insights;
-    private String adSetId;
+    private String campaignId;
     private String state;
+    private String queryInterest;
+    private String interestResult;
+    private String createAdInterest;
 
-    public String getAdSetId() {
-        return adSetId;
+    public String getCampaignId() {
+        return campaignId;
     }
 
-    public void setAdSetId(String adSetId) {
-        this.adSetId = adSetId;
+    public void setCampaignId(String campaignId) {
+        this.campaignId = campaignId;
     }
 
     public String getState() {
         return state;
     }
 
-    public Object readCurrentAds() {
+    public Object readCurrentCampaigns() {
         try {
-            currentAds = marketingService.getCurrentAdAsString();
+            currentCampaigns = marketingService.getCurrentCampaignsString();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            currentAds = t.getMessage();
+            currentCampaigns = t.getMessage();
         }
         return null;
     }
 
-    public Object getCurrentAds() {
-        return currentAds;
+    public String getCurrentCampaigns() {
+        return currentCampaigns;
     }
 
     public Object readInsights() {
         try {
-            insights = marketingService.getAdInsight(Long.parseLong(adSetId));
+            insights = marketingService.getAdInsight(Long.parseLong(campaignId));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             insights = t.getMessage();
@@ -63,9 +72,9 @@ public class MarketingPageBean {
         return insights;
     }
 
-    public Object stopAd() {
+    public Object stopCampaigns() {
         try {
-            marketingService.stopAd(Long.parseLong(adSetId));
+            marketingService.stopCampaigns(Long.parseLong(campaignId));
             state = "OK";
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -74,9 +83,79 @@ public class MarketingPageBean {
         return null;
     }
 
-    public Object deleteAdAndHistorize() {
+    public Object deleteCampaignAndHistorize() {
         try {
-            marketingService.deleteAdAndHistorize(Long.parseLong(adSetId));
+            marketingService.deleteCampaignAndHistorize(Long.parseLong(campaignId));
+            state = "OK";
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            state = t.getMessage();
+        }
+        return null;
+    }
+
+    public void setQueryInterest(String queryInterest) {
+        this.queryInterest = queryInterest;
+    }
+
+    public String getQueryInterest() {
+        return queryInterest;
+    }
+
+    public Object queryAdInterest() {
+        try {
+            List<AdInterest> adInterests = marketingService.queryAdInterest(queryInterest);
+            if (adInterests.isEmpty()) {
+                interestResult = "No interest for: " + queryInterest;
+            } else {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (AdInterest adInterest : adInterests) {
+                    stringBuilder.append(adInterest.toNiceString());
+                    stringBuilder.append("<br />");
+                }
+                interestResult = stringBuilder.toString();
+            }
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            interestResult = t.getMessage();
+        }
+        return null;
+    }
+
+    public String getInterestResult() {
+        return interestResult;
+    }
+
+    public void setCreateCampaignInterest(String createCampaignInterest) {
+        this.createAdInterest = createCampaignInterest;
+    }
+
+    public String getCreateCampaignInterest() {
+        return createAdInterest;
+    }
+
+    public Object createCampaign() {
+        try {
+            List<Interest> interests = new ArrayList<>();
+            for (String line : createAdInterest.split("\\n")) {
+                StringTokenizer stringTokenizer = new StringTokenizer(line, "|");
+                Interest interest = new Interest();
+                interest.setName(stringTokenizer.nextToken());
+                interest.setId(stringTokenizer.nextToken());
+                interests.add(interest);
+            }
+            CreationData creationData = marketingService.startAd(interests);
+            state = "OK Campaign: " + creationData.getCampaignId() + " Ad Set: " + creationData.getAdSetId() + " Ad: " + creationData.getAdId();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            state = t.getMessage();
+        }
+        return null;
+    }
+
+    public Object deleteCampaign() {
+        try {
+            marketingService.deleteCampaign(Long.parseLong(campaignId));
             state = "OK";
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

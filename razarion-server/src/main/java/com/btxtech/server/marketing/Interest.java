@@ -36,4 +36,12 @@ public class Interest {
         this.name = name;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Interest{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

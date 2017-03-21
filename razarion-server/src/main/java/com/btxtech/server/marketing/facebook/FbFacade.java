@@ -23,6 +23,9 @@ import com.facebook.ads.sdk.TargetingGeoLocation;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +42,6 @@ import java.util.Locale;
 @ApplicationScoped
 public class FbFacade {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-    private static final long CAMPAIGN_ID = 6065518817021L;
     @Inject
     private FilePropertiesService filePropertiesService;
 
@@ -52,32 +54,32 @@ public class FbFacade {
         return new AdAccount(filePropertiesService.getFacebookMarketingAccount(), apiContext);
     }
 
-    public long createCampaign() {
+    public CreationData createAd(List<Interest> interests) {
         try {
-            Campaign campaign = getAdAccount(getContext()).createCampaign()
+            APIContext context = getContext();
+            AdAccount adAccount = getAdAccount(context);
+            CreationData creationData = new CreationData();
+            long campaignId = createCampaign(adAccount);
+            creationData.setCampaignId(campaignId);
+            long adSetId = createAddSet(context, adAccount, campaignId, interests);
+            creationData.setAdSetId(adSetId);
+            long adId = createAdd(adAccount, adSetId);
+            creationData.setAdId(adId);
+            return creationData;
+        } catch (APIException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private long createCampaign(AdAccount account) {
+        try {
+            Campaign campaign = account.createCampaign()
                     .setName("Razarion Automated Campaign")
                     .setObjective(Campaign.EnumObjective.VALUE_CANVAS_APP_INSTALLS)
                     .setSpendCap(10000L) // Min value in Rappen
                     .setStatus(Campaign.EnumStatus.VALUE_PAUSED)
                     .execute();
             return Long.parseLong(campaign.getId());
-        } catch (APIException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public long getCampaignId() {
-        return CAMPAIGN_ID;
-    }
-
-
-    public long createAd(List<Interest> interests) {
-        try {
-            APIContext context = getContext();
-            AdAccount adAccount = getAdAccount(context);
-            long adSetId = createAddSet(context, adAccount, getCampaignId(), interests);
-            createAdd(adAccount, adSetId);
-            return adSetId;
         } catch (APIException e) {
             throw new RuntimeException(e);
         }
@@ -113,23 +115,23 @@ public class FbFacade {
         return Long.parseLong(adSet.getId());
     }
 
-    public void deleteAddSet(long adSetId) {
+    public void deleteCampaign(long campaignId) {
         try {
-            new AdSet.APIRequestDelete(Long.toString(adSetId), getContext()).execute();
+            new Campaign.APIRequestDelete(Long.toString(campaignId), getContext()).execute();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
     }
 
-    public void stopAddSet(long adSetId) {
+    public void stopCampaign(long campaignId) {
         try {
-            new AdSet.APIRequestUpdate(Long.toString(adSetId), getContext()).setStatus(AdSet.EnumStatus.VALUE_PAUSED).execute();
+            new Campaign.APIRequestUpdate(Long.toString(campaignId), getContext()).setStatus(Campaign.EnumStatus.VALUE_PAUSED).execute();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
     }
 
-    private void createAdd(AdAccount account, long adSetId) throws APIException {
+    private long createAdd(AdAccount account, long adSetId) throws APIException {
 //        AdImage image = account.createAdImage()
 //                .addUploadFile("file", new File(IMAGE_DIR, "TestAdImage.jpg"))
 //                .execute();
@@ -151,15 +153,16 @@ public class FbFacade {
                                 )
                         )
                 )
-                .setUrlTags("fbAdRazTrack=0001")
                 .execute();
-        account.createAd()
+        Ad ad = account.createAd()
                 .setName("Automated Ad")
                 .setAdsetId(adSetId)
                 .setCreative(creative)
                 .setStatus(Ad.EnumStatus.VALUE_PAUSED)
                 .setRedownload(true)
                 .execute();
+        return Long.parseLong(ad.getId());
+
     }
 
     public Collection<AdSetInsight> getInsight(long adSetId) {
@@ -185,31 +188,36 @@ public class FbFacade {
         }
     }
 
-    public String getCurrentAdSetAsString() {
+    public String getCurrentCampaignsString() {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            Campaign campaign = new Campaign(CAMPAIGN_ID, getContext()).get().requestAllFields().execute();
-            append("Campaign", campaign, stringBuilder);
-            APINodeList<AdSet> adSets = campaign.getAdSets().requestAllFields().execute();
-            while (adSets != null) {
-                for (AdSet adSet : adSets) {
-                    append("AdSet", adSet, stringBuilder);
-                    APINodeList<Ad> ads = adSet.getAds().requestAllFields().execute();
-                    while (ads != null) {
-                        for (Ad ad : ads) {
-                            append("Ad", ad, stringBuilder);
-                            APINodeList<AdCreative> adCreatives = ad.getAdCreatives().requestAllFields().execute();
-                            while (adCreatives != null) {
-                                for (AdCreative adCreative : adCreatives) {
-                                    append("AdCreative", adCreative, stringBuilder);
+            APINodeList<Campaign> campaigns = getAdAccount(getContext()).getCampaigns().requestAllFields().execute();
+            while (campaigns != null) {
+                for (Campaign campaign : campaigns) {
+                    append("Campaign", campaign, stringBuilder);
+                    APINodeList<AdSet> adSets = campaign.getAdSets().requestAllFields().execute();
+                    while (adSets != null) {
+                        for (AdSet adSet : adSets) {
+                            append("AdSet", adSet, stringBuilder);
+                            APINodeList<Ad> ads = adSet.getAds().requestAllFields().execute();
+                            while (ads != null) {
+                                for (Ad ad : ads) {
+                                    append("Ad", ad, stringBuilder);
+                                    APINodeList<AdCreative> adCreatives = ad.getAdCreatives().requestAllFields().execute();
+                                    while (adCreatives != null) {
+                                        for (AdCreative adCreative : adCreatives) {
+                                            append("AdCreative", adCreative, stringBuilder);
+                                        }
+                                        adCreatives = adCreatives.nextPage();
+                                    }
                                 }
-                                adCreatives = adCreatives.nextPage();
+                                ads = ads.nextPage();
                             }
                         }
-                        ads = ads.nextPage();
+                        adSets = adSets.nextPage();
                     }
                 }
-                adSets = adSets.nextPage();
+                campaigns = campaigns.nextPage();
             }
         } catch (Throwable t) {
             throw new RuntimeException(t);
@@ -222,4 +230,10 @@ public class FbFacade {
         stringBuilder.append(message).append(": ").append(apiNode.getRawResponse()).append("<br /><br />");
     }
 
+    public List<AdInterest> queryAdInterest(String query) {
+        Client client = ClientBuilder.newClient();
+        // client.register(new LoggingFilter());
+        TargetingAdInterestData data = client.target("https://graph.facebook.com/v2.8/search").queryParam("access_token", filePropertiesService.getFacebookAccessToken()).queryParam("type", "adinterest").queryParam("q", query).request(MediaType.APPLICATION_JSON).get(TargetingAdInterestData.class);
+        return data.getData();
+    }
 }

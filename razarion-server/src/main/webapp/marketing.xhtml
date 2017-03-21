@@ -19,18 +19,20 @@
 
 <h:body>
     <h:form>
-        <h:commandButton value="Show Current Ads" action="#{marketingPageBean.readCurrentAds()}">
-            <f:ajax execute="@this" render="currentAdDisplay"/>
+        <h:commandButton value="Show Current Campaigns" action="#{marketingPageBean.readCurrentCampaigns()}">
+            <f:ajax execute="@this" render="currentCampaignDisplay"/>
         </h:commandButton>
     </h:form>
     <br/>
-    <h:outputText id="currentAdDisplay" value="#{marketingPageBean.currentAds}" escape="false"/>
+    <h:outputText id="currentCampaignDisplay" value="#{marketingPageBean.currentCampaigns}" escape="false"/>
     <hr/>
 
     <h:form>
-        <h:inputText id="sinsightAdSet" value="#{marketingPageBean.adSetId}"/>
+        Pass AdSet Id
+        <br />
+        <h:inputText id="sinsightCampaign" value="#{marketingPageBean.campaignId}"/>
         <h:commandButton value="Show Insights" action="#{marketingPageBean.readInsights()}">
-            <f:ajax execute="sinsightAdSet" render="insightDisplay"/>
+            <f:ajax execute="sinsightCampaign" render="insightDisplay"/>
         </h:commandButton>
     </h:form>
     <br/>
@@ -38,23 +40,55 @@
     <hr/>
 
     <h:form>
-        <h:inputText id="stopAdSet" value="#{marketingPageBean.adSetId}"/>
-        <h:commandButton value="Stop Ad" action="#{marketingPageBean.stopAd()}">
-            <f:ajax execute="stopAdSet" render="adSetStopDisplay"/>
+        <h:inputText id="stopCampaign" value="#{marketingPageBean.campaignId}"/>
+        <h:commandButton value="Stop Campaign" action="#{marketingPageBean.stopCampaigns()}">
+            <f:ajax execute="stopCampaign" render="campaignStopDisplay"/>
         </h:commandButton>
     </h:form>
     <br/>
-    <h:outputText id="adSetStopDisplay" value="#{marketingPageBean.state}" escape="false"/>
+    <h:outputText id="campaignStopDisplay" value="#{marketingPageBean.state}" escape="false"/>
     <hr/>
 
     <h:form>
-        <h:inputText id="deleteAndHisotizeAdSet" value="#{marketingPageBean.adSetId}"/>
-        <h:commandButton value="Delete Ad and Historize" action="#{marketingPageBean.deleteAdAndHistorize()}">
-            <f:ajax execute="deleteAndHisotizeAdSet" render="deleteAndHisotizeAdSetDisplay"/>
+        <h:inputText id="deleteAndHisotizeCampaign" value="#{marketingPageBean.campaignId}"/>
+        <h:commandButton value="Delete Historize Campaign" action="#{marketingPageBean.deleteCampaignAndHistorize()}">
+            <f:ajax execute="deleteAndHisotizeCampaign" render="deleteAndHisotizeCampaignDisplay"/>
         </h:commandButton>
     </h:form>
     <br/>
-    <h:outputText id="deleteAndHisotizeAdSetDisplay" value="#{marketingPageBean.state}" escape="false"/>
+    <h:outputText id="deleteAndHisotizeCampaignDisplay" value="#{marketingPageBean.state}" escape="false"/>
+    <hr/>
+
+    <h:form>
+        Only used if something went wrong and need to be deleted
+        <br />
+        <h:inputText id="deleteCampaign" value="#{marketingPageBean.campaignId}"/>
+        <h:commandButton value="Delete Campaign" action="#{marketingPageBean.deleteCampaign()}">
+            <f:ajax execute="deleteCampaign" render="deleteCampaignDisplay"/>
+        </h:commandButton>
+    </h:form>
+    <br/>
+    <h:outputText id="deleteCampaignDisplay" value="#{marketingPageBean.state}" escape="false"/>
+    <hr/>
+
+    <h:form>
+        <h:inputText id="queryInterest" value="#{marketingPageBean.queryInterest}"/>
+        <h:commandButton value="Query Interest" action="#{marketingPageBean.queryAdInterest()}">
+            <f:ajax execute="queryInterest" render="queryInterestDisplay"/>
+        </h:commandButton>
+    </h:form>
+    <br/>
+    <h:outputText id="queryInterestDisplay" value="#{marketingPageBean.interestResult}" escape="false"/>
+    <hr/>
+
+    <h:form>
+        <h:inputTextarea cols="100" rows="30" id="createCampaignInterest" value="#{marketingPageBean.createCampaignInterest}"/>
+        <h:commandButton value="Create Campaign" action="#{marketingPageBean.createCampaign()}">
+            <f:ajax execute="createCampaignInterest" render="createCampaignDisplay"/>
+        </h:commandButton>
+    </h:form>
+    <br/>
+    <h:outputText id="createCampaignDisplay" value="#{marketingPageBean.state}" escape="false"/>
     <hr/>
 
 </h:body>

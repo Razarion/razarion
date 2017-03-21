@@ -73,5 +73,10 @@
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>2.22.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.facebook.ads.sdk</groupId>
+            <artifactId>facebook-java-ads-sdk</artifactId>
+            <version>0.4.0</version>
+        </dependency>
     </dependencies>
 </project>
