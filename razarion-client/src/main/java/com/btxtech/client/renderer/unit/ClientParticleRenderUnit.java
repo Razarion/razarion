@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.DecimalPositionShaderAttribute;
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;

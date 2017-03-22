@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.FloatShaderAttribute;
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.FloatShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.ModelMatrices;

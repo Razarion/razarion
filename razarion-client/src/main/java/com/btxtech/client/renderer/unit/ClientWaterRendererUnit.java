@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;

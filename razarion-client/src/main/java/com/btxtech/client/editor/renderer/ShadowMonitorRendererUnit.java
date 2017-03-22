@@ -2,8 +2,8 @@ package com.btxtech.client.editor.renderer;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
-import com.btxtech.client.renderer.engine.ShaderTextureCoordinateAttribute;
-import com.btxtech.client.renderer.engine.VertexShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.ShaderTextureCoordinateAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;

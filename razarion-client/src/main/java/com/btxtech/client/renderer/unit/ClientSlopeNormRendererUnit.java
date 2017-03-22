@@ -2,7 +2,7 @@ package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.ClientRenderUtil;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.engine.Vec3Float32ArrayShaderAttribute;
+import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.datatypes.Matrix4;
