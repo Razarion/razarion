@@ -127,4 +127,12 @@ public class MarketingService {
     public List<AdInterest> queryAdInterest(String query) {
         return fbFacade.queryAdInterest(query);
     }
+
+    @Transactional
+    public void onClickTrackerReceived(String adId) {
+        ClickTrackerEntity clickTrackerEntity = new ClickTrackerEntity();
+        clickTrackerEntity.setAdId(adId);
+        clickTrackerEntity.setTimeStamp(new Date());
+        entityManager.persist(clickTrackerEntity);
+    }
 }

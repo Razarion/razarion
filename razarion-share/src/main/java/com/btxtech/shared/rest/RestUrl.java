@@ -19,6 +19,8 @@ public class RestUrl {
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
+    public static final String MARKETING = "marketing";
+    public static final String FB_CLICK_TRACKING_TAGS_RECEIVER = "clicktrackerreceiver";
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache
@@ -36,6 +38,10 @@ public class RestUrl {
 
     public static String loadShape3dBufferUrl() {
         return "/" + APPLICATION_PATH + "/" + SHAPE_3D_PROVIDER + "/" + SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
+    }
+
+    public static String fbClickTrackingReceiver() {
+        return "https://www.razarion.com/" + APPLICATION_PATH + "/" + MARKETING + "/" + FB_CLICK_TRACKING_TAGS_RECEIVER;
     }
 
     public static String getImageServiceUrlSafe(Integer id) {

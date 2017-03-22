@@ -2,6 +2,7 @@ package com.btxtech.server.marketing.facebook;
 
 import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.system.FilePropertiesService;
+import com.btxtech.shared.rest.RestUrl;
 import com.facebook.ads.sdk.APIContext;
 import com.facebook.ads.sdk.APIException;
 import com.facebook.ads.sdk.APINode;
@@ -25,6 +26,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,7 +47,6 @@ public class FbFacade {
     @Inject
     private FilePropertiesService filePropertiesService;
 
-
     private APIContext getContext() {
         return new APIContext(filePropertiesService.getFacebookAccessToken(), filePropertiesService.getFacebookSecret()).enableDebug(false);
     }
@@ -65,6 +66,7 @@ public class FbFacade {
             creationData.setAdSetId(adSetId);
             long adId = createAdd(adAccount, adSetId);
             creationData.setAdId(adId);
+            setTrackingTag(adId, RestUrl.fbClickTrackingReceiver());
             return creationData;
         } catch (APIException e) {
             throw new RuntimeException(e);
@@ -235,5 +237,12 @@ public class FbFacade {
         // client.register(new LoggingFilter());
         TargetingAdInterestData data = client.target("https://graph.facebook.com/v2.8/search").queryParam("access_token", filePropertiesService.getFacebookAccessToken()).queryParam("type", "adinterest").queryParam("q", query).request(MediaType.APPLICATION_JSON).get(TargetingAdInterestData.class);
         return data.getData();
+    }
+
+    private void setTrackingTag(long addId, String url) {
+        Client client = ClientBuilder.newClient();
+        // client.register(new LoggingFilter());
+        String fields = "{\"access_token\": \"" + filePropertiesService.getFacebookAccessToken() + "\", \"url\": \"" + url + "\", \"add_template_param\": \"1\"}";
+        client.target("https://graph.facebook.com/v2.8").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
     }
 }
