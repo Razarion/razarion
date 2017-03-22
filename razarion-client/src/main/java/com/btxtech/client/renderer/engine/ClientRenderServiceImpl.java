@@ -1,11 +1,8 @@
 package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.editor.terrain.TerrainEditorImpl;
-import com.btxtech.client.editor.terrain.renderer.TerrainEditorSlopeRenderUnit;
-import com.btxtech.client.editor.terrain.renderer.TerrainEditorTerrainObjectRendererUnit;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.webgl.WebGlException;
-import com.btxtech.uiservice.renderer.AbstractRenderComposite;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.RenderService;
@@ -20,11 +17,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -33,9 +25,7 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class ClientRenderServiceImpl extends RenderService {
     public static final int DEPTH_BUFFER_SIZE = 1024;
-    public static final int RENDER_FRAME_COUNT = 1;
-    public static final int RENDER_FRAME_COUNT_MILLIS = RENDER_FRAME_COUNT * 1000;
-    private Logger logger = Logger.getLogger(ClientRenderServiceImpl.class.getName());
+    // private Logger logger = Logger.getLogger(ClientRenderServiceImpl.class.getName());
     @Inject
     private Instance<AbstractRenderUnit> renderInstance;
     @Inject
@@ -46,94 +36,12 @@ public class ClientRenderServiceImpl extends RenderService {
     private TerrainUiService terrainUiService;
     @Inject
     private TerrainEditorImpl terrainEditor;
-    @Deprecated
-    private List<AbstractRenderComposite> renderQueue;
-    @Deprecated
-    private Collection<AbstractRenderComposite> terrainObjectRenders;
-    private boolean wire;
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
-    private boolean showObjectEditor = false;
-    @Deprecated
-    private Collection<AbstractRenderComposite> terrainObjectNorms;
-    private int framesCount = 0;
-    private long lastTime = 0;
 
     public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
         initFrameBuffer();
-    }
-
-    protected void setupRenderers() {
-        renderQueue = new ArrayList<>();
-        terrainObjectNorms = new ArrayList<>();
-        terrainObjectRenders = new ArrayList<>();
-        setupTerrainObjectRenderer();
-    }
-
-    // TODO
-//    @Override
-//    protected void initBaseItemTypeRenderer(AbstractRenderComposite compositeRenderer) {
-//        compositeRenderer.setRenderUnit(renderInstance.select(ItemUnitRenderer.class).get());
-//        compositeRenderer.setDepthBufferRenderUnit(renderInstance.select(ItemDepthBufferUnitRenderer.class).get());
-//        compositeRenderer.setWireRenderUnit(renderInstance.select(ItemWireUnitRenderer.class).get());
-//        compositeRenderer.setNormRenderUnit(renderInstance.select(ItemNormUnitRenderer.class).get());
-//    }
-
-    public void setupTerrainObjectRenderer() {
-        if (terrainObjectRenders != null) {
-            renderQueue.removeAll(terrainObjectRenders);
-            terrainObjectRenders.clear();
-        }
-        if (terrainObjectNorms != null) {
-            renderQueue.removeAll(terrainObjectNorms);
-            terrainObjectNorms.clear();
-        }
-        for (AbstractRenderComposite terrainObjectRender : terrainObjectRenders) {
-            terrainObjectRender.fillBuffers();
-        }
-    }
-
-    public void createTerrainEditorRenderer(int id) {
-        TerrainEditorSlopeRenderUnit terrainEditorRenderer = renderInstance.select(TerrainEditorSlopeRenderUnit.class).get();
-        // TODO terrainEditorRenderer.setId(id);
-        terrainEditorRenderer.fillBuffers();
-    }
-
-
-    public void removeTerrainEditorRenderer(int id) {
-        // TODO
-//        for (TerrainEditorSlopeRenderUnit terrainEditorRenderer : terrainEditorRenderers) {
-//            if (terrainEditorRenderer.getId() == id) {
-//                terrainEditorRenderers.remove(terrainEditorRenderer);
-//                return;
-//            }
-//        }
-    }
-
-    private AbstractRenderComposite createAndAddRenderSwitch(Class<? extends AbstractRenderUnit> normalRendererClass, Class<? extends AbstractRenderUnit> depthBufferRendererClass, Class<? extends AbstractRenderUnit> wireRendererClass, int id) {
-        AbstractRenderUnit normalRenderUnit = null;
-        if (normalRendererClass != null) {
-            normalRenderUnit = renderInstance.select(normalRendererClass).get();
-            // TODO normalRenderUnit.setId(id);
-            normalRenderUnit.setupImages();
-        }
-        AbstractRenderUnit depthBufferRenderUnit = null;
-        if (depthBufferRendererClass != null) {
-            depthBufferRenderUnit = renderInstance.select(depthBufferRendererClass).get();
-            // TODO depthBufferRenderUnit.setId(id);
-            depthBufferRenderUnit.setupImages();
-        }
-        AbstractRenderUnit wireRenderUnit = null;
-        if (wireRendererClass != null) {
-            wireRenderUnit = renderInstance.select(wireRendererClass).get();
-            // TODO wireRenderUnit.setId(id);
-            wireRenderUnit.setupImages();
-        }
-        // TODO AbstractRenderComposite abstractRenderComposite = new AbstractRenderComposite(normalRenderUnit, depthBufferRenderUnit, wireRenderUnit, wire);
-        // TODOrenderQueue.add(abstractRenderComposite);
-        // TODO return abstractRenderComposite;
-        return null;
     }
 
     @Override
@@ -181,65 +89,6 @@ public class ClientRenderServiceImpl extends RenderService {
         }
     }
 
-    protected void doRender() {
-//        for (AbstractRenderComposite compositeRenderer : renderQueue) {
-//            try {
-//                compositeRenderer.drawDepthBuffer();
-//            } catch (Throwable t) {
-//                logger.log(Level.SEVERE, "drawDepthBuffer failed", t);
-//            }
-//        }
-//        for (AbstractRenderComposite compositeRenderer : renderQueue) {
-//            if (!showMonitor && compositeRenderer == monitor) {
-//                continue;
-//            }
-//            if (!showNorm && (compositeRenderer == terrainNorm || unitNorms.contains(compositeRenderer) || terrainObjectNorms.contains(compositeRenderer))) {
-//                continue;
-//            }
-//            try {
-//                compositeRenderer.draw();
-//            } catch (Throwable t) {
-//                logger.log(Level.SEVERE, "draw failed", t);
-//            }
-//        }
-
-        // ------------------------------------------------------------------------------------
-        // TODO handle the editor stuff
-
-        // Dirty way to render wire over image (see changed files in GIT).
-        gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.ALWAYS);
-        gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
-        gameCanvas.getCtx3d().blendFunc(WebGLRenderingContext.SRC_ALPHA, WebGLRenderingContext.ONE_MINUS_SRC_ALPHA);
-        gameCanvas.getCtx3d().depthMask(false);
-        for (AbstractRenderComposite abstractRenderComposite : renderQueue) {
-//            if (!showNorm && (abstractRenderComposite == terrainNorm || terrainObjectNorms.contains(abstractRenderComposite))) {
-//                continue;
-//            }
-            try {
-                abstractRenderComposite.drawWire();
-            } catch (Throwable t) {
-                logger.log(Level.SEVERE, "draw failed", t);
-            }
-        }
-        gameCanvas.getCtx3d().depthFunc(WebGLRenderingContext.LESS);
-        gameCanvas.getCtx3d().depthMask(true);
-        gameCanvas.getCtx3d().disable(WebGLRenderingContext.BLEND);
-
-
-        framesCount++;
-        if (lastTime == 0) {
-            lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
-        } else if (lastTime < System.currentTimeMillis()) {
-            // logger.severe("Frames per seonds: " + (double) framesCount / (double) RENDER_FRAME_COUNT);
-            framesCount = 0;
-            lastTime = System.currentTimeMillis() + RENDER_FRAME_COUNT_MILLIS;
-        }
-    }
-
-    public boolean isWire() {
-        return wire;
-    }
-
     private void initFrameBuffer() {
         Object extension = gameCanvas.getCtx3d().getExtension("WEBGL_depth_texture");
         if (extension == null) {
@@ -278,9 +127,5 @@ public class ClientRenderServiceImpl extends RenderService {
 
     public WebGLTexture getDepthTexture() {
         return depthTexture;
-    }
-
-    public void setShowObjectEditor(boolean showObjectEditor) {
-        this.showObjectEditor = showObjectEditor;
     }
 }
