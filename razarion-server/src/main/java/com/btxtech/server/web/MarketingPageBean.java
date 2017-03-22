@@ -144,7 +144,7 @@ public class MarketingPageBean {
                 interest.setId(stringTokenizer.nextToken());
                 interests.add(interest);
             }
-            CreationData creationData = marketingService.startAd(interests);
+            CreationData creationData = marketingService.startCampaign(interests);
             state = "OK Campaign: " + creationData.getCampaignId() + " Ad Set: " + creationData.getAdSetId() + " Ad: " + creationData.getAdId();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
