@@ -2,9 +2,11 @@ package com.btxtech.uiservice.tip.visualization;
 
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrix;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
 
@@ -18,6 +20,7 @@ import java.util.List;
  * Time: 22:51
  */
 public abstract class InGameTipVisualization implements TerrainScrollListener {
+    private static NativeMatrixFactory nativeMatrixFactory = new NativeMatrixFactory();
     private static final int READY_CHECK_DELAY = 500;
     private List<Vertex> cornerVertices;
     private final double moveDistance;
@@ -112,12 +115,12 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
 
     private List<ModelMatrices> createCornerModelMatrices(Vertex position, long timeStamp) {
         double distance = moveDistance - moveDistance * (double) (timeStamp % duration) / (double) duration;
-        Matrix4 positionMatrix = Matrix4.createTranslation(position);
-        Matrix4 animationMatrix = Matrix4.createTranslation(distance, -distance, 0);
-        Matrix4 matrix1 = positionMatrix.multiply(animationMatrix);
-        Matrix4 matrix2 = positionMatrix.multiply(Matrix4.ROT_90_Z.multiply(animationMatrix));
-        Matrix4 matrix3 = positionMatrix.multiply(Matrix4.ROT_180_Z.multiply(animationMatrix));
-        Matrix4 matrix4 = positionMatrix.multiply(Matrix4.ROT_270_Z.multiply(animationMatrix));
+        NativeMatrix positionMatrix = nativeMatrixFactory.createTranslation(position.getX(), position.getY(), position.getZ());
+        NativeMatrix animationMatrix = nativeMatrixFactory.createTranslation(distance, -distance, 0);
+        NativeMatrix matrix1 = positionMatrix.multiply(animationMatrix);
+        NativeMatrix matrix2 = positionMatrix.multiply(nativeMatrixFactory.createZRotation(MathHelper.QUARTER_RADIANT).multiply(animationMatrix));
+        NativeMatrix matrix3 = positionMatrix.multiply(nativeMatrixFactory.createZRotation(MathHelper.HALF_RADIANT).multiply(animationMatrix));
+        NativeMatrix matrix4 = positionMatrix.multiply(nativeMatrixFactory.createZRotation(MathHelper.THREE_QUARTER_RADIANT).multiply(animationMatrix));
 
         List<ModelMatrices> result = new ArrayList<>();
         result.add(new ModelMatrices(matrix1));
