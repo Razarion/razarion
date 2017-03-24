@@ -16,6 +16,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.google.gwt.resources.client.TextResource;
@@ -127,9 +128,17 @@ public class WebGlFacade {
         webGlProgram.useProgram();
     }
 
+    // Do not use anymore -> slow. User: uniformMatrix4fv(String uniformName, Matrix4 matrix)
+    @Deprecated
     public void uniformMatrix4fv(String uniformName, Matrix4 matrix) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
         gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.createArrayBufferOfFloat32Doubles(matrix.toWebGlArray()));
+        WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
+    }
+
+    public void uniformMatrix4fv(String uniformName, NativeMatrix matrix) {
+        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(matrix));
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
     }
 

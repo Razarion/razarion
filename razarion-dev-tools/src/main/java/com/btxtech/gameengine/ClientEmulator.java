@@ -1,9 +1,9 @@
 package com.btxtech.gameengine;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -30,7 +30,7 @@ public class ClientEmulator {
                     SyncBaseItemSimpleDto simpleDto = ((SyncBaseItem) syncItem).createSyncBaseItemSimpleDto();
                     // Alive
                     if (!simpleDto.checkSpawning() && simpleDto.checkBuildup() && simpleDto.checkHealth()) {
-                        aliveModelMatrices.add(new ModelMatrices(simpleDto.getModel()).setInterpolatableVelocity(simpleDto.getInterpolatableVelocity()));
+                        aliveModelMatrices.add(new ModelMatrices(simpleDto.getModel(), simpleDto.getInterpolatableVelocity()));
                     }
 
                 }

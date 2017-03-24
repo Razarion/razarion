@@ -1,11 +1,9 @@
 package com.btxtech.uiservice.renderer.task.ground;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 
-import javax.inject.Inject;
 import java.util.logging.Logger;
 
 /**

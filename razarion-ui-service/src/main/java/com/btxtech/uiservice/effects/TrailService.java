@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.effects;
 
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;

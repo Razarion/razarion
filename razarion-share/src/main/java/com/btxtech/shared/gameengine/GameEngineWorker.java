@@ -220,7 +220,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncResourceItemSimpleDto.setItemTypeId(syncResourceItem.getItemType().getId());
         syncResourceItemSimpleDto.setPosition2d(syncResourceItem.getSyncPhysicalArea().getPosition2d());
         syncResourceItemSimpleDto.setPosition3d(syncResourceItem.getSyncPhysicalArea().getPosition3d());
-        syncResourceItemSimpleDto.setModel(syncResourceItem.getSyncPhysicalArea().getModelMatrices().getModel());
+        syncResourceItemSimpleDto.setModel(syncResourceItem.getSyncPhysicalArea().getModelMatrices());
         sendToClient(GameEngineControlPackage.Command.RESOURCE_CREATED, syncResourceItemSimpleDto);
     }
 
@@ -236,7 +236,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncBoxItemSimpleDto.setItemTypeId(syncBoxItem.getItemType().getId());
         syncBoxItemSimpleDto.setPosition2d(syncBoxItem.getSyncPhysicalArea().getPosition2d());
         syncBoxItemSimpleDto.setPosition3d(syncBoxItem.getSyncPhysicalArea().getPosition3d());
-        syncBoxItemSimpleDto.setModel(syncBoxItem.getSyncPhysicalArea().getModelMatrices().getModel());
+        syncBoxItemSimpleDto.setModel(syncBoxItem.getSyncPhysicalArea().getModelMatrices());
         sendToClient(GameEngineControlPackage.Command.BOX_CREATED, syncBoxItemSimpleDto);
     }
 

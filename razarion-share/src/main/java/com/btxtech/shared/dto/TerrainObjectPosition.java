@@ -62,10 +62,4 @@ public class TerrainObjectPosition {
         this.rotationZ = rotationZ;
         return this;
     }
-
-    public Matrix4 createModelMatrix(double z) {
-        Matrix4 matrix4 = Matrix4.createTranslation(position.getX(), position.getY(), z);
-        matrix4 = matrix4.multiply(Matrix4.createScale(scale, scale, scale));
-        return matrix4.multiply(Matrix4.createZRotation(rotationZ));
-    }
 }

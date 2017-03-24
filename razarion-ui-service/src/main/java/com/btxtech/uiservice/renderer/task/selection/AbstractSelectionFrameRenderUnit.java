@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.renderer.task.selection;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.GroupSelectionFrame;

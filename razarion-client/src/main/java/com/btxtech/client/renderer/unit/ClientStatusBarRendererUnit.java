@@ -4,9 +4,8 @@ import com.btxtech.client.renderer.engine.shaderattribute.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.uiservice.item.StatusBarModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -61,11 +60,10 @@ public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        StatusBarModelMatrices statusBarModelMatrices = (StatusBarModelMatrices) modelMatrices;
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, statusBarModelMatrices.getModel());
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, statusBarModelMatrices.getColor());
-        webGlFacade.uniform4f("uBgColor", statusBarModelMatrices.getBgColor());
-        webGlFacade.uniform1f("uProgress", statusBarModelMatrices.getProgress());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
+        webGlFacade.uniform4f(WebGlFacade.U_COLOR, modelMatrices.getColor());
+        webGlFacade.uniform4f("uBgColor", modelMatrices.getBgColor());
+        webGlFacade.uniform1f("uProgress", modelMatrices.getProgress());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

@@ -4,9 +4,8 @@ import com.btxtech.client.renderer.engine.shaderattribute.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.uiservice.item.ItemMarkerModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -61,10 +60,9 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        ItemMarkerModelMatrices itemMarkerModelMatrices = (ItemMarkerModelMatrices) modelMatrices;
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, itemMarkerModelMatrices.getModel());
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, itemMarkerModelMatrices.getColor());
-        webGlFacade.uniform1f("uRadius", itemMarkerModelMatrices.getRadius());
+        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
+        webGlFacade.uniform4f(WebGlFacade.U_COLOR, modelMatrices.getColor());
+        webGlFacade.uniform1f("uRadius", modelMatrices.getRadius());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

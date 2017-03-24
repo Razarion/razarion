@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.VisualUiService;
 
@@ -17,7 +17,6 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
     @Inject
     private VisualUiService visualUiService;
     private Matrix4 buildupMatrix;
-    private double minZ;
     private double mayZ;
 
     protected abstract void internalFillBuffers(VertexContainer vertexContainer, Matrix4 buildupMatrix, int buildupTextureId);
@@ -27,7 +26,6 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
     protected abstract void draw(ModelMatrices modelMatrices, double progressZ);
 
     public void setMaxZ(double mayZ) {
-        this.minZ = minZ;
         this.mayZ = mayZ;
     }
 

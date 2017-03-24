@@ -172,7 +172,7 @@ public class Matrix4 {
     public Matrix4 normTransformation() {
         Matrix4 inverse = invertOrNull();
         if (inverse != null) {
-            return invert().transpose();
+            return inverse.transpose();
         } else {
             return this;
         }
@@ -244,6 +244,10 @@ public class Matrix4 {
                 {0, 0, z, 0},
                 {0, 0, 0, 1}};
         return new Matrix4(numbers);
+    }
+
+    public static Matrix4 createFromPositionAndZRotation(Vertex position, double zRotation) {
+        return Matrix4.createTranslation(position).multiply(Matrix4.createZRotation(zRotation));
     }
 
     @Override

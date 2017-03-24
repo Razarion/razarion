@@ -5,7 +5,7 @@ import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShader
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;

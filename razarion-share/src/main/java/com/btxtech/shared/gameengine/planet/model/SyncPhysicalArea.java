@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -34,7 +33,7 @@ public class SyncPhysicalArea {
     private Vertex norm;
     private double radius;
     private boolean fixVerticalNorm;
-    private ModelMatrices modelMatrices;
+    private Matrix4 modelMatrices;
 
     public void init(SyncItem syncItem, double radius, boolean fixVerticalNorm, DecimalPosition position2d, double angle) {
         this.syncItem = syncItem;
@@ -77,7 +76,7 @@ public class SyncPhysicalArea {
         if (position3d != null && norm != null) {
             return;
         }
-        if(fixVerticalNorm) {
+        if (fixVerticalNorm) {
             position3d = new Vertex(position2d, terrainService.getHighestZInRegion(position2d, radius));
             norm = Vertex.Z_NORM;
         } else {
@@ -102,13 +101,12 @@ public class SyncPhysicalArea {
         return norm;
     }
 
-    public ModelMatrices getModelMatrices() {
+    public Matrix4 getModelMatrices() {
         if (modelMatrices == null) {
             Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
             double yRotation = direction.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
             Matrix4 rotation = Matrix4.createZRotation(angle).multiply(Matrix4.createYRotation(-yRotation));
-            Matrix4 matrix = Matrix4.createTranslation(getPosition3d()).multiply(rotation);
-            return new ModelMatrices(matrix);
+            modelMatrices = Matrix4.createTranslation(getPosition3d()).multiply(rotation);
         }
         return modelMatrices;
     }

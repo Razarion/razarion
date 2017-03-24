@@ -2,7 +2,6 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -17,6 +16,7 @@ import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
@@ -143,20 +143,20 @@ public class BaseItemUiService {
             }
             // Alive
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && syncBaseItem.checkHealth()) {
-                aliveModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));
+                aliveModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity()));
                 if (syncBaseItem.getWeaponTurret() != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));
+                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity()));
                 }
             }
             // Demolition
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && !syncBaseItem.checkHealth()) {
-                ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getHealth()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity());
+                ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity(), syncBaseItem.getHealth());
                 demolitionModelMatrices.put(baseItemType, modelMatrices);
                 if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
                     effectVisualizationService.updateBuildingDemolitionEffect(syncBaseItem, baseItemType);
                 }
                 if (syncBaseItem.getWeaponTurret() != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret()).setInterpolatableVelocity(syncBaseItem.getInterpolatableVelocity()));
+                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity()));
                 }
             }
 

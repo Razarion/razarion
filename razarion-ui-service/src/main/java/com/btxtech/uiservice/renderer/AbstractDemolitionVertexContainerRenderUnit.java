@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 
 import java.util.logging.Logger;

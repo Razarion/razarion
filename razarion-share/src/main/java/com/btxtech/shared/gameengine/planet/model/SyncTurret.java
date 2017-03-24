@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -43,11 +42,11 @@ public class SyncTurret {
         }
     }
 
-    ModelMatrices createModelMatrices() {
-        return ModelMatrices.createFromPositionAndZRotation(turretType.getTorrentCenter(), angle);
+    Matrix4 createMatrix() {
+        return Matrix4.createFromPositionAndZRotation(turretType.getTorrentCenter(), angle);
     }
 
-    Matrix4 createModelMatrices4Shape3D() {
+    Matrix4 createMatrix4Shape3D() {
         return Matrix4.createZRotation(angle);
     }
 
@@ -58,8 +57,8 @@ public class SyncTurret {
     }
 
     private double calculateAbsoluteTargetAngle(DecimalPosition target) {
-        ModelMatrices modelMatrices = syncBaseItem.getSyncPhysicalArea().getModelMatrices();
-        Vertex absolutePosition = modelMatrices.getModel().multiply(turretType.getTorrentCenter(), 1.0);
+        Matrix4 modelMatrices = syncBaseItem.getSyncPhysicalArea().getModelMatrices();
+        Vertex absolutePosition = modelMatrices.multiply(turretType.getTorrentCenter(), 1.0);
         return MathHelper.normaliseAngle(absolutePosition.toXY().getAngle(target));
     }
 

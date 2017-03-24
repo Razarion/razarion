@@ -3,8 +3,7 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
@@ -94,8 +93,7 @@ public class TerrainUiService {
             try {
                 getTerrainZ(terrainObjectPosition.getPosition(), (position, z) -> {
                     if (z != null) {
-                        Matrix4 model = terrainObjectPosition.createModelMatrix(z);
-                        terrainObjectConfigModelMatrices.put(terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()), new ModelMatrices(model));
+                        terrainObjectConfigModelMatrices.put(terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()), ModelMatrices.create4TerrainObject(position.getX(), position.getY(), z,terrainObjectPosition.getScale(), terrainObjectPosition.getRotationZ()));
                     } else {
                         logger.warning("TerrainUiService: Can not place TerrainObjectPosition with id: " + terrainObjectPosition.getId());
                     }

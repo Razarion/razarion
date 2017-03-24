@@ -2,13 +2,12 @@ package com.btxtech.uiservice.itemplacer;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.Dependent;
@@ -79,15 +78,13 @@ public class BaseItemPlacer {
     }
 
     public List<ModelMatrices> provideCircleModelMatrices() {
-        Matrix4 model = Matrix4.createTranslation(position);
-        return Collections.singletonList(new ModelMatrices(model));
+        return Collections.singletonList(ModelMatrices.createFromPosition(position));
     }
 
     public List<ModelMatrices> provideItemModelMatrices() {
         List<ModelMatrices> result = new ArrayList<>();
         for (DecimalPosition position : setupAbsolutePositions()) {
-            Matrix4 model = Matrix4.createTranslation(position.getX(), position.getY(), this.position.getZ());
-            result.add(new ModelMatrices(model));
+            result.add(ModelMatrices.createFromPosition(position.getX(), position.getY(), this.position.getZ()));
         }
         return result;
     }

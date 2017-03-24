@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
@@ -83,7 +83,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         }
 
         if (progressAnimations == null) {
-            return modelMatrix.multiply(shapeTransform.setupMatrix());
+            return modelMatrix.multiply(shapeTransform);
         } else {
             ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
             for (ProgressAnimation progressAnimation : progressAnimations) {
@@ -102,7 +102,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
                         throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
                 }
             }
-            return modelMatrix.multiply(shapeTransformTRS.setupMatrix());
+            return modelMatrix.multiply(shapeTransformTRS);
         }
     }
 

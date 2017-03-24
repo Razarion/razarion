@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
@@ -228,11 +227,11 @@ public class SyncWeapon extends SyncBaseAbility {
         return syncTurret;
     }
 
-    public ModelMatrices createTurretModelMatrices() {
-        return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createModelMatrices());
+    public Matrix4 createTurretMatrix() {
+        return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix());
     }
 
-    public Matrix4 createTurretModelMatrices4Shape3D() {
-        return getSyncBaseItem().getModelMatrices().getModel().multiply(syncTurret.createModelMatrices4Shape3D());
+    public Matrix4 createTurretMatrix4Shape3D() {
+        return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix4Shape3D());
     }
 }

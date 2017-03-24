@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.renderer.task.slope;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 

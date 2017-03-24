@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer.task.itemplacer;
 
 import com.btxtech.shared.datatypes.Color;
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;

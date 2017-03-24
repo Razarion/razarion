@@ -117,7 +117,7 @@ public class NodeScene extends NameIdColladaXml {
             throw new IllegalStateException();
         }
 
-        transform = new ShapeTransform().setMatrix(new Matrix4(doubleArray));
+        transform = new ShapeTransform().setStaticMatrix(new Matrix4(doubleArray));
     }
 
     private void translate(Node node) {

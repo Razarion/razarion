@@ -7,7 +7,7 @@ import com.btxtech.shared.datatypes.Matrix4;
  * 05.08.2016.
  */
 public class ShapeTransform {
-    private Matrix4 matrix;
+    private Matrix4 staticMatrix;
     private double translateX;
     private double translateY;
     private double translateZ;
@@ -21,8 +21,8 @@ public class ShapeTransform {
     // -------------------------
 
     public Matrix4 setupMatrix() {
-        if (matrix != null) {
-            return matrix;
+        if (staticMatrix != null) {
+            return staticMatrix;
         } else {
             Matrix4 matrix = Matrix4.createIdentity();
             matrix = matrix.multiply(Matrix4.createTranslation(translateX, translateY, translateZ));
@@ -49,10 +49,8 @@ public class ShapeTransform {
         return shapeTransform;
     }
 
-
-    // -----------------------------------
-    public ShapeTransform setMatrix(Matrix4 matrix) {
-        this.matrix = matrix;
+    public ShapeTransform setStaticMatrix(Matrix4 staticMatrix) {
+        this.staticMatrix = staticMatrix;
         return this;
     }
 
@@ -137,8 +135,8 @@ public class ShapeTransform {
         return scaleZ;
     }
 
-    public Matrix4 getMatrix() {
-        return matrix;
+    public Matrix4 getStaticMatrix() {
+        return staticMatrix;
     }
 
     @Override
@@ -153,7 +151,7 @@ public class ShapeTransform {
                 ", scaleX=" + scaleX +
                 ", scaleY=" + scaleY +
                 ", scaleZ=" + scaleZ +
-                ", matrix=" + matrix +
+                ", staticMatrix=" + staticMatrix +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.webgl;
 
+import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.google.gwt.dom.client.CanvasElement;
 import elemental.html.Float32Array;
 import elemental.html.WebGLRenderingContext;
@@ -47,6 +48,10 @@ public class WebGlUtil {
         return createFloat32Array(vertices);
     }
 
+    public native static Float32Array toFloat32Array(NativeMatrix jsFloat32Array) /*-{
+        return jsFloat32Array.float32Array;
+    }-*/;
+
     public native static Float32Array createArrayBufferOfFloat32Doubles(double[] doubles) /*-{
         // TODO Why does this work?
         return doubles;
@@ -66,7 +71,7 @@ public class WebGlUtil {
     // http://stackoverflow.com/questions/7156971/webgl-readpixels-is-always-returning-0-0-0-0
     // {preserveDrawingBuffer: true}
     public native static WebGLRenderingContext getContext(CanvasElement canvasElement, String contextId) /*-{
-        return canvasElement.getContext(contextId, {alpha:false, preserveDrawingBuffer: true});
+        return canvasElement.getContext(contextId, {alpha: false, preserveDrawingBuffer: true});
     }-*/;
 
 

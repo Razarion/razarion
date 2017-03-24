@@ -3,8 +3,8 @@ package com.btxtech.uiservice.tip.visualization;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
 
@@ -48,7 +48,7 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
     abstract DecimalPosition getPosition2D();
 
     public void cleanup() {
-       // Override in subclasses
+        // Override in subclasses
     }
 
     public void preRender() {
@@ -90,7 +90,7 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
         }
 
         if (inViewFiled) {
-            return Collections.singletonList(new ModelMatrices(Matrix4.createTranslation(getPosition3D())));
+            return Collections.singletonList(ModelMatrices.createFromPosition(getPosition3D()));
         } else {
             return null;
         }
@@ -106,8 +106,7 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
         } else {
             DecimalPosition center = viewField.calculateCenter();
             double angle = center.getAngle(getPosition2D());
-            Matrix4 model = Matrix4.createTranslation(center.getX(), center.getY(), 0).multiply(Matrix4.createZRotation(angle));
-            return Collections.singletonList(new ModelMatrices(model));
+            return Collections.singletonList(ModelMatrices.createFromPositionAndZRotation(center.getX(), center.getY(), 0, angle));
         }
     }
 

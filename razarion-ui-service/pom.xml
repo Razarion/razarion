@@ -29,7 +29,11 @@
             <classifier>sources</classifier>
             <scope>provided</scope>
         </dependency>
-        <!-- Test -->
+        <dependency>
+            <groupId>com.google.jsinterop</groupId>
+            <artifactId>jsinterop-annotations</artifactId>
+            <version>1.0.1</version>
+        </dependency>        <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-test</artifactId>

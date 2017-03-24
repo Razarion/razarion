@@ -2,15 +2,12 @@ package com.btxtech.gameengine;
 
 import com.btxtech.Abstract2dRenderer;
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -41,12 +38,13 @@ public class ClientEmulatorGameEngineRenderer extends Abstract2dRenderer {
             double factor = (double) (System.currentTimeMillis() - clientEmulator.getLastUpdateTimeStamp()) / 1000.0;
 
             for (ModelMatrices modelMatrices : clientEmulator.getAliveModelMatrices()) {
-                Matrix4 model = modelMatrices.interpolateVelocity(factor).getModel();
-                List<Vertex> transformed = new ArrayList<>();
-                for (Vertex vertex : itemNullPosition) {
-                    transformed.add(model.multiply(vertex, 1.0));
-                }
-                extendedGraphicsContext.strokeCurve(transformed, 0.5, Color.RED, false);
+                throw new UnsupportedOperationException("Don't know how to solve");
+//                Matrix4 model = modelMatrices.interpolateVelocity(factor).getModel();
+//                List<Vertex> transformed = new ArrayList<>();
+//                for (Vertex vertex : itemNullPosition) {
+//                    transformed.add(model.multiply(vertex, 1.0));
+//                }
+//                extendedGraphicsContext.strokeCurve(transformed, 0.5, Color.RED, false);
             }
 
 

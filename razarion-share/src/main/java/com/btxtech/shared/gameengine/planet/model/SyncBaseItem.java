@@ -642,9 +642,9 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         simpleDto.setId(getId());
         simpleDto.setItemTypeId(getBaseItemType().getId());
         simpleDto.setBaseId(base.getBaseId());
-        simpleDto.setModel(getSyncPhysicalArea().getModelMatrices().getModel());
+        simpleDto.setModel(getSyncPhysicalArea().getModelMatrices());
         if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
-            simpleDto.setWeaponTurret(syncWeapon.createTurretModelMatrices4Shape3D());
+            simpleDto.setWeaponTurret(syncWeapon.createTurretMatrix4Shape3D());
         }
         simpleDto.setPosition2d(getSyncPhysicalArea().getPosition2d());
         simpleDto.setPosition3d(getSyncPhysicalArea().getPosition3d());

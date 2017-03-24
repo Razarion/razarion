@@ -2,8 +2,9 @@ package com.btxtech;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
@@ -17,7 +18,6 @@ import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
 import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -213,9 +213,9 @@ public class ExtendedGraphicsContext {
         if (syncItem instanceof SyncBaseItem) {
             SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
             if (syncBaseItem.getSyncWeapon() != null) {
-                ModelMatrices modelMatrices = syncBaseItem.getSyncWeapon().createTurretModelMatrices();
-                DecimalPosition canonStart = modelMatrices.getModel().multiply(Vertex.ZERO, 1.0).toXY();
-                DecimalPosition canonEnd = modelMatrices.getModel().multiply(syncBaseItem.getSyncWeapon().getWeaponType().getTurretType().getMuzzlePosition(), 1.0).toXY();
+                Matrix4 matrix4 = syncBaseItem.getSyncWeapon().createTurretMatrix();
+                DecimalPosition canonStart = matrix4.multiply(Vertex.ZERO, 1.0).toXY();
+                DecimalPosition canonEnd = matrix4.multiply(syncBaseItem.getSyncWeapon().getWeaponType().getTurretType().getMuzzlePosition(), 1.0).toXY();
                 gc.setStroke(BASE_ITEM_TYPE_WEAPON_COLOR);
                 gc.setLineWidth(0.5);
                 gc.strokeLine(canonStart.getX(), canonStart.getY(), canonEnd.getX(), canonEnd.getY());

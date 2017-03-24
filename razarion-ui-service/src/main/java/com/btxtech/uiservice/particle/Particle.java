@@ -1,9 +1,9 @@
 package com.btxtech.uiservice.particle;
 
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 
 /**
  * Created by Beat
@@ -44,12 +44,10 @@ public class Particle implements Comparable<Particle> {
             }
         }
         if (modelMatrices == null) {
-            modelMatrices = new ModelMatrices(addScaleTransformation(Matrix4.createTranslation(position), progress), progress);
-            modelMatrices.setParticleXColorRampOffsetIndex(particleConfig.getParticleXColorRampOffsetIndex());
+            modelMatrices = ModelMatrices.create4Particle(position, setupScale(progress), progress, particleConfig.getParticleXColorRampOffsetIndex());
         } else {
-            modelMatrices.setProgress(progress);
-            // TODO performance modelMatrices.getModel().setTranslation(position);
-            modelMatrices.setModel(addScaleTransformation(Matrix4.createTranslation(position), progress));
+            modelMatrices.updateProgress(progress);
+            modelMatrices.updatePositionScale(position, setupScale(progress), progress);
         }
         cameraDistance = viewTransformationMatrix.multiply(position, 1.0).getZ();
         return true;
@@ -64,16 +62,16 @@ public class Particle implements Comparable<Particle> {
         return Double.compare(cameraDistance, o.cameraDistance);
     }
 
-    private Matrix4 addScaleTransformation(Matrix4 input, double progress) {
+    private double setupScale(double progress) {
         if (particleConfig.getParticleGrowFrom() != null && particleConfig.getParticleGrowTo() != null) {
             double scale = progress * (particleConfig.getParticleGrowTo() - particleConfig.getParticleGrowFrom()) + particleConfig.getParticleGrowFrom();
             if (scale > 0) {
-                return input.multiply(Matrix4.createScale(scale));
+                return scale;
             } else {
-                throw new IllegalStateException("Particle.addScaleTransformation() Scale is negative: " + scale);
+                throw new IllegalStateException("Particle.setupScale() Scale is negative: " + scale);
             }
         } else {
-            return input;
+            return 1;
         }
     }
 }

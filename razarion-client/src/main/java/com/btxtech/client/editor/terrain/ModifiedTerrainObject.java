@@ -1,10 +1,9 @@
 package com.btxtech.client.editor.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 
 /**
  * Created by Beat
@@ -45,25 +44,21 @@ public class ModifiedTerrainObject {
 
     public void setHover(boolean hover) {
         if (hover) {
-            modelMatrices.setProgress(1);
+            modelMatrices.updateProgress(1);
         } else {
-            modelMatrices.setProgress(0);
+            modelMatrices.updateProgress(0);
         }
     }
 
     public void setNewPosition(Vertex newPosition) {
         position = newPosition.toXY();
-        modelMatrices.setModel(createMatrix());
+        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, radius * scale);
         dirty = true;
     }
 
     public ModelMatrices createModelMatrices() {
-        modelMatrices = new ModelMatrices(createMatrix());
+        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, radius * scale);
         return modelMatrices;
-    }
-
-    private Matrix4 createMatrix() {
-        return Matrix4.createTranslation(position.getX(), position.getY(), 0).multiply(Matrix4.createScale(radius * scale));
     }
 
     public void setDeleted() {

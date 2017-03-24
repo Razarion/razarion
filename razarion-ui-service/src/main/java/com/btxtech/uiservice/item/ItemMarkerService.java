@@ -1,12 +1,12 @@
 package com.btxtech.uiservice.item;
 
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.SingleHolder;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.SelectionEvent;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -41,9 +41,9 @@ public class ItemMarkerService {
     private List<ModelMatrices> selectedHealthModelMatrices = new ArrayList<>();
     private List<ModelMatrices> selectedConstructingModelMatrices = new ArrayList<>();
     // Hover
-    private ItemMarkerModelMatrices hoverMarkerModelMatrices;
-    private StatusBarModelMatrices hoverHealthModelMatrices;
-    private StatusBarModelMatrices hoverConstructingModelMatrices;
+    private ModelMatrices hoverMarkerModelMatrices;
+    private ModelMatrices hoverHealthModelMatrices;
+    private ModelMatrices hoverConstructingModelMatrices;
 
     public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
         clearSelection();
@@ -104,48 +104,43 @@ public class ItemMarkerService {
     private void setupSelectionModelMatrices(SyncItemSimpleDto syncItemSimpleDto, SyncItemMonitor syncItemMonitor) {
         selectionMonitors.add(syncItemMonitor);
         // Marker
-        ItemMarkerModelMatrices selectionModelMatrices = new ItemMarkerModelMatrices(setupMarkerMatrix(syncItemMonitor), itemUiService.color4SyncItem(syncItemSimpleDto).fromAlpha(Colors.SELECTION_ALPHA), syncItemMonitor.getRadius());
-        selectionModelMatrices.setInterpolatableVelocity(syncItemMonitor.getInterpolatableVelocity());
+        ModelMatrices selectionModelMatrices = ModelMatrices.create4Marker(syncItemMonitor.getPosition3d(), syncItemMonitor.getRadius() * FACTOR, syncItemMonitor.getInterpolatableVelocity(), itemUiService.color4SyncItem(syncItemSimpleDto).fromAlpha(Colors.SELECTION_ALPHA), syncItemMonitor.getRadius());
         selectedMarkerModelMatrices.add(selectionModelMatrices);
         // Status bars
-        StatusBarModelMatrices healthModelMatrices = null;
-        final SingleHolder<StatusBarModelMatrices> constructingModelMatrices = new SingleHolder<>();
+        ModelMatrices healthModelMatrices = null;
+        final SingleHolder<ModelMatrices> constructingModelMatrices = new SingleHolder<>();
         if (syncItemSimpleDto instanceof SyncBaseItemSimpleDto) {
             SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) syncItemSimpleDto;
-            healthModelMatrices = new StatusBarModelMatrices(setupHealthBarMatrix(syncItemMonitor), Colors.HEALTH_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), syncBaseItem.getHealth());
+            healthModelMatrices = ModelMatrices.create4Status(setupHealthBarPosition(syncItemMonitor), 2.0 * syncItemMonitor.getRadius(), syncItemMonitor.getInterpolatableVelocity(), Colors.HEALTH_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), syncBaseItem.getHealth());
             selectedHealthModelMatrices.add(healthModelMatrices);
             if (syncBaseItem.checkConstructing()) {
-                constructingModelMatrices.setO(new StatusBarModelMatrices(setupConstructingBarMatrix(syncItemMonitor), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), syncBaseItem.getConstructing()));
+                constructingModelMatrices.setO(ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor), 2.0 * syncItemMonitor.getRadius(), syncItemMonitor.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), syncBaseItem.getConstructing()));
                 selectedConstructingModelMatrices.add(constructingModelMatrices.getO());
             }
         }
-        final StatusBarModelMatrices healthModelMatricesFinal = healthModelMatrices;
+        final ModelMatrices healthModelMatricesFinal = healthModelMatrices;
         // Update listener
         syncItemMonitor.setPositionChangeListener(changedSyncItemMonitor -> {
-            selectionModelMatrices.setModel(setupMarkerMatrix(changedSyncItemMonitor));
-            selectionModelMatrices.setInterpolatableVelocity(changedSyncItemMonitor.getInterpolatableVelocity());
+            selectionModelMatrices.updatePositionScale(changedSyncItemMonitor.getPosition3d(), changedSyncItemMonitor.getRadius() * FACTOR, changedSyncItemMonitor.getInterpolatableVelocity());
             if (healthModelMatricesFinal != null) {
-                healthModelMatricesFinal.setModel(setupHealthBarMatrix(changedSyncItemMonitor));
-                healthModelMatricesFinal.setInterpolatableVelocity(changedSyncItemMonitor.getInterpolatableVelocity());
+                healthModelMatricesFinal.updatePositionScaleX(setupHealthBarPosition(changedSyncItemMonitor), 2.0 * changedSyncItemMonitor.getRadius(), changedSyncItemMonitor.getInterpolatableVelocity());
             }
             if (!constructingModelMatrices.isEmpty()) {
-                constructingModelMatrices.getO().setModel(setupConstructingBarMatrix(changedSyncItemMonitor));
-                constructingModelMatrices.getO().setInterpolatableVelocity(changedSyncItemMonitor.getInterpolatableVelocity());
+                constructingModelMatrices.getO().updatePositionScaleX(setupConstructingBarPosition(changedSyncItemMonitor), 2.0 * changedSyncItemMonitor.getRadius(), changedSyncItemMonitor.getInterpolatableVelocity());
             }
         });
         if (healthModelMatricesFinal != null) {
-            ((SyncBaseItemMonitor) syncItemMonitor).setHealthChangeListener(syncItemMonitor1 -> healthModelMatricesFinal.setProgress(((SyncBaseItemMonitor) syncItemMonitor1).getHealth()));
+            ((SyncBaseItemMonitor) syncItemMonitor).setHealthChangeListener(syncItemMonitor1 -> healthModelMatricesFinal.updateProgress(((SyncBaseItemMonitor) syncItemMonitor1).getHealth()));
         }
         if (syncItemSimpleDto instanceof SyncBaseItemSimpleDto) {
             ((SyncBaseItemMonitor) syncItemMonitor).setConstructingChangeListener(syncItemMonitor1 -> {
                 if (((SyncBaseItemMonitor) syncItemMonitor1).checkConstructing()) {
                     if (constructingModelMatrices.isEmpty()) {
-                        constructingModelMatrices.setO(new StatusBarModelMatrices(setupConstructingBarMatrix(syncItemMonitor1), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), ((SyncBaseItemMonitor) syncItemMonitor1).getConstructing()));
-                        constructingModelMatrices.getO().setInterpolatableVelocity(syncItemMonitor1.getInterpolatableVelocity());
+                        constructingModelMatrices.setO(ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor1), 2.0 * syncItemMonitor1.getRadius(), syncItemMonitor1.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), ((SyncBaseItemMonitor) syncItemMonitor1).getConstructing()));
                         selectedConstructingModelMatrices.add(constructingModelMatrices.getO());
                         setupAllStatusBarModelMatrices();
                     } else {
-                        constructingModelMatrices.getO().setProgress(((SyncBaseItemMonitor) syncItemMonitor1).getConstructing());
+                        constructingModelMatrices.getO().updateProgress(((SyncBaseItemMonitor) syncItemMonitor1).getConstructing());
                     }
                 } else {
                     selectedConstructingModelMatrices.remove(constructingModelMatrices.getO());
@@ -158,38 +153,34 @@ public class ItemMarkerService {
 
     private void setupHoverModelMatrices(SyncItemSimpleDto syncItem) {
         // Marker
-        hoverMarkerModelMatrices = new ItemMarkerModelMatrices(setupMarkerMatrix(hoverSyncItemMonitor), itemUiService.color4SyncItem(syncItem).fromAlpha(Colors.HOVER_ALPHA), hoverSyncItemMonitor.getRadius());
+        hoverMarkerModelMatrices =  ModelMatrices.create4Marker(hoverSyncItemMonitor.getPosition3d(), hoverSyncItemMonitor.getRadius() * FACTOR, hoverSyncItemMonitor.getInterpolatableVelocity(), itemUiService.color4SyncItem(syncItem).fromAlpha(Colors.HOVER_ALPHA), hoverSyncItemMonitor.getRadius());
         // Status bars
         if (syncItem instanceof SyncBaseItemSimpleDto) {
             SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) syncItem;
-            hoverHealthModelMatrices = new StatusBarModelMatrices(setupHealthBarMatrix(hoverSyncItemMonitor), Colors.HEALTH_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), syncBaseItem.getHealth());
+            hoverHealthModelMatrices = ModelMatrices.create4Status(setupHealthBarPosition(hoverSyncItemMonitor), 2.0 * hoverSyncItemMonitor.getRadius(), hoverSyncItemMonitor.getInterpolatableVelocity(), Colors.HEALTH_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), syncBaseItem.getHealth());
             if (syncBaseItem.checkConstructing()) {
-                hoverConstructingModelMatrices = new StatusBarModelMatrices(setupConstructingBarMatrix(hoverSyncItemMonitor), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), syncBaseItem.getConstructing());
+                hoverConstructingModelMatrices = ModelMatrices.create4Status(setupConstructingBarPosition(hoverSyncItemMonitor), 2.0 * hoverSyncItemMonitor.getRadius(), hoverSyncItemMonitor.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), syncBaseItem.getConstructing());
             }
         }
         // Update listener
         hoverSyncItemMonitor.setPositionChangeListener(changedSyncItemMonitor -> {
-            hoverMarkerModelMatrices.setModel(setupMarkerMatrix(changedSyncItemMonitor));
-            hoverMarkerModelMatrices.setInterpolatableVelocity(changedSyncItemMonitor.getInterpolatableVelocity());
+            hoverMarkerModelMatrices.updatePositionScale(changedSyncItemMonitor.getPosition3d(), changedSyncItemMonitor.getRadius() * FACTOR, changedSyncItemMonitor.getInterpolatableVelocity());
             if (hoverHealthModelMatrices != null) {
-                hoverHealthModelMatrices.setModel(setupHealthBarMatrix(changedSyncItemMonitor));
-                hoverHealthModelMatrices.setInterpolatableVelocity(changedSyncItemMonitor.getInterpolatableVelocity());
+                hoverHealthModelMatrices.updatePositionScaleX(setupHealthBarPosition(changedSyncItemMonitor), 2.0 * changedSyncItemMonitor.getRadius(), changedSyncItemMonitor.getInterpolatableVelocity());
             }
             if (hoverConstructingModelMatrices != null) {
-                hoverConstructingModelMatrices.setModel(setupConstructingBarMatrix(changedSyncItemMonitor));
-                hoverConstructingModelMatrices.setInterpolatableVelocity(changedSyncItemMonitor.getInterpolatableVelocity());
+                hoverConstructingModelMatrices.updatePositionScaleX(setupConstructingBarPosition(changedSyncItemMonitor), 2.0 * changedSyncItemMonitor.getRadius(), changedSyncItemMonitor.getInterpolatableVelocity());
             }
         });
         if (hoverSyncItemMonitor instanceof SyncBaseItemMonitor) {
-            ((SyncBaseItemMonitor) hoverSyncItemMonitor).setHealthChangeListener(syncItemMonitor1 -> hoverHealthModelMatrices.setProgress(((SyncBaseItemMonitor) syncItemMonitor1).getHealth()));
+            ((SyncBaseItemMonitor) hoverSyncItemMonitor).setHealthChangeListener(syncItemMonitor1 -> hoverHealthModelMatrices.updateProgress(((SyncBaseItemMonitor) syncItemMonitor1).getHealth()));
             ((SyncBaseItemMonitor) hoverSyncItemMonitor).setConstructingChangeListener(syncItemMonitor1 -> {
                 if (((SyncBaseItemMonitor) syncItemMonitor1).checkConstructing()) {
                     if (hoverConstructingModelMatrices == null) {
-                        hoverConstructingModelMatrices = new StatusBarModelMatrices(setupConstructingBarMatrix(hoverSyncItemMonitor), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), ((SyncBaseItemMonitor) syncItemMonitor1).getConstructing());
-                        hoverConstructingModelMatrices.setInterpolatableVelocity(syncItemMonitor1.getInterpolatableVelocity());
+                        hoverConstructingModelMatrices = ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor1), 2.0 * syncItemMonitor1.getRadius(), syncItemMonitor1.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), ((SyncBaseItemMonitor) syncItemMonitor1).getConstructing());
                         setupAllStatusBarModelMatrices();
                     } else {
-                        hoverConstructingModelMatrices.setProgress(((SyncBaseItemMonitor) syncItemMonitor1).getConstructing());
+                        hoverConstructingModelMatrices.updateProgress(((SyncBaseItemMonitor) syncItemMonitor1).getConstructing());
                     }
                 } else {
                     hoverConstructingModelMatrices = null;
@@ -202,16 +193,12 @@ public class ItemMarkerService {
         setupAllStatusBarModelMatrices();
     }
 
-    private Matrix4 setupMarkerMatrix(SyncItemMonitor syncItemMonitor) {
-        return Matrix4.createTranslation(syncItemMonitor.getPosition3d()).multiply(Matrix4.createScale(syncItemMonitor.getRadius() * FACTOR));
+    private Vertex setupHealthBarPosition(SyncItemMonitor syncItemMonitor) {
+        return new Vertex(syncItemMonitor.getPosition3d().getX(), syncItemMonitor.getPosition3d().getY() - syncItemMonitor.getRadius(), syncItemMonitor.getPosition3d().getZ());
     }
 
-    private Matrix4 setupHealthBarMatrix(SyncItemMonitor syncItemMonitor) {
-        return Matrix4.createTranslation(syncItemMonitor.getPosition3d().getX(), syncItemMonitor.getPosition3d().getY() - syncItemMonitor.getRadius(), syncItemMonitor.getPosition3d().getZ()).multiply(Matrix4.createScale(2.0 * syncItemMonitor.getRadius(), 1, 1));
-    }
-
-    private Matrix4 setupConstructingBarMatrix(SyncItemMonitor syncItemMonitor) {
-        return Matrix4.createTranslation(syncItemMonitor.getPosition3d().getX(), syncItemMonitor.getPosition3d().getY(), syncItemMonitor.getPosition3d().getZ() + syncItemMonitor.getRadius()).multiply(Matrix4.createScale(2.0 * syncItemMonitor.getRadius(), 1, 1));
+    private Vertex setupConstructingBarPosition(SyncItemMonitor syncItemMonitor) {
+        return new Vertex(syncItemMonitor.getPosition3d().getX(), syncItemMonitor.getPosition3d().getY(), syncItemMonitor.getPosition3d().getZ() + syncItemMonitor.getRadius());
     }
 
     private void setupAllMarkerModelMatrices() {

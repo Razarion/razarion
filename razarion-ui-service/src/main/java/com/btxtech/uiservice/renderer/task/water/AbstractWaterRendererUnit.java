@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.renderer.task.water;
 
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 

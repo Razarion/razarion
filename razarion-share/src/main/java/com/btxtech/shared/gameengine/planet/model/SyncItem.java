@@ -14,7 +14,7 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.datatypes.ModelMatrices;
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
@@ -90,13 +90,13 @@ public abstract class SyncItem {
     }
 
     public SyncPhysicalMovable getSyncPhysicalMovable() {
-        if(syncPhysicalArea instanceof SyncPhysicalMovable) {
+        if (syncPhysicalArea instanceof SyncPhysicalMovable) {
             return (SyncPhysicalMovable) syncPhysicalArea;
         }
         throw new IllegalStateException("SyncItem does not have a SyncPhysicalMovable: " + this);
     }
 
-    public ModelMatrices getModelMatrices() {
+    public Matrix4 getModelMatrices() {
         return syncPhysicalArea.getModelMatrices();
     }
 
