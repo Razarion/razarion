@@ -125,17 +125,25 @@ public class ModelMatrices {
         }
     }
 
-    public ModelMatrices multiply(ShapeTransform shapeTransform) {
-        NativeMatrix newMatrix;
-        if (shapeTransform.getStaticMatrix() != null) {
-            newMatrix = matrix.multiply(nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray()));
-        } else {
-            newMatrix = matrix.multiply(nativeMatrixFactory.createTranslation(shapeTransform.getTranslateX(), shapeTransform.getTranslateY(), shapeTransform.getTranslateZ()));
-            newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(shapeTransform.getRotateZ()));
-            newMatrix = newMatrix.multiply(nativeMatrixFactory.createYRotation(shapeTransform.getRotateY()));
-            newMatrix = newMatrix.multiply(nativeMatrixFactory.createXRotation(shapeTransform.getRotateX()));
-            newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(shapeTransform.getScaleX(), shapeTransform.getScaleY(), shapeTransform.getScaleZ()));
-        }
+    public ModelMatrices multiplyStaticShapeTransform(NativeMatrix staticShapeTransform) {
+        ModelMatrices modelMatrices = new ModelMatrices(matrix.multiply(staticShapeTransform));
+
+        modelMatrices.progress = progress;
+        modelMatrices.interpolatableVelocity = interpolatableVelocity;
+        modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
+        modelMatrices.radius = radius;
+        modelMatrices.color = color;
+        modelMatrices.bgColor = bgColor;
+        return modelMatrices;
+    }
+
+    public ModelMatrices multiplyShapeTransform(ShapeTransform shapeTransform) {
+        NativeMatrix newMatrix = matrix.multiply(nativeMatrixFactory.createTranslation(shapeTransform.getTranslateX(), shapeTransform.getTranslateY(), shapeTransform.getTranslateZ()));
+        newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(shapeTransform.getRotateZ()));
+        newMatrix = newMatrix.multiply(nativeMatrixFactory.createYRotation(shapeTransform.getRotateY()));
+        newMatrix = newMatrix.multiply(nativeMatrixFactory.createXRotation(shapeTransform.getRotateX()));
+        newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(shapeTransform.getScaleX(), shapeTransform.getScaleY(), shapeTransform.getScaleZ()));
+
         ModelMatrices modelMatrices = new ModelMatrices(newMatrix);
         modelMatrices.progress = progress;
         modelMatrices.interpolatableVelocity = interpolatableVelocity;

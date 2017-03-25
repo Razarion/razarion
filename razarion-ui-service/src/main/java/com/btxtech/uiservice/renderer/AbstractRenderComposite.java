@@ -1,10 +1,12 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrix;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,12 +21,14 @@ import java.util.stream.Collectors;
  * D render data (e.g.: VertexContainerRender)
  */
 public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D> {
+    protected static NativeMatrixFactory nativeMatrixFactory = new NativeMatrixFactory();
     private U renderUnit;
     private U depthBufferRenderUnit;
     private U wireRenderUnit;
     private U normRenderUnit;
     private D rendererData;
     private ShapeTransform shapeTransform;
+    private NativeMatrix staticshapeTransformCache;
     private Collection<ProgressAnimation> progressAnimations;
     private ModelRenderer modelRenderer;
     @Deprecated
@@ -83,7 +87,14 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         }
 
         if (progressAnimations == null) {
-            return modelMatrix.multiply(shapeTransform);
+            if (shapeTransform.getStaticMatrix() != null) {
+                if (staticshapeTransformCache == null) {
+                    staticshapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
+                }
+                return modelMatrix.multiplyStaticShapeTransform(staticshapeTransformCache);
+            } else {
+                return modelMatrix.multiplyShapeTransform(shapeTransform);
+            }
         } else {
             ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
             for (ProgressAnimation progressAnimation : progressAnimations) {
@@ -102,7 +113,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
                         throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
                 }
             }
-            return modelMatrix.multiply(shapeTransformTRS);
+            return modelMatrix.multiplyShapeTransform(shapeTransformTRS);
         }
     }
 
