@@ -4,6 +4,7 @@ import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -42,8 +43,7 @@ public class TerrainEditorCursorRenderUnit extends AbstractRenderUnit<Polygon2D>
 
     @PostConstruct
     public void init() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.terrainEditorCursorVertexShader(), Shaders.INSTANCE.terrainEditorCursorFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainEditorCursorVertexShader(), Shaders.INSTANCE.terrainEditorCursorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
@@ -77,8 +77,6 @@ public class TerrainEditorCursorRenderUnit extends AbstractRenderUnit<Polygon2D>
         }
         webGlFacade.useProgram();
 
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
         webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, terrainEditor.getCursorModelMatrix());
 
         vertices.activate();

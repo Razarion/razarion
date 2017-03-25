@@ -4,6 +4,7 @@ import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
@@ -40,8 +41,7 @@ public class TerrainEditorTerrainObjectRendererUnit extends AbstractRenderUnit<V
 
     @PostConstruct
     public void init() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.terrainObjectEditorVertexShader(), Shaders.INSTANCE.terrainObjectEditorFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainObjectEditorVertexShader(), Shaders.INSTANCE.terrainObjectEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
@@ -66,9 +66,6 @@ public class TerrainEditorTerrainObjectRendererUnit extends AbstractRenderUnit<V
     @Override
     protected void prepareDraw() {
         webGlFacade.useProgram();
-
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
 
         webGlFacade.uniform1b("uDelete", terrainEditor.isDeletePressed());
     }

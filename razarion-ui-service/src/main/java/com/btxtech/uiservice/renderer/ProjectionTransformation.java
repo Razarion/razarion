@@ -30,6 +30,8 @@ public class ProjectionTransformation {
     private TerrainUiService terrainUiService;
     @Inject
     private ShadowUiService shadowUiService;
+    @Inject
+    private TransformationNotifier transformationNotifier;
     private double fovY = DEFAULT_FOV_Y;
     private double aspectRatio = 4.0 / 3.0;
     private Matrix4 matrix;
@@ -50,6 +52,10 @@ public class ProjectionTransformation {
     public void setFovY(double fovY) {
         this.fovY = fovY;
         setupMatrices();
+        if (transformationNotifier != null) {
+            // transformationNotifier == null in tests
+            transformationNotifier.onTransformationChanged();
+        }
     }
 
     public void setViewFieldBottomWidth(Double bottomWidth) {
@@ -97,6 +103,10 @@ public class ProjectionTransformation {
             setupFovYFromBottomWidth();
         }
         setupMatrices();
+        if (transformationNotifier != null) {
+            // transformationNotifier == null in tests
+            transformationNotifier.onTransformationChanged();
+        }
     }
 
     public Matrix4 getMatrix() {

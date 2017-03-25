@@ -12,7 +12,7 @@ uniform vec3 uLightAmbient;
 uniform float uLightSpecularIntensity;
 uniform float uLightSpecularHardness;
 
-uniform highp mat4 uNMatrix;
+uniform highp mat4 uNVMatrix;
 uniform float uTransparency;
 uniform sampler2D uBm;
 uniform float uBmScale;
@@ -51,7 +51,7 @@ vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
 
 void main(void) {
     vec3 norm = bumpMapNorm(uBmScale);
-    vec3 correctedLigtDirection = (uNMatrix * vec4(uLightDirection, 1.0)).xyz;
+    vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightDirection, 1.0)).xyz;
 
     vec3 ambient = uLightAmbient * WATER_COLOR;
     vec3 diffuse = max(dot(normalize(norm), normalize(-correctedLigtDirection)), 0.0)* uLightDiffuse * WATER_COLOR /* * shadowFactor */ ;

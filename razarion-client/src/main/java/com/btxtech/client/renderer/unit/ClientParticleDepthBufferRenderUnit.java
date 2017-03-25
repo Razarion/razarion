@@ -1,17 +1,16 @@
 package com.btxtech.client.renderer.unit;
 
+import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
-import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.particle.ParticleShapeConfig;
-import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
-import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.particle.AbstractParticleRenderUnit;
 import elemental.html.WebGLRenderingContext;
 
@@ -30,10 +29,6 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
     // private Logger logger = Logger.getLogger(ClientParticleDepthBufferRenderUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
-    @Inject
-    private ShadowUiService shadowUiService;
-    @Inject
-    private Camera camera;
     private VertexShaderAttribute positions;
     private DecimalPositionShaderAttribute alphaTextureCoordinates;
     private WebGlUniformTexture alphaOffset;
@@ -42,8 +37,7 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
 
     @PostConstruct
     public void init() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleDeptBufferFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         alphaTextureCoordinates = webGlFacade.createDecimalPositionShaderAttribute("aAlphaTextureCoordinate");
     }
@@ -60,9 +54,6 @@ public class ClientParticleDepthBufferRenderUnit extends AbstractParticleRenderU
     @Override
     protected void prepareDraw() {
         webGlFacade.useProgram();
-
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, shadowUiService.getDepthViewTransformation());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.getDepthProjectionTransformation());
 
         positions.activate();
         alphaTextureCoordinates.activate();

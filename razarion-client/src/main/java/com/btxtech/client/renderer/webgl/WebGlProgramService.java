@@ -17,15 +17,15 @@ public class WebGlProgramService {
     private Instance<WebGlProgram> webGlProgramInstance;
     private Map<String, WebGlProgram> webGlProgramCache = new HashMap<>();
 
-    public WebGlProgram getWebGlProgram(String vertexShaderCode, String fragmentShaderCode) {
-        String key = vertexShaderCode + fragmentShaderCode;
+    public WebGlProgram getWebGlProgram(WebGlFacadeConfig webGlFacadeConfig) {
+        String key = webGlFacadeConfig.getVertexShaderCode().getText() + webGlFacadeConfig.getFragmentShaderCode().getText();
         WebGlProgram webGlProgram = webGlProgramCache.get(key);
         if (webGlProgram != null) {
             return webGlProgram;
         }
 
         webGlProgram = webGlProgramInstance.get();
-        webGlProgram.createProgram(vertexShaderCode, fragmentShaderCode);
+        webGlProgram.createProgram(webGlFacadeConfig);
         webGlProgramCache.put(key, webGlProgram);
         return webGlProgram;
     }

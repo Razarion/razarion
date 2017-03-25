@@ -75,12 +75,9 @@ public class WebGlFacade {
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
 
-    public void setAbstractRenderUnit(AbstractRenderUnit abstractRenderUnit) {
-        this.abstractRenderUnit = abstractRenderUnit;
-    }
-
-    public void createProgram(TextResource vertexShaderCode, TextResource fragmentShaderCode) {
-        webGlProgram = webGlProgramService.getWebGlProgram(vertexShaderCode.getText(), fragmentShaderCode.getText());
+    public void init(WebGlFacadeConfig webGlFacadeConfig) {
+        abstractRenderUnit = webGlFacadeConfig.getAbstractRenderUnit();
+        webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig);
     }
 
     public VertexShaderAttribute createVertexShaderAttribute(String attributeName) {

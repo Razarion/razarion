@@ -7,6 +7,7 @@ import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
@@ -43,8 +44,7 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
 
     @PostConstruct
     public void init() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.monitorVertexShader(), Shaders.INSTANCE.monitorFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.monitorVertexShader(), Shaders.INSTANCE.monitorFragmentShader()));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         textureCoordinates = webGlFacade.createShaderTextureCoordinateAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
 

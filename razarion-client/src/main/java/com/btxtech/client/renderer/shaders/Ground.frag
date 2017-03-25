@@ -17,7 +17,7 @@ varying vec4 vShadowCoord;
 uniform float uShadowAlpha;
 uniform sampler2D uShadowTexture;
 
-uniform highp mat4 uNMatrix;
+uniform highp mat4 uNVMatrix;
 uniform sampler2D uTopTexture;
 uniform float uTopTextureScale;
 uniform sampler2D uTopBm;
@@ -80,7 +80,7 @@ vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
 
 void main(void) {
     float shadowFactor = calculateShadowFactor();
-    vec3 correctedLightDirection = normalize((uNMatrix * vec4(uLightDirection, 1.0)).xyz);
+    vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
 
     vec4 colorTop = triPlanarTextureMapping(uTopTexture, uTopTextureScale, vec2(0,0));
     vec3 normTop = bumpMapNorm(uTopBm, uTopBmDepth, uTopBmScale, uTopBmOnePixel);

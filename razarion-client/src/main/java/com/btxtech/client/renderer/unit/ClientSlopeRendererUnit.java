@@ -1,14 +1,13 @@
 package com.btxtech.client.renderer.unit;
 
+import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
-import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
-import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
@@ -29,10 +28,6 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private TerrainUiService terrainUiService;
     @Inject
     private WebGlFacade webGlFacade;
-    @Inject
-    private Camera camera;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
     private Vec3Float32ArrayShaderAttribute vertices;
     private Vec3Float32ArrayShaderAttribute normals;
     private Vec3Float32ArrayShaderAttribute tangents;
@@ -48,8 +43,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
     @PostConstruct
     public void init() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader()).enableTransformation(true));
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
@@ -80,10 +74,6 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     @Override
     protected void draw(SlopeUi slopeUi) {
         webGlFacade.useProgram();
-
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.getNormMatrix());
 
         webGlFacade.setLightUniforms("Slope", slopeUi.getSlopeLightConfig());
         webGlFacade.setLightUniforms("Ground", slopeUi.getGroundLightConfig());

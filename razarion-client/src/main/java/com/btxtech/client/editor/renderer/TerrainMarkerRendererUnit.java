@@ -3,10 +3,11 @@ package com.btxtech.client.editor.renderer;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Color;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
@@ -38,8 +39,7 @@ public class TerrainMarkerRendererUnit extends AbstractRenderUnit<List<Vertex>> 
 
     @PostConstruct
     public void init() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.rgbaVpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.rgbaVpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
@@ -71,8 +71,6 @@ public class TerrainMarkerRendererUnit extends AbstractRenderUnit<List<Vertex>> 
     public void draw(ModelMatrices modelMatrices) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
         webGlFacade.uniform4f(WebGlFacade.U_COLOR, new Color(0, 1, 0, 0.5));
 
         positions.activate();

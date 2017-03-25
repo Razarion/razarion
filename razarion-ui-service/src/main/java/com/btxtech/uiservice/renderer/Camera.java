@@ -18,6 +18,8 @@ public class Camera {
     private Logger logger = Logger.getLogger(Camera.class.getName());
     @Inject
     private ProjectionTransformation projectionTransformation;
+    @Inject
+    private TransformationNotifier transformationNotifier;
     private double translateX;
     private double translateY;
     private double translateZ = 80;
@@ -125,9 +127,13 @@ public class Camera {
         setupMatrices();
     }
 
-    private void setupMatrices() {
+    public void setupMatrices() {
         setupInternalMatrices();
         projectionTransformation.setupMatrices();
+        if (transformationNotifier != null) {
+            // transformationNotifier == null in test
+            transformationNotifier.onTransformationChanged();
+        }
     }
 
     private void setupInternalMatrices() {

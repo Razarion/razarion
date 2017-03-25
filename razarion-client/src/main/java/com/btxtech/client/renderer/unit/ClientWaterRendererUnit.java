@@ -1,13 +1,12 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
+import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.terrain.WaterUi;
-import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
 import elemental.html.WebGLRenderingContext;
 
@@ -24,10 +23,6 @@ import javax.inject.Inject;
 public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     // private Logger logger = Logger.getLogger(ClientWaterRendererUnit.class.getName());
     @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
-    private Camera camera;
-    @Inject
     private WebGlFacade webGlFacade;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute norms;
@@ -36,8 +31,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
     @PostConstruct
     public void init() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader()).enableTransformation(true));
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
@@ -61,9 +55,6 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
         webGlFacade.setLightUniforms(null, waterUi.getLightConfig());
 
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_NORM_MATRIX, camera.getNormMatrix());
         webGlFacade.uniform1f("uTransparency", waterUi.getTransparency());
         webGlFacade.uniform1f("uBmDepth", waterUi.getBmDepth());
         webGlFacade.uniform1f("animation", waterUi.getWaterAnimation());

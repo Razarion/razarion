@@ -8,7 +8,7 @@ varying vec3 vVertexNormCoord;
 varying float vSlopeFactor;
 varying float vGroundSplatting;
 
-uniform highp mat4 uNMatrix;
+uniform highp mat4 uNVMatrix;
 // Light Slope
 uniform vec3 uLightDirectionSlope;
 uniform vec3 uLightDiffuseSlope;
@@ -109,8 +109,8 @@ float calculateShadowFactor() {
 }
 
 void main(void) {
-    vec3 correctedLightSlope = normalize((uNMatrix * vec4(uLightDirectionSlope, 1.0)).xyz);
-    vec3 correctedLightGround = normalize((uNMatrix * vec4(uLightDirectionGround, 1.0)).xyz);
+    vec3 correctedLightSlope = normalize((uNVMatrix * vec4(uLightDirectionSlope, 1.0)).xyz);
+    vec3 correctedLightGround = normalize((uNVMatrix * vec4(uLightDirectionGround, 1.0)).xyz);
 
     float shadowFactor = calculateShadowFactor();
 
@@ -224,7 +224,7 @@ void main(void) {
 
        bool renderSlope;
        if(slopeOriented) {
-           vec3 perpendicular = normalize((uNMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz);
+           vec3 perpendicular = normalize((uNVMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz);
            float flatFactor = max(dot(slopeNorm, perpendicular), 0.0) - slopeBmFactor;
            renderSlope = flatFactor < vSlopeFactor;
        } else {

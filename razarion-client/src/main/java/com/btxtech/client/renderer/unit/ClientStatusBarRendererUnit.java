@@ -4,11 +4,10 @@ import com.btxtech.client.renderer.engine.shaderattribute.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.selection.AbstractStatusBarRendererUnit;
 import elemental.html.WebGLRenderingContext;
 
@@ -25,18 +24,13 @@ import java.util.List;
 @ColorBufferRenderer
 public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
     @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
-    private Camera camera;
-    @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
     private FloatShaderAttribute visibilityAttribute;
 
     @PostConstruct
     public void postConstruct() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.statusBarFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.statusBarFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
     }
@@ -50,9 +44,6 @@ public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
     @Override
     protected void prepareDraw() {
         webGlFacade.useProgram();
-
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, projectionTransformation.getMatrix());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, camera.getMatrix());
 
         positions.activate();
         visibilityAttribute.activate();

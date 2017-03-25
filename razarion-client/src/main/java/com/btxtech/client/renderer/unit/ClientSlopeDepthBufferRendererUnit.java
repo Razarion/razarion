@@ -3,9 +3,9 @@ package com.btxtech.client.renderer.unit;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
+import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
-import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import elemental.html.WebGLRenderingContext;
 
@@ -21,16 +21,13 @@ import javax.inject.Inject;
 @Dependent
 public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUnit {
     // private Logger logger = Logger.getLogger(ClientSlopeDepthBufferRendererUnit.class.getName());
-    private Vec3Float32ArrayShaderAttribute vertices;
     @Inject
     private WebGlFacade webGlFacade;
-    @Inject
-    private ShadowUiService shadowUiService;
+    private Vec3Float32ArrayShaderAttribute vertices;
 
     @PostConstruct
     public void init() {
-        webGlFacade.setAbstractRenderUnit(this);
-        webGlFacade.createProgram(Shaders.INSTANCE.depthBufferVPVertexShader(), Shaders.INSTANCE.depthBufferVPFragmentShader());
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.depthBufferVPVertexShader(), Shaders.INSTANCE.depthBufferVPFragmentShader()).enableShadowTransformation());
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
     }
 
@@ -47,9 +44,6 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
     @Override
     protected void draw(SlopeUi slopeUi) {
         webGlFacade.useProgram();
-        // Projection uniform
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_PERSPECTIVE_MATRIX, shadowUiService.getDepthProjectionTransformation());
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_VIEW_MATRIX, shadowUiService.getDepthViewTransformation());
 
         vertices.activate();
 
