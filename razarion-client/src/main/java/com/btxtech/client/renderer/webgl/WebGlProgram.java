@@ -26,6 +26,12 @@ public class WebGlProgram {
     private TransformationNotifier transformationNotifier;
     private Runnable transformUnregisterHandler;
     private Runnable shadowLookupUnregisterHandler;
+    private WebGLUniformLocation viewMatrixUniformLocation;
+    private WebGLUniformLocation viewNormMatrixUniformLocation;
+    private WebGLUniformLocation perspectiveMatrixUniformLocation;
+    private WebGLUniformLocation shadowViewMatrixUniformLocation;
+    private WebGLUniformLocation shadowPerspectiveMatrixUniformLocation;
+    private WebGLUniformLocation shadowMatrixUniformLocation;
 
     public void createProgram(WebGlFacadeConfig webGlFacadeConfig) {
         vs = createShader(WebGLRenderingContext.VERTEX_SHADER, webGlFacadeConfig.getVertexShaderCode().getText());
@@ -34,53 +40,57 @@ public class WebGlProgram {
 
         if (webGlFacadeConfig.isTransformation()) {
             if (webGlFacadeConfig.isNormTransformation()) {
+                useProgram();
+                viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
+                viewNormMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
+                perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
                 transformUnregisterHandler = transformationNotifier.addAndCallTransformationNormListener((viewMatrix, viewNormMatrix, perspectiveMatrix) -> {
                     useProgram();
                     // View
-                    WebGLUniformLocation uniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-                    gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(viewMatrix));
+                    gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewMatrix));
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
                     // View Norm
-                    uniformLocation = getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
-                    gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(viewNormMatrix));
+                    gameCanvas.getCtx3d().uniformMatrix4fv(viewNormMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewNormMatrix));
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_NORM_MATRIX", gameCanvas.getCtx3d());
                     // Perspective
-                    uniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
-                    gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(perspectiveMatrix));
+                    gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(perspectiveMatrix));
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PERSPECTIVE_MATRIX", gameCanvas.getCtx3d());
                 });
             } else {
+                useProgram();
+                viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
+                perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
                 transformUnregisterHandler = transformationNotifier.addAndCallTransformationListener((viewMatrix, perspectiveMatrix) -> {
                     useProgram();
                     // View
-                    WebGLUniformLocation uniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-                    gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(viewMatrix));
+                    gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewMatrix));
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
                     // Perspective
-                    uniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
-                    gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(perspectiveMatrix));
+                    gameCanvas.getCtx3d().uniformMatrix4fv(perspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(perspectiveMatrix));
                     WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PERSPECTIVE_MATRIX", gameCanvas.getCtx3d());
                 });
             }
         } else if (webGlFacadeConfig.isShadowTransformation()) {
+            useProgram();
+            shadowViewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
+            shadowPerspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
             transformUnregisterHandler = transformationNotifier.addAndCallShadowTransformationListener((viewShadowMatrix, perspectiveShadowMatrix) -> {
                 useProgram();
                 // View
-                WebGLUniformLocation uniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
-                gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(viewShadowMatrix));
+                gameCanvas.getCtx3d().uniformMatrix4fv(shadowViewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewShadowMatrix));
                 WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_VIEW_MATRIX", gameCanvas.getCtx3d());
                 // Perspective
-                uniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
-                gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(perspectiveShadowMatrix));
+                gameCanvas.getCtx3d().uniformMatrix4fv(shadowPerspectiveMatrixUniformLocation, false, WebGlUtil.toFloat32Array(perspectiveShadowMatrix));
                 WebGlUtil.checkLastWebGlError("uniformMatrix4fv U_PERSPECTIVE_MATRIX", gameCanvas.getCtx3d());
             });
         }
 
         if (webGlFacadeConfig.isReceiveShadow()) {
+            useProgram();
+            shadowMatrixUniformLocation = getUniformLocation("uShadowMatrix");
             shadowLookupUnregisterHandler = transformationNotifier.addAndCallShadowLookupTransformationListener(shadowLookupMatrix -> {
                 useProgram();
-                WebGLUniformLocation uniformLocation = getUniformLocation("uShadowMatrix");
-                gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(shadowLookupMatrix));
+                gameCanvas.getCtx3d().uniformMatrix4fv(shadowMatrixUniformLocation, false, WebGlUtil.toFloat32Array(shadowLookupMatrix));
                 WebGlUtil.checkLastWebGlError("uniformMatrix4fv uShadowMatrix", gameCanvas.getCtx3d());
             });
         }

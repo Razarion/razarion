@@ -14,6 +14,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -39,6 +40,11 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     private WebGlUniformTexture texture;
     private Color ambient;
     private Color diffuse;
+    private WebGLUniformLocation uLightingAmbient;
+    private WebGLUniformLocation uLightingDirection;
+    private WebGLUniformLocation uLightingDiffuse;
+    private WebGLUniformLocation uModelMatrix;
+    private WebGLUniformLocation uModelNormMatrix;
 
     @PostConstruct
     public void init() {
@@ -46,6 +52,13 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         textureCoordinateAttribute = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
+
+        uLightingAmbient = webGlFacade.getUniformLocation("uLightingAmbient");
+        uLightingDirection = webGlFacade.getUniformLocation("uLightingDirection");
+        uLightingDiffuse = webGlFacade.getUniformLocation("uLightingDiffuse");
+
+        uModelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        uModelNormMatrix = webGlFacade.getUniformLocation("uNMMatrix");
     }
 
     @Override
@@ -67,9 +80,9 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     protected void prepareDraw() {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform3fNoAlpha("uLightingAmbient", ambient);
-        webGlFacade.uniform3f("uLightingDirection", visualUiService.getShape3DLightDirection());
-        webGlFacade.uniform3fNoAlpha("uLightingDiffuse", diffuse);
+        webGlFacade.uniform3fNoAlpha(uLightingAmbient, ambient);
+        webGlFacade.uniform3f(uLightingDirection, visualUiService.getShape3DLightDirection());
+        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, diffuse);
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
 
@@ -83,8 +96,8 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniformMatrix4fv("uNMMatrix", modelMatrices.getNorm());
+        webGlFacade.uniformMatrix4fv(uModelMatrix, modelMatrices.getModel());
+        webGlFacade.uniformMatrix4fv(uModelNormMatrix, modelMatrices.getNorm());
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

@@ -73,12 +73,16 @@ public class WebGlFacade {
     private AbstractRenderUnit abstractRenderUnit;
     private TextureIdHandler textureIdHandler = new TextureIdHandler();
     private TextureIdHandler.WebGlTextureId shadowWebGlTextureId;
+    private WebGLUniformLocation uShadowAlpha;
+    private WebGLUniformLocation uShadowTexture;
 
     public void init(WebGlFacadeConfig webGlFacadeConfig) {
         abstractRenderUnit = webGlFacadeConfig.getAbstractRenderUnit();
         webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig);
         if (webGlFacadeConfig.isReceiveShadow()) {
             shadowWebGlTextureId = createWebGlTextureId();
+            uShadowAlpha = getUniformLocation("uShadowAlpha");
+            uShadowTexture = getUniformLocation("uShadowTexture");
         }
     }
 
@@ -135,8 +139,14 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
     }
 
+    @Deprecated
     public void uniformMatrix4fv(String uniformName, NativeMatrix matrix) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(matrix));
+        WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
+    }
+
+    public void uniformMatrix4fv(WebGLUniformLocation uniformLocation, NativeMatrix matrix) {
         gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(matrix));
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
     }
@@ -147,22 +157,46 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
     }
 
+    @Deprecated
     public void uniform3f(String uniformName, Vertex vertex) {
         uniform3f(uniformName, vertex.getX(), vertex.getY(), vertex.getZ());
     }
 
+    public void uniform3f(WebGLUniformLocation webGLUniformLocation, Vertex vertex) {
+        gameCanvas.getCtx3d().uniform3f(webGLUniformLocation, (float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ());
+        WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
+    }
+
+    @Deprecated
     public void uniform3fNoAlpha(String uniformName, Color color) {
         uniform3f(uniformName, color.getR(), color.getG(), color.getB());
     }
 
+    public void uniform3fNoAlpha(WebGLUniformLocation uniformLocation, Color color) {
+        gameCanvas.getCtx3d().uniform3f(uniformLocation, (float) color.getR(), (float) color.getG(), (float) color.getB());
+        WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
+    }
+
+    @Deprecated
     public void uniform1f(String uniformName, double value) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
         gameCanvas.getCtx3d().uniform1f(uniformLocation, (float) value);
         WebGlUtil.checkLastWebGlError("uniform1f", gameCanvas.getCtx3d());
     }
 
+    public void uniform1f(WebGLUniformLocation uniformLocation, double value) {
+        gameCanvas.getCtx3d().uniform1f(uniformLocation, (float) value);
+        WebGlUtil.checkLastWebGlError("uniform1f", gameCanvas.getCtx3d());
+    }
+
+    @Deprecated
     public void uniform1i(String uniformName, int value) {
         WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+        gameCanvas.getCtx3d().uniform1i(uniformLocation, value);
+        WebGlUtil.checkLastWebGlError("uniform1i", gameCanvas.getCtx3d());
+    }
+
+    public void uniform1i(WebGLUniformLocation uniformLocation, int value) {
         gameCanvas.getCtx3d().uniform1i(uniformLocation, value);
         WebGlUtil.checkLastWebGlError("uniform1i", gameCanvas.getCtx3d());
     }
@@ -231,8 +265,8 @@ public class WebGlFacade {
         if (shadowWebGlTextureId == null) {
             throw new IllegalStateException("Shadow must be enabled before");
         }
-        uniform1f("uShadowAlpha", (float) shadowUiService.getShadowAlpha());
-        uniform1i("uShadowTexture", shadowWebGlTextureId.getUniformValue());
+        uniform1f(uShadowAlpha, (float) shadowUiService.getShadowAlpha());
+        uniform1i(uShadowTexture, shadowWebGlTextureId.getUniformValue());
         gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
     }
