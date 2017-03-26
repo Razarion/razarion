@@ -43,13 +43,12 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
     @PostConstruct
     public void init() {
-        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader()).enableTransformation(true));
+        webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.slopeVertexShader(), Shaders.INSTANCE.slopeFragmentShader()).enableTransformation(true).enableReceiveShadow());
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         slopeFactors = webGlFacade.createFloat32ArrayShaderAttribute("aSlopeFactor");
         groundSplatting = webGlFacade.createFloat32ArrayShaderAttribute("aGroundSplatting");
-        webGlFacade.enableReceiveShadow();
     }
 
     @Override

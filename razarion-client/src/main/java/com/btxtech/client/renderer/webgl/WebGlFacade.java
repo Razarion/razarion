@@ -2,16 +2,16 @@ package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
+import com.btxtech.client.renderer.engine.TextureIdHandler;
+import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.FloatShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.IntegerShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.ShaderTextureCoordinateAttribute;
-import com.btxtech.client.renderer.engine.TextureIdHandler;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec2Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
-import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
@@ -19,7 +19,6 @@ import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.ShadowUiService;
-import com.google.gwt.resources.client.TextResource;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
@@ -78,6 +77,9 @@ public class WebGlFacade {
     public void init(WebGlFacadeConfig webGlFacadeConfig) {
         abstractRenderUnit = webGlFacadeConfig.getAbstractRenderUnit();
         webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig);
+        if (webGlFacadeConfig.isReceiveShadow()) {
+            shadowWebGlTextureId = createWebGlTextureId();
+        }
     }
 
     public VertexShaderAttribute createVertexShaderAttribute(String attributeName) {
@@ -225,15 +227,10 @@ public class WebGlFacade {
         return gameCanvas.getCtx3d();
     }
 
-    public void enableReceiveShadow() {
-        shadowWebGlTextureId = createWebGlTextureId();
-    }
-
     public void activateReceiveShadow() {
         if (shadowWebGlTextureId == null) {
             throw new IllegalStateException("Shadow must be enabled before");
         }
-        uniformMatrix4fv("uShadowMatrix", shadowUiService.getShadowLookupTransformation());
         uniform1f("uShadowAlpha", (float) shadowUiService.getShadowAlpha());
         uniform1i("uShadowTexture", shadowWebGlTextureId.getUniformValue());
         gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());

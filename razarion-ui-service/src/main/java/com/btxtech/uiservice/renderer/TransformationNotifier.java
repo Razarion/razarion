@@ -26,6 +26,10 @@ public class TransformationNotifier {
         void onTransformationChanged(NativeMatrix viewShadowMatrix, NativeMatrix perspectiveShadowMatrix);
     }
 
+    public interface ShadowLookupTransformationListener {
+        void onShadowLookupTransformationChanged(NativeMatrix shadowLookupMatrix);
+    }
+
     @Inject
     private Camera camera;
     @Inject
@@ -38,9 +42,11 @@ public class TransformationNotifier {
     private NativeMatrix perspectiveMatrix;
     private NativeMatrix viewShadowMatrix;
     private NativeMatrix perspectiveShadowMatrix;
+    private NativeMatrix shadowLookupMatrix;
     private Collection<TransformationListener> transformationListeners = new ArrayList<>();
     private Collection<TransformationNormListener> transformationNormListeners = new ArrayList<>();
     private Collection<ShadowTransformationListener> shadowTransformationListeners = new ArrayList<>();
+    private Collection<ShadowLookupTransformationListener> shadowLookupTransformationListeners = new ArrayList<>();
 
     public Runnable addAndCallTransformationListener(TransformationListener listener) {
         transformationListeners.add(listener);
@@ -69,12 +75,21 @@ public class TransformationNotifier {
         return () -> shadowTransformationListeners.remove(listener);
     }
 
+    public Runnable addAndCallShadowLookupTransformationListener(ShadowLookupTransformationListener listener) {
+        shadowLookupTransformationListeners.add(listener);
+        if (shadowLookupMatrix == null) {
+            updateTransformationMatrices();
+        }
+        listener.onShadowLookupTransformationChanged(shadowLookupMatrix);
+        return () -> shadowLookupTransformationListeners.remove(listener);
+    }
 
     public void onTransformationChanged() {
         updateTransformationMatrices();
         transformationListeners.forEach(listeners -> listeners.onTransformationChanged(viewMatrix, perspectiveMatrix));
         transformationNormListeners.forEach(listeners -> listeners.onTransformationChanged(viewMatrix, viewNormMatrix, perspectiveMatrix));
         shadowTransformationListeners.forEach(listeners -> listeners.onTransformationChanged(viewShadowMatrix, perspectiveShadowMatrix));
+        shadowLookupTransformationListeners.forEach(listeners -> listeners.onShadowLookupTransformationChanged(shadowLookupMatrix));
     }
 
     private void updateTransformationMatrices() {
@@ -87,5 +102,6 @@ public class TransformationNotifier {
         perspectiveMatrix = nativeMatrixFactory.createFromColumnMajorArray(projectionTransformation.getMatrix().toWebGlArray());
         viewShadowMatrix = nativeMatrixFactory.createFromColumnMajorArray(shadowUiService.getDepthViewTransformation().toWebGlArray());
         perspectiveShadowMatrix = nativeMatrixFactory.createFromColumnMajorArray(shadowUiService.getDepthProjectionTransformation().toWebGlArray());
+        shadowLookupMatrix = nativeMatrixFactory.createFromColumnMajorArray(shadowUiService.getShadowLookupTransformation().toWebGlArray());
     }
 }
