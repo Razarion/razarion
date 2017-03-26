@@ -17,6 +17,7 @@ import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import elemental.html.Float32Array;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -45,6 +46,13 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     private WebGlUniformTexture buildupTexture;
     private Color ambient;
     private Color diffuse;
+    private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation modelNormMatrix;
+    private WebGLUniformLocation buildupMatrixUniformLocation;
+    private WebGLUniformLocation uLightingAmbient;
+    private WebGLUniformLocation uLightingDirection;
+    private WebGLUniformLocation uLightingDiffuse;
+    private WebGLUniformLocation progressZUniformLocation;
 
     @PostConstruct
     public void init() {
@@ -52,6 +60,13 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         textureCoordinateAttribute = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        modelNormMatrix = webGlFacade.getUniformLocation("uNMMatrix");
+        buildupMatrixUniformLocation = webGlFacade.getUniformLocation("buildupMatrix");
+        uLightingAmbient = webGlFacade.getUniformLocation("uLightingAmbient");
+        uLightingDirection = webGlFacade.getUniformLocation("uLightingDirection");
+        uLightingDiffuse = webGlFacade.getUniformLocation("uLightingDiffuse");
+        progressZUniformLocation = webGlFacade.getUniformLocation("progressZ");
     }
 
     @Override
@@ -76,10 +91,10 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
         webGlFacade.useProgram();
 
 
-        webGlFacade.uniform3fNoAlpha("uLightingAmbient", ambient);
-        webGlFacade.uniform3f("uLightingDirection", visualUiService.getShape3DLightDirection());
-        webGlFacade.uniform3fNoAlpha("uLightingDiffuse", diffuse);
-        webGlFacade.uniformMatrix4fv("buildupMatrix", buildupMatrix);
+        webGlFacade.uniform3fNoAlpha(uLightingAmbient, ambient);
+        webGlFacade.uniform3f(uLightingDirection, visualUiService.getShape3DLightDirection());
+        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, diffuse);
+        webGlFacade.uniformMatrix4fv(buildupMatrixUniformLocation, buildupMatrix);
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());
 
@@ -94,9 +109,9 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
 
     @Override
     protected void draw(ModelMatrices modelMatrices, double progressZ) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniformMatrix4fv("uNMMatrix", modelMatrices.getNorm());
-        webGlFacade.uniform1f("progressZ", progressZ);
+        webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
+        webGlFacade.uniformMatrix4fv(modelNormMatrix, modelMatrices.getNorm());
+        webGlFacade.uniform1f(progressZUniformLocation, progressZ);
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

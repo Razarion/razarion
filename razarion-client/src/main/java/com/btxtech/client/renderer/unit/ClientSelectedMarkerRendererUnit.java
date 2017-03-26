@@ -10,6 +10,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.selection.AbstractSelectedMarkerRendererUnit;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -27,12 +28,18 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
     private FloatShaderAttribute visibilityAttribute;
+    private WebGLUniformLocation colorUniformLocation;
+    private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation uRadius;
 
     @PostConstruct
     public void postConstruct() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.itemMarkerFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
+        colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        uRadius = webGlFacade.getUniformLocation("uRadius");
     }
 
     @Override
@@ -51,9 +58,9 @@ public class ClientSelectedMarkerRendererUnit extends AbstractSelectedMarkerRend
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, modelMatrices.getColor());
-        webGlFacade.uniform1f("uRadius", modelMatrices.getRadius());
+        webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
+        webGlFacade.uniform4f(colorUniformLocation, modelMatrices.getColor());
+        webGlFacade.uniform1f(uRadius, modelMatrices.getRadius());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

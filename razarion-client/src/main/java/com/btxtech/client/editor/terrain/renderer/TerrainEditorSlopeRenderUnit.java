@@ -13,6 +13,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -35,11 +36,13 @@ public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlo
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute vertices;
     private ModifiedSlope modifiedSlope;
+    private WebGLUniformLocation uHover;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainEditorVertexShader(), Shaders.INSTANCE.terrainEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        uHover = webGlFacade.getUniformLocation("uHover");
     }
 
     @Override
@@ -75,7 +78,7 @@ public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlo
     public void draw(ModelMatrices modelMatrices) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform1b("uHover", modifiedSlope.isHover());
+        webGlFacade.uniform1b(uHover, modifiedSlope.isHover());
 
         vertices.activate();
 

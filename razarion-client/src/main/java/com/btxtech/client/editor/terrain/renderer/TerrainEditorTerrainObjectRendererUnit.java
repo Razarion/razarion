@@ -6,14 +6,15 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -38,11 +39,17 @@ public class TerrainEditorTerrainObjectRendererUnit extends AbstractRenderUnit<V
     @Inject
     private TerrainEditorImpl terrainEditor;
     private VertexShaderAttribute vertices;
+    private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation uDelete;
+    private WebGLUniformLocation uHover;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainObjectEditorVertexShader(), Shaders.INSTANCE.terrainObjectEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        uDelete = webGlFacade.getUniformLocation("uDelete");
+        uHover = webGlFacade.getUniformLocation("uHover");
     }
 
     @Override
@@ -67,13 +74,13 @@ public class TerrainEditorTerrainObjectRendererUnit extends AbstractRenderUnit<V
     protected void prepareDraw() {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform1b("uDelete", terrainEditor.isDeletePressed());
+        webGlFacade.uniform1b(uDelete, terrainEditor.isDeletePressed());
     }
 
     @Override
     public void draw(ModelMatrices modelMatrices) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniform1b("uHover", modelMatrices.getProgress() > 0.0);
+        webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
+        webGlFacade.uniform1b(uHover, modelMatrices.getProgress() > 0.0);
 
         vertices.activate();
 

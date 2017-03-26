@@ -13,6 +13,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -36,11 +37,13 @@ public class TerrainMarkerRendererUnit extends AbstractRenderUnit<List<Vertex>> 
     @Inject
     private MonitorRenderTask monitorRenderTask;
     private VertexShaderAttribute positions;
+    private WebGLUniformLocation colorUniformLocation;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.rgbaVpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class TerrainMarkerRendererUnit extends AbstractRenderUnit<List<Vertex>> 
     public void draw(ModelMatrices modelMatrices) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, new Color(0, 1, 0, 0.5));
+        webGlFacade.uniform4f(colorUniformLocation, new Color(0, 1, 0, 0.5));
 
         positions.activate();
 

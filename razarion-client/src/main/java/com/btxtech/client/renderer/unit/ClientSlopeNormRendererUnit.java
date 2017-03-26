@@ -10,6 +10,7 @@ import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -26,11 +27,13 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     @Inject
     private WebGlFacade webGlFacade;
     private Vec3Float32ArrayShaderAttribute vertices;
+    private WebGLUniformLocation modelMatrix;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.debugVectorVertexShader(), Shaders.INSTANCE.debugVectorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
     }
 
     @Override
@@ -45,7 +48,7 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     @Override
     protected void draw(SlopeUi slopeUi) {
         webGlFacade.useProgram();
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, Matrix4.createIdentity());
+        webGlFacade.uniformMatrix4fv(modelMatrix, Matrix4.createIdentity());
 
         vertices.activate();
         // Draw

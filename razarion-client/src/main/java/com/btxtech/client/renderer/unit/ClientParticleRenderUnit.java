@@ -13,6 +13,7 @@ import com.btxtech.uiservice.particle.ParticleShapeConfig;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.particle.AbstractParticleRenderUnit;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -35,12 +36,20 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     private WebGlUniformTexture colorRamp;
     private ParticleShapeConfig particleShapeConfig;
     private double textureOffsetScope;
+    private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation uTextureOffsetScope;
+    private WebGLUniformLocation uProgress;
+    private WebGLUniformLocation uXColorRampOffset;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.particleVertexShader(), Shaders.INSTANCE.particleFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         alphaTextureCoordinates = webGlFacade.createDecimalPositionShaderAttribute("aAlphaTextureCoordinate");
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        uTextureOffsetScope = webGlFacade.getUniformLocation("uTextureOffsetScope");
+        uProgress = webGlFacade.getUniformLocation("uProgress");
+        uXColorRampOffset = webGlFacade.getUniformLocation("uXColorRampOffset");
     }
 
     @Override
@@ -57,7 +66,7 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
     protected void prepareDraw() {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform1f("uTextureOffsetScope", textureOffsetScope);
+        webGlFacade.uniform1f(uTextureOffsetScope, textureOffsetScope);
 
         positions.activate();
         alphaTextureCoordinates.activate();
@@ -68,9 +77,9 @@ public class ClientParticleRenderUnit extends AbstractParticleRenderUnit {
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniform1f("uProgress", modelMatrices.getProgress());
-        webGlFacade.uniform1f("uXColorRampOffset", particleShapeConfig.getColorRampXOffset(modelMatrices.getParticleXColorRampOffsetIndex()));
+        webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
+        webGlFacade.uniform1f(uProgress, modelMatrices.getProgress());
+        webGlFacade.uniform1f(uXColorRampOffset, particleShapeConfig.getColorRampXOffset(modelMatrices.getParticleXColorRampOffsetIndex()));
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

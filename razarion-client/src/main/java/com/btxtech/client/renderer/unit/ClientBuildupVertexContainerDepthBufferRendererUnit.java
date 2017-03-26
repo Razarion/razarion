@@ -15,6 +15,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -40,12 +41,18 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     private Vec2Float32ArrayShaderAttribute textureCoordinate;
     private WebGlUniformTexture finishTexture;
     private WebGlUniformTexture buildupTexture;
+    private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation buildupMatrixUniformLocation;
+    private WebGLUniformLocation progressZUniformLocation;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.buildupVertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.buildupVertexContainerDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         textureCoordinate = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        buildupMatrixUniformLocation = webGlFacade.getUniformLocation("buildupMatrix");
+        progressZUniformLocation = webGlFacade.getUniformLocation("progressZ");
     }
 
     @Override
@@ -64,7 +71,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     protected void prepareDraw(Matrix4 buildupMatrix) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniformMatrix4fv("buildupMatrix", buildupMatrix);
+        webGlFacade.uniformMatrix4fv(buildupMatrixUniformLocation, buildupMatrix);
 
         positions.activate();
         textureCoordinate.activate();
@@ -74,8 +81,8 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
 
     @Override
     protected void draw(ModelMatrices modelMatrices, double progressZ) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniform1f("progressZ", progressZ);
+        webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
+        webGlFacade.uniform1f(progressZUniformLocation, progressZ);
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

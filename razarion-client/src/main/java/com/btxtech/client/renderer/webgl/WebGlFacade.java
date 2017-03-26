@@ -15,7 +15,6 @@ import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.ShadowUiService;
@@ -131,18 +130,10 @@ public class WebGlFacade {
         webGlProgram.useProgram();
     }
 
+    @Deprecated
     // Do not use anymore -> slow. User: uniformMatrix4fv(String uniformName, Matrix4 matrix)
-    @Deprecated
-    public void uniformMatrix4fv(String uniformName, Matrix4 matrix) {
-        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+    public void uniformMatrix4fv(WebGLUniformLocation uniformLocation, Matrix4 matrix) {
         gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.createArrayBufferOfFloat32Doubles(matrix.toWebGlArray()));
-        WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
-    }
-
-    @Deprecated
-    public void uniformMatrix4fv(String uniformName, NativeMatrix matrix) {
-        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
-        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.toFloat32Array(matrix));
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
     }
 
@@ -151,25 +142,9 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
     }
 
-    protected void uniform3f(String uniformName, double x, double y, double z) {
-        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
-        gameCanvas.getCtx3d().uniform3f(uniformLocation, (float) x, (float) y, (float) z);
-        WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
-    }
-
-    @Deprecated
-    public void uniform3f(String uniformName, Vertex vertex) {
-        uniform3f(uniformName, vertex.getX(), vertex.getY(), vertex.getZ());
-    }
-
     public void uniform3f(WebGLUniformLocation webGLUniformLocation, Vertex vertex) {
         gameCanvas.getCtx3d().uniform3f(webGLUniformLocation, (float) vertex.getX(), (float) vertex.getY(), (float) vertex.getZ());
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
-    }
-
-    @Deprecated
-    public void uniform3fNoAlpha(String uniformName, Color color) {
-        uniform3f(uniformName, color.getR(), color.getG(), color.getB());
     }
 
     public void uniform3fNoAlpha(WebGLUniformLocation uniformLocation, Color color) {
@@ -177,23 +152,9 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
     }
 
-    @Deprecated
-    public void uniform1f(String uniformName, double value) {
-        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
-        gameCanvas.getCtx3d().uniform1f(uniformLocation, (float) value);
-        WebGlUtil.checkLastWebGlError("uniform1f", gameCanvas.getCtx3d());
-    }
-
     public void uniform1f(WebGLUniformLocation uniformLocation, double value) {
         gameCanvas.getCtx3d().uniform1f(uniformLocation, (float) value);
         WebGlUtil.checkLastWebGlError("uniform1f", gameCanvas.getCtx3d());
-    }
-
-    @Deprecated
-    public void uniform1i(String uniformName, int value) {
-        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
-        gameCanvas.getCtx3d().uniform1i(uniformLocation, value);
-        WebGlUtil.checkLastWebGlError("uniform1i", gameCanvas.getCtx3d());
     }
 
     public void uniform1i(WebGLUniformLocation uniformLocation, int value) {
@@ -201,20 +162,18 @@ public class WebGlFacade {
         WebGlUtil.checkLastWebGlError("uniform1i", gameCanvas.getCtx3d());
     }
 
-    public void uniform1b(String uniformName, boolean value) {
-        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+    public void uniform1b(WebGLUniformLocation uniformLocation, boolean value) {
         gameCanvas.getCtx3d().uniform1i(uniformLocation, value ? 1 : 0);
         WebGlUtil.checkLastWebGlError("uniform1b", gameCanvas.getCtx3d());
     }
 
-    public void uniform4f(String uniformName, double x, double y, double z, double w) {
-        WebGLUniformLocation uniformLocation = getUniformLocation(uniformName);
+    public void uniform4f(WebGLUniformLocation uniformLocation, double x, double y, double z, double w) {
         gameCanvas.getCtx3d().uniform4f(uniformLocation, (float) x, (float) y, (float) z, (float) w);
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
     }
 
-    public void uniform4f(String uniformName, Color color) {
-        uniform4f(uniformName, color.getR(), color.getG(), color.getB(), color.getA());
+    public void uniform4f(WebGLUniformLocation uniformLocation, Color color) {
+        uniform4f(uniformLocation, color.getR(), color.getG(), color.getB(), color.getA());
     }
 
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName) {
@@ -240,21 +199,6 @@ public class WebGlFacade {
 
     private TextureIdHandler.WebGlTextureId createWebGlTextureId() {
         return textureIdHandler.create();
-    }
-
-    public void setLightUniforms(LightConfig lightConfig) {
-        setLightUniforms(null, lightConfig);
-    }
-
-    public void setLightUniforms(String postfix, LightConfig lightConfig) {
-        if (postfix == null) {
-            postfix = "";
-        }
-        uniform3f("uLightDirection" + postfix, lightConfig.setupDirection());
-        uniform3fNoAlpha("uLightDiffuse" + postfix, lightConfig.getDiffuse());
-        uniform3fNoAlpha("uLightAmbient" + postfix, lightConfig.getAmbient());
-        uniform1f("uLightSpecularIntensity" + postfix, lightConfig.getSpecularIntensity());
-        uniform1f("uLightSpecularHardness" + postfix, lightConfig.getSpecularHardness());
     }
 
     public WebGLRenderingContext getCtx3d() {

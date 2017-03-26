@@ -10,6 +10,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.tip.AbstractInGameTipCornerRendererUnit;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -26,11 +27,15 @@ public class ClientInGameTipCornerRendererUnit extends AbstractInGameTipCornerRe
     @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
+    private WebGLUniformLocation colorUniformLocation;
+    private WebGLUniformLocation modelMatrix;
 
     @PostConstruct
     public void postConstruct() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.rgbaMvpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
     }
 
     @Override
@@ -42,14 +47,14 @@ public class ClientInGameTipCornerRendererUnit extends AbstractInGameTipCornerRe
     protected void prepareDraw(Color cornerColor) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, cornerColor);
+        webGlFacade.uniform4f(colorUniformLocation, cornerColor);
 
         positions.activate();
     }
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
+        webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
         webGlFacade.drawArrays(WebGLRenderingContext.LINES);
     }
 

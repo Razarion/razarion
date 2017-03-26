@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -28,6 +29,11 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     private Vec3Float32ArrayShaderAttribute norms;
     private Vec3Float32ArrayShaderAttribute tangents;
     private WebGlUniformTexture bumpMap;
+    private LightUniforms lightUniforms;
+    private WebGLUniformLocation uTransparency;
+    private WebGLUniformLocation uBmDepth;
+    private WebGLUniformLocation animation;
+    private WebGLUniformLocation animation2;
 
     @PostConstruct
     public void init() {
@@ -35,6 +41,11 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         norms = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
+        lightUniforms = new LightUniforms(null, webGlFacade);
+        uTransparency = webGlFacade.getUniformLocation("uTransparency");
+        uBmDepth = webGlFacade.getUniformLocation("uBmDepth");
+        animation = webGlFacade.getUniformLocation("animation");
+        animation2 = webGlFacade.getUniformLocation("animation2");
     }
 
     @Override
@@ -53,12 +64,12 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     public void draw(WaterUi waterUi) {
         webGlFacade.useProgram();
 
-        webGlFacade.setLightUniforms(null, waterUi.getLightConfig());
+        lightUniforms.setLightUniforms(waterUi.getLightConfig(), webGlFacade);
 
-        webGlFacade.uniform1f("uTransparency", waterUi.getTransparency());
-        webGlFacade.uniform1f("uBmDepth", waterUi.getBmDepth());
-        webGlFacade.uniform1f("animation", waterUi.getWaterAnimation());
-        webGlFacade.uniform1f("animation2", waterUi.getWaterAnimation2());
+        webGlFacade.uniform1f(uTransparency, waterUi.getTransparency());
+        webGlFacade.uniform1f(uBmDepth, waterUi.getBmDepth());
+        webGlFacade.uniform1f(animation, waterUi.getWaterAnimation());
+        webGlFacade.uniform1f(animation2, waterUi.getWaterAnimation2());
 
         positions.activate();
         norms.activate();

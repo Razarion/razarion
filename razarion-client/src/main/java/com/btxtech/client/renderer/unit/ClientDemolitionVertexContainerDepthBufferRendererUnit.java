@@ -12,6 +12,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -32,12 +33,14 @@ public class ClientDemolitionVertexContainerDepthBufferRendererUnit extends Abst
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec2Float32ArrayShaderAttribute textureCoordinate;
     private WebGlUniformTexture webGLTexture;
+    private WebGLUniformLocation modelMatrix;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.vertexContainerDeptBufferVertexShader(), Shaders.INSTANCE.vertexContainerDeptBufferFragmentShader()).enableShadowTransformation());
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         textureCoordinate = webGlFacade.createVec2Float32ArrayShaderAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
     }
 
     @Override
@@ -62,7 +65,7 @@ public class ClientDemolitionVertexContainerDepthBufferRendererUnit extends Abst
 
     @Override
     protected void draw(ModelMatrices modelMatrices, double health) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
+        webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 

@@ -2,20 +2,21 @@ package com.btxtech.client.editor.renderer;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
+import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.ShaderTextureCoordinateAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
-import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.VertexList;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -41,15 +42,16 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
     private ShaderTextureCoordinateAttribute textureCoordinates;
     private WebGlUniformTexture textureColor;
     private WebGlUniformTexture textureDepth;
+    private WebGLUniformLocation uDeepMap;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.monitorVertexShader(), Shaders.INSTANCE.monitorFragmentShader()));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         textureCoordinates = webGlFacade.createShaderTextureCoordinateAttribute(WebGlFacade.A_TEXTURE_COORDINATE);
-
         textureColor = webGlFacade.createEmptyWebGLTexture("uColorSampler");
         textureDepth = webGlFacade.createEmptyWebGLTexture("uDeepSampler");
+        uDeepMap = webGlFacade.getUniformLocation("uDeepMap");
     }
 
     @Override
@@ -86,7 +88,7 @@ public class ShadowMonitorRendererUnit extends AbstractRenderUnit<Void> {
     public void draw(ModelMatrices modelMatrices) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform1b("uDeepMap", monitorRenderTask.isShowDeep());
+        webGlFacade.uniform1b(uDeepMap, monitorRenderTask.isShowDeep());
 
         positions.activate();
         textureCoordinates.activate();

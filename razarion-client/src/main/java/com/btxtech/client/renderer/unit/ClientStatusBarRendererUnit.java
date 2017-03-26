@@ -10,6 +10,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.selection.AbstractStatusBarRendererUnit;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -27,12 +28,20 @@ public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
     private FloatShaderAttribute visibilityAttribute;
+    private WebGLUniformLocation colorUniformLocation;
+    private WebGLUniformLocation bgColorUniformLocation;
+    private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation uProgress;
 
     @PostConstruct
     public void postConstruct() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.commonVisibilityVertexShader(), Shaders.INSTANCE.statusBarFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         visibilityAttribute = webGlFacade.createFloatShaderAttribute("aVisibility");
+        colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
+        bgColorUniformLocation = webGlFacade.getUniformLocation("uBgColor");
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        uProgress = webGlFacade.getUniformLocation("uProgress");
     }
 
     @Override
@@ -51,10 +60,10 @@ public class ClientStatusBarRendererUnit extends AbstractStatusBarRendererUnit {
 
     @Override
     protected void draw(ModelMatrices modelMatrices) {
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, modelMatrices.getModel());
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, modelMatrices.getColor());
-        webGlFacade.uniform4f("uBgColor", modelMatrices.getBgColor());
-        webGlFacade.uniform1f("uProgress", modelMatrices.getProgress());
+        webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
+        webGlFacade.uniform4f(colorUniformLocation, modelMatrices.getColor());
+        webGlFacade.uniform4f(bgColorUniformLocation, modelMatrices.getBgColor());
+        webGlFacade.uniform1f(uProgress, modelMatrices.getProgress());
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 }

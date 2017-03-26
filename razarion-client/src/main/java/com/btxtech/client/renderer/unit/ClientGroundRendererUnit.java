@@ -10,6 +10,7 @@ import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -34,6 +35,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private WebGlUniformTexture splattingTexture;
     private WebGlUniformTexture bottomTexture;
     private WebGlUniformTexture bottomBm;
+    private LightUniforms lightUniforms;
+    private WebGLUniformLocation uTopBmDepth;
+    private WebGLUniformLocation uBottomBmDepth;
 
     @PostConstruct
     public void init() {
@@ -42,6 +46,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         splattings = webGlFacade.createFloat32ArrayShaderAttribute(WebGlFacade.A_GROUND_SPLATTING);
+        lightUniforms = new LightUniforms(null, webGlFacade);
+        uTopBmDepth = webGlFacade.getUniformLocation("uTopBmDepth");
+        uBottomBmDepth = webGlFacade.getUniformLocation("uBottomBmDepth");
     }
 
     @Override
@@ -66,9 +73,9 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     public void draw(GroundUi groundUi) {
         webGlFacade.useProgram();
 
-        webGlFacade.setLightUniforms(null, groundUi.getGroundLightConfig());
-        webGlFacade.uniform1f("uTopBmDepth", groundUi.getTopBmDepth());
-        webGlFacade.uniform1f("uBottomBmDepth", groundUi.getBottomBmDepth());
+        lightUniforms.setLightUniforms(groundUi.getGroundLightConfig(), webGlFacade);
+        webGlFacade.uniform1f(uTopBmDepth, groundUi.getTopBmDepth());
+        webGlFacade.uniform1f(uBottomBmDepth, groundUi.getBottomBmDepth());
 
         webGlFacade.activateReceiveShadow();
 

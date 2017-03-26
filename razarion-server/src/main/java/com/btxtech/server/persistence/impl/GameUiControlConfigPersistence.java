@@ -826,7 +826,7 @@ public class GameUiControlConfigPersistence {
     }
 
     private void addFadeOutLoadingCover(List<SceneConfig> sceneConfigs) {
-        sceneConfigs.add(new SceneConfig().setInternalName("script: fade out").setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("script: fade out").setRemoveLoadingCover(true).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(270, 275))));
     }
 
     private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {

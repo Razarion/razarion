@@ -9,6 +9,7 @@ import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.selection.AbstractSelectionFrameRenderUnit;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -25,11 +26,13 @@ public class ClientSelectionFrameRenderUnit extends AbstractSelectionFrameRender
     @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
+    private WebGLUniformLocation colorUniformLocation;
 
     @PostConstruct
     public void postConstruct() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.rgbaVpVertexShader(), Shaders.INSTANCE.rgbaVpFragmentShader()).enableTransformation(false));
         positions = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        colorUniformLocation = webGlFacade.getUniformLocation(WebGlFacade.U_COLOR);
     }
 
     @Override
@@ -42,7 +45,7 @@ public class ClientSelectionFrameRenderUnit extends AbstractSelectionFrameRender
         webGlFacade.useProgram();
 
         positions.activate();
-        webGlFacade.uniform4f(WebGlFacade.U_COLOR, Colors.SELECTION_FRAME);
+        webGlFacade.uniform4f(colorUniformLocation, Colors.SELECTION_FRAME);
         webGlFacade.drawArrays(WebGLRenderingContext.LINES);
     }
 }

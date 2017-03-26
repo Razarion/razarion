@@ -6,15 +6,16 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -40,11 +41,15 @@ public class TerrainEditorCursorRenderUnit extends AbstractRenderUnit<Polygon2D>
     @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute vertices;
+    private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation uCursorType;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainEditorCursorVertexShader(), Shaders.INSTANCE.terrainEditorCursorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
+        modelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
+        uCursorType = webGlFacade.getUniformLocation(WebGlFacade.U_CURSOR_TYPE);
     }
 
     @Override
@@ -72,16 +77,16 @@ public class TerrainEditorCursorRenderUnit extends AbstractRenderUnit<Polygon2D>
 
     @Override
     public void draw(ModelMatrices modelMatrices) {
-        if(!terrainEditor.isCursorVisible()) {
+        if (!terrainEditor.isCursorVisible()) {
             return;
         }
         webGlFacade.useProgram();
 
-        webGlFacade.uniformMatrix4fv(WebGlFacade.U_MODEL_MATRIX, terrainEditor.getCursorModelMatrix());
+        webGlFacade.uniformMatrix4fv(modelMatrix, terrainEditor.getCursorModelMatrix());
 
         vertices.activate();
 
-        webGlFacade.uniform1i(WebGlFacade.U_CURSOR_TYPE, terrainEditor.getCursorType().ordinal());
+        webGlFacade.uniform1i(uCursorType, terrainEditor.getCursorType().ordinal());
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLE_FAN);
     }

@@ -11,6 +11,7 @@ import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLRenderingContext;
+import elemental.html.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -40,6 +41,15 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private WebGlUniformTexture groundTopBm;
     private WebGlUniformTexture groundBottomTexture;
     private WebGlUniformTexture groundBottomBm;
+    private LightUniforms slopeLightUniforms;
+    private LightUniforms groundLightUniforms;
+    private WebGLUniformLocation slopeOriented;
+    private WebGLUniformLocation uSlopeBmDepth;
+    private WebGLUniformLocation uGroundTopBmDepth;
+    private WebGLUniformLocation uGroundBottomBmDepth;
+    private WebGLUniformLocation uHasWater;
+    private WebGLUniformLocation uWaterLevel;
+    private WebGLUniformLocation uWaterGround;
 
     @PostConstruct
     public void init() {
@@ -49,6 +59,15 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         slopeFactors = webGlFacade.createFloat32ArrayShaderAttribute("aSlopeFactor");
         groundSplatting = webGlFacade.createFloat32ArrayShaderAttribute("aGroundSplatting");
+        slopeLightUniforms = new LightUniforms("Slope", webGlFacade);
+        groundLightUniforms = new LightUniforms("Ground", webGlFacade);
+        slopeOriented = webGlFacade.getUniformLocation("slopeOriented");
+        uSlopeBmDepth = webGlFacade.getUniformLocation("uSlopeBmDepth");
+        uGroundTopBmDepth = webGlFacade.getUniformLocation("uGroundTopBmDepth");
+        uGroundBottomBmDepth = webGlFacade.getUniformLocation("uGroundBottomBmDepth");
+        uHasWater = webGlFacade.getUniformLocation("uHasWater");
+        uWaterLevel = webGlFacade.getUniformLocation("uWaterLevel");
+        uWaterGround = webGlFacade.getUniformLocation("uWaterGround");
     }
 
     @Override
@@ -74,20 +93,20 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     protected void draw(SlopeUi slopeUi) {
         webGlFacade.useProgram();
 
-        webGlFacade.setLightUniforms("Slope", slopeUi.getSlopeLightConfig());
-        webGlFacade.setLightUniforms("Ground", slopeUi.getGroundLightConfig());
+        slopeLightUniforms.setLightUniforms(slopeUi.getSlopeLightConfig(), webGlFacade);
+        groundLightUniforms.setLightUniforms(slopeUi.getGroundLightConfig(), webGlFacade);
 
-        webGlFacade.uniform1b("slopeOriented", slopeUi.isSlopeOriented());
+        webGlFacade.uniform1b(slopeOriented, slopeUi.isSlopeOriented());
 
         // Slope
-        webGlFacade.uniform1f("uSlopeBmDepth", slopeUi.getBmDepth());
+        webGlFacade.uniform1f(uSlopeBmDepth, slopeUi.getBmDepth());
         //Ground
-        webGlFacade.uniform1f("uGroundTopBmDepth", slopeUi.getTopBmDepth());
-        webGlFacade.uniform1f("uGroundBottomBmDepth", slopeUi.getBottomBmDepth());
+        webGlFacade.uniform1f(uGroundTopBmDepth, slopeUi.getTopBmDepth());
+        webGlFacade.uniform1f(uGroundBottomBmDepth, slopeUi.getBottomBmDepth());
         // Water
-        webGlFacade.uniform1b("uHasWater", slopeUi.hasWater());
-        webGlFacade.uniform1f("uWaterLevel", slopeUi.getWaterLevel());
-        webGlFacade.uniform1f("uWaterGround", terrainUiService.getWaterUi().getGroundLevel());
+        webGlFacade.uniform1b(uHasWater, slopeUi.hasWater());
+        webGlFacade.uniform1f(uWaterLevel, slopeUi.getWaterLevel());
+        webGlFacade.uniform1f(uWaterGround, terrainUiService.getWaterUi().getGroundLevel());
 
         vertices.activate();
         normals.activate();
