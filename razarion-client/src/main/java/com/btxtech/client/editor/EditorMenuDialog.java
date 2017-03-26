@@ -12,6 +12,7 @@ import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
 import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
+import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;

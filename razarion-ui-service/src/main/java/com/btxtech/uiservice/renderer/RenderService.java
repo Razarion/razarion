@@ -52,29 +52,30 @@ public abstract class RenderService {
         serviceInitEvent.fire(new RenderServiceInitEvent());
         renderTasks.clear();
 
-        addRenderTask(GroundRenderTask.class);
-        addRenderTask(SlopeRenderTask.class);
-        addRenderTask(TerrainObjectRenderTask.class);
-        addRenderTask(ItemMarkerRenderTask.class);
-        addRenderTask(BaseItemRenderTask.class);
-        addRenderTask(TrailRenderTask.class);
-        addRenderTask(ResourceItemRenderTask.class);
-        addRenderTask(BoxItemRenderTask.class);
-        addRenderTask(WaterRenderTask.class);
-        addRenderTask(ProjectileRenderTask.class);
-        addRenderTask(BaseItemPlacerRenderTask.class);
-        addRenderTask(SelectionFrameRenderTask.class);
-        addRenderTask(TipRenderTask.class);
-        addRenderTask(ParticleRenderTask.class);
+        addRenderTask(GroundRenderTask.class, "Ground");
+        addRenderTask(SlopeRenderTask.class, "Slope");
+        addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
+        addRenderTask(ItemMarkerRenderTask.class, "Item Marker");
+        addRenderTask(BaseItemRenderTask.class, "Base Item");
+        addRenderTask(TrailRenderTask.class, "Trail");
+        addRenderTask(ResourceItemRenderTask.class, "Resource");
+        addRenderTask(BoxItemRenderTask.class, "Box");
+        addRenderTask(WaterRenderTask.class, "Water");
+        addRenderTask(ProjectileRenderTask.class, "Projectile");
+        addRenderTask(BaseItemPlacerRenderTask.class, "Base Item Placer");
+        addRenderTask(SelectionFrameRenderTask.class, "Selection Frame");
+        addRenderTask(TipRenderTask.class, "Tip");
+        addRenderTask(ParticleRenderTask.class, "Particle");
 
         fillBuffers();
     }
 
-    private void addRenderTask(Class<? extends AbstractRenderTask> clazz) {
-        addRenderTask(instance.select(clazz).get());
+    private void addRenderTask(Class<? extends AbstractRenderTask> clazz, String name) {
+        addRenderTask(instance.select(clazz).get(), name);
     }
 
-    public void addRenderTask(AbstractRenderTask abstractRenderTask) {
+    public void addRenderTask(AbstractRenderTask abstractRenderTask, String name) {
+        abstractRenderTask.setName(name);
         renderTasks.add(abstractRenderTask);
     }
 
@@ -147,5 +148,9 @@ public abstract class RenderService {
                 }
             }
         }
+    }
+
+    public List<AbstractRenderTask> getRenderTasks() {
+        return renderTasks;
     }
 }

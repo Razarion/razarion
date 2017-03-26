@@ -27,7 +27,7 @@ public class MonitorRenderTask extends AbstractRenderTask<Void> {
         modelRenderer.add(RenderUnitControl.NORMAL, renderComposite);
         add(modelRenderer);
         renderComposite.fillBuffers();
-        renderService.addRenderTask(this);
+        renderService.addRenderTask(this, "Monitor");
     }
 
     public void hideMonitor() {

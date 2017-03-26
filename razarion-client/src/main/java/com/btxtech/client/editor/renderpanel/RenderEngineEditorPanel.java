@@ -1,4 +1,4 @@
-package com.btxtech.client.editor;
+package com.btxtech.client.editor.renderpanel;
 
 import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
@@ -13,12 +13,15 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -91,6 +94,10 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     @Inject
     @DataField
     private DoubleBox openingAngleYBox;
+    @Inject
+    @DataField
+    @ListContainer("tbody")
+    private ListComponent<RenderTaskModel, RenderTaskComponent> renderTasks;
 
     @PostConstruct
     public void init() {
@@ -106,6 +113,7 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
         rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
         rotateXBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateX())));
         rotateXSlider.setValue(Math.toDegrees(camera.getRotateX()));
+        renderTasks.setValue(renderService.getRenderTasks().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
     }
 
 

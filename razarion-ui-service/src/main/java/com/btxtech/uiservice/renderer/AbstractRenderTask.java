@@ -19,6 +19,8 @@ public abstract class AbstractRenderTask<T> {
     private List<ModelRenderer> modelRenderers = new ArrayList<>();
     private boolean active;
     private double interpolationFactor;
+    private String name;
+    private boolean enabled = true;
 
     /**
      * Override in sub classes
@@ -75,7 +77,7 @@ public abstract class AbstractRenderTask<T> {
     }
 
     public void prepareRender(long timeStamp) {
-        active = isActive();
+        active = isActive() && enabled;
         if (active) {
             interpolationFactor = setupInterpolationFactor();
             preRender(timeStamp);
@@ -107,5 +109,21 @@ public abstract class AbstractRenderTask<T> {
 
     public void fillNormBuffer() {
         modelRenderers.forEach(ModelRenderer::fillNormBuffer);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

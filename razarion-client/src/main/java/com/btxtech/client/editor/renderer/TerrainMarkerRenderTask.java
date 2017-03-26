@@ -30,7 +30,7 @@ public class TerrainMarkerRenderTask extends AbstractRenderTask<List<Vertex>> {
         modelRenderer.add(RenderUnitControl.START_POINT_CIRCLE, renderComposite);
         add(modelRenderer);
         renderComposite.fillBuffers();
-        renderService.addRenderTask(this);
+        renderService.addRenderTask(this, "Editor Terrain Marker");
     }
 
     public void hidePolygon() {

@@ -29,7 +29,9 @@
         </tr>
         <tr>
             <td>Render Unit</td>
-            <td><div id="rendererCount"></div></td>
+            <td>
+                <div id="rendererCount"></div>
+            </td>
         </tr>
         <tr>
             <td colspan="2">
@@ -89,6 +91,31 @@
             <td>Y Opening Angle</td>
             <td><input id="openingAngleYBox" type="number" max="180" min="0" step="1" style="width:5em;"><input id="openingAngleYSlider" type="range" max="180" min="0" step="1"></td>
         </tr>
+        <tr>
+            <td colspan="2">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">Renderers</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tbody id="renderTasks">
+                    <tr data-field="renderTaskTr">
+                        <td>
+                            <div data-field="name"></div>
+                        </td>
+                        <td>
+                            <input type="checkbox" id="enabled">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
     </table>
 </div>
 </body>
