@@ -822,11 +822,11 @@ public class GameUiControlConfigPersistence {
 
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(ENEMY_BOT).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Razar Industries").setNpc(false));
-        sceneConfigs.add(new SceneConfig().setInternalName("setup: add enemy bot").setBotConfigs(botConfigs));
+        sceneConfigs.add(new SceneConfig().setInternalName("setup: add enemy bot").setBotConfigs(botConfigs).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(270, 275)).setCameraLocked(true).setBottomWidth(120.0)));
     }
 
     private void addFadeOutLoadingCover(List<SceneConfig> sceneConfigs) {
-        sceneConfigs.add(new SceneConfig().setInternalName("script: fade out").setRemoveLoadingCover(true).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(270, 275))));
+        sceneConfigs.add(new SceneConfig().setInternalName("script: fade out").setRemoveLoadingCover(true));
     }
 
     private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {
