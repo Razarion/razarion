@@ -2,7 +2,6 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
@@ -20,10 +19,12 @@ public class VisualUiService {
     @Inject
     private Event<VisualConfig> visualConfigTrigger;
     private VisualConfig visualConfig;
+    private Vertex lightDirection;
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
         this.visualConfig = gameUiControlInitEvent.getGameUiControlConfig().getVisualConfig();
         visualConfigTrigger.fire(visualConfig);
+        lightDirection = Matrix4.createZRotation(visualConfig.getShape3DLightRotateZ()).multiply(Matrix4.createXRotation(visualConfig.getShape3DLightRotateX())).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
     public VisualConfig getVisualConfig() {
@@ -31,6 +32,6 @@ public class VisualUiService {
     }
 
     public Vertex getShape3DLightDirection() {
-        return Matrix4.createZRotation(visualConfig.getShape3DLightRotateZ()).multiply(Matrix4.createXRotation(visualConfig.getShape3DLightRotateX())).multiply(new Vertex(0, 0, -1), 1.0);
+        return lightDirection;
     }
 }
