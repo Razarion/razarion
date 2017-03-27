@@ -29,7 +29,7 @@
 
     <h:form>
         Pass AdSet Id
-        <br />
+        <br/>
         <h:inputText id="sinsightCampaign" value="#{marketingPageBean.campaignId}"/>
         <h:commandButton value="Show Insights" action="#{marketingPageBean.readInsights()}">
             <f:ajax execute="sinsightCampaign" render="insightDisplay"/>
@@ -61,7 +61,7 @@
 
     <h:form>
         Only used if something went wrong and need to be archived
-        <br />
+        <br/>
         <h:inputText id="archiveCampaign" value="#{marketingPageBean.campaignId}"/>
         <h:commandButton value="Archive Campaign" action="#{marketingPageBean.archiveCampaign()}">
             <f:ajax execute="archiveCampaign" render="archiveCampaignDisplay"/>
@@ -72,26 +72,8 @@
     <hr/>
 
     <h:form>
-        <h:inputText id="queryInterest" value="#{marketingPageBean.queryInterest}"/>
-        <h:commandButton value="Query Interest" action="#{marketingPageBean.queryAdInterest()}">
-            <f:ajax execute="queryInterest" render="queryInterestDisplay"/>
-        </h:commandButton>
+        <h:commandButton value="Create Campaign" action="createCampaign"/>
     </h:form>
-    <br/>
-    <h:outputText id="queryInterestDisplay" value="#{marketingPageBean.interestResult}" escape="false"/>
-    <hr/>
-
-    <h:form>
-        <h:inputTextarea cols="100" rows="30" id="createCampaignInterest" value="#{marketingPageBean.createCampaignInterest}"/>
-        <h:commandButton value="Create Campaign" action="#{marketingPageBean.createCampaign()}">
-            <f:ajax execute="createCampaignInterest" render="createCampaignDisplay"/>
-        </h:commandButton>
-    </h:form>
-    <br/>
-    <h:outputText id="createCampaignDisplay" value="#{marketingPageBean.state}" escape="false"/>
-    <hr/>
-
 </h:body>
-
 
 </html>

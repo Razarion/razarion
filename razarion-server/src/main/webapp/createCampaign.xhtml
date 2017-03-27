@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Created by IntelliJ IDEA.
+  User: Beat
+  Date: 27.03.2017
+  Time: 22:06
+-->
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+    <title>Razarion Create Ad</title>
+    <h:outputStylesheet library="css" name="marketing.css"/>
+</h:head>
+
+<h:body>
+    <h2>Brows Interest</h2>
+    <h:form>
+        Query interesst: <h:inputText value="#{createAdBean.interestQuery}"/>
+        <h:commandButton value="Query" action="#{createAdBean.queryInterest}"/>
+        <h:commandButton value="Deep Query" action="#{createAdBean.deepQueryInterest}"/>
+        <h:dataTable value="#{createAdBean.availableAdInterest}" var="i">
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Name</f:facet>
+                <!-- row record -->
+                #{i.name}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Audience Size</f:facet>
+                <!-- row record -->
+                #{i.audienceSize}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Topic</f:facet>
+                <!-- row record -->
+                #{i.topic}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Id</f:facet>
+                <!-- row record -->
+                #{i.id}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Disambiguation Category</f:facet>
+                <!-- row record -->
+                #{i.disambiguationCategory}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Description</f:facet>
+                <!-- row record -->
+                #{i.description}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Add</f:facet>
+                <!-- row record -->
+                <h:commandButton value="+" actionListener="#{createAdBean.addInterest(i)}"/>
+            </h:column>
+        </h:dataTable>
+    </h:form>
+
+
+    <h2>Selected Interest</h2>
+    <h:form>
+        <h:dataTable value="#{createAdBean.selectedAdInterest}" var="i">
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Name</f:facet>
+                <!-- row record -->
+                #{i.name}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Audience Size</f:facet>
+                <!-- row record -->
+                #{i.audienceSize}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Topic</f:facet>
+                <!-- row record -->
+                #{i.topic}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Id</f:facet>
+                <!-- row record -->
+                #{i.id}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Disambiguation Category</f:facet>
+                <!-- row record -->
+                #{i.disambiguationCategory}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Description</f:facet>
+                <!-- row record -->
+                #{i.description}
+            </h:column>
+            <h:column>
+                <!-- column header -->
+                <f:facet name="header">Remove</f:facet>
+                <!-- row record -->
+                <h:commandButton value="-" actionListener="#{createAdBean.removeInterest(i)}"/>
+            </h:column>
+        </h:dataTable>
+        <h:commandButton value="Create Ad" action="#{createAdBean.createCampaign}"/>
+        <h:outputText value="${createAdBean.campaignCreationError}"/>
+    </h:form>
+
+</h:body>
+
+</html>
