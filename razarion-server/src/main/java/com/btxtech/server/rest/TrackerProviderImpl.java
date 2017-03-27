@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.rest.TrackerProvider;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 
 import javax.inject.Inject;
 
@@ -54,6 +55,16 @@ public class TrackerProviderImpl implements TrackerProvider {
     public void sceneTrackerInfo(SceneTrackerInfo sceneTrackerInfo) {
         try {
             trackerPersistence.onSceneTrackerInfo(sceneTrackerInfo);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void performanceTracker(PerfmonStatistic perfmonStatistic) {
+        try {
+            trackerPersistence.onPerformanceTracker(perfmonStatistic);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

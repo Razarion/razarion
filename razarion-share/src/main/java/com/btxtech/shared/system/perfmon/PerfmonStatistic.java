@@ -1,5 +1,6 @@
 package com.btxtech.shared.system.perfmon;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -10,6 +11,7 @@ public class PerfmonStatistic {
     private PerfmonEnum perfmonEnum;
     private List<Double> frequency;
     private List<Double> avgDuration;
+    private Date timeStamp;
 
     public PerfmonEnum getPerfmonEnum() {
         return perfmonEnum;
@@ -41,6 +43,14 @@ public class PerfmonStatistic {
 
     public double getAvgDuration(int index) {
         return avgDuration.get(index);
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public int size() {

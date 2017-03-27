@@ -1,6 +1,7 @@
 package com.btxtech.shared.datatypes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,10 @@ public class MapList<T, U> {
         if (collection.isEmpty()) {
             map.remove(key);
         }
+    }
+
+    public Collection<T> getKeys() {
+        return map.keySet();
     }
 
     /**

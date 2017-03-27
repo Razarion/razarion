@@ -4,6 +4,7 @@ import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -35,4 +36,9 @@ public interface TrackerProvider {
     @Path("sceneTrackerInfo")
     @Consumes(MediaType.APPLICATION_JSON)
     void sceneTrackerInfo(SceneTrackerInfo sceneTrackerInfo);
+
+    @POST
+    @Path("performanceTracker")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void performanceTracker(PerfmonStatistic perfmonStatistic);
 }

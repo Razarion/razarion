@@ -2,6 +2,7 @@ package com.btxtech.shared.system.perfmon;
 
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.rest.TrackerProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -11,9 +12,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -24,12 +28,10 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class PerfmonService {
     public static final int COUNT = 180;
-    private static final long DUMP_DELAY = 1000;
-    private Logger log = Logger.getLogger(PerfmonService.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    public static final long DUMP_DELAY = 1000;
+    private Logger logger = Logger.getLogger(PerfmonService.class.getName());
     @Inject
     private SimpleExecutorService simpleExecutorService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     private Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
@@ -55,7 +57,7 @@ public class PerfmonService {
 
     public void onEntered(PerfmonEnum perfmonEnum) {
         if (enterTimes.containsKey(perfmonEnum)) {
-            log.warning("PerfmonService.onEntered(): onEntered has already been called for " + perfmonEnum);
+            logger.warning("PerfmonService.onEntered(): onEntered has already been called for " + perfmonEnum);
         }
         enterTimes.put(perfmonEnum, System.currentTimeMillis());
     }
@@ -63,7 +65,7 @@ public class PerfmonService {
     public void onLeft(PerfmonEnum perfmonEnum) {
         Long startTime = enterTimes.remove(perfmonEnum);
         if (startTime == null) {
-            log.warning("PerfmonService.onLeft(): onEntered was not called before " + perfmonEnum);
+            logger.warning("PerfmonService.onLeft(): onEntered was not called before " + perfmonEnum);
             return;
         }
         sampleEntries.add(new SampleEntry(perfmonEnum, startTime));
@@ -73,18 +75,28 @@ public class PerfmonService {
         return statisticEntries;
     }
 
-    public List<PerfmonStatistic> getPerfmonStatistics() {
+    public List<PerfmonStatistic> getPerfmonStatistics(int count) {
         List<PerfmonStatistic> perfmonStatistics = new ArrayList<>();
         for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
             PerfmonStatistic perfmonStatistic = new PerfmonStatistic();
+            perfmonStatistic.setTimeStamp(new Date());
             perfmonStatistic.setPerfmonEnum(entry.getKey());
             List<Double> frequency = new ArrayList<>();
             List<Double> avgDuration = new ArrayList<>();
-            for (StatisticEntry statisticEntry : entry.getValue()) {
+            List<StatisticEntry> value = entry.getValue();
+            if (count < 1) {
+                count = value.size() - 1;
+            } else if (count > value.size()) {
+                count = value.size() - 1;
+            }
+            for (int i = count; i >= 0; i--) {
+                StatisticEntry statisticEntry = value.get(i);
                 frequency.add(statisticEntry.getFrequency());
                 avgDuration.add(statisticEntry.getAvgDuration());
             }
+            Collections.reverse(frequency);
             perfmonStatistic.setFrequency(frequency);
+            Collections.reverse(avgDuration);
             perfmonStatistic.setAvgDuration(avgDuration);
             perfmonStatistics.add(perfmonStatistic);
         }

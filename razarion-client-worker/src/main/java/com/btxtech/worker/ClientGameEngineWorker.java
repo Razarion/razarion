@@ -2,20 +2,18 @@ package com.btxtech.worker;
 
 
 import com.btxtech.common.WorkerMarshaller;
+import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental.events.MessageEvent;
 import elemental.js.html.JsDedicatedWorkerGlobalScope;
-import elemental.js.json.JsJsonObject;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * Created by Beat
@@ -26,6 +24,8 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     // private Logger logger = Logger.getLogger(ClientGameEngineWorker.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private ClientPerformanceTrackerService clientPerformanceTrackerService;
 
     @PostConstruct
     public void onModuleLoad() {
@@ -42,6 +42,12 @@ public class ClientGameEngineWorker extends GameEngineWorker {
             }
         });
         sendToClient(GameEngineControlPackage.Command.LOADED);
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        clientPerformanceTrackerService.start();
     }
 
     @Override

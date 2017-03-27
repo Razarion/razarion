@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -123,5 +124,12 @@ public class TrackerPersistence {
         sceneTrackerEntity.setInternalName(sceneTrackerInfo.getInternalName());
         sceneTrackerEntity.setDuration(sceneTrackerInfo.getDuration());
         entityManager.persist(sceneTrackerEntity);
+    }
+
+    @Transactional
+    public void onPerformanceTracker(PerfmonStatistic perfmonStatistic) {
+        PerfmonStatisticEntity fromPerfmonStatistic = new PerfmonStatisticEntity();
+        fromPerfmonStatistic.fromPerfmonStatistic(session.getId(), new Date(), perfmonStatistic);
+        entityManager.persist(fromPerfmonStatistic);
     }
 }
