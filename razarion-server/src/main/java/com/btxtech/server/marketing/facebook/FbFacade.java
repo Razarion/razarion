@@ -115,6 +115,7 @@ public class FbFacade {
                 .setPromotedObject("{application_id: " + filePropertiesService.getFacebookAppId() + ", object_store_url: \"https://apps.facebook.com/razarion\"}")
                 .setTargeting(targeting)
                 .setRedownload(true)
+                // Does not work .setAdsetSchedule(Collections.singletonList(new DayPart().setFieldDays(Arrays.asList(0L, 1L, 2L, 3L, 4L, 5L, 6L)).setFieldStartMinute(14L * 60).setFieldEndMinute(23L * 60 + 59)))
                 .execute();
         return Long.parseLong(adSet.getId());
     }
