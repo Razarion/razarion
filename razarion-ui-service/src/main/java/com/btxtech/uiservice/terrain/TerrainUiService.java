@@ -3,7 +3,6 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
@@ -18,9 +17,9 @@ import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
 import javax.enterprise.event.Observes;
@@ -93,7 +92,7 @@ public class TerrainUiService {
             try {
                 getTerrainZ(terrainObjectPosition.getPosition(), (position, z) -> {
                     if (z != null) {
-                        terrainObjectConfigModelMatrices.put(terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()), ModelMatrices.create4TerrainObject(position.getX(), position.getY(), z,terrainObjectPosition.getScale(), terrainObjectPosition.getRotationZ()));
+                        terrainObjectConfigModelMatrices.put(terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()), ModelMatrices.create4TerrainObject(position.getX(), position.getY(), z, terrainObjectPosition.getScale(), terrainObjectPosition.getRotationZ()));
                     } else {
                         logger.warning("TerrainUiService: Can not place TerrainObjectPosition with id: " + terrainObjectPosition.getId());
                     }
@@ -156,7 +155,7 @@ public class TerrainUiService {
     }
 
     public void overlap(Collection<DecimalPosition> positions, BaseItemType baseItemType, Consumer<Boolean> callback) {
-        int uuid = MathHelper.generateSimpleUuid();
+        int uuid = (int) (Math.random() * Integer.MAX_VALUE);
         overlapTypeConsumers.put(uuid, callback);
         gameEngineControl.askOverlapType(uuid, positions, baseItemType.getId());
     }

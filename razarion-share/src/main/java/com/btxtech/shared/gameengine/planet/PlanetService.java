@@ -45,7 +45,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
-    private long tickCount;
     private Collection<PlanetTickListener> tickListeners = new ArrayList<>();
 
     @PostConstruct
@@ -54,7 +53,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
     }
 
     public void initialise(PlanetConfig planetConfig) {
-        tickCount = 0;
         this.planetConfig = planetConfig;
         activationEvent.fire(new PlanetActivationEvent(planetConfig));
     }
@@ -75,14 +73,9 @@ public class PlanetService implements Runnable { // Only available in worker. On
             boxService.tick();
             projectileService.tick();
             notifyTickListeners();
-            tickCount++;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
-    }
-
-    public long getTickCount() {
-        return tickCount;
     }
 
     public PlanetConfig getPlanetConfig() {

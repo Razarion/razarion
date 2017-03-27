@@ -84,6 +84,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
     private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
     private int xpFromKills;
+    private boolean sendTickUpdate;
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
 
@@ -100,6 +101,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case START:
                 start();
+                break;
+            case TICK_UPDATE_REQUEST:
+                sendTickUpdate = true;
                 break;
             case START_BOTS:
                 botService.startBots((Collection<BotConfig>) controlPackage.getSingleData());
@@ -189,6 +193,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onPostTick() {
+        if(!sendTickUpdate) {
+            return;
+        }
+        sendTickUpdate = false;
         List<SyncBaseItemSimpleDto> syncItems = new ArrayList<>();
         syncItemContainerService.iterateOverItems(false, false, null, syncItem -> {
             if (syncItem instanceof SyncBaseItem) {
@@ -201,6 +209,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userContext.getUserId());
         GameInfo gameInfo = new GameInfo();
         gameInfo.setXpFromKills(xpFromKills);
+        xpFromKills = 0;
         List<SyncBaseItemSimpleDto> tmpKilled = killed;
         killed = new ArrayList<>();
         List<SyncBaseItemSimpleDto> tmpRemoved = removed;

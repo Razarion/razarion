@@ -12,6 +12,7 @@ public class GameEngineControlPackage {
         INITIALIZED,
         INITIALISING_FAILED,
         START,
+        TICK_UPDATE_REQUEST,
         TICK_UPDATE,
         PERFMON_REQUEST,
         PERFMON_RESPONSE,

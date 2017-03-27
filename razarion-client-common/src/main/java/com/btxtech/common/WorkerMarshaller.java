@@ -64,6 +64,7 @@ public class WorkerMarshaller {
             case START:
             case QUEST_PASSED:
             case PERFMON_REQUEST:
+            case TICK_UPDATE_REQUEST:
                 break;
             // Single JSON data
             case START_BOTS:
@@ -153,6 +154,7 @@ public class WorkerMarshaller {
             case START:
             case QUEST_PASSED:
             case PERFMON_REQUEST:
+            case TICK_UPDATE_REQUEST:
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));

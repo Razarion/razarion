@@ -191,10 +191,6 @@ public class MathHelper {
         return stringBuilder.toString();
     }
 
-    public static int generateSimpleUuid() {
-        return (int) System.currentTimeMillis() + (int) (Math.random() * Integer.MAX_VALUE);
-    }
-
     /**
      * Randomly get true or false relaying on the given possibility
      *

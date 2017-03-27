@@ -21,6 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
@@ -69,8 +70,12 @@ public abstract class GameEngineControl {
     private UserUiService userUiService;
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private SimpleExecutorService simpleExecutorService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup initializationReferredStartup;
+    // private long tmpLastTimeStamp2;
+    // private int count;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -80,6 +85,7 @@ public abstract class GameEngineControl {
 
     public void start() {
         sendToWorker(GameEngineControlPackage.Command.START);
+        sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
     }
 
     public void init(GameEngineConfig gameEngineConfig, DeferredStartup initializationReferredStartup) {
@@ -181,6 +187,23 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_OVERLAP_TYPE, uuid, new ArrayList<>(positions), baseItemTypeId);
     }
 
+    private void onTickUpdate(Collection<SyncBaseItemSimpleDto> updatedSyncBaseItems, GameInfo gameInfo, Collection<SyncBaseItemSimpleDto> baseItemRemoved, Collection<SyncBaseItemSimpleDto> baseItemKilled) {
+        baseItemUiService.updateSyncBaseItems(updatedSyncBaseItems);
+        gameUiControl.setGameInfo(gameInfo);
+        selectionHandler.baseItemRemoved(baseItemRemoved);
+        selectionHandler.baseItemRemoved(baseItemKilled);
+        effectVisualizationService.baseItemRemoved(baseItemRemoved);
+        effectVisualizationService.onSyncBaseItemsExplode(baseItemKilled);
+        sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
+//        count++;
+//        if (tmpLastTimeStamp2 + 5000 < System.currentTimeMillis()) {
+//            long delta = System.currentTimeMillis() - tmpLastTimeStamp2;
+//            logger.severe("Client TICK_UPDATE: " + count + " time: " + delta + " updates: " + (1000.0 * (double) count / delta));
+//            tmpLastTimeStamp2 = System.currentTimeMillis();
+//            count = 0;
+//        }
+    }
+
     private void onPerfmonResponse(Collection<PerfmonStatistic> statisticEntries) {
         if (perfmonConsumer != null) {
             perfmonConsumer.accept(statisticEntries);
@@ -215,12 +238,8 @@ public abstract class GameEngineControl {
                 onInitialisingFailed((String) controlPackage.getSingleData());
                 break;
             case TICK_UPDATE:
-                baseItemUiService.updateSyncBaseItems((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(0));
-                gameUiControl.setGameInfo((GameInfo) controlPackage.getData(1));
-                selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
-                selectionHandler.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
-                effectVisualizationService.baseItemRemoved((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2));
-                effectVisualizationService.onSyncBaseItemsExplode((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
+                onTickUpdate((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(0), (GameInfo) controlPackage.getData(1),
+                        (Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2), (Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
                 break;
             case SYNC_ITEM_START_SPAWNED:
                 audioService.onSpawnSyncItem((SyncBaseItemSimpleDto) controlPackage.getSingleData());
