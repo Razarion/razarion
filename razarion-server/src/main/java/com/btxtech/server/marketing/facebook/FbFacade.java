@@ -177,8 +177,8 @@ public class FbFacade {
             while (adsInsightss != null) {
                 for (AdsInsights adsInsights : adsInsightss) {
                     AdSetInsight historyAdEntity = new AdSetInsight();
-                    historyAdEntity.setFacebookDateStart(DATE_FORMAT.parse(adsInsights.getFieldDateStart()));
-                    historyAdEntity.setFacebookDateStop(DATE_FORMAT.parse(adsInsights.getFieldDateStop())); // Wrong data from facebook
+                    historyAdEntity.setFacebookDateStart(DATE_FORMAT.parse(adsInsights.getFieldDateStart())); // May the time range of the insight query
+                    historyAdEntity.setFacebookDateStop(DATE_FORMAT.parse(adsInsights.getFieldDateStop())); // May the time range of the insight query
                     historyAdEntity.setClicks(Integer.parseInt(adsInsights.getFieldClicks()));
                     historyAdEntity.setImpressions(Integer.parseInt(adsInsights.getFieldImpressions()));
                     historyAdEntity.setSpent(Double.parseDouble(adsInsights.getFieldSpend()));

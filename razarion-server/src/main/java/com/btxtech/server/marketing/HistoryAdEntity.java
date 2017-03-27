@@ -27,9 +27,9 @@ public class HistoryAdEntity {
     private long adSetId;
     private long adId;
     private Date dateStart;
-    private Date dateStop; // Wrong data from facebook
-    private Date facebookDateStart;
-    private Date facebookDateStop; // Wrong data from facebook
+    private Date dateStop;
+    private Date facebookDateStart; // May the time range of the insight query. Wrong data from facebook.
+    private Date facebookDateStop; // May the time range of the insight query. Wrong data from facebook
     private int clicks;
     private int impressions;
     private double spent;
