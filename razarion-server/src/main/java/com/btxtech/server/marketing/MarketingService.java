@@ -53,23 +53,23 @@ public class MarketingService {
     @SecurityCheck
     public void stopCampaigns(long campaignId) {
         CurrentAdEntity currentAdEntity = getCurrentAdEntity(campaignId);
-        if (currentAdEntity.getState() == CurrentAdEntity.State.WAITING_FOR_DELETION) {
-            throw new IllegalStateException("Ad is already stopped: " + currentAdEntity.getState());
+        if (currentAdEntity.getState() != CurrentAdEntity.State.RUNNING) {
+            throw new IllegalStateException("Ad is not running: " + currentAdEntity.getState());
         }
 
         fbFacade.stopCampaign(campaignId);
 
         currentAdEntity.setDateStop(new Date());
-        currentAdEntity.setState(CurrentAdEntity.State.WAITING_FOR_DELETION);
+        currentAdEntity.setState(CurrentAdEntity.State.WAITING_FOR_ARCHIVING);
         entityManager.merge(currentAdEntity);
     }
 
     @Transactional
     @SecurityCheck
-    public void deleteCampaignAndHistorize(long campaignId) {
+    public void archiveCampaignAndHistorize(long campaignId) {
         CurrentAdEntity currentAdEntity = getCurrentAdEntity(campaignId);
-        if (currentAdEntity.getState() != CurrentAdEntity.State.WAITING_FOR_DELETION) {
-            throw new IllegalStateException("Can not delete running ad with id: " + currentAdEntity.getState());
+        if (currentAdEntity.getState() != CurrentAdEntity.State.WAITING_FOR_ARCHIVING) {
+            throw new IllegalStateException("Campaign is not in WAITING_FOR_ARCHIVING state: " + currentAdEntity.getState());
         }
 
         Collection<AdSetInsight> adSetInsights = fbFacade.getInsight(currentAdEntity.getAdSetId());
@@ -85,7 +85,7 @@ public class MarketingService {
         historyAdEntity.fill(currentAdEntity, adSetInsight);
         entityManager.persist(historyAdEntity);
 
-        fbFacade.deleteCampaign(campaignId);
+        fbFacade.archiveCampaign(campaignId);
         entityManager.remove(currentAdEntity);
     }
 
@@ -99,8 +99,8 @@ public class MarketingService {
     }
 
     @SecurityCheck
-    public void deleteCampaign(long campaignId) {
-        fbFacade.deleteCampaign(campaignId);
+    public void archiveCampaign(long campaignId) {
+        fbFacade.archiveCampaign(campaignId);
     }
 
     @SecurityCheck

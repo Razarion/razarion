@@ -50,25 +50,25 @@
     <hr/>
 
     <h:form>
-        <h:inputText id="deleteAndHisotizeCampaign" value="#{marketingPageBean.campaignId}"/>
-        <h:commandButton value="Delete Historize Campaign" action="#{marketingPageBean.deleteCampaignAndHistorize()}">
-            <f:ajax execute="deleteAndHisotizeCampaign" render="deleteAndHisotizeCampaignDisplay"/>
+        <h:inputText id="archiveAndHisotizeCampaign" value="#{marketingPageBean.campaignId}"/>
+        <h:commandButton value="Archive Historize Campaign" action="#{marketingPageBean.archiveCampaignAndHistorize()}">
+            <f:ajax execute="archiveAndHisotizeCampaign" render="archiveAndHisotizeCampaignDisplay"/>
         </h:commandButton>
     </h:form>
     <br/>
-    <h:outputText id="deleteAndHisotizeCampaignDisplay" value="#{marketingPageBean.state}" escape="false"/>
+    <h:outputText id="archiveAndHisotizeCampaignDisplay" value="#{marketingPageBean.state}" escape="false"/>
     <hr/>
 
     <h:form>
-        Only used if something went wrong and need to be deleted
+        Only used if something went wrong and need to be archived
         <br />
-        <h:inputText id="deleteCampaign" value="#{marketingPageBean.campaignId}"/>
-        <h:commandButton value="Delete Campaign" action="#{marketingPageBean.deleteCampaign()}">
-            <f:ajax execute="deleteCampaign" render="deleteCampaignDisplay"/>
+        <h:inputText id="archiveCampaign" value="#{marketingPageBean.campaignId}"/>
+        <h:commandButton value="Archive Campaign" action="#{marketingPageBean.archiveCampaign()}">
+            <f:ajax execute="archiveCampaign" render="archiveCampaignDisplay"/>
         </h:commandButton>
     </h:form>
     <br/>
-    <h:outputText id="deleteCampaignDisplay" value="#{marketingPageBean.state}" escape="false"/>
+    <h:outputText id="archiveCampaignDisplay" value="#{marketingPageBean.state}" escape="false"/>
     <hr/>
 
     <h:form>

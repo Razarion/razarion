@@ -2,6 +2,7 @@ package com.btxtech.server.marketing.facebook;
 
 import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.system.FilePropertiesService;
+import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.rest.RestUrl;
 import com.facebook.ads.sdk.APIContext;
 import com.facebook.ads.sdk.APIException;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -76,7 +78,7 @@ public class FbFacade {
     private long createCampaign(AdAccount account) {
         try {
             Campaign campaign = account.createCampaign()
-                    .setName("Razarion Automated Campaign")
+                    .setName("Razarion Automated Campaign: " + DateUtil.formatDateTime(new Date()))
                     .setObjective(Campaign.EnumObjective.VALUE_CANVAS_APP_INSTALLS)
                     .setSpendCap(10000L) // Min value in Rappen
                     .setStatus(Campaign.EnumStatus.VALUE_PAUSED)
@@ -103,7 +105,7 @@ public class FbFacade {
                 .setFieldFlexibleSpec(Collections.singletonList(new FlexibleTargeting().setFieldInterests(fbInterests)));
         Campaign campaign = new Campaign(campaignId, context).get().execute();
         AdSet adSet = account.createAdSet()
-                .setName("Automated Ad AdSet")
+                .setName("Automated Ad AdSet: " + DateUtil.formatDateTime(new Date()))
                 .setCampaignId(campaign.getFieldId())
                 .setStatus(AdSet.EnumStatus.VALUE_PAUSED)
                 .setBillingEvent(AdSet.EnumBillingEvent.VALUE_IMPRESSIONS)
@@ -117,9 +119,9 @@ public class FbFacade {
         return Long.parseLong(adSet.getId());
     }
 
-    public void deleteCampaign(long campaignId) {
+    public void archiveCampaign(long campaignId) {
         try {
-            new Campaign.APIRequestDelete(Long.toString(campaignId), getContext()).execute();
+            new Campaign.APIRequestUpdate(Long.toString(campaignId), getContext()).setStatus(Campaign.EnumStatus.VALUE_ARCHIVED).execute();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -157,7 +159,7 @@ public class FbFacade {
                 )
                 .execute();
         Ad ad = account.createAd()
-                .setName("Automated Ad")
+                .setName("Automated Ad: " + DateUtil.formatDateTime(new Date()))
                 .setAdsetId(adSetId)
                 .setCreative(creative)
                 .setStatus(Ad.EnumStatus.VALUE_PAUSED)

@@ -83,9 +83,9 @@ public class MarketingPageBean {
         return null;
     }
 
-    public Object deleteCampaignAndHistorize() {
+    public Object archiveCampaignAndHistorize() {
         try {
-            marketingService.deleteCampaignAndHistorize(Long.parseLong(campaignId));
+            marketingService.archiveCampaignAndHistorize(Long.parseLong(campaignId));
             state = "OK";
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -153,9 +153,9 @@ public class MarketingPageBean {
         return null;
     }
 
-    public Object deleteCampaign() {
+    public Object archiveCampaign() {
         try {
-            marketingService.deleteCampaign(Long.parseLong(campaignId));
+            marketingService.archiveCampaign(Long.parseLong(campaignId));
             state = "OK";
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
