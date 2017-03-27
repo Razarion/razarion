@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -74,8 +75,8 @@ public abstract class GameEngineControl {
     private SimpleExecutorService simpleExecutorService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup initializationReferredStartup;
-    // private long tmpLastTimeStamp2;
-    // private int count;
+//    private long tmpLastTimeStamp2;
+//    private int count;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -288,10 +289,10 @@ public abstract class GameEngineControl {
                 terrainUiService.onTerrainZAnswerFail((DecimalPosition) controlPackage.getData(0));
                 break;
             case TERRAIN_PICK_RAY_ANSWER:
-                terrainUiService.onTerrainPositionPickRayAnswer((Line3d) controlPackage.getData(0), (Vertex) controlPackage.getData(1));
+                terrainUiService.onTerrainPositionPickRayAnswer((Vertex) controlPackage.getData(0));
                 break;
             case TERRAIN_PICK_RAY_ANSWER_FAIL:
-                terrainUiService.onTerrainPositionPickRayAnswerFail((Line3d) controlPackage.getData(0));
+                terrainUiService.onTerrainPositionPickRayAnswerFail();
                 break;
             case TERRAIN_OVERLAP_ANSWER:
                 terrainUiService.onOverlapAnswer((DecimalPosition) controlPackage.getData(0), (boolean) controlPackage.getData(1));

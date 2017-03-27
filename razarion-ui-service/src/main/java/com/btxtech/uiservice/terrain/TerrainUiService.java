@@ -58,7 +58,9 @@ public class TerrainUiService {
     private WaterUi waterUi;
     private List<TerrainObjectPosition> terrainObjectPositions;
     private MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
-    private MapCollection<Line3d, Consumer<Vertex>> worldPickRayConsumers = new MapCollection<>();
+    private Consumer<Vertex> worldPickRayConsumer;
+    private Consumer<Vertex> worldPickRayConsumerQueued;
+    private Line3d worldPickRayQueued;
     private MapCollection<DecimalPosition, Consumer<Boolean>> overlapConsumers = new MapCollection<>();
     private Map<Integer, Consumer<Boolean>> overlapTypeConsumers = new HashMap<>();
 
@@ -160,13 +162,14 @@ public class TerrainUiService {
         gameEngineControl.askOverlapType(uuid, positions, baseItemType.getId());
     }
 
-    public void calculatePositionGroundMesh(Line3d worldPickRay, Consumer<Vertex> positionConsumer) {
-        boolean contains = worldPickRayConsumers.containsKey(worldPickRay);
-        worldPickRayConsumers.put(worldPickRay, positionConsumer);
-        if (contains) {
-            return;
+    public void calculateMousePositionGroundMesh(Line3d worldPickRay, Consumer<Vertex> positionConsumer) {
+        if(worldPickRayConsumer == null) {
+            worldPickRayConsumer = positionConsumer;
+            gameEngineControl.askTerrainPosition(worldPickRay);
+        } else {
+            worldPickRayQueued = worldPickRay;
+            worldPickRayConsumerQueued = positionConsumer;
         }
-        gameEngineControl.askTerrainPosition(worldPickRay);
     }
 
     public void getTerrainZ(DecimalPosition position, BiConsumer<DecimalPosition, Double> callback) {
@@ -196,17 +199,23 @@ public class TerrainUiService {
         }
     }
 
-    public void onTerrainPositionPickRayAnswer(Line3d worldPickRay, Vertex terrainPosition) {
-        Collection<Consumer<Vertex>> consumers = worldPickRayConsumers.remove(worldPickRay);
-        for (Consumer<Vertex> consumer : consumers) {
-            consumer.accept(terrainPosition);
-        }
+    public void onTerrainPositionPickRayAnswer(Vertex terrainPosition) {
+        worldPickRayConsumer.accept(terrainPosition);
+        handleWorldPickRayQueued();
     }
 
-    public void onTerrainPositionPickRayAnswerFail(Line3d worldPickRay) {
-        Collection<Consumer<Vertex>> consumers = worldPickRayConsumers.remove(worldPickRay);
-        for (Consumer<Vertex> consumer : consumers) {
-            consumer.accept(null);
+    public void onTerrainPositionPickRayAnswerFail() {
+        handleWorldPickRayQueued();
+    }
+
+    private void handleWorldPickRayQueued() {
+        if(worldPickRayConsumerQueued != null) {
+            worldPickRayConsumer = worldPickRayConsumerQueued;
+            gameEngineControl.askTerrainPosition(worldPickRayQueued);
+            worldPickRayQueued = null;
+            worldPickRayConsumerQueued = null;
+        } else {
+            worldPickRayConsumer = null;
         }
     }
 

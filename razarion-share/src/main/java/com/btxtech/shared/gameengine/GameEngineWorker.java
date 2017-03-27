@@ -337,10 +337,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void getTerrainPosition(Line3d worldPickRay) {
         try {
             Vertex vertex = terrainService.calculatePositionGroundMesh(worldPickRay);
-            sendToClient(GameEngineControlPackage.Command.TERRAIN_PICK_RAY_ANSWER, worldPickRay, vertex);
+            sendToClient(GameEngineControlPackage.Command.TERRAIN_PICK_RAY_ANSWER, vertex);
         } catch (NoInterpolatedTerrainTriangleException e) {
             logger.warning("GameEngineWorker.getTerrainZ() " + e.getMessage());
-            sendToClient(GameEngineControlPackage.Command.TERRAIN_PICK_RAY_ANSWER_FAIL, worldPickRay);
+            sendToClient(GameEngineControlPackage.Command.TERRAIN_PICK_RAY_ANSWER_FAIL);
         }
     }
 

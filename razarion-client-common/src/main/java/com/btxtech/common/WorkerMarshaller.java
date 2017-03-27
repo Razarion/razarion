@@ -65,6 +65,7 @@ public class WorkerMarshaller {
             case QUEST_PASSED:
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
+            case TERRAIN_PICK_RAY_ANSWER_FAIL:
                 break;
             // Single JSON data
             case START_BOTS:
@@ -84,9 +85,9 @@ public class WorkerMarshaller {
             case INITIALISING_FAILED:
             case SINGLE_Z_TERRAIN:
             case TERRAIN_PICK_RAY:
+            case TERRAIN_PICK_RAY_ANSWER:
             case TERRAIN_OVERLAP:
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
-            case TERRAIN_PICK_RAY_ANSWER_FAIL:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -102,7 +103,6 @@ public class WorkerMarshaller {
             case SPAWN_BASE_ITEMS:
             case PROJECTILE_DETONATION:
             case SINGLE_Z_TERRAIN_ANSWER:
-            case TERRAIN_PICK_RAY_ANSWER:
             case TERRAIN_OVERLAP_ANSWER:
             case TERRAIN_OVERLAP_TYPE_ANSWER:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
@@ -155,6 +155,7 @@ public class WorkerMarshaller {
             case QUEST_PASSED:
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
+            case TERRAIN_PICK_RAY_ANSWER_FAIL:
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));
@@ -279,11 +280,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Line3d.class));
                 break;
             case TERRAIN_PICK_RAY_ANSWER:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Line.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Vertex.class));
-                break;
-            case TERRAIN_PICK_RAY_ANSWER_FAIL:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Line.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Vertex.class));
                 break;
             case TERRAIN_OVERLAP:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));

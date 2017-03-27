@@ -265,7 +265,7 @@ public class TerrainMouseHandler {
         Line3d pickRay = projectionTransformation.createPickRay(webglClipPosition);
         Line3d worldPickRay = camera.toWorld(pickRay);
 
-        terrainUiService.calculatePositionGroundMesh(worldPickRay, positionConsumer);
+        terrainUiService.calculateMousePositionGroundMesh(worldPickRay, positionConsumer);
     }
 
     private void executeMoveCommand(DecimalPosition position) {
