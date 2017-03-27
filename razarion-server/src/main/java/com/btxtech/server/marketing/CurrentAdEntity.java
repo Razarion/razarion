@@ -24,8 +24,6 @@ import java.util.List;
 public class CurrentAdEntity {
     public enum State {
         RUNNING,
-        @Deprecated
-        WAITING_FOR_DELETION,
         WAITING_FOR_ARCHIVING
     }
 
