@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -45,6 +46,7 @@ import java.util.Locale;
  */
 @ApplicationScoped
 public class FbFacade {
+    private Logger logger = Logger.getLogger(FbFacade.class.getName());
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     @Inject
     private FilePropertiesService filePropertiesService;
@@ -246,6 +248,7 @@ public class FbFacade {
         Client client = ClientBuilder.newClient();
         // client.register(new LoggingFilter());
         String fields = "{\"access_token\": \"" + filePropertiesService.getFacebookAccessToken() + "\", \"url\": \"" + url + "\", \"add_template_param\": \"1\"}";
+        logger.severe("setTrackingTag: " + url);
         client.target("https://graph.facebook.com/v2.8").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
     }
 }
