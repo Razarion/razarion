@@ -1,7 +1,8 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.web.Session;
+import com.btxtech.server.persistence.impl.GameUiControlConfigPersistence;
 import com.btxtech.server.system.FilePropertiesService;
+import com.btxtech.server.web.Session;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
@@ -53,14 +54,15 @@ public class UserService {
         if (user != null) {
             userContext.setUserId((int) user.getUserId());
             userContext.setAdmin(user.isAdmin());
+            userContext.setLevelId(user.getLevelId());
         } else {
             userContext.setUserId(999999999); // TODO
+            userContext.setLevelId(GameUiControlConfigPersistence.FIRST_LEVEL_ID);
         }
-        if(filePropertiesService.isDeveloperMode()) {
+        if (filePropertiesService.isDeveloperMode()) {
             userContext.setAdmin(true);
         }
         userContext.setName("Emulator Name");// TODO
-        userContext.setLevelId(1);
         return userContext;
     }
 
@@ -68,6 +70,7 @@ public class UserService {
     private UserEntity createUser(FacebookUserLoginInfo facebookUserLoginInfo) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserLoginInfo);
+        userEntity.setLevelId(GameUiControlConfigPersistence.FIRST_LEVEL_ID);
         entityManager.persist(userEntity);
         return userEntity;
     }

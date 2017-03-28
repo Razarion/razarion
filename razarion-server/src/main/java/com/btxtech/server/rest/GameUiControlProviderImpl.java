@@ -32,8 +32,7 @@ public class GameUiControlProviderImpl implements GameUiControlProvider {
     public GameUiControlConfig loadGameUiControlConfig(FacebookUserLoginInfo facebookUserLoginInfo) {
         try {
             UserContext userContext = userService.handleUserLoginInfo(facebookUserLoginInfo);
-            GameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load(userContext);
-            return gameUiControlConfig;
+            return gameUiControlConfigPersistence.load(userContext);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

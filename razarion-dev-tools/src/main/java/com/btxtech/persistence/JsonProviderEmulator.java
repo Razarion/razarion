@@ -24,20 +24,22 @@ import java.util.List;
 @Singleton
 public class JsonProviderEmulator {
     private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
-    private static final String FILE_NAME = "GameUiControlConfig.json";
+    private static final String FILE_NAME_TUTORIAL = "GameUiControlConfigTutorial.json";
+    private static final String FILE_NAME_MULTI_PLAYER = "GameUiControlConfigMultiplayer.json";
     private static final String VERTEX_CONTAINER_BUFFERS_FILE_NAME = "VertexContainerBuffers.json";
     private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
     private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH;
     private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.SHAPE_3D_PROVIDER + "/" + RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
-    private static final String FACEBOOK_USER_LOGIN_INFO_STRING = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": null}";
+    private static final String FACEBOOK_USER_LOGIN_INFO_STRING_TUTORIAL = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": null}";
+    private static final String FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": 100003634094139}";
 
     public GameUiControlConfig readFromServer() {
         return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(GameUiControlConfig.class);
     }
 
-    public GameUiControlConfig readFromFile() {
+    public GameUiControlConfig readFromFile(boolean tutorial) {
         try {
-            String string = new String(Files.readAllBytes(getFile(FILE_NAME).toPath()));
+            String string = new String(Files.readAllBytes(getFile(tutorial ? FILE_NAME_TUTORIAL : FILE_NAME_MULTI_PLAYER).toPath()));
             return new ObjectMapper().readValue(string, GameUiControlConfig.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -63,10 +65,10 @@ public class JsonProviderEmulator {
         }
     }
 
-    public void fromServerToFilePost(String fileName, String url) {
+    public void fromServerToFilePost(String fileName, String url, String fbLogin) {
         try {
             Client client = ClientBuilder.newClient();
-            String text = client.target(url).request(MediaType.APPLICATION_JSON).post(Entity.entity(FACEBOOK_USER_LOGIN_INFO_STRING, MediaType.APPLICATION_JSON_TYPE), String.class);
+            String text = client.target(url).request(MediaType.APPLICATION_JSON).post(Entity.entity(fbLogin, MediaType.APPLICATION_JSON_TYPE), String.class);
             Files.write(getFile(fileName).toPath(), text.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -98,7 +100,9 @@ public class JsonProviderEmulator {
     }
 
     public void fromServerToFile() {
-        fromServerToFilePost(FILE_NAME, URL);
+        fromServerToFilePost(FILE_NAME_MULTI_PLAYER, URL, FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER);
+        fromServerToFilePost(FILE_NAME_TUTORIAL, URL, FACEBOOK_USER_LOGIN_INFO_STRING_TUTORIAL);
+        ;
     }
 
     public void fromServerToFileVertexContainerBuffer() {

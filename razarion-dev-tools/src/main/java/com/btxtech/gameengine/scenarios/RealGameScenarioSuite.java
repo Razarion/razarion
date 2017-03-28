@@ -47,7 +47,7 @@ public class RealGameScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Bot attack") {
             @Override
             public GameEngineConfig setupGameEngineConfig() {
-                return new JsonProviderEmulator().readFromFile().getGameEngineConfig();
+                return new JsonProviderEmulator().readFromFile(false).getGameEngineConfig();
             }
 
             @Override

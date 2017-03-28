@@ -25,7 +25,7 @@ public abstract class AbstractTerrainScenario extends Scenario {
     @Override
     public void init() {
         JsonProviderEmulator jsonProviderEmulator = new JsonProviderEmulator();
-        GameEngineConfig gameEngineConfig = jsonProviderEmulator.readFromFile().getGameEngineConfig();
+        GameEngineConfig gameEngineConfig = jsonProviderEmulator.readFromFile(false).getGameEngineConfig();
         // GameEngineConfig gameEngineConfig = jsonProviderEmulator.readGameEngineConfigFromFile("C:\\dev\\projects\\razarion\\code\\tmp\\TmpGameUiControlConfig.json");
         Weld weld = new Weld();
         weldContainer = weld.initialize();

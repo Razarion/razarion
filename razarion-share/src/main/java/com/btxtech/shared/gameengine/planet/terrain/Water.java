@@ -76,6 +76,11 @@ public class Water {
         if (aabb != null) {
             return aabb;
         }
+        if(vertices == null || vertices.isEmpty()) {
+            // Remove this if water is handled correctly. If wtaer has no polygons, then there should be no water
+            return new Rectangle2D(0,0,0,0);
+        }
+
         Polygon2D waterPolygon = new Polygon2D(new ArrayList<>(DecimalPosition.removeSimilarPoints(Vertex.toXY(vertices), 1.0)));
         aabb = waterPolygon.toAabb();
 

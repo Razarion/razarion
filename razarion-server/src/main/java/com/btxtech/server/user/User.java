@@ -6,15 +6,21 @@ package com.btxtech.server.user;
  */
 public class User {
     private long userId;
+    private int levelId;
     private boolean admin;
 
-    public User(long userId, boolean admin) {
+    public User(long userId, int levelId, boolean admin) {
         this.userId = userId;
+        this.levelId = levelId;
         this.admin = admin;
     }
 
     public long getUserId() {
         return userId;
+    }
+
+    public int getLevelId() {
+        return levelId;
     }
 
     public boolean isAdmin() {
@@ -25,6 +31,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "userId=" + userId +
+                ", levelId=" + levelId +
                 ", admin=" + admin +
                 '}';
     }

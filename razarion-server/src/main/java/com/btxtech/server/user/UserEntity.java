@@ -24,6 +24,7 @@ public class UserEntity {
     private String facebookUserId;
     private Date registerDate;
     private boolean admin;
+    private int levelId;
 
     public Long getId() {
         return id;
@@ -35,7 +36,15 @@ public class UserEntity {
     }
 
     public User createUser() {
-        return new User(id, admin);
+        return new User(id, levelId, admin);
+    }
+
+    public int getLevelId() {
+        return levelId;
+    }
+
+    public void setLevelId(int levelId) {
+        this.levelId = levelId;
     }
 
     @Override
