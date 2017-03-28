@@ -20,7 +20,6 @@ import java.util.List;
  * Time: 22:51
  */
 public abstract class InGameTipVisualization implements TerrainScrollListener {
-    private static NativeMatrixFactory nativeMatrixFactory = new NativeMatrixFactory();
     private static final int READY_CHECK_DELAY = 500;
     private List<Vertex> cornerVertices;
     private final double moveDistance;
@@ -32,13 +31,15 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
     private ViewField viewField;
     private long lastReadyCheck;
     private boolean ready;
+    private NativeMatrixFactory nativeMatrixFactory;
 
-    public InGameTipVisualization(double cornerLength, double moveDistance, long duration, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId) {
+    public InGameTipVisualization(double cornerLength, double moveDistance, long duration, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId, NativeMatrixFactory nativeMatrixFactory) {
         this.moveDistance = moveDistance;
         this.duration = duration;
         this.cornerColor = cornerColor;
         this.shape3DId = shape3DId;
         this.outOfViewShape3DId = outOfViewShape3DId;
+        this.nativeMatrixFactory = nativeMatrixFactory;
         setupCornerVertices(cornerLength);
     }
 
@@ -93,7 +94,7 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
         }
 
         if (inViewFiled) {
-            return Collections.singletonList(ModelMatrices.createFromPosition(getPosition3D()));
+            return Collections.singletonList(ModelMatrices.createFromPosition(getPosition3D(), nativeMatrixFactory));
         } else {
             return null;
         }
@@ -109,7 +110,7 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
         } else {
             DecimalPosition center = viewField.calculateCenter();
             double angle = center.getAngle(getPosition2D());
-            return Collections.singletonList(ModelMatrices.createFromPositionAndZRotation(center.getX(), center.getY(), 0, angle));
+            return Collections.singletonList(ModelMatrices.createFromPositionAndZRotation(center.getX(), center.getY(), 0, angle, nativeMatrixFactory));
         }
     }
 

@@ -1,7 +1,8 @@
 package com.btxtech.uiservice.particle;
 
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.Camera;
 
 import javax.annotation.PostConstruct;
@@ -30,6 +31,8 @@ public class ParticleService {
     private Instance<AutonomousParticleEmitter> autonomousParticleEmitterInstance;
     @Inject
     private Instance<DependentParticleEmitter> dependentParticleEmitterInstance;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private Map<Integer, ParticleEmitterSequenceConfig> particleEmitterSequenceConfigs = new HashMap<>();
     private ParticleShapeConfig particleShapeConfig;
     private List<Particle> particles = new ArrayList<>();
@@ -167,7 +170,7 @@ public class ParticleService {
         activeEmitters.removeIf(particle -> !particle.tick(timestamp, factor));
 
         // Handle particles
-        particles.removeIf(particle -> !particle.tick(timestamp, factor, camera.getMatrix()));
+        particles.removeIf(particle -> !particle.tick(timestamp, factor, camera.getMatrix(), nativeMatrixFactory));
         Collections.sort(particles);
 
         modelMatrices = particles.stream().map(Particle::getModelMatrices).collect(Collectors.toList());

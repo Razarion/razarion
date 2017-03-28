@@ -4,7 +4,7 @@ com = {
             nativejs: {
                 NativeMatrixFactory: function () {
                     this.createFromColumnMajorArray = function (array) {
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(new Float32Array(array));
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(new Float32Array(array), this);
                     };
 
                     /**
@@ -35,7 +35,7 @@ com = {
                         float32Array[14] = z;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array);
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
                     };
 
                     /**
@@ -66,7 +66,7 @@ com = {
                         float32Array[14] = 0;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array);
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
                     };
 
                     /**
@@ -96,7 +96,7 @@ com = {
                         float32Array[14] = 0;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array);
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
                     };
 
                     /**
@@ -126,7 +126,7 @@ com = {
                         float32Array[14] = 0;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array);
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
                     };
 
                     /**
@@ -156,13 +156,14 @@ com = {
                         float32Array[14] = 0;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array);
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
                     };
                 },
 
 
-                NativeMatrix: function (float32Array) {
+                NativeMatrix: function (float32Array, nativeMatrixFactory) {
                     this.float32Array = float32Array;
+                    this.nativeMatrixFactory = nativeMatrixFactory;
 
                     this.multiply = function (other) {
                         var out = new Float32Array(16);
@@ -206,7 +207,7 @@ com = {
                         out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
                         out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out);
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
                     };
 
                     this.invert = function () {
@@ -255,7 +256,7 @@ com = {
                         out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
                         out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out);
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
                     };
 
                     this.transpose = function () {
@@ -278,7 +279,7 @@ com = {
                         out[14] = this.float32Array[11];
                         out[15] = this.float32Array[15];
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out);
+                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
                     };
 
                     this.toColumnMajorArray = function () {
@@ -287,6 +288,10 @@ com = {
                             jsArray[i] = this.float32Array[i];
                         }
                         return jsArray;
+                    };
+
+                    this.getNativeMatrixFactory = function () {
+                        return this.nativeMatrixFactory;
                     };
 
                     this.toString = function () {

@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -30,6 +31,8 @@ public class ItemMarkerService {
     private BoxUiService boxUiService;
     @Inject
     private ItemUiService itemUiService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     // Monitors
     private Collection<SyncItemMonitor> selectionMonitors = new ArrayList<>();
     private SyncItemMonitor hoverSyncItemMonitor;
@@ -104,17 +107,17 @@ public class ItemMarkerService {
     private void setupSelectionModelMatrices(SyncItemSimpleDto syncItemSimpleDto, SyncItemMonitor syncItemMonitor) {
         selectionMonitors.add(syncItemMonitor);
         // Marker
-        ModelMatrices selectionModelMatrices = ModelMatrices.create4Marker(syncItemMonitor.getPosition3d(), syncItemMonitor.getRadius() * FACTOR, syncItemMonitor.getInterpolatableVelocity(), itemUiService.color4SyncItem(syncItemSimpleDto).fromAlpha(Colors.SELECTION_ALPHA), syncItemMonitor.getRadius());
+        ModelMatrices selectionModelMatrices = ModelMatrices.create4Marker(syncItemMonitor.getPosition3d(), syncItemMonitor.getRadius() * FACTOR, syncItemMonitor.getInterpolatableVelocity(), itemUiService.color4SyncItem(syncItemSimpleDto).fromAlpha(Colors.SELECTION_ALPHA), syncItemMonitor.getRadius(), nativeMatrixFactory);
         selectedMarkerModelMatrices.add(selectionModelMatrices);
         // Status bars
         ModelMatrices healthModelMatrices = null;
         final SingleHolder<ModelMatrices> constructingModelMatrices = new SingleHolder<>();
         if (syncItemSimpleDto instanceof SyncBaseItemSimpleDto) {
             SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) syncItemSimpleDto;
-            healthModelMatrices = ModelMatrices.create4Status(setupHealthBarPosition(syncItemMonitor), 2.0 * syncItemMonitor.getRadius(), syncItemMonitor.getInterpolatableVelocity(), Colors.HEALTH_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), syncBaseItem.getHealth());
+            healthModelMatrices = ModelMatrices.create4Status(setupHealthBarPosition(syncItemMonitor), 2.0 * syncItemMonitor.getRadius(), syncItemMonitor.getInterpolatableVelocity(), Colors.HEALTH_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), syncBaseItem.getHealth(), nativeMatrixFactory);
             selectedHealthModelMatrices.add(healthModelMatrices);
             if (syncBaseItem.checkConstructing()) {
-                constructingModelMatrices.setO(ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor), 2.0 * syncItemMonitor.getRadius(), syncItemMonitor.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), syncBaseItem.getConstructing()));
+                constructingModelMatrices.setO(ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor), 2.0 * syncItemMonitor.getRadius(), syncItemMonitor.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), syncBaseItem.getConstructing(), nativeMatrixFactory));
                 selectedConstructingModelMatrices.add(constructingModelMatrices.getO());
             }
         }
@@ -136,7 +139,7 @@ public class ItemMarkerService {
             ((SyncBaseItemMonitor) syncItemMonitor).setConstructingChangeListener(syncItemMonitor1 -> {
                 if (((SyncBaseItemMonitor) syncItemMonitor1).checkConstructing()) {
                     if (constructingModelMatrices.isEmpty()) {
-                        constructingModelMatrices.setO(ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor1), 2.0 * syncItemMonitor1.getRadius(), syncItemMonitor1.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), ((SyncBaseItemMonitor) syncItemMonitor1).getConstructing()));
+                        constructingModelMatrices.setO(ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor1), 2.0 * syncItemMonitor1.getRadius(), syncItemMonitor1.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.SELECTION_ALPHA), Colors.BAR_BG.fromAlpha(Colors.SELECTION_ALPHA), ((SyncBaseItemMonitor) syncItemMonitor1).getConstructing(), nativeMatrixFactory));
                         selectedConstructingModelMatrices.add(constructingModelMatrices.getO());
                         setupAllStatusBarModelMatrices();
                     } else {
@@ -153,13 +156,13 @@ public class ItemMarkerService {
 
     private void setupHoverModelMatrices(SyncItemSimpleDto syncItem) {
         // Marker
-        hoverMarkerModelMatrices =  ModelMatrices.create4Marker(hoverSyncItemMonitor.getPosition3d(), hoverSyncItemMonitor.getRadius() * FACTOR, hoverSyncItemMonitor.getInterpolatableVelocity(), itemUiService.color4SyncItem(syncItem).fromAlpha(Colors.HOVER_ALPHA), hoverSyncItemMonitor.getRadius());
+        hoverMarkerModelMatrices = ModelMatrices.create4Marker(hoverSyncItemMonitor.getPosition3d(), hoverSyncItemMonitor.getRadius() * FACTOR, hoverSyncItemMonitor.getInterpolatableVelocity(), itemUiService.color4SyncItem(syncItem).fromAlpha(Colors.HOVER_ALPHA), hoverSyncItemMonitor.getRadius(), nativeMatrixFactory);
         // Status bars
         if (syncItem instanceof SyncBaseItemSimpleDto) {
             SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) syncItem;
-            hoverHealthModelMatrices = ModelMatrices.create4Status(setupHealthBarPosition(hoverSyncItemMonitor), 2.0 * hoverSyncItemMonitor.getRadius(), hoverSyncItemMonitor.getInterpolatableVelocity(), Colors.HEALTH_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), syncBaseItem.getHealth());
+            hoverHealthModelMatrices = ModelMatrices.create4Status(setupHealthBarPosition(hoverSyncItemMonitor), 2.0 * hoverSyncItemMonitor.getRadius(), hoverSyncItemMonitor.getInterpolatableVelocity(), Colors.HEALTH_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), syncBaseItem.getHealth(), nativeMatrixFactory);
             if (syncBaseItem.checkConstructing()) {
-                hoverConstructingModelMatrices = ModelMatrices.create4Status(setupConstructingBarPosition(hoverSyncItemMonitor), 2.0 * hoverSyncItemMonitor.getRadius(), hoverSyncItemMonitor.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), syncBaseItem.getConstructing());
+                hoverConstructingModelMatrices = ModelMatrices.create4Status(setupConstructingBarPosition(hoverSyncItemMonitor), 2.0 * hoverSyncItemMonitor.getRadius(), hoverSyncItemMonitor.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), syncBaseItem.getConstructing(), nativeMatrixFactory);
             }
         }
         // Update listener
@@ -177,7 +180,7 @@ public class ItemMarkerService {
             ((SyncBaseItemMonitor) hoverSyncItemMonitor).setConstructingChangeListener(syncItemMonitor1 -> {
                 if (((SyncBaseItemMonitor) syncItemMonitor1).checkConstructing()) {
                     if (hoverConstructingModelMatrices == null) {
-                        hoverConstructingModelMatrices = ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor1), 2.0 * syncItemMonitor1.getRadius(), syncItemMonitor1.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), ((SyncBaseItemMonitor) syncItemMonitor1).getConstructing());
+                        hoverConstructingModelMatrices = ModelMatrices.create4Status(setupConstructingBarPosition(syncItemMonitor1), 2.0 * syncItemMonitor1.getRadius(), syncItemMonitor1.getInterpolatableVelocity(), Colors.CONSTRUCTING_BAR.fromAlpha(Colors.HOVER_ALPHA), Colors.BAR_BG.fromAlpha(Colors.HOVER_ALPHA), ((SyncBaseItemMonitor) syncItemMonitor1).getConstructing(), nativeMatrixFactory);
                         setupAllStatusBarModelMatrices();
                     } else {
                         hoverConstructingModelMatrices.updateProgress(((SyncBaseItemMonitor) syncItemMonitor1).getConstructing());

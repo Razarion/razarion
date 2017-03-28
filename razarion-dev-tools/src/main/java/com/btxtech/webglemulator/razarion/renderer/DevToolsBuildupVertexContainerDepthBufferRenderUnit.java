@@ -54,7 +54,7 @@ public class DevToolsBuildupVertexContainerDepthBufferRenderUnit extends Abstrac
     @Override
     public Vertex4 runShader(Vertex vertex) {
         tmpMaxZ = Math.max(tmpMaxZ, buildupMatrix.multiply(vertex, 1.0).getZ());
-        Matrix4 matrix4 = shadowUiService.getDepthProjectionTransformation().multiply(shadowUiService.getDepthViewTransformation().multiply(modelMatrices.getModel()));
+        Matrix4 matrix4 = shadowUiService.getDepthProjectionTransformation().multiply(shadowUiService.getDepthViewTransformation().multiply(DevToolRenderUtil.toMatrix4(modelMatrices.getModel())));
         return new Vertex4(matrix4.multiply(vertex, 1.0), matrix4.multiplyW(vertex, 1.0));
     }
 

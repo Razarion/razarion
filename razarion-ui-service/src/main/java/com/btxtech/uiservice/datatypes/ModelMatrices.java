@@ -15,7 +15,6 @@ import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 // May only be used in the GUI part (renderer)
 // Move to razaion-ui-services
 public class ModelMatrices {
-    protected static NativeMatrixFactory nativeMatrixFactory = new NativeMatrixFactory();
     private NativeMatrix matrix;
     private NativeMatrix norm;
     private double progress;
@@ -43,19 +42,19 @@ public class ModelMatrices {
         this.progress = progress;
     }
 
-    public ModelMatrices(Matrix4 model) {
-        this(model, 0);
+    public ModelMatrices(Matrix4 model, NativeMatrixFactory nativeMatrixFactory) {
+        this(model, 0, nativeMatrixFactory);
     }
 
-    public ModelMatrices(Matrix4 model, double progress) {
-        this(model, null, progress);
+    public ModelMatrices(Matrix4 model, double progress, NativeMatrixFactory nativeMatrixFactory) {
+        this(model, null, progress, nativeMatrixFactory);
     }
 
-    public ModelMatrices(Matrix4 model, DecimalPosition interpolatableVelocity) {
-        this(model, interpolatableVelocity, 0);
+    public ModelMatrices(Matrix4 model, DecimalPosition interpolatableVelocity, NativeMatrixFactory nativeMatrixFactory) {
+        this(model, interpolatableVelocity, 0, nativeMatrixFactory);
     }
 
-    public ModelMatrices(Matrix4 model, DecimalPosition interpolatableVelocity, double progress) {
+    public ModelMatrices(Matrix4 model, DecimalPosition interpolatableVelocity, double progress, NativeMatrixFactory nativeMatrixFactory) {
         matrix = nativeMatrixFactory.createFromColumnMajorArray(model.toWebGlArray());
         this.interpolatableVelocity = interpolatableVelocity;
         this.progress = progress;
@@ -70,8 +69,8 @@ public class ModelMatrices {
     }
 
     public void updatePositionScale(Vertex position, double scale, DecimalPosition interpolatableVelocity) {
-        matrix = nativeMatrixFactory.createTranslation(position.getX(), position.getY(), position.getZ());
-        matrix = matrix.multiply(nativeMatrixFactory.createScale(scale, scale, scale));
+        matrix = matrix.getNativeMatrixFactory().createTranslation(position.getX(), position.getY(), position.getZ());
+        matrix = matrix.multiply(matrix.getNativeMatrixFactory().createScale(scale, scale, scale));
         norm = null;
         this.interpolatableVelocity = interpolatableVelocity;
     }
@@ -83,8 +82,8 @@ public class ModelMatrices {
     }
 
     public void updatePositionScaleX(Vertex position, double scale, DecimalPosition interpolatableVelocity) {
-        matrix = nativeMatrixFactory.createTranslation(position.getX(), position.getY(), position.getZ());
-        matrix = matrix.multiply(nativeMatrixFactory.createScale(scale, 0, 0));
+        matrix = matrix.getNativeMatrixFactory().createTranslation(position.getX(), position.getY(), position.getZ());
+        matrix = matrix.multiply(matrix.getNativeMatrixFactory().createScale(scale, 0, 0));
         norm = null;
         this.interpolatableVelocity = interpolatableVelocity;
     }
@@ -112,7 +111,7 @@ public class ModelMatrices {
     public ModelMatrices interpolateVelocity(double factor) {
         if (interpolatableVelocity != null && factor != 0.0) {
             DecimalPosition interpolation = interpolatableVelocity.multiply(factor);
-            ModelMatrices modelMatrices = new ModelMatrices(nativeMatrixFactory.createTranslation(interpolation.getX(), interpolation.getY(), 0).multiply(matrix));
+            ModelMatrices modelMatrices = new ModelMatrices(matrix.getNativeMatrixFactory().createTranslation(interpolation.getX(), interpolation.getY(), 0).multiply(matrix));
             modelMatrices.progress = progress;
             modelMatrices.interpolatableVelocity = interpolatableVelocity;
             modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
@@ -138,11 +137,11 @@ public class ModelMatrices {
     }
 
     public ModelMatrices multiplyShapeTransform(ShapeTransform shapeTransform) {
-        NativeMatrix newMatrix = matrix.multiply(nativeMatrixFactory.createTranslation(shapeTransform.getTranslateX(), shapeTransform.getTranslateY(), shapeTransform.getTranslateZ()));
-        newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(shapeTransform.getRotateZ()));
-        newMatrix = newMatrix.multiply(nativeMatrixFactory.createYRotation(shapeTransform.getRotateY()));
-        newMatrix = newMatrix.multiply(nativeMatrixFactory.createXRotation(shapeTransform.getRotateX()));
-        newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(shapeTransform.getScaleX(), shapeTransform.getScaleY(), shapeTransform.getScaleZ()));
+        NativeMatrix newMatrix = matrix.multiply(matrix.getNativeMatrixFactory().createTranslation(shapeTransform.getTranslateX(), shapeTransform.getTranslateY(), shapeTransform.getTranslateZ()));
+        newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createZRotation(shapeTransform.getRotateZ()));
+        newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createYRotation(shapeTransform.getRotateY()));
+        newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createXRotation(shapeTransform.getRotateX()));
+        newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createScale(shapeTransform.getScaleX(), shapeTransform.getScaleY(), shapeTransform.getScaleZ()));
 
         ModelMatrices modelMatrices = new ModelMatrices(newMatrix);
         modelMatrices.progress = progress;
@@ -154,16 +153,16 @@ public class ModelMatrices {
         return modelMatrices;
     }
 
-    public static ModelMatrices create4Marker(Vertex position, double scale, DecimalPosition interpolatableVelocity, Color color, double radius) {
-        ModelMatrices modelMatrices = new ModelMatrices(matrixFromPositionAndScale(position, scale));
+    public static ModelMatrices create4Marker(Vertex position, double scale, DecimalPosition interpolatableVelocity, Color color, double radius, NativeMatrixFactory nativeMatrixFactory) {
+        ModelMatrices modelMatrices = new ModelMatrices(matrixFromPositionAndScale(position, scale, nativeMatrixFactory));
         modelMatrices.interpolatableVelocity = interpolatableVelocity;
         modelMatrices.color = color;
         modelMatrices.radius = radius;
         return modelMatrices;
     }
 
-    public static ModelMatrices create4Status(Vertex position, double scaleX, DecimalPosition interpolatableVelocity, Color color, Color bgColor, double progress) {
-        ModelMatrices modelMatrices = new ModelMatrices(createPositionScaleX(position, scaleX));
+    public static ModelMatrices create4Status(Vertex position, double scaleX, DecimalPosition interpolatableVelocity, Color color, Color bgColor, double progress, NativeMatrixFactory nativeMatrixFactory) {
+        ModelMatrices modelMatrices = new ModelMatrices(createPositionScaleX(position, scaleX, nativeMatrixFactory));
         modelMatrices.interpolatableVelocity = interpolatableVelocity;
         modelMatrices.color = color;
         modelMatrices.bgColor = bgColor;
@@ -171,39 +170,39 @@ public class ModelMatrices {
         return modelMatrices;
     }
 
-    public static ModelMatrices create4Particle(Vertex position, double scale, double progress, int particleXColorRampOffsetIndex) {
-        ModelMatrices modelMatrices = new ModelMatrices(matrixFromPositionAndScale(position, scale), progress);
+    public static ModelMatrices create4Particle(Vertex position, double scale, double progress, int particleXColorRampOffsetIndex, NativeMatrixFactory nativeMatrixFactory) {
+        ModelMatrices modelMatrices = new ModelMatrices(matrixFromPositionAndScale(position, scale, nativeMatrixFactory), progress);
         modelMatrices.progress = progress;
         modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
         return modelMatrices;
     }
 
-    public static ModelMatrices create4Wreckage(Vertex position, double zRotation) {
-        return createFromPositionAndZRotation(position.getX(), position.getY(), position.getZ(), zRotation);
+    public static ModelMatrices create4Wreckage(Vertex position, double zRotation, NativeMatrixFactory nativeMatrixFactory) {
+        return createFromPositionAndZRotation(position.getX(), position.getY(), position.getZ(), zRotation, nativeMatrixFactory);
     }
 
-    public static ModelMatrices create4TerrainObject(double x, double y, double z, double scale, double zRotation) {
+    public static ModelMatrices create4TerrainObject(double x, double y, double z, double scale, double zRotation, NativeMatrixFactory nativeMatrixFactory) {
         NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(x, y, z);
         newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(scale, scale, scale));
         newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(zRotation));
         return new ModelMatrices(newMatrix);
     }
 
-    public static ModelMatrices createFromPosition(Vertex position) {
-        return createFromPosition(position.getX(), position.getY(), position.getZ());
+    public static ModelMatrices createFromPosition(Vertex position, NativeMatrixFactory nativeMatrixFactory) {
+        return createFromPosition(position.getX(), position.getY(), position.getZ(), nativeMatrixFactory);
     }
 
-    public static ModelMatrices createFromPosition(double x, double y, double z) {
+    public static ModelMatrices createFromPosition(double x, double y, double z, NativeMatrixFactory nativeMatrixFactory) {
         return new ModelMatrices(nativeMatrixFactory.createTranslation(x, y, z));
     }
 
-    public static ModelMatrices createFromPositionAndZRotation(double x, double y, double z, double zRotation) {
+    public static ModelMatrices createFromPositionAndZRotation(double x, double y, double z, double zRotation, NativeMatrixFactory nativeMatrixFactory) {
         NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(x, y, z);
         newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(zRotation));
         return new ModelMatrices(newMatrix);
     }
 
-    public static ModelMatrices createFromPositionAndZRotation(Vertex position, Vertex direction) {
+    public static ModelMatrices createFromPositionAndZRotation(Vertex position, Vertex direction, NativeMatrixFactory nativeMatrixFactory) {
         direction = direction.normalize(1.0);
         double yRotation = -Math.asin(direction.getZ());
         double zRotation = direction.toXY().angle();
@@ -213,19 +212,19 @@ public class ModelMatrices {
         return new ModelMatrices(newMatrix);
     }
 
-    public static ModelMatrices create4Editor(double x, double y, double z, double scale) {
+    public static ModelMatrices create4Editor(double x, double y, double z, double scale, NativeMatrixFactory nativeMatrixFactory) {
         NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(x, y, z);
         newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(scale, scale, scale));
         return new ModelMatrices(newMatrix);
     }
 
-    public static NativeMatrix createPositionScaleX(Vertex position, double scale) {
+    public static NativeMatrix createPositionScaleX(Vertex position, double scale, NativeMatrixFactory nativeMatrixFactory) {
         NativeMatrix matrix = nativeMatrixFactory.createTranslation(position.getX(), position.getY(), position.getZ());
         matrix = matrix.multiply(nativeMatrixFactory.createScale(scale, 1, 1));
         return matrix;
     }
 
-    private static NativeMatrix matrixFromPositionAndScale(Vertex position, double scale) {
+    private static NativeMatrix matrixFromPositionAndScale(Vertex position, double scale, NativeMatrixFactory nativeMatrixFactory) {
         NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(position.getX(), position.getY(), position.getZ());
         return newMatrix.multiply(nativeMatrixFactory.createScale(scale, scale, scale));
     }

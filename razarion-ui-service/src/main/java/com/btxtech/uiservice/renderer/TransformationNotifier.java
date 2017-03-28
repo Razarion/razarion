@@ -36,7 +36,8 @@ public class TransformationNotifier {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private ShadowUiService shadowUiService;
-    private NativeMatrixFactory nativeMatrixFactory = new NativeMatrixFactory();
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private NativeMatrix viewMatrix;
     private NativeMatrix viewNormMatrix;
     private NativeMatrix perspectiveMatrix;

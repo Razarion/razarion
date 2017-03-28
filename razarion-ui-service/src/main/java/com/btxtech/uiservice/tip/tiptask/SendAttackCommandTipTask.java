@@ -48,6 +48,6 @@ public class SendAttackCommandTipTask extends AbstractTipTask {
 
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
-        return new InGameItemTipVisualization(() -> baseItemUiService.monitorMyEnemyItemWithPlace(placeConfig), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getAttackCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId());
+        return new InGameItemTipVisualization(() -> baseItemUiService.monitorMyEnemyItemWithPlace(placeConfig), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getAttackCommandCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId(), getNativeMatrixFactory());
     }
 }

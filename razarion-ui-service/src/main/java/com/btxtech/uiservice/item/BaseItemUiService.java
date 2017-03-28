@@ -19,6 +19,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
@@ -62,6 +63,8 @@ public class BaseItemUiService {
     private EffectVisualizationService effectVisualizationService;
     @Inject
     private UserUiService userUiService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
@@ -135,28 +138,28 @@ public class BaseItemUiService {
             }
             // Spawning
             if (syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup()) {
-                spawningModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getSpawning()));
+                spawningModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getSpawning(), nativeMatrixFactory));
             }
             // Buildup
             if (!syncBaseItem.checkSpawning() && !syncBaseItem.checkBuildup()) {
-                buildupModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getBuildup()));
+                buildupModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getBuildup(), nativeMatrixFactory));
             }
             // Alive
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && syncBaseItem.checkHealth()) {
-                aliveModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity()));
+                aliveModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity(), nativeMatrixFactory));
                 if (syncBaseItem.getWeaponTurret() != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity()));
+                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity(), nativeMatrixFactory));
                 }
             }
             // Demolition
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && !syncBaseItem.checkHealth()) {
-                ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity(), syncBaseItem.getHealth());
+                ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity(), syncBaseItem.getHealth(), nativeMatrixFactory);
                 demolitionModelMatrices.put(baseItemType, modelMatrices);
                 if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
                     effectVisualizationService.updateBuildingDemolitionEffect(syncBaseItem, baseItemType);
                 }
                 if (syncBaseItem.getWeaponTurret() != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity()));
+                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity(), nativeMatrixFactory));
                 }
             }
 
@@ -164,13 +167,13 @@ public class BaseItemUiService {
             if (syncBaseItem.getHarvestingResourcePosition() != null) {
                 Vertex origin = syncBaseItem.getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
                 Vertex direction = syncBaseItem.getHarvestingResourcePosition().sub(origin).normalize(1.0);
-                harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction));
+                harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
             }
             // Building
             if (syncBaseItem.getBuildingPosition() != null) {
                 Vertex origin = syncBaseItem.getModel().multiply(baseItemType.getBuilderType().getAnimationOrigin(), 1.0);
                 Vertex direction = syncBaseItem.getBuildingPosition().sub(origin).normalize(1.0);
-                builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction));
+                builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
             }
         }
         if (itemCount != tmpItemCount) {

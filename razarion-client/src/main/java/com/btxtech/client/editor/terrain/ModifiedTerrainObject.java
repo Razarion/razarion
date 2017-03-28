@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 /**
  * Created by Beat
@@ -50,14 +51,14 @@ public class ModifiedTerrainObject {
         }
     }
 
-    public void setNewPosition(Vertex newPosition) {
+    public void setNewPosition(Vertex newPosition, NativeMatrixFactory nativeMatrixFactory) {
         position = newPosition.toXY();
-        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, radius * scale);
+        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, radius * scale, nativeMatrixFactory);
         dirty = true;
     }
 
-    public ModelMatrices createModelMatrices() {
-        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, radius * scale);
+    public ModelMatrices createModelMatrices(NativeMatrixFactory nativeMatrixFactory) {
+        modelMatrices = ModelMatrices.create4Editor(position.getX(), position.getY(), 0, radius * scale, nativeMatrixFactory);
         return modelMatrices;
     }
 

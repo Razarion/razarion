@@ -3,6 +3,7 @@ package com.btxtech.uiservice.tip.tiptask;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
@@ -23,7 +24,6 @@ public class ScrollTipTask extends AbstractTipTask implements TerrainScrollListe
     private static final long TIMER_DELAY = 1000;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
     private SimpleScheduledFuture simpleScheduledFuture;
@@ -71,7 +71,7 @@ public class ScrollTipTask extends AbstractTipTask implements TerrainScrollListe
 
     @Override
     public InGameDirectionVisualization createInGameDirectionVisualization() {
-        inGameDirectionVisualization = new InGameDirectionVisualization(getGameTipVisualConfig().getDirectionShape3DId(), terrainPositionHint, !splashVisible);
+        inGameDirectionVisualization = new InGameDirectionVisualization(getGameTipVisualConfig().getDirectionShape3DId(), terrainPositionHint, !splashVisible, getNativeMatrixFactory());
         return inGameDirectionVisualization;
     }
 

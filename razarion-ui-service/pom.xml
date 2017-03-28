@@ -33,7 +33,8 @@
             <groupId>com.google.jsinterop</groupId>
             <artifactId>jsinterop-annotations</artifactId>
             <version>1.0.1</version>
-        </dependency>        <!-- Test -->
+        </dependency>
+        <!-- Test -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>razarion-test</artifactId>

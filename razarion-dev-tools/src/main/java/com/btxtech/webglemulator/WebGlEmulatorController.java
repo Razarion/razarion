@@ -387,7 +387,7 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onPerfomButtonClicked() {
-        List<PerfmonStatistic> clientPerfmonStatistics = perfmonService.getPerfmonStatistics();
+        List<PerfmonStatistic> clientPerfmonStatistics = perfmonService.getPerfmonStatistics(-1);
         System.out.println("Client---------------------------------------------------------------------------------------------------------");
         for (PerfmonStatistic perfmonStatistic : clientPerfmonStatistics) {
             for (int i = 0; i < perfmonStatistic.size(); i++) {

@@ -1,9 +1,10 @@
 package com.btxtech.uiservice.effects;
 
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 /**
  * Created by Beat
@@ -14,10 +15,10 @@ public class WreckageItem {
     private long visibleTillTimeStamp;
     private ModelMatrices modelMatrices;
 
-    public WreckageItem(BaseItemType baseItemType, Vertex position) {
+    public WreckageItem(BaseItemType baseItemType, Vertex position, NativeMatrixFactory nativeMatrixFactory) {
         visibleTillTimeStamp = System.currentTimeMillis() + TrailService.VISIBLE_WRECKAGE_MILLIS;
         this.baseItemType = baseItemType;
-        modelMatrices = ModelMatrices.create4Wreckage(position, MathHelper.getRandomAngle());
+        modelMatrices = ModelMatrices.create4Wreckage(position, MathHelper.getRandomAngle(), nativeMatrixFactory);
     }
 
     public ModelMatrices getModelMatrices() {

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 /**
  * Created by Beat
@@ -31,7 +32,7 @@ public class Particle implements Comparable<Particle> {
      * @param viewTransformationMatrix view transformation matrix
      * @return true if particle is not dead
      */
-    public boolean tick(long timeStamp, double factor, Matrix4 viewTransformationMatrix) {
+    public boolean tick(long timeStamp, double factor, Matrix4 viewTransformationMatrix, NativeMatrixFactory nativeMatrixFactory) {
         if (startTime + timeToLive < timeStamp) {
             return false;
         }
@@ -44,7 +45,7 @@ public class Particle implements Comparable<Particle> {
             }
         }
         if (modelMatrices == null) {
-            modelMatrices = ModelMatrices.create4Particle(position, setupScale(progress), progress, particleConfig.getParticleXColorRampOffsetIndex());
+            modelMatrices = ModelMatrices.create4Particle(position, setupScale(progress), progress, particleConfig.getParticleXColorRampOffsetIndex(),nativeMatrixFactory);
         } else {
             modelMatrices.updateProgress(progress);
             modelMatrices.updatePositionScale(position, setupScale(progress), progress);

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.item.SyncItemMonitor;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 import java.util.function.Supplier;
 
@@ -16,8 +17,8 @@ public class InGameItemTipVisualization extends InGameTipVisualization {
     private DecimalPosition lastPosition2D;
     private SyncItemMonitor syncItemMonitor;
 
-    public InGameItemTipVisualization(Supplier<SyncItemMonitor> syncItemProvider, double moveDistance, long duration, double cornerLength, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId) {
-        super(cornerLength, moveDistance, duration, cornerColor, shape3DId, outOfViewShape3DId);
+    public InGameItemTipVisualization(Supplier<SyncItemMonitor> syncItemProvider, double moveDistance, long duration, double cornerLength, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId, NativeMatrixFactory nativeMatrixFactory) {
+        super(cornerLength, moveDistance, duration, cornerColor, shape3DId, outOfViewShape3DId, nativeMatrixFactory);
         this.syncItemProvider = syncItemProvider;
     }
 

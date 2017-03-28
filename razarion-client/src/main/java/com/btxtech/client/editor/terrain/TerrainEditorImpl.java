@@ -18,6 +18,7 @@ import com.btxtech.uiservice.TerrainEditor;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.errai.common.client.api.Caller;
@@ -63,6 +64,8 @@ public class TerrainEditorImpl implements TerrainEditor {
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private boolean active;
     private boolean newSlopeMode = true;
     private Polygon2D cursor;
@@ -91,7 +94,7 @@ public class TerrainEditorImpl implements TerrainEditor {
         this.terrainPosition = terrainPosition;
 
         if (modifyingTerrainObject != null) {
-            modifyingTerrainObject.setNewPosition(terrainPosition);
+            modifyingTerrainObject.setNewPosition(terrainPosition, nativeMatrixFactory);
         } else {
             dehoverAll();
             hoverTerrainObject = getTerrainObjectAtTerrain(terrainPosition);
@@ -266,7 +269,7 @@ public class TerrainEditorImpl implements TerrainEditor {
     }
 
     private List<ModelMatrices> setupModelMatrices() {
-        return modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createModelMatrices).collect(Collectors.toList());
+        return modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(modifiedTerrainObject -> modifiedTerrainObject.createModelMatrices(nativeMatrixFactory)).collect(Collectors.toList());
     }
 
     public void sculpt() {

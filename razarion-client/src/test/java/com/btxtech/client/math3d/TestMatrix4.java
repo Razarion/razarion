@@ -110,7 +110,7 @@ public class TestMatrix4 {
 
     @Test
     public void field2Array2() {
-        double[] array = Matrix4.field2Array2(new double[][]{
+        double[] array = Matrix4.columnMajorOrder(new double[][]{
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -120,7 +120,7 @@ public class TestMatrix4 {
 
     @Test(expected = IllegalArgumentException.class)
     public void field2Array2Fail1() {
-        Matrix4.field2Array2(new double[][]{
+        Matrix4.columnMajorOrder(new double[][]{
                 {1, 2, 3},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -129,7 +129,7 @@ public class TestMatrix4 {
 
     @Test(expected = IllegalArgumentException.class)
     public void field2Array2Fail2() {
-        Matrix4.field2Array2(new double[][]{
+        Matrix4.columnMajorOrder(new double[][]{
                 {1, 2, 3, 4, 5},
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
@@ -138,7 +138,7 @@ public class TestMatrix4 {
 
     @Test(expected = IllegalArgumentException.class)
     public void field2Array2Fail3() {
-        Matrix4.field2Array2(new double[][]{
+        Matrix4.columnMajorOrder(new double[][]{
                 {5, 6, 7, 8},
                 {9, 10, 11, 12},
                 {13, 14, 15, 16}});
@@ -146,7 +146,7 @@ public class TestMatrix4 {
 
     @Test(expected = IllegalArgumentException.class)
     public void field2Array2Fail4() {
-        Matrix4.field2Array2(new double[][]{
+        Matrix4.columnMajorOrder(new double[][]{
                 {1, 2, 3, 4},
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},

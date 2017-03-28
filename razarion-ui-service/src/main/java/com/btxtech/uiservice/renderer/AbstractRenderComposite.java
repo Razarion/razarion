@@ -8,6 +8,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -21,18 +22,17 @@ import java.util.stream.Collectors;
  * D render data (e.g.: VertexContainerRender)
  */
 public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D> {
-    protected static NativeMatrixFactory nativeMatrixFactory = new NativeMatrixFactory();
     private U renderUnit;
     private U depthBufferRenderUnit;
     private U wireRenderUnit;
     private U normRenderUnit;
     private D rendererData;
     private ShapeTransform shapeTransform;
-    private NativeMatrix staticshapeTransformCache;
+    private NativeMatrix staticShapeTransformCache;
     private Collection<ProgressAnimation> progressAnimations;
     private ModelRenderer modelRenderer;
-    @Deprecated
-    private int id;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
 
     public void init(D renderModel) {
         this.rendererData = renderModel;
@@ -74,11 +74,6 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         this.shapeTransform = shapeTransform;
     }
 
-    @Deprecated
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public ModelMatrices mixTransformation(ModelMatrices modelMatrix, double interpolationFactor) {
         modelMatrix = modelMatrix.interpolateVelocity(interpolationFactor);
 
@@ -88,10 +83,10 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
 
         if (progressAnimations == null) {
             if (shapeTransform.getStaticMatrix() != null) {
-                if (staticshapeTransformCache == null) {
-                    staticshapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
+                if (staticShapeTransformCache == null) {
+                    staticShapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
                 }
-                return modelMatrix.multiplyStaticShapeTransform(staticshapeTransformCache);
+                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache);
             } else {
                 return modelMatrix.multiplyShapeTransform(shapeTransform);
             }
@@ -182,11 +177,6 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         if (normRenderUnit != null) {
             normRenderUnit.fillBuffers(rendererData);
         }
-    }
-
-    @Deprecated
-    public int getId() {
-        return id;
     }
 
     public ModelRenderer getModelRenderer() {

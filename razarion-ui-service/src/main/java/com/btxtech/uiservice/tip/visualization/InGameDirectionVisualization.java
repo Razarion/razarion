@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.tip.visualization;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
 
@@ -14,15 +14,17 @@ import java.util.List;
  * 16.12.2016.
  */
 public class InGameDirectionVisualization implements TerrainScrollListener {
+    private NativeMatrixFactory nativeMatrixFactory;
     private Integer shape3DId;
     private DecimalPosition terrainPositionHint;
     private ViewField viewField;
     private boolean visible;
 
-    public InGameDirectionVisualization(Integer shape3DId, DecimalPosition terrainPositionHint, boolean visible) {
+    public InGameDirectionVisualization(Integer shape3DId, DecimalPosition terrainPositionHint, boolean visible, NativeMatrixFactory nativeMatrixFactory) {
         this.shape3DId = shape3DId;
         this.terrainPositionHint = terrainPositionHint;
         this.visible = visible;
+        this.nativeMatrixFactory = nativeMatrixFactory;
     }
 
     public Integer getShape3DId() {
@@ -33,7 +35,7 @@ public class InGameDirectionVisualization implements TerrainScrollListener {
         if (visible) {
             DecimalPosition center = viewField.calculateCenter();
             double angle = center.getAngle(terrainPositionHint);
-            return Collections.singletonList(ModelMatrices.createFromPositionAndZRotation(center.getX(), center.getY(), 0, angle));
+            return Collections.singletonList(ModelMatrices.createFromPositionAndZRotation(center.getX(), center.getY(), 0, angle, nativeMatrixFactory));
         } else {
             return null;
         }

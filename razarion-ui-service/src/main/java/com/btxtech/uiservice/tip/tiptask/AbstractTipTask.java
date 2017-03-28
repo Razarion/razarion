@@ -15,6 +15,7 @@ import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
@@ -30,12 +31,10 @@ import java.util.Map;
  * Time: 13:19
  */
 public abstract class AbstractTipTask {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private SelectionHandler selectionHandler;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private QuestVisualizer questVisualizer;
     @Inject
@@ -44,6 +43,8 @@ public abstract class AbstractTipTask {
     private GameUiControl gameUiControl;
     @Inject
     private BaseItemUiService baseItemUiService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private GameTipService gameTipService;
     private boolean failOnSelectionCleared;
     private boolean failOnTargetSelectionChanged;
@@ -174,5 +175,9 @@ public abstract class AbstractTipTask {
 
     Collection<SyncBaseItemSimpleDto> findItemsOfType(int baseItemTypeId) {
         return baseItemUiService.findMyItemsOfType(baseItemTypeId);
+    }
+
+    protected NativeMatrixFactory getNativeMatrixFactory() {
+        return nativeMatrixFactory;
     }
 }

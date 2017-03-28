@@ -3,6 +3,7 @@ package com.btxtech.uiservice.tip.visualization;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 /**
  * Created by Beat
@@ -11,8 +12,8 @@ import com.btxtech.shared.datatypes.Vertex;
 public class InGamePositionTipVisualization extends InGameTipVisualization {
     private Vertex position;
 
-    public InGamePositionTipVisualization(double moveDistance, long duration, double cornerLength, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId) {
-        super(cornerLength, moveDistance, duration, cornerColor, shape3DId, outOfViewShape3DId);
+    public InGamePositionTipVisualization(double moveDistance, long duration, double cornerLength, Color cornerColor, Integer shape3DId, Integer outOfViewShape3DId, NativeMatrixFactory nativeMatrixFactory) {
+        super(cornerLength, moveDistance, duration, cornerColor, shape3DId, outOfViewShape3DId, nativeMatrixFactory);
     }
 
     public void setPosition(Vertex position) {

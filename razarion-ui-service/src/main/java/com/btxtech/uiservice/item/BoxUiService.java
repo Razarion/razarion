@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,6 +30,8 @@ public class BoxUiService {
     private ItemTypeService itemTypeService;
     @Inject
     private SelectionHandler selectionHandler;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private final Map<Integer, SyncBoxItemSimpleDto> boxes = new HashMap<>();
     private final MapList<BoxItemType, ModelMatrices> boxModelMatrices = new MapList<>();
 
@@ -110,7 +113,7 @@ public class BoxUiService {
             boxModelMatrices.clear();
             for (SyncBoxItemSimpleDto boxItemSimpleDto : boxes.values()) {
                 BoxItemType boxItemType = itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId());
-                boxModelMatrices.put(boxItemType, new ModelMatrices(boxItemSimpleDto.getModel()));
+                boxModelMatrices.put(boxItemType, new ModelMatrices(boxItemSimpleDto.getModel(), nativeMatrixFactory));
             }
         }
     }

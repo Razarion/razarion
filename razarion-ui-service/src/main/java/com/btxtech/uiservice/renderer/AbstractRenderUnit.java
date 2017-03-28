@@ -75,11 +75,6 @@ public abstract class AbstractRenderUnit<D> {
         return abstractRenderComposite.getRendererData();
     }
 
-    @Deprecated
-    protected int getId() {
-        return abstractRenderComposite.getId();
-    }
-
     public String helperString() {
         return "???";
     }

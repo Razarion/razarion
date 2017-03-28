@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -31,6 +32,8 @@ public class ResourceUiService {
     private ItemTypeService itemTypeService;
     @Inject
     private SelectionHandler selectionHandler;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private final MapList<ResourceItemType, ModelMatrices> resourceModelMatrices = new MapList<>();
 
@@ -104,7 +107,7 @@ public class ResourceUiService {
             resourceModelMatrices.clear();
             for (SyncResourceItemSimpleDto resourceItem : resources.values()) {
                 ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resourceItem.getItemTypeId());
-                resourceModelMatrices.put(resourceItemType, new ModelMatrices(resourceItem.getModel()));
+                resourceModelMatrices.put(resourceItemType, new ModelMatrices(resourceItem.getModel(), nativeMatrixFactory));
             }
         }
     }

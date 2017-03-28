@@ -16,6 +16,8 @@ public class NativeMatrix {
 
     public native NativeMatrix transpose();
 
+    public native NativeMatrixFactory getNativeMatrixFactory();
+
     @Override
     public native String toString();
 

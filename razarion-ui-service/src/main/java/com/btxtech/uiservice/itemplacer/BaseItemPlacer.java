@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.Dependent;
@@ -32,6 +33,8 @@ public class BaseItemPlacer {
     private TerrainService terrainService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private Vertex position;
     private BaseItemType baseItemType;
     private String errorText;
@@ -78,13 +81,13 @@ public class BaseItemPlacer {
     }
 
     public List<ModelMatrices> provideCircleModelMatrices() {
-        return Collections.singletonList(ModelMatrices.createFromPosition(position));
+        return Collections.singletonList(ModelMatrices.createFromPosition(position, nativeMatrixFactory));
     }
 
     public List<ModelMatrices> provideItemModelMatrices() {
         List<ModelMatrices> result = new ArrayList<>();
         for (DecimalPosition position : setupAbsolutePositions()) {
-            result.add(ModelMatrices.createFromPosition(position.getX(), position.getY(), this.position.getZ()));
+            result.add(ModelMatrices.createFromPosition(position.getX(), position.getY(), this.position.getZ(), nativeMatrixFactory));
         }
         return result;
     }

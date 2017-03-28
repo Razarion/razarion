@@ -1,11 +1,12 @@
 package com.btxtech.uiservice.projectile;
 
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -24,6 +25,8 @@ public class ProjectileUiService {
     private EffectVisualizationService effectVisualizationService;
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private final Collection<ProjectileUi> projectiles = new ArrayList<>();
     private MapList<BaseItemType, ModelMatrices> modelMatrices = new MapList<>();
 
@@ -45,7 +48,7 @@ public class ProjectileUiService {
                 if (projectile.destinationReached()) {
                     iterator.remove();
                 } else {
-                    modelMatricesTmp.put(projectile.getBaseItemType(), projectile.createInterpolatedModelMatrices());
+                    modelMatricesTmp.put(projectile.getBaseItemType(), projectile.createInterpolatedModelMatrices(nativeMatrixFactory));
                 }
             }
         }

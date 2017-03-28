@@ -20,6 +20,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 
 import javax.enterprise.event.Observes;
@@ -48,6 +49,8 @@ public class TerrainUiService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private GameEngineControl gameEngineControl;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private static final double HIGHEST_POINT_IN_VIEW = 20;
     private static final double LOWEST_POINT_IN_VIEW = -2;
     private double highestPointInView; // Should be calculated
@@ -94,7 +97,7 @@ public class TerrainUiService {
             try {
                 getTerrainZ(terrainObjectPosition.getPosition(), (position, z) -> {
                     if (z != null) {
-                        terrainObjectConfigModelMatrices.put(terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()), ModelMatrices.create4TerrainObject(position.getX(), position.getY(), z, terrainObjectPosition.getScale(), terrainObjectPosition.getRotationZ()));
+                        terrainObjectConfigModelMatrices.put(terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()), ModelMatrices.create4TerrainObject(position.getX(), position.getY(), z, terrainObjectPosition.getScale(), terrainObjectPosition.getRotationZ(), nativeMatrixFactory));
                     } else {
                         logger.warning("TerrainUiService: Can not place TerrainObjectPosition with id: " + terrainObjectPosition.getId());
                     }
@@ -163,7 +166,7 @@ public class TerrainUiService {
     }
 
     public void calculateMousePositionGroundMesh(Line3d worldPickRay, Consumer<Vertex> positionConsumer) {
-        if(worldPickRayConsumer == null) {
+        if (worldPickRayConsumer == null) {
             worldPickRayConsumer = positionConsumer;
             gameEngineControl.askTerrainPosition(worldPickRay);
         } else {
@@ -209,7 +212,7 @@ public class TerrainUiService {
     }
 
     private void handleWorldPickRayQueued() {
-        if(worldPickRayConsumerQueued != null) {
+        if (worldPickRayConsumerQueued != null) {
             worldPickRayConsumer = worldPickRayConsumerQueued;
             gameEngineControl.askTerrainPosition(worldPickRayQueued);
             worldPickRayQueued = null;

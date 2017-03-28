@@ -2,12 +2,14 @@ package com.btxtech.uiservice.nativejs;
 
 import jsinterop.annotations.JsType;
 
+import javax.enterprise.inject.Vetoed;
+
 /**
  * Created by Beat
  * 24.03.2017.
  */
 @JsType(name = "NativeMatrixFactory", isNative = true)
-public class NativeMatrixFactory {
+public abstract class NativeMatrixFactory {
     public native NativeMatrix createFromColumnMajorArray(double[] array);
 
     public native NativeMatrix createTranslation(double x, double y, double z);

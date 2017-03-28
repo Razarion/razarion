@@ -1,8 +1,9 @@
 package com.btxtech.uiservice.projectile;
 
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 /**
  * Created by Beat
@@ -38,9 +39,9 @@ public class ProjectileUi {
         return distance >= totalDistance;
     }
 
-    ModelMatrices createInterpolatedModelMatrices() {
+    ModelMatrices createInterpolatedModelMatrices(NativeMatrixFactory nativeMatrixFactory) {
         Vertex position = start.interpolate(distance, target);
-        return ModelMatrices.createFromPositionAndZRotation(position, target.sub(start));
+        return ModelMatrices.createFromPositionAndZRotation(position, target.sub(start), nativeMatrixFactory);
     }
 
 

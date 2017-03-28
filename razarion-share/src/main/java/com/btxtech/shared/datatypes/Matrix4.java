@@ -53,7 +53,7 @@ public class Matrix4 {
      * @return array
      */
     public double[] toWebGlArray() {
-        return field2Array2(numbers);
+        return columnMajorOrder(numbers);
     }
 
     public Matrix4 multiply(Matrix4 other) {
@@ -284,6 +284,7 @@ public class Matrix4 {
     /**
      * Due to performance reasons
      * Violates the immutable principe
+     *
      * @param position translation
      */
     public void setTranslation(Vertex position) {
@@ -420,7 +421,7 @@ public class Matrix4 {
      *
      * @return array: C0R0, C0R1, C0R2 ... C3R3
      */
-    public static double[] field2Array2(double[][] field) {
+    public static double[] columnMajorOrder(double[][] field) {
         if (field.length != ROWS) {
             throw new IllegalArgumentException("Invalid row count: " + field.length + ". Expected columns: " + ROWS);
         }
@@ -437,6 +438,23 @@ public class Matrix4 {
         }
         return array;
     }
+
+    /**
+     * Converts a array to a field. Column-major order
+     *
+     * @param array array: C0R0, C1R0, C2R0 ... C3R
+     */
+    public static Matrix4 fromColumnMajorOrder(double[] array) {
+        if (array.length != ROWS * COLUMNS) {
+            throw new IllegalArgumentException("Invalid count: " + array.length + ". Expected count: " + ROWS * COLUMNS);
+        }
+        return new Matrix4(new double[][]{
+                {array[0], array[4], array[8], array[12]},
+                {array[1], array[5], array[9], array[13]},
+                {array[2], array[6], array[10], array[14]},
+                {array[3], array[7], array[11], array[15]}});
+    }
+
 
     /**
      * Converts a array to a field. Row-major order

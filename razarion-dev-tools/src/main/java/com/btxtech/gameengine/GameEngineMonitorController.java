@@ -239,7 +239,7 @@ public class GameEngineMonitorController implements Initializable {
         runAndWait(() -> {
             try {
                 renderer.render();
-                stepField.setText(Long.toString(planetService.getTickCount()));
+                stepField.setText("CRASH");
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -313,7 +313,7 @@ public class GameEngineMonitorController implements Initializable {
     }
 
     public void onPerfmonButtonClicked() {
-        List<PerfmonStatistic> clientPerfmonStatistics = perfmonService.getPerfmonStatistics();
+        List<PerfmonStatistic> clientPerfmonStatistics = perfmonService.getPerfmonStatistics(-1);
         System.out.println("---------------------------------------------------------------------------------------------------------");
         for (PerfmonStatistic perfmonStatistic : clientPerfmonStatistics) {
             for (int i = 0; i < perfmonStatistic.size(); i++) {

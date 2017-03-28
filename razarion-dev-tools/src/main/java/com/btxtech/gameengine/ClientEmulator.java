@@ -4,6 +4,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
+import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -18,6 +19,8 @@ import java.util.Collection;
 public class ClientEmulator {
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private long lastUpdateTimeStamp;
     private final Collection<ModelMatrices> aliveModelMatrices = new ArrayList<>();
 
@@ -30,7 +33,7 @@ public class ClientEmulator {
                     SyncBaseItemSimpleDto simpleDto = ((SyncBaseItem) syncItem).createSyncBaseItemSimpleDto();
                     // Alive
                     if (!simpleDto.checkSpawning() && simpleDto.checkBuildup() && simpleDto.checkHealth()) {
-                        aliveModelMatrices.add(new ModelMatrices(simpleDto.getModel(), simpleDto.getInterpolatableVelocity()));
+                        aliveModelMatrices.add(new ModelMatrices(simpleDto.getModel(), simpleDto.getInterpolatableVelocity(), nativeMatrixFactory));
                     }
 
                 }

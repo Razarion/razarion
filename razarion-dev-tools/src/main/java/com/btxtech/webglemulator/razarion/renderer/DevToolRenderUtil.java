@@ -1,6 +1,9 @@
 package com.btxtech.webglemulator.razarion.renderer;
 
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.uiservice.nativejs.NativeMatrix;
+import com.btxtech.webglemulator.razarion.DevToolNativeMatrixFactoryProducer;
 
 import java.util.List;
 
@@ -23,6 +26,10 @@ public interface DevToolRenderUtil {
         // TODO fix
         // TODO fix also ClientRenderUtil
         throw new UnsupportedOperationException();
+    }
+
+    static Matrix4 toMatrix4(NativeMatrix model) {
+        return DevToolNativeMatrixFactoryProducer.getMatrix(model);
     }
 
 //    public interface RenderUtil {
