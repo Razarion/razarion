@@ -1,6 +1,8 @@
 package com.btxtech.server.persistence.impl;
 
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
+import com.btxtech.server.persistence.GameUiControlConfigEntity_;
+import com.btxtech.server.persistence.ImageLibraryEntity_;
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.TerrainElementPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
@@ -10,6 +12,7 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
@@ -100,44 +103,63 @@ public class GameUiControlConfigPersistence {
     @Inject
     private ItemTypePersistence itemTypePersistence;
 
+    // TODO DB Migration
+    // TODO create GAME_UI_CONTROL_CONFIG with id 2, planet 2
+    // TODO create PLANET with id 2
+
     @Transactional
-    public GameUiControlConfig load() throws ParserConfigurationException, SAXException, IOException {
+    public GameUiControlConfig load(UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
         GameEngineConfig gameEngineConfig = new GameEngineConfig();
         gameEngineConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
         gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
         gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
-        gameEngineConfig.setBaseItemTypes(finalizeBaseItemTypes(itemTypePersistence.readBaseItemTypes()));// TODO mode to DB
-        gameEngineConfig.setResourceItemTypes(finalizeResourceItemTypes(itemTypePersistence.readResourceItemTypes()));// TODO mode to DB
+        gameEngineConfig.setBaseItemTypes(finalizeBaseItemTypes(itemTypePersistence.readBaseItemTypes()));// TODO move to DB
+        gameEngineConfig.setResourceItemTypes(finalizeResourceItemTypes(itemTypePersistence.readResourceItemTypes()));// TODO move to DB
         gameEngineConfig.setBoxItemTypes(finalizeBoxItemTypes(itemTypePersistence.readBoxItemTypes()));
-        gameEngineConfig.setLevelConfigs(setupLevelConfigs());  // TODO mode to DB
-        gameEngineConfig.setInventoryItems(setupInventoryItems()); // TODO mode to DB
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        gameEngineConfig.setLevelConfigs(setupLevelConfigs());  // TODO move to DB
+        gameEngineConfig.setInventoryItems(setupInventoryItems()); // TODO move to DB
         // Query for total row count in invitations
-        CriteriaQuery<GameUiControlConfigEntity> userQuery = criteriaBuilder.createQuery(GameUiControlConfigEntity.class);
-        Root<GameUiControlConfigEntity> from = userQuery.from(GameUiControlConfigEntity.class);
-        CriteriaQuery<GameUiControlConfigEntity> userSelect = userQuery.select(from);
-        GameUiControlConfig gameUiControlConfig = entityManager.createQuery(userSelect).getSingleResult().toGameUiControlConfig(gameEngineConfig);
-        gameUiControlConfig.setVisualConfig(defaultVisualConfig());  // TODO mode to DB
-        gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO mode to DB
-        gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO mode to DB
-        completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO mode to DB
-        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupParticle()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(setupThankYouForward()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(humanKillBotBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(killEnemyBotBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(killHumanBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(buildBase()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(harvest()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(useInventoryItem()); // TODO mode to DB
-        // gameUiControlConfig.setSceneConfigs(demolitionVisualization()); // TODO mode to DB
+        GameUiControlConfigEntity gameUiControlConfigEntity = getGameUiControlConfig4Level(userContext);
+        GameUiControlConfig gameUiControlConfig = gameUiControlConfigEntity.toGameUiControlConfig(gameEngineConfig);
+        gameUiControlConfig.setUserContext(userContext);
+        gameUiControlConfig.setVisualConfig(defaultVisualConfig());  // TODO move to DB
+        gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO move to DB
+        gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO move to DB
+        completePlanetConfig(gameEngineConfig.getPlanetConfig());  // TODO move to DB
+        gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(setupTower()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(setupParticle()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(setupPickBox()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(setupThankYouForward()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(humanKillBotBase()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(killEnemyHarvester()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(killEnemyBotBase()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(killHumanBase()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(buildBase()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(harvest()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(useInventoryItem()); // TODO move to DB
+        // gameUiControlConfig.setSceneConfigs(demolitionVisualization()); // TODO move to DB
         return gameUiControlConfig;
+    }
+
+    private GameUiControlConfigEntity getGameUiControlConfig4Level(UserContext userContext) {
+        int levelNumber = getLevelNumber(userContext.getLevelId());
+        long fameUiControlConfigEntityId;
+        // TODO move to DB
+        if(levelNumber >= 5) {
+            fameUiControlConfigEntityId = 2;
+        } else {
+            fameUiControlConfigEntityId = 1;
+        }
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<GameUiControlConfigEntity> query = criteriaBuilder.createQuery(GameUiControlConfigEntity.class);
+        Root<GameUiControlConfigEntity> root = query.from(GameUiControlConfigEntity.class);
+        query.where(criteriaBuilder.equal(root.get(GameUiControlConfigEntity_.id), fameUiControlConfigEntityId));
+        CriteriaQuery<GameUiControlConfigEntity> userSelect = query.select(root);
+        return entityManager.createQuery(userSelect).getSingleResult();
     }
 
     private GameTipVisualConfig defaultGameTipVisualConfig() {
@@ -370,7 +392,22 @@ public class GameUiControlConfigPersistence {
         level4Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
         level4Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
         levelConfigs.add(new LevelConfig().setLevelId(4).setNumber(4).setXp2LevelUp(50).setItemTypeLimitation(level4Limitation));
+        Map<Integer, Integer> level5Limitation = new HashMap<>();
+        level5Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
+        level5Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
+        level5Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
+        level5Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
+        levelConfigs.add(new LevelConfig().setLevelId(5).setNumber(5).setXp2LevelUp(75).setItemTypeLimitation(level5Limitation));
         return levelConfigs;
+    }
+
+    private int getLevelNumber(int levelId) {
+        for (LevelConfig levelConfig : setupLevelConfigs()) {
+            if(levelConfig.getLevelId() == levelId) {
+                return levelConfig.getNumber();
+            }
+        }
+        throw new IllegalArgumentException("No level for id: " + levelId);
     }
 
     public List<InventoryItem> setupInventoryItems() {

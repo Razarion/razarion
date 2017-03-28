@@ -2,6 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.impl.GameUiControlConfigPersistence;
 import com.btxtech.server.user.UserService;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlProvider;
@@ -30,8 +31,8 @@ public class GameUiControlProviderImpl implements GameUiControlProvider {
     @Transactional
     public GameUiControlConfig loadGameUiControlConfig(FacebookUserLoginInfo facebookUserLoginInfo) {
         try {
-            GameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load();
-            gameUiControlConfig.setUserContext(userService.handleUserLoginInfo(facebookUserLoginInfo));
+            UserContext userContext = userService.handleUserLoginInfo(facebookUserLoginInfo);
+            GameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load(userContext);
             return gameUiControlConfig;
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
