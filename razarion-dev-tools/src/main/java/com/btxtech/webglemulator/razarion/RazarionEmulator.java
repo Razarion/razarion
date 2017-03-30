@@ -39,7 +39,7 @@ public class RazarionEmulator {
 
     public void run() {
         try {
-            gameUiControl.setGameUiControlConfig(jsonProviderEmulator.readFromFile(false));
+            gameUiControl.setGameUiControlConfig(jsonProviderEmulator.readFromFile(true));
             gameUiControl.init();
             gameEngineControl.init(gameUiControl.getGameUiControlConfig().getGameEngineConfig(), null);
             devToolShape3DUiService.loadBuffer();

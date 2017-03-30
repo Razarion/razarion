@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.webglemulator.razarion.renderer.DevToolFloat32ArrayEmu;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -65,8 +66,22 @@ public class ExtendedGraphicsContext {
 
     }
 
-    public void strokeVertexList(Float32ArrayEmu vertices, double lineWidth, Paint color) {
-        throw new UnsupportedOperationException();
+    public void strokeVertexList(Float32ArrayEmu verticesFloat32ArrayEmu, double lineWidth, Paint color) {
+        DevToolFloat32ArrayEmu vertices = (DevToolFloat32ArrayEmu) verticesFloat32ArrayEmu;
+        gc.setLineWidth(lineWidth);
+        gc.setStroke(color);
+        for (int i = 0; i < vertices.getDoubles().size(); i += 9) {
+            double aX = vertices.getDoubles().get(i);
+            double aY = vertices.getDoubles().get(i + 1);
+            double bX = vertices.getDoubles().get(i + 3);
+            double bY = vertices.getDoubles().get(i + 4);
+            double cX = vertices.getDoubles().get(i + 6);
+            double cY = vertices.getDoubles().get(i + 7);
+
+            gc.strokeLine(aX, aY, bX, bY);
+            gc.strokeLine(bX, bY, cX, cY);
+            gc.strokeLine(cX, cY, aX, aY);
+        }
     }
 
     public void fillVertexList(List<Vertex> vertices, double lineWidth, Color color) {
@@ -323,7 +338,7 @@ public class ExtendedGraphicsContext {
             double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
 
             //  x, y of norm
-            final double  AMPLIFIER = 5;
+            final double AMPLIFIER = 5;
             double normX0 = terrainTile.getGroundNorms()[vertexScalarIndex] * AMPLIFIER;
             double normY0 = terrainTile.getGroundNorms()[vertexScalarIndex + 1] * AMPLIFIER;
             double normX1 = terrainTile.getGroundNorms()[vertexScalarIndex + 3] * AMPLIFIER;

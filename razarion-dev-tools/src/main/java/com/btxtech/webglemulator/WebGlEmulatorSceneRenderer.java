@@ -78,16 +78,16 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
         }
 
         // Terrain objects
-        egc.getGc().setFill(Color.GREEN);
-        for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainUiService.getTerrainObjectPositions().getMap().entrySet()) {
-            TerrainObjectConfig terrainObjectConfig = entry.getKey();
-            for (TerrainObjectPosition terrainObjectPosition : entry.getValue()) {
-                egc.getGc().fillOval(terrainObjectPosition.getPosition().getX() - terrainObjectConfig.getRadius(),
-                        terrainObjectPosition.getPosition().getY() - terrainObjectConfig.getRadius(),
-                        2 * terrainObjectConfig.getRadius(), 2 * terrainObjectConfig.getRadius());
-            }
-
-        }
+//        egc.getGc().setFill(Color.GREEN);
+//        for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainUiService.getTerrainObjectPositions().getMap().entrySet()) {
+//            TerrainObjectConfig terrainObjectConfig = entry.getKey();
+//            for (TerrainObjectPosition terrainObjectPosition : entry.getValue()) {
+//                egc.getGc().fillOval(terrainObjectPosition.getPosition().getX() - terrainObjectConfig.getRadius(),
+//                        terrainObjectPosition.getPosition().getY() - terrainObjectConfig.getRadius(),
+//                        2 * terrainObjectConfig.getRadius(), 2 * terrainObjectConfig.getRadius());
+//            }
+//
+//        }
 
     }
 }
