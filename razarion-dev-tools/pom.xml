@@ -78,5 +78,12 @@
             <artifactId>facebook-java-ads-sdk</artifactId>
             <version>0.4.0</version>
         </dependency>
+        <!-- Mock is allowd in main code because this is a test util-->
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.4</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

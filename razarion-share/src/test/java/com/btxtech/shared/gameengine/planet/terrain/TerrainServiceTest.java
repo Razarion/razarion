@@ -1,0 +1,171 @@
+package com.btxtech.shared.gameengine.planet.terrain;
+
+import com.btxtech.shared.SimpleTestEnvironment;
+import com.btxtech.shared.TestHelper;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import org.junit.Assert;
+import org.junit.Test;
+
+import javax.enterprise.inject.Instance;
+
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+
+/**
+ * Created by Beat
+ * 29.03.2017.
+ */
+public class TerrainServiceTest {
+    @Test
+    public void testTerrainTileGenerationNormTangent() {
+        // Run test
+        TerrainTile terrainTile = generateTerrainTile(0, 0, new double[][]{
+                {0, 0, 0, 0},
+                {0, 16, 0, 0},
+                {0, 0, 16, 0},
+                {0, 0, 0, 0},
+                {16, 0, 0, 0},
+        }, new double[][]{
+                {0.0, 0.0, 0.0},
+                {0.0, 0.0, 0.0},
+                {0.0, 0.0, 0.0},
+                {0.0, 0.0, 0.0},
+        });
+        // Row major order
+        // Verify norms
+        TestHelper.assertVertex(new Vertex(0, 0, 1), terrainTile.getGroundNorms(), 0);
+        TestHelper.assertVertex(new Vertex(0.7071, 0, 0.7071), terrainTile.getGroundNorms(), 1);
+        TestHelper.assertVertex(new Vertex(0, 0.7071, 0.7071), terrainTile.getGroundNorms(), 2);
+        TestHelper.assertVertex(new Vertex(0.7071, 0, 0.7071), terrainTile.getGroundNorms(), 3);
+        TestHelper.assertVertex(new Vertex(0, 0, 1.0), terrainTile.getGroundNorms(), 4);
+        TestHelper.assertVertex(new Vertex(0, 0.7071, 0.7071), terrainTile.getGroundNorms(), 5);
+
+        TestHelper.assertVertex(new Vertex(-0.5773, -0.5773, 0.5773), terrainTile.getGroundNorms(), 132);
+        TestHelper.assertVertex(new Vertex(0, 0, 1), terrainTile.getGroundNorms(), 133);
+        TestHelper.assertVertex(new Vertex(0, 0, 1), terrainTile.getGroundNorms(), 134);
+        TestHelper.assertVertex(new Vertex(0, 0, 1), terrainTile.getGroundNorms(), 135);
+        TestHelper.assertVertex(new Vertex(0.5773, 0.5773, 0.5773), terrainTile.getGroundNorms(), 136);
+        TestHelper.assertVertex(new Vertex(0, 0, 1), terrainTile.getGroundNorms(), 137);
+        // Verify tangents
+        TestHelper.assertVertex(new Vertex(1, 0, 0), terrainTile.getGroundTangents(), 0);
+        TestHelper.assertVertex(new Vertex(0.7071, 0, -0.7071), terrainTile.getGroundTangents(), 1);
+        TestHelper.assertVertex(new Vertex(1, 0, 0), terrainTile.getGroundTangents(), 2);
+        TestHelper.assertVertex(new Vertex(0.7071, 0, -0.7071), terrainTile.getGroundTangents(), 3);
+        TestHelper.assertVertex(new Vertex(1, 0, 0), terrainTile.getGroundTangents(), 4);
+        TestHelper.assertVertex(new Vertex(1, 0, 0), terrainTile.getGroundTangents(), 5);
+
+        TestHelper.assertVertex(new Vertex(0.7071, 0, 0.7071), terrainTile.getGroundTangents(), 132);
+        TestHelper.assertVertex(new Vertex(1, 0, 0), terrainTile.getGroundTangents(), 133);
+        TestHelper.assertVertex(new Vertex(1, 0, 0), terrainTile.getGroundTangents(), 134);
+        TestHelper.assertVertex(new Vertex(1, 0, 0), terrainTile.getGroundTangents(), 135);
+        TestHelper.assertVertex(new Vertex(0.7071, 0, -0.7071), terrainTile.getGroundTangents(), 136);
+        TestHelper.assertVertex(new Vertex(1, 0, 0), terrainTile.getGroundTangents(), 137);
+    }
+
+    @Test
+    public void testTerrainTileGeneration() {
+        // Run test
+        TerrainTile terrainTile = generateTerrainTile(0, 0, new double[][]{
+                {4, 0, 0, 0},
+                {0, 1, 0, 0},
+                {0, 0, 0, 0},
+                {0, -1.6, 0, 0},
+                {0, 0, 0, 8},
+        }, new double[][]{
+                {0.0, 0.0, 0.0},
+                {0.0, 0.5, 0.8},
+                {0.0, 0.1, 0.0},
+                {0.0, 0.0, 0.3},
+        });
+        Assert.assertEquals(0, terrainTile.getAbsoluteX(), 0.0001);
+        Assert.assertEquals(0, terrainTile.getAbsoluteY(), 0.0001);
+        Assert.assertEquals(2400, terrainTile.getGroundVertexCount());
+        // Verify splattings
+        Assert.assertEquals(0, terrainTile.getGroundSplattings()[0], 0.0001);
+        Assert.assertEquals(0, terrainTile.getGroundSplattings()[1], 0.0001);
+        Assert.assertEquals(0, terrainTile.getGroundSplattings()[2], 0.0001);
+        Assert.assertEquals(0, terrainTile.getGroundSplattings()[3], 0.0001);
+        Assert.assertEquals(0.1, terrainTile.getGroundSplattings()[4], 0.0001);
+        Assert.assertEquals(0, terrainTile.getGroundSplattings()[5], 0.0001);
+        // Verify vertices
+        TestHelper.assertVertex(new Vertex(0, 0, 0), terrainTile.getGroundVertices(), 0);
+        TestHelper.assertVertex(new Vertex(8, 0, 0), terrainTile.getGroundVertices(), 1);
+        TestHelper.assertVertex(new Vertex(0, 8, 0), terrainTile.getGroundVertices(), 2);
+        TestHelper.assertVertex(new Vertex(8, 0, 0), terrainTile.getGroundVertices(), 3);
+        TestHelper.assertVertex(new Vertex(8, 8, -1.6), terrainTile.getGroundVertices(), 4);
+        TestHelper.assertVertex(new Vertex(0, 8, 0), terrainTile.getGroundVertices(), 5);
+
+        TestHelper.assertVertex(new Vertex(152, 152, 0), terrainTile.getGroundVertices(), 2394);
+        TestHelper.assertVertex(new Vertex(160, 152, 4), terrainTile.getGroundVertices(), 2395);
+        TestHelper.assertVertex(new Vertex(152, 160, 8), terrainTile.getGroundVertices(), 2396);
+        TestHelper.assertVertex(new Vertex(160, 152, 4), terrainTile.getGroundVertices(), 2397);
+        TestHelper.assertVertex(new Vertex(160, 160, 0), terrainTile.getGroundVertices(), 2398);
+        TestHelper.assertVertex(new Vertex(152, 160, 8), terrainTile.getGroundVertices(), 2399);
+
+        // Verify that norms and tangent are perpendicular -> dot product is 0
+        for (int i = 0; i < terrainTile.getGroundVertexCount(); i++) {
+            double dot = TestHelper.createVertex(terrainTile.getGroundNorms(), i).dot(TestHelper.createVertex(terrainTile.getGroundTangents(), i));
+            Assert.assertTrue("dot: " + dot, Math.abs(dot) < 0.0000001);
+        }
+    }
+
+
+    @Test
+    public void testTerrainTileGenerationOffset() {
+        // Run test
+        TerrainTile terrainTile = generateTerrainTile(160, 320, new double[][]{
+                {4, 0, 0, 0},
+                {0, 1, 0, 0},
+                {0, 0, 0, 0},
+                {0, -1.6, 0, 0},
+                {0, 0, 0, 8},
+        }, new double[][]{
+                {0.0, 0.0, 0.0},
+                {0.0, 0.5, 0.8},
+                {0.0, 0.1, 0.0},
+                {0.0, 0.0, 0.3},
+        });
+    }
+
+    private TerrainTile generateTerrainTile(double absoluteX, double absoluteY, double[][] heights, double[][] splattings) {
+        // Setup TerrainService
+        TerrainService terrainService = new TerrainService();
+        Instance mockListener = createNiceMock(Instance.class);
+        expect(mockListener.get()).andReturn(new TerrainTile() {
+        });
+        replay(mockListener);
+        SimpleTestEnvironment.injectInstance("terrainTileInstance", terrainService, mockListener);
+
+        TerrainTypeService terrainTypeService = new TerrainTypeService();
+        GameEngineConfig gameEngineConfig = new GameEngineConfig();
+        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
+        gameEngineConfig.setGroundSkeletonConfig(groundSkeletonConfig);
+        groundSkeletonConfig.setHeights(toColumnRow(heights));
+        groundSkeletonConfig.setHeightXCount(heights[0].length);
+        groundSkeletonConfig.setHeightYCount(heights.length);
+        groundSkeletonConfig.setSplattings(toColumnRow(splattings));
+        groundSkeletonConfig.setSplattingXCount(splattings[0].length);
+        groundSkeletonConfig.setSplattingYCount(splattings.length);
+
+        terrainTypeService.init(gameEngineConfig);
+        SimpleTestEnvironment.injectBean("terrainTypeService", terrainService, terrainTypeService);
+
+        return terrainService.generateTerrainTile(absoluteX, absoluteY);
+    }
+
+    private double[][] toColumnRow(double[][] rowColumn) {
+        int xCount = rowColumn[0].length;
+        int yCount = rowColumn.length;
+        double[][] columnRow = new double[xCount][yCount];
+        for (int x = 0; x < xCount; x++) {
+            for (int y = 0; y < yCount; y++) {
+                columnRow[x][y] = rowColumn[y][x];
+            }
+        }
+        return columnRow;
+    }
+}

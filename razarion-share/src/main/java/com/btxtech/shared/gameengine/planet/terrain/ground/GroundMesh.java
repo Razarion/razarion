@@ -18,6 +18,7 @@ import java.util.stream.DoubleStream;
  * Created by Beat
  * 27.06.2015.
  */
+@Deprecated
 public class GroundMesh {
     private Logger logger = Logger.getLogger(Math.class.getName());
     private Map<Index, VertexData> grid = new HashMap<>();

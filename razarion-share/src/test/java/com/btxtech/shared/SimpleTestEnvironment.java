@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 
+import javax.enterprise.inject.Instance;
 import java.lang.reflect.Field;
 import java.util.Collections;
 
@@ -32,6 +33,28 @@ public class SimpleTestEnvironment {
             Field field = service.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(service, itemTypeService);
+            field.setAccessible(false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void injectInstance(String fieldName, Object service, Instance instanceMock) {
+        try {
+            Field field = service.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(service, instanceMock);
+            field.setAccessible(false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void injectBean(String fieldName, Object service, Object bean) {
+        try {
+            Field field = service.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(service, bean);
             field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Simple Terrain Scenario", new SimpleTerrainScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
         register("ObstacleContainer InSight", new ObstacleContainerInSightScenario());
         register("Terrain", new TerrainScenario());

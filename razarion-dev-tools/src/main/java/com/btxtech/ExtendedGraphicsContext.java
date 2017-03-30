@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.utils.MathHelper;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -289,5 +290,51 @@ public class ExtendedGraphicsContext {
 
     public void strokePolygon(Polygon2D polygon, double strokeWidth, Color color, boolean showPoint) {
         strokeCurveDecimalPosition(polygon.getCorners(), strokeWidth, color, showPoint);
+    }
+
+    public void drawTerrainTile(TerrainTile terrainTile, double lineWidth) {
+        gc.setLineWidth(lineWidth);
+        gc.setStroke(Color.BLACK);
+        for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+            int vertexScalarIndex = vertexIndex * 3;
+
+            double[] xCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex], terrainTile.getGroundVertices()[vertexScalarIndex + 3], terrainTile.getGroundVertices()[vertexScalarIndex + 6]};
+            double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
+            gc.strokePolygon(xCorners, yCorners, 3);
+
+            // Height as color dot
+            gc.setFill(Color.GREEN);
+            double[] zCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 2], terrainTile.getGroundVertices()[vertexScalarIndex + 5], terrainTile.getGroundVertices()[vertexScalarIndex + 8]};
+            if (zCorners[0] > 0.5) {
+                gc.fillOval(xCorners[0] - lineWidth * 3.0, yCorners[0] - lineWidth * 3.0, lineWidth * 6.0, lineWidth * 6.0);
+            }
+            if (zCorners[1] > 0.5) {
+                gc.fillOval(xCorners[1] - lineWidth * 3.0, yCorners[1] - lineWidth * 3.0, lineWidth * 6.0, lineWidth * 6.0);
+            }
+            if (zCorners[2] > 0.5) {
+                gc.fillOval(xCorners[2] - lineWidth * 3.0, yCorners[2] - lineWidth * 3.0, lineWidth * 6.0, lineWidth * 6.0);
+            }
+        }
+        gc.setStroke(Color.RED);
+        for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+            int vertexScalarIndex = vertexIndex * 3;
+
+            double[] xCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex], terrainTile.getGroundVertices()[vertexScalarIndex + 3], terrainTile.getGroundVertices()[vertexScalarIndex + 6]};
+            double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
+
+            //  x, y of norm
+            final double  AMPLIFIER = 5;
+            double normX0 = terrainTile.getGroundNorms()[vertexScalarIndex] * AMPLIFIER;
+            double normY0 = terrainTile.getGroundNorms()[vertexScalarIndex + 1] * AMPLIFIER;
+            double normX1 = terrainTile.getGroundNorms()[vertexScalarIndex + 3] * AMPLIFIER;
+            double normY1 = terrainTile.getGroundNorms()[vertexScalarIndex + 4] * AMPLIFIER;
+            double normX2 = terrainTile.getGroundNorms()[vertexScalarIndex + 6] * AMPLIFIER;
+            double normY2 = terrainTile.getGroundNorms()[vertexScalarIndex + 7] * AMPLIFIER;
+
+            gc.strokeLine(xCorners[0], yCorners[0], xCorners[0] + normX0, yCorners[0] + normY0);
+            gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + normX1, yCorners[1] + normY1);
+            gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
+
+        }
     }
 }

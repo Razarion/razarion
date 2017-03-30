@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainConstants;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -52,10 +52,10 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
 
             // Ground Mesh
             Rectangle groundRect = gameUiControl.getPlanetConfig().getGroundMeshDimension();
-            Rectangle2D groundMesh = new Rectangle2D(groundRect.startX() * TerrainService.MESH_NODE_EDGE_LENGTH,
-                    groundRect.startY() * TerrainService.MESH_NODE_EDGE_LENGTH,
-                    groundRect.width() * TerrainService.MESH_NODE_EDGE_LENGTH,
-                    groundRect.height() * TerrainService.MESH_NODE_EDGE_LENGTH);
+            Rectangle2D groundMesh = new Rectangle2D(groundRect.startX() * TerrainConstants.GROUND_NODE_EDGE_LENGTH,
+                    groundRect.startY() * TerrainConstants.GROUND_NODE_EDGE_LENGTH,
+                    groundRect.width() * TerrainConstants.GROUND_NODE_EDGE_LENGTH,
+                    groundRect.height() * TerrainConstants.GROUND_NODE_EDGE_LENGTH);
             egc.strokeRectangle(groundMesh, 1.0, Color.RED);
 
             // Play ground

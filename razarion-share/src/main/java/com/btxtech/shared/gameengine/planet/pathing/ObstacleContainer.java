@@ -9,7 +9,7 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainConstants;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
@@ -33,9 +33,9 @@ public class ObstacleContainer {
     private int yCount;
 
     public void setup(Rectangle groundMeshDimension, Collection<Slope> slopes, MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions) {
-        absoluteOffset = new DecimalPosition(groundMeshDimension.getStart()).multiply(TerrainService.MESH_NODE_EDGE_LENGTH);
-        xCount = (int) Math.ceil(groundMeshDimension.width() * TerrainService.MESH_NODE_EDGE_LENGTH / TILE_SIZE);
-        yCount = (int) Math.ceil(groundMeshDimension.height() * TerrainService.MESH_NODE_EDGE_LENGTH / TILE_SIZE);
+        absoluteOffset = new DecimalPosition(groundMeshDimension.getStart()).multiply(TerrainConstants.GROUND_NODE_EDGE_LENGTH);
+        xCount = (int) Math.ceil(groundMeshDimension.width() * TerrainConstants.GROUND_NODE_EDGE_LENGTH / TILE_SIZE);
+        yCount = (int) Math.ceil(groundMeshDimension.height() * TerrainConstants.GROUND_NODE_EDGE_LENGTH / TILE_SIZE);
         obstacleContainerTiles = new ObstacleContainerTile[xCount][yCount];
         for (Slope slope : slopes) {
             insertObstacles(slope.generateObstacles());
