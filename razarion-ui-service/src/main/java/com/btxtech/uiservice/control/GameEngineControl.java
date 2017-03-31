@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.terrain.GroundUi;
@@ -21,6 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
@@ -41,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -188,6 +189,10 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_OVERLAP_TYPE, uuid, new ArrayList<>(positions), baseItemTypeId);
     }
 
+    public void requestTerrainTile(Index terrainTileIndex) {
+        sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
+    }
+
     private void onTickUpdate(Collection<SyncBaseItemSimpleDto> updatedSyncBaseItems, GameInfo gameInfo, Collection<SyncBaseItemSimpleDto> baseItemRemoved, Collection<SyncBaseItemSimpleDto> baseItemKilled) {
         baseItemUiService.updateSyncBaseItems(updatedSyncBaseItems);
         gameUiControl.setGameInfo(gameInfo);
@@ -299,6 +304,9 @@ public abstract class GameEngineControl {
                 break;
             case TERRAIN_OVERLAP_TYPE_ANSWER:
                 terrainUiService.onOverlapTypeAnswer((int) controlPackage.getData(0), (boolean) controlPackage.getData(1));
+                break;
+            case TERRAIN_TILE_RESPONSE:
+                terrainUiService.onTerrainTileResponse((TerrainTile)controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

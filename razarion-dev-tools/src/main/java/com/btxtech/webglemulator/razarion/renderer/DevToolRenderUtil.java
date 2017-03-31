@@ -28,6 +28,12 @@ public interface DevToolRenderUtil {
         throw new UnsupportedOperationException();
     }
 
+    static List<Double> setupNormDoubles(double[] vertices, double[] norms) {
+        // TODO fix
+        // TODO fix also ClientRenderUtil
+        throw new UnsupportedOperationException();
+    }
+
     static Matrix4 toMatrix4(NativeMatrix model) {
         return DevToolNativeMatrixFactoryProducer.getMatrix(model);
     }

@@ -9,7 +9,7 @@ import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
@@ -46,6 +46,8 @@ public class TerrainScrollHandler {
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
+    @Inject
+    private ViewService viewService;
     private ScrollDirection scrollDirectionXKey = ScrollDirection.STOP;
     private ScrollDirection scrollDirectionYKey = ScrollDirection.STOP;
     private ScrollDirection scrollDirectionXMouse = ScrollDirection.STOP;
@@ -55,8 +57,6 @@ public class TerrainScrollHandler {
     private boolean scrollDisabled;
     private SimpleScheduledFuture simpleScheduledFuture;
     private SimpleScheduledFuture moveHandler;
-    private ViewField currentViewField;
-    private Rectangle2D currentAabb;
     private Collection<TerrainScrollListener> terrainScrollListeners = new ArrayList<>();
     private Rectangle2D playGround;
     private long lastAutoScrollTimeStamp;
@@ -245,8 +245,8 @@ public class TerrainScrollHandler {
             return projectionTransformation.viewFieldCenterToCamera(viewFieldCenterPosition, 0);
         }
         Rectangle2D viewFieldAabb;
-        if (currentAabb != null) {
-            viewFieldAabb = currentAabb;
+        if (viewService.getCurrentAabb() != null) {
+            viewFieldAabb = viewService.getCurrentAabb();
         } else {
             viewFieldAabb = projectionTransformation.calculateViewField(0).calculateAabbRectangle();
         }
@@ -262,13 +262,13 @@ public class TerrainScrollHandler {
         double correctedXPosition = position.getX();
         double correctedYPosition = position.getY();
         if (playGround != null) {
-            if (currentViewField == null || currentAabb == null) {
+            if (viewService.getCurrentViewField() == null || viewService.getCurrentAabb() == null) {
                 camera.setTranslateXY(correctedXPosition, correctedYPosition);
                 update();
             }
             double deltaX = position.getX() - camera.getTranslateX();
             double deltaY = position.getY() - camera.getTranslateY();
-            Rectangle2D viewFiledAabb = currentViewField.calculateAabbRectangle().translate(deltaX, deltaY);
+            Rectangle2D viewFiledAabb = viewService.getCurrentAabb().translate(deltaX, deltaY);
             if (viewFiledAabb.width() >= playGround.width()) {
                 correctedXPosition = projectionTransformation.viewFieldCenterToCamera(playGround.center(), 0).getX();
             } else {
@@ -293,17 +293,10 @@ public class TerrainScrollHandler {
         update();
     }
 
-    public void updateViewField() {
-        currentViewField = projectionTransformation.calculateViewField(0);
-        currentAabb = currentViewField.calculateAabbRectangle();
-    }
-
     public void update() {
-        updateViewField();
-
         for (TerrainScrollListener terrainScrollListener : terrainScrollListeners) {
             try {
-                terrainScrollListener.onScroll(currentViewField);
+                terrainScrollListener.onScroll(viewService.getCurrentViewField());
             } catch (Throwable t) {
                 exceptionHandler.handleException("TerrainScrollHandler notify listeners", t);
             }
@@ -316,14 +309,6 @@ public class TerrainScrollHandler {
 
     public void removeTerrainScrollListener(TerrainScrollListener terrainScrollListener) {
         terrainScrollListeners.remove(terrainScrollListener);
-    }
-
-    public ViewField getCurrentViewField() {
-        return currentViewField;
-    }
-
-    public Rectangle2D getCurrentAabb() {
-        return currentAabb;
     }
 
     private double setupScrollDistance(double scrollSpeed) {

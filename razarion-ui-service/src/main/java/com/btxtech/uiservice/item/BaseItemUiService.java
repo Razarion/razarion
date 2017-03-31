@@ -20,7 +20,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
@@ -44,11 +44,7 @@ public class BaseItemUiService {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private TerrainUiService terrainUiService;
-    @Inject
-    private ResourceService resourceService;
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
+    private ViewService viewService;
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
@@ -132,7 +128,7 @@ public class BaseItemUiService {
             }
             updateSyncItemMonitor(syncBaseItem);
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (terrainScrollHandler.getCurrentAabb() == null || !terrainScrollHandler.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
+            if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
                 continue;
             }

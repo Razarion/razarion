@@ -19,7 +19,7 @@ public class Camera {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
-    private TransformationNotifier transformationNotifier;
+    private ViewService viewService;
     private double translateX;
     private double translateY;
     private double translateZ = 80;
@@ -130,9 +130,9 @@ public class Camera {
     public void setupMatrices() {
         setupInternalMatrices();
         projectionTransformation.setupMatrices();
-        if (transformationNotifier != null) {
-            // transformationNotifier == null in test
-            transformationNotifier.onTransformationChanged();
+        if (viewService != null) {
+            // viewService == null in test
+            viewService.onViewChanged();
         }
     }
 

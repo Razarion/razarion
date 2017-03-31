@@ -8,6 +8,7 @@ import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainScrollListener;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -23,6 +24,8 @@ import javax.inject.Inject;
 public abstract class AudioService implements TerrainScrollListener {
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private ViewService viewService;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
@@ -67,7 +70,7 @@ public abstract class AudioService implements TerrainScrollListener {
         if (audioId == null) {
             return;
         }
-        if (terrainScrollHandler.getCurrentViewField().isInside(syncBaseItem.getPosition2d())) {
+        if (viewService.getCurrentViewField().isInside(syncBaseItem.getPosition2d())) {
             playAudio(audioId);
         }
     }

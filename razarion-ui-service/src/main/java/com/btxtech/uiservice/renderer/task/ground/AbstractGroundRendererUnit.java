@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.renderer.task.ground;
 
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
+import com.btxtech.uiservice.terrain.UiTerrainTile;
 
 import java.util.logging.Logger;
 
@@ -10,37 +10,37 @@ import java.util.logging.Logger;
  * Created by Beat
  * 07.08.2016.
  */
-public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<GroundUi> {
+public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<UiTerrainTile> {
     private Logger logger = Logger.getLogger(AbstractGroundRendererUnit.class.getName());
 
-    protected abstract void fillBuffersInternal(GroundUi groundUi);
+    protected abstract void fillBuffersInternal(UiTerrainTile uiTerrainTile);
 
-    protected abstract void draw(GroundUi groundUi);
+    protected abstract void draw(UiTerrainTile uiTerrainTile);
 
     @Override
-    public void fillBuffers(GroundUi groundUi) {
-        if (groundUi.getTopTextureId() == null) {
+    public void fillBuffers(UiTerrainTile uiTerrainTile) {
+        if (uiTerrainTile.getTopTextureId() == null) {
             logger.warning("No TopTextureId in AbstractGroundRendererUnit for: " + helperString());
             return;
         }
-        if (groundUi.getTopBmId() == null) {
+        if (uiTerrainTile.getTopBmId() == null) {
             logger.warning("No TopBmId in AbstractGroundRendererUnit for: " + helperString());
             return;
         }
-        if (groundUi.getSplattingId() == null) {
+        if (uiTerrainTile.getSplattingId() == null) {
             logger.warning("No SplattingId in AbstractGroundRendererUnit for: " + helperString());
             return;
         }
-        if (groundUi.getBottomTextureId() == null) {
+        if (uiTerrainTile.getBottomTextureId() == null) {
             logger.warning("No BottomTextureId in AbstractGroundRendererUnit for: " + helperString());
             return;
         }
-        if (groundUi.getBottomBmId() == null) {
+        if (uiTerrainTile.getBottomBmId() == null) {
             logger.warning("No BottomBmId in AbstractGroundRendererUnit for: " + helperString());
             return;
         }
-        fillBuffersInternal(groundUi);
-        setElementCount(groundUi);
+        fillBuffersInternal(uiTerrainTile);
+        setElementCount(uiTerrainTile.getVertexCount());
     }
 
     @Override

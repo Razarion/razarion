@@ -2,7 +2,7 @@ package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
-import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -88,6 +88,7 @@ public class WorkerMarshaller {
             case TERRAIN_PICK_RAY_ANSWER:
             case TERRAIN_OVERLAP:
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
+            case TERRAIN_TILE_REQUEST:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -137,6 +138,9 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_1, marshallSlopeBuffers((Collection<Slope>) controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, marshallWaterBuffers((Water) controlPackage.getData(2)));
                 break;
+            case TERRAIN_TILE_RESPONSE:
+                throw new UnsupportedOperationException("TerrainTile does not have native marshaller yet");
+                // TODO break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
         }
@@ -304,6 +308,12 @@ public class WorkerMarshaller {
                 data.add(demarshallSlopeBuffers(array.getObject(DATA_OFFSET_1)));
                 data.add(demarshallWaterBuffers(array.getObject(DATA_OFFSET_2)));
                 break;
+            case TERRAIN_TILE_REQUEST:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Index.class));
+                break;
+            case TERRAIN_TILE_RESPONSE:
+                throw new UnsupportedOperationException("TerrainTile does not have native marshaller yet");
+                // TODO break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);
         }

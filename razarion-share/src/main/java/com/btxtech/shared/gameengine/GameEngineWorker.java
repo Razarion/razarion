@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -34,6 +35,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
@@ -165,6 +167,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case TERRAIN_OVERLAP_TYPE:
                 getTerrainOverlapBaseItemType((int) controlPackage.getData(0), (List<DecimalPosition>) controlPackage.getData(1), (int) controlPackage.getData(2));
                 break;
+            case TERRAIN_TILE_REQUEST:
+                getTerrainTile((Index) controlPackage.getData(0));
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
         }
@@ -193,7 +198,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onPostTick() {
-        if(!sendTickUpdate) {
+        if (!sendTickUpdate) {
             return;
         }
         sendTickUpdate = false;
@@ -351,5 +356,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void getTerrainOverlapBaseItemType(int uuid, List<DecimalPosition> positions, int baseItemType) {
         boolean overlaps = terrainService.overlap(positions, baseItemType);
         sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_TYPE_ANSWER, uuid, overlaps);
+    }
+
+    private void getTerrainTile(Index terrainTileIndex) {
+        TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
+        sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
     }
 }

@@ -2,6 +2,7 @@ package com.btxtech.webglemulator.webgl;
 
 import javafx.scene.paint.Paint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +43,14 @@ public class WebGlProgramEmulator {
 
     public WebGlProgramEmulator setDoubles(List<Double> doubles) {
         this.doubles = doubles;
+        return this;
+    }
+
+    public WebGlProgramEmulator setDoubles(double[] doubles) {
+        this.doubles = new ArrayList<>();
+        for (double aDouble : doubles) {
+            this.doubles.add(aDouble);
+        }
         return this;
     }
 

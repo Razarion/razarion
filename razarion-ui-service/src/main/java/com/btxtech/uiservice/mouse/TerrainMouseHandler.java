@@ -249,7 +249,6 @@ public class TerrainMouseHandler {
     public void onMouseWheel(double deltaY) {
         try {
             projectionTransformation.setFovYSave(projectionTransformation.getFovY() - Math.toRadians(deltaY) / MOUSE_WHEEL_DIVIDER);
-            terrainScrollHandler.updateViewField();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

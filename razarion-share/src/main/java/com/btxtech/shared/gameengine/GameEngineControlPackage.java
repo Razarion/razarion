@@ -61,7 +61,10 @@ public class GameEngineControlPackage {
         TERRAIN_OVERLAP,
         TERRAIN_OVERLAP_ANSWER,
         TERRAIN_OVERLAP_TYPE,
-        TERRAIN_OVERLAP_TYPE_ANSWER
+        TERRAIN_OVERLAP_TYPE_ANSWER,
+        TERRAIN_TILE_REQUEST,
+        TERRAIN_TILE_RESPONSE,
+
     }
 
     private Command command;

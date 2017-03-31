@@ -1,33 +1,52 @@
-package com.btxtech.shared.datatypes.terrain;
+package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.uiservice.renderer.ModelRenderer;
+import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  * Created by Beat
- * 13.03.2017.
+ * 31.03.2017.
  */
-@Deprecated
-public class GroundUi extends TerrainUi {
+@Dependent
+public class UiTerrainTile {
+    @Inject
+    private TerrainUiService terrainUiService;
+    @Inject
+    private GroundRenderTask groundRenderTask;
     private GroundSkeletonConfig groundSkeletonConfig;
-    private Float32ArrayEmu splattings;
+    private TerrainTile terrainTile;
+    private ModelRenderer modelRenderer;
+    private boolean active;
 
-    public GroundUi(GroundSkeletonConfig groundSkeletonConfig) {
+    public void init(Index index, GroundSkeletonConfig groundSkeletonConfig) {
         this.groundSkeletonConfig = groundSkeletonConfig;
+        terrainUiService.requestTerrainTile(index, this::terrainTileReceived);
     }
 
-    public GroundUi(int elementCount, Float32ArrayEmu vertices, Float32ArrayEmu norms, Float32ArrayEmu tangents, Float32ArrayEmu splattings) {
-        super(elementCount, vertices, norms, tangents);
-        this.splattings = splattings;
+    public void setActive(boolean active) {
+        this.active = active;
+        modelRenderer.setActive(active);
     }
 
-    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
-        this.groundSkeletonConfig = groundSkeletonConfig;
+    private void terrainTileReceived(TerrainTile terrainTile) {
+        this.terrainTile = terrainTile;
+        modelRenderer = groundRenderTask.createRendererUnit(this);
+        modelRenderer.setActive(active);
     }
 
-    public Float32ArrayEmu getSplattings() {
-        return splattings;
+    public TerrainTile getTerrainTile() {
+        return terrainTile;
+    }
+
+    public Integer getVertexCount() {
+        return terrainTile.getGroundVertexCount();
     }
 
     public Integer getTopTextureId() {
@@ -80,10 +99,5 @@ public class GroundUi extends TerrainUi {
 
     public double getBottomBmDepth() {
         return groundSkeletonConfig.getBottomBmDepth();
-    }
-
-    public void setBuffers(GroundUi groundUi) {
-        super.setBuffers(groundUi);
-        splattings = groundUi.getSplattings();
     }
 }

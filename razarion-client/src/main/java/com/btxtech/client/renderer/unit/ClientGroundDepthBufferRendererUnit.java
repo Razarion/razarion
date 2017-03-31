@@ -4,9 +4,9 @@ import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShader
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
+import com.btxtech.uiservice.terrain.UiTerrainTile;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -32,8 +32,9 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     }
 
     @Override
-    protected void fillBuffersInternal(GroundUi groundUi) {
-        vertices.fillFloat32ArrayEmu(groundUi.getVertices());
+    protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
+        // vertices.fillFloat32ArrayEmu(uiTerrainTile.getVertices());
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
@@ -42,7 +43,7 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
     }
 
     @Override
-    public void draw(GroundUi groundUi) {
+    public void draw(UiTerrainTile uiTerrainTile) {
         webGlFacade.useProgram();
 
         vertices.activate();

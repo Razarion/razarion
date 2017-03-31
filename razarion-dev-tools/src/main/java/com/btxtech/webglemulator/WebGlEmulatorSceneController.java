@@ -1,5 +1,9 @@
 package com.btxtech.webglemulator;
 
+import com.btxtech.DevToolUtil;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.uiservice.terrain.UiTerrainTile;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,6 +15,8 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -25,6 +31,8 @@ public class WebGlEmulatorSceneController implements Initializable {
     private AnchorPane mainPanel;
     @Inject
     private Instance<WebGlEmulatorSceneRenderer> instance;
+    @Inject
+    private TerrainUiService terrainUiService;
     private WebGlEmulatorSceneRenderer webGlEmulatorSceneRenderer;
     private double zoom = 1.0;
 

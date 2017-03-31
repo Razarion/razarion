@@ -131,6 +131,21 @@ public class Rectangle2D {
     }
 
     /**
+     * Returns true if one of the given positions is in the rectangle
+     *
+     * @param positions to check
+     * @return true if adjoins or contains position
+     */
+    public boolean contains(Collection<DecimalPosition> positions) {
+        for (DecimalPosition position : positions) {
+            if (contains(position)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns the nearest point on the rectangle. Endpoints are inclusive
      *
      * @param point input
@@ -233,6 +248,31 @@ public class Rectangle2D {
         return new Line(new DecimalPosition(cornerTopRight()), new DecimalPosition(cornerTopLeft()));
     }
 
+    public boolean isLineCrossing(List<Line> lines) {
+        Line lineW = lineW();
+        Line lineS = lineS();
+        Line lineE = lineE();
+        Line lineN = lineN();
+
+        for (Line line : lines) {
+            if (lineW.getCrossInclusive(line) != null) {
+                return true;
+            }
+            if (lineS.getCrossInclusive(line) != null) {
+                return true;
+            }
+            if (lineE.getCrossInclusive(line) != null) {
+                return true;
+            }
+            if (lineN.getCrossInclusive(line) != null) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+
     public DecimalPosition cornerBottomLeft() {
         return start;
     }
@@ -329,5 +369,9 @@ public class Rectangle2D {
     public static Rectangle2D generateRectangleFromMiddlePoint(DecimalPosition middlePoint, double width, double height) {
         DecimalPosition start = middlePoint.sub(width / 2.0, height / 2.0);
         return new Rectangle2D(start.getX(), start.getY(), width, height);
+    }
+
+    public String testString() {
+        return "new Rectangle2D(" + startX() + ", " + startY() + ", " + width() + ", " + height() + ")";
     }
 }

@@ -133,6 +133,10 @@ public class ViewField {
         return Arrays.asList(bottomLeft, bottomRight, topRight, topLeft);
     }
 
+    public Polygon2D toPolygon() {
+        return new Polygon2D(toList());
+    }
+
     /**
      * Axis-aligned minimum bounding box
      * <p>

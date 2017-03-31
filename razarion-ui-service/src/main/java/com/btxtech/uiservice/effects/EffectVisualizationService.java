@@ -6,12 +6,10 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.uiservice.particle.ParticleService;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,16 +27,11 @@ import java.util.logging.Logger;
 public class EffectVisualizationService {
     private Logger logger = Logger.getLogger(EffectVisualizationService.class.getName());
     @Inject
-    private Shape3DUiService shape3DUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
     private AudioService audioService;
     @Inject
-    private TerrainScrollHandler terrainScrollHandler;
+    private ViewService viewService;
     @Inject
     private ItemTypeService itemTypeService;
-    @Inject
-    private BaseItemUiService baseItemUiService;
     @Inject
     private ParticleService particleService;
     @Inject
@@ -96,7 +89,7 @@ public class EffectVisualizationService {
     }
 
     private void playSound(List<Integer> audioIs, Vertex position) {
-        if (!terrainScrollHandler.getCurrentViewField().isInside(position.toXY())) {
+        if (!viewService.getCurrentViewField().isInside(position.toXY())) {
             return;
         }
 

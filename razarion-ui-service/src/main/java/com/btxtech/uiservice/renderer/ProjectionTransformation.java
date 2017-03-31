@@ -31,7 +31,7 @@ public class ProjectionTransformation {
     @Inject
     private ShadowUiService shadowUiService;
     @Inject
-    private TransformationNotifier transformationNotifier;
+    private ViewService viewService;
     private double fovY = DEFAULT_FOV_Y;
     private double aspectRatio = 4.0 / 3.0;
     private Matrix4 matrix;
@@ -52,9 +52,9 @@ public class ProjectionTransformation {
     public void setFovY(double fovY) {
         this.fovY = fovY;
         setupMatrices();
-        if (transformationNotifier != null) {
-            // transformationNotifier == null in tests
-            transformationNotifier.onTransformationChanged();
+        if (viewService != null) {
+            // viewService == null in tests
+            viewService.onViewChanged();
         }
     }
 
@@ -103,9 +103,9 @@ public class ProjectionTransformation {
             setupFovYFromBottomWidth();
         }
         setupMatrices();
-        if (transformationNotifier != null) {
-            // transformationNotifier == null in tests
-            transformationNotifier.onTransformationChanged();
+        if (viewService != null) {
+            // viewService == null in tests
+            viewService.onViewChanged();
         }
     }
 

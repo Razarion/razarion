@@ -24,6 +24,10 @@ public class CollectionUtils {
         return correctedIndex;
     }
 
+    public static int getCorrectedIndexInvert(int index, int listSize) {
+        return listSize - 1 - getCorrectedIndex(index, listSize);
+    }
+
     public static int getCorrectedIndex(int index, List list) {
         return getCorrectedIndex(index, list.size());
     }
@@ -130,5 +134,4 @@ public class CollectionUtils {
         }
         return sum;
     }
-
 }

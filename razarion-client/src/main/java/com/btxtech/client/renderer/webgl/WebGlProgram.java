@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.uiservice.renderer.TransformationNotifier;
+import com.btxtech.uiservice.renderer.ViewService;
 import elemental.html.WebGLProgram;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLShader;
@@ -23,7 +23,7 @@ public class WebGlProgram {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private TransformationNotifier transformationNotifier;
+    private ViewService viewService;
     private Runnable transformUnregisterHandler;
     private Runnable shadowLookupUnregisterHandler;
     private WebGLUniformLocation viewMatrixUniformLocation;
@@ -44,7 +44,7 @@ public class WebGlProgram {
                 viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
                 viewNormMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_NORM_MATRIX);
                 perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
-                transformUnregisterHandler = transformationNotifier.addAndCallTransformationNormListener((viewMatrix, viewNormMatrix, perspectiveMatrix) -> {
+                transformUnregisterHandler = viewService.addAndCallTransformationNormListener((viewMatrix, viewNormMatrix, perspectiveMatrix) -> {
                     useProgram();
                     // View
                     gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewMatrix));
@@ -60,7 +60,7 @@ public class WebGlProgram {
                 useProgram();
                 viewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
                 perspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
-                transformUnregisterHandler = transformationNotifier.addAndCallTransformationListener((viewMatrix, perspectiveMatrix) -> {
+                transformUnregisterHandler = viewService.addAndCallTransformationListener((viewMatrix, perspectiveMatrix) -> {
                     useProgram();
                     // View
                     gameCanvas.getCtx3d().uniformMatrix4fv(viewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewMatrix));
@@ -74,7 +74,7 @@ public class WebGlProgram {
             useProgram();
             shadowViewMatrixUniformLocation = getUniformLocation(WebGlFacade.U_VIEW_MATRIX);
             shadowPerspectiveMatrixUniformLocation = getUniformLocation(WebGlFacade.U_PERSPECTIVE_MATRIX);
-            transformUnregisterHandler = transformationNotifier.addAndCallShadowTransformationListener((viewShadowMatrix, perspectiveShadowMatrix) -> {
+            transformUnregisterHandler = viewService.addAndCallShadowTransformationListener((viewShadowMatrix, perspectiveShadowMatrix) -> {
                 useProgram();
                 // View
                 gameCanvas.getCtx3d().uniformMatrix4fv(shadowViewMatrixUniformLocation, false, WebGlUtil.toFloat32Array(viewShadowMatrix));
@@ -88,7 +88,7 @@ public class WebGlProgram {
         if (webGlFacadeConfig.isReceiveShadow()) {
             useProgram();
             shadowMatrixUniformLocation = getUniformLocation("uShadowMatrix");
-            shadowLookupUnregisterHandler = transformationNotifier.addAndCallShadowLookupTransformationListener(shadowLookupMatrix -> {
+            shadowLookupUnregisterHandler = viewService.addAndCallShadowLookupTransformationListener(shadowLookupMatrix -> {
                 useProgram();
                 gameCanvas.getCtx3d().uniformMatrix4fv(shadowMatrixUniformLocation, false, WebGlUtil.toFloat32Array(shadowLookupMatrix));
                 WebGlUtil.checkLastWebGlError("uniformMatrix4fv uShadowMatrix", gameCanvas.getCtx3d());

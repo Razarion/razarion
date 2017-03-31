@@ -149,7 +149,8 @@ public class GroundSidebar extends LeftSideBarContent {
         // TODO GroundConfig groundConfig = groundConfigDataBinder.getModel();
         // TODO terrainUiService.setGroundSkeleton(groundConfig.getGroundSkeletonConfig());
         // TODO terrainUiService.setup();
-        groundRenderTask.onChanged();
+        // groundRenderTask.onChanged();
+        throw new UnsupportedOperationException("This has changed since TerrainTile introduction");
     }
 
     @EventHandler("fractalSplatting")

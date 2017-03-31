@@ -6,9 +6,9 @@ import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShader
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
+import com.btxtech.uiservice.terrain.UiTerrainTile;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
@@ -56,26 +56,27 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     }
 
     @Override
-    protected void fillBuffersInternal(GroundUi groundUi) {
-        topTexture = webGlFacade.createWebGLTexture(groundUi.getTopTextureId(), "uTopTexture", "uTopTextureScale", groundUi.getTopTextureScale());
-        topBm = webGlFacade.createWebGLBumpMapTexture(groundUi.getTopBmId(), "uTopBm", "uTopBmScale", groundUi.getTopBmScale(), "uTopBmOnePixel");
-        splattingTexture = webGlFacade.createWebGLTexture(groundUi.getSplattingId(), "uSplatting", "uSplattingScale", groundUi.getSplattingScale());
-        bottomTexture = webGlFacade.createWebGLTexture(groundUi.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", groundUi.getBottomTextureScale());
-        bottomBm = webGlFacade.createWebGLBumpMapTexture(groundUi.getBottomBmId(), "uBottomBm", "uBottomBmScale", groundUi.getBottomBmScale(), "uBottomBmOnePixel");
+    protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
+        topTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getTopTextureId(), "uTopTexture", "uTopTextureScale", uiTerrainTile.getTopTextureScale());
+        topBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getTopBmId(), "uTopBm", "uTopBmScale", uiTerrainTile.getTopBmScale(), "uTopBmOnePixel");
+        splattingTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getSplattingId(), "uSplatting", "uSplattingScale", uiTerrainTile.getSplattingScale());
+        bottomTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", uiTerrainTile.getBottomTextureScale());
+        bottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getBottomBmId(), "uBottomBm", "uBottomBmScale", uiTerrainTile.getBottomBmScale(), "uBottomBmOnePixel");
 
-        vertices.fillFloat32ArrayEmu(groundUi.getVertices());
-        normals.fillFloat32ArrayEmu(groundUi.getNorms());
-        tangents.fillFloat32ArrayEmu(groundUi.getTangents());
-        splattings.fillFloat32ArrayEmu(groundUi.getSplattings());
+        // vertices.fillFloat32ArrayEmu(uiTerrainTile.getVertices());
+        // normals.fillFloat32ArrayEmu(uiTerrainTile.getNorms());
+        // tangents.fillFloat32ArrayEmu(uiTerrainTile.getTangents());
+        // splattings.fillFloat32ArrayEmu(uiTerrainTile.getSplattings());
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public void draw(GroundUi groundUi) {
+    public void draw(UiTerrainTile uiTerrainTile) {
         webGlFacade.useProgram();
 
-        lightUniforms.setLightUniforms(groundUi.getGroundLightConfig(), webGlFacade);
-        webGlFacade.uniform1f(uTopBmDepth, groundUi.getTopBmDepth());
-        webGlFacade.uniform1f(uBottomBmDepth, groundUi.getBottomBmDepth());
+        lightUniforms.setLightUniforms(uiTerrainTile.getGroundLightConfig(), webGlFacade);
+        webGlFacade.uniform1f(uTopBmDepth, uiTerrainTile.getTopBmDepth());
+        webGlFacade.uniform1f(uBottomBmDepth, uiTerrainTile.getBottomBmDepth());
 
         webGlFacade.activateReceiveShadow();
 
@@ -84,15 +85,15 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         tangents.activate();
         splattings.activate();
 
-        topTexture.overrideScale(groundUi.getTopTextureScale());
+        topTexture.overrideScale(uiTerrainTile.getTopTextureScale());
         topTexture.activate();
-        topBm.overrideScale(groundUi.getTopBmScale());
+        topBm.overrideScale(uiTerrainTile.getTopBmScale());
         topBm.activate();
-        splattingTexture.overrideScale(groundUi.getSplattingScale());
+        splattingTexture.overrideScale(uiTerrainTile.getSplattingScale());
         splattingTexture.activate();
-        bottomTexture.overrideScale(groundUi.getBottomTextureScale());
+        bottomTexture.overrideScale(uiTerrainTile.getBottomTextureScale());
         bottomTexture.activate();
-        bottomBm.overrideScale(groundUi.getBottomBmScale());
+        bottomBm.overrideScale(uiTerrainTile.getBottomBmScale());
         bottomBm.activate();
 
         // Draw

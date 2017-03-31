@@ -3,11 +3,11 @@ package com.btxtech.uiservice.tip;
 import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
@@ -30,25 +30,22 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class GameTipService {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private TipRenderTask tipRenderTask;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private GuiTipVisualizationService guiTipVisualizationService;
     @Inject
     private TipTaskFactory tipTaskFactory;
     @Inject
-    private PlanetService planetService;
-    @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private ViewService viewService;
     private TipTaskContainer tipTaskContainer;
     private InGameTipVisualization inGameTipVisualization;
     private InGameDirectionVisualization inGameDirectionVisualization;
@@ -162,13 +159,13 @@ public class GameTipService {
         inGameTipVisualization = currentTipTask.createInGameTipVisualization();
         if (inGameTipVisualization != null) {
             terrainScrollHandler.addTerrainScrollListener(inGameTipVisualization);
-            inGameTipVisualization.onScroll(terrainScrollHandler.getCurrentViewField());
+            inGameTipVisualization.onScroll(viewService.getCurrentViewField());
             tipRenderTask.activate(inGameTipVisualization);
         }
         inGameDirectionVisualization = currentTipTask.createInGameDirectionVisualization();
         if (inGameDirectionVisualization != null) {
             terrainScrollHandler.addTerrainScrollListener(inGameDirectionVisualization);
-            inGameDirectionVisualization.onScroll(terrainScrollHandler.getCurrentViewField());
+            inGameDirectionVisualization.onScroll(viewService.getCurrentViewField());
             tipRenderTask.activate(inGameDirectionVisualization);
         }
         guiTipVisualization = currentTipTask.createGuiTipVisualization();

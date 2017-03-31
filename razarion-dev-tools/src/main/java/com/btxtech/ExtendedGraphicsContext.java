@@ -304,21 +304,21 @@ public class ExtendedGraphicsContext {
     }
 
     public void strokePolygon(Polygon2D polygon, double strokeWidth, Color color, boolean showPoint) {
-        strokeCurveDecimalPosition(polygon.getCorners(), strokeWidth, color, showPoint);
+        strokePolygon(polygon.getCorners(), strokeWidth, color, showPoint);
     }
 
-    public void drawTerrainTile(TerrainTile terrainTile, double lineWidth) {
+    public void drawTerrainTile(TerrainTile terrainTile, double lineWidth, Paint ground, Paint zColor, Paint splattingColor) {
         gc.setLineWidth(lineWidth);
-        gc.setStroke(Color.BLACK);
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 
             double[] xCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex], terrainTile.getGroundVertices()[vertexScalarIndex + 3], terrainTile.getGroundVertices()[vertexScalarIndex + 6]};
             double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
+            gc.setStroke(ground);
             gc.strokePolygon(xCorners, yCorners, 3);
 
             // Height as color dot
-            gc.setFill(Color.GREEN);
+            gc.setFill(zColor);
             double[] zCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 2], terrainTile.getGroundVertices()[vertexScalarIndex + 5], terrainTile.getGroundVertices()[vertexScalarIndex + 8]};
             if (zCorners[0] > 0.5) {
                 gc.fillOval(xCorners[0] - lineWidth * 3.0, yCorners[0] - lineWidth * 3.0, lineWidth * 6.0, lineWidth * 6.0);
@@ -349,6 +349,20 @@ public class ExtendedGraphicsContext {
             gc.strokeLine(xCorners[0], yCorners[0], xCorners[0] + normX0, yCorners[0] + normY0);
             gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + normX1, yCorners[1] + normY1);
             gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
+
+        }
+        if(splattingColor != null) {
+            gc.setFill(splattingColor);
+            for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+                int vertexScalarIndex = vertexIndex * 3;
+
+                double[] xCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex], terrainTile.getGroundVertices()[vertexScalarIndex + 3], terrainTile.getGroundVertices()[vertexScalarIndex + 6]};
+                double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
+
+                if (terrainTile.getGroundSplattings()[vertexIndex] > 0.1) {
+                    gc.fillOval(xCorners[0] - lineWidth * 3.0, yCorners[0] - lineWidth * 3.0, lineWidth * 6.0, lineWidth * 6.0);
+                }
+            }
 
         }
     }

@@ -1,11 +1,13 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import javafx.scene.paint.Color;
 
 import javax.enterprise.inject.Instance;
 import java.lang.reflect.Field;
@@ -19,30 +21,35 @@ import static org.easymock.EasyMock.replay;
  * 19.03.2016.
  */
 public class SimpleTerrainScenario extends Scenario {
-    private TerrainTile terrainTile;
+    private TerrainTile terrainTile1;
+    private TerrainTile terrainTile2;
 
     public SimpleTerrainScenario() {
-        terrainTile = generateTerrainTile(160, 320, new double[][]{
+        double[][] heights = new double[][]{
                 {4, 0, 0, 0},
                 {0, 1, 0, 0},
                 {0, 0, 0, 0},
                 {0, -1.6, 0, 0},
                 {0, 0, 0, 8},
-        }, new double[][]{
+        };
+        double[][] splattings = new double[][]{
                 {0.0, 0.0, 0.0},
                 {0.0, 0.5, 0.8},
                 {0.0, 0.1, 0.0},
                 {0.0, 0.0, 0.3},
-        });
+        };
+        terrainTile1 = generateTerrainTile(new Index(0, 0), heights, splattings);
+        terrainTile2 = generateTerrainTile(new Index(0, 1), heights, splattings);
     }
 
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-        context.drawTerrainTile(terrainTile, 0.2);
+        context.drawTerrainTile(terrainTile1, 0.2, Color.BLACK, Color.RED, Color.BLUEVIOLET);
+        context.drawTerrainTile(terrainTile2, 0.2, Color.RED, Color.BLACK, Color.GREEN);
     }
 
-    private TerrainTile generateTerrainTile(double absoluteX, double absoluteY, double[][] heights, double[][] splattings) {
+    private TerrainTile generateTerrainTile(Index terrainTileIndex, double[][] heights, double[][] splattings) {
         // Setup TerrainService
         TerrainService terrainService = new TerrainService();
         Instance mockListener = createNiceMock(Instance.class);
@@ -65,7 +72,7 @@ public class SimpleTerrainScenario extends Scenario {
         terrainTypeService.init(gameEngineConfig);
         injectBean("terrainTypeService", terrainService, terrainTypeService);
 
-        return terrainService.generateTerrainTile(absoluteX, absoluteY);
+        return terrainService.generateTerrainTile(terrainTileIndex);
     }
 
     private void injectInstance(String fieldName, Object service, Instance instanceMock) {

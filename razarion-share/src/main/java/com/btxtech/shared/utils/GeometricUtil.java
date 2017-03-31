@@ -6,12 +6,13 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Line3d;
-import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Triangle3D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -129,6 +130,28 @@ public class GeometricUtil {
 
         return tiles;
     }
+
+    public static Collection<Index> rasterizeTerrainViewField(Rectangle2D absAabbRect, Polygon2D viewField) {
+        Index bLTile = TerrainUtil.toTile(absAabbRect.getStart());
+        Index tRTile = TerrainUtil.toTile(absAabbRect.getEnd());
+
+        Collection<Index> tiles = new ArrayList<>();
+        for (int x = bLTile.getX(); x <= tRTile.getX(); x++) {
+            for (int y = bLTile.getY(); y <= tRTile.getY(); y++) {
+                Index tile = new Index(x, y);
+                Rectangle2D absTile = TerrainUtil.toAbsoluteRectangle(tile);
+                if (absTile.contains(viewField.getCorners())) {
+                    tiles.add(tile);
+                } else if (viewField.isOneCornerInside(absTile.toCorners())) {
+                    tiles.add(tile);
+                } else if(absTile.isLineCrossing(viewField.getLines())) {
+                    tiles.add(tile);
+                }
+            }
+        }
+        return tiles;
+    }
+
 
     public static InterpolatedTerrainTriangle getInterpolatedVertexData(DecimalPosition absoluteXY, List<Vertex> vertices, Function<Integer, Vertex> normProvider, Function<Integer, Vertex> tangentsProvider, IntToDoubleFunction splattingProvider) {
         for (int i = 0; i < vertices.size(); i += 3) {

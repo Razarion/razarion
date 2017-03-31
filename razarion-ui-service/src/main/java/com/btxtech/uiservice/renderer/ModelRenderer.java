@@ -32,6 +32,7 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     private Function<Long, List<ModelMatrices>> modelMatricesSupplier;
     private T model;
     private boolean hasSomethingToDraw;
+    private boolean active = true;
 
     public void init(T model, Function<Long, List<ModelMatrices>> modelMatricesProvider) {
         this.model = model;
@@ -59,6 +60,10 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     }
 
     public void setupModelMatrices(long timeStamp) {
+        if (!active) {
+            return;
+        }
+
         if (modelMatricesSupplier != null) {
             modelMatrices = modelMatricesSupplier.apply(timeStamp);
             hasSomethingToDraw = modelMatrices != null && !modelMatrices.isEmpty();
@@ -69,21 +74,21 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
     }
 
     public void draw(RenderUnitControl renderUnitControl, double interpolationFactor) {
-        if (!hasSomethingToDraw) {
+        if (!active || !hasSomethingToDraw) {
             return;
         }
         abstractRenderComposites.getSave(renderUnitControl).forEach(abstractRenderComposite -> abstractRenderComposite.draw(modelMatrices, interpolationFactor));
     }
 
     public void drawDepthBuffer(double interpolationFactor) {
-        if (!hasSomethingToDraw) {
+        if (!active || !hasSomethingToDraw) {
             return;
         }
         abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawDepthBuffer(modelMatrices, interpolationFactor));
     }
 
     public void drawNorm(double interpolationFactor) {
-        if (!hasSomethingToDraw) {
+        if (!active || !hasSomethingToDraw) {
             return;
         }
         abstractRenderComposites.getAll().forEach(abstractRenderComposite -> abstractRenderComposite.drawNorm(modelMatrices, interpolationFactor));
@@ -95,5 +100,9 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
 
     public void fillNormBuffer() {
         abstractRenderComposites.getAll().forEach(AbstractRenderComposite::fillNormBuffer);
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

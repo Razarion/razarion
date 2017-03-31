@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -32,7 +32,7 @@ public class BaseItemPlacer {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private TerrainScrollHandler terrainScrollHandler;
+    private ViewService viewService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
     private Vertex position;
@@ -48,7 +48,7 @@ public class BaseItemPlacer {
         if (baseItemPlacerConfig.getSuggestedPosition() != null) {
             onMove(new Vertex(baseItemPlacerConfig.getSuggestedPosition(), 0));
         } else {
-            DecimalPosition cameraCenter = terrainScrollHandler.getCurrentViewField().calculateCenter();
+            DecimalPosition cameraCenter = viewService.getCurrentViewField().calculateCenter();
             onMove(new Vertex(cameraCenter, 0));
         }
         return this;

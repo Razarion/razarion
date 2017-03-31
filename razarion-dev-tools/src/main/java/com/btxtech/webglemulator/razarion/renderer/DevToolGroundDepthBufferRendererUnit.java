@@ -3,10 +3,10 @@ package com.btxtech.webglemulator.razarion.renderer;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
+import com.btxtech.uiservice.terrain.UiTerrainTile;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -33,9 +33,9 @@ public class DevToolGroundDepthBufferRendererUnit extends AbstractGroundRenderer
     }
 
     @Override
-    protected void fillBuffersInternal(GroundUi groundUi) {
+    protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.GREEN).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(DevToolRenderUtil.toDoubles(groundUi.getVertices()));
+        webGlProgramEmulator.setDoubles(uiTerrainTile.getTerrainTile().getGroundVertices());
     }
 
     @Override
@@ -45,7 +45,7 @@ public class DevToolGroundDepthBufferRendererUnit extends AbstractGroundRenderer
     }
 
     @Override
-    public void draw(GroundUi groundUi) {
+    public void draw(UiTerrainTile uiTerrainTile) {
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 }

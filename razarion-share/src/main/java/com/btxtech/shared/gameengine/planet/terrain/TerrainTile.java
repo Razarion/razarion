@@ -5,16 +5,16 @@ package com.btxtech.shared.gameengine.planet.terrain;
  * 28.03.2017.
  */
 public abstract class TerrainTile {
-    private double absoluteX;
-    private double absoluteY;
+    private int indexX;
+    private int indexY;
     private double[] groundVertices;
     private double[] groundNorms;
     private double[] groundTangents;
     private double[] groundSplattings;
 
-    public void init(double absoluteX, double absoluteY) {
-        this.absoluteX = absoluteX;
-        this.absoluteY = absoluteY;
+    public void init(int indexX, int indexY) {
+        this.indexX = indexX;
+        this.indexY = indexY;
     }
 
     public void initGroundArrays(int groundSizeVec, int groundSizeScalar) {
@@ -38,12 +38,12 @@ public abstract class TerrainTile {
         groundSplattings[triangleCornerIndex] = splatting;
     }
 
-    public double getAbsoluteX() {
-        return absoluteX;
+    public int getIndexX() {
+        return indexX;
     }
 
-    public double getAbsoluteY() {
-        return absoluteY;
+    public int getIndexY() {
+        return indexY;
     }
 
     public double[] getGroundVertices() {

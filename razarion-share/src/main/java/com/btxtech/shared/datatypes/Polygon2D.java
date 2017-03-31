@@ -59,6 +59,15 @@ public class Polygon2D {
         return true;
     }
 
+    public boolean isOneCornerInside(Collection<DecimalPosition> positions) {
+        for (DecimalPosition position : positions) {
+            if (isInside(position)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isLineCrossing(Line testLine) {
         for (Line line : lines) {
             if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {

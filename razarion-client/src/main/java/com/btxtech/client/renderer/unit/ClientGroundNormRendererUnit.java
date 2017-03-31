@@ -6,9 +6,9 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
+import com.btxtech.uiservice.terrain.UiTerrainTile;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
@@ -41,12 +41,13 @@ public class ClientGroundNormRendererUnit extends AbstractGroundRendererUnit {
     }
 
     @Override
-    protected void fillBuffersInternal(GroundUi groundUi) {
-        vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(groundUi.getVertices(), groundUi.getNorms()));
+    protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
+        // vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(uiTerrainTile.getVertices(), uiTerrainTile.getNorms()));
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public void draw(GroundUi groundUi) {
+    public void draw(UiTerrainTile uiTerrainTile) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(modelMatrix, Matrix4.createIdentity());
 
