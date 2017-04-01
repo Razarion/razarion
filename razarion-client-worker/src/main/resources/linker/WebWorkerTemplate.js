@@ -1,3 +1,4 @@
+importScripts('/NativeRazarion.js');
 // Window and document redirection to WorkerGlobalScope
 self.$wnd = self;
 self.$doc = self;

@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShader
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
+import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainTile;
@@ -63,11 +64,10 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         bottomTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", uiTerrainTile.getBottomTextureScale());
         bottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getBottomBmId(), "uBottomBm", "uBottomBmScale", uiTerrainTile.getBottomBmScale(), "uBottomBmOnePixel");
 
-        // vertices.fillFloat32ArrayEmu(uiTerrainTile.getVertices());
-        // normals.fillFloat32ArrayEmu(uiTerrainTile.getNorms());
-        // tangents.fillFloat32ArrayEmu(uiTerrainTile.getTangents());
-        // splattings.fillFloat32ArrayEmu(uiTerrainTile.getSplattings());
-        throw new UnsupportedOperationException("TODO");
+        vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundVertices()));
+        normals.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundNorms()));
+        tangents.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundTangents()));
+        splattings.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundSplattings()));
     }
 
     @Override

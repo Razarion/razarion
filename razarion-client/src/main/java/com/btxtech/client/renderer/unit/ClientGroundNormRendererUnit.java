@@ -42,7 +42,7 @@ public class ClientGroundNormRendererUnit extends AbstractGroundRendererUnit {
 
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
-        // vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(uiTerrainTile.getVertices(), uiTerrainTile.getNorms()));
+        // vertices.fillFloat32Array(ClientRenderUtil.setupNormFloat32Array(uiTerrainTile.getVertices(), uiTerrainTile.getNorms()));
         throw new UnsupportedOperationException("TODO");
     }
 

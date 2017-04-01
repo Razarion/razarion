@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
+import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.inject.Instance;
 import java.lang.reflect.Field;
@@ -39,11 +40,13 @@ public class SimpleTestEnvironment {
         }
     }
 
-    public static void injectInstance(String fieldName, Object service, Instance instanceMock) {
+
+
+    public static void injectJsInteropObjectFactory(String fieldName, Object service, JsInteropObjectFactory jsInteropObjectFactory) {
         try {
             Field field = service.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
-            field.set(service, instanceMock);
+            field.set(service, jsInteropObjectFactory);
             field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);

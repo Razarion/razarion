@@ -26,10 +26,10 @@ import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundModeler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeWater;
+import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -50,7 +50,7 @@ public class TerrainService {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private Instance<TerrainTile> terrainTileInstance;
+    private JsInteropObjectFactory jsInteropObjectFactory;
     @Inject
     private ObstacleContainer obstacleContainer;
     private Water water;
@@ -71,7 +71,7 @@ public class TerrainService {
     }
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex) {
-        TerrainTile terrainTile = terrainTileInstance.get();
+        TerrainTile terrainTile = jsInteropObjectFactory.generateTerrainTile();
         terrainTile.init(terrainTileIndex.getX(), terrainTileIndex.getY());
 
         int verticesCount = (int) (Math.pow(TerrainUtil.TERRAIN_TILE_NODES_COUNT, 2) * 6);

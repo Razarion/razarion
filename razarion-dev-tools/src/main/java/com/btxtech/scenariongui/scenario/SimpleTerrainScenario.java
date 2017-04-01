@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.webglemulator.razarion.DevTooTerrainTile;
 import javafx.scene.paint.Color;
 
 import javax.enterprise.inject.Instance;
@@ -53,8 +54,7 @@ public class SimpleTerrainScenario extends Scenario {
         // Setup TerrainService
         TerrainService terrainService = new TerrainService();
         Instance mockListener = createNiceMock(Instance.class);
-        expect(mockListener.get()).andReturn(new TerrainTile() {
-        });
+        expect(mockListener.get()).andReturn(new DevTooTerrainTile());
         replay(mockListener);
         injectInstance("terrainTileInstance", terrainService, mockListener);
 

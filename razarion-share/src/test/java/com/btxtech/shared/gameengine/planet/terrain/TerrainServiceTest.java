@@ -2,11 +2,13 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.TestHelper;
+import com.btxtech.shared.TestTerrainTile;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.system.JsInteropObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -213,11 +215,10 @@ public class TerrainServiceTest {
     private TerrainTile generateTerrainTile(Index terrainTileIndex, double[][] heights, double[][] splattings) {
         // Setup TerrainService
         TerrainService terrainService = new TerrainService();
-        Instance mockListener = createNiceMock(Instance.class);
-        expect(mockListener.get()).andReturn(new TerrainTile() {
-        });
-        replay(mockListener);
-        SimpleTestEnvironment.injectInstance("terrainTileInstance", terrainService, mockListener);
+        JsInteropObjectFactory mockJsInteropObjectFactory = createNiceMock(JsInteropObjectFactory.class);
+        expect(mockJsInteropObjectFactory.generateTerrainTile()).andReturn(new TestTerrainTile());
+        replay(mockJsInteropObjectFactory);
+        SimpleTestEnvironment.injectJsInteropObjectFactory("jsInteropObjectFactory", terrainService, mockJsInteropObjectFactory);
 
         TerrainTypeService terrainTypeService = new TerrainTypeService();
         GameEngineConfig gameEngineConfig = new GameEngineConfig();

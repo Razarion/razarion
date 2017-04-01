@@ -304,6 +304,78 @@ com = {
 
                 }
             }
+        },
+        shared: {
+            nativejs: {
+                TerrainTile: function () {
+                    this.init = function (indexX, indexY) {
+                        this.indexX = indexX;
+                        this.indexY = indexY;
+                    };
+
+                    this.initGroundArrays = function (groundSizeVec, groundSizeScalar) {
+                        this.groundVertices = new Float32Array(groundSizeVec);
+                        this.groundNorms = new Float32Array(groundSizeVec);
+                        this.groundTangents = new Float32Array(groundSizeVec);
+                        this.groundSplattings = new Float32Array(groundSizeScalar);
+                    };
+
+                    this.setGroundTriangleCorner = function (triangleCornerIndex, vertexX, vertexY, vertexZ, normX, normY, normZ, tangentX, tangentY, tangentZ, splatting) {
+                        var cornerScalarIndex = triangleCornerIndex * 3;
+                        this.groundVertices[cornerScalarIndex] = vertexX;
+                        this.groundVertices[cornerScalarIndex + 1] = vertexY;
+                        this.groundVertices[cornerScalarIndex + 2] = vertexZ;
+                        this.groundNorms[cornerScalarIndex] = normX;
+                        this.groundNorms[cornerScalarIndex + 1] = normY;
+                        this.groundNorms[cornerScalarIndex + 2] = normZ;
+                        this.groundTangents[cornerScalarIndex] = tangentX;
+                        this.groundTangents[cornerScalarIndex + 1] = tangentY;
+                        this.groundTangents[cornerScalarIndex + 2] = tangentZ;
+                        this.groundSplattings[triangleCornerIndex] = splatting;
+                    };
+
+                    this.getIndexX = function () {
+                        return this.indexX;
+                    };
+
+                    this.getIndexY = function () {
+                        return this.indexY;
+                    };
+
+                    this.getGroundVertices = function () {
+                        return this.groundVertices;
+                    };
+
+                    this.getGroundNorms = function () {
+                        return this.groundNorms;
+                    };
+
+                    this.getGroundTangents = function () {
+                        return this.groundTangents;
+                    };
+
+                    this.getGroundSplattings = function () {
+                        return this.groundSplattings;
+                    };
+
+                    this.getGroundVertexCount = function () {
+                        return this.groundVertices.length / 3;
+                    };
+
+                    this.toArray = function () {
+                        return [this.indexX, this.indexY, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings];
+                    };
+
+                    this.fromArray = function (array) {
+                        this.indexX = array[0];
+                        this.indexY = array[1];
+                        this.groundVertices = array[2];
+                        this.groundNorms = array[3];
+                        this.groundTangents = array[4];
+                        this.groundSplattings = array[5];
+                    };
+                }
+            }
         }
     }
 };

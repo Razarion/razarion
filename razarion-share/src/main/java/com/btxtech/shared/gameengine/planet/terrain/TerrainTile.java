@@ -1,68 +1,34 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import jsinterop.annotations.JsType;
+
 /**
  * Created by Beat
  * 28.03.2017.
  */
+@JsType(isNative = true, name = "TerrainTile", namespace = "com.btxtech.shared.nativejs")
 public abstract class TerrainTile {
-    private int indexX;
-    private int indexY;
-    private double[] groundVertices;
-    private double[] groundNorms;
-    private double[] groundTangents;
-    private double[] groundSplattings;
+    public native void init(int indexX, int indexY);
 
-    public void init(int indexX, int indexY) {
-        this.indexX = indexX;
-        this.indexY = indexY;
-    }
+    public native void initGroundArrays(int groundSizeVec, int groundSizeScalar);
 
-    public void initGroundArrays(int groundSizeVec, int groundSizeScalar) {
-        groundVertices = new double[groundSizeVec];
-        groundNorms = new double[groundSizeVec];
-        groundTangents = new double[groundSizeVec];
-        groundSplattings = new double[groundSizeScalar];
-    }
+    public native void setGroundTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double splatting);
 
-    public void setGroundTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double splatting) {
-        int cornerScalarIndex = triangleCornerIndex * 3;
-        groundVertices[cornerScalarIndex] = vertexX;
-        groundVertices[cornerScalarIndex + 1] = vertexY;
-        groundVertices[cornerScalarIndex + 2] = vertexZ;
-        groundNorms[cornerScalarIndex] = normX;
-        groundNorms[cornerScalarIndex + 1] = normY;
-        groundNorms[cornerScalarIndex + 2] = normZ;
-        groundTangents[cornerScalarIndex] = tangentX;
-        groundTangents[cornerScalarIndex + 1] = tangentY;
-        groundTangents[cornerScalarIndex + 2] = tangentZ;
-        groundSplattings[triangleCornerIndex] = splatting;
-    }
+    public native int getIndexX();
 
-    public int getIndexX() {
-        return indexX;
-    }
+    public native int getIndexY();
 
-    public int getIndexY() {
-        return indexY;
-    }
+    public native double[] getGroundVertices();
 
-    public double[] getGroundVertices() {
-        return groundVertices;
-    }
+    public native double[] getGroundNorms();
 
-    public double[] getGroundNorms() {
-        return groundNorms;
-    }
+    public native double[] getGroundTangents();
 
-    public double[] getGroundTangents() {
-        return groundTangents;
-    }
+    public native double[] getGroundSplattings();
 
-    public double[] getGroundSplattings() {
-        return groundSplattings;
-    }
+    public native int getGroundVertexCount();
 
-    public int getGroundVertexCount() {
-        return groundVertices.length / 3;
-    }
+    public native Object toArray();
+
+    public native int fromArray(Object object);
 }

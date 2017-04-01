@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.Water;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
@@ -139,8 +140,8 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, marshallWaterBuffers((Water) controlPackage.getData(2)));
                 break;
             case TERRAIN_TILE_RESPONSE:
-                throw new UnsupportedOperationException("TerrainTile does not have native marshaller yet");
-                // TODO break;
+                array.set(DATA_OFFSET_0, marshallTerrainTile((TerrainTile) controlPackage.getData(0)));
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
         }
@@ -312,8 +313,8 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Index.class));
                 break;
             case TERRAIN_TILE_RESPONSE:
-                throw new UnsupportedOperationException("TerrainTile does not have native marshaller yet");
-                // TODO break;
+                data.add(demarshallTerrainTile(array.getObject(DATA_OFFSET_0)));
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);
         }
@@ -458,4 +459,17 @@ public class WorkerMarshaller {
     private native static void setFloat32ArrayProperty(JavaScriptObject javaScriptObject, String propertyName, JsArrayOfNumber array) /*-{
         return javaScriptObject[propertyName] = new Float32Array(array);
     }-*/;
+
+
+    private static TerrainTile demarshallTerrainTile(JavaScriptObject data) {
+        TerrainTile terrainTile = new TerrainTile() {
+        };
+        terrainTile.fromArray(data);
+        return terrainTile;
+    }
+
+    private static JavaScriptObject marshallTerrainTile(TerrainTile terrainTile) {
+        return (JavaScriptObject) terrainTile.toArray();
+    }
+
 }

@@ -52,10 +52,8 @@ public class WebGlUtil {
         return jsFloat32Array.float32Array;
     }-*/;
 
-    public native static Float32Array createArrayBufferOfFloat32Doubles(double[] doubles) /*-{
-        // TODO Why does this work?
+    public native static Float32Array doublesToFloat32Array(double[] doubles) /*-{
         return doubles;
-        // return new Float32Array(doubles);
     }-*/;
 
     public native static Float32Array createFloat32Array(JsArrayOfNumber vertices) /*-{

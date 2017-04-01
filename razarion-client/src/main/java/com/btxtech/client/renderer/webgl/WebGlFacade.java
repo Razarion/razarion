@@ -133,7 +133,7 @@ public class WebGlFacade {
     @Deprecated
     // Do not use anymore -> slow. User: uniformMatrix4fv(String uniformName, Matrix4 matrix)
     public void uniformMatrix4fv(WebGLUniformLocation uniformLocation, Matrix4 matrix) {
-        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.createArrayBufferOfFloat32Doubles(matrix.toWebGlArray()));
+        gameCanvas.getCtx3d().uniformMatrix4fv(uniformLocation, false, WebGlUtil.doublesToFloat32Array(matrix.toWebGlArray()));
         WebGlUtil.checkLastWebGlError("uniformMatrix4fv", gameCanvas.getCtx3d());
     }
 

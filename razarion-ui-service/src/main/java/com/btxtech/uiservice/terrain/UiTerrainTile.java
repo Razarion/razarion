@@ -32,7 +32,9 @@ public class UiTerrainTile {
 
     public void setActive(boolean active) {
         this.active = active;
-        modelRenderer.setActive(active);
+        if (modelRenderer != null) {
+            modelRenderer.setActive(active);
+        }
     }
 
     private void terrainTileReceived(TerrainTile terrainTile) {
