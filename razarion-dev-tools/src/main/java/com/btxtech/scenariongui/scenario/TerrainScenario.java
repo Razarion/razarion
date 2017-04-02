@@ -17,7 +17,7 @@ public class TerrainScenario extends AbstractTerrainScenario {
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-        context.strokeVertexList(getTerrainService().getGroundMesh().provideVertexList().getVertices(), 0.1, Color.BLUE);
+        // TODO user TerrainTile instead context.strokeVertexList(getTerrainService().getGroundMesh().provideVertexList().getVertices(), 0.1, Color.BLUE);
 
         for (Slope slope : getTerrainService().getSlopes()) {
 

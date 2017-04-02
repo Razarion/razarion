@@ -238,10 +238,6 @@ public class TerrainService {
         return water;
     }
 
-    public GroundMesh getGroundMesh() {
-        return groundMesh;
-    }
-
     public boolean overlap(DecimalPosition position) {
         // Check in terrain objects
         SingleHolder<Boolean> result = new SingleHolder<>(false);
