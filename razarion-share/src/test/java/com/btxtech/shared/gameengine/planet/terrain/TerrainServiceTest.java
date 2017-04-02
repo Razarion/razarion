@@ -8,12 +8,12 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.enterprise.inject.Instance;
-
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -215,10 +215,17 @@ public class TerrainServiceTest {
     private TerrainTile generateTerrainTile(Index terrainTileIndex, double[][] heights, double[][] splattings) {
         // Setup TerrainService
         TerrainService terrainService = new TerrainService();
+        // Mock JsInteropObjectFactory
         JsInteropObjectFactory mockJsInteropObjectFactory = createNiceMock(JsInteropObjectFactory.class);
         expect(mockJsInteropObjectFactory.generateTerrainTile()).andReturn(new TestTerrainTile());
-        replay(mockJsInteropObjectFactory);
         SimpleTestEnvironment.injectJsInteropObjectFactory("jsInteropObjectFactory", terrainService, mockJsInteropObjectFactory);
+        // Mock ObstacleContainer
+        ObstacleContainer obstacleContainerMock = createNiceMock(ObstacleContainer.class);
+        expect(obstacleContainerMock.isSlope(anyObject(Index.class))).andReturn(false);
+        expect(obstacleContainerMock.getInsideSlopeHeight(anyObject(Index.class))).andReturn(0.0);
+        SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainerMock);
+
+        replay(mockJsInteropObjectFactory, obstacleContainerMock);
 
         TerrainTypeService terrainTypeService = new TerrainTypeService();
         GameEngineConfig gameEngineConfig = new GameEngineConfig();
@@ -232,7 +239,7 @@ public class TerrainServiceTest {
         groundSkeletonConfig.setSplattingYCount(splattings.length);
 
         terrainTypeService.init(gameEngineConfig);
-        SimpleTestEnvironment.injectBean("terrainTypeService", terrainService, terrainTypeService);
+        SimpleTestEnvironment.injectService("terrainTypeService", terrainService, terrainTypeService);
 
         return terrainService.generateTerrainTile(terrainTileIndex);
     }

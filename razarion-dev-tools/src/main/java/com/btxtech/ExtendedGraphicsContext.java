@@ -15,8 +15,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleCircle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.webglemulator.razarion.renderer.DevToolFloat32ArrayEmu;
@@ -293,12 +293,12 @@ public class ExtendedGraphicsContext {
         gc.setStroke(stroke);
         gc.setFill(fill);
         gc.setLineWidth(0.2);
-        if (obstacle instanceof ObstacleLine) {
-            DecimalPosition point1 = ((ObstacleLine) obstacle).getLine().getPoint1();
-            DecimalPosition point2 = ((ObstacleLine) obstacle).getLine().getPoint2();
+        if (obstacle instanceof ObstacleSlope) {
+            DecimalPosition point1 = ((ObstacleSlope) obstacle).getLine().getPoint1();
+            DecimalPosition point2 = ((ObstacleSlope) obstacle).getLine().getPoint2();
             gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
-        } else if (obstacle instanceof ObstacleCircle) {
-            Circle2D circle = ((ObstacleCircle) obstacle).getCircle();
+        } else if (obstacle instanceof ObstacleTerrainObject) {
+            Circle2D circle = ((ObstacleTerrainObject) obstacle).getCircle();
             gc.fillOval(circle.getCenter().getX() - circle.getRadius(), circle.getCenter().getY() - circle.getRadius(), circle.getRadius() * 2, circle.getRadius() * 2);
         }
     }

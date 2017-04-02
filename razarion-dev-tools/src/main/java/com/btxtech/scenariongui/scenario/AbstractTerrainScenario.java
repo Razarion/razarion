@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerTile;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import javafx.scene.paint.Color;
 import org.jboss.weld.environment.se.Weld;
@@ -49,9 +49,9 @@ public abstract class AbstractTerrainScenario extends Scenario {
         for (int x = 0; x < obstacleContainer.getXCount(); x++) {
             for (int y = 0; y < obstacleContainer.getYCount(); y++) {
                 Index index = new Index(x, y);
-                ObstacleContainerTile obstacleContainerTile = obstacleContainer.getObstacleContainerTile(index);
-                if (obstacleContainerTile != null) {
-                    for (Obstacle obstacle : obstacleContainerTile.getObstacles()) {
+                ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNode(index);
+                if (obstacleContainerNode != null && obstacleContainerNode.getObstacles() != null) {
+                    for (Obstacle obstacle : obstacleContainerNode.getObstacles()) {
                         extendedGraphicsContext.drawObstacle(obstacle, Color.BROWN, Color.BROWN);
                     }
                 }

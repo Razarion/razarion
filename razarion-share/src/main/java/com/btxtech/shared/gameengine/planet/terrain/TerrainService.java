@@ -86,22 +86,27 @@ public class TerrainService {
         int yNodeEnd = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT + TerrainUtil.TERRAIN_TILE_NODES_COUNT;
         for (int xNode = xNodeStart; xNode < xNodeEnd; xNode++) {
             for (int yNode = yNodeStart; yNode < yNodeEnd; yNode++) {
-                insertTerrainRectangle(xNode, yNode, rectangleIndex, groundSkeletonConfig, terrainTile);
+                Index index = new Index(xNode, yNode);
+                if (obstacleContainer.isSlope(index)) {
+                    continue;
+                }
+                double slopeHeight = obstacleContainer.getInsideSlopeHeight(index);
+                insertTerrainRectangle(xNode, yNode, rectangleIndex, groundSkeletonConfig, slopeHeight, terrainTile);
                 rectangleIndex++;
             }
         }
-
+        terrainTile.setGroundVertexCount(rectangleIndex * 2 * 3); // Per rectangle are two triangles with 3 corners
         return terrainTile;
     }
 
-    private void insertTerrainRectangle(int xNode, int yNode, int rectangleIndex, GroundSkeletonConfig groundSkeletonConfig, TerrainTile terrainTile) {
+    private void insertTerrainRectangle(int xNode, int yNode, int rectangleIndex, GroundSkeletonConfig groundSkeletonConfig, double slopeHeight, TerrainTile terrainTile) {
         int rightXNode = xNode + 1;
         int topYNode = yNode + 1;
 
-        double zBL = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getHeightYCount())];
-        double zBR = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(rightXNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getHeightYCount())];
-        double zTR = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(rightXNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(topYNode, groundSkeletonConfig.getHeightYCount())];
-        double zTL = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(topYNode, groundSkeletonConfig.getHeightYCount())];
+        double zBL = slopeHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getHeightYCount())];
+        double zBR = slopeHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(rightXNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getHeightYCount())];
+        double zTR = slopeHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(rightXNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(topYNode, groundSkeletonConfig.getHeightYCount())];
+        double zTL = slopeHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(topYNode, groundSkeletonConfig.getHeightYCount())];
         double absoluteX = xNode * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
         double absoluteY = yNode * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
         Vertex vertexBL = new Vertex(absoluteX, absoluteY, zBL);

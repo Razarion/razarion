@@ -100,13 +100,13 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
 
         egc.getGc().setFill(Color.color(0.0, 1.0, 0.0, 0.5));
         for (UiTerrainTile active : displayTerrainTiles.values()) {
-            Rectangle2D rectangle2D = TerrainUtil.toAbsoluteRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
+            Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
             egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
         }
 
         egc.getGc().setFill(Color.color(1.0, 0.0, 0.0, 0.5));
         for (UiTerrainTile active : cacheTerrainTiles.values()) {
-            Rectangle2D rectangle2D = TerrainUtil.toAbsoluteRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
+            Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
             egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
         }
 

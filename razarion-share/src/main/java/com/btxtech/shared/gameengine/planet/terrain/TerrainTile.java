@@ -26,6 +26,8 @@ public abstract class TerrainTile {
 
     public native double[] getGroundSplattings();
 
+    public native void setGroundVertexCount(int groundVertexCount);
+
     public native int getGroundVertexCount();
 
     public native Object toArray();

@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 public class TestTerrainTile extends TerrainTile {
     private int indexX;
     private int indexY;
+    private int groundVertexCount;
     private double[] groundVertices;
     private double[] groundNorms;
     private double[] groundTangents;
@@ -73,9 +74,15 @@ public class TestTerrainTile extends TerrainTile {
         return groundSplattings;
     }
 
+
+    @Override
+    public void setGroundVertexCount(int groundVertexCount) {
+        this.groundVertexCount = groundVertexCount;
+    }
+
     @Override
     public int getGroundVertexCount() {
-        return groundVertices.length / 3;
+        return groundVertexCount;
     }
 
     @Override

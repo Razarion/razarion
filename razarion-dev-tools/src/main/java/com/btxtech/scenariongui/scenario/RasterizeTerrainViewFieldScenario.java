@@ -12,7 +12,6 @@ import com.btxtech.uiservice.renderer.ViewField;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -44,7 +43,7 @@ public class RasterizeTerrainViewFieldScenario extends Scenario {
 
         display = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewPolygon);
         for (Index index : display) {
-            Rectangle2D rectangle = TerrainUtil.toAbsoluteRectangle(index);
+            Rectangle2D rectangle = TerrainUtil.toAbsoluteTileRectangle(index);
             Rectangle2D displayRect = new Rectangle2D(rectangle.startX(), rectangle.startY(), rectangle.width() - 2, rectangle.height() - 2);
             extendedGraphicsContext.fillRectangle(displayRect, 0.1, Color.GREEN);
         }

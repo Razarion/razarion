@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerTile;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.projectile.Projectile;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -41,9 +41,9 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
         for (int x = 0; x < obstacleContainer.getXCount(); x++) {
             for (int y = 0; y < obstacleContainer.getYCount(); y++) {
                 Index index = new Index(x, y);
-                ObstacleContainerTile obstacleContainerTile = obstacleContainer.getObstacleContainerTile(index);
-                if (obstacleContainerTile != null) {
-                    for (Obstacle obstacle : obstacleContainerTile.getObstacles()) {
+                ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNode(index);
+                if (obstacleContainerNode != null && obstacleContainerNode.getObstacles() != null) {
+                    for (Obstacle obstacle : obstacleContainerNode.getObstacles()) {
                         extendedGraphicsContext.drawObstacle(obstacle, Color.BLACK, Color.BLACK);
                     }
                 }

@@ -9,7 +9,7 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleLine;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundSlopeConnector;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -166,6 +166,10 @@ public class Slope {
         return outerPolygon.isInside(vertex.toXY());
     }
 
+    public Polygon2D getOuterPolygon() {
+        return outerPolygon;
+    }
+
     public Polygon2D getInnerPolygon() {
         return innerPolygon;
     }
@@ -251,8 +255,8 @@ public class Slope {
         this.slopeSkeletonConfig = slopeSkeletonConfig;
     }
 
-    public Collection<Obstacle> generateObstacles() {
-        Collection<Obstacle> obstacles = new ArrayList<>();
+    public Collection<ObstacleSlope> generateObstacles() {
+        Collection<ObstacleSlope> obstacles = new ArrayList<>();
 
         fillObstacle(innerLine, obstacles);
         fillObstacle(outerLine, obstacles);
@@ -275,14 +279,14 @@ public class Slope {
         return obstacles;
     }
 
-    private void fillObstacle(List<Vertex> polygon, Collection<Obstacle> obstacles) {
+    private void fillObstacle(List<Vertex> polygon, Collection<ObstacleSlope> obstacles) {
         DecimalPosition last = polygon.get(0).toXY();
         for (int i = 0; i < polygon.size(); i++) {
             DecimalPosition next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY();
             if (last.equals(next)) {
                 continue;
             }
-            obstacles.add(new ObstacleLine(new Line(last, next)));
+            obstacles.add(new ObstacleSlope(new Line(last, next)));
             last = next;
         }
     }

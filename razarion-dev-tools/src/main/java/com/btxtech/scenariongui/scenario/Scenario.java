@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
         register("Simple Terrain Scenario", new SimpleTerrainScenario());
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());

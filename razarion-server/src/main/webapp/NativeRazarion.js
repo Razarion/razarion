@@ -358,21 +358,26 @@ com = {
                         return this.groundSplattings;
                     };
 
+                    this.setGroundVertexCount = function (groundVertexCount) {
+                        this.groundVertexCount = groundVertexCount;
+                    };
+
                     this.getGroundVertexCount = function () {
-                        return this.groundVertices.length / 3;
+                        return this.groundVertexCount;
                     };
 
                     this.toArray = function () {
-                        return [this.indexX, this.indexY, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings];
+                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings];
                     };
 
                     this.fromArray = function (array) {
                         this.indexX = array[0];
                         this.indexY = array[1];
-                        this.groundVertices = array[2];
-                        this.groundNorms = array[3];
-                        this.groundTangents = array[4];
-                        this.groundSplattings = array[5];
+                        this.groundVertexCount = array[2];
+                        this.groundVertices = array[3];
+                        this.groundNorms = array[4];
+                        this.groundTangents = array[5];
+                        this.groundSplattings = array[6];
                     };
                 }
             }

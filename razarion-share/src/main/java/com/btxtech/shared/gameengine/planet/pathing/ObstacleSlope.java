@@ -7,10 +7,10 @@ import com.btxtech.shared.datatypes.Line;
  * Created by Beat
  * 20.09.2016.
  */
-public class ObstacleLine extends Obstacle {
+public class ObstacleSlope extends Obstacle {
     private Line line;
 
-    public ObstacleLine(Line line) {
+    public ObstacleSlope(Line line) {
         this.line = line;
     }
 
@@ -30,7 +30,7 @@ public class ObstacleLine extends Obstacle {
 
     @Override
     public String toString() {
-        return "ObstacleLine{" +
+        return "ObstacleSlope{" +
                 "line=" + line +
                 '}';
     }

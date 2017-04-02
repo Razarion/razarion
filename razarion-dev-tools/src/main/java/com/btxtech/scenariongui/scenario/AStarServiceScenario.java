@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.planet.model.DevToolHelper;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import javafx.scene.paint.Color;
 
 /**
@@ -25,12 +26,12 @@ public class AStarServiceScenario extends AbstractTerrainScenario {
         for (int x = 0; x < obstacleContainer.getXCount(); x++) {
             for (int y = 0; y < obstacleContainer.getYCount(); y++) {
                 Index index = new Index(x, y);
-                if (obstacleContainer.getObstacleContainerTile(index) != null) {
+                if (obstacleContainer.getObstacleContainerNode(index) != null) {
                     DecimalPosition absolutePosition = obstacleContainer.toAbsolute(index);
                     extendedGraphicsContext.getGc().setFill(Color.GREEN);
-                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), ObstacleContainer.TILE_SIZE, ObstacleContainer.TILE_SIZE);
+                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
                     extendedGraphicsContext.getGc().setFill(Color.RED);
-                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), ObstacleContainer.TILE_SIZE - 0.1, ObstacleContainer.TILE_SIZE - 0.1);
+                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
                 }
             }
         }

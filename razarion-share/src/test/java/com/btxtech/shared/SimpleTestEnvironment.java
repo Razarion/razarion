@@ -53,11 +53,11 @@ public class SimpleTestEnvironment {
         }
     }
 
-    public static void injectBean(String fieldName, Object service, Object bean) {
+    public static void injectService(String fieldName, Object service, Object serviceToInject) {
         try {
             Field field = service.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
-            field.set(service, bean);
+            field.set(service, serviceToInject);
             field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -8,10 +8,10 @@ import com.btxtech.shared.datatypes.Line;
  * Created by Beat
  * 20.09.2016.
  */
-public class ObstacleCircle extends Obstacle {
+public class ObstacleTerrainObject extends Obstacle {
     private Circle2D circle;
 
-    public ObstacleCircle(Circle2D circle) {
+    public ObstacleTerrainObject(Circle2D circle) {
         this.circle = circle;
     }
 
@@ -31,7 +31,7 @@ public class ObstacleCircle extends Obstacle {
 
     @Override
     public String toString() {
-        return "ObstacleCircle{" +
+        return "ObstacleTerrainObject{" +
                 "circle=" + circle +
                 '}';
     }

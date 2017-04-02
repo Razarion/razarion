@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.webglemulator.razarion.DevTooTerrainTile;
 import javafx.scene.paint.Color;
 
@@ -25,7 +26,8 @@ public class SimpleTerrainScenario extends Scenario {
     private TerrainTile terrainTile1;
     private TerrainTile terrainTile2;
 
-    public SimpleTerrainScenario() {
+    @Override
+    public void init() {
         double[][] heights = new double[][]{
                 {4, 0, 0, 0},
                 {0, 1, 0, 0},
@@ -43,7 +45,6 @@ public class SimpleTerrainScenario extends Scenario {
         terrainTile2 = generateTerrainTile(new Index(0, 1), heights, splattings);
     }
 
-
     @Override
     public void render(ExtendedGraphicsContext context) {
         context.drawTerrainTile(terrainTile1, 0.2, Color.BLACK, Color.RED, Color.BLUEVIOLET);
@@ -53,10 +54,10 @@ public class SimpleTerrainScenario extends Scenario {
     private TerrainTile generateTerrainTile(Index terrainTileIndex, double[][] heights, double[][] splattings) {
         // Setup TerrainService
         TerrainService terrainService = new TerrainService();
-        Instance mockListener = createNiceMock(Instance.class);
-        expect(mockListener.get()).andReturn(new DevTooTerrainTile());
-        replay(mockListener);
-        injectInstance("terrainTileInstance", terrainService, mockListener);
+        JsInteropObjectFactory mockJsInteropObjectFactory = createNiceMock(JsInteropObjectFactory.class);
+        expect(mockJsInteropObjectFactory.generateTerrainTile()).andReturn(new DevTooTerrainTile());
+        replay(mockJsInteropObjectFactory);
+        injectService("jsInteropObjectFactory", terrainService, mockJsInteropObjectFactory);
 
         TerrainTypeService terrainTypeService = new TerrainTypeService();
         GameEngineConfig gameEngineConfig = new GameEngineConfig();
@@ -75,7 +76,7 @@ public class SimpleTerrainScenario extends Scenario {
         return terrainService.generateTerrainTile(terrainTileIndex);
     }
 
-    private void injectInstance(String fieldName, Object service, Instance instanceMock) {
+    private void injectService(String fieldName, Object service, Object instanceMock) {
         try {
             Field field = service.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);

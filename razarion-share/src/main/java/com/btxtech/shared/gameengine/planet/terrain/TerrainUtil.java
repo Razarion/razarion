@@ -18,12 +18,21 @@ public interface TerrainUtil {
     }
 
 
-    static DecimalPosition toAbsolute(Index tile) {
+    static DecimalPosition toTileAbsolute(Index tile) {
         return new DecimalPosition(tile.scale(TERRAIN_TILE_ABSOLUTE_LENGTH));
     }
 
-    static Rectangle2D toAbsoluteRectangle(Index tile) {
-        DecimalPosition start = toAbsolute(tile);
+    static Rectangle2D toAbsoluteTileRectangle(Index tile) {
+        DecimalPosition start = toTileAbsolute(tile);
         return new Rectangle2D(start.getX(), start.getY(), TERRAIN_TILE_ABSOLUTE_LENGTH, TERRAIN_TILE_ABSOLUTE_LENGTH);
+    }
+
+    static DecimalPosition toNodeAbsolute(Index tile) {
+        return new DecimalPosition(tile.scale(GROUND_NODE_ABSOLUTE_LENGTH));
+    }
+
+    static Rectangle2D toAbsoluteNodeRectangle(Index tile) {
+        DecimalPosition start = toNodeAbsolute(tile);
+        return new Rectangle2D(start.getX(), start.getY(), GROUND_NODE_ABSOLUTE_LENGTH, GROUND_NODE_ABSOLUTE_LENGTH);
     }
 }

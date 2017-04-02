@@ -52,8 +52,8 @@ public class PathingService {
     private Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange) {
         Path path = instancePath.get();
         List<DecimalPosition> positions = new ArrayList<>();
-        Index startTile = obstacleContainer.toTile(syncItem.getSyncPhysicalArea().getPosition2d());
-        Index destinationTile = obstacleContainer.toTile(destination);
+        Index startTile = obstacleContainer.toNode(syncItem.getSyncPhysicalArea().getPosition2d());
+        Index destinationTile = obstacleContainer.toNode(destination);
         if (startTile.equals(destinationTile)) {
             positions.add(destination);
             path.init(positions, totalRange);

@@ -105,6 +105,37 @@ public class GeometricUtil {
         return tiles;
     }
 
+    public static List<Index> rasterizeRectangleExclusive(Rectangle2D rect, int rasterSize) {
+        List<Index> tiles = new ArrayList<>();
+
+        int startX = (int) Math.ceil(rect.startX() / rasterSize);
+        int startY = (int) Math.ceil(rect.startY() / rasterSize);
+        int endX = (int) Math.floor(rect.endX() / rasterSize);
+        int endY = (int) Math.floor(rect.endY() / rasterSize);
+
+        for (int x = startX; x < endX; x++) {
+            for (int y = startY; y < endY; y++) {
+                tiles.add(new Index(x, y));
+            }
+        }
+        return tiles;
+    }
+
+    public static List<Index> rasterizeRectangleInclusive(Rectangle2D rect, int rasterSize) {
+        List<Index> tiles = new ArrayList<>();
+
+        int startX = (int) Math.floor(rect.startX() / rasterSize);
+        int startY = (int) Math.floor(rect.startY() / rasterSize);
+        int endX = (int) Math.ceil(rect.endX() / rasterSize);
+        int endY = (int) Math.ceil(rect.endY() / rasterSize);
+
+        for (int x = startX; x < endX; x++) {
+            for (int y = startY; y < endY; y++) {
+                tiles.add(new Index(x, y));
+            }
+        }
+        return tiles;
+    }
 
     public static List<Index> rasterizeCircle(Circle2D circle2D, int rasterSize) {
         double startX = Math.floor((circle2D.getCenter().getX() - circle2D.getRadius()) / rasterSize) * rasterSize;
@@ -139,12 +170,12 @@ public class GeometricUtil {
         for (int x = bLTile.getX(); x <= tRTile.getX(); x++) {
             for (int y = bLTile.getY(); y <= tRTile.getY(); y++) {
                 Index tile = new Index(x, y);
-                Rectangle2D absTile = TerrainUtil.toAbsoluteRectangle(tile);
+                Rectangle2D absTile = TerrainUtil.toAbsoluteTileRectangle(tile);
                 if (absTile.contains(viewField.getCorners())) {
                     tiles.add(tile);
                 } else if (viewField.isOneCornerInside(absTile.toCorners())) {
                     tiles.add(tile);
-                } else if(absTile.isLineCrossing(viewField.getLines())) {
+                } else if (absTile.isLineCrossing(viewField.getLines())) {
                     tiles.add(tile);
                 }
             }
@@ -186,5 +217,4 @@ public class GeometricUtil {
         }
         return null;
     }
-
 }
