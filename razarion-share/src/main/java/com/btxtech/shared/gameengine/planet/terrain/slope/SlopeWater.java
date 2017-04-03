@@ -17,8 +17,8 @@ import java.util.List;
 public class SlopeWater extends Slope {
     private final Water water;
 
-    public SlopeWater(Water water, SlopeSkeletonConfig slopeSkeletonConfig, List<DecimalPosition> corners) {
-        super(slopeSkeletonConfig, corners);
+    public SlopeWater(int slopeId, Water water, SlopeSkeletonConfig slopeSkeletonConfig, List<DecimalPosition> corners) {
+        super(slopeId, slopeSkeletonConfig, corners);
         this.water = water;
     }
 

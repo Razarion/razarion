@@ -52,6 +52,7 @@ public class SlopeModeler {
         slopeConfig.getSlopeSkeletonConfig().setRows(rows);
     }
 
+    @Deprecated
     public static void generateMesh(Mesh mesh, SlopeSkeletonConfig slopeSkeletonConfig, List<AbstractBorder> borders, List<Index> innerLineMeshIndex, List<Index> outerLineMeshIndex, GroundMesh groundMesh) {
         int templateSegment = 0;
         int meshColumn = 0;

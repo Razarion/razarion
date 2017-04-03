@@ -1,5 +1,6 @@
 package com.btxtech.shared.system;
 
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 
 /**
@@ -9,4 +10,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 public interface JsInteropObjectFactory {
 
     TerrainTile generateTerrainTile();
+
+    TerrainSlopeTile generateTerrainSlopeTile();
 }

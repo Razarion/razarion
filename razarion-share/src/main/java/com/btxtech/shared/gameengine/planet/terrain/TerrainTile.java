@@ -30,6 +30,10 @@ public abstract class TerrainTile {
 
     public native int getGroundVertexCount();
 
+    public native void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile);
+
+    public native TerrainSlopeTile[] getTerrainSlopeTile();
+
     public native Object toArray();
 
     public native int fromArray(Object object);

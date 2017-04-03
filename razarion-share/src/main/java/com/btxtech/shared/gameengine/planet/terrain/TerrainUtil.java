@@ -17,7 +17,6 @@ public interface TerrainUtil {
         return absolute.divide(TERRAIN_TILE_ABSOLUTE_LENGTH).toIndexFloor();
     }
 
-
     static DecimalPosition toTileAbsolute(Index tile) {
         return new DecimalPosition(tile.scale(TERRAIN_TILE_ABSOLUTE_LENGTH));
     }
@@ -25,6 +24,10 @@ public interface TerrainUtil {
     static Rectangle2D toAbsoluteTileRectangle(Index tile) {
         DecimalPosition start = toTileAbsolute(tile);
         return new Rectangle2D(start.getX(), start.getY(), TERRAIN_TILE_ABSOLUTE_LENGTH, TERRAIN_TILE_ABSOLUTE_LENGTH);
+    }
+
+    static Index toNode(DecimalPosition absolute) {
+        return absolute.divide(GROUND_NODE_ABSOLUTE_LENGTH).toIndexFloor();
     }
 
     static DecimalPosition toNodeAbsolute(Index tile) {

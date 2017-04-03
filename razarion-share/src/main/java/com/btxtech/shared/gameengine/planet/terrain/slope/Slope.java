@@ -8,7 +8,7 @@ import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundSlopeConnector;
@@ -16,7 +16,6 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
  */
 public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
+    private int slopeId;
     private SlopeSkeletonConfig slopeSkeletonConfig;
     private List<DecimalPosition> corners;
     private List<AbstractBorder> borders = new ArrayList<>();
@@ -40,7 +40,8 @@ public class Slope {
     private Polygon2D outerPolygon;
     private GroundSlopeConnector groundPlateauConnector;
 
-    public Slope(SlopeSkeletonConfig slopeSkeletonConfig, List<DecimalPosition> corners) {
+    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<DecimalPosition> corners) {
+        this.slopeId = slopeId;
         this.slopeSkeletonConfig = slopeSkeletonConfig;
         this.corners = new ArrayList<>(corners);
 
@@ -53,8 +54,31 @@ public class Slope {
         // Setup vertical segments
         xVertices = 0;
         for (AbstractBorder border : borders) {
-            xVertices += border.setupVerticalSegments(slopeSkeletonConfig.getVerticalSpace());
+            xVertices += border.setupVerticalSegments(this, slopeSkeletonConfig.getVerticalSpace());
         }
+        // Set VerticalSegment predecessor and successor
+        VerticalSegment last = null;
+        VerticalSegment first = null;
+        for (AbstractBorder border : borders) {
+            for (VerticalSegment verticalSegment : border.getVerticalSegments()) {
+                if (first == null) {
+                    first = verticalSegment;
+                }
+                if (last != null) {
+                    last.setSuccessor(verticalSegment);
+                    verticalSegment.setPredecessor(last);
+                }
+                last = verticalSegment;
+            }
+        }
+        if (last != null) {
+            last.setSuccessor(first);
+            first.setPredecessor(last);
+        }
+    }
+
+    public int getSlopeId() {
+        return slopeId;
     }
 
     public List<AbstractBorder> getBorders() {
@@ -255,38 +279,24 @@ public class Slope {
         this.slopeSkeletonConfig = slopeSkeletonConfig;
     }
 
-    public Collection<ObstacleSlope> generateObstacles() {
-        Collection<ObstacleSlope> obstacles = new ArrayList<>();
-
-        fillObstacle(innerLine, obstacles);
-        fillObstacle(outerLine, obstacles);
-
-//        Index last = innerLine.get(0).toXY().toIndexRound();
-//        for (int i = 0; i < innerLine.size(); i++) {
-//            Index next = innerLine.get(CollectionUtils.getCorrectedIndex(i + 1, innerLine.size())).toXY().toIndexRound();;
-//            if(last.equals(next)) {
-//                continue;
-//            }
-//            obstacles.add(new Obstacle(new Line2I(last, next)));
-//            last = next;
-//        }
-//        for (int i = 0; i < outerLine.size(); i++) {
-//            Vertex current = outerLine.get(i);
-//            Vertex next = outerLine.get(CollectionUtils.getCorrectedIndex(i + 1, outerLine.size()));
-//            obstacles.add(new Obstacle(new Line2I(current.toXY().toIndexRound(), next.toXY().toIndexRound())));
-//        }
-
-        return obstacles;
+    public void fillObstacleContainer(ObstacleContainer obstacleContainer) {
+        fillObstacle(innerLine, obstacleContainer);
+        fillObstacle(outerLine, obstacleContainer);
+        for (AbstractBorder border : borders) {
+            for (VerticalSegment verticalSegment : border.getVerticalSegments()) {
+                obstacleContainer.addSlopeSegment(verticalSegment);
+            }
+        }
     }
 
-    private void fillObstacle(List<Vertex> polygon, Collection<ObstacleSlope> obstacles) {
+    private void fillObstacle(List<Vertex> polygon, ObstacleContainer obstacleContainer) {
         DecimalPosition last = polygon.get(0).toXY();
         for (int i = 0; i < polygon.size(); i++) {
             DecimalPosition next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY();
             if (last.equals(next)) {
                 continue;
             }
-            obstacles.add(new ObstacleSlope(new Line(last, next)));
+            obstacleContainer.addObstacleSlope(new ObstacleSlope(new Line(last, next)));
             last = next;
         }
     }
@@ -315,5 +325,24 @@ public class Slope {
     public boolean isInSlope(DecimalPosition position, double radius) {
         // TODO This is not enough. Radius is ignored. Also check the innerPolygon and the water
         return outerPolygon.isInside(position);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Slope slope = (Slope) o;
+
+        return slopeId == slope.slopeId;
+    }
+
+    @Override
+    public int hashCode() {
+        return slopeId;
     }
 }

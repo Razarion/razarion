@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.utils.GeometricUtil;
 
+import javax.enterprise.context.Dependent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 23.01.2016.
  */
+@Deprecated
 public class Mesh {
     private Logger logger = Logger.getLogger(Mesh.class.getName());
     private MeshEntry[][] nodes;

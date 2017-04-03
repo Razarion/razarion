@@ -6,9 +6,9 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
+import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
@@ -41,12 +41,12 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
     }
 
     @Override
-    protected void fillBuffer(SlopeUi slopeUi) {
-        vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(slopeUi.getVertices(), slopeUi.getNorms()));
+    protected void fillBuffer(UiTerrainSlopeTile terrainSlopeTile) {
+        // TODO vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(terrainSlopeTile.getVertices(), terrainSlopeTile.getNorms()));
     }
 
     @Override
-    protected void draw(SlopeUi slopeUi) {
+    protected void draw(UiTerrainSlopeTile uiTerrainSlopeTile) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(modelMatrix, Matrix4.createIdentity());
 

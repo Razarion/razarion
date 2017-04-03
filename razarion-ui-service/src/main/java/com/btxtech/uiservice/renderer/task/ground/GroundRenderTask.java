@@ -20,7 +20,7 @@ public class GroundRenderTask extends AbstractRenderTask<GroundSkeletonConfig> {
     @Inject
     private TerrainUiService terrainUiService;
 
-    public ModelRenderer createRendererUnit(UiTerrainTile uiTerrainTile) {
+    public ModelRenderer createModelRenderer(UiTerrainTile uiTerrainTile) {
         ModelRenderer<UiTerrainTile, CommonRenderComposite<AbstractGroundRendererUnit, UiTerrainTile>, AbstractGroundRendererUnit, UiTerrainTile> modelRenderer = create();
         CommonRenderComposite<AbstractGroundRendererUnit, UiTerrainTile> renderComposite = modelRenderer.create();
         renderComposite.init(uiTerrainTile);

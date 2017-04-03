@@ -4,9 +4,9 @@ import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShader
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
-import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
+import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 import elemental.html.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
@@ -37,12 +37,12 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
     }
 
     @Override
-    protected void fillBuffer(SlopeUi slopeUi) {
-        vertices.fillFloat32ArrayEmu(slopeUi.getVertices());
+    protected void fillBuffer(UiTerrainSlopeTile uiTerrainSlopeTile) {
+        // TODO vertices.fillFloat32ArrayEmu(uiTerrainSlopeTile.getVertices());
     }
 
     @Override
-    protected void draw(SlopeUi slopeUi) {
+    protected void draw(UiTerrainSlopeTile uiTerrainSlopeTile) {
         webGlFacade.useProgram();
 
         vertices.activate();

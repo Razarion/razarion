@@ -12,28 +12,28 @@ import java.util.function.BiFunction;
  * Created by Beat
  * 09.08.2016.
  */
-public class MapList<T, U> {
-    private final Map<T, List<U>> map = new HashMap<>();
+public class MapList<K, L> {
+    private final Map<K, List<L>> map = new HashMap<>();
 
-    public void put(T key, U value) {
-        List<U> collection = map.computeIfAbsent(key, k -> new ArrayList<>());
+    public void put(K key, L value) {
+        List<L> collection = map.computeIfAbsent(key, k -> new ArrayList<>());
         collection.add(value);
     }
 
-    public List<U> get(T key) {
+    public List<L> get(K key) {
         return map.get(key);
     }
 
-    public List<U> getAll() {
-        List<U> all = new ArrayList<>();
-        for (List<U> list : map.values()) {
+    public List<L> getAll() {
+        List<L> all = new ArrayList<>();
+        for (List<L> list : map.values()) {
             all.addAll(list);
         }
         return all;
     }
 
-    public List<U> getSave(T key) {
-        List<U> values = get(key);
+    public List<L> getSave(K key) {
+        List<L> values = get(key);
         if (values != null) {
             return values;
         } else {
@@ -41,16 +41,16 @@ public class MapList<T, U> {
         }
     }
 
-    public Map<T, List<U>> getMap() {
+    public Map<K, List<L>> getMap() {
         return map;
     }
 
-    public void remove(T key) {
+    public void remove(K key) {
         map.remove(key);
     }
 
-    public void remove(T key, U value) {
-        List<U> collection = map.get(key);
+    public void remove(K key, L value) {
+        List<L> collection = map.get(key);
         if (collection == null) {
             return;
         }
@@ -60,8 +60,12 @@ public class MapList<T, U> {
         }
     }
 
-    public Collection<T> getKeys() {
+    public Collection<K> getKeys() {
         return map.keySet();
+    }
+
+    public boolean containsKey(K key) {
+        return map.containsKey(key);
     }
 
     /**
@@ -70,10 +74,10 @@ public class MapList<T, U> {
      *
      * @param callback callback
      */
-    public void iterate(BiFunction<T, U, Boolean> callback) {
-        for (Map.Entry<T, List<U>> entry : map.entrySet()) {
-            for (U u : entry.getValue()) {
-                if(!callback.apply(entry.getKey(), u)) {
+    public void iterate(BiFunction<K, L, Boolean> callback) {
+        for (Map.Entry<K, List<L>> entry : map.entrySet()) {
+            for (L l : entry.getValue()) {
+                if (!callback.apply(entry.getKey(), l)) {
                     return;
                 }
             }
@@ -81,6 +85,6 @@ public class MapList<T, U> {
     }
 
     public void clear() {
-        map.clear();;
+        map.clear();
     }
 }

@@ -1,32 +1,20 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.TestHelper;
-import com.btxtech.shared.TestTerrainTile;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
-import com.btxtech.shared.system.JsInteropObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
 
 /**
  * Created by Beat
  * 29.03.2017.
  */
-public class TerrainServiceTest {
+public class GroundTerrainServiceTest extends TerrainServiceTestBase {
     @Test
     public void testTerrainTileGenerationNormTangent() {
         // Run test
-        TerrainTile terrainTile = generateTerrainTile(new Index(0, 0), new double[][]{
+        TerrainTile terrainTile = generateTerrainTileGround(new Index(0, 0), new double[][]{
                 {0, 0, 0, 0},
                 {0, 16, 0, 0},
                 {0, 0, 16, 0},
@@ -72,7 +60,7 @@ public class TerrainServiceTest {
     @Test
     public void testTerrainTileGeneration() {
         // Run test
-        TerrainTile terrainTile = generateTerrainTile(new Index(0, 0), new double[][]{
+        TerrainTile terrainTile = generateTerrainTileGround(new Index(0, 0), new double[][]{
                 {4, 0, 0, 0},
                 {0, 1, 0, 0},
                 {0, 0, 0, 0},
@@ -119,7 +107,7 @@ public class TerrainServiceTest {
     @Test
     public void testTerrainTileGenerationOffset() {
         // Run test
-        TerrainTile terrainTile = generateTerrainTile(new Index(8, 16), new double[][]{
+        TerrainTile terrainTile = generateTerrainTileGround(new Index(8, 16), new double[][]{
                 {4, 0, 0, 0},
                 {0, 1, 0, 0},
                 {0, 0, 0, 0},
@@ -167,7 +155,7 @@ public class TerrainServiceTest {
     @Test
     public void testTerrainTileGenerationOffsetNeg() {
         // Run test
-        TerrainTile terrainTile = generateTerrainTile(new Index(-1, -2), new double[][]{
+        TerrainTile terrainTile = generateTerrainTileGround(new Index(-1, -2), new double[][]{
                 {4, 0, 0, 0},
                 {0, 1, 0, 0},
                 {0, 0, 0, 0},
@@ -210,49 +198,5 @@ public class TerrainServiceTest {
             double dot = TestHelper.createVertex(terrainTile.getGroundNorms(), i).dot(TestHelper.createVertex(terrainTile.getGroundTangents(), i));
             Assert.assertTrue("dot: " + dot, Math.abs(dot) < 0.0000001);
         }
-    }
-
-    private TerrainTile generateTerrainTile(Index terrainTileIndex, double[][] heights, double[][] splattings) {
-        // Setup TerrainService
-        TerrainService terrainService = new TerrainService();
-        // Mock JsInteropObjectFactory
-        JsInteropObjectFactory mockJsInteropObjectFactory = createNiceMock(JsInteropObjectFactory.class);
-        expect(mockJsInteropObjectFactory.generateTerrainTile()).andReturn(new TestTerrainTile());
-        SimpleTestEnvironment.injectJsInteropObjectFactory("jsInteropObjectFactory", terrainService, mockJsInteropObjectFactory);
-        // Mock ObstacleContainer
-        ObstacleContainer obstacleContainerMock = createNiceMock(ObstacleContainer.class);
-        expect(obstacleContainerMock.isSlope(anyObject(Index.class))).andReturn(false);
-        expect(obstacleContainerMock.getInsideSlopeHeight(anyObject(Index.class))).andReturn(0.0);
-        SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainerMock);
-
-        replay(mockJsInteropObjectFactory, obstacleContainerMock);
-
-        TerrainTypeService terrainTypeService = new TerrainTypeService();
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
-        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        gameEngineConfig.setGroundSkeletonConfig(groundSkeletonConfig);
-        groundSkeletonConfig.setHeights(toColumnRow(heights));
-        groundSkeletonConfig.setHeightXCount(heights[0].length);
-        groundSkeletonConfig.setHeightYCount(heights.length);
-        groundSkeletonConfig.setSplattings(toColumnRow(splattings));
-        groundSkeletonConfig.setSplattingXCount(splattings[0].length);
-        groundSkeletonConfig.setSplattingYCount(splattings.length);
-
-        terrainTypeService.init(gameEngineConfig);
-        SimpleTestEnvironment.injectService("terrainTypeService", terrainService, terrainTypeService);
-
-        return terrainService.generateTerrainTile(terrainTileIndex);
-    }
-
-    private double[][] toColumnRow(double[][] rowColumn) {
-        int xCount = rowColumn[0].length;
-        int yCount = rowColumn.length;
-        double[][] columnRow = new double[xCount][yCount];
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
-                columnRow[x][y] = rowColumn[y][x];
-            }
-        }
-        return columnRow;
     }
 }

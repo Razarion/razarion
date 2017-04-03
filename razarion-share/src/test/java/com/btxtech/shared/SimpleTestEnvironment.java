@@ -6,11 +6,21 @@ import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTileContext;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.inject.Instance;
+import javax.enterprise.util.TypeLiteral;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 
 /**
  * Created by Beat
@@ -58,6 +68,59 @@ public class SimpleTestEnvironment {
             Field field = service.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(service, serviceToInject);
+            field.setAccessible(false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void injectInstance(String fieldName, Object object, Supplier getSupplier) {
+        Instance instance = new Instance() {
+            @Override
+            public Instance select(Annotation... qualifiers) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Instance select(Class subtype, Annotation... qualifiers) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Instance select(TypeLiteral subtype, Annotation... qualifiers) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean isUnsatisfied() {
+                return false;
+            }
+
+            @Override
+            public boolean isAmbiguous() {
+                return false;
+            }
+
+            @Override
+            public void destroy(Object instance) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Iterator iterator() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Object get() {
+                return getSupplier.get();
+            }
+        };
+
+        try {
+            Field field = object.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(object, instance);
             field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);

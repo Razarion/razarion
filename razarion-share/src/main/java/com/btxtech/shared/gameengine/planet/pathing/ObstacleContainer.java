@@ -13,6 +13,7 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
+import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
@@ -54,12 +55,20 @@ public class ObstacleContainer {
         logger.severe("Setup ObstacleContainer took: " + (System.currentTimeMillis() - time));
     }
 
-    private void insertObstacleSlope(Slope slope) {
-        for (ObstacleSlope obstacleSlope : slope.generateObstacles()) {
-            for (Index node : absoluteLineToNodes(obstacleSlope.getLine())) {
-                getOrCreate(node).addObstacle(obstacleSlope);
-            }
+    private void insertObstacleTerrainObject(ObstacleTerrainObject obstacleTerrainObject) {
+        for (Index node : absoluteCircleToNodes(obstacleTerrainObject.getCircle())) {
+            getOrCreate(node).addObstacle(obstacleTerrainObject);
         }
+    }
+
+    private List<Index> absoluteCircleToNodes(Circle2D absoluteCircle) {
+        Circle2D circle = new Circle2D(absoluteCircle.getCenter().sub(absoluteOffset), absoluteCircle.getRadius());
+        return GeometricUtil.rasterizeCircle(circle, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+    }
+
+    private void insertObstacleSlope(Slope slope) {
+        slope.fillObstacleContainer(this);
+
         Polygon2D outerPolygon = slope.getOuterPolygon();
         Rectangle2D aabb = outerPolygon.toAabb();
         Polygon2D innerPolygon = slope.getInnerPolygon();
@@ -74,41 +83,24 @@ public class ObstacleContainer {
                 getOrCreate(node).setBelongsToSlope();
             }
         }
-
     }
 
-    private List<Index> absoluteLineToNodes(Line absoluteLine) {
-        Line line = new Line(absoluteLine.getPoint1().sub(absoluteOffset), absoluteLine.getPoint2().sub(absoluteOffset));
-        return GeometricUtil.rasterizeLine(line, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-    }
-
-    private List<Index> absoluteRectangleToNodesInclusive(Rectangle2D absoluteRect) {
-        DecimalPosition start = absoluteRect.getStart().sub(absoluteOffset);
-        Rectangle2D rect = new Rectangle2D(start.getX(), start.getY(), absoluteRect.width(), absoluteRect.height());
-        return GeometricUtil.rasterizeRectangleInclusive(rect, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-    }
-
-    private void insertObstacleTerrainObject(ObstacleTerrainObject obstacleTerrainObject) {
-        for (Index node : absoluteCircleToNodes(obstacleTerrainObject.getCircle())) {
-            getOrCreate(node).addObstacle(obstacleTerrainObject);
+    public void addObstacleSlope(ObstacleSlope obstacleSlope) {
+        for (Index node : absoluteLineToNodes(obstacleSlope.getLine())) {
+            getOrCreate(node).addObstacle(obstacleSlope);
         }
     }
 
-    private List<Index> absoluteCircleToNodes(Circle2D absoluteCircle) {
-        Circle2D circle = new Circle2D(absoluteCircle.getCenter().sub(absoluteOffset), absoluteCircle.getRadius());
-        return GeometricUtil.rasterizeCircle(circle, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+    public void addSlopeSegment(VerticalSegment verticalSegment) {
+        getOrCreate(toNode(verticalSegment.getInner())).addSlopeSegment(verticalSegment);
     }
 
-    public Iterable<Obstacle> getObstacles(SyncPhysicalArea syncPhysicalArea) {
-        List<Index> nodes = absoluteCircleToNodes(new Circle2D(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius()));
-        Set<Obstacle> obstacles = new HashSet<>();
-        for (Index node : nodes) {
-            ObstacleContainerNode obstacleContainerNode = getObstacleContainerNode(node);
-            if (obstacleContainerNode != null && obstacleContainerNode.getObstacles() != null) {
-                obstacles.addAll(obstacleContainerNode.getObstacles());
-            }
-        }
-        return obstacles;
+    public int getXCount() {
+        return xCount;
+    }
+
+    public int getYCount() {
+        return yCount;
     }
 
     public DecimalPosition toAbsolute(Index index) {
@@ -144,6 +136,17 @@ public class ObstacleContainer {
         return obstacleContainerNode;
     }
 
+    private List<Index> absoluteLineToNodes(Line absoluteLine) {
+        Line line = new Line(absoluteLine.getPoint1().sub(absoluteOffset), absoluteLine.getPoint2().sub(absoluteOffset));
+        return GeometricUtil.rasterizeLine(line, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+    }
+
+    private List<Index> absoluteRectangleToNodesInclusive(Rectangle2D absoluteRect) {
+        DecimalPosition start = absoluteRect.getStart().sub(absoluteOffset);
+        Rectangle2D rect = new Rectangle2D(start.getX(), start.getY(), absoluteRect.width(), absoluteRect.height());
+        return GeometricUtil.rasterizeRectangleInclusive(rect, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+    }
+
     public boolean isSlope(Index index) {
         ObstacleContainerNode node = getObstacleContainerNodeIncludeOffset(index);
         return node != null && node.isInSlope();
@@ -160,12 +163,24 @@ public class ObstacleContainer {
         return node.getSlopHeight();
     }
 
-    public int getXCount() {
-        return xCount;
+    public List<VerticalSegment> getVerticalSegments(Index index) {
+        ObstacleContainerNode node = getObstacleContainerNodeIncludeOffset(index);
+        if (node == null) {
+            return null;
+        }
+        return node.getSlopeSegments();
     }
 
-    public int getYCount() {
-        return yCount;
+    public Iterable<Obstacle> getObstacles(SyncPhysicalArea syncPhysicalArea) {
+        List<Index> nodes = absoluteCircleToNodes(new Circle2D(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius()));
+        Set<Obstacle> obstacles = new HashSet<>();
+        for (Index node : nodes) {
+            ObstacleContainerNode obstacleContainerNode = getObstacleContainerNode(node);
+            if (obstacleContainerNode != null && obstacleContainerNode.getObstacles() != null) {
+                obstacles.addAll(obstacleContainerNode.getObstacles());
+            }
+        }
+        return obstacles;
     }
 
     public boolean hasNorthSuccessorNode(int currentNodePositionY) {

@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +29,12 @@ public abstract class AbstractBorder {
         return distance;
     }
 
-    public int setupVerticalSegments(double verticalSpace) {
+    public int setupVerticalSegments(Slope slope, double verticalSpace) {
         int count = getSegmentCount(verticalSpace);
         double length = getSegmentLength(count);
         for (int i = 0; i < count; i++) {
-            verticalSegments.add(new VerticalSegment(setupInnerPointFormStart(length, i), setupOuterPointFormStart(length, i)));
+            VerticalSegment verticalSegment = new VerticalSegment(slope, i, setupInnerPointFormStart(length, i), setupOuterPointFormStart(length, i));
+            verticalSegments.add(verticalSegment);
         }
         return count;
     }

@@ -1,7 +1,10 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
+import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -9,6 +12,7 @@ import java.util.Collection;
  */
 public class ObstacleContainerNode {
     private Collection<Obstacle> obstacles;
+    private List<VerticalSegment> slopeSegments;
     private Double slopHeight;
     private boolean belongsToSlope;
 
@@ -19,16 +23,31 @@ public class ObstacleContainerNode {
         obstacles.add(obstacle);
     }
 
-    public Collection<Obstacle> getObstacles() {
-        return obstacles;
-    }
-
-    public Double getSlopHeight() {
-        return slopHeight;
+    public void addSlopeSegment(VerticalSegment verticalSegment) {
+        if (slopeSegments == null) {
+            slopeSegments = new ArrayList<>();
+        }
+        slopeSegments.add(verticalSegment);
     }
 
     public void setSlopHeight(Double slopHeight) {
         this.slopHeight = slopHeight;
+    }
+
+    public void setBelongsToSlope() {
+        belongsToSlope = true;
+    }
+
+    public Collection<Obstacle> getObstacles() {
+        return obstacles;
+    }
+
+    public List<VerticalSegment> getSlopeSegments() {
+        return slopeSegments;
+    }
+
+    public Double getSlopHeight() {
+        return slopHeight;
     }
 
     public boolean isInSlope() {
@@ -45,9 +64,5 @@ public class ObstacleContainerNode {
             }
         }
         return false;
-    }
-
-    public void setBelongsToSlope() {
-        belongsToSlope = true;
     }
 }

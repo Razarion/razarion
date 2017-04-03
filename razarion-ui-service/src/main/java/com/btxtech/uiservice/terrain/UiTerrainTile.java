@@ -3,12 +3,16 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -20,10 +24,13 @@ public class UiTerrainTile {
     private TerrainUiService terrainUiService;
     @Inject
     private GroundRenderTask groundRenderTask;
+    @Inject
+    private Instance<UiTerrainSlopeTile> uiTerrainSlopeTileInstance;
     private GroundSkeletonConfig groundSkeletonConfig;
     private TerrainTile terrainTile;
     private ModelRenderer modelRenderer;
     private boolean active;
+    private Collection<UiTerrainSlopeTile> uiTerrainSlopeTiles;
 
     public void init(Index index, GroundSkeletonConfig groundSkeletonConfig) {
         this.groundSkeletonConfig = groundSkeletonConfig;
@@ -35,12 +42,23 @@ public class UiTerrainTile {
         if (modelRenderer != null) {
             modelRenderer.setActive(active);
         }
+        if (uiTerrainSlopeTiles != null) {
+            uiTerrainSlopeTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.setActive(active));
+        }
     }
 
     private void terrainTileReceived(TerrainTile terrainTile) {
         this.terrainTile = terrainTile;
-        modelRenderer = groundRenderTask.createRendererUnit(this);
+        modelRenderer = groundRenderTask.createModelRenderer(this);
         modelRenderer.setActive(active);
+        if (terrainTile.getTerrainSlopeTile() != null) {
+            uiTerrainSlopeTiles = new ArrayList<>();
+            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTile()) {
+                UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
+                uiTerrainSlopeTile.init(active, this, terrainSlopeTile);
+                uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
+            }
+        }
     }
 
     public TerrainTile getTerrainTile() {

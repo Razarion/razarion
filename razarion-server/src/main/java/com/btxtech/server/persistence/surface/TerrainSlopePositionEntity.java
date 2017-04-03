@@ -39,7 +39,7 @@ public class TerrainSlopePositionEntity {
     }
 
     public TerrainSlopePosition toTerrainSlopePosition() {
-        return new TerrainSlopePosition().setId(id.intValue()).setSlopeId(slopeConfigEntity.getId().intValue()).setPolygon(new ArrayList<>(polygon));
+        return new TerrainSlopePosition().setId(id.intValue()).setSlopeConfigEntity(slopeConfigEntity.getId().intValue()).setPolygon(new ArrayList<>(polygon));
     }
 
     public void setSlopeConfigEntity(SlopeConfigEntity slopeConfigEntity) {

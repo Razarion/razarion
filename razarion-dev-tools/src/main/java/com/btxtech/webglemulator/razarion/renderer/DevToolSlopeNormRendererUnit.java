@@ -7,7 +7,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
-import com.btxtech.shared.datatypes.terrain.SlopeUi;
+import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -31,13 +31,13 @@ public class DevToolSlopeNormRendererUnit extends AbstractSlopeRendererUnit impl
     private WebGlProgramEmulator webGlProgramEmulator;
 
     @Override
-    protected void fillBuffer(SlopeUi slopeUi) {
+    protected void fillBuffer(UiTerrainSlopeTile terrainSlopeTile) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(DevToolRenderUtil.setupNormDoubles(slopeUi.getVertices(), slopeUi.getNorms()));
+        webGlProgramEmulator.setDoubles(DevToolRenderUtil.setupNormDoubles(terrainSlopeTile.getTerrainSlopeTile().getVertices(), terrainSlopeTile.getTerrainSlopeTile().getNorms()));
     }
 
     @Override
-    protected void draw(SlopeUi slopeUi) {
+    protected void draw(UiTerrainSlopeTile uiTerrainSlopeTile) {
         webGlEmulator.drawArrays(webGlProgramEmulator);
     }
 

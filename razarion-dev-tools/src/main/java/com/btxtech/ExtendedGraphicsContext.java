@@ -15,8 +15,9 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.webglemulator.razarion.renderer.DevToolFloat32ArrayEmu;
@@ -351,7 +352,7 @@ public class ExtendedGraphicsContext {
             gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
 
         }
-        if(splattingColor != null) {
+        if (splattingColor != null) {
             gc.setFill(splattingColor);
             for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
                 int vertexScalarIndex = vertexIndex * 3;
@@ -364,6 +365,22 @@ public class ExtendedGraphicsContext {
                 }
             }
 
+        }
+        if (terrainTile.getTerrainSlopeTile() != null) {
+            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTile()) {
+                drawTerrainSlopeTile(terrainSlopeTile);
+            }
+        }
+    }
+
+    private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
+        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
+            int vertexScalarIndex = vertexIndex * 3;
+
+            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
+            double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
+            gc.setStroke(Color.GRAY);
+            gc.strokePolygon(xCorners, yCorners, 3);
         }
     }
 }

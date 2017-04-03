@@ -1,12 +1,16 @@
 package com.btxtech.webglemulator.razarion;
 
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Beat
  * 31.03.2017.
  */
-public class DevTooTerrainTile extends TerrainTile {
+public class DevToolTerrainTile extends TerrainTile {
     private int indexX;
     private int indexY;
     private int groundVertexCount;
@@ -14,6 +18,7 @@ public class DevTooTerrainTile extends TerrainTile {
     private double[] groundNorms;
     private double[] groundTangents;
     private double[] groundSplattings;
+    private Collection<TerrainSlopeTile> terrainSlopeTiles;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -82,6 +87,22 @@ public class DevTooTerrainTile extends TerrainTile {
     @Override
     public int getGroundVertexCount() {
         return groundVertexCount;
+    }
+
+    @Override
+    public void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
+        if(terrainSlopeTiles == null) {
+            terrainSlopeTiles = new ArrayList<>();
+        }
+        terrainSlopeTiles.add(terrainSlopeTile);
+    }
+
+    @Override
+    public TerrainSlopeTile[] getTerrainSlopeTile() {
+        if(terrainSlopeTiles == null) {
+            return null;
+        }
+        return terrainSlopeTiles.toArray(new TerrainSlopeTile[terrainSlopeTiles.size()]);
     }
 
     @Override

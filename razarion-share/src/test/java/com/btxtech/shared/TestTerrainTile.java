@@ -1,6 +1,10 @@
 package com.btxtech.shared;
 
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -14,6 +18,7 @@ public class TestTerrainTile extends TerrainTile {
     private double[] groundNorms;
     private double[] groundTangents;
     private double[] groundSplattings;
+    private Collection<TerrainSlopeTile> terrainSlopeTiles;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -83,6 +88,22 @@ public class TestTerrainTile extends TerrainTile {
     @Override
     public int getGroundVertexCount() {
         return groundVertexCount;
+    }
+
+    @Override
+    public void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
+        if(terrainSlopeTiles == null) {
+            terrainSlopeTiles = new ArrayList<>();
+        }
+        terrainSlopeTiles.add(terrainSlopeTile);
+    }
+
+    @Override
+    public TerrainSlopeTile[] getTerrainSlopeTile() {
+        if(terrainSlopeTiles == null) {
+            return null;
+        }
+        return terrainSlopeTiles.toArray(new TerrainSlopeTile[terrainSlopeTiles.size()]);
     }
 
     @Override
