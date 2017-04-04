@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 
@@ -23,15 +24,19 @@ public class UiTerrainSlopeTile {
     private TerrainTypeService terrainTypeService;
     @Inject
     private VisualUiService visualUiService;
+    @Inject
+    private GameUiControl gameUiControl;
     private ModelRenderer modelRenderer;
     private UiTerrainTile uiTerrainTile;
     private SlopeSkeletonConfig slopeSkeletonConfig;
     private TerrainSlopeTile terrainSlopeTile;
+    private double waterLevel;
     private double waterGroundLevel;
 
     public void init(boolean active, UiTerrainTile uiTerrainTile, TerrainSlopeTile terrainSlopeTile) {
         this.uiTerrainTile = uiTerrainTile;
         slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopeTile.getSlopeSkeletonConfigId());
+        waterLevel = gameUiControl.getPlanetConfig().getWaterLevel();
         waterGroundLevel = visualUiService.getVisualConfig().getWaterConfig().getGroundLevel();
         this.terrainSlopeTile = terrainSlopeTile;
         modelRenderer = slopeRenderTask.createModelRenderer(this);
@@ -83,15 +88,19 @@ public class UiTerrainSlopeTile {
         return slopeSkeletonConfig.getType() == SlopeSkeletonConfig.Type.WATER;
     }
 
-    public double getWaterLevel() {
-        return waterGroundLevel;
-    }
-
     public double getTextureScale() {
         return slopeSkeletonConfig.getTextureScale();
     }
 
     public double getBmScale() {
         return slopeSkeletonConfig.getBmScale();
+    }
+
+    public double getWaterLevel() {
+        return waterLevel;
+    }
+
+    public double getWaterGroundLevel() {
+        return waterGroundLevel;
     }
 }

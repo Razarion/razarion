@@ -9,7 +9,6 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
@@ -26,8 +25,6 @@ import javax.inject.Inject;
 @Dependent
 public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     // private static Logger logger = Logger.getLogger(ClientSlopeRendererUnit.class.getName());
-    @Inject
-    private TerrainUiService terrainUiService;
     @Inject
     private WebGlFacade webGlFacade;
     private Vec3Float32ArrayShaderAttribute vertices;
@@ -107,7 +104,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         // Water
         webGlFacade.uniform1b(uHasWater, uiTerrainSlopeTile.hasWater());
         webGlFacade.uniform1f(uWaterLevel, uiTerrainSlopeTile.getWaterLevel());
-        webGlFacade.uniform1f(uWaterGround, terrainUiService.getWaterUi().getGroundLevel());
+        webGlFacade.uniform1f(uWaterGround, uiTerrainSlopeTile.getWaterGroundLevel());
 
         vertices.activate();
         normals.activate();
