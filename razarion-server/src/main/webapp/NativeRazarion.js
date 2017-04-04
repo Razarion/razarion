@@ -366,8 +366,26 @@ com = {
                         return this.groundVertexCount;
                     };
 
+                    this.addTerrainSlopeTile = function (terrainSlopeTile) {
+                        if (typeof this.terrainSlopeTiles == 'undefined') {
+                            this.terrainSlopeTiles = [];
+                        }
+                        this.terrainSlopeTiles.push(terrainSlopeTile)
+                    };
+
+                    this.getTerrainSlopeTile = function () {
+                        return this.terrainSlopeTiles;
+                    };
+
                     this.toArray = function () {
-                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings];
+                        var terrainSlopeTilesArray = [];
+                        if (typeof this.terrainSlopeTiles != 'undefined') {
+                            for (var i = 0; i < this.terrainSlopeTiles.length; i++) {
+                                terrainSlopeTilesArray.push(this.terrainSlopeTiles[i].toArray());
+                            }
+                        }
+
+                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, terrainSlopeTilesArray];
                     };
 
                     this.fromArray = function (array) {
@@ -377,6 +395,86 @@ com = {
                         this.groundVertices = array[3];
                         this.groundNorms = array[4];
                         this.groundTangents = array[5];
+                        this.groundSplattings = array[6];
+                        var terrainSlopeTilesArray = array[7];
+                        if (typeof terrainSlopeTilesArray != 'undefined') {
+                            for (var i = 0; i < terrainSlopeTilesArray.length; i++) {
+                                var terrainSlopeTile = new com.btxtech.shared.nativejs.TerrainSlopeTile();
+                                terrainSlopeTile.fromArray(terrainSlopeTilesArray[i]);
+                                this.addTerrainSlopeTile(terrainSlopeTile);
+                            }
+                        }
+                    };
+                },
+
+                TerrainSlopeTile: function () {
+                    this.init = function (slopeSkeletonConfigId, vertexSize, scalarSize) {
+                        this.slopeSkeletonConfigId = slopeSkeletonConfigId;
+                        this.vertices = new Float32Array(vertexSize);
+                        this.norms = new Float32Array(vertexSize);
+                        this.tangents = new Float32Array(vertexSize);
+                        this.slopeFactors = new Float32Array(scalarSize);
+                        this.groundSplattings = new Float32Array(scalarSize);
+                    };
+
+                    this.setTriangleCorner = function (triangleCornerIndex, vertexX, vertexY, vertexZ, normX, normY, normZ, tangentX, tangentY, tangentZ, slopeFactor, splatting) {
+                        var cornerScalarIndex = triangleCornerIndex * 3;
+                        this.vertices[cornerScalarIndex] = vertexX;
+                        this.vertices[cornerScalarIndex + 1] = vertexY;
+                        this.vertices[cornerScalarIndex + 2] = vertexZ;
+                        this.norms[cornerScalarIndex] = normX;
+                        this.norms[cornerScalarIndex + 1] = normY;
+                        this.norms[cornerScalarIndex + 2] = normZ;
+                        this.tangents[cornerScalarIndex] = tangentX;
+                        this.tangents[cornerScalarIndex + 1] = tangentY;
+                        this.tangents[cornerScalarIndex + 2] = tangentZ;
+                        this.slopeFactors[triangleCornerIndex] = slopeFactor;
+                        this.groundSplattings[triangleCornerIndex] = splatting;
+                    };
+
+                    this.getSlopeSkeletonConfigId = function () {
+                        return this.slopeSkeletonConfigId;
+                    };
+
+                    this.setSlopeVertexCount = function (slopeVertexCount) {
+                        this.slopeVertexCount = slopeVertexCount;
+                    };
+
+                    this.getSlopeVertexCount = function () {
+                        return this.slopeVertexCount;
+                    };
+
+                    this.getVertices = function () {
+                        return this.vertices;
+                    };
+
+                    this.getNorms = function () {
+                        return this.norms;
+                    };
+
+                    this.getTangents = function () {
+                        return this.tangents;
+                    };
+
+                    this.getSlopeFactors = function () {
+                        return this.slopeFactors;
+                    };
+
+                    this.getGroundSplattings = function () {
+                        return this.groundSplattings;
+                    };
+
+                    this.toArray = function () {
+                        return [this.slopeSkeletonConfigId, this.slopeVertexCount, this.vertices, this.norms, this.tangents, this.slopeFactors, this.groundSplattings];
+                    };
+
+                    this.fromArray = function (array) {
+                        this.slopeSkeletonConfigId = array[0];
+                        this.slopeVertexCount = array[1];
+                        this.vertices = array[2];
+                        this.norms = array[3];
+                        this.tangents = array[4];
+                        this.slopeFactors = array[5];
                         this.groundSplattings = array[6];
                     };
                 }

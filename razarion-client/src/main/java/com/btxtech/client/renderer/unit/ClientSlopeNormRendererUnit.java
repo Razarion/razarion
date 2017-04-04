@@ -42,7 +42,8 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
 
     @Override
     protected void fillBuffer(UiTerrainSlopeTile terrainSlopeTile) {
-        // TODO vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(terrainSlopeTile.getVertices(), terrainSlopeTile.getNorms()));
+        // vertices.fillFloat32Array(ClientRenderUtil.setupNormFloat32Array(terrainSlopeTile.getVertices(), terrainSlopeTile.getNorms()));
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
