@@ -10,6 +10,7 @@ import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Beat
@@ -78,6 +79,14 @@ public class InstanceStringGenerator {
         }
     }
 
+    public static String generate(Vertex vertex) {
+        if (vertex != null) {
+            return "new Vertex(" + String.format(Locale.US, "%.4f, %.4f, %.4f", vertex.getX(), vertex.getY(), vertex.getZ()) + ")";
+        } else {
+            return NULL_STRING;
+        }
+    }
+
     public static String toVertexDoubleString(List<Vertex> vertices) {
         String s = "new double[]{";
         for (Iterator<Vertex> iterator = vertices.iterator(); iterator.hasNext(); ) {
@@ -91,7 +100,7 @@ public class InstanceStringGenerator {
     }
 
     public static String toSimpleString(Vertex vertex) {
-        return String.format("%.2f, %.2f, %.2f", vertex.getX(), vertex.getY(), vertex.getZ());
+        return String.format(Locale.US, "%.4f, %.4f, %.4f", vertex.getX(), vertex.getY(), vertex.getZ());
     }
 
     public static String toSimpleString(TextureCoordinate textureCoordinate) {

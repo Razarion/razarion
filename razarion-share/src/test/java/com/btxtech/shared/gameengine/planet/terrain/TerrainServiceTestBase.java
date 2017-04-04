@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.TestTerrainSlopeTile;
 import com.btxtech.shared.TestTerrainTile;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Vertex;
@@ -19,7 +18,6 @@ import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.easymock.EasyMock.anyObject;
@@ -63,6 +61,22 @@ public class TerrainServiceTestBase {
     }
 
     protected TerrainTile generateTerrainTileSlope(Index terrainTileIndex, double[][] splattings, List<TerrainSlopePosition> terrainSlopePositions) {
+        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
+        SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
+        slopeSkeletonConfig.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
+        slopeSkeletonConfig.setRows(3).setSegments(1).setWidth(2).setVerticalSpace(2);
+        SlopeNode[][] slopeNodes = new SlopeNode[][]{
+                {createSlopeNode(0, 10, 0.3),},
+                {createSlopeNode(1, 5, 1),},
+                {createSlopeNode(2, 0, 0.7),},
+        };
+        slopeSkeletonConfig.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeSkeletonConfigs.add(slopeSkeletonConfig);
+
+        return generateTerrainTileSlope(terrainTileIndex, splattings, slopeSkeletonConfigs, terrainSlopePositions);
+    }
+
+    protected TerrainTile generateTerrainTileSlope(Index terrainTileIndex, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
         // Setup TerrainService
         TerrainService terrainService = new TerrainService();
         injectTerrainTileContextInstance(terrainService);
@@ -89,17 +103,6 @@ public class TerrainServiceTestBase {
         groundSkeletonConfig.setSplattingXCount(splattings[0].length);
         groundSkeletonConfig.setSplattingYCount(splattings.length);
 
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
-        slopeSkeletonConfig.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfig.setRows(3).setSegments(1).setWidth(2).setVerticalSpace(2);
-        SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 10, 0.3),},
-                {createSlopeNode(1, 5, 1),},
-                {createSlopeNode(2, 0, 0.7),},
-        };
-        slopeSkeletonConfig.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigs.add(slopeSkeletonConfig);
         gameEngineConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
 
         terrainTypeService.init(gameEngineConfig);
@@ -111,10 +114,6 @@ public class TerrainServiceTestBase {
         terrainService.onPlanetActivation(new PlanetActivationEvent(planetConfig));
 
         return terrainService.generateTerrainTile(terrainTileIndex);
-    }
-
-    private SlopeNode createSlopeNode(double x, double z, double slopeFactor) {
-        return new SlopeNode().setPosition(new Vertex(x, 0, z)).setSlopeFactor(slopeFactor);
     }
 
     private void mockJsInteropObjectFactory(Object object) {
@@ -138,7 +137,11 @@ public class TerrainServiceTestBase {
         });
     }
 
-    private double[][] toColumnRow(double[][] rowColumn) {
+    protected SlopeNode createSlopeNode(double x, double z, double slopeFactor) {
+        return new SlopeNode().setPosition(new Vertex(x, 0, z)).setSlopeFactor(slopeFactor);
+    }
+
+    protected double[][] toColumnRow(double[][] rowColumn) {
         int xCount = rowColumn[0].length;
         int yCount = rowColumn.length;
         double[][] columnRow = new double[xCount][yCount];
@@ -150,7 +153,7 @@ public class TerrainServiceTestBase {
         return columnRow;
     }
 
-    private SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
+    protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
         int xCount = rowColumn[0].length;
         int yCount = rowColumn.length;
         SlopeNode[][] columnRow = new SlopeNode[xCount][yCount];

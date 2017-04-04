@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTileContext;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileContext;
@@ -31,9 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Supplier;
 
-import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -44,24 +45,16 @@ import static org.easymock.EasyMock.replay;
  */
 public class SimpleTerrainScenario extends Scenario {
     private TerrainTile terrainTile1;
-    private TerrainTile terrainTile2;
-    private TerrainTile terrainTile3;
-    private TerrainTile terrainTile4;
+    // private TerrainTile terrainTile2;
+    // private TerrainTile terrainTile3;
+    // private TerrainTile terrainTile4;
 
     @Override
     public void init() {
-        double[][] heights = new double[][]{
-                {4, 0, 0, 0},
-                {0, 1, 0, 0},
-                {0, 0, 0, 0},
-                {0, -1.6, 0, 0},
-                {0, 0, 0, 8},
-        };
         double[][] splattings = new double[][]{
-                {0.0, 0.0, 0.0},
-                {0.0, 0.5, 0.8},
-                {0.0, 0.1, 0.0},
-                {0.0, 0.0, 0.3},
+                {0.7, 0.8, 0.9},
+                {0.4, 0.5, 0.6},
+                {0.1, 0.2, 0.3},
         };
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
@@ -69,55 +62,28 @@ public class SimpleTerrainScenario extends Scenario {
         terrainSlopePositionLand.setSlopeConfigEntity(1);
         terrainSlopePositionLand.setPolygon(Arrays.asList(new DecimalPosition(50, 40), new DecimalPosition(100, 40), new DecimalPosition(100, 110), new DecimalPosition(50, 110)));
         terrainSlopePositions.add(terrainSlopePositionLand);
-        TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
-        terrainSlopePositionWater.setId(2);
-        terrainSlopePositionWater.setSlopeConfigEntity(2);
-        // terrainSlopePositionWater.setPolygon(Arrays.asList(new DecimalPosition(120, 40), new DecimalPosition(240, 40), new DecimalPosition(240, 240), new DecimalPosition(120, 240), new DecimalPosition(120, 140), new DecimalPosition(200, 140), new DecimalPosition(200, 40)));
-        terrainSlopePositionWater.setPolygon(Arrays.asList(new DecimalPosition(120, 40), new DecimalPosition(240, 40), new DecimalPosition(240, 220), new DecimalPosition(120, 220)));
-        terrainSlopePositions.add(terrainSlopePositionWater);
-
 
         terrainTile1 = generateTerrainTileSlope(new Index(0, 0), splattings, terrainSlopePositions);
-        terrainTile2 = generateTerrainTileSlope(new Index(1, 0), splattings, terrainSlopePositions);
-        terrainTile3 = generateTerrainTileSlope(new Index(1, 1), splattings, terrainSlopePositions);
-        terrainTile4 = generateTerrainTileSlope(new Index(0, 1), splattings, terrainSlopePositions);
+        TerrainSlopeTile terrainSlopeTile = terrainTile1.getTerrainSlopeTile()[0];
+
     }
 
     @Override
     public void render(ExtendedGraphicsContext context) {
         context.drawTerrainTile(terrainTile1, 0.05, Color.BLACK, Color.RED, Color.BLUEVIOLET);
-        context.drawTerrainTile(terrainTile2, 0.2, Color.RED, Color.BLACK, Color.GREEN);
-        context.drawTerrainTile(terrainTile3, 0.05, Color.BLACK, Color.RED, Color.BLUEVIOLET);
-        context.drawTerrainTile(terrainTile4, 0.2, Color.RED, Color.BLACK, Color.GREEN);
+        // context.drawTerrainTile(terrainTile2, 0.2, Color.RED, Color.BLACK, Color.GREEN);
+        // context.drawTerrainTile(terrainTile3, 0.05, Color.BLACK, Color.RED, Color.BLUEVIOLET);
+        // context.drawTerrainTile(terrainTile4, 0.2, Color.RED, Color.BLACK, Color.GREEN);
     }
 
-    protected TerrainTile generateTerrainTileGround(Index terrainTileIndex, double[][] heights, double[][] splattings) {
-        // Setup TerrainService
-        TerrainService terrainService = new TerrainService();
-        injectTerrainTileContextInstance(terrainService);
-        // Mock ObstacleContainer
-        ObstacleContainer obstacleContainerMock = createNiceMock(ObstacleContainer.class);
-        expect(obstacleContainerMock.isSlope(anyObject(Index.class))).andReturn(false);
-        expect(obstacleContainerMock.getInsideSlopeHeight(anyObject(Index.class))).andReturn(0.0);
-        injectService("obstacleContainer", terrainService, obstacleContainerMock);
+    @Override
+    public void onGenerate() {
+        System.out.println("------------------------------------------");
+        TerrainSlopeTile terrainSlopeTile = terrainTile1.getTerrainSlopeTile()[0];
+        for (int i = 0; i < terrainSlopeTile.getSlopeVertexCount(); i++) {
+            System.out.println("Assert.assertEquals(" + String.format(Locale.US, "%.4f", terrainSlopeTile.getGroundSplattings()[i]) + ", terrainSlopeTile.getGroundSplattings()[" + i + "], 0.0001);");
 
-        replay(obstacleContainerMock);
-
-        TerrainTypeService terrainTypeService = new TerrainTypeService();
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
-        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        gameEngineConfig.setGroundSkeletonConfig(groundSkeletonConfig);
-        groundSkeletonConfig.setHeights(toColumnRow(heights));
-        groundSkeletonConfig.setHeightXCount(heights[0].length);
-        groundSkeletonConfig.setHeightYCount(heights.length);
-        groundSkeletonConfig.setSplattings(toColumnRow(splattings));
-        groundSkeletonConfig.setSplattingXCount(splattings[0].length);
-        groundSkeletonConfig.setSplattingYCount(splattings.length);
-
-        terrainTypeService.init(gameEngineConfig);
-        injectService("terrainTypeService", terrainService, terrainTypeService);
-
-        return terrainService.generateTerrainTile(terrainTileIndex);
+        }
     }
 
     protected TerrainTile generateTerrainTileSlope(Index terrainTileIndex, double[][] splattings, List<TerrainSlopePosition> terrainSlopePositions) {
@@ -150,22 +116,24 @@ public class SimpleTerrainScenario extends Scenario {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(2).setVerticalSpace(2);
+        slopeSkeletonConfigLand.setRows(4).setSegments(1).setVerticalSpace(20).setWidth(20).setHeight(4);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 10, 0.3),},
-                {createSlopeNode(1, 5, 1),},
-                {createSlopeNode(2, 0, 0.7),},
+                {createSlopeNode(0, 0, 0.0),},
+                {createSlopeNode(5, 1, 0.2),},
+                {createSlopeNode(10, 2, 0.4),},
+                {createSlopeNode(15, 3, 0.6),},
+                {createSlopeNode(20, 4, 0.8),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
         SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
         slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
-        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(4).setVerticalSpace(1);
+        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(4).setVerticalSpace(6).setHeight(1.5);
         slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 0.5, 0.3),},
-                {createSlopeNode(1, 1, 1),},
-                {createSlopeNode(2, -0.5, 1.0),},
-                {createSlopeNode(4, -1, 1.0),},
+                {createSlopeNode(4, 0.5, 0.3),},
+                {createSlopeNode(2, 1, 1),},
+                {createSlopeNode(1, -0.5, 1.0),},
+                {createSlopeNode(0, -1, 1.0),},
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);

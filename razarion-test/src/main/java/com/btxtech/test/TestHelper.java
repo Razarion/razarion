@@ -38,6 +38,15 @@ public class TestHelper {
         assertVertex(new Vertex(expectedX, expectedY, expectedZ), actual);
     }
 
+    public static void assertVertex(Vertex expected, double[] vertices, int vertexIndex) {
+        assertVertex(expected, createVertex(vertices, vertexIndex));
+    }
+
+    public static Vertex createVertex(double[] vertices, int vertexIndex) {
+        int scalarIndex = vertexIndex * Vertex.getComponentsPerVertex();
+        return new Vertex(vertices[scalarIndex], vertices[scalarIndex + 1], vertices[scalarIndex + 2]);
+    }
+
     public static void assertTriangle(Triangle expected, int index, VertexList vertexList) {
         List<Vertex> vertexes = vertexList.getVertices().subList(index * 3, index * 3 + 3);
 
