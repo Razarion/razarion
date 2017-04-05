@@ -57,7 +57,7 @@ public class InstanceStringGenerator {
 
     public static String generate(DecimalPosition decimalPosition) {
         if (decimalPosition != null) {
-            return "new DecimalPosition(" + decimalPosition.getX() + ", " + decimalPosition.getY() + ")";
+            return "new DecimalPosition(" + String.format(Locale.US, "%.3f, %.3f", decimalPosition.getX(), decimalPosition.getY()) + ")";
         } else {
             return NULL_STRING;
         }

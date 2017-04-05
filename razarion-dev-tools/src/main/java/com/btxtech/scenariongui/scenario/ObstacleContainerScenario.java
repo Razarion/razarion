@@ -37,7 +37,7 @@ public class ObstacleContainerScenario extends AbstractTerrainScenario {
 
         // Draw terrain
         for (Slope slope : getTerrainService().getSlopes()) {
-            extendedGraphicsContext.strokeVertexList(slope.getMesh().getVertices(), 0.05, Color.BLUE);
+            extendedGraphicsContext.strokeTriangles(slope.getMesh().getVertices(), 0.05, Color.BLUE);
         }
 
         drawObstacle(extendedGraphicsContext);

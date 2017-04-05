@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Slope Ground Connection Scenario", new SlopeGroundConnectionScenario());
         register("Simple Terrain Scenario", new SimpleTerrainScenario());
         register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());

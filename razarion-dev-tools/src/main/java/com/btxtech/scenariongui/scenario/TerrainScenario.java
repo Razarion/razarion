@@ -17,7 +17,7 @@ public class TerrainScenario extends AbstractTerrainScenario {
 
     @Override
     public void render(ExtendedGraphicsContext context) {
-        // TODO user TerrainTile instead context.strokeVertexList(getTerrainService().getGroundMesh().provideVertexList().getVertices(), 0.1, Color.BLUE);
+        // TODO user TerrainTile instead context.strokeTriangles(getTerrainService().getGroundMesh().provideVertexList().getVertices(), 0.1, Color.BLUE);
 
         for (Slope slope : getTerrainService().getSlopes()) {
 
@@ -28,7 +28,7 @@ public class TerrainScenario extends AbstractTerrainScenario {
                 t.printStackTrace();
             }
 
-            context.strokeVertexList(slope.getMesh().getVertices(), 0.02, Color.PINK);
+            context.strokeTriangles(slope.getMesh().getVertices(), 0.02, Color.PINK);
 
             try {
 //                context.strokeCurve(slope.getGroundPlateauConnector().getOuterGroundEdges(), 0.1, Color.GREEN, true);
@@ -38,7 +38,7 @@ public class TerrainScenario extends AbstractTerrainScenario {
             }
 
             if (!slope.hasWater()) {
-                context.strokeVertexList(slope.getGroundPlateauConnector().getTopMesh().provideVertexList().getVertices(), 0.1, Color.BLUEVIOLET);
+                context.strokeTriangles(slope.getGroundPlateauConnector().getTopMesh().provideVertexList().getVertices(), 0.1, Color.BLUEVIOLET);
                 context.strokeCurve(slope.getGroundPlateauConnector().getInnerGroundEdges(), 0.1, Color.GREEN, true);
                 context.strokeCurve(slope.getGroundPlateauConnector().getInnerSlopeEdges(), 0.1, Color.RED, true);
                 context.fillVertexList(slope.getGroundPlateauConnector().getInnerConnectionVertexList().getVertices(), 0.1, Color.RED);

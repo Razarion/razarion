@@ -52,7 +52,7 @@ public class ExtendedGraphicsContext {
         return gc;
     }
 
-    public void strokeVertexList(List<Vertex> vertices, double lineWidth, Paint color) {
+    public void strokeTriangles(List<Vertex> vertices, double lineWidth, Paint color) {
         gc.setLineWidth(lineWidth);
         gc.setStroke(color);
         for (int i = 0; i < vertices.size(); i += 3) {
