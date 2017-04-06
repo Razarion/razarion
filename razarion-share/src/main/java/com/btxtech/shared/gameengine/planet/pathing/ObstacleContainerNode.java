@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ public class ObstacleContainerNode {
     private List<VerticalSegment> slopeSegments;
     private Double slopHeight;
     private boolean belongsToSlope;
+    private Collection<List<Vertex>> outerSlopeGroundPiercingLine;
 
     public void addObstacle(Obstacle obstacle) {
         if (obstacles == null) {
@@ -64,5 +67,30 @@ public class ObstacleContainerNode {
             }
         }
         return false;
+    }
+
+    public boolean exitsInSlopeGroundPiercing(DecimalPosition absolutePosition) {
+        if (outerSlopeGroundPiercingLine == null) {
+            return false;
+        }
+        for (List<Vertex> piercings : outerSlopeGroundPiercingLine) {
+            for (Vertex piercing : piercings) {
+                if (piercing.toXY().equals(absolutePosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void addSlopeGroundPiercing(List<Vertex> piercingLine) {
+        if (outerSlopeGroundPiercingLine == null) {
+            outerSlopeGroundPiercingLine = new ArrayList<>();
+        }
+        outerSlopeGroundPiercingLine.add(piercingLine);
+    }
+
+    public Collection<List<Vertex>> getOuterSlopeGroundPiercingLine() {
+        return outerSlopeGroundPiercingLine;
     }
 }

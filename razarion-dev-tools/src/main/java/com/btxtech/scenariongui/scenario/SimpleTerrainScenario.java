@@ -89,10 +89,10 @@ public class SimpleTerrainScenario extends Scenario {
     protected TerrainTile generateTerrainTileSlope(Index terrainTileIndex, double[][] splattings, List<TerrainSlopePosition> terrainSlopePositions) {
         // Setup TerrainService
         TerrainService terrainService = new TerrainService();
-        injectTerrainTileContextInstance(terrainService);
+        FrameworkHelper.injectTerrainTileContextInstance(terrainService);
         // Mock ObstacleContainer
         ObstacleContainer obstacleContainer = new ObstacleContainer();
-        injectService("obstacleContainer", terrainService, obstacleContainer);
+        FrameworkHelper.injectService("obstacleContainer", terrainService, obstacleContainer);
 
         double[][] heights = new double[][]{
                 {0, 0, 0, 0},
@@ -106,42 +106,42 @@ public class SimpleTerrainScenario extends Scenario {
 
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         gameEngineConfig.setGroundSkeletonConfig(groundSkeletonConfig);
-        groundSkeletonConfig.setHeights(toColumnRow(heights));
+        groundSkeletonConfig.setHeights(FrameworkHelper.toColumnRow(heights));
         groundSkeletonConfig.setHeightXCount(heights[0].length);
         groundSkeletonConfig.setHeightYCount(heights.length);
-        groundSkeletonConfig.setSplattings(toColumnRow(splattings));
+        groundSkeletonConfig.setSplattings(FrameworkHelper.toColumnRow(splattings));
         groundSkeletonConfig.setSplattingXCount(splattings[0].length);
         groundSkeletonConfig.setSplattingYCount(splattings.length);
 
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(4).setSegments(1).setVerticalSpace(20).setWidth(20).setHeight(4);
+        slopeSkeletonConfigLand.setRows(4).setSegments(1).setVerticalSpace(5).setWidth(20).setHeight(4);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 0, 0.0),},
-                {createSlopeNode(5, 1, 0.2),},
-                {createSlopeNode(10, 2, 0.4),},
-                {createSlopeNode(15, 3, 0.6),},
-                {createSlopeNode(20, 4, 0.8),},
+                {FrameworkHelper.createSlopeNode(0, 0, 0.0),},
+                {FrameworkHelper.createSlopeNode(5, 1, 0.2),},
+                {FrameworkHelper.createSlopeNode(10, 2, 0.4),},
+                {FrameworkHelper.createSlopeNode(15, 3, 0.6),},
+                {FrameworkHelper.createSlopeNode(20, 4, 0.8),},
         };
-        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeSkeletonConfigLand.setSlopeNodes(FrameworkHelper.toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
         SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
         slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
         slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(4).setVerticalSpace(6).setHeight(1.5);
         slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(4, 0.5, 0.3),},
-                {createSlopeNode(2, 1, 1),},
-                {createSlopeNode(1, -0.5, 1.0),},
-                {createSlopeNode(0, -1, 1.0),},
+                {FrameworkHelper.createSlopeNode(4, 0.5, 0.3),},
+                {FrameworkHelper.createSlopeNode(2, 1, 1),},
+                {FrameworkHelper.createSlopeNode(1, -0.5, 1.0),},
+                {FrameworkHelper.createSlopeNode(0, -1, 1.0),},
         };
-        slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeSkeletonConfigWater.setSlopeNodes(FrameworkHelper.toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
         gameEngineConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
 
         terrainTypeService.init(gameEngineConfig);
-        injectService("terrainTypeService", terrainService, terrainTypeService);
+        FrameworkHelper.injectService("terrainTypeService", terrainService, terrainTypeService);
 
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
@@ -150,129 +150,4 @@ public class SimpleTerrainScenario extends Scenario {
 
         return terrainService.generateTerrainTile(terrainTileIndex);
     }
-
-    private SlopeNode createSlopeNode(double x, double z, double slopeFactor) {
-        return new SlopeNode().setPosition(new Vertex(x, 0, z)).setSlopeFactor(slopeFactor);
-    }
-
-    private void mockJsInteropObjectFactory(Object object) {
-        JsInteropObjectFactory mockJsInteropObjectFactory = createNiceMock(JsInteropObjectFactory.class);
-        expect(mockJsInteropObjectFactory.generateTerrainTile()).andReturn(new DevToolTerrainTile());
-        expect(mockJsInteropObjectFactory.generateTerrainSlopeTile()).andReturn(new DevToolTerrainSlopeTile());
-        injectJsInteropObjectFactory("jsInteropObjectFactory", object, mockJsInteropObjectFactory);
-        replay(mockJsInteropObjectFactory);
-    }
-
-    private void injectTerrainTileContextInstance(TerrainService terrainService) {
-        injectInstance("terrainTileContextInstance", terrainService, () -> {
-            TerrainTileContext terrainTileContext = new TerrainTileContext();
-            mockJsInteropObjectFactory(terrainTileContext);
-            injectInstance("terrainSlopeTileContextInstance", terrainTileContext, () -> {
-                TerrainSlopeTileContext terrainSlopeTileContext = new TerrainSlopeTileContext();
-                mockJsInteropObjectFactory(terrainSlopeTileContext);
-                return terrainSlopeTileContext;
-            });
-            return terrainTileContext;
-        });
-    }
-
-    private static void injectInstance(String fieldName, Object object, Supplier getSupplier) {
-        Instance instance = new Instance() {
-            @Override
-            public Instance select(Annotation... qualifiers) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Instance select(Class subtype, Annotation... qualifiers) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Instance select(TypeLiteral subtype, Annotation... qualifiers) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isUnsatisfied() {
-                return false;
-            }
-
-            @Override
-            public boolean isAmbiguous() {
-                return false;
-            }
-
-            @Override
-            public void destroy(Object instance) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Iterator iterator() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Object get() {
-                return getSupplier.get();
-            }
-        };
-
-        try {
-            Field field = object.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(object, instance);
-            field.setAccessible(false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void injectJsInteropObjectFactory(String fieldName, Object service, JsInteropObjectFactory jsInteropObjectFactory) {
-        try {
-            Field field = service.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(service, jsInteropObjectFactory);
-            field.setAccessible(false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void injectService(String fieldName, Object service, Object serviceToInject) {
-        try {
-            Field field = service.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(service, serviceToInject);
-            field.setAccessible(false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private double[][] toColumnRow(double[][] rowColumn) {
-        int xCount = rowColumn[0].length;
-        int yCount = rowColumn.length;
-        double[][] columnRow = new double[xCount][yCount];
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
-                columnRow[x][y] = rowColumn[y][x];
-            }
-        }
-        return columnRow;
-    }
-
-    private SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
-        int xCount = rowColumn[0].length;
-        int yCount = rowColumn.length;
-        SlopeNode[][] columnRow = new SlopeNode[xCount][yCount];
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
-                columnRow[x][y] = rowColumn[y][x];
-            }
-        }
-        return columnRow;
-    }
-
 }

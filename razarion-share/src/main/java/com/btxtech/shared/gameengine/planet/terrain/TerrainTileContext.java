@@ -14,6 +14,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -43,8 +44,8 @@ public class TerrainTileContext {
         offsetIndexY = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
     }
 
-    public void initGround() {
-        int verticesCount = (int) (Math.pow(TerrainUtil.TERRAIN_TILE_NODES_COUNT, 2) * 6);
+    public void initGround(List<Vertex> slopeGroundConnection) {
+        int verticesCount = slopeGroundConnection.size() + (int) (Math.pow(TerrainUtil.TERRAIN_TILE_NODES_COUNT, 2) * 6);
         terrainTile.initGroundArrays(verticesCount * Vertex.getComponentsPerVertex(), verticesCount);
     }
 

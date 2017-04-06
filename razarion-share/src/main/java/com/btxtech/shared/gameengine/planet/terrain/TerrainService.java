@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.MapList;
@@ -10,6 +11,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
+import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
@@ -25,6 +27,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundModeler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
@@ -77,7 +80,8 @@ public class TerrainService {
         long time = System.currentTimeMillis();
         TerrainTileContext terrainTileContext = terrainTileContextInstance.get();
         terrainTileContext.init(terrainTileIndex, terrainTypeService.getGroundSkeletonConfig());
-        insertGroundPart(terrainTileContext);
+        List<Vertex> slopeGroundConnection = insertSlopeGroundConnectionPart(terrainTileContext);
+        insertGroundPart(terrainTileContext, slopeGroundConnection);
         insertSlopePart(terrainTileContext);
         TerrainTile terrainTile = terrainTileContext.complete();
         logger.severe("generateTerrainTile: " + (System.currentTimeMillis() - time));
@@ -97,21 +101,28 @@ public class TerrainService {
         }
     }
 
-    private void insertGroundPart(TerrainTileContext terrainTileContext) {
-        terrainTileContext.initGround();
+    private void insertGroundPart(TerrainTileContext terrainTileContext, List<Vertex> slopeGroundConnection) {
+        terrainTileContext.initGround(slopeGroundConnection);
 
         GroundSkeletonConfig groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
 
-        final SingleHolder<Integer> rectangleIndex = new SingleHolder<>(0);
+        final SingleHolder<Integer> rectangleIndexHolder = new SingleHolder<>(0);
         iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
             if (obstacleContainer.isSlope(nodeIndex)) {
                 return;
             }
             double slopeHeight = obstacleContainer.getInsideSlopeHeight(nodeIndex);
-            insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), rectangleIndex.getO(), groundSkeletonConfig, slopeHeight, terrainTileContext);
-            rectangleIndex.setO(rectangleIndex.getO() + 1);
+            insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), rectangleIndexHolder.getO(), groundSkeletonConfig, slopeHeight, terrainTileContext);
+            rectangleIndexHolder.setO(rectangleIndexHolder.getO() + 1);
         });
-        terrainTileContext.setGroundVertexCount(rectangleIndex.getO() * 2 * 3); // Per rectangle are two triangles with 3 corners
+
+        int triangleCornerIndex = rectangleIndexHolder.getO() * 2 * 3;
+        for (Vertex vertex : slopeGroundConnection) {
+            terrainTileContext.insertTriangleCorner(vertex, Vertex.Z_NORM, Vertex.X_NORM, 1.0, triangleCornerIndex);
+            triangleCornerIndex++;
+        }
+
+        terrainTileContext.setGroundVertexCount(triangleCornerIndex); // Per rectangle are two triangles with 3 corners
     }
 
     private void insertTerrainRectangle(int xNode, int yNode, int rectangleIndex, GroundSkeletonConfig groundSkeletonConfig, double slopeHeight, TerrainTileContext terrainTileContext) {
@@ -295,6 +306,182 @@ public class TerrainService {
         // Why -shapeTemplateEntry.getNormShift() and not + is unclear
         // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
         return slopeNode.getSlopeFactor();
+    }
+
+    private List<Vertex> insertSlopeGroundConnectionPart(TerrainTileContext terrainTileContext) {
+        List<Vertex> vertices = new ArrayList<>();
+        iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
+            ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
+            if (obstacleContainerNode == null) {
+                return;
+            }
+            if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() == null) {
+                return;
+            }
+            Rectangle2D absoluteRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+            for (List<Vertex> piercingLine : obstacleContainerNode.getOuterSlopeGroundPiercingLine()) {
+                List<Vertex> polygon = new ArrayList<>();
+                Line startLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
+                RectanglePiercing startRectanglePiercing = getRectanglePiercing(absoluteRect, startLine);
+
+                Line endLine = new Line(piercingLine.get(piercingLine.size() - 2).toXY(), piercingLine.get(piercingLine.size() - 1).toXY());
+                RectanglePiercing endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine);
+
+                addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross()));
+                Side side = startRectanglePiercing.getSide();
+                if (startRectanglePiercing.getSide() == endRectanglePiercing.getSide()) {
+                    if (!startRectanglePiercing.getSide().isBefore(startRectanglePiercing.getCross(), endRectanglePiercing.getCross())) {
+                        addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side)));
+                        side = side.getSuccessor();
+                    }
+                }
+
+                while (side != endRectanglePiercing.side) {
+                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side)));
+                    side = side.getSuccessor();
+                }
+                addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross()));
+
+                for (int i = piercingLine.size() - 2; i > 0; i--) {
+                    addOnlyXyUnique(polygon, piercingLine.get(i));
+                }
+
+                if (polygon.size() < 3) {
+                    continue;
+                }
+
+                // Triangulate Polygon
+                Triangulator.calculate(polygon, (vertex1, vertex2, vertex3) -> {
+                    vertices.add(vertex1);
+                    vertices.add(vertex2);
+                    vertices.add(vertex3);
+                });
+
+            }
+        });
+        return vertices;
+    }
+
+    private void addOnlyXyUnique(List<Vertex> list, Vertex vertex) {
+        if (list.isEmpty()) {
+            list.add(vertex);
+            return;
+        }
+        DecimalPosition decimalPosition = vertex.toXY();
+        for (Vertex existing : list) {
+            if (existing.toXY().equals(decimalPosition)) {
+                return;
+            }
+        }
+        list.add(vertex);
+    }
+
+    private Vertex toVertexGround(DecimalPosition position) {
+        return new Vertex(position, 0);
+    }
+
+    private Vertex toVertexSlope(DecimalPosition position) {
+        return new Vertex(position, 0);
+    }
+
+    private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line) {
+        DecimalPosition crossPoint = rectangle.lineW().getCrossInclusive(line);
+        if (crossPoint != null) {
+            return new RectanglePiercing(crossPoint, Side.WEST);
+        }
+        crossPoint = rectangle.lineS().getCrossInclusive(line);
+        if (crossPoint != null) {
+            return new RectanglePiercing(crossPoint, Side.SOUTH);
+        }
+        crossPoint = rectangle.lineE().getCrossInclusive(line);
+        if (crossPoint != null) {
+            return new RectanglePiercing(crossPoint, Side.EAST);
+        }
+        crossPoint = rectangle.lineN().getCrossInclusive(line);
+        if (crossPoint != null) {
+            return new RectanglePiercing(crossPoint, Side.NORTH);
+        }
+        throw new IllegalArgumentException("getRectanglePiercing should not happen");
+    }
+
+    public static class RectanglePiercing {
+
+        private DecimalPosition cross;
+        private Side side;
+
+        public RectanglePiercing(DecimalPosition cross, Side side) {
+            this.cross = cross;
+            this.side = side;
+        }
+
+        public DecimalPosition getCross() {
+            return cross;
+        }
+
+        public Side getSide() {
+            return side;
+        }
+    }
+
+
+    public enum Side {
+        NORTH {
+            @Override
+            boolean isBefore(DecimalPosition position1, DecimalPosition position2) {
+                return position1.getX() > position2.getX();
+            }
+        },
+        WEST {
+            @Override
+            boolean isBefore(DecimalPosition position1, DecimalPosition position2) {
+                return position1.getY() > position2.getY();
+            }
+        },
+        SOUTH {
+            @Override
+            boolean isBefore(DecimalPosition position1, DecimalPosition position2) {
+                return position1.getX() < position2.getX();
+            }
+        },
+        EAST {
+            @Override
+            boolean isBefore(DecimalPosition position1, DecimalPosition position2) {
+                return position1.getY() < position2.getY();
+            }
+        };
+
+        Side getSuccessor() {
+            switch (this) {
+                case NORTH:
+                    return WEST;
+                case WEST:
+                    return SOUTH;
+                case SOUTH:
+                    return EAST;
+                case EAST:
+                    return NORTH;
+                default:
+                    throw new IllegalArgumentException("Side don't know how to handle: " + this);
+            }
+        }
+
+        abstract boolean isBefore(DecimalPosition position1, DecimalPosition position2);
+    }
+
+    public DecimalPosition getSuccessorCorner(Rectangle2D rectangle, Side side) {
+        switch (side) {
+            case NORTH:
+                return rectangle.cornerTopLeft();
+            case WEST:
+                return rectangle.cornerBottomLeft();
+            case SOUTH:
+                return rectangle.cornerBottomRight();
+            case EAST:
+                return rectangle.cornerTopRight();
+            default:
+                throw new IllegalArgumentException("getCorner: don't know how to handle side: " + side);
+        }
+
     }
 
     private void setup(PlanetConfig planetConfig) {

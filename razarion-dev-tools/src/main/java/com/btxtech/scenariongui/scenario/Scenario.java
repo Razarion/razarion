@@ -37,8 +37,9 @@ public abstract class Scenario {
     }
 
     static {
-        register("Slope Ground Connection Scenario", new SlopeGroundConnectionScenario());
-        register("Simple Terrain Scenario", new SimpleTerrainScenario());
+        register("Simple Terrain", new SimpleTerrainScenario());
+        register("Obstacle Container Slope Ground Connector", new ObstacleContainerSlopeGroundConnectorScenario());
+        register("Slope Ground Connection", new SlopeGroundConnectionScenario());
         register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());

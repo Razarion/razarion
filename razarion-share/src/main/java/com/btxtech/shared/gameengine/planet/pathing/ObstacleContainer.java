@@ -8,16 +8,19 @@ import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -79,7 +82,7 @@ public class ObstacleContainer {
                 getOrCreate(node).setSlopHeight(slope.getHeight());
                 continue;
             }
-            if(outerPolygon.isOneCornerInside(corners)) {
+            if (outerPolygon.isOneCornerInside(corners)) {
                 getOrCreate(node).setBelongsToSlope();
             }
         }
@@ -90,6 +93,39 @@ public class ObstacleContainer {
             getOrCreate(node).addObstacle(obstacleSlope);
         }
     }
+
+    public void addSlopeGroundConnector(List<Vertex> slopeLine, int slopePositionIndex, DecimalPosition absolutePosition) {
+        Index nodeIndex = toNode(absolutePosition);
+        ObstacleContainerNode obstacleContainerNode = getOrCreate(nodeIndex);
+        if (!obstacleContainerNode.exitsInSlopeGroundPiercing(absolutePosition)) {
+            Rectangle2D nodeRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+            int currentIndex = findStart(nodeRect, slopePositionIndex, slopeLine);
+            Vertex current = slopeLine.get(currentIndex);;
+            List<Vertex> piercingLine = new ArrayList<>();
+            piercingLine.add(current);
+            do {
+                currentIndex = CollectionUtils.getCorrectedIndex(currentIndex + 1, slopeLine);
+                current = slopeLine.get(currentIndex);
+                piercingLine.add(current);
+            } while (nodeRect.contains(current.toXY()));
+
+
+            obstacleContainerNode.addSlopeGroundPiercing(piercingLine);
+        }
+    }
+
+    private int findStart(Rectangle2D rect, int index, List<Vertex> outerLine) {
+        int protection = outerLine.size() + 1;
+        do {
+            index = CollectionUtils.getCorrectedIndex(index - 1, outerLine);
+            protection--;
+            if (protection < 0) {
+                throw new IllegalStateException("Prevent infinite loop");
+            }
+        } while (rect.contains(outerLine.get(index).toXY()));
+        return index;
+    }
+
 
     public void addSlopeSegment(VerticalSegment verticalSegment) {
         getOrCreate(toNode(verticalSegment.getInner())).addSlopeSegment(verticalSegment);
@@ -122,7 +158,7 @@ public class ObstacleContainer {
         return obstacleContainerNodes[index.getX()][index.getY()];
     }
 
-    private ObstacleContainerNode getObstacleContainerNodeIncludeOffset(Index index) {
+    public ObstacleContainerNode getObstacleContainerNodeIncludeOffset(Index index) {
         Index correctedIndex = index.sub(offset);
         return getObstacleContainerNode(correctedIndex);
     }

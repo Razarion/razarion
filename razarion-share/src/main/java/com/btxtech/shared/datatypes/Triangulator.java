@@ -24,6 +24,10 @@ public class Triangulator {
     }
 
     private static <T extends Vertex> void extractTriangle(List<T> vertexPolygon, Listener<T> listener) {
+        if (vertexPolygon.size() < 3) {
+            throw new IllegalArgumentException("A polygon must have at least 3 corners");
+        }
+
         if (vertexPolygon.size() == 3) {
             listener.onTriangle(vertexPolygon.get(0), vertexPolygon.get(1), vertexPolygon.get(2));
             return;

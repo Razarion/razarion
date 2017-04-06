@@ -169,13 +169,16 @@ public class ExtendedGraphicsContext {
         gc.setStroke(color);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
         gc.setLineWidth(strokeWidth);
-        for (int i = 0; i < curve.size(); i++) {
+        for (int i = 0; i < curve.size() - 1; i++) {
             DecimalPosition start = curve.get(i).toXY();
-            DecimalPosition end = curve.get(i + 1 < curve.size() ? i + 1 : i - curve.size() + 1).toXY();
+            DecimalPosition end = curve.get(i + 1).toXY();
 
             gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
             if (showPoint) {
                 gc.fillOval(start.getX() - strokeWidth * 3.0, start.getY() - strokeWidth * 3.0, strokeWidth * 6.0, strokeWidth * 6.0);
+                if (i == curve.size() - 2) {
+                    gc.fillOval(end.getX() - strokeWidth * 3.0, end.getY() - strokeWidth * 3.0, strokeWidth * 6.0, strokeWidth * 6.0);
+                }
             }
         }
     }
@@ -317,6 +320,8 @@ public class ExtendedGraphicsContext {
             double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
             gc.setStroke(ground);
             gc.strokePolygon(xCorners, yCorners, 3);
+            gc.setFill(Color.color(0, 1, 0, 0.3));
+            gc.fillPolygon(xCorners, yCorners, 3);
 
 //            // Height as color dot
 //            gc.setFill(zColor);
@@ -352,22 +357,22 @@ public class ExtendedGraphicsContext {
 //            gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + normX1, yCorners[1] + normY1);
 //            gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
 //        }
-        // Splattings
-        gc.setStroke(Color.BLUEVIOLET);
-        gc.setLineWidth(0.3);
-        for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex++) {
-            int vertexScalarIndex = vertexIndex * 3;
-
-            double xCorner = terrainTile.getGroundVertices()[vertexScalarIndex];
-            double yCorner = terrainTile.getGroundVertices()[vertexScalarIndex + 1];
-
-            double splatting = terrainTile.getGroundSplattings()[vertexIndex];
-
-            DecimalPosition position = new DecimalPosition(xCorner, yCorner);
-            DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
-
-            gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
-        }
+//        // Splattings
+//        gc.setStroke(Color.BLUEVIOLET);
+//        gc.setLineWidth(0.3);
+//        for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex++) {
+//            int vertexScalarIndex = vertexIndex * 3;
+//
+//            double xCorner = terrainTile.getGroundVertices()[vertexScalarIndex];
+//            double yCorner = terrainTile.getGroundVertices()[vertexScalarIndex + 1];
+//
+//            double splatting = terrainTile.getGroundSplattings()[vertexIndex];
+//
+//            DecimalPosition position = new DecimalPosition(xCorner, yCorner);
+//            DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
+//
+//            gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
+//        }
 
         gc.setLineWidth(lineWidth);
         if (terrainTile.getTerrainSlopeTile() != null) {
@@ -385,8 +390,8 @@ public class ExtendedGraphicsContext {
             double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
             gc.setStroke(Color.GRAY);
             gc.strokePolygon(xCorners, yCorners, 3);
-//            gc.setFill(Color.color(0, 1, 0, 0.5));
-//            gc.fillPolygon(xCorners, yCorners, 3);
+            gc.setFill(Color.color(1, 0, 0, 0.3));
+            gc.fillPolygon(xCorners, yCorners, 3);
         }
 //        // Norm
 //        gc.setStroke(Color.RED);
@@ -445,21 +450,21 @@ public class ExtendedGraphicsContext {
 //            double radius = 1;
 //            gc.fillOval(xCorner - radius, yCorner - radius, radius * 2.0, radius * 2.0);
 //        }
-        // Splattings
-        gc.setStroke(Color.GREEN);
-        gc.setLineWidth(0.3);
-        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
-            int vertexScalarIndex = vertexIndex * 3;
-
-            double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
-            double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
-
-            double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
-
-            DecimalPosition position = new DecimalPosition(xCorner, yCorner);
-            DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
-            gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
-        }
+//        // Splattings
+//        gc.setStroke(Color.GREEN);
+//        gc.setLineWidth(0.3);
+//        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
+//            int vertexScalarIndex = vertexIndex * 3;
+//
+//            double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
+//            double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
+//
+//            double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
+//
+//            DecimalPosition position = new DecimalPosition(xCorner, yCorner);
+//            DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
+//            gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
+//        }
 
     }
 }

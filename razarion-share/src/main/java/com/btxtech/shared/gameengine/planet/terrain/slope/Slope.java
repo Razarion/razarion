@@ -280,8 +280,8 @@ public class Slope {
     }
 
     public void fillObstacleContainer(ObstacleContainer obstacleContainer) {
-        fillObstacle(innerLine, obstacleContainer);
-        fillObstacle(outerLine, obstacleContainer);
+        fillObstacle(innerLine, obstacleContainer, false);
+        fillObstacle(outerLine, obstacleContainer, true);
         for (AbstractBorder border : borders) {
             for (VerticalSegment verticalSegment : border.getVerticalSegments()) {
                 obstacleContainer.addSlopeSegment(verticalSegment);
@@ -289,7 +289,7 @@ public class Slope {
         }
     }
 
-    private void fillObstacle(List<Vertex> polygon, ObstacleContainer obstacleContainer) {
+    private void fillObstacle(List<Vertex> polygon, ObstacleContainer obstacleContainer, boolean isOuter) {
         DecimalPosition last = polygon.get(0).toXY();
         for (int i = 0; i < polygon.size(); i++) {
             DecimalPosition next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY();
@@ -297,6 +297,9 @@ public class Slope {
                 continue;
             }
             obstacleContainer.addObstacleSlope(new ObstacleSlope(new Line(last, next)));
+            if (isOuter) {
+                obstacleContainer.addSlopeGroundConnector(polygon, i, polygon.get(i).toXY());
+            }
             last = next;
         }
     }
