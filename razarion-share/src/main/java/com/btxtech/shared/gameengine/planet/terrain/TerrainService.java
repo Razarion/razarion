@@ -13,7 +13,6 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -33,7 +32,6 @@ import com.btxtech.shared.gameengine.planet.terrain.ground.GroundModeler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeWater;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
-import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.event.Observes;
@@ -80,8 +78,8 @@ public class TerrainService {
         long time = System.currentTimeMillis();
         TerrainTileContext terrainTileContext = terrainTileContextInstance.get();
         terrainTileContext.init(terrainTileIndex, terrainTypeService.getGroundSkeletonConfig());
-        List<Vertex> slopeGroundConnection = insertSlopeGroundConnectionPart(terrainTileContext);
-        insertGroundPart(terrainTileContext, slopeGroundConnection);
+        insertSlopeGroundConnectionPart(terrainTileContext);
+        insertGroundPart(terrainTileContext);
         insertSlopePart(terrainTileContext);
         TerrainTile terrainTile = terrainTileContext.complete();
         logger.severe("generateTerrainTile: " + (System.currentTimeMillis() - time));
@@ -101,54 +99,41 @@ public class TerrainService {
         }
     }
 
-    private void insertGroundPart(TerrainTileContext terrainTileContext, List<Vertex> slopeGroundConnection) {
-        terrainTileContext.initGround(slopeGroundConnection);
+    private void insertGroundPart(TerrainTileContext terrainTileContext) {
+        terrainTileContext.initGround();
 
-        GroundSkeletonConfig groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
-
-        final SingleHolder<Integer> rectangleIndexHolder = new SingleHolder<>(0);
         iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
             if (obstacleContainer.isSlope(nodeIndex)) {
                 return;
             }
             double slopeHeight = obstacleContainer.getInsideSlopeHeight(nodeIndex);
-            insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), rectangleIndexHolder.getO(), groundSkeletonConfig, slopeHeight, terrainTileContext);
-            rectangleIndexHolder.setO(rectangleIndexHolder.getO() + 1);
+            insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), slopeHeight, terrainTileContext);
         });
 
-        int triangleCornerIndex = rectangleIndexHolder.getO() * 2 * 3;
-        for (Vertex vertex : slopeGroundConnection) {
-            terrainTileContext.insertTriangleCorner(vertex, Vertex.Z_NORM, Vertex.X_NORM, 1.0, triangleCornerIndex);
-            triangleCornerIndex++;
-        }
 
-        terrainTileContext.setGroundVertexCount(triangleCornerIndex); // Per rectangle are two triangles with 3 corners
+        terrainTileContext.insertSlopeGroundConnection();
+
+        terrainTileContext.setGroundVertexCount(); // Per rectangle are two triangles with 3 corners
     }
 
-    private void insertTerrainRectangle(int xNode, int yNode, int rectangleIndex, GroundSkeletonConfig groundSkeletonConfig, double slopeHeight, TerrainTileContext terrainTileContext) {
+    private void insertTerrainRectangle(int xNode, int yNode, double slopeHeight, TerrainTileContext terrainTileContext) {
         int rightXNode = xNode + 1;
         int topYNode = yNode + 1;
 
-        double zBL = slopeHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getHeightYCount())];
-        double zBR = slopeHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(rightXNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getHeightYCount())];
-        double zTR = slopeHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(rightXNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(topYNode, groundSkeletonConfig.getHeightYCount())];
-        double zTL = slopeHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(topYNode, groundSkeletonConfig.getHeightYCount())];
-        double absoluteX = xNode * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
-        double absoluteY = yNode * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
-        Vertex vertexBL = new Vertex(absoluteX, absoluteY, zBL);
-        Vertex vertexBR = new Vertex(absoluteX + TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, absoluteY, zBR);
-        Vertex vertexTR = new Vertex(absoluteX + TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, absoluteY + TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, zTR);
-        Vertex vertexTL = new Vertex(absoluteX, absoluteY + TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, zTL);
+        Vertex vertexBL = terrainTileContext.setupVertex(xNode, yNode, slopeHeight);
+        Vertex vertexBR = terrainTileContext.setupVertex(rightXNode, yNode, slopeHeight);
+        Vertex vertexTR = terrainTileContext.setupVertex(rightXNode, topYNode, slopeHeight);
+        Vertex vertexTL = terrainTileContext.setupVertex(xNode, topYNode, slopeHeight);
 
-        Vertex normBL = setupNorm(xNode, yNode, groundSkeletonConfig);
-        Vertex normBR = setupNorm(rightXNode, yNode, groundSkeletonConfig);
-        Vertex normTR = setupNorm(rightXNode, topYNode, groundSkeletonConfig);
-        Vertex normTL = setupNorm(xNode, topYNode, groundSkeletonConfig);
+        Vertex normBL = terrainTileContext.setupNorm(xNode, yNode);
+        Vertex normBR = terrainTileContext.setupNorm(rightXNode, yNode);
+        Vertex normTR = terrainTileContext.setupNorm(rightXNode, topYNode);
+        Vertex normTL = terrainTileContext.setupNorm(xNode, topYNode);
 
-        Vertex tangentBL = setupTangent(xNode, yNode, groundSkeletonConfig);
-        Vertex tangentBR = setupTangent(rightXNode, yNode, groundSkeletonConfig);
-        Vertex tangentTR = setupTangent(rightXNode, topYNode, groundSkeletonConfig);
-        Vertex tangentTL = setupTangent(xNode, topYNode, groundSkeletonConfig);
+        Vertex tangentBL = terrainTileContext.setupTangent(xNode, yNode);
+        Vertex tangentBR = terrainTileContext.setupTangent(rightXNode, yNode);
+        Vertex tangentTR = terrainTileContext.setupTangent(rightXNode, topYNode);
+        Vertex tangentTL = terrainTileContext.setupTangent(xNode, topYNode);
 
 
         double splattingBL = terrainTileContext.getSplatting(xNode, yNode);
@@ -159,40 +144,13 @@ public class TerrainService {
         terrainTileContext.setSplatting(xNode, yNode, splattingBL, splattingBR, splattingTR, splattingTL);
 
         // Triangle 1
-        int triangleIndex = rectangleIndex * 2;
-        int triangleCornerIndex = triangleIndex * 3;
-        terrainTileContext.insertTriangleCorner(vertexBL, normBL, tangentBL, splattingBL, triangleCornerIndex);
-        terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR, triangleCornerIndex + 1);
-        terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL, triangleCornerIndex + 2);
+        terrainTileContext.insertTriangleCorner(vertexBL, normBL, tangentBL, splattingBL);
+        terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR);
+        terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL);
         // Triangle 2
-        triangleIndex = rectangleIndex * 2 + 1;
-        triangleCornerIndex = triangleIndex * 3;
-        terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR, triangleCornerIndex);
-        terrainTileContext.insertTriangleCorner(vertexTR, normTR, tangentTR, splattingTR, triangleCornerIndex + 1);
-        terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL, triangleCornerIndex + 2);
-    }
-
-    private Vertex setupNorm(int x, int y, GroundSkeletonConfig groundSkeletonConfig) {
-        int xEast = x + 1;
-        int xWest = x - 1 < 0 ? groundSkeletonConfig.getHeightXCount() - 1 : x - 1;
-        int yNorth = y + 1;
-        int ySouth = y - 1 < 0 ? groundSkeletonConfig.getHeightYCount() - 1 : y - 1;
-
-        double zNorth = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(x, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNorth, groundSkeletonConfig.getHeightYCount())];
-        double zEast = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xEast, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
-        double zSouth = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(x, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(ySouth, groundSkeletonConfig.getHeightYCount())];
-        double zWest = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xWest, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
-        return new Vertex(zWest - zEast, zSouth - zNorth, 2 * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
-    }
-
-    private Vertex setupTangent(int x, int y, GroundSkeletonConfig groundSkeletonConfig) {
-        int xEast = x + 1;
-        int xWest = x - 1 < 0 ? groundSkeletonConfig.getHeightXCount() - 1 : x - 1;
-
-        double zEast = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xEast, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
-        double zWest = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xWest, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
-
-        return new Vertex(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH * 2.0, 0, zEast - zWest).normalize(1.0);
+        terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR);
+        terrainTileContext.insertTriangleCorner(vertexTR, normTR, tangentTR, splattingTR);
+        terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL);
     }
 
     private void insertSlopePart(TerrainTileContext terrainTileContext) {
@@ -351,12 +309,7 @@ public class TerrainService {
                 }
 
                 // Triangulate Polygon
-                Triangulator.calculate(polygon, (vertex1, vertex2, vertex3) -> {
-                    vertices.add(vertex1);
-                    vertices.add(vertex2);
-                    vertices.add(vertex3);
-                });
-
+                Triangulator.calculate(polygon, (vertex1, vertex2, vertex3) -> terrainTileContext.insertTriangleGroundSlopeConnection(vertex1, vertex2, vertex3, 0));
             }
         });
         return vertices;
@@ -505,10 +458,6 @@ public class TerrainService {
         }
 
         logger.severe("Setup surface took: " + (System.currentTimeMillis() - time));
-    }
-
-    public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {
-        return terrainObjectConfigPositions;
     }
 
     public void setupPlateaus() {
@@ -714,14 +663,6 @@ public class TerrainService {
         }
         // Nothing found
         throw new NoInterpolatedTerrainTriangleException(worldPickRay);
-    }
-
-    public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
-        for (Slope slope : slopeMap.values()) {
-            if (slope.getSlopeSkeletonConfig().getId() == slopeSkeletonConfig.getId()) {
-                slope.updateSlopeSkeleton(slopeSkeletonConfig);
-            }
-        }
     }
 
     public VertexList createGroundVertexList() {

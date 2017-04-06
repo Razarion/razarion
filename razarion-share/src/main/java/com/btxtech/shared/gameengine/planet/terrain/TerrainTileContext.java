@@ -33,6 +33,11 @@ public class TerrainTileContext {
     private int offsetIndexY;
     private Collection<TerrainSlopeTileContext> terrainSlopeTileContexts;
     private GroundSkeletonConfig groundSkeletonConfig;
+    private List<Vertex> groundSlopeConnectionVertices = new ArrayList<>();
+    private List<Vertex> groundSlopeConnectionNorms = new ArrayList<>();
+    private List<Vertex> groundSlopeConnectionTangents = new ArrayList<>();
+    private List<Double> groundSlopeConnectionSplattings = new ArrayList<>();
+    private int triangleCornerIndex;
 
     public void init(Index terrainTileIndex, GroundSkeletonConfig groundSkeletonConfig) {
         this.terrainTileIndex = terrainTileIndex;
@@ -44,13 +49,13 @@ public class TerrainTileContext {
         offsetIndexY = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
     }
 
-    public void initGround(List<Vertex> slopeGroundConnection) {
-        int verticesCount = slopeGroundConnection.size() + (int) (Math.pow(TerrainUtil.TERRAIN_TILE_NODES_COUNT, 2) * 6);
+    public void initGround() {
+        int verticesCount = groundSlopeConnectionVertices.size() + (int) (Math.pow(TerrainUtil.TERRAIN_TILE_NODES_COUNT, 2) * 6);
         terrainTile.initGroundArrays(verticesCount * Vertex.getComponentsPerVertex(), verticesCount);
     }
 
-    public void setGroundVertexCount(int groundVertexCount) {
-        terrainTile.setGroundVertexCount(groundVertexCount);
+    public void setGroundVertexCount() {
+        terrainTile.setGroundVertexCount(triangleCornerIndex);
     }
 
     public void setSplatting(int xNode, int yNode, double splattingBL, double splattingBR, double splattingTR, double splattingTL) {
@@ -101,8 +106,85 @@ public class TerrainTileContext {
         }
     }
 
-    public void insertTriangleCorner(Vertex vertex, Vertex norm, Vertex tangent, double splatting, int triangleCornerIndex) {
+    public Vertex interpolateVertex(DecimalPosition absolutePosition, double additionHeight) {
+        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+
+        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
+        Vertex vertexBR = setupVertex(bottomLeft.getX() + 1, bottomLeft.getY(), additionHeight);
+        Vertex vertexTL = setupVertex(bottomLeft.getX(), bottomLeft.getY() + 1, additionHeight);
+        if (triangle1.isInside(offset)) {
+            Vertex weight = triangle1.interpolate(offset);
+            Vertex vertexBL = setupVertex(bottomLeft.getX(), bottomLeft.getY(), additionHeight);
+            return vertexBL.multiply(weight.getX()).add(vertexBR.multiply(weight.getY())).add(vertexTL.multiply(weight.getZ()));
+        } else {
+            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
+            Vertex weight = triangle2.interpolate(offset);
+            Vertex vertexTR = setupVertex(bottomLeft.getX() + 1, bottomLeft.getY() + 1, additionHeight);
+            return vertexBR.multiply(weight.getX()).add(vertexTR.multiply(weight.getY()).add(vertexTL.multiply(weight.getZ())));
+        }
+    }
+
+
+    public Vertex interpolateNorm(DecimalPosition absolutePosition) {
+        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+
+        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
+        Vertex normBR = setupNorm(bottomLeft.getX() + 1, bottomLeft.getY());
+        Vertex normTL = setupNorm(bottomLeft.getX(), bottomLeft.getY() + 1);
+        if (triangle1.isInside(offset)) {
+            Vertex weight = triangle1.interpolate(offset);
+            Vertex normBL = setupNorm(bottomLeft.getX(), bottomLeft.getY());
+            return normBL.multiply(weight.getX()).add(normBR.multiply(weight.getY())).add(normTL.multiply(weight.getZ())).normalize(1.0);
+        } else {
+            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
+            Vertex weight = triangle2.interpolate(offset);
+            Vertex normTR = setupNorm(bottomLeft.getX() + 1, bottomLeft.getY() + 1);
+            return normBR.multiply(weight.getX()).add(normTR.multiply(weight.getY()).add(normTL.multiply(weight.getZ()))).normalize(1.0);
+        }
+    }
+
+    public Vertex interpolateTangent(DecimalPosition absolutePosition) {
+        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+
+        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
+        Vertex tangentBR = setupTangent(bottomLeft.getX() + 1, bottomLeft.getY());
+        Vertex tangentTL = setupTangent(bottomLeft.getX(), bottomLeft.getY() + 1);
+        if (triangle1.isInside(offset)) {
+            Vertex weight = triangle1.interpolate(offset);
+            Vertex tangentBL = setupTangent(bottomLeft.getX(), bottomLeft.getY());
+            return tangentBL.multiply(weight.getX()).add(tangentBR.multiply(weight.getY())).add(tangentTL.multiply(weight.getZ())).normalize(1.0);
+        } else {
+            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
+            Vertex weight = triangle2.interpolate(offset);
+            Vertex tangentTR = setupTangent(bottomLeft.getX() + 1, bottomLeft.getY() + 1);
+            return tangentBR.multiply(weight.getX()).add(tangentTR.multiply(weight.getY()).add(tangentTL.multiply(weight.getZ()))).normalize(1.0);
+        }
+    }
+
+    public void insertTriangleCorner(Vertex vertex, Vertex norm, Vertex tangent, double splatting) {
         terrainTile.setGroundTriangleCorner(triangleCornerIndex, vertex.getX(), vertex.getY(), vertex.getZ(), norm.getX(), norm.getY(), norm.getZ(), tangent.getX(), tangent.getY(), tangent.getZ(), splatting);
+        triangleCornerIndex++;
+    }
+
+    public void insertTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC, double additionHeight) {
+        DecimalPosition positionA = vertexA.toXY();
+        DecimalPosition positionB = vertexB.toXY();
+        DecimalPosition positionC = vertexC.toXY();
+        groundSlopeConnectionVertices.add(interpolateVertex(positionA, additionHeight));
+        groundSlopeConnectionVertices.add(interpolateVertex(positionB, additionHeight));
+        groundSlopeConnectionVertices.add(interpolateVertex(positionC, additionHeight));
+        groundSlopeConnectionNorms.add(interpolateNorm(positionA));
+        groundSlopeConnectionNorms.add(interpolateNorm(positionB));
+        groundSlopeConnectionNorms.add(interpolateNorm(positionC));
+        groundSlopeConnectionTangents.add(interpolateTangent(positionA));
+        groundSlopeConnectionTangents.add(interpolateTangent(positionB));
+        groundSlopeConnectionTangents.add(interpolateTangent(positionC));
+        groundSlopeConnectionSplattings.add(interpolateSplattin(positionA));
+        groundSlopeConnectionSplattings.add(interpolateSplattin(positionB));
+        groundSlopeConnectionSplattings.add(interpolateSplattin(positionC));
     }
 
     public TerrainTile complete() {
@@ -116,5 +198,41 @@ public class TerrainTileContext {
 
     public double getSplatting(int xNode, int yNode) {
         return groundSkeletonConfig.getSplattings()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getSplattingXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getSplattingYCount())];
+    }
+
+    public Vertex setupVertex(int x, int y, double additionHeight) {
+        double absoluteX = x * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
+        double absoluteY = y * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
+        double height = additionHeight + groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(x, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
+        return new Vertex(absoluteX, absoluteY, height);
+    }
+
+    public Vertex setupNorm(int x, int y) {
+        int xEast = x + 1;
+        int xWest = x - 1 < 0 ? groundSkeletonConfig.getHeightXCount() - 1 : x - 1;
+        int yNorth = y + 1;
+        int ySouth = y - 1 < 0 ? groundSkeletonConfig.getHeightYCount() - 1 : y - 1;
+
+        double zNorth = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(x, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNorth, groundSkeletonConfig.getHeightYCount())];
+        double zEast = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xEast, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
+        double zSouth = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(x, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(ySouth, groundSkeletonConfig.getHeightYCount())];
+        double zWest = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xWest, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
+        return new Vertex(zWest - zEast, zSouth - zNorth, 2 * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
+    }
+
+    public Vertex setupTangent(int x, int y) {
+        int xEast = x + 1;
+        int xWest = x - 1 < 0 ? groundSkeletonConfig.getHeightXCount() - 1 : x - 1;
+
+        double zEast = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xEast, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
+        double zWest = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xWest, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
+
+        return new Vertex(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH * 2.0, 0, zEast - zWest).normalize(1.0);
+    }
+
+    public void insertSlopeGroundConnection() {
+        for (int i = 0; i < groundSlopeConnectionVertices.size(); i++) {
+            insertTriangleCorner(groundSlopeConnectionVertices.get(i), groundSlopeConnectionNorms.get(i), groundSlopeConnectionTangents.get(i), groundSlopeConnectionSplattings.get(i));
+        }
     }
 }
