@@ -289,13 +289,13 @@ public class TerrainService {
                 Side side = startRectanglePiercing.getSide();
                 if (startRectanglePiercing.getSide() == endRectanglePiercing.getSide()) {
                     if (!startRectanglePiercing.getSide().isBefore(startRectanglePiercing.getCross(), endRectanglePiercing.getCross())) {
-                        addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side)));
+                        addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext));
                         side = side.getSuccessor();
                     }
                 }
 
                 while (side != endRectanglePiercing.side) {
-                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side)));
+                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext));
                     side = side.getSuccessor();
                 }
                 addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross()));
@@ -329,8 +329,9 @@ public class TerrainService {
         list.add(vertex);
     }
 
-    private Vertex toVertexGround(DecimalPosition position) {
-        return new Vertex(position, 0);
+    private Vertex toVertexGround(DecimalPosition position, TerrainTileContext terrainTileContext) {
+        Index nodeTile = obstacleContainer.toNode(position);
+        return new Vertex(position, terrainTileContext.setupHeight(nodeTile.getX(), nodeTile.getY()));
     }
 
     private Vertex toVertexSlope(DecimalPosition position) {

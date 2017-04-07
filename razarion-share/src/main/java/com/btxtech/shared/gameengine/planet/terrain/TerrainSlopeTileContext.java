@@ -31,8 +31,8 @@ public class TerrainSlopeTileContext {
         verticesVertices = new SlopeVertex[xCount][yCount];
     }
 
-    public void addVertex(int x, int y, Vertex transformedPoint, double slopeFactor, double splatting) {
-        verticesVertices[x][y] = new SlopeVertex(transformedPoint, slopeFactor, splatting);
+    public void addVertex(int x, int y, Vertex vertex, double slopeFactor, double splatting) {
+        verticesVertices[x][y] = new SlopeVertex(vertex, slopeFactor, splatting);
     }
 
     public TerrainSlopeTile getTerrainSlopeTile() {
