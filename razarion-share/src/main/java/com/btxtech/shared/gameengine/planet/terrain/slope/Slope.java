@@ -10,9 +10,11 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundMesh;
 import com.btxtech.shared.gameengine.planet.terrain.ground.GroundSlopeConnector;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -291,6 +293,7 @@ public class Slope {
 
     private void fillObstacle(List<Vertex> polygon, ObstacleContainer obstacleContainer, boolean isOuter) {
         DecimalPosition last = polygon.get(0).toXY();
+        Index lastNodeIndex = null;
         for (int i = 0; i < polygon.size(); i++) {
             DecimalPosition next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size())).toXY();
             if (last.equals(next)) {
@@ -298,7 +301,24 @@ public class Slope {
             }
             obstacleContainer.addObstacleSlope(new ObstacleSlope(new Line(last, next)));
             if (isOuter) {
-                obstacleContainer.addSlopeGroundConnector(polygon, i, polygon.get(i).toXY());
+                DecimalPosition absolute = polygon.get(i).toXY();
+                Index nodeIndex = TerrainUtil.toNode(absolute);
+                obstacleContainer.addSlopeGroundConnector(polygon, i, absolute);
+                if (lastNodeIndex != null) {
+                    // Check if some node are left out
+                    if (nodeIndex.getX() != lastNodeIndex.getX() && nodeIndex.getY() != lastNodeIndex.getY()) {
+                        Vertex predecessor = polygon.get(i - 1);
+                        Vertex successor = polygon.get(i);
+                        List<Index> leftOut = GeometricUtil.rasterizeLine(new Line(predecessor.toXY() ,successor.toXY()), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+                        leftOut.remove(0);
+                        leftOut.remove(leftOut.size() - 1);
+                        for (Index leftOutNodeIndex : leftOut) {
+                            obstacleContainer.addLeftOutSlopeGroundConnector(leftOutNodeIndex, predecessor, successor);
+
+                        }
+                    }
+                }
+                lastNodeIndex = nodeIndex;
             }
             last = next;
         }

@@ -100,7 +100,7 @@ public class ObstacleContainer {
         if (!obstacleContainerNode.exitsInSlopeGroundPiercing(absolutePosition)) {
             Rectangle2D nodeRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
             int currentIndex = findStart(nodeRect, slopePositionIndex, slopeLine);
-            Vertex current = slopeLine.get(currentIndex);;
+            Vertex current = slopeLine.get(currentIndex);
             List<Vertex> piercingLine = new ArrayList<>();
             piercingLine.add(current);
             do {
@@ -112,6 +112,14 @@ public class ObstacleContainer {
 
             obstacleContainerNode.addSlopeGroundPiercing(piercingLine);
         }
+    }
+
+    public void addLeftOutSlopeGroundConnector(Index leftOutNodeIndex, Vertex predecessor, Vertex successor) {
+        ObstacleContainerNode obstacleContainerNode = getOrCreate(leftOutNodeIndex);
+        List<Vertex> piercingLine = new ArrayList<>();
+        piercingLine.add(predecessor);
+        piercingLine.add(successor);
+        obstacleContainerNode.addSlopeGroundPiercing(piercingLine);
     }
 
     private int findStart(Rectangle2D rect, int index, List<Vertex> outerLine) {

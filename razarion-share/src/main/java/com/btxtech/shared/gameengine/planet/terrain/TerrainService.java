@@ -266,8 +266,7 @@ public class TerrainService {
         return slopeNode.getSlopeFactor();
     }
 
-    private List<Vertex> insertSlopeGroundConnectionPart(TerrainTileContext terrainTileContext) {
-        List<Vertex> vertices = new ArrayList<>();
+    private void insertSlopeGroundConnectionPart(TerrainTileContext terrainTileContext) {
         iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
             ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
             if (obstacleContainerNode == null) {
@@ -279,11 +278,27 @@ public class TerrainService {
             Rectangle2D absoluteRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
             for (List<Vertex> piercingLine : obstacleContainerNode.getOuterSlopeGroundPiercingLine()) {
                 List<Vertex> polygon = new ArrayList<>();
-                Line startLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
-                RectanglePiercing startRectanglePiercing = getRectanglePiercing(absoluteRect, startLine);
 
-                Line endLine = new Line(piercingLine.get(piercingLine.size() - 2).toXY(), piercingLine.get(piercingLine.size() - 1).toXY());
-                RectanglePiercing endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine);
+                RectanglePiercing startRectanglePiercing;
+                RectanglePiercing endRectanglePiercing;
+                if (piercingLine.size() == 2) {
+                    // This is a left out node
+                    Line crossLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
+                    Collection<DecimalPosition> crossPoints = absoluteRect.getCrossPointsLine(crossLine);
+                    if (crossPoints.size() != 2) {
+                        throw new IllegalStateException("Exactly two cross points expected: " + crossPoints.size());
+                    }
+                    DecimalPosition start = DecimalPosition.getNearestPoint(piercingLine.get(0).toXY(), crossPoints);
+                    startRectanglePiercing = getRectanglePiercing(absoluteRect, start);
+                    DecimalPosition end = DecimalPosition.getFarestPoint(piercingLine.get(0).toXY(), crossPoints);
+                    endRectanglePiercing = getRectanglePiercing(absoluteRect, end);
+                } else {
+                    Line startLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
+                    startRectanglePiercing = getRectanglePiercing(absoluteRect, startLine);
+
+                    Line endLine = new Line(piercingLine.get(piercingLine.size() - 2).toXY(), piercingLine.get(piercingLine.size() - 1).toXY());
+                    endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine);
+                }
 
                 addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross()));
                 Side side = startRectanglePiercing.getSide();
@@ -312,7 +327,6 @@ public class TerrainService {
                 Triangulator.calculate(polygon, (vertex1, vertex2, vertex3) -> terrainTileContext.insertTriangleGroundSlopeConnection(vertex1, vertex2, vertex3, 0));
             }
         });
-        return vertices;
     }
 
     private void addOnlyXyUnique(List<Vertex> list, Vertex vertex) {
@@ -355,7 +369,24 @@ public class TerrainService {
         if (crossPoint != null) {
             return new RectanglePiercing(crossPoint, Side.NORTH);
         }
-        throw new IllegalArgumentException("getRectanglePiercing should not happen");
+        throw new IllegalArgumentException("getRectanglePiercing should not happen 1");
+    }
+
+    private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, DecimalPosition crossPoint) {
+        if (rectangle.lineW().isPointInLineInclusive(crossPoint)) {
+            return new RectanglePiercing(crossPoint, Side.WEST);
+        }
+        if (rectangle.lineS().isPointInLineInclusive(crossPoint)) {
+            return new RectanglePiercing(crossPoint, Side.SOUTH);
+        }
+        if (rectangle.lineE().isPointInLineInclusive(crossPoint)) {
+            return new RectanglePiercing(crossPoint, Side.EAST);
+        }
+        if (rectangle.lineN().isPointInLineInclusive(crossPoint)) {
+            return new RectanglePiercing(crossPoint, Side.NORTH);
+        }
+        // throw new IllegalArgumentException("getRectanglePiercing should not happen 2");
+        return null;
     }
 
     public static class RectanglePiercing {
