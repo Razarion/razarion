@@ -79,7 +79,7 @@ public class TerrainTileContext {
 
     public TerrainSlopeTileContext createTerrainSlopeTileContext(Slope slope, int xCount, int yCount) {
         TerrainSlopeTileContext terrainSlopeTileContext = terrainSlopeTileContextInstance.get();
-        terrainSlopeTileContext.init(slope, xCount, yCount);
+        terrainSlopeTileContext.init(slope, xCount, yCount, this);
         if (terrainSlopeTileContexts == null) {
             terrainSlopeTileContexts = new ArrayList<>();
         }

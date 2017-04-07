@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.system.JsInteropObjectFactory;
@@ -23,11 +24,13 @@ public class TerrainSlopeTileContext {
     private int yCount;
     private SlopeVertex[][] verticesVertices;
     private TerrainSlopeTile terrainSlopeTile;
+    private TerrainTileContext terrainTileContext;
 
-    public void init(Slope slope, int xCount, int yCount) {
+    public void init(Slope slope, int xCount, int yCount, TerrainTileContext terrainTileContext) {
         this.slope = slope;
         this.xCount = xCount;
         this.yCount = yCount;
+        this.terrainTileContext = terrainTileContext;
         verticesVertices = new SlopeVertex[xCount][yCount];
     }
 
@@ -51,10 +54,10 @@ public class TerrainSlopeTileContext {
                 Vertex vertexTR = verticesVertices[x + 1][y + 1].getVertex();
                 Vertex vertexTL = verticesVertices[x][y + 1].getVertex();
 
-                Vertex normBR = setupNorm(x + 1, y);
-                Vertex normTL = setupNorm(x, y + 1);
-                Vertex tangentBR = setupTangent(x + 1, y);
-                Vertex tangentTL = setupTangent(x, y + 1);
+                Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY());
+                Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY());
+                Vertex tangentBR = setupTangent(x + 1, y, vertexBR.toXY());
+                Vertex tangentTL = setupTangent(x, y + 1, vertexTL.toXY());
                 double slopeFactorBR = verticesVertices[x + 1][y].getSlopeFactor();
                 double slopeFactorTL = verticesVertices[x][y + 1].getSlopeFactor();
                 double splattingBR = verticesVertices[x + 1][y].getSplatting();
@@ -63,8 +66,8 @@ public class TerrainSlopeTileContext {
                 if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
                     int triangleCornerIndex = triangleIndex * 3;
 
-                    Vertex normBL = setupNorm(x, y);
-                    Vertex tangentBL = setupTangent(x, y);
+                    Vertex normBL = setupNorm(x, y, vertexBL.toXY());
+                    Vertex tangentBL = setupTangent(x, y, vertexBL.toXY());
                     double slopeFactorBL = verticesVertices[x][y].getSlopeFactor();
                     double splattingBL = verticesVertices[x][y].getSplatting();
 
@@ -77,8 +80,8 @@ public class TerrainSlopeTileContext {
                 if (!vertexTL.equalsDelta(vertexTR, 0.001)) {
                     int triangleCornerIndex = triangleIndex * 3;
 
-                    Vertex normTR = setupNorm(x + 1, y + 1);
-                    Vertex tangentTR = setupTangent(x + 1, y + 1);
+                    Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY());
+                    Vertex tangentTR = setupTangent(x + 1, y + 1, vertexTR.toXY());
                     double slopeFactorTR = verticesVertices[x + 1][y + 1].getSlopeFactor();
                     double splattingTR = verticesVertices[x + 1][y + 1].getSplatting();
 
@@ -92,21 +95,22 @@ public class TerrainSlopeTileContext {
         terrainSlopeTile.setSlopeVertexCount(triangleIndex * 3);
     }
 
-    private Vertex setupNorm(int x, int y) {
+    private Vertex setupNorm(int x, int y, DecimalPosition absolutePosition) {
         try {
+            if (y == 0) {
+                // Outer take norm from ground
+                return terrainTileContext.interpolateNorm(absolutePosition);
+            } else if (y == yCount - 1) {
+                // Inner take norm from ground
+                return terrainTileContext.interpolateNorm(absolutePosition);
+            }
+
             int xEast = x + 1 > xCount - 1 ? 1 : x + 1;
             int xWest = x - 1 < 0 ? xCount - 2 : x - 1;
             int yNorth = y + 1;
             int ySouth = y - 1;
 
-            Vertex vertical;
-            if (ySouth < 0) {
-                vertical = verticesVertices[x][yNorth].getVertex().sub(verticesVertices[x][y].getVertex());
-            } else if (yNorth > yCount - 1) {
-                vertical = verticesVertices[x][y].getVertex().sub(verticesVertices[x][ySouth].getVertex());
-            } else {
-                vertical = verticesVertices[x][yNorth].getVertex().sub(verticesVertices[x][ySouth].getVertex());
-            }
+            Vertex vertical = verticesVertices[x][yNorth].getVertex().sub(verticesVertices[x][ySouth].getVertex());
             Vertex current = verticesVertices[x][y].getVertex();
             Vertex east = verticesVertices[xEast][y].getVertex();
             if (east.equals(current)) {
@@ -136,8 +140,16 @@ public class TerrainSlopeTileContext {
         }
     }
 
-    private Vertex setupTangent(int x, int y) {
+    private Vertex setupTangent(int x, int y, DecimalPosition absolutePosition) {
         try {
+            if (y == 0) {
+                // Outer take tangent from ground
+                return terrainTileContext.interpolateTangent(absolutePosition);
+            } else if (y == yCount - 1) {
+                // Inner take tangent from ground
+                return terrainTileContext.interpolateTangent(absolutePosition);
+            }
+
             int xEast = x + 1 > xCount - 1 ? 1 : x + 1;
             int xWest = x - 1 < 0 ? xCount - 2 : x - 1;
 
