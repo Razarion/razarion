@@ -385,8 +385,7 @@ public class TerrainService {
         if (rectangle.lineN().isPointInLineInclusive(crossPoint)) {
             return new RectanglePiercing(crossPoint, Side.NORTH);
         }
-        // throw new IllegalArgumentException("getRectanglePiercing should not happen 2");
-        return null;
+        throw new IllegalArgumentException("getRectanglePiercing should not happen 2");
     }
 
     public static class RectanglePiercing {
