@@ -54,6 +54,20 @@ public class GeometricUtilTest {
         GeometricUtilTest.assertIndices(positions, actual);
     }
 
+    @Test
+    public void rasterizeLineLeftOut1() throws Exception {
+        List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(256.96844848711316, 160.8236704677113), new DecimalPosition(254.56432329181317, 159.06081110957567)), 8);
+        List<Index> positions = Arrays.asList(new Index(32, 20), new Index(31, 20), new Index(31, 19));
+        GeometricUtilTest.assertIndices(positions, actual);
+    }
+
+    @Test
+    public void rasterizeLineLeftExactlyOnCorner() throws Exception {
+        List<Index> actual = GeometricUtil.rasterizeLine(new Line(new DecimalPosition(4, 4), new DecimalPosition(12, 12)), 8);
+        List<Index> positions = Arrays.asList(new Index(0, 0), new Index(1, 1));
+        GeometricUtilTest.assertIndices(positions, actual);
+    }
+
     public static void assertIndices(Collection<Index> expected, Collection<Index> actual) {
         Assert.assertEquals("Collection do have different sizes", expected.size(), actual.size());
         List<Index> expectedList = new ArrayList<>(expected);

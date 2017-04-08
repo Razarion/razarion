@@ -95,10 +95,31 @@ public class GeometricUtil {
         double dy = difY / dist;
 
         for (int i = 0; i <= Math.ceil(dist); i++) {
-            int x = (int) Math.floor((line.getPoint1().getX() + dx * i) / rasterSize);
-            int y = (int) Math.floor((line.getPoint1().getY() + dy * i) / rasterSize);
+            double doubleX = Math.floor((line.getPoint1().getX() + dx * i) / rasterSize);
+            double doubleY = Math.floor((line.getPoint1().getY() + dy * i) / rasterSize);
+            int x = (int) doubleX;
+            int y = (int) doubleY;
             Index tile = new Index(x, y);
-            if (!tiles.get(tiles.size() - 1).equals(tile)) {
+            Index last = tiles.get(tiles.size() - 1);
+            if (last.getX() != tile.getX() && last.getY() != tile.getY()) {
+                // Find left out
+                Rectangle2D rasterRect = new Rectangle2D(tile.getX() * rasterSize, last.getY() * rasterSize, rasterSize, rasterSize);
+                Collection<DecimalPosition> crossPoints = rasterRect.getCrossPointsLine(line);
+                if (crossPoints.size() != 1) {
+                    Index leftOut;
+                    if (crossPoints.isEmpty()) {
+                        leftOut = new Index(last.getX(), tile.getY());
+                    } else {
+                        leftOut = new Index(tile.getX(), last.getY());
+                    }
+                    if (!last.equals(leftOut)) {
+                        tiles.add(leftOut);
+                    }
+                    last = leftOut;
+                }
+            }
+
+            if (!last.equals(tile)) {
                 tiles.add(tile);
             }
         }

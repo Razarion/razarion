@@ -38,11 +38,11 @@ public abstract class Scenario {
 
     static {
         register("Simple Terrain", new SimpleTerrainScenario());
+        register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
         register("Obstacle Container Slope Ground Connector", new ObstacleContainerSlopeGroundConnectorScenario());
         register("Slope Ground Connection", new SlopeGroundConnectionScenario());
         register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());
-        register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
         register("ObstacleContainer InSight", new ObstacleContainerInSightScenario());
         register("Terrain", new TerrainScenario());
         register("AStar Test", new AStarServiceScenario());
