@@ -294,10 +294,10 @@ public class TerrainService {
                     endRectanglePiercing = getRectanglePiercing(absoluteRect, end);
                 } else {
                     Line startLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
-                    startRectanglePiercing = getRectanglePiercing(absoluteRect, startLine);
+                    startRectanglePiercing = getRectanglePiercing(absoluteRect, startLine, piercingLine.get(0).toXY());
 
                     Line endLine = new Line(piercingLine.get(piercingLine.size() - 2).toXY(), piercingLine.get(piercingLine.size() - 1).toXY());
-                    endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine);
+                    endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine, piercingLine.get(piercingLine.size() - 1).toXY());
                 }
 
                 addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross()));
@@ -352,24 +352,67 @@ public class TerrainService {
         return new Vertex(position, 0);
     }
 
-    private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line) {
+    private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line, DecimalPosition reference) {
+        boolean ambiguous = rectangle.getCrossPointsLine(line).size() > 1;
+        double minDistance = Double.MAX_VALUE;
+        DecimalPosition bestFitCrossPoint = null;
+        Side bestFitSide = null;
         DecimalPosition crossPoint = rectangle.lineW().getCrossInclusive(line);
         if (crossPoint != null) {
-            return new RectanglePiercing(crossPoint, Side.WEST);
+            if (ambiguous) {
+                double distance = crossPoint.getDistance(reference);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    bestFitCrossPoint = crossPoint;
+                    bestFitSide = Side.WEST;
+                }
+            } else {
+                return new RectanglePiercing(crossPoint, Side.WEST);
+            }
         }
         crossPoint = rectangle.lineS().getCrossInclusive(line);
         if (crossPoint != null) {
-            return new RectanglePiercing(crossPoint, Side.SOUTH);
+            if (ambiguous) {
+                double distance = crossPoint.getDistance(reference);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    bestFitCrossPoint = crossPoint;
+                    bestFitSide = Side.SOUTH;
+                }
+            } else {
+                return new RectanglePiercing(crossPoint, Side.SOUTH);
+            }
         }
         crossPoint = rectangle.lineE().getCrossInclusive(line);
         if (crossPoint != null) {
-            return new RectanglePiercing(crossPoint, Side.EAST);
+            if (ambiguous) {
+                double distance = crossPoint.getDistance(reference);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    bestFitCrossPoint = crossPoint;
+                    bestFitSide = Side.EAST;
+                }
+            } else {
+                return new RectanglePiercing(crossPoint, Side.EAST);
+            }
         }
         crossPoint = rectangle.lineN().getCrossInclusive(line);
         if (crossPoint != null) {
-            return new RectanglePiercing(crossPoint, Side.NORTH);
+            if (ambiguous) {
+                double distance = crossPoint.getDistance(reference);
+                if (distance < minDistance) {
+                    bestFitCrossPoint = crossPoint;
+                    bestFitSide = Side.NORTH;
+                }
+            } else {
+                return new RectanglePiercing(crossPoint, Side.NORTH);
+            }
         }
-        throw new IllegalArgumentException("getRectanglePiercing should not happen 1");
+        if (ambiguous) {
+            return new RectanglePiercing(bestFitCrossPoint, bestFitSide);
+        } else {
+            throw new IllegalArgumentException("getRectanglePiercing should not happen 1");
+        }
     }
 
     private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, DecimalPosition crossPoint) {
