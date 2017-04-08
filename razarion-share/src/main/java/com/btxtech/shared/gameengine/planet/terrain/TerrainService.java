@@ -230,6 +230,7 @@ public class TerrainService {
             }
 
         }
+        VerticalSegment startNormTangentExtra = predecessor.getPredecessor();
         VerticalSegment end = current;
         // find end
         while (true) {
@@ -252,14 +253,17 @@ public class TerrainService {
                 break;
             }
         }
+        VerticalSegment endNormTangentExtra = successor.getSuccessor();
         // Iterator from start to end
         List<VerticalSegment> connectedVerticalSegment = new ArrayList<>();
+        connectedVerticalSegment.add(startNormTangentExtra);
         VerticalSegment verticalSegment = start;
         connectedVerticalSegment.add(verticalSegment);
         do {
             verticalSegment = verticalSegment.getSuccessor();
             connectedVerticalSegment.add(verticalSegment);
         } while (verticalSegment != end);
+        connectedVerticalSegment.add(endNormTangentExtra);
         return connectedVerticalSegment;
     }
 

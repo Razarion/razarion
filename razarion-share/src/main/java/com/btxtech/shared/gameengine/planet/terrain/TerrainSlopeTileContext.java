@@ -47,7 +47,7 @@ public class TerrainSlopeTileContext {
         int verticesCount = (xCount - 1) * (yCount - 1) * 6;
         terrainSlopeTile.init(slope.getSlopeSkeletonConfig().getId(), verticesCount * Vertex.getComponentsPerVertex(), verticesCount);
         int triangleIndex = 0;
-        for (int x = 0; x < xCount - 1; x++) {
+        for (int x = 1; x < xCount - 2; x++) {
             for (int y = 0; y < yCount - 1; y++) {
                 Vertex vertexBL = verticesVertices[x][y].getVertex();
                 Vertex vertexBR = verticesVertices[x + 1][y].getVertex();
@@ -96,48 +96,19 @@ public class TerrainSlopeTileContext {
     }
 
     private Vertex setupNorm(int x, int y, DecimalPosition absolutePosition) {
-        try {
-            if (y == 0) {
-                // Outer take norm from ground
-                return terrainTileContext.interpolateNorm(absolutePosition);
-            } else if (y == yCount - 1) {
-                // Inner take norm from ground
-                return terrainTileContext.interpolateNorm(absolutePosition);
-            }
-
-            int xEast = x + 1 > xCount - 1 ? 1 : x + 1;
-            int xWest = x - 1 < 0 ? xCount - 2 : x - 1;
-            int yNorth = y + 1;
-            int ySouth = y - 1;
-
-            Vertex vertical = verticesVertices[x][yNorth].getVertex().sub(verticesVertices[x][ySouth].getVertex());
-            Vertex current = verticesVertices[x][y].getVertex();
-            Vertex east = verticesVertices[xEast][y].getVertex();
-            if (east.equals(current)) {
-                do {
-                    xEast++;
-                    if (xEast > xCount - 1) {
-                        xEast = 0;
-                    }
-                    east = verticesVertices[xEast][y].getVertex();
-                } while (current.equals(east));
-            }
-            Vertex west = verticesVertices[xWest][y].getVertex();
-            if (west.equals(current)) {
-                do {
-                    xWest--;
-                    if (xWest < 0) {
-                        xWest = xCount - 1;
-                    }
-                    west = verticesVertices[xWest][y].getVertex();
-                } while (current.equals(west));
-            }
-            Vertex horizontal = east.sub(west).normalize(1);
-            return horizontal.cross(vertical).normalize(1.0);
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, "FIX ME", t);
-            return Vertex.Z_NORM;
+        if (y == 0) {
+            // Outer take norm from ground
+            return terrainTileContext.interpolateNorm(absolutePosition);
+        } else if (y == yCount - 1) {
+            // Inner take norm from ground
+            return terrainTileContext.interpolateNorm(absolutePosition);
         }
+        Vertex vertical = verticesVertices[x][y + 1].getVertex().sub(verticesVertices[x][y - 1].getVertex());
+
+        Vertex east = verticesVertices[x + 1][y].getVertex();
+        Vertex west = verticesVertices[x - 1][y].getVertex();
+        Vertex horizontal = east.sub(west).normalize(1);
+        return horizontal.cross(vertical).normalize(1.0);
     }
 
     private Vertex setupTangent(int x, int y, DecimalPosition absolutePosition) {
@@ -150,30 +121,9 @@ public class TerrainSlopeTileContext {
                 return terrainTileContext.interpolateTangent(absolutePosition);
             }
 
-            int xEast = x + 1 > xCount - 1 ? 1 : x + 1;
-            int xWest = x - 1 < 0 ? xCount - 2 : x - 1;
-
             Vertex current = verticesVertices[x][y].getVertex();
-            Vertex east = verticesVertices[xEast][y].getVertex();
-            if (east.equals(current)) {
-                do {
-                    xEast++;
-                    if (xEast > xCount - 1) {
-                        xEast = 0;
-                    }
-                    east = verticesVertices[xEast][y].getVertex();
-                } while (current.equals(east));
-            }
-            Vertex west = verticesVertices[xWest][y].getVertex();
-            if (west.equals(current)) {
-                do {
-                    xWest--;
-                    if (xWest < 0) {
-                        xWest = xCount - 1;
-                    }
-                    west = verticesVertices[xWest][y].getVertex();
-                } while (current.equals(west));
-            }
+            Vertex east = verticesVertices[x + 1][y].getVertex();
+            Vertex west = verticesVertices[x - 1][y].getVertex();
             return east.sub(west).normalize(1);
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "FIX ME 2", t);
