@@ -32,6 +32,7 @@ import com.btxtech.shared.gameengine.planet.terrain.ground.GroundModeler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeWater;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.event.Observes;
@@ -208,17 +209,42 @@ public class TerrainService {
         }
         VerticalSegment start = current;
         // find start
-        while (absoluteTerrainTileRect.contains(predecessor.getInner())) {
+        while (true) {
+            if (!absoluteTerrainTileRect.contains(predecessor.getInner())) {
+                double totalDistance = start.getInner().getDistance(predecessor.getInner());
+                Collection<DecimalPosition> crossPoints = absoluteTerrainTileRect.getCrossPointsLine(new Line(start.getInner(), predecessor.getInner()));
+                if (crossPoints.size() != 1) {
+                    throw new IllegalStateException("Exactly one cross point expected in start finding: " + crossPoints.size());
+                }
+                double innerDistance = CollectionUtils.getFirst(crossPoints).getDistance(start.getInner());
+                if (innerDistance * 2.0 > totalDistance) {
+                    start = predecessor;
+                }
+                break;
+            }
             start = predecessor;
             predecessor = predecessor.getPredecessor();
             if (predecessor == current) {
                 start = current;
                 break;
             }
+
         }
         VerticalSegment end = current;
         // find end
-        while (absoluteTerrainTileRect.contains(successor.getInner())) {
+        while (true) {
+            if (!absoluteTerrainTileRect.contains(successor.getInner())) {
+                double totalDistance = end.getInner().getDistance(successor.getInner());
+                Collection<DecimalPosition> crossPoints = absoluteTerrainTileRect.getCrossPointsLine(new Line(end.getInner(), successor.getInner()));
+                if (crossPoints.size() != 1) {
+                    throw new IllegalStateException("Exactly one cross point expected in end finding: " + crossPoints.size());
+                }
+                double innerDistance = CollectionUtils.getFirst(crossPoints).getDistance(end.getInner());
+                if (innerDistance * 2.0 > totalDistance) {
+                    end = successor;
+                }
+                break;
+            }
             end = successor;
             successor = successor.getSuccessor();
             if (successor == current) {
