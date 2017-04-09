@@ -81,7 +81,7 @@ public class SlopeTerrainServiceTest extends TerrainServiceTestBase {
         TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition();
         terrainSlopePosition.setId(1);
         terrainSlopePosition.setSlopeConfigEntity(1);
-        terrainSlopePosition.setPolygon(Arrays.asList(new DecimalPosition(120, 120), new DecimalPosition(260, 120), new DecimalPosition(260, 240), new DecimalPosition(120, 240)));
+        terrainSlopePosition.setPolygon(Arrays.asList(new DecimalPosition(120, 120), new DecimalPosition(260, 120), new DecimalPosition(260, 250), new DecimalPosition(120, 250)));
         terrainSlopePositions.add(terrainSlopePosition);
 
         double[][] heights = new double[][]{
