@@ -72,4 +72,26 @@ public class Triangle3D {
                 ", pointC=" + pointC +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Triangle3D that = (Triangle3D) o;
+
+        return pointA.equals(that.pointA) && pointB.equals(that.pointB) && pointC.equals(that.pointC);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pointA.hashCode();
+        result = 31 * result + pointB.hashCode();
+        result = 31 * result + pointC.hashCode();
+        return result;
+    }
 }

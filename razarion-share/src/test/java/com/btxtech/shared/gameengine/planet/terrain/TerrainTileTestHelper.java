@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.TestTerrainTile;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.terrain.gui.TerrainTestApplication;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,7 @@ import java.util.List;
  * 09.04.2017.
  */
 public class TerrainTileTestHelper {
+    private static final boolean SHOW_GUI = false;
     private static final String DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     private Collection<TerrainTile> expected;
 
@@ -40,6 +42,10 @@ public class TerrainTileTestHelper {
     }
 
     public void assertEquals(Collection<TerrainTile> actual) {
+        if (SHOW_GUI) {
+            TerrainTestApplication.show(expected, actual);
+        }
+
         if (expected.size() != actual.size()) {
             Assert.fail("Expected size does not match one single TerrainTile. Expected size: " + expected.size());
         }
@@ -60,6 +66,10 @@ public class TerrainTileTestHelper {
     }
 
     public void assertEquals(TerrainTile actual) {
+        if (SHOW_GUI) {
+            TerrainTestApplication.show(expected, Collections.singletonList(actual));
+        }
+
         if (expected.size() != 1) {
             Assert.fail("Expected size does not match one single TerrainTile. Expected size: " + expected.size());
         }
@@ -101,7 +111,6 @@ public class TerrainTileTestHelper {
         Assert.assertArrayEquals("Slope Ground Splattings", expected.getGroundSplattings(), actual.getGroundSplattings(), 0.001);
         Assert.assertEquals("Slope Vertex Count", expected.getSlopeVertexCount(), actual.getSlopeVertexCount());
     }
-
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {
         try {
