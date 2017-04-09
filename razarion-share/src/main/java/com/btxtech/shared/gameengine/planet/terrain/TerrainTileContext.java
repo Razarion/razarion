@@ -168,13 +168,13 @@ public class TerrainTileContext {
         triangleCornerIndex++;
     }
 
-    public void insertTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC, double additionHeight) {
+    public void insertTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
         DecimalPosition positionA = vertexA.toXY();
         DecimalPosition positionB = vertexB.toXY();
         DecimalPosition positionC = vertexC.toXY();
-        groundSlopeConnectionVertices.add(vertexA.add(0, 0, additionHeight));
-        groundSlopeConnectionVertices.add(vertexB.add(0, 0, additionHeight));
-        groundSlopeConnectionVertices.add(vertexC.add(0, 0, additionHeight));
+        groundSlopeConnectionVertices.add(vertexA);
+        groundSlopeConnectionVertices.add(vertexB);
+        groundSlopeConnectionVertices.add(vertexC);
         groundSlopeConnectionNorms.add(interpolateNorm(positionA));
         groundSlopeConnectionNorms.add(interpolateNorm(positionB));
         groundSlopeConnectionNorms.add(interpolateNorm(positionC));

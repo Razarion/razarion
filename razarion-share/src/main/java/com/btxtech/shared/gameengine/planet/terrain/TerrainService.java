@@ -302,61 +302,67 @@ public class TerrainService {
             if (obstacleContainerNode == null) {
                 return;
             }
-            if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() == null) {
-                return;
+            if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0);
             }
-            Rectangle2D absoluteRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-            for (List<Vertex> piercingLine : obstacleContainerNode.getOuterSlopeGroundPiercingLine()) {
-                List<Vertex> polygon = new ArrayList<>();
-
-                RectanglePiercing startRectanglePiercing;
-                RectanglePiercing endRectanglePiercing;
-                if (piercingLine.size() == 2) {
-                    // This is a left out node
-                    Line crossLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
-                    Collection<DecimalPosition> crossPoints = absoluteRect.getCrossPointsLine(crossLine);
-                    if (crossPoints.size() != 2) {
-                        throw new IllegalStateException("Exactly two cross points expected: " + crossPoints.size());
-                    }
-                    DecimalPosition start = DecimalPosition.getNearestPoint(piercingLine.get(0).toXY(), crossPoints);
-                    startRectanglePiercing = getRectanglePiercing(absoluteRect, start);
-                    DecimalPosition end = DecimalPosition.getFarestPoint(piercingLine.get(0).toXY(), crossPoints);
-                    endRectanglePiercing = getRectanglePiercing(absoluteRect, end);
-                } else {
-                    Line startLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
-                    startRectanglePiercing = getRectanglePiercing(absoluteRect, startLine, piercingLine.get(0).toXY());
-
-                    Line endLine = new Line(piercingLine.get(piercingLine.size() - 2).toXY(), piercingLine.get(piercingLine.size() - 1).toXY());
-                    endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine, piercingLine.get(piercingLine.size() - 1).toXY());
-                }
-
-                addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross()));
-                Side side = startRectanglePiercing.getSide();
-                if (startRectanglePiercing.getSide() == endRectanglePiercing.getSide()) {
-                    if (!startRectanglePiercing.getSide().isBefore(startRectanglePiercing.getCross(), endRectanglePiercing.getCross())) {
-                        addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext));
-                        side = side.getSuccessor();
-                    }
-                }
-
-                while (side != endRectanglePiercing.side) {
-                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext));
-                    side = side.getSuccessor();
-                }
-                addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross()));
-
-                for (int i = piercingLine.size() - 2; i > 0; i--) {
-                    addOnlyXyUnique(polygon, piercingLine.get(i));
-                }
-
-                if (polygon.size() < 3) {
-                    continue;
-                }
-
-                // Triangulate Polygon
-                Triangulator.calculate(polygon, (vertex1, vertex2, vertex3) -> terrainTileContext.insertTriangleGroundSlopeConnection(vertex1, vertex2, vertex3, 0));
+            if (obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null) {
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getSlopHeight());
             }
         });
+    }
+
+    private void insertSlopeGroundConnection(TerrainTileContext terrainTileContext, Index nodeIndex, Collection<List<Vertex>> piercings, double additionHeight) {
+        Rectangle2D absoluteRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+        for (List<Vertex> piercingLine : piercings) {
+            List<Vertex> polygon = new ArrayList<>();
+
+            RectanglePiercing startRectanglePiercing;
+            RectanglePiercing endRectanglePiercing;
+            if (piercingLine.size() == 2) {
+                // This is a left out node
+                Line crossLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
+                Collection<DecimalPosition> crossPoints = absoluteRect.getCrossPointsLine(crossLine);
+                if (crossPoints.size() != 2) {
+                    throw new IllegalStateException("Exactly two cross points expected: " + crossPoints.size());
+                }
+                DecimalPosition start = DecimalPosition.getNearestPoint(piercingLine.get(0).toXY(), crossPoints);
+                startRectanglePiercing = getRectanglePiercing(absoluteRect, start);
+                DecimalPosition end = DecimalPosition.getFarestPoint(piercingLine.get(0).toXY(), crossPoints);
+                endRectanglePiercing = getRectanglePiercing(absoluteRect, end);
+            } else {
+                Line startLine = new Line(piercingLine.get(0).toXY(), piercingLine.get(1).toXY());
+                startRectanglePiercing = getRectanglePiercing(absoluteRect, startLine, piercingLine.get(0).toXY());
+
+                Line endLine = new Line(piercingLine.get(piercingLine.size() - 2).toXY(), piercingLine.get(piercingLine.size() - 1).toXY());
+                endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine, piercingLine.get(piercingLine.size() - 1).toXY());
+            }
+
+            addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross(), additionHeight));
+            Side side = startRectanglePiercing.getSide();
+            if (startRectanglePiercing.getSide() == endRectanglePiercing.getSide()) {
+                if (!startRectanglePiercing.getSide().isBefore(startRectanglePiercing.getCross(), endRectanglePiercing.getCross())) {
+                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, additionHeight));
+                    side = side.getSuccessor();
+                }
+            }
+
+            while (side != endRectanglePiercing.side) {
+                addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, additionHeight));
+                side = side.getSuccessor();
+            }
+            addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross(), additionHeight));
+
+            for (int i = piercingLine.size() - 2; i > 0; i--) {
+                addOnlyXyUnique(polygon, piercingLine.get(i));
+            }
+
+            if (polygon.size() < 3) {
+                continue;
+            }
+
+            // Triangulate Polygon
+            Triangulator.calculate(polygon, terrainTileContext::insertTriangleGroundSlopeConnection);
+        }
     }
 
     private void addOnlyXyUnique(List<Vertex> list, Vertex vertex) {
@@ -373,13 +379,13 @@ public class TerrainService {
         list.add(vertex);
     }
 
-    private Vertex toVertexGround(DecimalPosition position, TerrainTileContext terrainTileContext) {
+    private Vertex toVertexGround(DecimalPosition position, TerrainTileContext terrainTileContext, double slopeHeight) {
         Index nodeTile = obstacleContainer.toNode(position);
-        return new Vertex(position, terrainTileContext.setupHeight(nodeTile.getX(), nodeTile.getY()));
+        return new Vertex(position, terrainTileContext.setupHeight(nodeTile.getX(), nodeTile.getY()) + slopeHeight);
     }
 
-    private Vertex toVertexSlope(DecimalPosition position) {
-        return new Vertex(position, 0);
+    private Vertex toVertexSlope(DecimalPosition position, double slopeHeigh) {
+        return new Vertex(position, slopeHeigh);
     }
 
     private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line, DecimalPosition reference) {

@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ public class ObstacleContainerNode {
     private Double slopHeight;
     private boolean belongsToSlope;
     private Collection<List<Vertex>> outerSlopeGroundPiercingLine;
+    private Collection<List<Vertex>> innerSlopeGroundPiercingLine;
 
     public void addObstacle(Obstacle obstacle) {
         if (obstacles == null) {
@@ -69,7 +71,29 @@ public class ObstacleContainerNode {
         return false;
     }
 
-    public boolean exitsInSlopeGroundPiercing(DecimalPosition absolutePosition) {
+    public boolean exitsInSlopeGroundPiercing(DecimalPosition absolutePosition, boolean isOuter) {
+        if (isOuter) {
+            return exitsInOuterSlopeGroundPiercing(absolutePosition);
+        } else {
+            return exitsInInnerSlopeGroundPiercing(absolutePosition);
+        }
+    }
+
+    private boolean exitsInInnerSlopeGroundPiercing(DecimalPosition absolutePosition) {
+        if (innerSlopeGroundPiercingLine == null) {
+            return false;
+        }
+        for (List<Vertex> piercings : innerSlopeGroundPiercingLine) {
+            for (Vertex piercing : piercings) {
+                if (piercing.toXY().equals(absolutePosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean exitsInOuterSlopeGroundPiercing(DecimalPosition absolutePosition) {
         if (outerSlopeGroundPiercingLine == null) {
             return false;
         }
@@ -83,11 +107,23 @@ public class ObstacleContainerNode {
         return false;
     }
 
-    public void addSlopeGroundPiercing(List<Vertex> piercingLine) {
-        if (outerSlopeGroundPiercingLine == null) {
-            outerSlopeGroundPiercingLine = new ArrayList<>();
+    public void addSlopeGroundPiercing(List<Vertex> piercingLine, boolean isOuter) {
+        if (isOuter) {
+            if (outerSlopeGroundPiercingLine == null) {
+                outerSlopeGroundPiercingLine = new ArrayList<>();
+            }
+            outerSlopeGroundPiercingLine.add(piercingLine);
+        } else {
+            if (innerSlopeGroundPiercingLine == null) {
+                innerSlopeGroundPiercingLine = new ArrayList<>();
+            }
+            Collections.reverse(piercingLine);
+            innerSlopeGroundPiercingLine.add(piercingLine);
         }
-        outerSlopeGroundPiercingLine.add(piercingLine);
+    }
+
+    public Collection<List<Vertex>> getInnerSlopeGroundPiercingLine() {
+        return innerSlopeGroundPiercingLine;
     }
 
     public Collection<List<Vertex>> getOuterSlopeGroundPiercingLine() {

@@ -300,26 +300,24 @@ public class Slope {
                 continue;
             }
             obstacleContainer.addObstacleSlope(new ObstacleSlope(new Line(last, next)));
-            if (isOuter) {
-                DecimalPosition absolute = polygon.get(i).toXY();
-                Index nodeIndex = TerrainUtil.toNode(absolute);
-                obstacleContainer.addSlopeGroundConnector(polygon, i, absolute);
-                if (lastNodeIndex != null) {
-                    // Check if some node are left out
-                    if (nodeIndex.getX() != lastNodeIndex.getX() && nodeIndex.getY() != lastNodeIndex.getY()) {
-                        Vertex predecessor = polygon.get(i - 1);
-                        Vertex successor = polygon.get(i);
-                        List<Index> leftOut = GeometricUtil.rasterizeLine(new Line(predecessor.toXY() ,successor.toXY()), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-                        leftOut.remove(0);
-                        leftOut.remove(leftOut.size() - 1);
-                        for (Index leftOutNodeIndex : leftOut) {
-                            obstacleContainer.addLeftOutSlopeGroundConnector(leftOutNodeIndex, predecessor, successor);
+            DecimalPosition absolute = polygon.get(i).toXY();
+            Index nodeIndex = TerrainUtil.toNode(absolute);
+            obstacleContainer.addSlopeGroundConnector(polygon, i, absolute, isOuter);
+            if (lastNodeIndex != null) {
+                // Check if some node are left out
+                if (nodeIndex.getX() != lastNodeIndex.getX() && nodeIndex.getY() != lastNodeIndex.getY()) {
+                    Vertex predecessor = polygon.get(i - 1);
+                    Vertex successor = polygon.get(i);
+                    List<Index> leftOut = GeometricUtil.rasterizeLine(new Line(predecessor.toXY(), successor.toXY()), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+                    leftOut.remove(0);
+                    leftOut.remove(leftOut.size() - 1);
+                    for (Index leftOutNodeIndex : leftOut) {
+                        obstacleContainer.addLeftOutSlopeGroundConnector(leftOutNodeIndex, predecessor, successor, isOuter);
 
-                        }
                     }
                 }
-                lastNodeIndex = nodeIndex;
             }
+            lastNodeIndex = nodeIndex;
             last = next;
         }
     }

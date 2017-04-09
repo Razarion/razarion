@@ -83,7 +83,9 @@ public class ObstacleContainer {
                 continue;
             }
             if (outerPolygon.isOneCornerInside(corners)) {
-                getOrCreate(node).setBelongsToSlope();
+                ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
+                obstacleContainerNode.setBelongsToSlope();
+                obstacleContainerNode.setSlopHeight(slope.getHeight());
             }
         }
     }
@@ -94,10 +96,10 @@ public class ObstacleContainer {
         }
     }
 
-    public void addSlopeGroundConnector(List<Vertex> slopeLine, int slopePositionIndex, DecimalPosition absolutePosition) {
+    public void addSlopeGroundConnector(List<Vertex> slopeLine, int slopePositionIndex, DecimalPosition absolutePosition, boolean isOuter) {
         Index nodeIndex = toNode(absolutePosition);
         ObstacleContainerNode obstacleContainerNode = getOrCreate(nodeIndex);
-        if (!obstacleContainerNode.exitsInSlopeGroundPiercing(absolutePosition)) {
+        if (!obstacleContainerNode.exitsInSlopeGroundPiercing(absolutePosition, isOuter)) {
             Rectangle2D nodeRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
             int currentIndex = findStart(nodeRect, slopePositionIndex, slopeLine);
             Vertex current = slopeLine.get(currentIndex);
@@ -109,17 +111,16 @@ public class ObstacleContainer {
                 piercingLine.add(current);
             } while (nodeRect.contains(current.toXY()));
 
-
-            obstacleContainerNode.addSlopeGroundPiercing(piercingLine);
+            obstacleContainerNode.addSlopeGroundPiercing(piercingLine, isOuter);
         }
     }
 
-    public void addLeftOutSlopeGroundConnector(Index leftOutNodeIndex, Vertex predecessor, Vertex successor) {
+    public void addLeftOutSlopeGroundConnector(Index leftOutNodeIndex, Vertex predecessor, Vertex successor, boolean isOuter) {
         ObstacleContainerNode obstacleContainerNode = getOrCreate(leftOutNodeIndex);
         List<Vertex> piercingLine = new ArrayList<>();
         piercingLine.add(predecessor);
         piercingLine.add(successor);
-        obstacleContainerNode.addSlopeGroundPiercing(piercingLine);
+        obstacleContainerNode.addSlopeGroundPiercing(piercingLine, isOuter);
     }
 
     private int findStart(Rectangle2D rect, int index, List<Vertex> outerLine) {

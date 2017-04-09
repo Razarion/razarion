@@ -143,7 +143,7 @@ public class TerrainTestRenderer {
     public void render() {
         preRender();
 
-        for (TerrainTile terrainTile : expected) {
+        for (TerrainTile terrainTile : actual) {
             drawTerrainTile(terrainTile);
         }
 
