@@ -98,7 +98,7 @@ public class DevToolTerrainTile extends TerrainTile {
     }
 
     @Override
-    public TerrainSlopeTile[] getTerrainSlopeTile() {
+    public TerrainSlopeTile[] getTerrainSlopeTiles() {
         if(terrainSlopeTiles == null) {
             return null;
         }

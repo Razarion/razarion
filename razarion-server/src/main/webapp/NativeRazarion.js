@@ -373,7 +373,7 @@ com = {
                         this.terrainSlopeTiles.push(terrainSlopeTile)
                     };
 
-                    this.getTerrainSlopeTile = function () {
+                    this.getTerrainSlopeTiles = function () {
                         return this.terrainSlopeTiles;
                     };
 

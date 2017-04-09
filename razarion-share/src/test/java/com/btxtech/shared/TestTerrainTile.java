@@ -2,6 +2,8 @@ package com.btxtech.shared;
 
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +20,7 @@ public class TestTerrainTile extends TerrainTile {
     private double[] groundNorms;
     private double[] groundTangents;
     private double[] groundSplattings;
-    private Collection<TerrainSlopeTile> terrainSlopeTiles;
+    private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -95,11 +97,11 @@ public class TestTerrainTile extends TerrainTile {
         if(terrainSlopeTiles == null) {
             terrainSlopeTiles = new ArrayList<>();
         }
-        terrainSlopeTiles.add(terrainSlopeTile);
+        terrainSlopeTiles.add((TestTerrainSlopeTile) terrainSlopeTile);
     }
 
     @Override
-    public TerrainSlopeTile[] getTerrainSlopeTile() {
+    public TerrainSlopeTile[] getTerrainSlopeTiles() {
         if(terrainSlopeTiles == null) {
             return null;
         }

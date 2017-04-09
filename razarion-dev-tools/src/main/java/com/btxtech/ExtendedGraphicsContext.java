@@ -375,8 +375,8 @@ public class ExtendedGraphicsContext {
 //        }
 
         gc.setLineWidth(lineWidth);
-        if (terrainTile.getTerrainSlopeTile() != null) {
-            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTile()) {
+        if (terrainTile.getTerrainSlopeTiles() != null) {
+            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
                 drawTerrainSlopeTile(terrainSlopeTile);
             }
         }

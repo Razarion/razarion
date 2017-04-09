@@ -4,7 +4,6 @@ import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -16,28 +15,15 @@ import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTileContext;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainTileContext;
-import com.btxtech.shared.system.JsInteropObjectFactory;
-import com.btxtech.webglemulator.razarion.DevToolTerrainSlopeTile;
-import com.btxtech.webglemulator.razarion.DevToolTerrainTile;
 import javafx.scene.paint.Color;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Supplier;
 
 import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
 
 /**
  * Created by Beat
@@ -64,7 +50,7 @@ public class SimpleTerrainScenario extends Scenario {
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         terrainTile1 = generateTerrainTileSlope(new Index(0, 0), splattings, terrainSlopePositions);
-        TerrainSlopeTile terrainSlopeTile = terrainTile1.getTerrainSlopeTile()[0];
+        TerrainSlopeTile terrainSlopeTile = terrainTile1.getTerrainSlopeTiles()[0];
 
     }
 
@@ -79,7 +65,7 @@ public class SimpleTerrainScenario extends Scenario {
     @Override
     public void onGenerate() {
         System.out.println("------------------------------------------");
-        TerrainSlopeTile terrainSlopeTile = terrainTile1.getTerrainSlopeTile()[0];
+        TerrainSlopeTile terrainSlopeTile = terrainTile1.getTerrainSlopeTiles()[0];
         for (int i = 0; i < terrainSlopeTile.getSlopeVertexCount(); i++) {
             System.out.println("Assert.assertEquals(" + String.format(Locale.US, "%.4f", terrainSlopeTile.getGroundSplattings()[i]) + ", terrainSlopeTile.getGroundSplattings()[" + i + "], 0.0001);");
 

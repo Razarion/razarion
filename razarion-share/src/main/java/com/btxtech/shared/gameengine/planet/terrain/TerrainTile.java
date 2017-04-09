@@ -32,7 +32,7 @@ public abstract class TerrainTile {
 
     public native void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile);
 
-    public native TerrainSlopeTile[] getTerrainSlopeTile();
+    public native TerrainSlopeTile[] getTerrainSlopeTiles();
 
     public native Object toArray();
 

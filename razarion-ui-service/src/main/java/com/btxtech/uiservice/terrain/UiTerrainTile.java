@@ -51,9 +51,9 @@ public class UiTerrainTile {
         this.terrainTile = terrainTile;
         modelRenderer = groundRenderTask.createModelRenderer(this);
         modelRenderer.setActive(active);
-        if (terrainTile.getTerrainSlopeTile() != null) {
+        if (terrainTile.getTerrainSlopeTiles() != null) {
             uiTerrainSlopeTiles = new ArrayList<>();
-            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTile()) {
+            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
                 UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
                 uiTerrainSlopeTile.init(active, this, terrainSlopeTile);
                 uiTerrainSlopeTiles.add(uiTerrainSlopeTile);

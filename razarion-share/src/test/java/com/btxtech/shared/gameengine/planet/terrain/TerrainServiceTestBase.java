@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.easymock.EasyMock.anyObject;
@@ -30,10 +29,11 @@ import static org.easymock.EasyMock.replay;
  * 03.04.2017.
  */
 public class TerrainServiceTestBase {
+    private TerrainService terrainService;
 
-    protected TerrainTile generateTerrainTileGround(Index terrainTileIndex, double[][] heights, double[][] splattings) {
+    protected void setupTerrainService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
+        terrainService = new TerrainService();
         // Setup TerrainService
-        TerrainService terrainService = new TerrainService();
         injectTerrainTileContextInstance(terrainService);
         // Mock ObstacleContainer
         ObstacleContainer obstacleContainerMock = createNiceMock(ObstacleContainer.class);
@@ -54,55 +54,6 @@ public class TerrainServiceTestBase {
         groundSkeletonConfig.setSplattingXCount(splattings[0].length);
         groundSkeletonConfig.setSplattingYCount(splattings.length);
 
-        terrainTypeService.init(gameEngineConfig);
-        SimpleTestEnvironment.injectService("terrainTypeService", terrainService, terrainTypeService);
-
-        return terrainService.generateTerrainTile(terrainTileIndex);
-    }
-
-    protected TerrainTile generateTerrainTileSlope(Index terrainTileIndex, double[][] splattings, List<TerrainSlopePosition> terrainSlopePositions) {
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
-        slopeSkeletonConfig.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfig.setRows(3).setSegments(1).setWidth(2).setVerticalSpace(2);
-        SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 10, 0.3),},
-                {createSlopeNode(1, 5, 1),},
-                {createSlopeNode(2, 0, 0.7),},
-        };
-        slopeSkeletonConfig.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigs.add(slopeSkeletonConfig);
-
-        return generateTerrainTileSlope(terrainTileIndex, splattings, slopeSkeletonConfigs, terrainSlopePositions);
-    }
-
-    protected TerrainTile generateTerrainTileSlope(Index terrainTileIndex, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
-        // Setup TerrainService
-        TerrainService terrainService = new TerrainService();
-        injectTerrainTileContextInstance(terrainService);
-        // Mock ObstacleContainer
-        ObstacleContainer obstacleContainer = new ObstacleContainer();
-        SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainer);
-
-        double[][] heights = new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 10, 0, 0},
-                {0, 0, 0, 0},
-        };
-        TerrainTypeService terrainTypeService = new TerrainTypeService();
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
-
-        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        gameEngineConfig.setGroundSkeletonConfig(groundSkeletonConfig);
-        groundSkeletonConfig.setHeights(toColumnRow(heights));
-        groundSkeletonConfig.setHeightXCount(heights[0].length);
-        groundSkeletonConfig.setHeightYCount(heights.length);
-        groundSkeletonConfig.setSplattings(toColumnRow(splattings));
-        groundSkeletonConfig.setSplattingXCount(splattings[0].length);
-        groundSkeletonConfig.setSplattingYCount(splattings.length);
-
         gameEngineConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
 
         terrainTypeService.init(gameEngineConfig);
@@ -112,7 +63,9 @@ public class TerrainServiceTestBase {
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         terrainService.onPlanetActivation(new PlanetActivationEvent(planetConfig));
+    }
 
+    protected TerrainTile generateTerrainTile(Index terrainTileIndex) {
         return terrainService.generateTerrainTile(terrainTileIndex);
     }
 
