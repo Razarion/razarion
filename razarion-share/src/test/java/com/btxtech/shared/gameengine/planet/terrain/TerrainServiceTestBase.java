@@ -19,7 +19,6 @@ import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import java.util.List;
 
-import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -33,15 +32,11 @@ public class TerrainServiceTestBase {
 
     protected void setupTerrainService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
         terrainService = new TerrainService();
-        // Setup TerrainService
-        injectTerrainTileContextInstance(terrainService);
-        // Mock ObstacleContainer
-        ObstacleContainer obstacleContainerMock = createNiceMock(ObstacleContainer.class);
-        expect(obstacleContainerMock.isSlope(anyObject(Index.class))).andReturn(false);
-        expect(obstacleContainerMock.getInsideSlopeHeight(anyObject(Index.class))).andReturn(0.0);
-        SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainerMock);
 
-        replay(obstacleContainerMock);
+        injectTerrainTileContextInstance(terrainService);
+
+        ObstacleContainer obstacleContainer = new ObstacleContainer();
+        SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainer);
 
         TerrainTypeService terrainTypeService = new TerrainTypeService();
         GameEngineConfig gameEngineConfig = new GameEngineConfig();

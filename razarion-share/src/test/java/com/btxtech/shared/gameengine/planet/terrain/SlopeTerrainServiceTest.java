@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class SlopeTerrainServiceTest extends TerrainServiceTestBase {
 
         TerrainTile terrainTile = generateTerrainTile(new Index(0, 0));
 
-        TerrainTileTestHelper.saveTerrainTile(terrainTile, "testTerrainSlopeTileGeneration.json");
+        // TerrainTileTestHelper.saveTerrainTile(terrainTile, "testTerrainSlopeTileGeneration.json");
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testTerrainSlopeTileGeneration.json");
         terrainTileTestHelper.assertEquals(terrainTile);
     }
