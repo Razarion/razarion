@@ -2,6 +2,7 @@ package com.btxtech.common.system;
 
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -22,5 +23,10 @@ public class ClientJsInteropObjectFactory implements JsInteropObjectFactory {
     public TerrainSlopeTile generateTerrainSlopeTile() {
         return new TerrainSlopeTile() {
         };
+    }
+
+    @Override
+    public TerrainWaterTile generateTerrainWaterTile() {
+        return new TerrainWaterTile();
     }
 }

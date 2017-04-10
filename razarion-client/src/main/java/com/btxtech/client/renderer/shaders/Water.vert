@@ -1,6 +1,4 @@
 attribute vec3 aVertexPosition;
-attribute vec3 aVertexNormal;
-attribute vec3 aVertexTangent;
 
 uniform highp mat4 uVMatrix;
 uniform highp mat4 uPMatrix;
@@ -12,8 +10,8 @@ varying vec3 vVertexPosition;
 varying vec3 vWorldVertexPosition;
 
 void main(void) {
-    vVertexNormal = (uNVMatrix * vec4(aVertexNormal, 1.0)).xyz;
-    vVertexTangent = (uNVMatrix * vec4(aVertexTangent, 1.0)).xyz;
+    vVertexNormal = (uNVMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz;
+    vVertexTangent = (uNVMatrix * vec4(1.0, 0.0, 0.0, 1.0)).xyz;
     vVertexPosition = (uVMatrix * vec4(aVertexPosition, 1.0)).xyz;
     vWorldVertexPosition = aVertexPosition.xyz;
 

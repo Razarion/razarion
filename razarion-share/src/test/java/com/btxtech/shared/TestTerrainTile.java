@@ -2,8 +2,8 @@ package com.btxtech.shared;
 
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +12,7 @@ import java.util.Collection;
  * Created by Beat
  * 31.03.2017.
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class TestTerrainTile extends TerrainTile {
     private int indexX;
     private int indexY;
@@ -21,6 +22,7 @@ public class TestTerrainTile extends TerrainTile {
     private double[] groundTangents;
     private double[] groundSplattings;
     private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
+    private TestTerrainWaterTile terrainWaterTile;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -81,7 +83,6 @@ public class TestTerrainTile extends TerrainTile {
         return groundSplattings;
     }
 
-
     @Override
     public void setGroundVertexCount(int groundVertexCount) {
         this.groundVertexCount = groundVertexCount;
@@ -94,7 +95,7 @@ public class TestTerrainTile extends TerrainTile {
 
     @Override
     public void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
-        if(terrainSlopeTiles == null) {
+        if (terrainSlopeTiles == null) {
             terrainSlopeTiles = new ArrayList<>();
         }
         terrainSlopeTiles.add((TestTerrainSlopeTile) terrainSlopeTile);
@@ -102,10 +103,20 @@ public class TestTerrainTile extends TerrainTile {
 
     @Override
     public TerrainSlopeTile[] getTerrainSlopeTiles() {
-        if(terrainSlopeTiles == null) {
+        if (terrainSlopeTiles == null) {
             return null;
         }
         return terrainSlopeTiles.toArray(new TerrainSlopeTile[terrainSlopeTiles.size()]);
+    }
+
+    @Override
+    public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
+        this.terrainWaterTile = (TestTerrainWaterTile) terrainWaterTile;
+    }
+
+    @Override
+    public TerrainWaterTile getTerrainWaterTile() {
+        return terrainWaterTile;
     }
 
     @Override

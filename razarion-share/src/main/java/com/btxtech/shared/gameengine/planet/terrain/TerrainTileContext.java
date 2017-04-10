@@ -237,4 +237,9 @@ public class TerrainTileContext {
             insertTriangleCorner(groundSlopeConnectionVertices.get(i), groundSlopeConnectionNorms.get(i), groundSlopeConnectionTangents.get(i), groundSlopeConnectionSplattings.get(i));
         }
     }
+
+    public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
+        terrainTile.setTerrainWaterTile(terrainWaterTile);
+    }
+
 }

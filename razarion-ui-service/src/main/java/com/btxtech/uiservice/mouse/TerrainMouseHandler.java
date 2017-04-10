@@ -84,7 +84,6 @@ public class TerrainMouseHandler {
                 if (terrainPosition == null) {
                     return;
                 }
-
                 if (terrainEditor != null) {
                     terrainEditor.onMouseMove(terrainPosition);
                     return;
@@ -145,6 +144,7 @@ public class TerrainMouseHandler {
                     return;
                 }
 
+                System.out.println("terrainPosition: " + terrainPosition);
                 if (shiftKey) {
                     logger.severe("Terrain Position: " + terrainPosition);
                 }

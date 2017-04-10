@@ -1,14 +1,13 @@
 package com.btxtech.client.renderer.unit;
 
-import com.btxtech.client.renderer.ClientRenderUtil;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
+import com.btxtech.uiservice.terrain.UiTerrainWaterTile;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
@@ -41,12 +40,13 @@ public class ClientWaterNormRendererUnit extends AbstractWaterRendererUnit {
     }
 
     @Override
-    protected void fillInternalBuffers(WaterUi waterUi) {
-        vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(waterUi.getVertices(), waterUi.getNorms()));
+    protected void fillInternalBuffers(UiTerrainWaterTile uiTerrainWaterTile) {
+        // vertices.fillFloat32ArrayEmu(ClientRenderUtil.setupNormFloat32Array(uiTerrainWaterTile.getVertices(), uiTerrainWaterTile.getNorms()));
+        throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public void draw(WaterUi waterUi) {
+    public void draw(UiTerrainWaterTile uiTerrainWaterTile) {
         webGlFacade.useProgram();
         webGlFacade.uniformMatrix4fv(modelMatrix, Matrix4.createIdentity());
 

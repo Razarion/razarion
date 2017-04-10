@@ -377,6 +377,14 @@ com = {
                         return this.terrainSlopeTiles;
                     };
 
+                    this.setTerrainWaterTile = function (terrainWaterTile) {
+                        this.terrainWaterTile = terrainWaterTile;
+                    };
+
+                    this.getTerrainWaterTile = function () {
+                        return this.terrainWaterTile;
+                    };
+
                     this.toArray = function () {
                         var terrainSlopeTilesArray = [];
                         if (typeof this.terrainSlopeTiles != 'undefined') {
@@ -384,8 +392,11 @@ com = {
                                 terrainSlopeTilesArray.push(this.terrainSlopeTiles[i].toArray());
                             }
                         }
-
-                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, terrainSlopeTilesArray];
+                        var terrainWaterTile = [];
+                        if (typeof this.terrainWaterTile != 'undefined') {
+                            terrainWaterTile = this.terrainWaterTile.toArray();
+                        }
+                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, terrainSlopeTilesArray, terrainWaterTile];
                     };
 
                     this.fromArray = function (array) {
@@ -404,7 +415,12 @@ com = {
                                 this.addTerrainSlopeTile(terrainSlopeTile);
                             }
                         }
-                    };
+                        var terrainWaterTile = array[8];
+                        if (typeof terrainWaterTile != 'undefined') {
+                            this.terrainWaterTile = new com.btxtech.shared.nativejs.TerrainWaterTile();
+                            this.terrainWaterTile.fromArray(terrainWaterTile);
+                        }
+                    }
                 },
 
                 TerrainSlopeTile: function () {
@@ -477,6 +493,41 @@ com = {
                         this.slopeFactors = array[5];
                         this.groundSplattings = array[6];
                     };
+                },
+
+                TerrainWaterTile: function () {
+                    this.initArray = function (sizeVec) {
+                        this.vertices = new Float32Array(sizeVec);
+                    };
+
+                    this.setTriangleCorner = function (triangleCornerIndex, vertexX, vertexY, vertexZ) {
+                        var cornerScalarIndex = triangleCornerIndex * 3;
+                        this.vertices[cornerScalarIndex] = vertexX;
+                        this.vertices[cornerScalarIndex + 1] = vertexY;
+                        this.vertices[cornerScalarIndex + 2] = vertexZ;
+                    };
+
+                    this.getVertices = function () {
+                        return this.vertices;
+                    };
+
+                    this.setVertexCount = function (vertexCount) {
+                        this.vertexCount = vertexCount;
+                    };
+
+                    this.getVertexCount = function () {
+                        return this.vertexCount;
+                    };
+
+                    this.toArray = function () {
+                        return [this.vertexCount, this.vertices];
+                    };
+
+                    this.fromArray = function (array) {
+                        this.vertexCount = array[0];
+                        this.vertices = array[1];
+                    };
+
                 }
             }
         }

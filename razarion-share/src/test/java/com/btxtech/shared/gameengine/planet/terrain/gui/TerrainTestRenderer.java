@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain.gui;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -151,26 +152,30 @@ public class TerrainTestRenderer {
     }
 
 
-    public void drawTerrainTile(TerrainTile expected) {
+    public void drawTerrainTile(TerrainTile terrainTile) {
         gc.setLineWidth(LINE_WIDTH);
-        for (int vertexIndex = 0; vertexIndex < expected.getGroundVertexCount(); vertexIndex += 3) {
+        for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 
-            double[] xCorners = new double[]{expected.getGroundVertices()[vertexScalarIndex], expected.getGroundVertices()[vertexScalarIndex + 3], expected.getGroundVertices()[vertexScalarIndex + 6]};
-            double[] yCorners = new double[]{expected.getGroundVertices()[vertexScalarIndex + 1], expected.getGroundVertices()[vertexScalarIndex + 4], expected.getGroundVertices()[vertexScalarIndex + 7]};
+            double[] xCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex], terrainTile.getGroundVertices()[vertexScalarIndex + 3], terrainTile.getGroundVertices()[vertexScalarIndex + 6]};
+            double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
             gc.setStroke(Color.LIGHTGREEN);
             gc.strokePolygon(xCorners, yCorners, 3);
         }
 
-        gc.setLineWidth(LINE_WIDTH);
-        if (expected.getTerrainSlopeTiles() != null) {
-            for (TerrainSlopeTile terrainSlopeTile : expected.getTerrainSlopeTiles()) {
+        if (terrainTile.getTerrainSlopeTiles() != null) {
+            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
                 drawTerrainSlopeTile(terrainSlopeTile);
             }
+        }
+
+        if(terrainTile.getTerrainWaterTile() != null) {
+            drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
         }
     }
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
+        gc.setLineWidth(LINE_WIDTH);
         for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 
@@ -178,8 +183,8 @@ public class TerrainTestRenderer {
             double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
             gc.setStroke(Color.GRAY);
             gc.strokePolygon(xCorners, yCorners, 3);
-            gc.setFill(Color.color(1, 0, 0, 0.3));
-            gc.fillPolygon(xCorners, yCorners, 3);
+            // gc.setFill(Color.color(1, 0, 0, 0.3));
+            // gc.fillPolygon(xCorners, yCorners, 3);
         }
 //        // Norm
 //        gc.setStroke(Color.RED);
@@ -254,6 +259,20 @@ public class TerrainTestRenderer {
 //            gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
 //        }
 
+    }
+
+    private void drawTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
+        gc.setLineWidth(LINE_WIDTH);
+        gc.setStroke(Color.BLUE);
+        for (int vertexIndex = 0; vertexIndex < terrainWaterTile.getVertexCount(); vertexIndex += 3) {
+            int vertexScalarIndex = vertexIndex * 3;
+
+            double[] xCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex], terrainWaterTile.getVertices()[vertexScalarIndex + 3], terrainWaterTile.getVertices()[vertexScalarIndex + 6]};
+            double[] yCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex + 1], terrainWaterTile.getVertices()[vertexScalarIndex + 4], terrainWaterTile.getVertices()[vertexScalarIndex + 7]};
+            gc.strokePolygon(xCorners, yCorners, 3);
+            // gc.setFill(Color.color(1, 0, 0, 0.3));
+            // gc.fillPolygon(xCorners, yCorners, 3);
+        }
     }
 
 }

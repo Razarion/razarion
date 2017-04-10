@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,8 @@ public class TerrainService {
     private ObstacleContainer obstacleContainer;
     @Inject
     private Instance<TerrainTileContext> terrainTileContextInstance;
+    @Inject
+    private Instance<TerrainWaterTileContext> terrainWaterTileContextInstance;
     private Water water;
     private GroundMesh groundMesh;
     private Rectangle groundMeshDimension;
@@ -82,6 +85,7 @@ public class TerrainService {
         insertSlopeGroundConnectionPart(terrainTileContext);
         insertGroundPart(terrainTileContext);
         insertSlopePart(terrainTileContext);
+        insertWaterPart(terrainTileContext);
         TerrainTile terrainTile = terrainTileContext.complete();
         logger.severe("generateTerrainTile: " + (System.currentTimeMillis() - time));
         return terrainTile;
@@ -104,9 +108,16 @@ public class TerrainService {
         terrainTileContext.initGround();
 
         iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
-            if (obstacleContainer.isSlope(nodeIndex)) {
-                return;
+            ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
+            if (obstacleContainerNode != null) {
+                if (obstacleContainerNode.isInSlope()) {
+                    return;
+                }
+                if (obstacleContainerNode.isFullWater()) {
+                    return;
+                }
             }
+
             double slopeHeight = obstacleContainer.getInsideSlopeHeight(nodeIndex);
             insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), slopeHeight, terrainTileContext);
         });
@@ -302,18 +313,25 @@ public class TerrainService {
             if (obstacleContainerNode == null) {
                 return;
             }
-            if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0);
+            if (obstacleContainerNode.isFullWater()) {
+                return;
             }
-            if (obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getSlopHeight());
+            if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0, terrainTileContext::insertTriangleGroundSlopeConnection, false);
+            }
+            if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null) {
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getSlopHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
             }
         });
     }
 
-    private void insertSlopeGroundConnection(TerrainTileContext terrainTileContext, Index nodeIndex, Collection<List<Vertex>> piercings, double additionHeight) {
+    private void insertSlopeGroundConnection(TerrainTileContext terrainTileContext, Index nodeIndex, Collection<List<Vertex>> piercings, double additionHeight, Triangulator.Listener<Vertex> listener, boolean water) {
         Rectangle2D absoluteRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
         for (List<Vertex> piercingLine : piercings) {
+            if (water) {
+                piercingLine = new ArrayList<>(piercingLine);
+                Collections.reverse(piercingLine);
+            }
             List<Vertex> polygon = new ArrayList<>();
 
             RectanglePiercing startRectanglePiercing;
@@ -353,7 +371,7 @@ public class TerrainService {
             addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross(), additionHeight));
 
             for (int i = piercingLine.size() - 2; i > 0; i--) {
-                addOnlyXyUnique(polygon, piercingLine.get(i));
+                addOnlyXyUnique(polygon, toVertexSlope(piercingLine.get(i), additionHeight, water));
             }
 
             if (polygon.size() < 3) {
@@ -361,7 +379,7 @@ public class TerrainService {
             }
 
             // Triangulate Polygon
-            Triangulator.calculate(polygon, terrainTileContext::insertTriangleGroundSlopeConnection);
+            Triangulator.calculate(polygon, listener);
         }
     }
 
@@ -384,8 +402,16 @@ public class TerrainService {
         return new Vertex(position, terrainTileContext.setupHeight(nodeTile.getX(), nodeTile.getY()) + slopeHeight);
     }
 
-    private Vertex toVertexSlope(DecimalPosition position, double slopeHeigh) {
-        return new Vertex(position, slopeHeigh);
+    private Vertex toVertexSlope(Vertex vertex, double additionHeight, boolean water) {
+        if (water) {
+            return new Vertex(vertex.toXY(), additionHeight);
+        } else {
+            return vertex;
+        }
+    }
+
+    private Vertex toVertexSlope(DecimalPosition position, double slopeHeight) {
+        return new Vertex(position, slopeHeight);
     }
 
     private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line, DecimalPosition reference) {
@@ -544,7 +570,26 @@ public class TerrainService {
             default:
                 throw new IllegalArgumentException("getCorner: don't know how to handle side: " + side);
         }
+    }
 
+    private void insertWaterPart(TerrainTileContext terrainTileContext) {
+        TerrainWaterTileContext terrainWaterTileContext = terrainWaterTileContextInstance.get();
+        terrainWaterTileContext.init(terrainTileContext);
+
+        iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
+            ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
+            if (obstacleContainerNode == null) {
+                return;
+            }
+            if (obstacleContainerNode.isFullWater()) {
+                terrainWaterTileContext.insertNode(nodeIndex, obstacleContainerNode.getWaterLevel());
+                return;
+            }
+            if (obstacleContainerNode.isFractionWater() && obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), obstacleContainerNode.getWaterLevel(), terrainWaterTileContext::insertWaterRim, true);
+            }
+        });
+        terrainWaterTileContext.complete();
     }
 
     private void setup(PlanetConfig planetConfig) {

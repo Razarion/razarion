@@ -2,6 +2,7 @@ package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +20,7 @@ public class DevToolTerrainTile extends TerrainTile {
     private double[] groundTangents;
     private double[] groundSplattings;
     private Collection<TerrainSlopeTile> terrainSlopeTiles;
+    private TerrainWaterTile terrainWaterTile;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -91,7 +93,7 @@ public class DevToolTerrainTile extends TerrainTile {
 
     @Override
     public void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
-        if(terrainSlopeTiles == null) {
+        if (terrainSlopeTiles == null) {
             terrainSlopeTiles = new ArrayList<>();
         }
         terrainSlopeTiles.add(terrainSlopeTile);
@@ -99,10 +101,20 @@ public class DevToolTerrainTile extends TerrainTile {
 
     @Override
     public TerrainSlopeTile[] getTerrainSlopeTiles() {
-        if(terrainSlopeTiles == null) {
+        if (terrainSlopeTiles == null) {
             return null;
         }
         return terrainSlopeTiles.toArray(new TerrainSlopeTile[terrainSlopeTiles.size()]);
+    }
+
+    @Override
+    public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
+        this.terrainWaterTile = terrainWaterTile;
+    }
+
+    @Override
+    public TerrainWaterTile getTerrainWaterTile() {
+        return terrainWaterTile;
     }
 
     @Override

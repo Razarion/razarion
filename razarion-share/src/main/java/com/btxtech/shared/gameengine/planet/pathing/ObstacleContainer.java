@@ -78,14 +78,24 @@ public class ObstacleContainer {
         for (Index node : absoluteRectangleToNodesInclusive(aabb)) {
             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(node);
             Collection<DecimalPosition> corners = terrainRect.toCorners();
-            if (innerPolygon.isInside(corners)) {
-                getOrCreate(node).setSlopHeight(slope.getHeight());
-                continue;
+            if (slope.hasWater()) {
+                if (outerPolygon.isInside(corners)) {
+                    getOrCreate(node).setFullWater(slope.getHeight());
+                    continue;
+                }
+            } else {
+                if (innerPolygon.isInside(corners)) {
+                    getOrCreate(node).setSlopHeight(slope.getHeight());
+                    continue;
+                }
             }
             if (outerPolygon.isOneCornerInside(corners)) {
                 ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
                 obstacleContainerNode.setBelongsToSlope();
                 obstacleContainerNode.setSlopHeight(slope.getHeight());
+                if (slope.hasWater()) {
+                    obstacleContainerNode.setFractionWater(slope.getWaterLevel());
+                }
             }
         }
     }
@@ -190,11 +200,6 @@ public class ObstacleContainer {
         DecimalPosition start = absoluteRect.getStart().sub(absoluteOffset);
         Rectangle2D rect = new Rectangle2D(start.getX(), start.getY(), absoluteRect.width(), absoluteRect.height());
         return GeometricUtil.rasterizeRectangleInclusive(rect, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-    }
-
-    public boolean isSlope(Index index) {
-        ObstacleContainerNode node = getObstacleContainerNodeIncludeOffset(index);
-        return node != null && node.isInSlope();
     }
 
     public double getInsideSlopeHeight(Index index) {

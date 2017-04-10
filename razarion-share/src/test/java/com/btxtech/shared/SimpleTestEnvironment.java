@@ -50,8 +50,6 @@ public class SimpleTestEnvironment {
         }
     }
 
-
-
     public static void injectJsInteropObjectFactory(String fieldName, Object service, JsInteropObjectFactory jsInteropObjectFactory) {
         try {
             Field field = service.getClass().getDeclaredField(fieldName);

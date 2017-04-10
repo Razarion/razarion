@@ -26,11 +26,14 @@ public class UiTerrainTile {
     private GroundRenderTask groundRenderTask;
     @Inject
     private Instance<UiTerrainSlopeTile> uiTerrainSlopeTileInstance;
+    @Inject
+    private Instance<UiTerrainWaterTile> uiTerrainWaterTileInstance;
     private GroundSkeletonConfig groundSkeletonConfig;
     private TerrainTile terrainTile;
     private ModelRenderer modelRenderer;
     private boolean active;
     private Collection<UiTerrainSlopeTile> uiTerrainSlopeTiles;
+    private UiTerrainWaterTile uiTerrainWaterTile;
 
     public void init(Index index, GroundSkeletonConfig groundSkeletonConfig) {
         this.groundSkeletonConfig = groundSkeletonConfig;
@@ -45,6 +48,9 @@ public class UiTerrainTile {
         if (uiTerrainSlopeTiles != null) {
             uiTerrainSlopeTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.setActive(active));
         }
+        if (uiTerrainWaterTile != null) {
+            uiTerrainWaterTile.setActive(active);
+        }
     }
 
     private void terrainTileReceived(TerrainTile terrainTile) {
@@ -58,6 +64,10 @@ public class UiTerrainTile {
                 uiTerrainSlopeTile.init(active, this, terrainSlopeTile);
                 uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
             }
+        }
+        if (terrainTile.getTerrainWaterTile() != null) {
+            uiTerrainWaterTile = uiTerrainWaterTileInstance.get();
+            uiTerrainWaterTile.init(active, terrainTile.getTerrainWaterTile());
         }
     }
 

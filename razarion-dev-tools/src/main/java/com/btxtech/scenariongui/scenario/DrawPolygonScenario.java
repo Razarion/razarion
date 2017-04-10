@@ -1,10 +1,9 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.scenariongui.InstanceStringGenerator;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class DrawPolygonScenario extends Scenario {
     @Override
     public void render(ExtendedGraphicsContext context) {
         for (List<DecimalPosition> polygon : polygons) {
-            context.strokeCurveDecimalPosition(polygon, 1.0, Color.RED, true);
+            context.strokeCurveDecimalPosition(polygon, 0.2, Color.RED, true);
         }
 
     }
@@ -49,6 +48,6 @@ public class DrawPolygonScenario extends Scenario {
     @Override
     public void onCmd1() {
         System.out.println("Start new Polygon");
-        polygons.add(new ArrayList<DecimalPosition>());
+        polygons.add(new ArrayList<>());
     }
 }

@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Draw Polygon", new DrawPolygonScenario());
         register("Simple Terrain", new SimpleTerrainScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
         register("Obstacle Container Slope Ground Connector", new ObstacleContainerSlopeGroundConnectorScenario());
@@ -51,7 +52,6 @@ public abstract class Scenario {
         register("Rectangle 2D", new Rectangle2DScenario());
         register("Polygon2D Test", new TestPolygon2DScenario());
         register("Triangle2D", new Triangle2DScenario());
-        register("Draw Polygon", new DrawPolygonScenario());
         register("JUnit Test", new JUnitTestScenario());
         register("Polygon2I Test", new TestPolygon2IScenario());
     }

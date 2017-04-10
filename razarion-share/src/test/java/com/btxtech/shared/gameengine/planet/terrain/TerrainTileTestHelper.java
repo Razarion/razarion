@@ -77,6 +77,7 @@ public class TerrainTileTestHelper {
     }
 
     private void compare(TerrainTile expected, TerrainTile actual) {
+        // Ground
         Assert.assertEquals("Index X", expected.getIndexX(), actual.getIndexX());
         Assert.assertEquals("Index Y", expected.getIndexY(), actual.getIndexY());
         Assert.assertArrayEquals("Ground Vertices", expected.getGroundVertices(), actual.getGroundVertices(), 0.001);
@@ -84,7 +85,7 @@ public class TerrainTileTestHelper {
         Assert.assertArrayEquals("Ground Tangents", expected.getGroundTangents(), actual.getGroundTangents(), 0.001);
         Assert.assertArrayEquals("Ground Splattings", expected.getGroundSplattings(), actual.getGroundSplattings(), 0.001);
         Assert.assertEquals("Ground Vertex Count", expected.getGroundVertexCount(), actual.getGroundVertexCount());
-
+        // Slope
         int expectedSlopeTileCount = 0;
         if (expected.getTerrainSlopeTiles() != null) {
             expectedSlopeTileCount = expected.getTerrainSlopeTiles().length;
@@ -94,10 +95,17 @@ public class TerrainTileTestHelper {
             actualSlopeTileCount = expected.getTerrainSlopeTiles().length;
         }
         Assert.assertEquals("TerrainSlopeTiles length different", expectedSlopeTileCount, actualSlopeTileCount);
-
         if (expectedSlopeTileCount != 0) {
             for (int i = 0; i < expected.getTerrainSlopeTiles().length; i++) {
                 compare(expected.getTerrainSlopeTiles()[i], actual.getTerrainSlopeTiles()[i]);
+            }
+        }
+        // Water
+        if (expected.getTerrainWaterTile() != null || expected.getTerrainWaterTile() != null) {
+            if (expected.getTerrainWaterTile() != null && expected.getTerrainWaterTile() != null) {
+                compare(expected.getTerrainWaterTile(), actual.getTerrainWaterTile());
+            } else {
+                Assert.fail("TerrainWaterTile is invalid. Expected: " + expected.getTerrainWaterTile() + " Actual: " + actual.getTerrainWaterTile());
             }
         }
     }
@@ -110,6 +118,11 @@ public class TerrainTileTestHelper {
         Assert.assertArrayEquals("Slope Factor", expected.getSlopeFactors(), actual.getSlopeFactors(), 0.001);
         Assert.assertArrayEquals("Slope Ground Splattings", expected.getGroundSplattings(), actual.getGroundSplattings(), 0.001);
         Assert.assertEquals("Slope Vertex Count", expected.getSlopeVertexCount(), actual.getSlopeVertexCount());
+    }
+
+    private void compare(TerrainWaterTile expected, TerrainWaterTile actual) {
+        Assert.assertArrayEquals("Water Vertices", expected.getVertices(), actual.getVertices(), 0.001);
+        Assert.assertEquals("Water Vertex Count", expected.getVertexCount(), actual.getVertexCount());
     }
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {

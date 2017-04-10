@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.TestTerrainSlopeTile;
 import com.btxtech.shared.TestTerrainTile;
+import com.btxtech.shared.TestTerrainWaterTile;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Vertex;
@@ -34,6 +35,7 @@ public class TerrainServiceTestBase {
         terrainService = new TerrainService();
 
         injectTerrainTileContextInstance(terrainService);
+        injectTerrainWaterTileContextInstance(terrainService);
 
         ObstacleContainer obstacleContainer = new ObstacleContainer();
         SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainer);
@@ -55,7 +57,7 @@ public class TerrainServiceTestBase {
         SimpleTestEnvironment.injectService("terrainTypeService", terrainService, terrainTypeService);
 
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
+        planetConfig.setTerrainSlopePositions(terrainSlopePositions).setWaterLevel(-0.7);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         terrainService.onPlanetActivation(new PlanetActivationEvent(planetConfig));
     }
@@ -68,6 +70,7 @@ public class TerrainServiceTestBase {
         JsInteropObjectFactory mockJsInteropObjectFactory = createNiceMock(JsInteropObjectFactory.class);
         expect(mockJsInteropObjectFactory.generateTerrainTile()).andReturn(new TestTerrainTile());
         expect(mockJsInteropObjectFactory.generateTerrainSlopeTile()).andReturn(new TestTerrainSlopeTile());
+        expect(mockJsInteropObjectFactory.generateTerrainWaterTile()).andReturn(new TestTerrainWaterTile());
         SimpleTestEnvironment.injectJsInteropObjectFactory("jsInteropObjectFactory", object, mockJsInteropObjectFactory);
         replay(mockJsInteropObjectFactory);
     }
@@ -82,6 +85,14 @@ public class TerrainServiceTestBase {
                 return terrainSlopeTileContext;
             });
             return terrainTileContext;
+        });
+    }
+
+    private void injectTerrainWaterTileContextInstance(TerrainService terrainService) {
+        SimpleTestEnvironment.injectInstance("terrainWaterTileContextInstance", terrainService, () -> {
+            TerrainWaterTileContext terrainWaterTileContextInstance = new TerrainWaterTileContext();
+            mockJsInteropObjectFactory(terrainWaterTileContextInstance);
+            return terrainWaterTileContextInstance;
         });
     }
 

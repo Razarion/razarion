@@ -34,6 +34,10 @@ public abstract class TerrainTile {
 
     public native TerrainSlopeTile[] getTerrainSlopeTiles();
 
+    public native void setTerrainWaterTile(TerrainWaterTile terrainWaterTile);
+
+    public native TerrainWaterTile getTerrainWaterTile();
+
     public native Object toArray();
 
     public native int fromArray(Object object);
