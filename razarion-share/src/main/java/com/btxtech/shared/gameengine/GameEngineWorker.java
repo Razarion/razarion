@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
@@ -157,9 +156,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case SINGLE_Z_TERRAIN:
                 getTerrainZ((DecimalPosition) controlPackage.getData(0));
-                break;
-            case TERRAIN_PICK_RAY:
-                getTerrainPosition((Line3d) controlPackage.getData(0));
                 break;
             case TERRAIN_OVERLAP:
                 getTerrainOverlap((DecimalPosition) controlPackage.getData(0));
@@ -336,16 +332,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         } catch (NoInterpolatedTerrainTriangleException e) {
             logger.warning("GameEngineWorker.getTerrainZ() " + e.getMessage());
             sendToClient(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN_ANSWER_FAIL, position);
-        }
-    }
-
-    private void getTerrainPosition(Line3d worldPickRay) {
-        try {
-            Vertex vertex = terrainService.calculatePositionGroundMesh(worldPickRay);
-            sendToClient(GameEngineControlPackage.Command.TERRAIN_PICK_RAY_ANSWER, vertex);
-        } catch (NoInterpolatedTerrainTriangleException e) {
-            logger.warning("GameEngineWorker.getTerrainZ() " + e.getMessage());
-            sendToClient(GameEngineControlPackage.Command.TERRAIN_PICK_RAY_ANSWER_FAIL);
         }
     }
 

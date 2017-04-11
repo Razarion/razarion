@@ -2,7 +2,6 @@ package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
@@ -44,7 +43,6 @@ public class WorkerMarshaller {
             case QUEST_PASSED:
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
-            case TERRAIN_PICK_RAY_ANSWER_FAIL:
             case INITIALIZED:
                 break;
             // Single JSON data
@@ -64,8 +62,6 @@ public class WorkerMarshaller {
             case PERFMON_RESPONSE:
             case INITIALISING_FAILED:
             case SINGLE_Z_TERRAIN:
-            case TERRAIN_PICK_RAY:
-            case TERRAIN_PICK_RAY_ANSWER:
             case TERRAIN_OVERLAP:
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
             case TERRAIN_TILE_REQUEST:
@@ -134,7 +130,6 @@ public class WorkerMarshaller {
             case QUEST_PASSED:
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
-            case TERRAIN_PICK_RAY_ANSWER_FAIL:
             case INITIALIZED:
                 break;
             case INITIALIZE:
@@ -255,12 +250,6 @@ public class WorkerMarshaller {
                 break;
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
-                break;
-            case TERRAIN_PICK_RAY:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Line3d.class));
-                break;
-            case TERRAIN_PICK_RAY_ANSWER:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Vertex.class));
                 break;
             case TERRAIN_OVERLAP:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));

@@ -2,7 +2,6 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
@@ -174,10 +173,6 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN, position);
     }
 
-    public void askTerrainPosition(Line3d worldPickRay) {
-        sendToWorker(GameEngineControlPackage.Command.TERRAIN_PICK_RAY, worldPickRay);
-    }
-
     public void askOverlap(DecimalPosition position) {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_OVERLAP, position);
     }
@@ -289,12 +284,6 @@ public abstract class GameEngineControl {
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
                 terrainUiService.onTerrainZAnswerFail((DecimalPosition) controlPackage.getData(0));
                 break;
-            case TERRAIN_PICK_RAY_ANSWER:
-                terrainUiService.onTerrainPositionPickRayAnswer((Vertex) controlPackage.getData(0));
-                break;
-            case TERRAIN_PICK_RAY_ANSWER_FAIL:
-                terrainUiService.onTerrainPositionPickRayAnswerFail();
-                break;
             case TERRAIN_OVERLAP_ANSWER:
                 terrainUiService.onOverlapAnswer((DecimalPosition) controlPackage.getData(0), (boolean) controlPackage.getData(1));
                 break;
@@ -302,7 +291,7 @@ public abstract class GameEngineControl {
                 terrainUiService.onOverlapTypeAnswer((int) controlPackage.getData(0), (boolean) controlPackage.getData(1));
                 break;
             case TERRAIN_TILE_RESPONSE:
-                terrainUiService.onTerrainTileResponse((TerrainTile)controlPackage.getData(0));
+                terrainUiService.onTerrainTileResponse((TerrainTile) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
