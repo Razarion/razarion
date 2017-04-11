@@ -36,7 +36,6 @@ public class Line3d {
         return calculatePoint(m);
     }
 
-
     //    public Vertex projectOnInfiniteLine(Vertex source) {
 //        Vertex relativePoint2 = point2.sub(point1);
 //        Vertex relativeSource = source.sub(point1);

@@ -81,6 +81,10 @@ public class Vertex {
         return new Vertex(x + other.x, y + other.y, z + other.z);
     }
 
+    public Vertex sub(double x, double y, double z) {
+        return new Vertex(this.x - x, this.y - y, this.z - z);
+    }
+
     public Vertex sub(Vertex other) {
         return new Vertex(x - other.x, y - other.y, z - other.z);
     }

@@ -6,14 +6,12 @@ import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -168,14 +166,12 @@ public class TerrainUiService {
         gameEngineControl.askOverlapType(uuid, positions, baseItemType.getId());
     }
 
-    public void calculateMousePositionGroundMesh(Line3d worldPickRay, Consumer<Vertex> positionConsumer) {
-        if (worldPickRayConsumer == null) {
-            worldPickRayConsumer = positionConsumer;
-            gameEngineControl.askTerrainPosition(worldPickRay);
-        } else {
-            worldPickRayQueued = worldPickRay;
-            worldPickRayConsumerQueued = positionConsumer;
-        }
+    public Vertex calculateMousePositionGroundMesh(Line3d worldPickRay) {
+        DecimalPosition groundPosition = worldPickRay.calculatePositionOnHeightLevel(0).toXY();
+        Index terrainTile = TerrainUtil.toTile(groundPosition);
+        UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
+        DecimalPosition tileGroundPosition = groundPosition.sub(TerrainUtil.toTileAbsolute(terrainTile));
+        return new Vertex(groundPosition, uiTerrainTile.interpolateDisplayHeight(tileGroundPosition));
     }
 
     public void getTerrainZ(DecimalPosition position, BiConsumer<DecimalPosition, Double> callback) {

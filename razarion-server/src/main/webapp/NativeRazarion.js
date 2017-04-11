@@ -313,11 +313,12 @@ com = {
                         this.indexY = indexY;
                     };
 
-                    this.initGroundArrays = function (groundSizeVec, groundSizeScalar) {
+                    this.initGroundArrays = function (groundSizeVec, groundSizeScalar, nodes) {
                         this.groundVertices = new Float32Array(groundSizeVec);
                         this.groundNorms = new Float32Array(groundSizeVec);
                         this.groundTangents = new Float32Array(groundSizeVec);
                         this.groundSplattings = new Float32Array(groundSizeScalar);
+                        this.displayHeights = new Float32Array(nodes);
                     };
 
                     this.setGroundTriangleCorner = function (triangleCornerIndex, vertexX, vertexY, vertexZ, normX, normY, normZ, tangentX, tangentY, tangentZ, splatting) {
@@ -332,6 +333,10 @@ com = {
                         this.groundTangents[cornerScalarIndex + 1] = tangentY;
                         this.groundTangents[cornerScalarIndex + 2] = tangentZ;
                         this.groundSplattings[triangleCornerIndex] = splatting;
+                    };
+
+                    this.setDisplayHeight = function (index, height) {
+                        return this.displayHeights[index] = height;
                     };
 
                     this.getIndexX = function () {
@@ -356,6 +361,10 @@ com = {
 
                     this.getGroundSplattings = function () {
                         return this.groundSplattings;
+                    };
+
+                    this.getDisplayHeights = function () {
+                        return this.displayHeights;
                     };
 
                     this.setGroundVertexCount = function (groundVertexCount) {
@@ -396,7 +405,7 @@ com = {
                         if (typeof this.terrainWaterTile != 'undefined') {
                             terrainWaterTile = this.terrainWaterTile.toArray();
                         }
-                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, terrainSlopeTilesArray, terrainWaterTile];
+                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, this.displayHeights, terrainSlopeTilesArray, terrainWaterTile];
                     };
 
                     this.fromArray = function (array) {
@@ -407,7 +416,8 @@ com = {
                         this.groundNorms = array[4];
                         this.groundTangents = array[5];
                         this.groundSplattings = array[6];
-                        var terrainSlopeTilesArray = array[7];
+                        this.displayHeights = array[7];
+                        var terrainSlopeTilesArray = array[8];
                         if (typeof terrainSlopeTilesArray != 'undefined') {
                             for (var i = 0; i < terrainSlopeTilesArray.length; i++) {
                                 var terrainSlopeTile = new com.btxtech.shared.nativejs.TerrainSlopeTile();
@@ -415,7 +425,7 @@ com = {
                                 this.addTerrainSlopeTile(terrainSlopeTile);
                             }
                         }
-                        var terrainWaterTile = array[8];
+                        var terrainWaterTile = array[9];
                         if (typeof terrainWaterTile != 'undefined') {
                             this.terrainWaterTile = new com.btxtech.shared.nativejs.TerrainWaterTile();
                             this.terrainWaterTile.fromArray(terrainWaterTile);
