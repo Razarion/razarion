@@ -19,6 +19,7 @@ public class DevToolTerrainTile extends TerrainTile {
     private double[] groundNorms;
     private double[] groundTangents;
     private double[] groundSplattings;
+    private double[] displayHeights;
     private Collection<TerrainSlopeTile> terrainSlopeTiles;
     private TerrainWaterTile terrainWaterTile;
 
@@ -34,6 +35,7 @@ public class DevToolTerrainTile extends TerrainTile {
         groundNorms = new double[groundSizeVec];
         groundTangents = new double[groundSizeVec];
         groundSplattings = new double[groundSizeScalar];
+        displayHeights = new double[nodes];
     }
 
     @Override
@@ -50,6 +52,12 @@ public class DevToolTerrainTile extends TerrainTile {
         groundTangents[cornerScalarIndex + 2] = tangentZ;
         groundSplattings[triangleCornerIndex] = splatting;
     }
+
+    @Override
+    public void setDisplayHeight(int index, double height) {
+        displayHeights[index] = height;
+    }
+
 
     @Override
     public int getIndexX() {
@@ -79,6 +87,11 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public double[] getGroundSplattings() {
         return groundSplattings;
+    }
+
+    @Override
+    public double[] getDisplayHeights() {
+        return displayHeights;
     }
 
     @Override
