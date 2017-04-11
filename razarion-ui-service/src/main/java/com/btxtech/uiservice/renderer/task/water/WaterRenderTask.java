@@ -24,6 +24,7 @@ public class WaterRenderTask extends AbstractRenderTask<WaterUi> {
         renderComposite.setNormRenderUnit(AbstractWaterRendererUnit.class);
         modelRenderer.add(RenderUnitControl.WATER, renderComposite);
         add(modelRenderer);
+        modelRenderer.fillBuffers();
         return modelRenderer;
     }
 }
