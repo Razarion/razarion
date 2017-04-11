@@ -120,7 +120,7 @@ public class GroundSidebar extends LeftSideBarContent {
                 bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId));
                 bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId));
                 splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> groundConfig.getGroundSkeletonConfig().setSplattingId(imageId));
-                terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
+                // TODO terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "loadGroundConfig failed: " + message, throwable);
@@ -135,7 +135,7 @@ public class GroundSidebar extends LeftSideBarContent {
             public void callback(GroundConfig groundConfig) {
                 groundConfigDataBinder.setModel(groundConfig);
                 lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
-                terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
+                // TODO terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "saveGroundConfig failed: " + message, throwable);

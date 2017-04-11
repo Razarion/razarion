@@ -126,7 +126,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @Override
     public void init(SlopeConfig slopeConfig) {
         slopeConfigDataBinder.setModel(slopeConfig);
-        terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
+        // TODO terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
         textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId));
         bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setBmId(imageId));
         lightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getLightConfig());

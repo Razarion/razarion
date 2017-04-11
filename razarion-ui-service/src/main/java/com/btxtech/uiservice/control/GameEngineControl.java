@@ -4,9 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
-import com.btxtech.shared.datatypes.terrain.SlopeUi;
-import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -217,8 +214,7 @@ public abstract class GameEngineControl {
         }
     }
 
-    private void onInitialized(GroundUi groundUi, Collection<SlopeUi> slopeUis, WaterUi waterUi) {
-        terrainUiService.setBuffers(groundUi, slopeUis, waterUi);
+    private void onInitialized() {
         if (initializationReferredStartup != null) {
             initializationReferredStartup.finished();
             initializationReferredStartup = null;
@@ -238,7 +234,7 @@ public abstract class GameEngineControl {
                 onLoaded();
                 break;
             case INITIALIZED:
-                onInitialized((GroundUi) controlPackage.getData(0), (Collection<SlopeUi>) controlPackage.getData(1), (WaterUi) controlPackage.getData(2));
+                onInitialized();
                 break;
             case INITIALISING_FAILED:
                 onInitialisingFailed((String) controlPackage.getSingleData());

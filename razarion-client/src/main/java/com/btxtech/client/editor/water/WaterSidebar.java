@@ -56,7 +56,7 @@ public class WaterSidebar extends LeftSideBarContent {
     public void init() {
         waterDataBinder.setModel(visualUiService.getVisualConfig().getWaterConfig());
         lightConfig.setModel(visualUiService.getVisualConfig().getWaterConfig().getLightConfig());
-        terrainUiService.enableEditMode(visualUiService.getVisualConfig().getWaterConfig());
+        // TODO terrainUiService.enableEditMode(visualUiService.getVisualConfig().getWaterConfig());
         bmId.setImageId(visualUiService.getVisualConfig().getWaterConfig().getBmId(), imageId -> visualUiService.getVisualConfig().getWaterConfig().setBmId(imageId));
     }
 

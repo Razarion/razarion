@@ -1,16 +1,10 @@
 package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line3d;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
-import com.btxtech.shared.datatypes.terrain.SlopeUi;
-import com.btxtech.shared.datatypes.terrain.WaterUi;
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
@@ -19,17 +13,12 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.Water;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
-import elemental.js.util.JsArrayOfNumber;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -44,17 +33,6 @@ public class WorkerMarshaller {
     private static final int DATA_OFFSET_2 = 3;
     private static final int DATA_OFFSET_3 = 4;
     private static final int DATA_OFFSET_4 = 5;
-    private static final String ID_KEY = "id";
-    private static final String ELEMENT_COUNT_KEY = "elementCount";
-    private static final String VERTICES_KEY = "vertices";
-    private static final String NORMS_KEY = "norms";
-    private static final String TANGENTS_KEY = "tangents";
-    private static final String SPLATTINGS_KEY = "splattings";
-    private static final String SLOPE_FACTOR_KEY = "slopeFactor";
-    private static final String RECT_X_KEY = "rectX";
-    private static final String RECT_Y_KEY = "rectY";
-    private static final String RECT_WIDTH_KEY = "rectWidth";
-    private static final String RECT_HEIGHT_KEY = "rectHeight";
 
     public static JavaScriptObject marshall(GameEngineControlPackage controlPackage) {
         JsArrayMixed array = JavaScriptObject.createArray().cast();
@@ -67,6 +45,7 @@ public class WorkerMarshaller {
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
             case TERRAIN_PICK_RAY_ANSWER_FAIL:
+            case INITIALIZED:
                 break;
             // Single JSON data
             case START_BOTS:
@@ -134,11 +113,6 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
                 break;
             // Native marshal terrain buffers
-            case INITIALIZED:
-                array.set(DATA_OFFSET_0, marshallGroundBuffers((VertexList) controlPackage.getData(0)));
-                array.set(DATA_OFFSET_1, marshallSlopeBuffers((Collection<Slope>) controlPackage.getData(1)));
-                array.set(DATA_OFFSET_2, marshallWaterBuffers((Water) controlPackage.getData(2)));
-                break;
             case TERRAIN_TILE_RESPONSE:
                 array.set(DATA_OFFSET_0, marshallTerrainTile((TerrainTile) controlPackage.getData(0)));
                 break;
@@ -161,6 +135,7 @@ public class WorkerMarshaller {
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
             case TERRAIN_PICK_RAY_ANSWER_FAIL:
+            case INITIALIZED:
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));
@@ -304,11 +279,6 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Boolean.class));
                 break;
             // Native demarshal terrain buffers
-            case INITIALIZED:
-                data.add(demarshallGroundBuffers(array.getObject(DATA_OFFSET_0)));
-                data.add(demarshallSlopeBuffers(array.getObject(DATA_OFFSET_1)));
-                data.add(demarshallWaterBuffers(array.getObject(DATA_OFFSET_2)));
-                break;
             case TERRAIN_TILE_REQUEST:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Index.class));
                 break;
@@ -339,126 +309,6 @@ public class WorkerMarshaller {
             RestClient.setJacksonMarshallingActive(true); // Bug in Errai Jackson marshaller -> Map<Integer, Integer> sometimes has still "^NumVal" in the Jackson string
         }
     }
-
-    private static JavaScriptObject marshallGroundBuffers(VertexList groundVertexList) {
-        JavaScriptObject javaScriptObject = JavaScriptObject.createObject();
-        setIntProperty(javaScriptObject, ELEMENT_COUNT_KEY, groundVertexList.getVerticesCount());
-        setFloat32ArrayProperty(javaScriptObject, VERTICES_KEY, vertices2JsArrayOfVertices(groundVertexList.getVertices()));
-        setFloat32ArrayProperty(javaScriptObject, NORMS_KEY, vertices2JsArrayOfVertices(groundVertexList.getNormVertices()));
-        setFloat32ArrayProperty(javaScriptObject, TANGENTS_KEY, vertices2JsArrayOfVertices(groundVertexList.getTangentVertices()));
-        setFloat32ArrayProperty(javaScriptObject, SPLATTINGS_KEY, doubles2JsArrayOfNumber(groundVertexList.getSplattings()));
-        return javaScriptObject;
-    }
-
-    private static GroundUi demarshallGroundBuffers(JavaScriptObject javaScriptObject) {
-        return new GroundUi(getIntProperty(javaScriptObject, ELEMENT_COUNT_KEY),
-                getFloat32ArrayEmuProperty(javaScriptObject, VERTICES_KEY), getFloat32ArrayEmuProperty(javaScriptObject, NORMS_KEY),
-                getFloat32ArrayEmuProperty(javaScriptObject, TANGENTS_KEY), getFloat32ArrayEmuProperty(javaScriptObject, SPLATTINGS_KEY));
-    }
-
-
-    private static JavaScriptObject marshallSlopeBuffers(Collection<Slope> slopes) {
-        JsArrayMixed array = JavaScriptObject.createArray().cast();
-        for (Slope slope : slopes) {
-            array.push(marshallSlope(slope));
-        }
-        return array;
-    }
-
-    private static JavaScriptObject marshallSlope(Slope slope) {
-        Mesh mesh = slope.getMesh();
-        JavaScriptObject javaScriptObject = JavaScriptObject.createObject();
-        setIntProperty(javaScriptObject, ID_KEY, slope.getSlopeSkeletonConfig().getId());
-        setIntProperty(javaScriptObject, ELEMENT_COUNT_KEY, mesh.size());
-        setFloat32ArrayProperty(javaScriptObject, VERTICES_KEY, vertices2JsArrayOfVertices(mesh.getVertices()));
-        setFloat32ArrayProperty(javaScriptObject, NORMS_KEY, vertices2JsArrayOfVertices(mesh.getNorms()));
-        setFloat32ArrayProperty(javaScriptObject, TANGENTS_KEY, vertices2JsArrayOfVertices(mesh.getTangents()));
-        setFloat32ArrayProperty(javaScriptObject, SPLATTINGS_KEY, floats2JsArrayOfNumber(mesh.getSplatting()));
-        setFloat32ArrayProperty(javaScriptObject, SLOPE_FACTOR_KEY, floats2JsArrayOfNumber(mesh.getSlopeFactors()));
-        return javaScriptObject;
-    }
-
-    private static Collection<SlopeUi> demarshallSlopeBuffers(JavaScriptObject javaScriptObject) {
-        Collection<SlopeUi> slopeBuffers = new ArrayList<>();
-        JsArrayMixed array = ((JavaScriptObject) javaScriptObject).cast();
-        for (int i = 0; i < array.length(); i++) {
-            JavaScriptObject slopeJsData = array.getObject(i);
-            slopeBuffers.add(new SlopeUi(getIntProperty(slopeJsData, ID_KEY), getIntProperty(slopeJsData, ELEMENT_COUNT_KEY),
-                    getFloat32ArrayEmuProperty(slopeJsData, VERTICES_KEY), getFloat32ArrayEmuProperty(slopeJsData, NORMS_KEY),
-                    getFloat32ArrayEmuProperty(slopeJsData, TANGENTS_KEY), getFloat32ArrayEmuProperty(slopeJsData, SPLATTINGS_KEY),
-                    getFloat32ArrayEmuProperty(slopeJsData, SLOPE_FACTOR_KEY)));
-        }
-        return slopeBuffers;
-    }
-
-    private static JavaScriptObject marshallWaterBuffers(Water water) {
-        JavaScriptObject javaScriptObject = JavaScriptObject.createObject();
-        setIntProperty(javaScriptObject, ELEMENT_COUNT_KEY, water.getVertices().size());
-        setFloat32ArrayProperty(javaScriptObject, VERTICES_KEY, vertices2JsArrayOfVertices(water.getVertices()));
-        setFloat32ArrayProperty(javaScriptObject, NORMS_KEY, vertices2JsArrayOfVertices(water.getNorms()));
-        setFloat32ArrayProperty(javaScriptObject, TANGENTS_KEY, vertices2JsArrayOfVertices(water.getTangents()));
-        setDoubleProperty(javaScriptObject, RECT_X_KEY, water.calculateAabb().startX());
-        setDoubleProperty(javaScriptObject, RECT_Y_KEY, water.calculateAabb().startY());
-        setDoubleProperty(javaScriptObject, RECT_WIDTH_KEY, water.calculateAabb().width());
-        setDoubleProperty(javaScriptObject, RECT_HEIGHT_KEY, water.calculateAabb().height());
-        return javaScriptObject;
-    }
-
-    private static WaterUi demarshallWaterBuffers(JavaScriptObject waterJsData) {
-        Rectangle2D aabb = new Rectangle2D(getDoubleProperty(waterJsData, RECT_X_KEY), getDoubleProperty(waterJsData, RECT_Y_KEY), getDoubleProperty(waterJsData, RECT_WIDTH_KEY), getDoubleProperty(waterJsData, RECT_HEIGHT_KEY));
-        return new WaterUi(getIntProperty(waterJsData, ELEMENT_COUNT_KEY), getFloat32ArrayEmuProperty(waterJsData, VERTICES_KEY), getFloat32ArrayEmuProperty(waterJsData, NORMS_KEY),
-                getFloat32ArrayEmuProperty(waterJsData, TANGENTS_KEY), aabb);
-    }
-
-    private static JsArrayOfNumber vertices2JsArrayOfVertices(List<Vertex> vertices) {
-        JsArrayOfNumber numberArray = JsArrayOfNumber.create();
-        for (Vertex vertex : vertices) {
-            numberArray.push(vertex.getX());
-            numberArray.push(vertex.getY());
-            numberArray.push(vertex.getZ());
-        }
-        return numberArray;
-    }
-
-    private static JsArrayOfNumber floats2JsArrayOfNumber(List<Float> floats) {
-        JsArrayOfNumber numberArray = JsArrayOfNumber.create();
-        for (float floatValue : floats) {
-            numberArray.push(floatValue);
-        }
-        return numberArray;
-    }
-
-    private static JsArrayOfNumber doubles2JsArrayOfNumber(List<Double> doubles) {
-        JsArrayOfNumber numberArray = JsArrayOfNumber.create();
-        for (double doubleValue : doubles) {
-            numberArray.push(doubleValue);
-        }
-        return numberArray;
-    }
-
-    private native static int getIntProperty(JavaScriptObject javaScriptObject, String propertyName) /*-{
-        return javaScriptObject[propertyName];
-    }-*/;
-
-    private native static double getDoubleProperty(JavaScriptObject javaScriptObject, String propertyName) /*-{
-        return javaScriptObject[propertyName];
-    }-*/;
-
-    private native static Float32ArrayEmu getFloat32ArrayEmuProperty(JavaScriptObject javaScriptObject, String propertyName) /*-{
-        return javaScriptObject[propertyName];
-    }-*/;
-
-    private native static void setIntProperty(JavaScriptObject javaScriptObject, String propertyName, int number) /*-{
-        return javaScriptObject[propertyName] = number;
-    }-*/;
-
-    private native static void setDoubleProperty(JavaScriptObject javaScriptObject, String propertyName, double number) /*-{
-        return javaScriptObject[propertyName] = number;
-    }-*/;
-
-    private native static void setFloat32ArrayProperty(JavaScriptObject javaScriptObject, String propertyName, JsArrayOfNumber array) /*-{
-        return javaScriptObject[propertyName] = new Float32Array(array);
-    }-*/;
 
 
     private static TerrainTile demarshallTerrainTile(JavaScriptObject data) {

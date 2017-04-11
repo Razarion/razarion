@@ -6,14 +6,10 @@ import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.datatypes.terrain.GroundUi;
-import com.btxtech.shared.datatypes.terrain.SlopeUi;
-import com.btxtech.shared.datatypes.terrain.WaterUi;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -63,9 +59,6 @@ public class TerrainUiService {
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
-    private Map<Integer, SlopeUi> slopeUis = new HashMap<>();
-    private GroundUi groundUi;
-    private WaterUi waterUi;
     private List<TerrainObjectPosition> terrainObjectPositions;
     private MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
     private Consumer<Vertex> worldPickRayConsumer;
@@ -83,22 +76,7 @@ public class TerrainUiService {
     }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        slopeUis.clear();
-        for (TerrainSlopePosition terrainSlopePosition : gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions()) {
-            int id = terrainSlopePosition.getSlopeConfigEntity();
-            slopeUis.put(id, new SlopeUi(id, terrainTypeService.getSlopeSkeleton(id), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getWaterLevel(), gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig()));
-        }
-        groundUi = new GroundUi(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getGroundSkeletonConfig());
-        waterUi = new WaterUi(gameUiControlInitEvent.getGameUiControlConfig().getVisualConfig().getWaterConfig());
         terrainObjectPositions = gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions();
-    }
-
-    public void setBuffers(GroundUi groundUi, Collection<SlopeUi> slopeUis, WaterUi waterUi) {
-        this.groundUi.setBuffers(groundUi);
-        for (SlopeUi slopeUi : slopeUis) {
-            this.slopeUis.get(slopeUi.getId()).setBuffers(slopeUi);
-        }
-        this.waterUi.setBuffers(waterUi);
     }
 
     public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
@@ -156,14 +134,6 @@ public class TerrainUiService {
         return lowestPointInView;
     }
 
-    public GroundUi getGroundUi() {
-        return groundUi;
-    }
-
-    public WaterUi getWaterUi() {
-        return waterUi;
-    }
-
     public List<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {
         Collection<ModelMatrices> modelMatrices = terrainObjectConfigModelMatrices.get(terrainObjectConfig);
         if (modelMatrices != null) {
@@ -174,15 +144,8 @@ public class TerrainUiService {
     }
 
     public double calculateLandWaterProportion(Rectangle2D viewField) {
-        if (waterUi.isValid()) {
-            return 1.0 - waterUi.getAabb().coverRatio(viewField);
-        } else {
-            return 0;
-        }
-    }
-
-    public Collection<SlopeUi> getSlopes() {
-        return slopeUis.values();
+        logger.severe("TODO calculateLandWaterProportion");
+        return 0;
     }
 
     public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {
@@ -271,19 +234,6 @@ public class TerrainUiService {
 
     public void onOverlapTypeAnswer(int uuid, boolean overlaps) {
         overlapTypeConsumers.remove(uuid).accept(overlaps);
-    }
-
-    public void enableEditMode(GroundSkeletonConfig groundSkeletonConfig) {
-        groundUi.setGroundSkeletonConfig(groundSkeletonConfig);
-        slopeUis.values().forEach(slopeUi -> slopeUi.setGroundSkeletonConfig(groundSkeletonConfig));
-    }
-
-    public void enableEditMode(SlopeSkeletonConfig slopeSkeletonConfig) {
-        slopeUis.values().stream().filter(slopeUi -> slopeUi.getId() == slopeSkeletonConfig.getId()).forEach(slopeUi -> slopeUi.setSlopeSkeletonConfig(slopeSkeletonConfig));
-    }
-
-    public void enableEditMode(WaterConfig waterConfig) {
-        waterUi.setWaterConfig(waterConfig);
     }
 
     public void requestTerrainTile(Index terrainTileIndex, Consumer<TerrainTile> terrainTileConsumer) {

@@ -5,7 +5,6 @@ import com.btxtech.DevToolUtil;
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.terrain.SlopeUi;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.Camera;
@@ -72,13 +71,13 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
     }
 
     private void drawTerrain(ExtendedGraphicsContext egc) {
-        // Ground mesh
-        egc.strokeVertexList(terrainUiService.getGroundUi().getVertices(), 0.2, Color.BLUE);
-
-        // Slopes
-        for (SlopeUi slope : terrainUiService.getSlopes()) {
-            egc.strokeVertexList(slope.getVertices(), 0.2, Color.RED);
-        }
+//        // Ground mesh
+//        egc.strokeVertexList(terrainUiService.getGroundUi().getVertices(), 0.2, Color.BLUE);
+//
+//        // Slopes
+//        for (SlopeUi slope : terrainUiService.getSlopes()) {
+//            egc.strokeVertexList(slope.getVertices(), 0.2, Color.RED);
+//        }
 
         // Terrain objects
 //        egc.getGc().setFill(Color.GREEN);
