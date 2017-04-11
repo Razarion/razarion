@@ -27,7 +27,7 @@
     <center>
         <AnchorPane fx:id="anchorPanel" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Canvas fx:id="canvas" height="200.0" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMouseReleased="#onMouseReleased" onScroll="#onScroll" width="200.0" />
+            <Canvas fx:id="canvas" height="200.0" onMousePressed="#onMousePressed"  onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMouseReleased="#onMouseReleased" onScroll="#onScroll" width="200.0" />
          </children></AnchorPane>
     </center>
 </BorderPane>

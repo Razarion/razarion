@@ -359,13 +359,13 @@ public class TerrainService {
             Side side = startRectanglePiercing.getSide();
             if (startRectanglePiercing.getSide() == endRectanglePiercing.getSide()) {
                 if (!startRectanglePiercing.getSide().isBefore(startRectanglePiercing.getCross(), endRectanglePiercing.getCross())) {
-                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, additionHeight));
+                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, additionHeight, water));
                     side = side.getSuccessor();
                 }
             }
 
             while (side != endRectanglePiercing.side) {
-                addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, additionHeight));
+                addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, additionHeight, water));
                 side = side.getSuccessor();
             }
             addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross(), additionHeight));
@@ -397,9 +397,13 @@ public class TerrainService {
         list.add(vertex);
     }
 
-    private Vertex toVertexGround(DecimalPosition position, TerrainTileContext terrainTileContext, double slopeHeight) {
-        Index nodeTile = obstacleContainer.toNode(position);
-        return new Vertex(position, terrainTileContext.setupHeight(nodeTile.getX(), nodeTile.getY()) + slopeHeight);
+    private Vertex toVertexGround(DecimalPosition position, TerrainTileContext terrainTileContext, double slopeHeight, boolean water) {
+        if (water) {
+            return new Vertex(position, slopeHeight);
+        } else {
+            Index nodeTile = obstacleContainer.toNode(position);
+            return new Vertex(position, terrainTileContext.setupHeight(nodeTile.getX(), nodeTile.getY()) + slopeHeight);
+        }
     }
 
     private Vertex toVertexSlope(Vertex vertex, double additionHeight, boolean water) {
@@ -582,11 +586,11 @@ public class TerrainService {
                 return;
             }
             if (obstacleContainerNode.isFullWater()) {
-                terrainWaterTileContext.insertNode(nodeIndex, obstacleContainerNode.getWaterLevel());
+                terrainWaterTileContext.insertNode(nodeIndex, planetConfig.getWaterLevel());
                 return;
             }
             if (obstacleContainerNode.isFractionWater() && obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), obstacleContainerNode.getWaterLevel(), terrainWaterTileContext::insertWaterRim, true);
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), planetConfig.getWaterLevel(), terrainWaterTileContext::insertWaterRim, true);
             }
         });
         terrainWaterTileContext.complete();

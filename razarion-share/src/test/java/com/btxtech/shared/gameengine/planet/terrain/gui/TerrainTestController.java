@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 
@@ -33,10 +34,12 @@ public class TerrainTestController implements Initializable {
     @FXML
     private TextField mouseLabel;
     private TerrainTestRenderer terrainTestRenderer;
+    private TriangleContainer triangleContainer;
 
     public TerrainTestController(Collection<TerrainTile> expected, Collection<TerrainTile> actual) {
         this.expected = expected;
         this.actual = actual;
+        triangleContainer = new TriangleContainer(actual);
     }
 
     @Override
@@ -87,6 +90,12 @@ public class TerrainTestController implements Initializable {
     public void onMouseMoved(Event event) {
         DecimalPosition position = terrainTestRenderer.convertMouseToModel(event);
         mouseLabel.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
+    }
+
+
+    public void onMousePressed(MouseEvent event) {
+        DecimalPosition position = terrainTestRenderer.convertMouseToModel(event);
+        triangleContainer.printTrianglesAt(position);
     }
 
 }

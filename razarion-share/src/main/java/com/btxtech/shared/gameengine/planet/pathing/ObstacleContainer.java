@@ -80,7 +80,7 @@ public class ObstacleContainer {
             Collection<DecimalPosition> corners = terrainRect.toCorners();
             if (slope.hasWater()) {
                 if (outerPolygon.isInside(corners)) {
-                    getOrCreate(node).setFullWater(slope.getHeight());
+                    getOrCreate(node).setFullWater();
                     continue;
                 }
             } else {
@@ -94,7 +94,7 @@ public class ObstacleContainer {
                 obstacleContainerNode.setBelongsToSlope();
                 obstacleContainerNode.setSlopHeight(slope.getHeight());
                 if (slope.hasWater()) {
-                    obstacleContainerNode.setFractionWater(slope.getWaterLevel());
+                    obstacleContainerNode.setFractionWater();
                 }
             }
         }

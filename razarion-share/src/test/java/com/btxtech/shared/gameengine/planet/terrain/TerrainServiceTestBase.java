@@ -59,6 +59,7 @@ public class TerrainServiceTestBase {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions).setWaterLevel(-0.7);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
+        planetConfig.setWaterLevel(-0.7);
         terrainService.onPlanetActivation(new PlanetActivationEvent(planetConfig));
     }
 

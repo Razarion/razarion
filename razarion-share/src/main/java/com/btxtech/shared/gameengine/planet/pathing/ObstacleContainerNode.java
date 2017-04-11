@@ -20,7 +20,6 @@ public class ObstacleContainerNode {
     private boolean belongsToSlope;
     private boolean fullWater;
     private boolean fractionWater;
-    private Double waterLevel;
     private Collection<List<Vertex>> outerSlopeGroundPiercingLine;
     private Collection<List<Vertex>> innerSlopeGroundPiercingLine;
 
@@ -42,13 +41,11 @@ public class ObstacleContainerNode {
         this.slopHeight = slopHeight;
     }
 
-    public void setFullWater(double waterLevel) {
+    public void setFullWater() {
         fullWater = true;
-        this.waterLevel = waterLevel;
     }
 
-    public void setFractionWater(double waterLevel) {
-        this.waterLevel = waterLevel;
+    public void setFractionWater() {
         fractionWater = true;
     }
 
@@ -74,10 +71,6 @@ public class ObstacleContainerNode {
 
     public Double getSlopHeight() {
         return slopHeight;
-    }
-
-    public Double getWaterLevel() {
-        return waterLevel;
     }
 
     public boolean isInSlope() {
