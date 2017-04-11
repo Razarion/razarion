@@ -92,10 +92,10 @@ public class TerrainService {
     }
 
     private void iterateOverTerrainNodes(Index terrainTileIndex, Consumer<Index> nodeCallback) {
-        int xNodeStart = terrainTileIndex.getX() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
-        int xNodeEnd = terrainTileIndex.getX() * TerrainUtil.TERRAIN_TILE_NODES_COUNT + TerrainUtil.TERRAIN_TILE_NODES_COUNT;
-        int yNodeStart = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
-        int yNodeEnd = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT + TerrainUtil.TERRAIN_TILE_NODES_COUNT;
+        int xNodeStart = TerrainUtil.toNodeIndex(terrainTileIndex.getX());
+        int xNodeEnd = TerrainUtil.toNodeIndex(terrainTileIndex.getX()) + TerrainUtil.TERRAIN_TILE_NODES_COUNT;
+        int yNodeStart = TerrainUtil.toNodeIndex(terrainTileIndex.getY());
+        int yNodeEnd = TerrainUtil.toNodeIndex(terrainTileIndex.getY()) + TerrainUtil.TERRAIN_TILE_NODES_COUNT;
         for (int xNode = xNodeStart; xNode < xNodeEnd; xNode++) {
             for (int yNode = yNodeStart; yNode < yNodeEnd; yNode++) {
                 Index index = new Index(xNode, yNode);
@@ -111,9 +111,11 @@ public class TerrainService {
             ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
             if (obstacleContainerNode != null) {
                 if (obstacleContainerNode.isInSlope()) {
+                    terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainer.getInsideSlopeHeight(nodeIndex));
                     return;
                 }
                 if (obstacleContainerNode.isFullWater()) {
+                    terrainTileContext.insertDisplayHeight(nodeIndex, planetConfig.getWaterLevel());
                     return;
                 }
             }
@@ -163,6 +165,8 @@ public class TerrainService {
         terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR);
         terrainTileContext.insertTriangleCorner(vertexTR, normTR, tangentTR, splattingTR);
         terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL);
+
+        terrainTileContext.insertDisplayHeight(new Index(xNode, yNode), vertexBL.getZ() + slopeHeight);
     }
 
     private void insertSlopePart(TerrainTileContext terrainTileContext) {

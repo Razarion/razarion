@@ -29,7 +29,7 @@ public class DevToolTerrainTile extends TerrainTile {
     }
 
     @Override
-    public void initGroundArrays(int groundSizeVec, int groundSizeScalar) {
+    public void initGroundArrays(int groundSizeVec, int groundSizeScalar, int nodes) {
         groundVertices = new double[groundSizeVec];
         groundNorms = new double[groundSizeVec];
         groundTangents = new double[groundSizeVec];

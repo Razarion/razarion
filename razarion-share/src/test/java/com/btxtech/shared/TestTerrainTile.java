@@ -21,6 +21,7 @@ public class TestTerrainTile extends TerrainTile {
     private double[] groundNorms;
     private double[] groundTangents;
     private double[] groundSplattings;
+    private double[] displayHeights;
     private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
     private TestTerrainWaterTile terrainWaterTile;
 
@@ -31,11 +32,12 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
-    public void initGroundArrays(int groundSizeVec, int groundSizeScalar) {
+    public void initGroundArrays(int groundSizeVec, int groundSizeScalar, int nodes) {
         groundVertices = new double[groundSizeVec];
         groundNorms = new double[groundSizeVec];
         groundTangents = new double[groundSizeVec];
         groundSplattings = new double[groundSizeScalar];
+        displayHeights = new double[nodes];
     }
 
     @Override
@@ -51,6 +53,11 @@ public class TestTerrainTile extends TerrainTile {
         groundTangents[cornerScalarIndex + 1] = tangentY;
         groundTangents[cornerScalarIndex + 2] = tangentZ;
         groundSplattings[triangleCornerIndex] = splatting;
+    }
+
+    @Override
+    public void setDisplayHeight(int index, double height) {
+        displayHeights[index] = height;
     }
 
     @Override
@@ -81,6 +88,11 @@ public class TestTerrainTile extends TerrainTile {
     @Override
     public double[] getGroundSplattings() {
         return groundSplattings;
+    }
+
+    @Override
+    public double[] getDisplayHeights() {
+        return displayHeights;
     }
 
     @Override

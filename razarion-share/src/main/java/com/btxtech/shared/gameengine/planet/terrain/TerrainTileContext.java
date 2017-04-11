@@ -50,8 +50,9 @@ public class TerrainTileContext {
     }
 
     public void initGround() {
-        int verticesCount = groundSlopeConnectionVertices.size() + (int) (Math.pow(TerrainUtil.TERRAIN_TILE_NODES_COUNT, 2) * 6);
-        terrainTile.initGroundArrays(verticesCount * Vertex.getComponentsPerVertex(), verticesCount);
+        int nodes = (int) Math.pow(TerrainUtil.TERRAIN_TILE_NODES_COUNT, 2);
+        int verticesCount = groundSlopeConnectionVertices.size() + nodes * 6;
+        terrainTile.initGroundArrays(verticesCount * Vertex.getComponentsPerVertex(), verticesCount, nodes);
     }
 
     public void setGroundVertexCount() {
@@ -168,6 +169,11 @@ public class TerrainTileContext {
         triangleCornerIndex++;
     }
 
+    public void insertDisplayHeight(Index nodeIndex, double height) {
+        Index relativeNodeIndex = new Index(nodeIndex.getX() - TerrainUtil.toNodeIndex(terrainTileIndex.getX()), nodeIndex.getY() - TerrainUtil.toNodeIndex(terrainTileIndex.getY()));
+        terrainTile.setDisplayHeight(TerrainUtil.filedToArrayNodeIndex(relativeNodeIndex), height);
+    }
+
     public void insertTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
         DecimalPosition positionA = vertexA.toXY();
         DecimalPosition positionB = vertexB.toXY();
@@ -241,5 +247,4 @@ public class TerrainTileContext {
     public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
         terrainTile.setTerrainWaterTile(terrainWaterTile);
     }
-
 }

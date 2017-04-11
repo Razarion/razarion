@@ -38,4 +38,16 @@ public interface TerrainUtil {
         DecimalPosition start = toNodeAbsolute(tile);
         return new Rectangle2D(start.getX(), start.getY(), GROUND_NODE_ABSOLUTE_LENGTH, GROUND_NODE_ABSOLUTE_LENGTH);
     }
+
+    static int filedToArrayNodeIndex(Index index) {
+        return index.getX() + index.getY() * TERRAIN_TILE_NODES_COUNT;
+    }
+
+    static Index arrayToFiledNodeIndex(int index) {
+        return new Index(index % TERRAIN_TILE_NODES_COUNT, index / TERRAIN_TILE_NODES_COUNT);
+    }
+
+    static int toNodeIndex(int tileIndex) {
+        return tileIndex * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
+    }
 }

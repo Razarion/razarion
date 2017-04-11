@@ -108,6 +108,8 @@ public class TerrainTileTestHelper {
                 Assert.fail("TerrainWaterTile is invalid. Expected: " + expected.getTerrainWaterTile() + " Actual: " + actual.getTerrainWaterTile());
             }
         }
+        // Display heights
+        Assert.assertArrayEquals("Display Heights", expected.getDisplayHeights(), actual.getDisplayHeights(), 0.001);
     }
 
     private void compare(TerrainSlopeTile expected, TerrainSlopeTile actual) {

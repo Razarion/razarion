@@ -1,8 +1,10 @@
 package com.btxtech.shared.gameengine.planet.terrain.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
@@ -169,9 +171,11 @@ public class TerrainTestRenderer {
             }
         }
 
-        if(terrainTile.getTerrainWaterTile() != null) {
+        if (terrainTile.getTerrainWaterTile() != null) {
             drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
         }
+
+        drawDisplayHeight(terrainTile.getDisplayHeights(), terrainTile.getIndexX(), terrainTile.getIndexY());
     }
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
@@ -272,6 +276,21 @@ public class TerrainTestRenderer {
             gc.strokePolygon(xCorners, yCorners, 3);
             // gc.setFill(Color.color(1, 0, 0, 0.3));
             // gc.fillPolygon(xCorners, yCorners, 3);
+        }
+    }
+
+    private void drawDisplayHeight(double[] displayHeights, int tileX, int tileY) {
+        gc.setLineWidth(LINE_WIDTH * 2);
+        gc.setStroke(Color.RED);
+
+        Index offset = new Index(TerrainUtil.toNodeIndex(tileX), TerrainUtil.toNodeIndex(tileY));
+
+        for (int i = 0; i < displayHeights.length; i++) {
+            double height = displayHeights[i] * 0.1;
+            Index nodeIndex = TerrainUtil.arrayToFiledNodeIndex(i).add(offset);
+            DecimalPosition position = TerrainUtil.toNodeAbsolute(nodeIndex);
+            gc.strokeLine(position.getX(), position.getY(), position.getX(), position.getY() + height);
+
         }
     }
 

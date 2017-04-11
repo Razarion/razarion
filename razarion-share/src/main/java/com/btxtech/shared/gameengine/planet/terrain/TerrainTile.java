@@ -10,9 +10,11 @@ import jsinterop.annotations.JsType;
 public abstract class TerrainTile {
     public native void init(int indexX, int indexY);
 
-    public native void initGroundArrays(int groundSizeVec, int groundSizeScalar);
+    public native void initGroundArrays(int groundSizeVec, int groundSizeScalar, int nodes);
 
     public native void setGroundTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double splatting);
+
+    public native void setDisplayHeight(int index, double height);
 
     public native int getIndexX();
 
@@ -25,6 +27,8 @@ public abstract class TerrainTile {
     public native double[] getGroundTangents();
 
     public native double[] getGroundSplattings();
+
+    public native double[] getDisplayHeights();
 
     public native void setGroundVertexCount(int groundVertexCount);
 
