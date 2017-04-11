@@ -652,16 +652,8 @@ public class TerrainService {
         }
     }
 
-    public Slope getSlope(int id) {
-        return slopeMap.get(id);
-    }
-
     public Collection<Slope> getSlopes() {
         return slopeMap.values();
-    }
-
-    public Water getWater() {
-        return water;
     }
 
     public boolean overlap(DecimalPosition position) {
@@ -803,46 +795,6 @@ public class TerrainService {
         }
         // Nothing found
         throw new NoInterpolatedTerrainTriangleException(absoluteXY);
-    }
-
-    public Vertex calculatePositionGroundMesh(Line3d worldPickRay) {
-        // Water
-        InterpolatedTerrainTriangle interpolatedTerrainTriangle = water.getInterpolatedVertexData(worldPickRay);
-        if (interpolatedTerrainTriangle != null) {
-            return interpolatedTerrainTriangle.crossPoint(worldPickRay);
-        }
-        // Ground
-        DecimalPosition groundXY = groundMesh.calculatePositionOnHeightLevel(worldPickRay).toXY();
-        interpolatedTerrainTriangle = groundMesh.getInterpolatedTerrainTriangle(groundXY);
-        if (interpolatedTerrainTriangle != null) {
-            return interpolatedTerrainTriangle.crossPoint(worldPickRay);
-        }
-        // Slope
-        for (Slope slope : getSlopes()) {
-            Vertex slopePosition = slope.calculatePositionOnSlope(worldPickRay);
-            if (slopePosition != null) {
-                return slopePosition;
-            }
-        }
-        // Nothing found
-        throw new NoInterpolatedTerrainTriangleException(worldPickRay);
-    }
-
-    public VertexList createGroundVertexList() {
-        VertexList vertexList;
-        if (groundMesh != null) {
-            vertexList = groundMesh.provideVertexList();
-        } else {
-            vertexList = new VertexList();
-        }
-        for (Slope slope : slopeMap.values()) {
-            if (!slope.hasWater()) {
-                vertexList.append(slope.getGroundPlateauConnector().getTopMesh().provideVertexList());
-                vertexList.append(slope.getGroundPlateauConnector().getInnerConnectionVertexList());
-            }
-            vertexList.append(slope.getGroundPlateauConnector().getOuterConnectionVertexList());
-        }
-        return vertexList;
     }
 
     // -------------------------------------------------
