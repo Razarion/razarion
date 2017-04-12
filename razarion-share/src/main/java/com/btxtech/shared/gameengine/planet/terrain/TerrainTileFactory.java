@@ -21,7 +21,6 @@ import com.btxtech.shared.utils.MathHelper;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -376,7 +375,7 @@ public class TerrainTileFactory {
             return new Vertex(position, slopeHeight);
         } else {
             Index nodeTile = obstacleContainer.toNode(position);
-            return new Vertex(position, terrainTileContext.setupHeight(nodeTile.getX(), nodeTile.getY()) + slopeHeight);
+            return new Vertex(position, terrainTypeService.getGroundSkeletonConfig().getHeight(nodeTile.getX(), nodeTile.getY()) + slopeHeight);
         }
     }
 

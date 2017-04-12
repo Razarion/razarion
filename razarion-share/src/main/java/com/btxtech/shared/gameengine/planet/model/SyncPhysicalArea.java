@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
@@ -80,9 +79,8 @@ public class SyncPhysicalArea {
             position3d = new Vertex(position2d, terrainService.getHighestZInRegion(position2d, radius));
             norm = Vertex.Z_NORM;
         } else {
-            InterpolatedTerrainTriangle interpolatedTerrainTriangle = terrainService.getInterpolatedTerrainTriangle(position2d);
-            position3d = new Vertex(position2d, interpolatedTerrainTriangle.getHeight());
-            norm = interpolatedTerrainTriangle.getNorm();
+            position3d = new Vertex(position2d, terrainService.getInterpolatedZ(position2d));
+            norm = terrainService.getNorm(position2d);
         }
         modelMatrices = null;
     }

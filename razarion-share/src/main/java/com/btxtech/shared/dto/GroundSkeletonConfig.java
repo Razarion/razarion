@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.utils.CollectionUtils;
+
 /**
  * Created by Beat
  * 07.05.2016.
@@ -38,6 +40,10 @@ public class GroundSkeletonConfig {
 
     public double[][] getHeights() {
         return heights;
+    }
+
+    public double getHeight(int x, int y) {
+        return heights[CollectionUtils.getCorrectedIndex(x, heightXCount)][CollectionUtils.getCorrectedIndexInvert(y, heightYCount)];
     }
 
     public void setHeights(double[][] heights) {

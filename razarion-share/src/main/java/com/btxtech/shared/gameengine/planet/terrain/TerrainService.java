@@ -2,10 +2,11 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.InterpolatedTerrainTriangle;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Triangle2d;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -14,9 +15,9 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 
 import javax.enterprise.event.Observes;
@@ -90,21 +91,21 @@ public class TerrainService {
     public double getHighestZInRegion(DecimalPosition center, double radius) {
         DoubleStream.Builder doubleStreamBuilder = DoubleStream.builder();
 
+        int startX = (int) (Math.floor((center.getX() - radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+        int startY = (int) (Math.floor((center.getY() - radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+        int endX = (int) (Math.ceil((center.getX() + radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+        int endY = (int) (Math.ceil((center.getY() + radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
 
-        double startX = Math.floor((center.getX() - radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
-        double startY = Math.floor((center.getY() - radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
-        double endX = Math.ceil((center.getX() + radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
-        double endY = Math.ceil((center.getY() + radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
-
-        for (double x = startX; x < endX; x += (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) {
-            for (double y = startY; y < endY; y += (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) {
-                Rectangle2D rect = new Rectangle2D(x, y, (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+        for (int x = startX; x < endX; x += (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) {
+            for (int y = startY; y < endY; y += (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) {
+                Index nodeIndex = new Index(x, y);
+                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
                 if (rect.contains(center)) {
-                    doubleStreamBuilder.add(faceMaxZ(x, y));
+                    doubleStreamBuilder.add(faceMaxZ(nodeIndex));
                 } else {
                     DecimalPosition projection = rect.getNearestPoint(center);
                     if (projection.getDistance(center) <= radius) {
-                        doubleStreamBuilder.add(faceMaxZ(x, y));
+                        doubleStreamBuilder.add(faceMaxZ(nodeIndex));
                     }
                 }
             }
@@ -113,14 +114,53 @@ public class TerrainService {
         return doubleStreamBuilder.build().max().orElseThrow(IllegalStateException::new);
     }
 
-    private double faceMaxZ(double x, double y) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+
+    public double faceMaxZ(Index nodeIndex) {
+        return Math.max(Math.max(getZ(nodeIndex), getZ(nodeIndex.add(1, 0))), Math.max(getZ(nodeIndex.add(1, 1)), getZ(nodeIndex.add(0, 1))));
     }
 
-    public InterpolatedTerrainTriangle getInterpolatedTerrainTriangle(DecimalPosition absoluteXY) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
+    public double getZ(Index nodeIndex) {
+        ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
+        if (obstacleContainerNode != null && obstacleContainerNode.isFullWater()) {
+            return planetConfig.getWaterLevel();
+        }
+        return obstacleContainer.getInsideSlopeHeight(nodeIndex) + terrainTypeService.getGroundSkeletonConfig().getHeight(nodeIndex.getX(), nodeIndex.getY());
+    }
+
+
+    public double getInterpolatedZ(DecimalPosition absolutePosition) {
+        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+
+        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
+        double zBR = getZ(bottomLeft.add(1, 0));
+        double zTL = getZ(bottomLeft.add(0, 1));
+        if (triangle1.isInside(offset)) {
+            Vertex weight = triangle1.interpolate(offset);
+            double zBL = getZ(bottomLeft);
+            return weight.getX() * zBL + weight.getY() * zBR + weight.getZ() * zTL;
+        } else {
+            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
+            Vertex weight = triangle2.interpolate(offset);
+            double zTR = getZ(bottomLeft.add(1, 1));
+            return weight.getX() * zBR + weight.getY() * zTR + weight.getZ() * zTL;
+        }
+    }
+
+    public Vertex getNorm(DecimalPosition absolutePosition) {
+        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+
+        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
+        double zBR = getZ(bottomLeft.add(1, 0));
+        double zTL = getZ(bottomLeft.add(0, 1));
+        if (triangle1.isInside(offset)) {
+            double zBL = getZ(bottomLeft);
+            return new Vertex(zBL - zBR, zBL - zTL, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
+        } else {
+            double zTR = getZ(bottomLeft.add(1, 1));
+            return new Vertex(zBR - zTR, zTL - zTR, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
+        }
     }
 
     // -------------------------------------------------

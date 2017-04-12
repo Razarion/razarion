@@ -112,16 +112,16 @@ public class TerrainTileContext {
         DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
-        double heightBR = setupHeight(bottomLeft.getX() + 1, bottomLeft.getY());
-        double heightTL = setupHeight(bottomLeft.getX(), bottomLeft.getY() + 1);
+        double heightBR = groundSkeletonConfig.getHeight(bottomLeft.getX() + 1, bottomLeft.getY());
+        double heightTL = groundSkeletonConfig.getHeight(bottomLeft.getX(), bottomLeft.getY() + 1);
         if (triangle1.isInside(offset)) {
             Vertex weight = triangle1.interpolate(offset);
-            double heightBL = setupHeight(bottomLeft.getX(), bottomLeft.getY());
+            double heightBL = groundSkeletonConfig.getHeight(bottomLeft.getX(), bottomLeft.getY());
             return heightBL * weight.getX() + heightBR * weight.getY() + heightTL * weight.getZ();
         } else {
             Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
             Vertex weight = triangle2.interpolate(offset);
-            double heightTR = setupHeight(bottomLeft.getX() + 1, bottomLeft.getY() + 1);
+            double heightTR = groundSkeletonConfig.getHeight(bottomLeft.getX() + 1, bottomLeft.getY() + 1);
             return heightBR * weight.getX() + heightTR * weight.getY() + heightTL * weight.getZ();
         }
     }
@@ -205,14 +205,10 @@ public class TerrainTileContext {
         return groundSkeletonConfig.getSplattings()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getSplattingXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getSplattingYCount())];
     }
 
-    public double setupHeight(int x, int y) {
-        return groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(x, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
-    }
-
     public Vertex setupVertex(int x, int y, double additionHeight) {
         double absoluteX = x * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
         double absoluteY = y * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
-        return new Vertex(absoluteX, absoluteY, setupHeight(x, y) + additionHeight);
+        return new Vertex(absoluteX, absoluteY, groundSkeletonConfig.getHeight(x, y) + additionHeight);
     }
 
     public Vertex setupNorm(int x, int y) {
@@ -221,10 +217,10 @@ public class TerrainTileContext {
         int yNorth = y + 1;
         int ySouth = y - 1 < 0 ? groundSkeletonConfig.getHeightYCount() - 1 : y - 1;
 
-        double zNorth = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(x, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(yNorth, groundSkeletonConfig.getHeightYCount())];
-        double zEast = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xEast, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
-        double zSouth = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(x, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(ySouth, groundSkeletonConfig.getHeightYCount())];
-        double zWest = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xWest, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
+        double zNorth = groundSkeletonConfig.getHeight(x, yNorth);
+        double zEast = groundSkeletonConfig.getHeight(xEast, y);
+        double zSouth = groundSkeletonConfig.getHeight(x, ySouth);
+        double zWest = groundSkeletonConfig.getHeight(xWest, y);
         return new Vertex(zWest - zEast, zSouth - zNorth, 2 * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
     }
 
@@ -232,8 +228,8 @@ public class TerrainTileContext {
         int xEast = x + 1;
         int xWest = x - 1 < 0 ? groundSkeletonConfig.getHeightXCount() - 1 : x - 1;
 
-        double zEast = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xEast, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
-        double zWest = groundSkeletonConfig.getHeights()[CollectionUtils.getCorrectedIndex(xWest, groundSkeletonConfig.getHeightXCount())][CollectionUtils.getCorrectedIndexInvert(y, groundSkeletonConfig.getHeightYCount())];
+        double zEast = groundSkeletonConfig.getHeight(xEast, y);
+        double zWest = groundSkeletonConfig.getHeight(xWest, y);
 
         return new Vertex(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH * 2.0, 0, zEast - zWest).normalize(1.0);
     }

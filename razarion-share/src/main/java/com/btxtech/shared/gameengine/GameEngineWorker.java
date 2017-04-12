@@ -330,7 +330,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void getTerrainZ(DecimalPosition position) {
         try {
-            double z = terrainService.getInterpolatedTerrainTriangle(position).getHeight();
+            double z = terrainService.getInterpolatedZ(position);
             sendToClient(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN_ANSWER, position, z);
         } catch (NoInterpolatedTerrainTriangleException e) {
             logger.warning("GameEngineWorker.getTerrainZ() " + e.getMessage());
