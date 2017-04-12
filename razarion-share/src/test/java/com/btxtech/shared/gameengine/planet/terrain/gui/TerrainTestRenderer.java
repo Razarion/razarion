@@ -23,17 +23,19 @@ public class TerrainTestRenderer {
     private static final double LINE_WIDTH = 0.2;
     private static final int GRID_SPACING_100 = 100;
     private static final int GRID_SPACING_20 = 20;
-    private final Collection<TerrainTile> expected;
-    private final Collection<TerrainTile> actual;
+    private final Collection<TerrainTile> expectedTiles;
+    private final Collection<TerrainTile> actualTiles;
+    private TriangleContainer triangleContainer;
     private Canvas canvas;
     private GraphicsContext gc;
     private double scale;
     private DecimalPosition shift = new DecimalPosition(0, 0);
     private DecimalPosition lastShiftPosition;
 
-    public TerrainTestRenderer(Collection<TerrainTile> expected, Collection<TerrainTile> actual) {
-        this.expected = expected;
-        this.actual = actual;
+    public TerrainTestRenderer(Collection<TerrainTile> expectedTiles, Collection<TerrainTile> actualTiles, TriangleContainer triangleContainer) {
+        this.expectedTiles = expectedTiles;
+        this.actualTiles = actualTiles;
+        this.triangleContainer = triangleContainer;
     }
 
     public void init(Canvas canvas, double scale) {
@@ -146,9 +148,14 @@ public class TerrainTestRenderer {
     public void render() {
         preRender();
 
-        for (TerrainTile terrainTile : actual) {
-            drawTerrainTile(terrainTile);
-        }
+//        for (TerrainTile actual : actualTiles) {
+//            drawTerrainTile(actual);
+//        }
+//        for (TerrainTile expected : expectedTiles) {
+//            drawTerrainTile(expected);
+//        }
+
+        drawTriangleContainer();
 
         postRender();
     }
@@ -293,5 +300,21 @@ public class TerrainTestRenderer {
 
         }
     }
+
+    private void drawTriangleContainer() {
+        for (TriangleElement missing : triangleContainer.getMissingInExpected()) {
+            double[] xCorners = new double[]{missing.getVertexA().getX(), missing.getVertexB().getX(), missing.getVertexC().getX()};
+            double[] yCorners = new double[]{missing.getVertexA().getY(), missing.getVertexB().getY(), missing.getVertexC().getY()};
+            gc.setStroke(Color.RED);
+            gc.strokePolygon(xCorners, yCorners, 3);
+        }
+        for (TriangleElement missing : triangleContainer.getNonexistentInExpected()) {
+            double[] xCorners = new double[]{missing.getVertexA().getX(), missing.getVertexB().getX(), missing.getVertexC().getX()};
+            double[] yCorners = new double[]{missing.getVertexA().getY(), missing.getVertexB().getY(), missing.getVertexC().getY()};
+            gc.setStroke(Color.YELLOWGREEN);
+            gc.strokePolygon(xCorners, yCorners, 3);
+        }
+    }
+
 
 }

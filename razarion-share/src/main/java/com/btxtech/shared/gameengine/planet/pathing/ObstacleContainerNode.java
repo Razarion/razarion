@@ -20,8 +20,8 @@ public class ObstacleContainerNode {
     private boolean belongsToSlope;
     private boolean fullWater;
     private boolean fractionWater;
-    private Collection<List<Vertex>> outerSlopeGroundPiercingLine;
-    private Collection<List<Vertex>> innerSlopeGroundPiercingLine;
+    private Collection<List<DecimalPosition>> outerSlopeGroundPiercingLine;
+    private Collection<List<DecimalPosition>> innerSlopeGroundPiercingLine;
 
     public void addObstacle(Obstacle obstacle) {
         if (obstacles == null) {
@@ -101,9 +101,9 @@ public class ObstacleContainerNode {
         if (innerSlopeGroundPiercingLine == null) {
             return false;
         }
-        for (List<Vertex> piercings : innerSlopeGroundPiercingLine) {
-            for (Vertex piercing : piercings) {
-                if (piercing.toXY().equals(absolutePosition)) {
+        for (List<DecimalPosition> piercings : innerSlopeGroundPiercingLine) {
+            for (DecimalPosition piercing : piercings) {
+                if (piercing.equals(absolutePosition)) {
                     return true;
                 }
             }
@@ -115,9 +115,9 @@ public class ObstacleContainerNode {
         if (outerSlopeGroundPiercingLine == null) {
             return false;
         }
-        for (List<Vertex> piercings : outerSlopeGroundPiercingLine) {
-            for (Vertex piercing : piercings) {
-                if (piercing.toXY().equals(absolutePosition)) {
+        for (List<DecimalPosition> piercings : outerSlopeGroundPiercingLine) {
+            for (DecimalPosition piercing : piercings) {
+                if (piercing.equals(absolutePosition)) {
                     return true;
                 }
             }
@@ -125,7 +125,7 @@ public class ObstacleContainerNode {
         return false;
     }
 
-    public void addSlopeGroundPiercing(List<Vertex> piercingLine, boolean isOuter) {
+    public void addSlopeGroundPiercing(List<DecimalPosition> piercingLine, boolean isOuter) {
         if (isOuter) {
             if (outerSlopeGroundPiercingLine == null) {
                 outerSlopeGroundPiercingLine = new ArrayList<>();
@@ -140,11 +140,11 @@ public class ObstacleContainerNode {
         }
     }
 
-    public Collection<List<Vertex>> getInnerSlopeGroundPiercingLine() {
+    public Collection<List<DecimalPosition>> getInnerSlopeGroundPiercingLine() {
         return innerSlopeGroundPiercingLine;
     }
 
-    public Collection<List<Vertex>> getOuterSlopeGroundPiercingLine() {
+    public Collection<List<DecimalPosition>> getOuterSlopeGroundPiercingLine() {
         return outerSlopeGroundPiercingLine;
     }
 }

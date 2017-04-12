@@ -39,6 +39,10 @@ public class VerticalSegment {
         return inner;
     }
 
+    public DecimalPosition getOuter() {
+        return outer;
+    }
+
     public VerticalSegment getPredecessor() {
         return predecessor;
     }

@@ -39,12 +39,12 @@ public class TerrainTestController implements Initializable {
     public TerrainTestController(Collection<TerrainTile> expected, Collection<TerrainTile> actual) {
         this.expected = expected;
         this.actual = actual;
-        triangleContainer = new TriangleContainer(actual);
+        triangleContainer = new TriangleContainer(expected, actual);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        terrainTestRenderer = new TerrainTestRenderer(expected, actual);
+        terrainTestRenderer = new TerrainTestRenderer(expected, actual, triangleContainer);
         terrainTestRenderer.init(canvas, 1.0);
         anchorPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> {
             canvas.setWidth(width.doubleValue());
@@ -91,7 +91,6 @@ public class TerrainTestController implements Initializable {
         DecimalPosition position = terrainTestRenderer.convertMouseToModel(event);
         mouseLabel.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
     }
-
 
     public void onMousePressed(MouseEvent event) {
         DecimalPosition position = terrainTestRenderer.convertMouseToModel(event);

@@ -34,11 +34,15 @@ public class TerrainServiceTestBase {
     protected void setupTerrainService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
         terrainService = new TerrainService();
 
-        injectTerrainTileContextInstance(terrainService);
-        injectTerrainWaterTileContextInstance(terrainService);
+        TerrainTileFactory terrainTileFactory = new TerrainTileFactory();
+        injectTerrainTileContextInstance(terrainTileFactory);
+        injectTerrainWaterTileContextInstance(terrainTileFactory);
+        SimpleTestEnvironment.injectService("terrainTileFactory", terrainService, terrainTileFactory);
+        SimpleTestEnvironment.injectService("terrainService", terrainTileFactory, terrainService);
 
         ObstacleContainer obstacleContainer = new ObstacleContainer();
         SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainer);
+        SimpleTestEnvironment.injectService("obstacleContainer", terrainTileFactory, obstacleContainer);
 
         TerrainTypeService terrainTypeService = new TerrainTypeService();
         GameEngineConfig gameEngineConfig = new GameEngineConfig();
@@ -55,6 +59,7 @@ public class TerrainServiceTestBase {
 
         terrainTypeService.init(gameEngineConfig);
         SimpleTestEnvironment.injectService("terrainTypeService", terrainService, terrainTypeService);
+        SimpleTestEnvironment.injectService("terrainTypeService", terrainTileFactory, terrainTypeService);
 
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions).setWaterLevel(-0.7);
@@ -76,8 +81,8 @@ public class TerrainServiceTestBase {
         replay(mockJsInteropObjectFactory);
     }
 
-    private void injectTerrainTileContextInstance(TerrainService terrainService) {
-        SimpleTestEnvironment.injectInstance("terrainTileContextInstance", terrainService, () -> {
+    private void injectTerrainTileContextInstance(TerrainTileFactory terrainTileFactory) {
+        SimpleTestEnvironment.injectInstance("terrainTileContextInstance", terrainTileFactory, () -> {
             TerrainTileContext terrainTileContext = new TerrainTileContext();
             mockJsInteropObjectFactory(terrainTileContext);
             SimpleTestEnvironment.injectInstance("terrainSlopeTileContextInstance", terrainTileContext, () -> {
@@ -89,8 +94,8 @@ public class TerrainServiceTestBase {
         });
     }
 
-    private void injectTerrainWaterTileContextInstance(TerrainService terrainService) {
-        SimpleTestEnvironment.injectInstance("terrainWaterTileContextInstance", terrainService, () -> {
+    private void injectTerrainWaterTileContextInstance(TerrainTileFactory terrainTileFactory) {
+        SimpleTestEnvironment.injectInstance("terrainWaterTileContextInstance", terrainTileFactory, () -> {
             TerrainWaterTileContext terrainWaterTileContextInstance = new TerrainWaterTileContext();
             mockJsInteropObjectFactory(terrainWaterTileContextInstance);
             return terrainWaterTileContextInstance;

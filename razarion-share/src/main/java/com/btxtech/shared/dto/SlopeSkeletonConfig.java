@@ -5,7 +5,7 @@ package com.btxtech.shared.dto;
  * Created by Beat
  * 08.05.2016.
  */
-public class SlopeSkeletonConfig implements ObjectNameIdProvider{
+public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     public enum Type {
         LAND,
         WATER
@@ -119,7 +119,7 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider{
     }
 
     public SlopeSkeletonConfig setSlopeNodes(SlopeNode[][] slopeNodes) {
-       this.slopeNodes = slopeNodes;
+        this.slopeNodes = slopeNodes;
         return this;
     }
 
@@ -176,6 +176,10 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider{
     public SlopeSkeletonConfig setBmScale(double bmScale) {
         this.bmScale = bmScale;
         return this;
+    }
+
+    public SlopeNode getSlopeNode(int column, int row) {
+        return slopeNodes[column % segments][row];
     }
 
     @Override

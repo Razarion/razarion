@@ -1,18 +1,10 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
-import com.btxtech.shared.gameengine.planet.terrain.Water;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Mesh;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.uiservice.control.GameEngineControl;
-import com.btxtech.webglemulator.razarion.renderer.DevToolFloat32ArrayEmu;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Beat

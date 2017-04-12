@@ -33,5 +33,19 @@ public class TriangleElement {
         return type + " A: " + vertexA + " B: " + vertexB + " C: " + vertexC;
     }
 
-    ;
+    public boolean compare(TriangleElement other) {
+        return vertexA.equalsDelta(other.vertexA, 0.001) && vertexB.equalsDelta(other.vertexB, 0.001) && vertexC.equalsDelta(other.vertexC, 0.001);
+    }
+
+    public Vertex getVertexA() {
+        return vertexA;
+    }
+
+    public Vertex getVertexB() {
+        return vertexB;
+    }
+
+    public Vertex getVertexC() {
+        return vertexC;
+    }
 }

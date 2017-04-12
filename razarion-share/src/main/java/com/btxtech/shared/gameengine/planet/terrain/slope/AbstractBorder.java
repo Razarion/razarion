@@ -11,7 +11,6 @@ import java.util.List;
  */
 public abstract class AbstractBorder {
     private double distance;
-    private List<VerticalSegment> verticalSegments = new ArrayList<>();
 
     public AbstractBorder(double distance) {
         this.distance = distance;
@@ -29,18 +28,14 @@ public abstract class AbstractBorder {
         return distance;
     }
 
-    public int setupVerticalSegments(Slope slope, double verticalSpace) {
+    public List<VerticalSegment> setupVerticalSegments(Slope slope, double verticalSpace) {
+        List<VerticalSegment> verticalSegments = new ArrayList<>();
         int count = getSegmentCount(verticalSpace);
         double length = getSegmentLength(count);
         for (int i = 0; i < count; i++) {
             VerticalSegment verticalSegment = new VerticalSegment(slope, i, setupInnerPointFormStart(length, i), setupOuterPointFormStart(length, i));
             verticalSegments.add(verticalSegment);
         }
-        return count;
-    }
-
-    public List<VerticalSegment> getVerticalSegments() {
         return verticalSegments;
     }
-
 }

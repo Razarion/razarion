@@ -119,12 +119,12 @@ public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
         DecimalPosition absolutePosition = obstacleContainer.toAbsolute(testPintIndex);
         extendedGraphicsContext.getGc().setFill(Color.YELLOW);
         extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-        List<Vertex> vertices1 = new ArrayList<>(obstacleContainer.getObstacleContainerNode(testPintIndex).getOuterSlopeGroundPiercingLine()).get(0);
-        extendedGraphicsContext.strokeCurve(vertices1, 0.2, Color.RED, true);
+        List<DecimalPosition> vertices1 = new ArrayList<>(obstacleContainer.getObstacleContainerNode(testPintIndex).getOuterSlopeGroundPiercingLine()).get(0);
+        // extendedGraphicsContext.strokeCurve(vertices1, 0.2, Color.RED, true);
 
-        for (Slope slope : terrainService.getSlopes()) {
-            extendedGraphicsContext.strokeVertices(slope.getOuterLine(), Color.BLUE, 1);
-        }
+//        for (Slope slope : terrainService.getSlopes()) {
+//            extendedGraphicsContext.strokeVertices(slope.getOuterLine(), Color.BLUE, 1);
+//        }
 
 //        for (int x = 0; x < obstacleContainer.getXCount(); x++) { // TODO make test case
 //            for (int y = 0; y < obstacleContainer.getYCount(); y++) {

@@ -8,7 +8,6 @@ import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
@@ -41,7 +40,6 @@ public class ObstacleContainer {
     private int yCount;
 
     public void setup(Rectangle groundMeshDimension, Collection<Slope> slopes, MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions) {
-        logger.severe("Start setup ObstacleContainer");
         long time = System.currentTimeMillis();
         offset = groundMeshDimension.getStart();
         absoluteOffset = new DecimalPosition(groundMeshDimension.getStart()).multiply(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
@@ -55,7 +53,7 @@ public class ObstacleContainer {
             insertObstacleTerrainObject(new ObstacleTerrainObject(new Circle2D(position.getPosition(), terrainObject.getRadius())));
             return true;
         });
-        logger.severe("Setup ObstacleContainer took: " + (System.currentTimeMillis() - time));
+        logger.severe("Setup ObstacleContainer: " + (System.currentTimeMillis() - time));
     }
 
     private void insertObstacleTerrainObject(ObstacleTerrainObject obstacleTerrainObject) {
@@ -106,34 +104,34 @@ public class ObstacleContainer {
         }
     }
 
-    public void addSlopeGroundConnector(List<Vertex> slopeLine, int slopePositionIndex, DecimalPosition absolutePosition, boolean isOuter) {
+    public void addSlopeGroundConnector(List<DecimalPosition> slopeLine, int slopePositionIndex, DecimalPosition absolutePosition, boolean isOuter) {
         Index nodeIndex = toNode(absolutePosition);
         ObstacleContainerNode obstacleContainerNode = getOrCreate(nodeIndex);
         if (!obstacleContainerNode.exitsInSlopeGroundPiercing(absolutePosition, isOuter)) {
             Rectangle2D nodeRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
             int currentIndex = findStart(nodeRect, slopePositionIndex, slopeLine);
-            Vertex current = slopeLine.get(currentIndex);
-            List<Vertex> piercingLine = new ArrayList<>();
+            DecimalPosition current = slopeLine.get(currentIndex);
+            List<DecimalPosition> piercingLine = new ArrayList<>();
             piercingLine.add(current);
             do {
                 currentIndex = CollectionUtils.getCorrectedIndex(currentIndex + 1, slopeLine);
                 current = slopeLine.get(currentIndex);
                 piercingLine.add(current);
-            } while (nodeRect.contains(current.toXY()));
+            } while (nodeRect.contains(current));
 
             obstacleContainerNode.addSlopeGroundPiercing(piercingLine, isOuter);
         }
     }
 
-    public void addLeftOutSlopeGroundConnector(Index leftOutNodeIndex, Vertex predecessor, Vertex successor, boolean isOuter) {
+    public void addLeftOutSlopeGroundConnector(Index leftOutNodeIndex, DecimalPosition predecessor, DecimalPosition successor, boolean isOuter) {
         ObstacleContainerNode obstacleContainerNode = getOrCreate(leftOutNodeIndex);
-        List<Vertex> piercingLine = new ArrayList<>();
+        List<DecimalPosition> piercingLine = new ArrayList<>();
         piercingLine.add(predecessor);
         piercingLine.add(successor);
         obstacleContainerNode.addSlopeGroundPiercing(piercingLine, isOuter);
     }
 
-    private int findStart(Rectangle2D rect, int index, List<Vertex> outerLine) {
+    private int findStart(Rectangle2D rect, int index, List<DecimalPosition> outerLine) {
         int protection = outerLine.size() + 1;
         do {
             index = CollectionUtils.getCorrectedIndex(index - 1, outerLine);
@@ -141,7 +139,7 @@ public class ObstacleContainer {
             if (protection < 0) {
                 throw new IllegalStateException("Prevent infinite loop");
             }
-        } while (rect.contains(outerLine.get(index).toXY()));
+        } while (rect.contains(outerLine.get(index)));
         return index;
     }
 
