@@ -87,26 +87,6 @@ public class TerrainService {
         return terrainTileFactory.generateTerrainTile(terrainTileIndex);
     }
 
-    public boolean overlap(DecimalPosition position) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public boolean overlap(DecimalPosition position, double radius) {
-        // TODO
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    public boolean overlap(Collection<DecimalPosition> positions, int baseItemTypeId) {
-        BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
-        for (DecimalPosition position : positions) {
-            if (overlap(position, baseItemType.getPhysicalAreaConfig().getRadius())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public double getHighestZInRegion(DecimalPosition center, double radius) {
         DoubleStream.Builder doubleStreamBuilder = DoubleStream.builder();
 

@@ -30,6 +30,7 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
@@ -81,6 +82,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private TerrainService terrainService;
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private ObstacleContainer obstacleContainer;
     private UserContext userContext;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
     private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
@@ -336,11 +339,18 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     private void getTerrainOverlap(DecimalPosition position) {
-        sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_ANSWER, position, terrainService.overlap(position));
+        sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_ANSWER, position, obstacleContainer.overlap(position, 1.0));
     }
 
     private void getTerrainOverlapBaseItemType(int uuid, List<DecimalPosition> positions, int baseItemType) {
-        boolean overlaps = terrainService.overlap(positions, baseItemType);
+        boolean overlaps = false;
+        double radius = itemTypeService.getBaseItemType(baseItemType).getPhysicalAreaConfig().getRadius();
+        for (DecimalPosition position : positions) {
+            if (obstacleContainer.overlap(position, radius)) {
+                overlaps = true;
+                break;
+            }
+        }
         sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_TYPE_ANSWER, uuid, overlaps);
     }
 

@@ -231,6 +231,17 @@ public class ObstacleContainer {
         return obstacles;
     }
 
+    public boolean overlap(DecimalPosition position, double radius) {
+        List<Index> nodes = absoluteCircleToNodes(new Circle2D(position, radius));
+        for (Index node : nodes) {
+            ObstacleContainerNode obstacleContainerNode = getObstacleContainerNode(node);
+            if (obstacleContainerNode != null && obstacleContainerNode.getObstacles() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean hasNorthSuccessorNode(int currentNodePositionY) {
         return currentNodePositionY < yCount - 1;
     }

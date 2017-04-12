@@ -22,8 +22,8 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -221,7 +221,7 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     private boolean allowedUnload(DecimalPosition position, int containedItem) throws ItemDoesNotExistException {
-        return isInUnloadRange(position) && !terrainService.overlap(position, baseItemService.getItem(containedItem).getBaseItemType().getPhysicalAreaConfig().getRadius());
+        throw new UnsupportedOperationException();
     }
 
     private boolean isInUnloadRange(DecimalPosition unloadPos) {

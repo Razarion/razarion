@@ -18,7 +18,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
@@ -51,7 +51,7 @@ public class SyncItemContainerService {
     @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
     private Instance<SyncPhysicalMovable> syncPhysicalMovableInstance;
     @Inject
-    private TerrainService terrainService; // May combine terrain-service with sync-item-container-service
+    private ObstacleContainer obstacleContainer;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         items.clear();
@@ -302,7 +302,7 @@ public class SyncItemContainerService {
     }
 
     private boolean isFree(DecimalPosition position, double radius) {
-        return !terrainService.overlap(position, radius) && !hasItemsInRange(position, radius);
+        return !obstacleContainer.overlap(position, radius) && !hasItemsInRange(position, radius);
     }
 
     public boolean isFree(DecimalPosition position, BaseItemType baseItemType) {
