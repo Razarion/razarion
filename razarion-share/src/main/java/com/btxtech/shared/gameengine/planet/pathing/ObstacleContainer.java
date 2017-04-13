@@ -62,7 +62,7 @@ public class ObstacleContainer {
         }
     }
 
-    private List<Index> absoluteCircleToNodes(Circle2D absoluteCircle) {
+    public List<Index> absoluteCircleToNodes(Circle2D absoluteCircle) {
         Circle2D circle = new Circle2D(absoluteCircle.getCenter().sub(absoluteOffset), absoluteCircle.getRadius());
         return GeometricUtil.rasterizeCircle(circle, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
     }

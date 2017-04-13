@@ -1,10 +1,10 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 
 import javax.enterprise.event.Observes;
@@ -25,6 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
 
@@ -89,28 +89,11 @@ public class TerrainService {
     }
 
     public double getHighestZInRegion(DecimalPosition center, double radius) {
+        List<Index> indices = obstacleContainer.absoluteCircleToNodes(new Circle2D(center, radius));
         DoubleStream.Builder doubleStreamBuilder = DoubleStream.builder();
-
-        int startX = (int) (Math.floor((center.getX() - radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-        int startY = (int) (Math.floor((center.getY() - radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-        int endX = (int) (Math.ceil((center.getX() + radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-        int endY = (int) (Math.ceil((center.getY() + radius) / (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) * (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-
-        for (int x = startX; x < endX; x += (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) {
-            for (int y = startY; y < endY; y += (double) TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH) {
-                Index nodeIndex = new Index(x, y);
-                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                if (rect.contains(center)) {
-                    doubleStreamBuilder.add(faceMaxZ(nodeIndex));
-                } else {
-                    DecimalPosition projection = rect.getNearestPoint(center);
-                    if (projection.getDistance(center) <= radius) {
-                        doubleStreamBuilder.add(faceMaxZ(nodeIndex));
-                    }
-                }
-            }
+        for (Index nodeIndex : indices) {
+            doubleStreamBuilder.add(faceMaxZ(nodeIndex));
         }
-
         return doubleStreamBuilder.build().max().orElseThrow(IllegalStateException::new);
     }
 
