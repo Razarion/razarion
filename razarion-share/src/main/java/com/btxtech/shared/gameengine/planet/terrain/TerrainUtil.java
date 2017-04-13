@@ -11,6 +11,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 public interface TerrainUtil {
     int GROUND_NODE_ABSOLUTE_LENGTH = 8;
     int TERRAIN_TILE_NODES_COUNT = 20;
+    int TERRAIN_TILE_TOTAL_NODES_COUNT = TERRAIN_TILE_NODES_COUNT * TERRAIN_TILE_NODES_COUNT;
     double TERRAIN_TILE_ABSOLUTE_LENGTH = GROUND_NODE_ABSOLUTE_LENGTH * TERRAIN_TILE_NODES_COUNT;
 
     static Index toTile(DecimalPosition absolute) {

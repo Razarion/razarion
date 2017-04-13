@@ -59,6 +59,10 @@ public class TerrainTileContext {
         terrainTile.setGroundVertexCount(triangleCornerIndex);
     }
 
+    public void setLandWaterProportion(double landWaterProportion) {
+        terrainTile.setLandWaterProportion(landWaterProportion);
+    }
+
     public void setSplatting(int xNode, int yNode, double splattingBL, double splattingBR, double splattingTR, double splattingTL) {
         int x = xNode - offsetIndexX;
         int y = yNode - offsetIndexY;

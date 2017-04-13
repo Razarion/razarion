@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeNode;
@@ -76,9 +77,13 @@ public class TerrainTileFactory {
     private void insertGroundPart(TerrainTileContext terrainTileContext) {
         terrainTileContext.initGround();
 
+        SingleHolder<Integer> landNodes = new SingleHolder<>(0);
         iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
             ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
             if (obstacleContainerNode != null) {
+                if (!obstacleContainerNode.isFullWater() && !obstacleContainerNode.isFractionWater()) {
+                    landNodes.setO(landNodes.getO() + 1);
+                }
                 if (obstacleContainerNode.isInSlope()) {
                     terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainer.getInsideSlopeHeight(nodeIndex));
                     return;
@@ -87,16 +92,17 @@ public class TerrainTileFactory {
                     terrainTileContext.insertDisplayHeight(nodeIndex, terrainService.getPlanetConfig().getWaterLevel());
                     return;
                 }
+            } else {
+                landNodes.setO(landNodes.getO() + 1);
             }
 
             double slopeHeight = obstacleContainer.getInsideSlopeHeight(nodeIndex);
             insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), slopeHeight, terrainTileContext);
         });
 
-
         terrainTileContext.insertSlopeGroundConnection();
-
-        terrainTileContext.setGroundVertexCount(); // Per rectangle are two triangles with 3 corners
+        terrainTileContext.setGroundVertexCount();
+        terrainTileContext.setLandWaterProportion((double) landNodes.getO() / (double) TerrainUtil.TERRAIN_TILE_TOTAL_NODES_COUNT);
     }
 
     private void insertTerrainRectangle(int xNode, int yNode, double slopeHeight, TerrainTileContext terrainTileContext) {

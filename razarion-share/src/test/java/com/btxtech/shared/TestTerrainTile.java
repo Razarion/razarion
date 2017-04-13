@@ -24,6 +24,7 @@ public class TestTerrainTile extends TerrainTile {
     private double[] displayHeights;
     private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
     private TestTerrainWaterTile terrainWaterTile;
+    private double landWaterProportion;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -129,6 +130,16 @@ public class TestTerrainTile extends TerrainTile {
     @Override
     public TerrainWaterTile getTerrainWaterTile() {
         return terrainWaterTile;
+    }
+
+    @Override
+    public double getLandWaterProportion() {
+        return landWaterProportion;
+    }
+
+    @Override
+    public void setLandWaterProportion(double landWaterProportion) {
+        this.landWaterProportion = landWaterProportion;
     }
 
     @Override

@@ -22,6 +22,7 @@ public class DevToolTerrainTile extends TerrainTile {
     private double[] displayHeights;
     private Collection<TerrainSlopeTile> terrainSlopeTiles;
     private TerrainWaterTile terrainWaterTile;
+    private double landWaterProportion;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -128,6 +129,16 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public TerrainWaterTile getTerrainWaterTile() {
         return terrainWaterTile;
+    }
+
+    @Override
+    public double getLandWaterProportion() {
+        return landWaterProportion;
+    }
+
+    @Override
+    public void setLandWaterProportion(double landWaterProportion) {
+        this.landWaterProportion = landWaterProportion;
     }
 
     @Override

@@ -148,14 +148,14 @@ public class TerrainTestRenderer {
     public void render() {
         preRender();
 
-//        for (TerrainTile actual : actualTiles) {
-//            drawTerrainTile(actual);
-//        }
+        for (TerrainTile actual : actualTiles) {
+            drawTerrainTile(actual);
+        }
 //        for (TerrainTile expected : expectedTiles) {
 //            drawTerrainTile(expected);
 //        }
 
-        drawTriangleContainer();
+//        drawTriangleContainer();
 
         postRender();
     }

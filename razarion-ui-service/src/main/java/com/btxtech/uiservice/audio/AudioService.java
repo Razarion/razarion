@@ -121,7 +121,7 @@ public abstract class AudioService implements TerrainScrollListener {
 
     @Override
     public void onScroll(ViewField viewField) {
-        double landWaterProportion = terrainUiService.calculateLandWaterProportion(viewField.calculateAabbRectangle());
+        double landWaterProportion = terrainUiService.calculateLandWaterProportion();
         if (MathHelper.compareWithPrecision(lastLandWaterProportion, landWaterProportion, 0.05)) {
             return;
         }

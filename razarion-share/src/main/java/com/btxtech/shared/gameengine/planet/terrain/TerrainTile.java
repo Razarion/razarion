@@ -42,6 +42,10 @@ public abstract class TerrainTile {
 
     public native TerrainWaterTile getTerrainWaterTile();
 
+    public native double getLandWaterProportion();
+
+    public native void setLandWaterProportion(double landWaterProportion);
+
     public native Object toArray();
 
     public native int fromArray(Object object);

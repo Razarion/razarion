@@ -138,9 +138,22 @@ public class TerrainUiService {
         }
     }
 
-    public double calculateLandWaterProportion(Rectangle2D viewField) {
-        logger.severe("TODO calculateLandWaterProportion");
-        return 0;
+    public double calculateLandWaterProportion() {
+        double value = 0;
+        int count = 0;
+        for (UiTerrainTile uiTerrainTile : displayTerrainTiles.values()) {
+            if (uiTerrainTile.getTerrainTile() != null) {
+                value += uiTerrainTile.getTerrainTile().getLandWaterProportion();
+                count++;
+            }
+        }
+        if (count != 0) {
+            logger.severe("calculateLandWaterProportion " + (value / (double) count));
+            return value / (double) count;
+        } else {
+            logger.severe("calculateLandWaterProportion 0");
+            return 0;
+        }
     }
 
     public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {

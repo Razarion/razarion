@@ -394,6 +394,14 @@ com = {
                         return this.terrainWaterTile;
                     };
 
+                    this.setLandWaterProportion = function (landWaterProportion) {
+                        this.landWaterProportion = landWaterProportion;
+                    };
+
+                    this.getLandWaterProportion = function () {
+                        return this.landWaterProportion;
+                    };
+
                     this.toArray = function () {
                         var terrainSlopeTilesArray = [];
                         if (typeof this.terrainSlopeTiles != 'undefined') {
@@ -405,7 +413,7 @@ com = {
                         if (typeof this.terrainWaterTile != 'undefined') {
                             terrainWaterTile = this.terrainWaterTile.toArray();
                         }
-                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, this.displayHeights, terrainSlopeTilesArray, terrainWaterTile];
+                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, this.displayHeights, terrainSlopeTilesArray, terrainWaterTile, this.landWaterProportion];
                     };
 
                     this.fromArray = function (array) {
@@ -430,6 +438,7 @@ com = {
                             this.terrainWaterTile = new com.btxtech.shared.nativejs.TerrainWaterTile();
                             this.terrainWaterTile.fromArray(terrainWaterTile);
                         }
+                        this.landWaterProportion = array[10];
                     }
                 },
 
