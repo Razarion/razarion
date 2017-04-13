@@ -126,6 +126,7 @@ public class GameUiControlConfigPersistence {
             // Multiplayer
             gameUiControlConfig = getGameUiControlConfig4Level(2).toGameUiControlConfig(gameEngineConfig);
             completePlanetConfigMultiPlayer(gameEngineConfig.getPlanetConfig());// TODO move to DB
+            gameUiControlConfig.setSceneConfigs(setupPlanet1()); // TODO move to DB
         } else {
             // Tutorial
             gameUiControlConfig = getGameUiControlConfig4Level(1).toGameUiControlConfig(gameEngineConfig);
@@ -441,7 +442,7 @@ public class GameUiControlConfigPersistence {
         itemTypeLimitation.put(BASE_ITEM_TYPE_FACTORY, 1);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 2500, 2500));
-        planetConfig.setPlayGround(new Rectangle2D(50, 40, 19900, 320));
+        planetConfig.setPlayGround(new Rectangle2D(50, 40, 19900, 19920));
         planetConfig.setWaterLevel(-0.7);
         planetConfig.setStartRazarion(550);
     }
@@ -1161,5 +1162,13 @@ public class GameUiControlConfigPersistence {
         // Go to than you page
         sceneConfigs.add(new SceneConfig().setInternalName("script: forward to ThankYou page").setForwardUrl("ThankYou.html"));
     }
+
+    // Tutorial -----------------------------------------------------------------------------
+    private List<SceneConfig> setupPlanet1() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        addFadeOutLoadingCover(sceneConfigs);
+        return sceneConfigs;
+    }
+
 
 }
