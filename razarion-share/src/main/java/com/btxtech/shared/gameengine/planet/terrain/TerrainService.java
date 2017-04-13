@@ -116,15 +116,11 @@ public class TerrainService {
 
 
     public double faceMaxZ(Index nodeIndex) {
-        return Math.max(Math.max(getZ(nodeIndex), getZ(nodeIndex.add(1, 0))), Math.max(getZ(nodeIndex.add(1, 1)), getZ(nodeIndex.add(0, 1))));
+        return Math.max(Math.max(getGroundZ(nodeIndex), getGroundZ(nodeIndex.add(1, 0))), Math.max(getGroundZ(nodeIndex.add(1, 1)), getGroundZ(nodeIndex.add(0, 1))));
     }
 
-    public double getZ(Index nodeIndex) {
-        ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
-        if (obstacleContainerNode != null && obstacleContainerNode.isFullWater()) {
-            return planetConfig.getWaterLevel();
-        }
-        return obstacleContainer.getInsideSlopeHeight(nodeIndex) + terrainTypeService.getGroundSkeletonConfig().getHeight(nodeIndex.getX(), nodeIndex.getY());
+    public double getGroundZ(Index nodeIndex) {
+        return terrainTypeService.getGroundSkeletonConfig().getHeight(nodeIndex.getX(), nodeIndex.getY());
     }
 
 
@@ -133,16 +129,16 @@ public class TerrainService {
         DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
-        double zBR = getZ(bottomLeft.add(1, 0));
-        double zTL = getZ(bottomLeft.add(0, 1));
+        double zBR = getGroundZ(bottomLeft.add(1, 0));
+        double zTL = getGroundZ(bottomLeft.add(0, 1));
         if (triangle1.isInside(offset)) {
             Vertex weight = triangle1.interpolate(offset);
-            double zBL = getZ(bottomLeft);
+            double zBL = getGroundZ(bottomLeft);
             return weight.getX() * zBL + weight.getY() * zBR + weight.getZ() * zTL;
         } else {
             Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
             Vertex weight = triangle2.interpolate(offset);
-            double zTR = getZ(bottomLeft.add(1, 1));
+            double zTR = getGroundZ(bottomLeft.add(1, 1));
             return weight.getX() * zBR + weight.getY() * zTR + weight.getZ() * zTL;
         }
     }
@@ -152,13 +148,13 @@ public class TerrainService {
         DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
-        double zBR = getZ(bottomLeft.add(1, 0));
-        double zTL = getZ(bottomLeft.add(0, 1));
+        double zBR = getGroundZ(bottomLeft.add(1, 0));
+        double zTL = getGroundZ(bottomLeft.add(0, 1));
         if (triangle1.isInside(offset)) {
-            double zBL = getZ(bottomLeft);
+            double zBL = getGroundZ(bottomLeft);
             return new Vertex(zBL - zBR, zBL - zTL, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
         } else {
-            double zTR = getZ(bottomLeft.add(1, 1));
+            double zTR = getGroundZ(bottomLeft.add(1, 1));
             return new Vertex(zBR - zTR, zTL - zTR, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
         }
     }

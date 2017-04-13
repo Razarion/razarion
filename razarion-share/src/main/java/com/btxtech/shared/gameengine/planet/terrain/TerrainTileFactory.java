@@ -124,7 +124,6 @@ public class TerrainTileFactory {
         Vertex tangentTR = terrainTileContext.setupTangent(rightXNode, topYNode);
         Vertex tangentTL = terrainTileContext.setupTangent(xNode, topYNode);
 
-
         double splattingBL = terrainTileContext.getSplatting(xNode, yNode);
         double splattingBR = terrainTileContext.getSplatting(rightXNode, yNode);
         double splattingTR = terrainTileContext.getSplatting(rightXNode, topYNode);
@@ -141,7 +140,7 @@ public class TerrainTileFactory {
         terrainTileContext.insertTriangleCorner(vertexTR, normTR, tangentTR, splattingTR);
         terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL);
 
-        terrainTileContext.insertDisplayHeight(new Index(xNode, yNode), vertexBL.getZ() + slopeHeight);
+        terrainTileContext.insertDisplayHeight(new Index(xNode, yNode), vertexBL.getZ());
     }
 
     private void insertSlopePart(TerrainTileContext terrainTileContext) {

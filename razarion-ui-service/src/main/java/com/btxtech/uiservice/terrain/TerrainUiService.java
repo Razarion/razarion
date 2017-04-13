@@ -148,10 +148,8 @@ public class TerrainUiService {
             }
         }
         if (count != 0) {
-            logger.severe("calculateLandWaterProportion " + (value / (double) count));
             return value / (double) count;
         } else {
-            logger.severe("calculateLandWaterProportion 0");
             return 0;
         }
     }
