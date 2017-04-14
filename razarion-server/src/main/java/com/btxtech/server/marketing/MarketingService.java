@@ -37,8 +37,8 @@ public class MarketingService {
 
     @Transactional
     @SecurityCheck
-    public CreationData startCampaign(List<Interest> interests) {
-        CreationData creationData = fbFacade.createAd(interests);
+    public CreationData startCampaign(String title, String body, List<Interest> interests) {
+        CreationData creationData = fbFacade.createAd(title, body, interests);
 
         CurrentAdEntity currentAdEntity = new CurrentAdEntity();
         currentAdEntity.setState(CurrentAdEntity.State.RUNNING);

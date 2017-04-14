@@ -59,7 +59,7 @@ public class FbFacade {
         return new AdAccount(filePropertiesService.getFacebookMarketingAccount(), apiContext);
     }
 
-    public CreationData createAd(List<Interest> interests) {
+    public CreationData createAd(String title, String body, List<Interest> interests) {
         try {
             APIContext context = getContext();
             AdAccount adAccount = getAdAccount(context);
@@ -68,7 +68,7 @@ public class FbFacade {
             creationData.setCampaignId(campaignId);
             long adSetId = createAddSet(context, adAccount, campaignId, interests);
             creationData.setAdSetId(adSetId);
-            long adId = createAdd(adAccount, adSetId);
+            long adId = createAdd(adAccount, adSetId, title, body);
             creationData.setAdId(adId);
             setTrackingTag(adId, RestUrl.fbClickTrackingReceiver());
             return creationData;
@@ -78,9 +78,13 @@ public class FbFacade {
     }
 
     private long createCampaign(AdAccount account) {
+        String name = "Razarion Automated Campaign: " + DateUtil.formatDateTime(new Date());
+        if (filePropertiesService.isDeveloperMode()) {
+            name += "_DEVELOPER_MODE";
+        }
         try {
             Campaign campaign = account.createCampaign()
-                    .setName("Razarion Automated Campaign: " + DateUtil.formatDateTime(new Date()))
+                    .setName(name)
                     .setObjective(Campaign.EnumObjective.VALUE_CANVAS_APP_INSTALLS)
                     .setSpendCap(10000L) // Min value in Rappen
                     .setStatus(Campaign.EnumStatus.VALUE_PAUSED)
@@ -109,7 +113,7 @@ public class FbFacade {
         AdSet adSet = account.createAdSet()
                 .setName("Automated Ad AdSet: " + DateUtil.formatDateTime(new Date()))
                 .setCampaignId(campaign.getFieldId())
-                .setStatus(AdSet.EnumStatus.VALUE_PAUSED)
+                .setStatus(AdSet.EnumStatus.VALUE_ACTIVE)
                 .setBillingEvent(AdSet.EnumBillingEvent.VALUE_IMPRESSIONS)
                 .setIsAutobid(true)
                 .setDailyBudget(200L)
@@ -138,14 +142,14 @@ public class FbFacade {
         }
     }
 
-    private long createAdd(AdAccount account, long adSetId) throws APIException {
+    private long createAdd(AdAccount account, long adSetId, String title, String body) throws APIException {
 //        AdImage image = account.createAdImage()
 //                .addUploadFile("file", new File(IMAGE_DIR, "TestAdImage.jpg"))
 //                .execute();
         AdCreative creative = account.createAdCreative()
                 .setObjectType("SHARE")
-                .setTitle("Echtzeit Strategiespiel")
-                .setBody("Razarion vereint packende Echtzeit-Schlachten mit komplexer Strategie und Multiplayerspaß")
+                .setTitle(title)
+                .setBody(body)
                 .setObjectStorySpec(new AdCreativeObjectStorySpec().setFieldPageId(filePropertiesService.getFacebookAppPageId())
                         .setFieldLinkData(new AdCreativeLinkData()
                                 .setFieldLink("https://apps.facebook.com/razarion/")
@@ -165,7 +169,7 @@ public class FbFacade {
                 .setName("Automated Ad: " + DateUtil.formatDateTime(new Date()))
                 .setAdsetId(adSetId)
                 .setCreative(creative)
-                .setStatus(Ad.EnumStatus.VALUE_PAUSED)
+                .setStatus(Ad.EnumStatus.VALUE_ACTIVE)
                 .setRedownload(true)
                 .execute();
         return Long.parseLong(ad.getId());

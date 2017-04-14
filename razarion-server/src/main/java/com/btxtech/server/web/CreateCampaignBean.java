@@ -3,7 +3,6 @@ package com.btxtech.server.web;
 import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.marketing.MarketingService;
 import com.btxtech.server.marketing.facebook.AdInterest;
-import com.btxtech.server.marketing.facebook.CreationData;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.SessionScoped;
@@ -19,15 +18,33 @@ import java.util.List;
  */
 @Named
 @SessionScoped
-public class CreateAdBean implements Serializable {
+public class CreateCampaignBean implements Serializable {
     @Inject
     private MarketingService marketingService;
     @Inject
-    transient  private ExceptionHandler exceptionHandler;
+    transient private ExceptionHandler exceptionHandler;
+    private String title;
+    private String body;
     private List<AdInterest> selectedAdInterest = new ArrayList<>();
     private List<AdInterest> availableAdInterest = new ArrayList<>();
     private String interestQuery;
     private String campaignCreationError;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
 
     public List<AdInterest> getSelectedAdInterest() {
         return selectedAdInterest;
@@ -79,6 +96,14 @@ public class CreateAdBean implements Serializable {
 
 
     public Object createCampaign() {
+        if(title == null || title.isEmpty()) {
+            campaignCreationError = "Title not defined";
+            return null;
+        }
+        if(body == null || body.isEmpty()) {
+            campaignCreationError = "Body not defined";
+            return null;
+        }
         if (selectedAdInterest.isEmpty()) {
             campaignCreationError = "No interests";
             return null;
@@ -92,7 +117,7 @@ public class CreateAdBean implements Serializable {
                 interest.setId(selected.getId());
                 interests.add(interest);
             }
-            marketingService.startCampaign(interests);
+            marketingService.startCampaign(title, body, interests);
             return "marketing";
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
