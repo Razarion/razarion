@@ -2,9 +2,9 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -44,6 +44,7 @@ public class PlanetEntity {
         }
 
         PlanetConfig planetConfig = new PlanetConfig();
+        planetConfig.setPlanetId(id.intValue());
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setTerrainObjectPositions(terrainObjectPositions);
         return planetConfig;

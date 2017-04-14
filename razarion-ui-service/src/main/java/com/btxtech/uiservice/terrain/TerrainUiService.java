@@ -20,6 +20,7 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -54,6 +55,8 @@ public class TerrainUiService {
     private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private Instance<UiTerrainTile> uiTerrainTileInstance;
+    @Inject
+    private ViewService viewService;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
@@ -89,6 +92,18 @@ public class TerrainUiService {
                 exceptionHandler.handleException("Placing terrain object failed", t);
             }
         }
+    }
+
+    public void clearTerrainTilesForEditor() {
+        for (UiTerrainTile uiTerrainTile : displayTerrainTiles.values()) {
+            uiTerrainTile.dispose();
+        }
+        displayTerrainTiles.clear();
+        for (UiTerrainTile uiTerrainTile : cacheTerrainTiles.values()) {
+            uiTerrainTile.dispose();
+        }
+        cacheTerrainTiles.clear();
+        onViewChanged(viewService.getCurrentViewField(), viewService.getCurrentAabb());
     }
 
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
@@ -152,11 +167,6 @@ public class TerrainUiService {
         } else {
             return 0;
         }
-    }
-
-    public MapCollection<TerrainObjectConfig, TerrainObjectPosition> getTerrainObjectPositions() {
-        throw new UnsupportedOperationException("FIXME: The required data is in the worker now");
-        // return terrainService.getTerrainObjectPositions();
     }
 
     public void overlap(DecimalPosition position, Consumer<Boolean> callback) {

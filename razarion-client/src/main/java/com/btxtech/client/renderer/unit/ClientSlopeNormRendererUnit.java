@@ -55,4 +55,10 @@ public class ClientSlopeNormRendererUnit extends AbstractSlopeRendererUnit {
         // Draw
         webGlFacade.drawArrays(WebGLRenderingContext.LINES);
     }
+
+    @Override
+    public void dispose() {
+        vertices.deleteBuffer();
+    }
+
 }

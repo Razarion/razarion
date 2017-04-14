@@ -60,7 +60,7 @@ public abstract class AbstractRenderTask<T> {
         this.modelRenderers.add(modelRenderer);
     }
 
-    protected void remove(ModelRenderer modelRenderer) {
+    public void remove(ModelRenderer modelRenderer) {
         this.modelRenderers.remove(modelRenderer);
     }
 

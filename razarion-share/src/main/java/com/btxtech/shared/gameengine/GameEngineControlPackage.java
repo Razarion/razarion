@@ -61,6 +61,8 @@ public class GameEngineControlPackage {
         TERRAIN_OVERLAP_TYPE_ANSWER,
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
+        // Editor
+        EDITOR_OVERRIDE_TERRAIN,
 
     }
 

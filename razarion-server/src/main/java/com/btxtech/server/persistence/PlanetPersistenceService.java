@@ -31,7 +31,7 @@ public class PlanetPersistenceService {
 
     @Transactional
     @SecurityCheck
-    public void createTerrainObjectPositions(List<TerrainObjectPosition> createdTerrainObjects) {
+    public void createTerrainObjectPositions(int planetId, List<TerrainObjectPosition> createdTerrainObjects) {
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();
         for (TerrainObjectPosition terrainObjectPosition : createdTerrainObjects) {
             TerrainObjectPositionEntity terrainObjectPositionEntity = new TerrainObjectPositionEntity();
@@ -42,15 +42,15 @@ public class PlanetPersistenceService {
             terrainObjectPositionEntities.add(terrainObjectPositionEntity);
         }
 
-        PlanetEntity planetEntity = loadPlanet();
+        PlanetEntity planetEntity = loadPlanet(planetId);
         planetEntity.getTerrainObjectPositionEntities().addAll(terrainObjectPositionEntities);
         entityManager.persist(planetEntity);
     }
 
     @Transactional
     @SecurityCheck
-    public void updateTerrainObjectPositions(List<TerrainObjectPosition> updatedTerrainObjects) {
-        PlanetEntity planetEntity = loadPlanet();
+    public void updateTerrainObjectPositions(int planetId,List<TerrainObjectPosition> updatedTerrainObjects) {
+        PlanetEntity planetEntity = loadPlanet(planetId);
         for (TerrainObjectPosition terrainObjectPosition : updatedTerrainObjects) {
             TerrainObjectPositionEntity terrainObjectPositionEntity = getTerrainObjectPositionEntity(planetEntity, terrainObjectPosition.getId());
             terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getTerrainObjectEntity(terrainObjectPosition.getTerrainObjectId()));
@@ -63,8 +63,8 @@ public class PlanetPersistenceService {
 
     @Transactional
     @SecurityCheck
-    public void deleteTerrainObjectPositionIds(List<Integer> deletedTerrainIds) {
-        PlanetEntity planetEntity = loadPlanet();
+    public void deleteTerrainObjectPositionIds(int planetId,List<Integer> deletedTerrainIds) {
+        PlanetEntity planetEntity = loadPlanet(planetId);
         for (int terrainSlopePositionId : deletedTerrainIds) {
             planetEntity.getTerrainObjectPositionEntities().remove(getTerrainObjectPositionEntity(planetEntity, terrainSlopePositionId));
         }
@@ -72,8 +72,8 @@ public class PlanetPersistenceService {
 
     @Transactional
     @SecurityCheck
-    public void updateTerrainSlopePositions(List<TerrainSlopePosition> updatedSlopes) {
-        PlanetEntity planetEntity = loadPlanet();
+    public void updateTerrainSlopePositions(int planetId,List<TerrainSlopePosition> updatedSlopes) {
+        PlanetEntity planetEntity = loadPlanet(planetId);
         for (TerrainSlopePosition terrainSlopePosition : updatedSlopes) {
             TerrainSlopePositionEntity terrainSlopePositionEntity = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePosition.getId());
             terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigEntity()));
@@ -85,7 +85,7 @@ public class PlanetPersistenceService {
 
     @Transactional
     @SecurityCheck
-    public void createTerrainSlopePositions(Collection<TerrainSlopePosition> terrainSlopePositions) {
+    public void createTerrainSlopePositions(int planetId,Collection<TerrainSlopePosition> terrainSlopePositions) {
         List<TerrainSlopePositionEntity> terrainSlopePositionEntities = new ArrayList<>();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             TerrainSlopePositionEntity terrainSlopePositionEntity = new TerrainSlopePositionEntity();
@@ -94,15 +94,15 @@ public class PlanetPersistenceService {
             terrainSlopePositionEntities.add(terrainSlopePositionEntity);
         }
 
-        PlanetEntity planetEntity = loadPlanet();
+        PlanetEntity planetEntity = loadPlanet(planetId);
         planetEntity.getTerrainSlopePositionEntities().addAll(terrainSlopePositionEntities);
         entityManager.persist(planetEntity);
     }
 
     @Transactional
     @SecurityCheck
-    public void deleteTerrainSlopePositions(Collection<Integer> terrainSlopePositionIds) {
-        PlanetEntity planetEntity = loadPlanet();
+    public void deleteTerrainSlopePositions(int planetId,Collection<Integer> terrainSlopePositionIds) {
+        PlanetEntity planetEntity = loadPlanet(planetId);
         for (int terrainSlopePositionId : terrainSlopePositionIds) {
             planetEntity.getTerrainSlopePositionEntities().remove(getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePositionId));
         }
@@ -126,12 +126,13 @@ public class PlanetPersistenceService {
         throw new IllegalArgumentException("No TerrainObjectPositionEntity on planet for id: " + id);
     }
 
-    private PlanetEntity loadPlanet() {
+    private PlanetEntity loadPlanet(int planetId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         // Query for total row count in invitations
         CriteriaQuery<PlanetEntity> userQuery = criteriaBuilder.createQuery(PlanetEntity.class);
         Root<PlanetEntity> from = userQuery.from(PlanetEntity.class);
         CriteriaQuery<PlanetEntity> userSelect = userQuery.select(from);
+        userQuery.where(criteriaBuilder.equal(from.get(PlanetEntity_.id), planetId));
         return entityManager.createQuery(userSelect).getSingleResult();
     }
 }

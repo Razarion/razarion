@@ -163,4 +163,11 @@ public class UiTerrainTile {
         return terrainTile.getDisplayHeights()[TerrainUtil.filedToArrayNodeIndex(new Index(nodeX, nodeY))];
     }
 
+    public void dispose() {
+        if (modelRenderer != null) {
+            groundRenderTask.remove(modelRenderer);
+            modelRenderer.dispose();
+        }
+
+    }
 }

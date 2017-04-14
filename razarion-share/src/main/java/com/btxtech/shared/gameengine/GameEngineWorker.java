@@ -7,6 +7,8 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
+import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
@@ -168,6 +170,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case TERRAIN_TILE_REQUEST:
                 getTerrainTile((Index) controlPackage.getData(0));
+                break;
+            case EDITOR_OVERRIDE_TERRAIN:
+                overrideTerrain4Editor((List<TerrainSlopePosition>) controlPackage.getData(0), (List<TerrainObjectPosition>) controlPackage.getData(1));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -358,4 +363,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
         sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
     }
+
+
+    private void overrideTerrain4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+        try {
+            terrainService.override4Editor(terrainSlopePositions, terrainObjectPositions);
+            logger.warning("overrideTerrain4Editor done");
+        } catch (NoInterpolatedTerrainTriangleException e) {
+            exceptionHandler.handleException("overrideTerrain4Editor failed", e);
+        }
+
+    }
+
 }

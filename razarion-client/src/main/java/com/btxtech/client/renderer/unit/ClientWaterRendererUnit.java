@@ -73,4 +73,10 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
+
+    @Override
+    public void dispose() {
+        positions.deleteBuffer();
+    }
+
 }

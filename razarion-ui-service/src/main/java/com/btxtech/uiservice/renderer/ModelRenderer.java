@@ -20,9 +20,6 @@ import java.util.function.Function;
  */
 @Dependent
 public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends AbstractRenderUnit<D>, D> {
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
-    private RenderService renderService;
     @Inject
     private Instance<AbstractRenderComposite> instance;
     @Inject
@@ -104,5 +101,11 @@ public class ModelRenderer<T, C extends AbstractRenderComposite<U, D>, U extends
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void dispose() {
+        for (AbstractRenderComposite abstractRenderComposite : abstractRenderComposites.getAll()) {
+            abstractRenderComposite.dispose();
+        }
     }
 }

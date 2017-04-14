@@ -137,4 +137,14 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     public void setupImages() {
 
     }
+
+    @Override
+    public void dispose() {
+        vertices.deleteBuffer();
+        normals.deleteBuffer();
+        tangents.deleteBuffer();
+        groundSplatting.deleteBuffer();
+        slopeFactors.deleteBuffer();
+    }
+
 }

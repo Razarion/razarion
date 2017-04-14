@@ -47,21 +47,29 @@ public class TerrainService {
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         this.planetConfig = planetActivationEvent.getPlanetConfig();
-        MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions = generateTerrainObjects(planetActivationEvent.getPlanetConfig());
-        Collection<Slope> slopes = generatesSlopes();
-        obstacleContainer.setup(planetActivationEvent.getPlanetConfig().getGroundMeshDimension(), slopes, terrainObjectConfigPositions);
+        setup(planetConfig.getTerrainSlopePositions(), planetConfig.getTerrainObjectPositions());
+    }
+
+    public void override4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+        setup(terrainSlopePositions, terrainObjectPositions);
+    }
+
+    private void setup(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+        MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions = generateTerrainObjects(terrainObjectPositions);
+        Collection<Slope> slopes = generatesSlopes(terrainSlopePositions);
+        obstacleContainer.setup(planetConfig.getGroundMeshDimension(), slopes, terrainObjectConfigPositions);
     }
 
     public PlanetConfig getPlanetConfig() {
         return planetConfig;
     }
 
-    private MapCollection<TerrainObjectConfig, TerrainObjectPosition> generateTerrainObjects(PlanetConfig planetConfig) {
+    private MapCollection<TerrainObjectConfig, TerrainObjectPosition> generateTerrainObjects(List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
 
         MapCollection<TerrainObjectConfig, TerrainObjectPosition> terrainObjectConfigPositions = new MapCollection<>();
-        if (planetConfig.getTerrainObjectPositions() != null) {
-            for (TerrainObjectPosition objectPosition : planetConfig.getTerrainObjectPositions()) {
+        if (terrainObjectPositions != null) {
+            for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
                 TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
                 terrainObjectConfigPositions.put(terrainObjectConfig, objectPosition);
             }
@@ -71,11 +79,11 @@ public class TerrainService {
         return terrainObjectConfigPositions;
     }
 
-    public Collection<Slope> generatesSlopes() {
+    public Collection<Slope> generatesSlopes(List<TerrainSlopePosition> terrainSlopePositions) {
         long time = System.currentTimeMillis();
         Collection<Slope> slopes = new ArrayList<>();
-        if (planetConfig.getTerrainSlopePositions() != null) {
-            for (TerrainSlopePosition terrainSlopePosition : planetConfig.getTerrainSlopePositions()) {
+        if (terrainSlopePositions != null) {
+            for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
                 SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigEntity());
                 slopes.add(new Slope(terrainSlopePosition.getSlopeConfigEntity(), slopeSkeletonConfig, terrainSlopePosition.getPolygon()));
             }

@@ -82,6 +82,7 @@ public class WorkerMarshaller {
             case SINGLE_Z_TERRAIN_ANSWER:
             case TERRAIN_OVERLAP_ANSWER:
             case TERRAIN_OVERLAP_TYPE_ANSWER:
+            case EDITOR_OVERRIDE_TERRAIN:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
@@ -267,7 +268,10 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Boolean.class));
                 break;
-            // Native demarshal terrain buffers
+            case EDITOR_OVERRIDE_TERRAIN:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), List.class));
+                // Native demarshal terrain buffers
             case TERRAIN_TILE_REQUEST:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Index.class));
                 break;

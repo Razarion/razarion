@@ -50,4 +50,10 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
+
+    @Override
+    public void dispose() {
+        vertices.deleteBuffer();
+    }
+
 }

@@ -63,4 +63,9 @@ public abstract class AbstractRenderUnit<D> {
     public String helperString() {
         return "???";
     }
+
+    // Override in subclasses
+    public void dispose() {
+
+    }
 }

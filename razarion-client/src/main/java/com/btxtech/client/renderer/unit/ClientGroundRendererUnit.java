@@ -99,4 +99,12 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         // Draw
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
+
+    @Override
+    public void dispose() {
+        vertices.deleteBuffer();
+        normals.deleteBuffer();
+        tangents.deleteBuffer();
+        splattings.deleteBuffer();
+    }
 }

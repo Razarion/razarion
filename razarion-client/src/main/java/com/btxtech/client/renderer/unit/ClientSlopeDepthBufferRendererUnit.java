@@ -51,4 +51,10 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
         // Draw
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
+
+    @Override
+    public void dispose() {
+        vertices.deleteBuffer();
+    }
+
 }

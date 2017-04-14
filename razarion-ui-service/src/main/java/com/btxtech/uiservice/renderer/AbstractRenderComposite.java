@@ -186,4 +186,20 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
     public void setModelRenderer(ModelRenderer modelRenderer) {
         this.modelRenderer = modelRenderer;
     }
+
+    public void dispose() {
+        if (renderUnit != null) {
+            renderUnit.dispose();
+        }
+        if (depthBufferRenderUnit != null) {
+            depthBufferRenderUnit.dispose();
+        }
+        if (wireRenderUnit != null) {
+            wireRenderUnit.dispose();
+        }
+        if (normRenderUnit != null) {
+            normRenderUnit.dispose();
+        }
+    }
+
 }

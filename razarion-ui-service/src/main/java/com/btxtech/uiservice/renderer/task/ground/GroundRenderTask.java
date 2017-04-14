@@ -16,7 +16,7 @@ import javax.inject.Singleton;
  * 31.08.2016.
  */
 @Singleton
-public class GroundRenderTask extends AbstractRenderTask<GroundSkeletonConfig> {
+public class GroundRenderTask extends AbstractRenderTask<UiTerrainTile> {
     @Inject
     private TerrainUiService terrainUiService;
 

@@ -55,4 +55,9 @@ public class ClientGroundNormRendererUnit extends AbstractGroundRendererUnit {
         // Draw
         webGlFacade.drawArrays(WebGLRenderingContext.LINES);
     }
+
+    @Override
+    public void dispose() {
+        vertices.deleteBuffer();
+    }
 }

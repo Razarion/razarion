@@ -54,4 +54,10 @@ public class ClientWaterNormRendererUnit extends AbstractWaterRendererUnit {
         // Draw
         webGlFacade.drawArrays(WebGLRenderingContext.LINES);
     }
+
+    @Override
+    public void dispose() {
+        vertices.deleteBuffer();
+    }
+
 }

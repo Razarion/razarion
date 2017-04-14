@@ -11,10 +11,10 @@ import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.TerrainEditor;
+import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
@@ -66,6 +66,8 @@ public class TerrainEditorImpl implements TerrainEditor {
     private TerrainTypeService terrainTypeService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private GameEngineControl gameEngineControl;
     private boolean active;
     private boolean newSlopeMode = true;
     private Polygon2D cursor;
@@ -273,13 +275,10 @@ public class TerrainEditorImpl implements TerrainEditor {
     }
 
     public void sculpt() {
-        PlanetConfig planetConfig = gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig();
-        planetConfig.setTerrainSlopePositions(modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList()));
-        planetConfig.setTerrainObjectPositions(modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList()));
-        // TODO terrainUiService.init(gameUiControl.getGameUiControlConfig());
-        renderService.setup();
-        modalDialogManager.showMessageDialog("Attention", "Terrain is overridden. Reload browser. Reopen editor will fail!");
-        throw new UnsupportedOperationException("FIXME: The required data is in the worker now");
+        List<TerrainSlopePosition> terrainSlopePositions = modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
+        List<TerrainObjectPosition> terrainObjectPositions = modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList());
+        gameEngineControl.overrideTerrain4Editor(terrainSlopePositions, terrainObjectPositions);
+        terrainUiService.clearTerrainTilesForEditor();
     }
 
     public void save() {
@@ -304,24 +303,25 @@ public class TerrainEditorImpl implements TerrainEditor {
                 }
             }
         }
+        modifiedSlopes.clear();
 
         if (!createdSlopes.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Slopes Created"), (message, throwable) -> {
                 logger.log(Level.SEVERE, "createTerrainSlopePositions failed: " + message, throwable);
                 return false;
-            }).createTerrainSlopePositions(createdSlopes);
+            }).createTerrainSlopePositions(getPlanetId(), createdSlopes);
         }
         if (!updatedSlopes.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Slopes Updated"), (message, throwable) -> {
                 logger.log(Level.SEVERE, "updateTerrainSlopePositions failed: " + message, throwable);
                 return false;
-            }).updateTerrainSlopePositions(updatedSlopes);
+            }).updateTerrainSlopePositions(getPlanetId(), updatedSlopes);
         }
         if (!deletedSlopeIds.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Slopes Deleted"), (message, throwable) -> {
                 logger.log(Level.SEVERE, "deleteTerrainSlopePositionIds failed: " + message, throwable);
                 return false;
-            }).deleteTerrainSlopePositionIds(deletedSlopeIds);
+            }).deleteTerrainSlopePositionIds(getPlanetId(), deletedSlopeIds);
         }
     }
 
@@ -342,24 +342,25 @@ public class TerrainEditorImpl implements TerrainEditor {
                 }
             }
         }
+        modifiedTerrainObjects.clear();
 
         if (!createdTerrainObjects.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Created"), (message, throwable) -> {
                 logger.log(Level.SEVERE, "createTerrainObjectPositions failed: " + message, throwable);
                 return false;
-            }).createTerrainObjectPositions(createdTerrainObjects);
+            }).createTerrainObjectPositions(getPlanetId(), createdTerrainObjects);
         }
         if (!updatedTerrainObjects.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Updated"), (message, throwable) -> {
                 logger.log(Level.SEVERE, "updateTerrainObjectPositions failed: " + message, throwable);
                 return false;
-            }).updateTerrainObjectPositions(updatedTerrainObjects);
+            }).updateTerrainObjectPositions(getPlanetId(), updatedTerrainObjects);
         }
         if (!deletedTerrainObjectsIds.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Attention", "Reload Browser now!"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Deleted"), (message, throwable) -> {
                 logger.log(Level.SEVERE, "deleteTerrainObjectPositionIds failed: " + message, throwable);
                 return false;
-            }).deleteTerrainObjectPositionIds(deletedTerrainObjectsIds);
+            }).deleteTerrainObjectPositionIds(getPlanetId(), deletedTerrainObjectsIds);
         }
     }
 
@@ -455,4 +456,7 @@ public class TerrainEditorImpl implements TerrainEditor {
         this.terrainPositionListener = terrainPositionListener;
     }
 
+    private int getPlanetId() {
+        return gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getPlanetId();
+    }
 }

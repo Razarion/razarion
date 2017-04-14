@@ -13,6 +13,7 @@ import java.util.Map;
  * 05.07.2016.
  */
 public class PlanetConfig {
+    private int planetId;
     private Rectangle groundMeshDimension;
     private List<TerrainSlopePosition> terrainSlopePositions;
     private List<TerrainObjectPosition> terrainObjectPositions;
@@ -21,6 +22,14 @@ public class PlanetConfig {
     private int houseSpace;
     private int startRazarion;
     private Rectangle2D playGround;
+
+    public int getPlanetId() {
+        return planetId;
+    }
+
+    public void setPlanetId(int planetId) {
+        this.planetId = planetId;
+    }
 
     public Rectangle getGroundMeshDimension() {
         return groundMeshDimension;
