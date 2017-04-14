@@ -15,6 +15,7 @@ import com.facebook.ads.sdk.AdCreativeLinkData;
 import com.facebook.ads.sdk.AdCreativeLinkDataCallToAction;
 import com.facebook.ads.sdk.AdCreativeLinkDataCallToActionValue;
 import com.facebook.ads.sdk.AdCreativeObjectStorySpec;
+import com.facebook.ads.sdk.AdImage;
 import com.facebook.ads.sdk.AdSet;
 import com.facebook.ads.sdk.AdsInsights;
 import com.facebook.ads.sdk.Campaign;
@@ -29,6 +30,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ public class FbFacade {
         return new AdAccount(filePropertiesService.getFacebookMarketingAccount(), apiContext);
     }
 
-    public CreationData createAd(String title, String body, List<Interest> interests) {
+    public CreationData createAd(String title, String body, FbAdImage fbAdImage, List<Interest> interests) {
         try {
             APIContext context = getContext();
             AdAccount adAccount = getAdAccount(context);
@@ -68,7 +70,7 @@ public class FbFacade {
             creationData.setCampaignId(campaignId);
             long adSetId = createAddSet(context, adAccount, campaignId, interests);
             creationData.setAdSetId(adSetId);
-            long adId = createAdd(adAccount, adSetId, title, body);
+            long adId = createAdd(adAccount, adSetId, title, body, fbAdImage);
             creationData.setAdId(adId);
             setTrackingTag(adId, RestUrl.fbClickTrackingReceiver());
             return creationData;
@@ -142,10 +144,7 @@ public class FbFacade {
         }
     }
 
-    private long createAdd(AdAccount account, long adSetId, String title, String body) throws APIException {
-//        AdImage image = account.createAdImage()
-//                .addUploadFile("file", new File(IMAGE_DIR, "TestAdImage.jpg"))
-//                .execute();
+    private long createAdd(AdAccount account, long adSetId, String title, String body, FbAdImage fbAdImage) throws APIException {
         AdCreative creative = account.createAdCreative()
                 .setObjectType("SHARE")
                 .setTitle(title)
@@ -153,8 +152,8 @@ public class FbFacade {
                 .setObjectStorySpec(new AdCreativeObjectStorySpec().setFieldPageId(filePropertiesService.getFacebookAppPageId())
                         .setFieldLinkData(new AdCreativeLinkData()
                                 .setFieldLink("https://apps.facebook.com/razarion/")
-                                .setFieldMessage("Razarion vereint packende Echtzeit-Schlachten mit komplexer Strategie")
-                                .setFieldImageHash("f889056506d773565829a57eff09e095")
+                                .setFieldMessage(body)
+                                .setFieldImageHash(fbAdImage.getHash())
                                 .setFieldCallToAction(new AdCreativeLinkDataCallToAction()
                                         .setFieldType(AdCreativeLinkDataCallToAction.EnumType.VALUE_PLAY_GAME)
                                         .setFieldValue(new AdCreativeLinkDataCallToActionValue().setFieldApplication(filePropertiesService.getFacebookAppId())
@@ -254,5 +253,37 @@ public class FbFacade {
         String fields = "{\"access_token\": \"" + filePropertiesService.getFacebookAccessToken() + "\", \"url\": \"" + url + "\", \"add_template_param\": \"1\"}";
         logger.severe("setTrackingTag: " + url);
         client.target("https://graph.facebook.com/v2.8").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
+    }
+
+    public List<FbAdImage> queryFbAdImages() {
+        try {
+            APINodeList<AdImage> adImages = getAdAccount(getContext()).getAdImages().requestAllFields().execute();
+            List<FbAdImage> fbAdImages = new ArrayList<>();
+            while (adImages != null) {
+                for (AdImage adImage : adImages) {
+                    fbAdImages.add(new FbAdImage(adImage));
+                }
+                adImages = adImages.nextPage();
+            }
+            return fbAdImages;
+        } catch (APIException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteFbAdImage(FbAdImage image) {
+        try {
+            getAdAccount(getContext()).deleteAdImages().setHash(image.getHash()).execute();
+        } catch (APIException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void uploadImageFile(String base64File) {
+        try {
+           getAdAccount(getContext()).createAdImage().setParam("bytes", base64File).execute();
+        } catch (APIException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

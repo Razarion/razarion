@@ -3,6 +3,7 @@ package com.btxtech.server.marketing;
 import com.btxtech.server.marketing.facebook.AdInterest;
 import com.btxtech.server.marketing.facebook.AdSetInsight;
 import com.btxtech.server.marketing.facebook.CreationData;
+import com.btxtech.server.marketing.facebook.FbAdImage;
 import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -15,6 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -37,13 +39,16 @@ public class MarketingService {
 
     @Transactional
     @SecurityCheck
-    public CreationData startCampaign(String title, String body, List<Interest> interests) {
-        CreationData creationData = fbFacade.createAd(title, body, interests);
+    public CreationData startCampaign(String title, String body, FbAdImage fbAdImage, List<Interest> interests) {
+        CreationData creationData = fbFacade.createAd(title, body, fbAdImage, interests);
 
         CurrentAdEntity currentAdEntity = new CurrentAdEntity();
         currentAdEntity.setState(CurrentAdEntity.State.RUNNING);
         currentAdEntity.setIds(creationData);
         currentAdEntity.setDateStart(new Date());
+        currentAdEntity.setTitle(title);
+        currentAdEntity.setBody(body);
+        currentAdEntity.setImageHash(fbAdImage.getHash());
         currentAdEntity.setInterests(interests);
         entityManager.persist(currentAdEntity);
         return creationData;
@@ -134,5 +139,17 @@ public class MarketingService {
         clickTrackerEntity.setAdId(adId);
         clickTrackerEntity.setTimeStamp(new Date());
         entityManager.persist(clickTrackerEntity);
+    }
+
+    public List<FbAdImage> queryFbAdImages() {
+        return fbFacade.queryFbAdImages();
+    }
+
+    public void deleteFbAdImage(FbAdImage image) {
+        fbFacade.deleteFbAdImage(image);
+    }
+
+    public void uploadImageFile(byte[] uploadImageFile) {
+        fbFacade.uploadImageFile(new String(Base64.getEncoder().encode(uploadImageFile)));
     }
 }

@@ -33,6 +33,9 @@ public class HistoryAdEntity {
     private int clicks;
     private int impressions;
     private double spent;
+    private String title;
+    private String body;
+    private String imageHash;
     @ElementCollection
     @CollectionTable(
             name = "FB_MARKETING_HISTORY_AD_INTEREST",
@@ -40,13 +43,15 @@ public class HistoryAdEntity {
     )
     private List<Interest> interests;
 
-
     public void fill(CurrentAdEntity currentAdEntity, AdSetInsight adSetInsight) {
         campaignId = currentAdEntity.getCampaignId();
         adSetId = currentAdEntity.getAdSetId();
         adId = currentAdEntity.getAdId();
         dateStart = currentAdEntity.getDateStart();
         dateStop = currentAdEntity.getDateStop();
+        title = currentAdEntity.getTitle();
+        body = currentAdEntity.getBody();
+        imageHash = currentAdEntity.getImageHash();
         interests = new ArrayList<>();
         for (Interest currentInterest : currentAdEntity.getInterests()) {
             interests.add(new Interest(currentInterest));

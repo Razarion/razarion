@@ -37,7 +37,9 @@ public class CurrentAdEntity {
     private long campaignId;
     private long adSetId;
     private long adId;
-
+    private String title;
+    private String body;
+    private String imageHash;
     @ElementCollection
     @CollectionTable(
             name = "FB_MARKETING_CURRENT_AD_INTEREST",
@@ -85,6 +87,30 @@ public class CurrentAdEntity {
         campaignId = creationData.getCampaignId();
         adSetId = creationData.getAdSetId();
         adId = creationData.getAdId();
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getImageHash() {
+        return imageHash;
+    }
+
+    public void setImageHash(String imageHash) {
+        this.imageHash = imageHash;
     }
 
     public List<Interest> getInterests() {

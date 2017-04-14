@@ -1,37 +1,56 @@
 package com.btxtech.facebookmarketing;
 
-import org.glassfish.jersey.filter.LoggingFilter;
+import com.facebook.ads.sdk.APIContext;
+import com.facebook.ads.sdk.APINodeList;
+import com.facebook.ads.sdk.AdAccount;
+import com.facebook.ads.sdk.AdImage;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
 
 /**
  * Created by Beat
  * 17.03.2017.
  */
 public class FacebookAdMain {
-    private static final String ACCESS_TOKEN = "";
-    // private static final String SECRET = "";
-    // private static final String MARKETING_ACCOUNT = "";
+    private static final String ACCESS_TOKEN;
+    private static final String SECRET;
+    private static final String MARKETING_ACCOUNT;
 
     public static void main(String[] args) {
         try {
-            //APIContext apiContext = new APIContext(ACCESS_TOKEN, SECRET).enableDebug(true);
-            //AdAccount adAccount = new AdAccount(MARKETING_ACCOUNT, apiContext);
-            Client client = ClientBuilder.newClient();
-            client.register(new LoggingFilter());
-            long addId = 6065802095221L;
-            String fields = "{\"access_token\": \"" + ACCESS_TOKEN + "\", \"url\": \"https://www.razarion.com\", \"add_template_param\": \"1\"}";
-
-            Object returnValue = client.target("https://graph.facebook.com/v2.8").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE), String.class);
-            System.out.println(returnValue);
+            System.out.println("----------INIT------------------");
+            APIContext apiContext = new APIContext(ACCESS_TOKEN, SECRET).enableDebug(true);
+            AdAccount adAccount = new AdAccount(MARKETING_ACCOUNT, apiContext);
             System.out.println("----------------------------");
+
+            APINodeList<AdImage> adImages = adAccount.getAdImages().requestAllFields().execute();
+            while (adImages != null) {
+                for (AdImage adImage : adImages) {
+                    System.out.println("adImage: URL:" + adImage.getFieldUrl() + " " + adImage.getFieldUrl128() + "" + adImage);
+                }
+                adImages = adImages.nextPage();
+            }
         } catch (Throwable t) {
             t.printStackTrace();
         }
-
     }
+
+    static {
+        try {
+            File file = new File(System.getProperty("user.home"), "razarion.properties");
+            System.out.println("Reading property from: " + file);
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(file));
+            SECRET = properties.getProperty("facebook.secret");
+            ACCESS_TOKEN = properties.getProperty("facebook.access_token");
+            MARKETING_ACCOUNT = properties.getProperty("facebook.marketing_account_id");
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new RuntimeException(t);
+        }
+    }
+
 
 }
