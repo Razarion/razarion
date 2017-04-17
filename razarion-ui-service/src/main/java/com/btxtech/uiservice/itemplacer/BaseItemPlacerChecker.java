@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.Dependent;
@@ -25,9 +26,9 @@ public class BaseItemPlacerChecker {
     private static final double SAFETY_DISTANCE = 0.2;
     private Logger logger = Logger.getLogger(BaseItemPlacerChecker.class.getName());
     @Inject
-    private SyncItemContainerService syncItemContainerService;
-    @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private BaseItemUiService baseItemUiService;
     private Collection<DecimalPosition> relativeItemPositions;
     private boolean isAllowedAreaOk;
     private boolean isTerrainOk;
@@ -48,13 +49,11 @@ public class BaseItemPlacerChecker {
         isAllowedAreaOk = allowedArea == null || allowedArea.isInside(absoluteItemPositions);
         isEnemiesOk = false;
         if (isAllowedAreaOk) {
-            isEnemiesOk = true;
-            // TODO isEnemiesOk = !baseItemService.hasEnemyForSpawn(position, enemyFreeRadius);
-            logger.severe("BaseItemPlacerChecker: !baseItemService.hasEnemyForSpawn(position, enemyFreeRadius) not available. Call worker or put to BaseItemUiService");
+            isEnemiesOk = !baseItemUiService.hasEnemyForSpawn(position, enemyFreeRadius);
         }
         isItemsOk = false;
         if (isEnemiesOk) {
-            isItemsOk = !syncItemContainerService.hasItemsInRange(absoluteItemPositions, baseItemType.getPhysicalAreaConfig().getRadius());
+            isItemsOk = !baseItemUiService.hasItemsInRange(absoluteItemPositions, baseItemType.getPhysicalAreaConfig().getRadius());
         }
         if (isItemsOk) {
             terrainUiService.overlap(absoluteItemPositions, baseItemType, overlap -> isTerrainOk = !overlap);

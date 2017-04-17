@@ -32,6 +32,7 @@ import com.btxtech.shared.dto.ScrollUiQuest;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.dto.WaterConfig;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -125,11 +126,13 @@ public class GameUiControlConfigPersistence {
         if (levelNumber >= 5) {
             // Multiplayer
             gameUiControlConfig = getGameUiControlConfig4Level(2).toGameUiControlConfig(gameEngineConfig);
+            gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.SLAVE);// TODO move to DB
             completePlanetConfigMultiPlayer(gameEngineConfig.getPlanetConfig());// TODO move to DB
             gameUiControlConfig.setSceneConfigs(setupPlanet1()); // TODO move to DB
         } else {
             // Tutorial
             gameUiControlConfig = getGameUiControlConfig4Level(1).toGameUiControlConfig(gameEngineConfig);
+            gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.MASTER);// TODO move to DB
             completePlanetConfigTutorial(gameEngineConfig.getPlanetConfig());  // TODO move to DB
             gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO move to DB
             // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO move to DB

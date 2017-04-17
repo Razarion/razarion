@@ -19,6 +19,7 @@ public class PlayerBaseFull extends PlayerBase{
 
     public PlayerBaseFull(int baseId, String name, Character character, int resources, Integer levelId, Integer userId) {
         super(baseId, name, character, resources, userId);
+        this.levelId = levelId;
     }
 
     public void addItem(SyncBaseItem syncBaseItem) {

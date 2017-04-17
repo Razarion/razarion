@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -21,7 +20,6 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewService;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -237,41 +235,6 @@ public class BaseItemUiService {
         return getBase(syncBaseItem).getCharacter() == Character.BOT;
     }
 
-    public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (syncBaseItem.getPosition2d().getDistance(decimalPosition) <= baseItemType.getPhysicalAreaConfig().getRadius()) {
-                return syncBaseItem;
-            }
-        }
-        return null;
-    }
-
-    public Collection<SyncBaseItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
-        Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (rectangle.adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
-                result.add(syncBaseItem);
-            }
-        }
-        return result;
-    }
-
-    public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId) {
-        Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (!isMyOwnProperty(syncBaseItem)) {
-                continue;
-            }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (baseItemType.getId() == baseItemTypeId) {
-                result.add(syncBaseItem);
-            }
-        }
-        return result;
-    }
-
     public SyncBaseItemMonitor monitorSyncItem(SyncBaseItemSimpleDto syncBaseItemSimpleDto) {
         double radius = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId()).getPhysicalAreaConfig().getRadius();
         SyncBaseItemState syncBaseItemState = syncItemStates.computeIfAbsent(syncBaseItemSimpleDto.getId(), k -> new SyncBaseItemState(syncBaseItemSimpleDto, syncBaseItemSimpleDto.getInterpolatableVelocity(), radius, this::releaseSyncItemMonitor));
@@ -373,6 +336,59 @@ public class BaseItemUiService {
             }
         }
         return null;
+    }
+
+
+    public boolean hasEnemyForSpawn(DecimalPosition position, double enemyFreeRadius) {
+        return findMyEnemyItemWithPlace(new PlaceConfig().setPosition(position).setRadius(enemyFreeRadius)) != null;
+    }
+
+    public boolean hasItemsInRange(Collection<DecimalPosition> positions, double radius) {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            double itemRadius = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId()).getPhysicalAreaConfig().getRadius();
+            for (DecimalPosition position : positions) {
+                if (syncBaseItem.getPosition2d().getDistance(position) < radius + itemRadius) {
+                    return true;
+                }
+
+            }
+        }
+        return false;
+    }
+
+    public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (syncBaseItem.getPosition2d().getDistance(decimalPosition) <= baseItemType.getPhysicalAreaConfig().getRadius()) {
+                return syncBaseItem;
+            }
+        }
+        return null;
+    }
+
+    public Collection<SyncBaseItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
+        Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (rectangle.adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
+                result.add(syncBaseItem);
+            }
+        }
+        return result;
+    }
+
+    public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId) {
+        Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (!isMyOwnProperty(syncBaseItem)) {
+                continue;
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (baseItemType.getId() == baseItemTypeId) {
+                result.add(syncBaseItem);
+            }
+        }
+        return result;
     }
 
 }
