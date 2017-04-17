@@ -4,6 +4,9 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +17,7 @@ import java.util.Map;
  */
 public class PlanetConfig {
     private int planetId;
+    private GameEngineMode gameEngineMode;
     private Rectangle groundMeshDimension;
     private List<TerrainSlopePosition> terrainSlopePositions;
     private List<TerrainObjectPosition> terrainObjectPositions;
@@ -22,6 +26,8 @@ public class PlanetConfig {
     private int houseSpace;
     private int startRazarion;
     private Rectangle2D playGround;
+    private List<SyncBaseItemInfo> syncBaseItemInfos;
+    private List<PlayerBaseInfo> playerBaseInfos;
 
     public int getPlanetId() {
         return planetId;
@@ -29,6 +35,15 @@ public class PlanetConfig {
 
     public void setPlanetId(int planetId) {
         this.planetId = planetId;
+    }
+
+    public GameEngineMode getGameEngineMode() {
+        return gameEngineMode;
+    }
+
+    public PlanetConfig setGameEngineMode(GameEngineMode gameEngineMode) {
+        this.gameEngineMode = gameEngineMode;
+        return this;
     }
 
     public Rectangle getGroundMeshDimension() {
@@ -109,6 +124,24 @@ public class PlanetConfig {
 
     public PlanetConfig setPlayGround(Rectangle2D playGround) {
         this.playGround = playGround;
+        return this;
+    }
+
+    public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
+        return syncBaseItemInfos;
+    }
+
+    public PlanetConfig setSyncBaseItemInfos(List<SyncBaseItemInfo> syncBaseItemInfos) {
+        this.syncBaseItemInfos = syncBaseItemInfos;
+        return this;
+    }
+
+    public List<PlayerBaseInfo> getPlayerBaseInfos() {
+        return playerBaseInfos;
+    }
+
+    public PlanetConfig setPlayerBaseInfos(List<PlayerBaseInfo> playerBaseInfos) {
+        this.playerBaseInfos = playerBaseInfos;
         return this;
     }
 }

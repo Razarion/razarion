@@ -25,7 +25,7 @@ import java.util.List;
 public class BuilderType {
     private double range;
     private double progress;
-    private List<Integer> ableToBuild;
+    private List<Integer> ableToBuildIds;
     private Vertex animationOrigin;
     private Integer animationShape3dId;
 
@@ -47,17 +47,17 @@ public class BuilderType {
         return this;
     }
 
-    public List<Integer> getAbleToBuild() {
-        return ableToBuild;
+    public List<Integer> getAbleToBuildIds() {
+        return ableToBuildIds;
     }
 
-    public BuilderType setAbleToBuild(List<Integer> ableToBuild) {
-        this.ableToBuild = ableToBuild;
+    public BuilderType setAbleToBuildIds(List<Integer> ableToBuildIds) {
+        this.ableToBuildIds = ableToBuildIds;
         return this;
     }
 
     public boolean checkAbleToBuild(int itemTypeId) {
-        return ableToBuild.contains(itemTypeId);
+        return ableToBuildIds.contains(itemTypeId);
     }
 
     public Vertex getAnimationOrigin() {

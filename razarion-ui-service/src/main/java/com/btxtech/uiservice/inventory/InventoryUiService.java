@@ -5,7 +5,6 @@ import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -41,8 +40,6 @@ public class InventoryUiService {
     private ModalDialogManager modalDialogManager;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
-    @Inject
-    private BaseItemService baseItemService;
     @Inject
     private GameLogicService gameLogicService;
     @Inject

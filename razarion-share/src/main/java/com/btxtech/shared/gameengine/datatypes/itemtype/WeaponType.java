@@ -28,7 +28,6 @@ public class WeaponType {
     private double detonationRadius;
     private double reloadTime;
     private Collection<Integer> disallowedItemTypes;
-    private Map<Integer, Double> itemTypeFactors;
     private Double projectileSpeed; // Pixel per second
     private Integer projectileShape3DId;
     private Integer muzzleFlashParticleEmitterSequenceConfigId;
@@ -82,15 +81,6 @@ public class WeaponType {
 
     public boolean checkItemTypeDisallowed(int itemTypeId) {
         return disallowedItemTypes != null && disallowedItemTypes.contains(itemTypeId);
-    }
-
-    public Map<Integer, Double> getItemTypeFactors() {
-        return itemTypeFactors;
-    }
-
-    public WeaponType setItemTypeFactors(Map<Integer, Double> itemTypeFactors) {
-        this.itemTypeFactors = itemTypeFactors;
-        return this;
     }
 
     public Double getProjectileSpeed() {

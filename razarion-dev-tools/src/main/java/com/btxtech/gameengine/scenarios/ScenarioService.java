@@ -11,7 +11,7 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.GameEngineInitEvent;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -142,7 +142,7 @@ public class ScenarioService implements QuestListener {
         builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setName("Builder");
         builder.setId(++itemId);
         builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
-        builder.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuild(Collections.singletonList(FACTORY_ITEM_TYPE.getId())));
+        builder.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuildIds(Collections.singletonList(FACTORY_ITEM_TYPE.getId())));
         BUILDER_ITEM_TYPE = builder;
 
         BaseItemType tower = new BaseItemType();
@@ -153,7 +153,7 @@ public class ScenarioService implements QuestListener {
         TOWER_ITEM_TYPE = tower;
 
         // Finalize factory
-        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BUILDER_ITEM_TYPE.getId(), HARVESTER_ITEM_TYPE.getId())));
+        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE.getId(), HARVESTER_ITEM_TYPE.getId())));
 
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000).setId(++itemId);
@@ -264,7 +264,7 @@ public class ScenarioService implements QuestListener {
             planetService.initialise(gameEngineConfig.getPlanetConfig());
             currentScenario.setupBots(botService);
             planetService.start();
-            PlayerBase playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getUserId(), userContext.getName());
+            PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getUserId(), userContext.getName());
             currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService);
             List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
             currentScenario.setupBotCommands(botCommandConfigs);

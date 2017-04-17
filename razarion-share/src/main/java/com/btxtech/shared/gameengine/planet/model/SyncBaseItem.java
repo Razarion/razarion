@@ -36,7 +36,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
@@ -152,105 +152,86 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
     }
 
-    private void checkBase(PlayerBase syncBase) {
-        if (base == null && syncBase == null) {
-            return;
-        }
-        if (base == null) {
-            throw new IllegalArgumentException(this + " this.base == null; sync base: " + syncBase);
-        }
-
-        if (!base.equals(syncBase)) {
-            throw new IllegalArgumentException(this + " bases do not match: client: " + base + " sync: " + syncBase);
-        }
-    }
-
     public PlayerBase getBase() {
         return base;
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws ItemDoesNotExistException {
-        checkBase(syncItemInfo.getBase());
-        if (getItemType().getId() != syncItemInfo.getItemTypeId()) {
-            setItemType(itemTypeService.getBaseItemType(syncItemInfo.getItemTypeId()));
-            // TODO fireItemChanged(SyncItemListener.Change.ITEM_TYPE_CHANGED, null);
-            // TODO  setup();
-        }
-        health = syncItemInfo.getHealth();
-        setBuildup(syncItemInfo.getBuildup());
-        containedIn = syncItemInfo.getContainedIn();
-        killedBy = syncItemInfo.getKilledBy();
+    public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws ItemDoesNotExistException {
+        health = syncBaseItemInfo.getHealth();
+        setBuildup(syncBaseItemInfo.getBuildup());
+        containedIn = syncBaseItemInfo.getContainedIn();
+        killedBy = syncBaseItemInfo.getKilledBy();
 
         // TODO if (syncMovable != null) {
         // TODO     syncMovable.synchronize(syncItemInfo);
         // TODO }
 
         if (syncWeapon != null) {
-            syncWeapon.synchronize(syncItemInfo);
+            syncWeapon.synchronize(syncBaseItemInfo);
         }
 
         if (syncFactory != null) {
-            syncFactory.synchronize(syncItemInfo);
+            syncFactory.synchronize(syncBaseItemInfo);
         }
 
         if (syncBuilder != null) {
-            syncBuilder.synchronize(syncItemInfo);
+            syncBuilder.synchronize(syncBaseItemInfo);
         }
 
         if (syncHarvester != null) {
-            syncHarvester.synchronize(syncItemInfo);
+            syncHarvester.synchronize(syncBaseItemInfo);
         }
 
         if (syncConsumer != null) {
-            syncConsumer.synchronize(syncItemInfo);
+            syncConsumer.synchronize(syncBaseItemInfo);
         }
 
         if (syncItemContainer != null) {
-            syncItemContainer.synchronize(syncItemInfo);
+            syncItemContainer.synchronize(syncBaseItemInfo);
         }
 
-        super.synchronize(syncItemInfo);
+        super.synchronize(syncBaseItemInfo);
     }
 
     @Override
-    public SyncItemInfo getSyncInfo() {
-        SyncItemInfo syncItemInfo = super.getSyncInfo();
-        syncItemInfo.setBase(base);
-        syncItemInfo.setHealth(health);
-        syncItemInfo.setBuildup(buildup);
-        syncItemInfo.setContainedIn(containedIn);
-        syncItemInfo.setKilledBy(killedBy);
+    public SyncBaseItemInfo getSyncInfo() {
+        SyncBaseItemInfo syncBaseItemInfo = super.getSyncInfo();
+        syncBaseItemInfo.setBaseId(base.getBaseId());
+        syncBaseItemInfo.setHealth(health);
+        syncBaseItemInfo.setBuildup(buildup);
+        syncBaseItemInfo.setContainedIn(containedIn);
+        syncBaseItemInfo.setKilledBy(killedBy);
 
         // TODO if (syncMovable != null) {
         // TODO     syncMovable.fillSyncItemInfo(syncItemInfo);
         // TODO }
 
         if (syncWeapon != null) {
-            syncWeapon.fillSyncItemInfo(syncItemInfo);
+            syncWeapon.fillSyncItemInfo(syncBaseItemInfo);
         }
 
         if (syncFactory != null) {
-            syncFactory.fillSyncItemInfo(syncItemInfo);
+            syncFactory.fillSyncItemInfo(syncBaseItemInfo);
         }
 
         if (syncBuilder != null) {
-            syncBuilder.fillSyncItemInfo(syncItemInfo);
+            syncBuilder.fillSyncItemInfo(syncBaseItemInfo);
         }
 
         if (syncHarvester != null) {
-            syncHarvester.fillSyncItemInfo(syncItemInfo);
+            syncHarvester.fillSyncItemInfo(syncBaseItemInfo);
         }
 
         if (syncConsumer != null) {
-            syncConsumer.fillSyncItemInfo(syncItemInfo);
+            syncConsumer.fillSyncItemInfo(syncBaseItemInfo);
         }
 
         if (syncItemContainer != null) {
-            syncItemContainer.fillSyncItemInfo(syncItemInfo);
+            syncItemContainer.fillSyncItemInfo(syncBaseItemInfo);
         }
 
-        return syncItemInfo;
+        return syncBaseItemInfo;
     }
 
     public boolean isIdle() {

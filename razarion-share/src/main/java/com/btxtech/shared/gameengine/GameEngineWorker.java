@@ -11,6 +11,7 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -215,7 +216,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             }
             return null;
         });
-        PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userContext.getUserId());
+        PlayerBaseFull playerBase = baseItemService.getPlayerBase4UserId(userContext.getUserId());
         GameInfo gameInfo = new GameInfo();
         gameInfo.setXpFromKills(xpFromKills);
         xpFromKills = 0;

@@ -21,7 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemContainerFullExcept
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -61,15 +61,15 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws ItemDoesNotExistException {
-        unloadPos = syncItemInfo.getUnloadPos();
-        containedItems = syncItemInfo.getContainedItems();
+    public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws ItemDoesNotExistException {
+        unloadPos = syncBaseItemInfo.getUnloadPos();
+        containedItems = syncBaseItemInfo.getContainedItems();
     }
 
     @Override
-    public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
-        syncItemInfo.setUnloadPos(unloadPos);
-        syncItemInfo.setContainedItems(CollectionUtils.saveArrayListCopy(containedItems));
+    public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
+        syncBaseItemInfo.setUnloadPos(unloadPos);
+        syncBaseItemInfo.setContainedItems(CollectionUtils.saveArrayListCopy(containedItems));
     }
 
     public void load(SyncBaseItem syncBaseItem) throws ItemContainerFullException, WrongOperationSurfaceException {

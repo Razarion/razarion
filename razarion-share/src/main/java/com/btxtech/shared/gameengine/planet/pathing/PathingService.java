@@ -34,7 +34,6 @@ public class PathingService {
     private Instance<AStar> instanceAStar;
     @Inject
     private Instance<Path> instancePath;
-    int obstacleCount;
 
     public Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, destination, 0);
@@ -225,7 +224,6 @@ public class PathingService {
                 }
             }
         }
-        obstacleCount = 0;
         // obstacles
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
@@ -235,7 +233,6 @@ public class PathingService {
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
 
             for (Obstacle obstacle : obstacleContainer.getObstacles(syncPhysicalMovable)) {
-                obstacleCount++;
                 // There is no check if the unit is inside the restricted area
                 DecimalPosition projection = obstacle.project(syncPhysicalMovable.getPosition2d());
                 double distance = projection.getDistance(syncPhysicalMovable.getPosition2d()) - syncPhysicalMovable.getRadius();

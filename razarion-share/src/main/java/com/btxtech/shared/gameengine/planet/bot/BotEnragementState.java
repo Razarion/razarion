@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -52,7 +53,7 @@ public class BotEnragementState {
         activateEnragementState(botEnragementStateConfigs.get(0), null);
     }
 
-    public void work(PlayerBase base) {
+    public void work(PlayerBaseFull base) {
         botItemContainer.work(base);
     }
 
@@ -125,7 +126,7 @@ public class BotEnragementState {
         }
     }
 
-    public void executeCommand(AbstractBotCommandConfig botCommandConfig, PlayerBase base) {
+    public void executeCommand(AbstractBotCommandConfig botCommandConfig, PlayerBaseFull base) {
         botItemContainer.executeCommand(botCommandConfig, base);
     }
 }

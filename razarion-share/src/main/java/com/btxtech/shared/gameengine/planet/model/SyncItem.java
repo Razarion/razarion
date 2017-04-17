@@ -19,7 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -39,8 +39,6 @@ public abstract class SyncItem {
     // Own states
     private ItemType itemType;
     private SyncPhysicalArea syncPhysicalArea;
-    @Deprecated
-    private SyncItemArea syncItemArea;
 
     public void init(int id, ItemType itemType, SyncPhysicalArea syncPhysicalArea) {
         this.id = id;
@@ -52,14 +50,14 @@ public abstract class SyncItem {
         return id;
     }
 
-    public void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
-        syncItemArea.synchronize(syncItemInfo);
+    public void synchronize(SyncBaseItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
+        syncPhysicalArea.synchronize(syncItemInfo.getSyncPhysicalAreaInfo());
     }
 
-    public SyncItemInfo getSyncInfo() {
-        SyncItemInfo syncItemInfo = new SyncItemInfo();
+    public SyncBaseItemInfo getSyncInfo() {
+        SyncBaseItemInfo syncItemInfo = new SyncBaseItemInfo();
         syncItemInfo.setId(id);
-        syncItemArea.fillSyncItemInfo(syncItemInfo);
+        // TODO SyncPhysicalAreaInfo;
         syncItemInfo.setItemTypeId(itemType.getId());
         syncItemInfo.setAlive(isAlive());
         return syncItemInfo;
@@ -78,7 +76,7 @@ public abstract class SyncItem {
 
     @Deprecated
     public SyncItemArea getSyncItemArea() {
-        return syncItemArea;
+        throw new UnsupportedOperationException("SyncItemArea is no longer supported");
     }
 
     public TerrainType getTerrainType() {

@@ -16,7 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HouseType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
 import javax.enterprise.context.Dependent;
 
@@ -35,12 +35,12 @@ public class SyncHouse extends SyncBaseAbility {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
+    public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
         // Ignore
     }
 
     @Override
-    public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
+    public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
         // Ignore
     }
 

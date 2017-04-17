@@ -16,15 +16,17 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.UnlockService;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 
@@ -81,39 +83,41 @@ public class SyncFactory extends SyncBaseAbility {
             gameLogicService.onSyncFactoryProgress(getSyncBaseItem());
         }
         if (buildup >= 1.0) {
-            if (baseItemService.isLevelLimitation4ItemTypeExceeded(toBeBuiltType, 1, getSyncBaseItem().getBase())) {
-                gameLogicService.onFactoryLevelLimitation4ItemTypeExceeded();
-                return true;
+            if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+                if (baseItemService.isLevelLimitation4ItemTypeExceeded(toBeBuiltType, 1, (PlayerBaseFull) getSyncBaseItem().getBase())) {
+                    gameLogicService.onFactoryLevelLimitation4ItemTypeExceeded();
+                    return true;
+                }
+                if (baseItemService.isHouseSpaceExceeded((PlayerBaseFull) getSyncBaseItem().getBase(), toBeBuiltType, 1)) {
+                    gameLogicService.onFactoryHouseSpaceExceeded();
+                    return true;
+                }
+                SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, getSyncBaseItem().getSyncPhysicalArea().getPosition2d(), (PlayerBaseFull) getSyncBaseItem().getBase());
+                stop();
+                commandService.move(createItem, rallyPoint);
             }
-            if (baseItemService.isHouseSpaceExceeded(getSyncBaseItem().getBase(), toBeBuiltType, 1)) {
-                gameLogicService.onFactoryHouseSpaceExceeded();
-                return true;
-            }
-            SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, getSyncBaseItem().getSyncPhysicalArea().getPosition2d(), getSyncBaseItem().getBase());
-            stop();
-            commandService.move(createItem, rallyPoint);
             return false;
         }
         return true;
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException {
-        if (syncItemInfo.getToBeBuiltTypeId() != null) {
-            toBeBuiltType = itemTypeService.getBaseItemType(syncItemInfo.getToBeBuiltTypeId());
+    public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws NoSuchItemTypeException {
+        if (syncBaseItemInfo.getToBeBuiltTypeId() != null) {
+            toBeBuiltType = itemTypeService.getBaseItemType(syncBaseItemInfo.getToBeBuiltTypeId());
         } else {
             toBeBuiltType = null;
         }
-        buildup = syncItemInfo.getFactoryBuildupProgress();
-        // TODO rallyPoint = syncItemInfo.getRallyPoint();
+        buildup = syncBaseItemInfo.getFactoryBuildupProgress();
+        rallyPoint = syncBaseItemInfo.getRallyPoint();
     }
 
     @Override
-    public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
+    public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
         if (toBeBuiltType != null) {
-            syncItemInfo.setToBeBuiltTypeId(toBeBuiltType.getId());
+            syncBaseItemInfo.setToBeBuiltTypeId(toBeBuiltType.getId());
         }
-        syncItemInfo.setFactoryBuildupProgress(buildup);
+        syncBaseItemInfo.setFactoryBuildupProgress(buildup);
         // TODO syncItemInfo.setRallyPoint(rallyPoint);
     }
 
@@ -143,7 +147,7 @@ public class SyncFactory extends SyncBaseAbility {
 
     private void setupRallyPoint() {
         double maxRadius = Double.MIN_VALUE;
-        for (int ableToBuildId : factoryType.getAbleToBuildId()) {
+        for (int ableToBuildId : factoryType.getAbleToBuildIds()) {
             maxRadius = Math.max(maxRadius, itemTypeService.getBaseItemType(ableToBuildId).getPhysicalAreaConfig().getRadius());
         }
         rallyPoint = getSyncBaseItem().getSyncPhysicalArea().getPosition2d().sub(0, getSyncBaseItem().getSyncPhysicalArea().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE + maxRadius);

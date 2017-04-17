@@ -81,7 +81,7 @@ public abstract class BuildupItemPanel {
     private void setupBuildupItemsCV(Group constructionVehicles) throws NoSuchItemTypeException {
         clear();
         hasItemsToBuild = false;
-        Collection<Integer> itemTypeIds = itemTypeService.getBaseItemType(constructionVehicles.getFirst().getItemTypeId()).getBuilderType().getAbleToBuild();
+        Collection<Integer> itemTypeIds = itemTypeService.getBaseItemType(constructionVehicles.getFirst().getItemTypeId()).getBuilderType().getAbleToBuildIds();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
             if (gameUiControl.getPlanetConfig().imitation4ItemType(itemTypeId) == 0) {
@@ -103,7 +103,7 @@ public abstract class BuildupItemPanel {
     private void setupBuildupItemsFactory(Group factories) throws NoSuchItemTypeException {
         clear();
         hasItemsToBuild = false;
-        Collection<Integer> itemTypeIds = itemTypeService.getBaseItemType(factories.getFirst().getItemTypeId()).getFactoryType().getAbleToBuildId();
+        Collection<Integer> itemTypeIds = itemTypeService.getBaseItemType(factories.getFirst().getItemTypeId()).getFactoryType().getAbleToBuildIds();
         List<BuildupItem> buildupItems = new ArrayList<>();
         for (Integer itemTypeId : itemTypeIds) {
             if (gameUiControl.getPlanetConfig().imitation4ItemType(itemTypeId) == 0) {

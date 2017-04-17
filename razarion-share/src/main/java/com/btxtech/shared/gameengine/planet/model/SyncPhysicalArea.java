@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -205,6 +206,11 @@ public class SyncPhysicalArea {
             }
         }
         return false;
+    }
+
+    public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        position2d = syncPhysicalAreaInfo.getPosition();
+        angle = syncPhysicalAreaInfo.getAngle();
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -39,7 +40,7 @@ public class Scenario {
     private ResourceService resourceService;
     private BoxService boxService;
     private PathingService pathingService;
-    private PlayerBase playerBase;
+    private PlayerBaseFull playerBase;
     private int slopeId = 1;
     private List<SyncBaseItem> createdSyncBaseItems = new ArrayList<>();
     private List<SyncResourceItem> createdSyncResourceItems = new ArrayList<>();
@@ -100,11 +101,11 @@ public class Scenario {
         return false;
     }
 
-    public PlayerBase getPlayerBase() {
+    public PlayerBaseFull getPlayerBase() {
         return playerBase;
     }
 
-    public void setupSyncItems(BaseItemService baseItemService, PlayerBase playerBase, ResourceService resourceService, BoxService boxService, PathingService pathingService) {
+    public void setupSyncItems(BaseItemService baseItemService, PlayerBaseFull playerBase, ResourceService resourceService, BoxService boxService, PathingService pathingService) {
         this.baseItemService = baseItemService;
         this.playerBase = playerBase;
         this.resourceService = resourceService;

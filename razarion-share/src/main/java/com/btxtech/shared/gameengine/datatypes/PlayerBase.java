@@ -32,18 +32,14 @@ public class PlayerBase {
     private String name;
     private Character character;
     private Integer userId;
-    private Integer levelId;
     private boolean abandoned;
-    private final Collection<SyncBaseItem> items = new ArrayList<>();
-    private int usedHouseSpace = 0;
 
-    public PlayerBase(int baseId, String name, Character character, int resources, Integer levelId, Integer userId) {
+    public PlayerBase(int baseId, String name, Character character, double resources, Integer userId) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
-        this.levelId = levelId;
-        this.userId = userId;
         this.resources = resources;
+        this.userId = userId;
     }
 
     public int getBaseId() {
@@ -66,55 +62,12 @@ public class PlayerBase {
         return !equals(playerBase) && character.isEnemy(playerBase.character);
     }
 
-    public void addItem(SyncBaseItem syncBaseItem) {
-        items.add(syncBaseItem);
-        usedHouseSpace += syncBaseItem.getBaseItemType().getConsumingHouseSpace();
-    }
-
-    public void removeItem(SyncBaseItem syncBaseItem) {
-        items.remove(syncBaseItem);
-        usedHouseSpace -= syncBaseItem.getBaseItemType().getConsumingHouseSpace();
-    }
-
-    public int getItemCount() {
-        return items.size();
-    }
-
-    public Collection<SyncBaseItem> getItems() {
-        return Collections.unmodifiableCollection(items);
-    }
-
-    public Collection<SyncBaseItem> findItemsInPlace(PlaceConfig placeConfig) {
-        return items.stream().filter(placeConfig::checkInside).collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    public int getUsedHouseSpace() {
-        return usedHouseSpace;
-    }
-
-    public int getHouseSpace() {
-        // TODO no houses yet
-        return 0;
-    }
-
     public Integer getUserId() {
         return userId;
     }
 
-    public Integer getLevelId() {
-        return levelId;
-    }
-
-    public void setLevelId(Integer levelId) {
-        this.levelId = levelId;
-    }
-
     public double getResources() {
         return resources;
-    }
-
-    public void setResources(double resources) {
-        this.resources = resources;
     }
 
     public void addResource(double resources) {

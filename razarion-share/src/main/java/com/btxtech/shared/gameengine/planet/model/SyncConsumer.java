@@ -15,7 +15,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.EnergyService;
 
 import javax.enterprise.context.Dependent;
@@ -40,13 +40,13 @@ public class SyncConsumer extends SyncBaseAbility {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) {
-        operationState = syncItemInfo.isOperationState();
+    public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
+        operationState = syncBaseItemInfo.isOperationState();
     }
 
     @Override
-    public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
-        syncItemInfo.setOperationState(operationState);
+    public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
+        syncBaseItemInfo.setOperationState(operationState);
     }
 
     public boolean isOperating() {

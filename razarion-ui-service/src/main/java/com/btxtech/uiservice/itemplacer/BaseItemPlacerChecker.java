@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -14,6 +13,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -23,12 +23,11 @@ import java.util.Collection;
 @Dependent
 public class BaseItemPlacerChecker {
     private static final double SAFETY_DISTANCE = 0.2;
+    private Logger logger = Logger.getLogger(BaseItemPlacerChecker.class.getName());
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainUiService terrainUiService;
-    @Inject
-    private BaseItemService baseItemService;
     private Collection<DecimalPosition> relativeItemPositions;
     private boolean isAllowedAreaOk;
     private boolean isTerrainOk;
@@ -49,7 +48,9 @@ public class BaseItemPlacerChecker {
         isAllowedAreaOk = allowedArea == null || allowedArea.isInside(absoluteItemPositions);
         isEnemiesOk = false;
         if (isAllowedAreaOk) {
-            isEnemiesOk = !baseItemService.hasEnemyForSpawn(position, enemyFreeRadius);
+            isEnemiesOk = true;
+            // TODO isEnemiesOk = !baseItemService.hasEnemyForSpawn(position, enemyFreeRadius);
+            logger.severe("BaseItemPlacerChecker: !baseItemService.hasEnemyForSpawn(position, enemyFreeRadius) not available. Call worker or put to BaseItemUiService");
         }
         isItemsOk = false;
         if (isEnemiesOk) {

@@ -19,7 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -150,17 +150,21 @@ public class SyncWeapon extends SyncBaseAbility {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) {
-        // target = syncItemInfo.getTarget();
-        followTarget = syncItemInfo.isFollowTarget();
-        reloadProgress = syncItemInfo.getReloadProgress();
+    public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
+        if(syncBaseItemInfo.getTarget() != null) {
+            target = syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getTarget());
+        } else {
+            target = null;
+        }
+        followTarget = syncBaseItemInfo.isFollowTarget();
+        reloadProgress = syncBaseItemInfo.getReloadProgress();
     }
 
     @Override
-    public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
+    public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
         // syncItemInfo.setTarget(target);
-        syncItemInfo.setFollowTarget(followTarget);
-        syncItemInfo.setReloadProgress(reloadProgress);
+        syncBaseItemInfo.setFollowTarget(followTarget);
+        syncBaseItemInfo.setReloadProgress(reloadProgress);
     }
 
     public void executeCommand(AttackCommand attackCommand) throws ItemDoesNotExistException {

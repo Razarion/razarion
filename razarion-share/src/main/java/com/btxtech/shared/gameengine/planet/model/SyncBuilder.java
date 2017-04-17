@@ -17,6 +17,8 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.UnlockService;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -26,7 +28,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -91,24 +93,28 @@ public class SyncBuilder extends SyncBaseAbility {
             if (toBeBuiltType == null || toBeBuildPosition == null) {
                 throw new IllegalArgumentException("Invalid attributes |" + toBeBuiltType + "|" + toBeBuildPosition);
             }
-            if (!syncItemContainerService.isFree(toBeBuildPosition, toBeBuiltType)) {
-                stop();
-                return false;
-            }
-            try {
-                currentBuildup = (SyncBaseItem) baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, getSyncBaseItem().getBase());
-                gameLogicService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
-                toBeBuildPosition = null;
-                toBeBuiltType = null;
+            if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+                if (!syncItemContainerService.isFree(toBeBuildPosition, toBeBuiltType)) {
+                    stop();
+                    return false;
+                }
+                try {
+                    currentBuildup = baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, (PlayerBaseFull) getSyncBaseItem().getBase());
+                    gameLogicService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
+                    toBeBuildPosition = null;
+                    toBeBuiltType = null;
+                    return true;
+                } catch (ItemLimitExceededException e) {
+                    stop();
+                    gameLogicService.onItemLimitExceededExceptionBuilder(getSyncBaseItem());
+                    return false;
+                } catch (HouseSpaceExceededException e) {
+                    stop();
+                    gameLogicService.onHouseSpaceExceededExceptionBuilder(getSyncBaseItem());
+                    return false;
+                }
+            } else {
                 return true;
-            } catch (ItemLimitExceededException e) {
-                stop();
-                gameLogicService.onItemLimitExceededExceptionBuilder(getSyncBaseItem());
-                return false;
-            } catch (HouseSpaceExceededException e) {
-                stop();
-                gameLogicService.onHouseSpaceExceededExceptionBuilder(getSyncBaseItem());
-                return false;
             }
         } else {
             if (!currentBuildup.isAlive()) {
@@ -165,14 +171,14 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws ItemDoesNotExistException {
-        // toBeBuildPosition = syncItemInfo.getToBeBuildPosition();
-        if (syncItemInfo.getToBeBuiltTypeId() != null) {
-            toBeBuiltType = itemTypeService.getBaseItemType(syncItemInfo.getToBeBuiltTypeId());
+    public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws ItemDoesNotExistException {
+        toBeBuildPosition = syncBaseItemInfo.getToBeBuildPosition();
+        if (syncBaseItemInfo.getToBeBuiltTypeId() != null) {
+            toBeBuiltType = itemTypeService.getBaseItemType(syncBaseItemInfo.getToBeBuiltTypeId());
         } else {
             toBeBuiltType = null;
         }
-        Integer currentBuildupId = syncItemInfo.getCurrentBuildup();
+        Integer currentBuildupId = syncBaseItemInfo.getCurrentBuildup();
         if (currentBuildupId != null) {
             currentBuildup = syncItemContainerService.getSyncBaseItem(currentBuildupId);
         } else {
@@ -181,13 +187,13 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     @Override
-    public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
+    public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
         // syncItemInfo.setToBeBuildPosition(toBeBuildPosition);
         if (toBeBuiltType != null) {
-            syncItemInfo.setToBeBuiltTypeId(toBeBuiltType.getId());
+            syncBaseItemInfo.setToBeBuiltTypeId(toBeBuiltType.getId());
         }
         if (currentBuildup != null) {
-            syncItemInfo.setCurrentBuildup(currentBuildup.getId());
+            syncBaseItemInfo.setCurrentBuildup(currentBuildup.getId());
         }
     }
 

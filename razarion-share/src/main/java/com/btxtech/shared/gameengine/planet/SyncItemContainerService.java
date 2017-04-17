@@ -179,6 +179,13 @@ public class SyncItemContainerService {
         return syncBaseItem;
     }
 
+    public SyncBaseItem createSyncBaseItemSlave(BaseItemType baseItemType, int syncItemId, DecimalPosition position2d, double zRotation) {
+        SyncBaseItem syncBaseItem = syncItemInstance.select(SyncBaseItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = createSyncPhysicalArea(syncBaseItem, baseItemType, position2d, zRotation);
+        initAndAddSlave(baseItemType, syncItemId, syncBaseItem, syncPhysicalArea);
+        return syncBaseItem;
+    }
+
     SyncResourceItem createSyncResourceItem(ResourceItemType resourceItemType, DecimalPosition position2d, double zRotation) {
         SyncResourceItem syncResourceItem = syncItemInstance.select(SyncResourceItem.class).get();
         SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
@@ -200,6 +207,14 @@ public class SyncItemContainerService {
             syncItem.init(lastItemId, itemType, syncPhysicalArea);
             items.put(lastItemId, syncItem);
             lastItemId++;
+        }
+        syncItem.getSyncPhysicalArea().setupPosition3d();
+    }
+
+    private void initAndAddSlave(ItemType itemType, int syncItemId, SyncItem syncItem, SyncPhysicalArea syncPhysicalArea) {
+        synchronized (items) {
+            syncItem.init(syncItemId, itemType, syncPhysicalArea);
+            items.put(syncItemId, syncItem);
         }
         syncItem.getSyncPhysicalArea().setupPosition3d();
     }

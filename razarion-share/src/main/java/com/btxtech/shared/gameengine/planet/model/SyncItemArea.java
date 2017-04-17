@@ -7,7 +7,7 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoundingBox;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
 import java.util.logging.Logger;
 
@@ -111,18 +111,10 @@ public class SyncItemArea {
         }
     }
 
-    public void synchronize(SyncItemInfo syncItemInfo) {
-        setPosition(syncItemInfo.getPosition());
-        if (getBoundingBox().isTurnable()) {
-            setAngel(syncItemInfo.getAngel());
-        }
+    public void synchronize(SyncBaseItemInfo syncItemInfo) {
     }
 
-    public void fillSyncItemInfo(SyncItemInfo syncItemInfo) {
-        syncItemInfo.setPosition(getPosition());
-        if (getBoundingBox().isTurnable()) {
-            syncItemInfo.setAngel(getAngel());
-        }
+    public void fillSyncItemInfo(SyncBaseItemInfo syncItemInfo) {
     }
 
     public boolean hasPosition() {

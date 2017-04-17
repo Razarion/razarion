@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class FactoryType {
     private double progress;
-    private List<Integer> ableToBuildId;
+    private List<Integer> ableToBuildIds;
 
     public double getProgress() {
         return progress;
@@ -33,17 +33,17 @@ public class FactoryType {
         return this;
     }
 
-    public List<Integer> getAbleToBuildId() {
-        return ableToBuildId;
+    public List<Integer> getAbleToBuildIds() {
+        return ableToBuildIds;
     }
 
-    public FactoryType setAbleToBuildId(List<Integer> ableToBuildId) {
-        this.ableToBuildId = ableToBuildId;
+    public FactoryType setAbleToBuildIds(List<Integer> ableToBuildIds) {
+        this.ableToBuildIds = ableToBuildIds;
         return this;
     }
 
     public boolean isAbleToBuild(int itemTypeId) {
-        return ableToBuildId.contains(itemTypeId);
+        return ableToBuildIds.contains(itemTypeId);
     }
 
 }

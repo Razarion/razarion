@@ -17,6 +17,7 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
@@ -25,6 +26,7 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 public class SyncPhysicalMovable extends SyncPhysicalArea {
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private Instance<Path> instancePath;
     private final static int LOOK_AHEAD_TICKS = 20;
     private double lookAheadDistance;
     private double acceleration; // Meter per square second
@@ -270,5 +274,17 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         }
         return velocity;
 
+    }
+
+    public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        super.synchronize(syncPhysicalAreaInfo);
+        velocity = syncPhysicalAreaInfo.getVelocity();
+        if (syncPhysicalAreaInfo.getWayPositions() != null && syncPhysicalAreaInfo.getCurrentWayPointIndex() != null && syncPhysicalAreaInfo.getTotalRange() != null) {
+            Path path = instancePath.get();
+            path.synchronize(syncPhysicalAreaInfo);
+            this.path = path;
+        } else {
+            this.path = null;
+        }
     }
 }

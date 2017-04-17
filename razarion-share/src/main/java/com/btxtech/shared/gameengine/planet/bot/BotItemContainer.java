@@ -24,6 +24,7 @@ import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -84,7 +85,7 @@ public class BotItemContainer {
         need = new Need(botItems);
     }
 
-    public void work(PlayerBase playerBase) {
+    public void work(PlayerBaseFull playerBase) {
         updateState();
         Map<BotItemConfig, Integer> effectiveNeeds = need.getEffectiveItemNeed();
         if (!effectiveNeeds.isEmpty()) {
@@ -170,7 +171,7 @@ public class BotItemContainer {
         currentItemBuildup.onPotentialBuilderRemoved(botSyncBaseItem);
     }
 
-    private void buildItems(PlayerBase playerBase, Map<BotItemConfig, Integer> effectiveNeeds) {
+    private void buildItems(PlayerBaseFull playerBase, Map<BotItemConfig, Integer> effectiveNeeds) {
         for (Map.Entry<BotItemConfig, Integer> entry : effectiveNeeds.entrySet()) {
 
             int effectiveNeed = entry.getValue();
@@ -192,7 +193,7 @@ public class BotItemContainer {
         }
     }
 
-    private void createItem(BotItemConfig botItemConfig, PlayerBase playerBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
+    private void createItem(BotItemConfig botItemConfig, PlayerBaseFull playerBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(botItemConfig.getBaseItemTypeId());
         if (botItemConfig.isCreateDirectly()) {
             DecimalPosition position = getPosition(botItemConfig.getPlace(), toBeBuilt);
@@ -281,7 +282,7 @@ public class BotItemContainer {
         need.onItemAdded(botSyncBaseItem);
     }
 
-    public void executeCommand(AbstractBotCommandConfig botCommandConfig, PlayerBase base) {
+    public void executeCommand(AbstractBotCommandConfig botCommandConfig, PlayerBaseFull base) {
         if (botCommandConfig instanceof BotMoveCommandConfig) {
             handleMoveCommand((BotMoveCommandConfig) botCommandConfig);
         } else if (botCommandConfig instanceof BotHarvestCommandConfig) {
@@ -344,7 +345,7 @@ public class BotItemContainer {
     }
 
 
-    private void handleKillBaseCommand(BotKillBaseCommandConfig botKillBaseCommandConfig, PlayerBase base, PlayerBase targetBase) {
+    private void handleKillBaseCommand(BotKillBaseCommandConfig botKillBaseCommandConfig, PlayerBaseFull base, PlayerBaseFull targetBase) {
         Collection<SyncBaseItem> targets = targetBase.getItems();
 
         for (int i = 0; i < targets.size() * botKillBaseCommandConfig.getDominanceFactor(); i++) {
@@ -370,13 +371,13 @@ public class BotItemContainer {
         }
     }
 
-    private void handleKillOtherBotCommand(BotKillOtherBotCommandConfig botKillOtherBotCommandConfig, PlayerBase base) {
-        PlayerBase target = botService.getBotRunner(botKillOtherBotCommandConfig.getTargetBotId()).getBase();
+    private void handleKillOtherBotCommand(BotKillOtherBotCommandConfig botKillOtherBotCommandConfig, PlayerBaseFull base) {
+        PlayerBaseFull target = botService.getBotRunner(botKillOtherBotCommandConfig.getTargetBotId()).getBase();
         handleKillBaseCommand(botKillOtherBotCommandConfig, base, target);
     }
 
-    private void handleKillHumanCommand(BotKillHumanCommandConfig botKillHumanCommandConfig, PlayerBase base) {
-        PlayerBase target = baseItemService.getFirstHumanBase();
+    private void handleKillHumanCommand(BotKillHumanCommandConfig botKillHumanCommandConfig, PlayerBaseFull base) {
+        PlayerBaseFull target = baseItemService.getFirstHumanBase();
         handleKillBaseCommand(botKillHumanCommandConfig, base, target);
     }
 

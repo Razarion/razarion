@@ -16,7 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
 import javax.enterprise.context.Dependent;
@@ -50,14 +50,14 @@ public class SyncResourceItem extends SyncItem {
     }
 
     @Override
-    public void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
+    public void synchronize(SyncBaseItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
         super.synchronize(syncItemInfo);
         amount = syncItemInfo.getAmount();
     }
 
     @Override
-    public SyncItemInfo getSyncInfo() {
-        SyncItemInfo syncItemInfo = super.getSyncInfo();
+    public SyncBaseItemInfo getSyncInfo() {
+        SyncBaseItemInfo syncItemInfo = super.getSyncInfo();
         syncItemInfo.setAmount(amount);
         return syncItemInfo;
     }

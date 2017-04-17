@@ -3,9 +3,10 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
 import java.util.List;
@@ -95,7 +96,7 @@ public class GameEngineConfig {
     public GameEngineConfig setBoxItemTypes(List<BoxItemType> boxItemTypes) {
         this.boxItemTypes = boxItemTypes;
         return this;
-   }
+    }
 
     public List<InventoryItem> getInventoryItems() {
         return inventoryItems;

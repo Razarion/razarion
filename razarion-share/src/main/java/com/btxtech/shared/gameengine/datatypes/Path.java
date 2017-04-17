@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 
@@ -90,5 +91,11 @@ public class Path {
 
     public List<DecimalPosition> getWayPositions() {
         return wayPositions;
+    }
+
+    public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        wayPositions = syncPhysicalAreaInfo.getWayPositions();
+        currentWayPointIndex = syncPhysicalAreaInfo.getCurrentWayPointIndex();
+        totalRange = syncPhysicalAreaInfo.getTotalRange();
     }
 }

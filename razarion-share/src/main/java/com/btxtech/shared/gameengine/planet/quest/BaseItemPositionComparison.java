@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -82,7 +83,7 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
     }
 
     private void addInitial() {
-        PlayerBase playerBase = baseItemService.getPlayerBase4UserId(userId);
+        PlayerBaseFull playerBase = baseItemService.getPlayerBase4UserId(userId);
         if (playerBase == null) {
             return;
         }

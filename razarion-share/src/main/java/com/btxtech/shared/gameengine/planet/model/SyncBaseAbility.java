@@ -14,10 +14,9 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
-import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
 /**
  * User: beat
@@ -48,9 +47,9 @@ public abstract class SyncBaseAbility {
         return syncBaseItem.getSyncPhysicalMovable();
     }
 
-    public abstract void synchronize(SyncItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException;
+    public abstract void synchronize(SyncBaseItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException;
 
-    public abstract void fillSyncItemInfo(SyncItemInfo syncItemInfo);
+    public abstract void fillSyncItemInfo(SyncBaseItemInfo syncItemInfo);
 
 
 }

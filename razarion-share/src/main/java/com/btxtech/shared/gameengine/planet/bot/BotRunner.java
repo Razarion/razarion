@@ -16,6 +16,7 @@ package com.btxtech.shared.gameengine.planet.bot;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -52,7 +53,7 @@ public class BotRunner {
     @Inject
     private SimpleExecutorService simpleExecutorService;
     private BotConfig botConfig;
-    private PlayerBase base;
+    private PlayerBaseFull base;
     private BotEnragementState botEnragementState;
     private IntruderHandler intruderHandler;
     private final Object syncObject = new Object();
@@ -138,7 +139,7 @@ public class BotRunner {
     }
 
 
-    public PlayerBase getBase() {
+    public PlayerBaseFull getBase() {
         return base;
     }
 

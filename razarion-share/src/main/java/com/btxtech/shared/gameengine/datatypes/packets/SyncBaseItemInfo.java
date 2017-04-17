@@ -16,7 +16,6 @@ package com.btxtech.shared.gameengine.datatypes.packets;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 
 import java.util.Iterator;
@@ -27,28 +26,26 @@ import java.util.List;
  * Date: 23.11.2009
  * Time: 21:54:50
  */
-public class SyncItemInfo extends Packet {
+public class SyncBaseItemInfo {
     private int id;
-    private DecimalPosition position;
     private int itemTypeId;
     private boolean isAlive = true;
-    private PlayerBase base;
+    private SyncPhysicalAreaInfo syncPhysicalAreaInfo;
+    private int baseId;
     private PlayerBase killedBy;
-    private List<DecimalPosition> pathToDestination;
-    private Double angel;
-    private Vertex toBeBuildPosition;
+    private DecimalPosition toBeBuildPosition;
     private Integer toBeBuiltTypeId;
     private Integer currentBuildup;
     private Double factoryBuildupProgress;
     private Double projectileBuildupProgress;
     private Integer target;
-    private Double health;
+    private double health;
     private double buildup;
     private Double amount;
     private Boolean followTarget;
     private Boolean operationState;
     private double reloadProgress;
-    private Vertex rallyPoint;
+    private DecimalPosition rallyPoint;
     private List<Integer> containedItems;
     private Integer targetContainer;
     private Integer containedIn;
@@ -63,59 +60,57 @@ public class SyncItemInfo extends Packet {
         return id;
     }
 
-    public void setId(int id) {
+    public SyncBaseItemInfo setId(int id) {
         this.id = id;
+        return this;
     }
 
-    public DecimalPosition getPosition() {
-        return position;
+    public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {
+        return syncPhysicalAreaInfo;
     }
 
-    public void setPosition(DecimalPosition position) {
-        this.position = position;
+    public SyncBaseItemInfo setSyncPhysicalAreaInfo(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        this.syncPhysicalAreaInfo = syncPhysicalAreaInfo;
+        return this;
     }
 
     public int getItemTypeId() {
         return itemTypeId;
     }
 
-    public void setItemTypeId(int itemTypeId) {
+    public SyncBaseItemInfo setItemTypeId(int itemTypeId) {
         this.itemTypeId = itemTypeId;
+        return this;
     }
 
     public boolean isAlive() {
         return isAlive;
     }
 
-    public void setAlive(boolean alive) {
+    public SyncBaseItemInfo setAlive(boolean alive) {
         isAlive = alive;
+        return this;
     }
 
     public PlayerBase getKilledBy() {
         return killedBy;
     }
 
-    public void setKilledBy(PlayerBase killedBy) {
+    public SyncBaseItemInfo setKilledBy(PlayerBase killedBy) {
         this.killedBy = killedBy;
+        return this;
     }
 
-    public PlayerBase getBase() {
-        return base;
+    public int getBaseId() {
+        return baseId;
     }
 
-    public void setBase(PlayerBase base) {
-        this.base = base;
+    public SyncBaseItemInfo setBaseId(int baseId) {
+        this.baseId = baseId;
+        return this;
     }
 
-    public List<DecimalPosition> getPathToDestination() {
-        return pathToDestination;
-    }
-
-    public double getAngel() {
-        return angel;
-    }
-
-    public Vertex getToBeBuildPosition() {
+    public DecimalPosition getToBeBuildPosition() {
         return toBeBuildPosition;
     }
 
@@ -135,15 +130,16 @@ public class SyncItemInfo extends Packet {
         return projectileBuildupProgress;
     }
 
-    public void setProjectileBuildupProgress(Double projectileBuildupProgress) {
+    public SyncBaseItemInfo setProjectileBuildupProgress(Double projectileBuildupProgress) {
         this.projectileBuildupProgress = projectileBuildupProgress;
+        return this;
     }
 
     public Integer getTarget() {
         return target;
     }
 
-    public Double getHealth() {
+    public double getHealth() {
         return health;
     }
 
@@ -155,120 +151,130 @@ public class SyncItemInfo extends Packet {
         return followTarget;
     }
 
-    public void setPathToDestination(List<DecimalPosition> pathToDestination) {
-        this.pathToDestination = pathToDestination;
-    }
-
-    public void setAngel(Double angel) {
-        this.angel = angel;
-    }
-
-    public void setToBeBuildPosition(Vertex toBeBuildPosition) {
+    public SyncBaseItemInfo setToBeBuildPosition(DecimalPosition toBeBuildPosition) {
         this.toBeBuildPosition = toBeBuildPosition;
+        return this;
     }
 
-    public void setToBeBuiltTypeId(Integer toBeBuiltTypeId) {
+    public SyncBaseItemInfo setToBeBuiltTypeId(Integer toBeBuiltTypeId) {
         this.toBeBuiltTypeId = toBeBuiltTypeId;
+        return this;
     }
 
-    public void setCurrentBuildup(int currentBuildup) {
+    public SyncBaseItemInfo setCurrentBuildup(int currentBuildup) {
         this.currentBuildup = currentBuildup;
+        return this;
     }
 
-    public void setFactoryBuildupProgress(Double factoryBuildupProgress) {
+    public SyncBaseItemInfo setFactoryBuildupProgress(Double factoryBuildupProgress) {
         this.factoryBuildupProgress = factoryBuildupProgress;
+        return this;
     }
 
-    public void setTarget(Integer target) {
+    public SyncBaseItemInfo setTarget(Integer target) {
         this.target = target;
+        return this;
     }
 
-    public void setHealth(Double health) {
+    public SyncBaseItemInfo setHealth(double health) {
         this.health = health;
+        return this;
     }
 
-    public void setAmount(Double amount) {
+    public SyncBaseItemInfo setAmount(Double amount) {
         this.amount = amount;
+        return this;
     }
 
-    public void setFollowTarget(boolean followTarget) {
+    public SyncBaseItemInfo setFollowTarget(boolean followTarget) {
         this.followTarget = followTarget;
+        return this;
     }
 
     public Boolean isOperationState() {
         return operationState;
     }
 
-    public void setOperationState(Boolean operationState) {
+    public SyncBaseItemInfo setOperationState(Boolean operationState) {
         this.operationState = operationState;
+        return this;
     }
 
     public double getReloadProgress() {
         return reloadProgress;
     }
 
-    public void setReloadProgress(double reloadProgress) {
+    public SyncBaseItemInfo setReloadProgress(double reloadProgress) {
         this.reloadProgress = reloadProgress;
+        return this;
     }
 
-    public Vertex getRallyPoint() {
+    public DecimalPosition getRallyPoint() {
         return rallyPoint;
     }
 
-    public void setRallyPoint(Vertex rallyPoint) {
+    public SyncBaseItemInfo setRallyPoint(DecimalPosition rallyPoint) {
         this.rallyPoint = rallyPoint;
+        return this;
     }
 
     public List<Integer> getContainedItems() {
         return containedItems;
     }
 
-    public void setContainedItems(List<Integer> containedItems) {
+    public SyncBaseItemInfo setContainedItems(List<Integer> containedItems) {
         this.containedItems = containedItems;
+        return this;
     }
 
     public Integer getTargetContainer() {
         return targetContainer;
     }
 
-    public void setTargetContainer(Integer targetContainer) {
+    public SyncBaseItemInfo setTargetContainer(Integer targetContainer) {
         this.targetContainer = targetContainer;
+        return this;
     }
 
     public Integer getContainedIn() {
         return containedIn;
     }
 
-    public void setContainedIn(Integer containedIn) {
+    public SyncBaseItemInfo setContainedIn(Integer containedIn) {
         this.containedIn = containedIn;
+        return this;
     }
 
     public DecimalPosition getUnloadPos() {
         return unloadPos;
     }
 
-    public void setUnloadPos(DecimalPosition unloadPos) {
+    public SyncBaseItemInfo setUnloadPos(DecimalPosition unloadPos) {
         this.unloadPos = unloadPos;
+        return this;
     }
 
     public double getBuildup() {
         return buildup;
     }
 
-    public void setBuildup(double buildup) {
+    public SyncBaseItemInfo setBuildup(double buildup) {
         this.buildup = buildup;
+        return this;
     }
 
     public Index getTargetPosition() {
         return targetPosition;
     }
 
-    public void setTargetPosition(Index targetPosition) {
+    public SyncBaseItemInfo setTargetPosition(Index targetPosition) {
         this.targetPosition = Index.saveCopy(targetPosition);
+        return this;
     }
 
-    public void setDestinationAngel(Double destinationAngel) {
+    public SyncBaseItemInfo setDestinationAngel(Double destinationAngel) {
         this.destinationAngel = destinationAngel;
+        return this;
     }
 
     public Double getDestinationAngel() {
@@ -297,35 +303,36 @@ public class SyncItemInfo extends Packet {
         return clientTimeStamp;
     }
 
-    public void setClientTimeStamp() {
+    public SyncBaseItemInfo setClientTimeStamp() {
         clientTimeStamp = System.currentTimeMillis();
+        return this;
     }
 
     public String getStartUuid() {
         return startUuid;
     }
 
-    public void setStartUuid(String startUuid) {
+    public SyncBaseItemInfo setStartUuid(String startUuid) {
         this.startUuid = startUuid;
+        return this;
     }
 
     public Integer getSyncBoxItemId() {
         return syncBoxItemId;
     }
 
-    public void setSyncBoxItemId(Integer syncBoxItemId) {
+    public SyncBaseItemInfo setSyncBoxItemId(Integer syncBoxItemId) {
         this.syncBoxItemId = syncBoxItemId;
+        return this;
     }
 
     @Override
     public String toString() {
         return "SyncItemInfo: " + id +
-                " pos:" + position +
                 " itemTypeId:" + itemTypeId +
                 " isAlive:" + isAlive +
-                base +
-                " pathToDestination:" + pathToDestination +
-                " angel:" + angel +
+                baseId +
+                " syncPhysicalAreaInfo:" + syncPhysicalAreaInfo +
                 " toBeBuildPosition:" + toBeBuildPosition +
                 " toBeBuiltTypeId:" + toBeBuiltTypeId +
                 " currentBuildup:" + currentBuildup +

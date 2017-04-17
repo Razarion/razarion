@@ -253,7 +253,7 @@ public class GameUiControlConfigPersistence {
         bulldozer.setI18Name(i18nHelper("Bulldozer Name"));
         bulldozer.setDescription(i18nHelper("Bulldozer Description"));
         bulldozer.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
-        bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuild(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(1.63196, 0, 3.04829)));
+        bulldozer.setBuilderType(new BuilderType().setProgress(1).setRange(10).setAbleToBuildIds(Collections.singletonList(BASE_ITEM_TYPE_FACTORY)).setAnimationShape3dId(272491).setAnimationOrigin(new Vertex(1.63196, 0, 3.04829)));
         bulldozer.setBoxPickupRange(2).setExplosionParticleEmitterSequenceConfigId(2).setBuildup(30);
         bulldozer.setPrice(100).setWreckageShape3DId(272944);
     }
@@ -287,7 +287,7 @@ public class GameUiControlConfigPersistence {
         factory.setDescription(i18nHelper("Factory Description"));
         factory.setExplosionParticleEmitterSequenceConfigId(2).setBuildup(30);
         factory.getPhysicalAreaConfig().setFixVerticalNorm(true);
-        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildId(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER, BASE_ITEM_TYPE_ATTACKER)));
+        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildIds(Arrays.asList(BASE_ITEM_TYPE_BULLDOZER, BASE_ITEM_TYPE_HARVESTER, BASE_ITEM_TYPE_ATTACKER)));
         factory.setPrice(200).setWreckageShape3DId(272943);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
         // Demolition 1
