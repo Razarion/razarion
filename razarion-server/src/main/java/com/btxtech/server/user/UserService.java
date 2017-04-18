@@ -1,6 +1,6 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.persistence.impl.GameUiControlConfigPersistence;
+import com.btxtech.server.persistence.GameEngineConfigPersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.Session;
 import com.btxtech.shared.datatypes.UserContext;
@@ -57,7 +57,7 @@ public class UserService {
             userContext.setLevelId(user.getLevelId());
         } else {
             userContext.setUserId(999999999); // TODO
-            userContext.setLevelId(GameUiControlConfigPersistence.FIRST_LEVEL_ID);
+            userContext.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
         }
         if (filePropertiesService.isDeveloperMode()) {
             userContext.setAdmin(true);
@@ -70,7 +70,7 @@ public class UserService {
     private UserEntity createUser(FacebookUserLoginInfo facebookUserLoginInfo) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserLoginInfo);
-        userEntity.setLevelId(GameUiControlConfigPersistence.FIRST_LEVEL_ID);
+        userEntity.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
         entityManager.persist(userEntity);
         return userEntity;
     }

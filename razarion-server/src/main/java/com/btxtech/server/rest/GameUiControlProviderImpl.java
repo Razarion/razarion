@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.impl.GameUiControlConfigPersistence;
+import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
