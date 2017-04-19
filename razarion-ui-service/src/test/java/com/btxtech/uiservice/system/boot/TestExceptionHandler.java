@@ -1,4 +1,4 @@
-package com.btxtech.test.cdimock;
+package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.shared.system.ExceptionHandler;
 import org.junit.Assert;

@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.system.boot;
 
 import com.btxtech.shared.utils.ExceptionUtil;
-import com.btxtech.test.cdimock.TestExceptionHandler;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.jboss.weld.environment.se.Weld;
