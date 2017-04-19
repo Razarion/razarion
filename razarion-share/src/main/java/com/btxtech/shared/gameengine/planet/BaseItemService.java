@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
@@ -26,7 +27,9 @@ import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,7 +40,7 @@ import java.util.Map;
  * Created by Beat
  * 15.07.2016.
  */
-@ApplicationScoped // Rename to BaseService
+@Singleton // Rename to BaseService
 public class BaseItemService {
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
@@ -49,11 +52,9 @@ public class BaseItemService {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private PlanetService planetService;
-    @Inject
     private LevelService levelService;
     @Inject
-    private CommandService commandService;
+    private Instance<CommandService> commandService;
     @Inject
     private ItemTypeService itemTypeService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
@@ -61,7 +62,7 @@ public class BaseItemService {
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
     private final Collection<SyncBaseItem> guardingItems = new ArrayList<>();
-    private GameEngineMode gameEngineMode;
+    private PlanetConfig planetConfig;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         activeItems.clear();
@@ -69,8 +70,8 @@ public class BaseItemService {
         bases.clear();
         guardingItems.clear();
         lastBaseItId = 0;
-        gameEngineMode = planetActivationEvent.getPlanetConfig().getGameEngineMode();
-        if (gameEngineMode == GameEngineMode.SLAVE) {
+        planetConfig = planetActivationEvent.getPlanetConfig();
+        if (getGameEngineMode() == GameEngineMode.SLAVE) {
             for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getPlanetConfig().getPlayerBaseInfos()) {
                 createBaseSlave(playerBaseInfo);
             }
@@ -115,7 +116,7 @@ public class BaseItemService {
 
     public void createHumanBaseWithBaseItem(int levelId, int userId, String name, int baseItemTypeId, DecimalPosition position) {
         surrenderHumanBase(userId);
-        PlayerBaseFull playerBase = createHumanBase(planetService.getPlanetConfig().getStartRazarion(), levelId, userId, name);
+        PlayerBaseFull playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, userId, name);
         spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, 0, playerBase, false);
     }
 
@@ -227,7 +228,7 @@ public class BaseItemService {
     }
 
     public void killSyncItem(SyncBaseItem target, SyncBaseItem actor) {
-        if (gameEngineMode != GameEngineMode.MASTER) {
+        if (getGameEngineMode() != GameEngineMode.MASTER) {
             return;
         }
         gameLogicService.onKilledSyncBaseItem(target, actor);
@@ -310,7 +311,7 @@ public class BaseItemService {
 
     public int getLimitation4ItemType(int itemTypeId, int levelId) {
         int levelCount = levelService.getLevel(levelId).limitation4ItemType(itemTypeId);
-        int planetCount = planetService.getPlanetConfig().imitation4ItemType(itemTypeId);
+        int planetCount = planetConfig.imitation4ItemType(itemTypeId);
         return Math.min(levelCount, planetCount);
     }
 
@@ -329,7 +330,7 @@ public class BaseItemService {
     }
 
     public boolean isHouseSpaceExceeded(PlayerBaseFull playerBase, BaseItemType toBeBuiltType, int itemCount2Add) {
-        return playerBase.getUsedHouseSpace() + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetService.getPlanetConfig().getHouseSpace();
+        return playerBase.getUsedHouseSpace() + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetConfig.getHouseSpace();
     }
 
     public PlayerBaseFull getPlayerBase4UserId(int userId) {
@@ -441,7 +442,7 @@ public class BaseItemService {
     private boolean handleGuardingItemHasEnemiesInRange(SyncBaseItem guardingItem) {
         SyncBaseItem target = findNearestEnemy(guardingItem);
         if (target != null) {
-            commandService.defend(guardingItem, target);
+            commandService.get().defend(guardingItem, target);
             return true;
         } else {
             return false;
@@ -449,7 +450,7 @@ public class BaseItemService {
     }
 
     public GameEngineMode getGameEngineMode() {
-        return gameEngineMode;
+        return planetConfig.getGameEngineMode();
     }
 
     // --------------------------------------------------------------------------

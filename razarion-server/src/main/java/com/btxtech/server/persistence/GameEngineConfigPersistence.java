@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
@@ -62,8 +61,9 @@ public class GameEngineConfigPersistence {
     @Transactional
     public GameEngineConfig load4Server() {
         GameEngineConfig gameEngineConfig = setupGameEngineConfig();
-        gameEngineConfig.setPlanetConfig(entityManager.find(PlanetEntity.class, (long)2).toPlanetConfig());
+        gameEngineConfig.setPlanetConfig(entityManager.find(PlanetEntity.class, (long) 2).toPlanetConfig());
         gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.MASTER);// TODO move to DB
+        TemporaryPersistenceUtils.completePlanetConfigMultiPlayer(gameEngineConfig.getPlanetConfig());// TODO move to DB
         return gameEngineConfig;
     }
 

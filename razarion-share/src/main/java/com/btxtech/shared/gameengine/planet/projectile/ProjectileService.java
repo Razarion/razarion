@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,7 +22,7 @@ import java.util.Iterator;
  * Created by Beat
  * 15.07.2016.
  */
-@ApplicationScoped
+@Singleton
 public class ProjectileService {
     @Inject
     private BaseItemService baseItemService;

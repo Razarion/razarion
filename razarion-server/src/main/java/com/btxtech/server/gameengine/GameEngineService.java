@@ -15,7 +15,7 @@ import javax.inject.Inject;
  * 18.04.2017.
  */
 @ApplicationScoped
-public class GameEngineServer {
+public class GameEngineService {
     @Inject
     private Event<GameEngineInitEvent> gameEngineInitEvent;
     @Inject

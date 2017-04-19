@@ -29,6 +29,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ import java.util.Map;
  * Date: 28.12.2010
  * Time: 13:09:19
  */
-@ApplicationScoped
+@Singleton
 public class QuestService {
     @Inject
     private ItemTypeService itemTypeService;
