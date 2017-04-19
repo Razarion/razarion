@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.gameengine.GameEngineService;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -69,6 +70,8 @@ public class GameUiControlConfigPersistence {
     private Shape3DPersistence shape3DPersistence;
     @Inject
     private GameEngineConfigPersistence gameEngineConfigPersistence;
+    @Inject
+    private GameEngineService gameEngineService;
 
     // TODO DB Migration
     // TODO create GAME_UI_CONTROL_CONFIG with id 2, planet 2
@@ -85,6 +88,7 @@ public class GameUiControlConfigPersistence {
             // Multiplayer
             gameUiControlConfig = getGameUiControlConfig4Level(2).toGameUiControlConfig(gameEngineConfig);
             gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.SLAVE);// TODO move to DB
+            gameEngineService.fillPlanetConfig(gameEngineConfig.getPlanetConfig());
             TemporaryPersistenceUtils.completePlanetConfigMultiPlayer(gameEngineConfig.getPlanetConfig());// TODO move to DB
             gameUiControlConfig.setSceneConfigs(setupPlanet1()); // TODO move to DB
         } else {

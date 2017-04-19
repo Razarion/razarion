@@ -108,4 +108,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
         }
     }
 
+    public void fillPlanetConfig(PlanetConfig planetConfig) {
+        planetConfig.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
+        planetConfig.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
+    }
 }

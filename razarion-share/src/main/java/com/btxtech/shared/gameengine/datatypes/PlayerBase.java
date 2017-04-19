@@ -13,13 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes;
 
-import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 
 /**
  * User: beat
@@ -80,6 +74,15 @@ public class PlayerBase {
         }
         resources -= amount;
         return true;
+    }
+
+    public PlayerBaseInfo getPlayerBaseInfo() {
+        PlayerBaseInfo playerBaseInfo = new PlayerBaseInfo();
+        playerBaseInfo.setBaseId(baseId);
+        playerBaseInfo.setCharacter(character);
+        playerBaseInfo.setName(name);
+        playerBaseInfo.setUserId(userId);
+        return playerBaseInfo;
     }
 
     @Override

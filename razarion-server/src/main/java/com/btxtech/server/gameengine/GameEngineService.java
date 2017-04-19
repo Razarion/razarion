@@ -3,6 +3,7 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.persistence.GameEngineConfigPersistence;
 import com.btxtech.shared.gameengine.GameEngineInitEvent;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -34,6 +35,10 @@ public class GameEngineService {
 
     public void stop() {
         planetService.stop();
+    }
+
+    public void fillPlanetConfig(PlanetConfig planetConfig) {
+        planetService.fillPlanetConfig(planetConfig);
     }
 
 }

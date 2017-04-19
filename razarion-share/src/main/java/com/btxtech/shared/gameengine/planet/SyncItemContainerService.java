@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -28,6 +29,7 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -348,5 +350,14 @@ public class SyncItemContainerService {
             return null;
         });
         return result;
+    }
+
+    public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
+        List<SyncBaseItemInfo> syncBaseItemInfos = new ArrayList<>();
+        iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            syncBaseItemInfos.add(syncBaseItem.getSyncInfo());
+            return null;
+        });
+        return syncBaseItemInfos;
     }
 }

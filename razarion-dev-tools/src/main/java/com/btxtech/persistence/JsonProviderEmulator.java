@@ -102,7 +102,6 @@ public class JsonProviderEmulator {
     public void fromServerToFile() {
         fromServerToFilePost(FILE_NAME_MULTI_PLAYER, URL, FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER);
         fromServerToFilePost(FILE_NAME_TUTORIAL, URL, FACEBOOK_USER_LOGIN_INFO_STRING_TUTORIAL);
-        ;
     }
 
     public void fromServerToFileVertexContainerBuffer() {

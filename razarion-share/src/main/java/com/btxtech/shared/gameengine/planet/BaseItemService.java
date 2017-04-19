@@ -25,7 +25,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -34,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -451,6 +451,18 @@ public class BaseItemService {
 
     public GameEngineMode getGameEngineMode() {
         return planetConfig.getGameEngineMode();
+    }
+
+    public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
+        return syncItemContainerService.getSyncBaseItemInfos();
+    }
+
+    public List<PlayerBaseInfo> getPlayerBaseInfos() {
+        List<PlayerBaseInfo> playerBaseInfos = new ArrayList<>();
+        for (PlayerBase playerBase : bases.values()) {
+            playerBaseInfos.add(playerBase.getPlayerBaseInfo());
+        }
+        return playerBaseInfos;
     }
 
     // --------------------------------------------------------------------------
