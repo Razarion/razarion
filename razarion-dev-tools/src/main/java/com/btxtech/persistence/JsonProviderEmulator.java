@@ -75,6 +75,16 @@ public class JsonProviderEmulator {
         }
     }
 
+    public GameUiControlConfig fromServer() {
+        try {
+            Client client = ClientBuilder.newClient();
+            String string = client.target(URL).request(MediaType.APPLICATION_JSON).post(Entity.entity(FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER, MediaType.APPLICATION_JSON_TYPE), String.class);
+            return new ObjectMapper().readValue(string, GameUiControlConfig.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void fromServerToFileGet(String fileName, String url) {
         try {
             Client client = ClientBuilder.newClient();

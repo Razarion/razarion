@@ -55,7 +55,7 @@ public class SyncItemContainerService {
     @Inject
     private ObstacleContainer obstacleContainer;
 
-    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+    public void clear() {
         items.clear();
         lastItemId = 0;
     }

@@ -29,7 +29,7 @@ public class MasterBaseItemServiceTest extends BaseItemServiceBase {
         PlayerBaseFull base2 = getBaseItemService().createBotBase(new BotConfig().setName("Test Bot").setNpc(false));
         int builderId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(BUILDER_ITEM_TYPE_ID), new DecimalPosition(100, 200), Math.toRadians(80), base1, true).getId();
         int factoryId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FACTORY_ITEM_TYPE_ID), new DecimalPosition(200, 200), Math.toRadians(100), base2, true).getId();
-        int attackerId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(ATTACKER_ITEM_TYPE_ID), new DecimalPosition(300, 200), Math.toRadians(120), base2, true).getId();
+        int attackerId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(ATTACKER_ITEM_TYPE_ID), new DecimalPosition(300, 200), Math.toRadians(120), base2, false).getId();
 
         // Verify bases
         List<PlayerBaseInfo> playerBaseInfos = getBaseItemService().getPlayerBaseInfos();
@@ -57,18 +57,21 @@ public class MasterBaseItemServiceTest extends BaseItemServiceBase {
         Assert.assertEquals(new DecimalPosition(100, 200), builderSyncInfo.getSyncPhysicalAreaInfo().getPosition());
         Assert.assertEquals(1.0, builderSyncInfo.getBuildup(), 0.0001);
         Assert.assertNull(builderSyncInfo.getCurrentBuildup());
+        Assert.assertEquals(1.0, builderSyncInfo.getSpawnProgress(), 0.0001);
         // Verify Factory
         SyncBaseItemInfo factorySyncInfo = getSyncBaseItemInfo(factoryId, syncBaseItemInfos);
         Assert.assertEquals(base2.getBaseId(), factorySyncInfo.getBaseId());
         Assert.assertEquals(30, factorySyncInfo.getHealth(), 0.001);
         Assert.assertEquals(Math.toRadians(100), factorySyncInfo.getSyncPhysicalAreaInfo().getAngle(), 0.001);
         Assert.assertEquals(new DecimalPosition(200, 200), factorySyncInfo.getSyncPhysicalAreaInfo().getPosition());
+        Assert.assertEquals(1.0, factorySyncInfo.getSpawnProgress(), 0.0001);
         // Verify Attacker
         SyncBaseItemInfo attackerSyncInfo = getSyncBaseItemInfo(attackerId, syncBaseItemInfos);
         Assert.assertEquals(base2.getBaseId(), attackerSyncInfo.getBaseId());
         Assert.assertEquals(20, attackerSyncInfo.getHealth(), 0.001);
         Assert.assertEquals(Math.toRadians(120), attackerSyncInfo.getSyncPhysicalAreaInfo().getAngle(), 0.001);
         Assert.assertEquals(new DecimalPosition(300, 200), attackerSyncInfo.getSyncPhysicalAreaInfo().getPosition());
+        Assert.assertEquals(0.0, attackerSyncInfo.getSpawnProgress(), 0.0001);
     }
 
     private PlayerBaseInfo getPlayerBaseInfo(int baseId, List<PlayerBaseInfo> playerBaseInfos) {

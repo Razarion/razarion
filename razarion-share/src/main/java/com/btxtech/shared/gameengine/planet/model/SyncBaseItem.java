@@ -158,6 +158,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws ItemDoesNotExistException {
         health = syncBaseItemInfo.getHealth();
+        spawnProgress = syncBaseItemInfo.getSpawnProgress();
         setBuildup(syncBaseItemInfo.getBuildup());
         containedIn = syncBaseItemInfo.getContainedIn();
 
@@ -195,6 +196,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         syncBaseItemInfo.setHealth(health);
         syncBaseItemInfo.setBuildup(buildup);
         syncBaseItemInfo.setContainedIn(containedIn);
+        syncBaseItemInfo.setSpawnProgress(spawnProgress);
 
         // TODO if (syncMovable != null) {
         // TODO     syncMovable.fillSyncItemInfo(syncItemInfo);

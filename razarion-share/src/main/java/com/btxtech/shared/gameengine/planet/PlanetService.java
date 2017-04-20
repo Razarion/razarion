@@ -45,6 +45,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private ProjectileService projectileService;
     @Inject
     private BotService botService;
+    @Inject
+    private SyncItemContainerService syncItemContainerService;
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
@@ -57,6 +59,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     public void initialise(PlanetConfig planetConfig) {
         this.planetConfig = planetConfig;
+        syncItemContainerService.clear();
         activationEvent.fire(new PlanetActivationEvent(planetConfig));
     }
 

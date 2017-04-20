@@ -54,6 +54,7 @@ public class SyncBaseItemInfo {
     private Long clientTimeStamp;
     private String startUuid;
     private Integer syncBoxItemId;
+    private double spawnProgress;
 
     public int getId() {
         return id;
@@ -313,6 +314,15 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo setSyncBoxItemId(Integer syncBoxItemId) {
         this.syncBoxItemId = syncBoxItemId;
+        return this;
+    }
+
+    public double getSpawnProgress() {
+        return spawnProgress;
+    }
+
+    public SyncBaseItemInfo setSpawnProgress(double spawnProgress) {
+        this.spawnProgress = spawnProgress;
         return this;
     }
 

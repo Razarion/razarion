@@ -104,7 +104,7 @@ public class BaseItemService {
 
 
     private void surrenderHumanBase(int userId) {
-        PlayerBaseFull playerBase = (PlayerBaseFull) getPlayerBase4UserId(userId);
+        PlayerBaseFull playerBase = getPlayerBase4UserId(userId);
         if (playerBase != null) {
             gameLogicService.onSurrenderBase(playerBase);
             while (!playerBase.getItems().isEmpty()) {

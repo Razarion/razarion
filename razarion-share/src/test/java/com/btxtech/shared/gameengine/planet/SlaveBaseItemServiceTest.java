@@ -35,17 +35,17 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         List<SyncBaseItemInfo> syncBaseItemInfos = new ArrayList<>();
         // Attacker
         SyncPhysicalAreaInfo syncPhysicalAreaInfo = new SyncPhysicalAreaInfo().setPosition(new DecimalPosition(500, 200)).setAngle(0);
-        SyncBaseItemInfo attackerInfo = new SyncBaseItemInfo().setId(203).setBaseId(40).setItemTypeId(ATTACKER_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.99);
+        SyncBaseItemInfo attackerInfo = new SyncBaseItemInfo().setId(203).setBaseId(40).setItemTypeId(ATTACKER_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.99).setSpawnProgress(1.0);
         attackerInfo.setTarget(15).setFollowTarget(true).setReloadProgress(0.75);
         syncBaseItemInfos.add(attackerInfo);
         // Builder
         syncPhysicalAreaInfo = new SyncPhysicalAreaInfo().setPosition(new DecimalPosition(100, 200)).setAngle(Math.toRadians(45));
-        SyncBaseItemInfo builderInfo = new SyncBaseItemInfo().setId(15).setBaseId(99).setItemTypeId(BUILDER_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.34);
+        SyncBaseItemInfo builderInfo = new SyncBaseItemInfo().setId(15).setBaseId(99).setItemTypeId(BUILDER_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.34).setSpawnProgress(0.5);
         builderInfo.setToBeBuiltTypeId(FACTORY_ITEM_TYPE_ID).setToBeBuildPosition(new DecimalPosition(200, 200));
         syncBaseItemInfos.add(builderInfo);
         // Factory
         syncPhysicalAreaInfo = new SyncPhysicalAreaInfo().setPosition(new DecimalPosition(300, 200)).setAngle(0);
-        SyncBaseItemInfo factoryInfo = new SyncBaseItemInfo().setId(107).setBaseId(99).setItemTypeId(FACTORY_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.5);
+        SyncBaseItemInfo factoryInfo = new SyncBaseItemInfo().setId(107).setBaseId(99).setItemTypeId(FACTORY_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.5).setSpawnProgress(0.0);
         factoryInfo.setFactoryBuildupProgress(0.45).setToBeBuiltTypeId(BUILDER_ITEM_TYPE_ID).setRallyPoint(new DecimalPosition(300, 150));
         syncBaseItemInfos.add(factoryInfo);
 
@@ -73,6 +73,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         Assert.assertNull(builder.getSyncWeapon());
         Assert.assertEquals(new DecimalPosition(200, 200), SimpleTestEnvironment.readField("toBeBuildPosition", builder.getSyncBuilder()));
         Assert.assertNull(builder.getSyncBuilder().getCurrentBuildup());
+        Assert.assertEquals(0.5, builder.getSpawnProgress(), 0.0001);
         // Verify Factory
         SyncBaseItem factory = getSyncItemContainerService().getSyncBaseItem(107);
         Assert.assertEquals(99, factory.getBase().getBaseId());
@@ -93,6 +94,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         Assert.assertEquals(0.45, factory.getSyncFactory().getBuildup(), 0.00001);
         Assert.assertEquals(BUILDER_ITEM_TYPE_ID, ((BaseItemType) SimpleTestEnvironment.readField("toBeBuiltType", factory.getSyncFactory())).getId());
         Assert.assertEquals(new DecimalPosition(300, 150), SimpleTestEnvironment.readField("rallyPoint", factory.getSyncFactory()));
+        Assert.assertEquals(0.0, factory.getSpawnProgress(), 0.0001);
         // Attacker
         SyncBaseItem attacker = getSyncItemContainerService().getSyncBaseItem(203);
         Assert.assertEquals(40, attacker.getBase().getBaseId());
@@ -110,6 +112,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         Assert.assertNotNull(attacker.getSyncWeapon());
         Assert.assertEquals(15, attacker.getSyncWeapon().getTarget().getId());
         Assert.assertEquals(0.75, (double)SimpleTestEnvironment.readField("reloadProgress", attacker.getSyncWeapon()), 0.0001);
+        Assert.assertEquals(1.0, attacker.getSpawnProgress(), 0.0001);
     }
 
 }
