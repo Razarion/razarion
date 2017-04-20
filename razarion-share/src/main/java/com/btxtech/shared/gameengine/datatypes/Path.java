@@ -98,4 +98,10 @@ public class Path {
         currentWayPointIndex = syncPhysicalAreaInfo.getCurrentWayPointIndex();
         totalRange = syncPhysicalAreaInfo.getTotalRange();
     }
+
+    public void fillSyncPhysicalAreaInfo(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        syncPhysicalAreaInfo.setWayPositions(wayPositions);
+        syncPhysicalAreaInfo.setCurrentWayPointIndex(currentWayPointIndex);
+        syncPhysicalAreaInfo.setTotalRange(totalRange);
+    }
 }

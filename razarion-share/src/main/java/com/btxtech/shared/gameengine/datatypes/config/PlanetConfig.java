@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
@@ -28,6 +29,7 @@ public class PlanetConfig {
     private Rectangle2D playGround;
     private List<SyncBaseItemInfo> syncBaseItemInfos;
     private List<PlayerBaseInfo> playerBaseInfos;
+    private List<BotConfig> botConfigs;
 
     public int getPlanetId() {
         return planetId;
@@ -142,6 +144,15 @@ public class PlanetConfig {
 
     public PlanetConfig setPlayerBaseInfos(List<PlayerBaseInfo> playerBaseInfos) {
         this.playerBaseInfos = playerBaseInfos;
+        return this;
+    }
+
+    public List<BotConfig> getBotConfigs() {
+        return botConfigs;
+    }
+
+    public PlanetConfig setBotConfigs(List<BotConfig> botConfigs) {
+        this.botConfigs = botConfigs;
         return this;
     }
 }

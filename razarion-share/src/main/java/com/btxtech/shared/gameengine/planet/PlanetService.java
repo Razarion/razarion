@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -42,6 +43,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private BoxService boxService;
     @Inject
     private ProjectileService projectileService;
+    @Inject
+    private BotService botService;
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
@@ -59,6 +62,9 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     public void start() {
         scheduledFuture.start();
+        if (planetConfig.getBotConfigs() != null) {
+            botService.startBots(planetConfig.getBotConfigs());
+        }
     }
 
     @Override

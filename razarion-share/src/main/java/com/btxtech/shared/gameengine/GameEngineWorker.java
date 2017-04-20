@@ -125,7 +125,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 baseItemService.createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (Integer) controlPackage.getData(1), (String) controlPackage.getData(2), (Integer) controlPackage.getData(3), (DecimalPosition) controlPackage.getData(4));
                 break;
             case SPAWN_BASE_ITEMS:
-                baseItemService.spawnSyncBaseItem((Integer) controlPackage.getData(0), (Collection<DecimalPosition>) controlPackage.getData(1), baseItemService.getPlayerBase4UserId(userContext.getUserId()));
+                baseItemService.spawnSyncBaseItems((Integer) controlPackage.getData(0), (Collection<DecimalPosition>) controlPackage.getData(1), baseItemService.getPlayerBase4UserId(userContext.getUserId()));
                 break;
             case CREATE_BOXES:
                 boxService.dropBoxes((List<BoxItemPosition>) controlPackage.getSingleData());

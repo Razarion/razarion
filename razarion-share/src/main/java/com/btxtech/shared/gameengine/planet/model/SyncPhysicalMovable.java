@@ -287,4 +287,14 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             this.path = null;
         }
     }
+
+    public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {
+        SyncPhysicalAreaInfo syncPhysicalAreaInfo = super.getSyncPhysicalAreaInfo();
+        syncPhysicalAreaInfo.setVelocity(velocity);
+        if(path != null) {
+            path.fillSyncPhysicalAreaInfo(syncPhysicalAreaInfo);
+        }
+        return syncPhysicalAreaInfo;
+    }
+
 }

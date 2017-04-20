@@ -64,6 +64,7 @@ public class GameUiControlConfigPersistence {
     private static final int NPC_BOT_OUTPOST_2 = 2;
     private static final int NPC_BOT_INSTRUCTOR = 3;
     private static final int ENEMY_BOT = 4;
+    public static final int PLANET_BOT_1 = 5;
     @PersistenceContext
     private EntityManager entityManager;
     @Inject

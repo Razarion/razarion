@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 16.04.2017.
  */
-public class PlayerBaseFull extends PlayerBase{
+public class PlayerBaseFull extends PlayerBase {
     private final Collection<SyncBaseItem> items = new ArrayList<>();
     private int usedHouseSpace = 0;
     private Integer levelId;

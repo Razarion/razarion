@@ -82,7 +82,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private SyncHouse syncHouse;
     private Integer containedIn;
     private boolean isMoneyEarningOrConsuming = false;
-    private PlayerBase killedBy;
     private double spawnProgress;
     private SyncBoxItem syncBoxItemToPick;
 
@@ -161,11 +160,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         health = syncBaseItemInfo.getHealth();
         setBuildup(syncBaseItemInfo.getBuildup());
         containedIn = syncBaseItemInfo.getContainedIn();
-        killedBy = syncBaseItemInfo.getKilledBy();
-
-        // TODO if (syncMovable != null) {
-        // TODO     syncMovable.synchronize(syncItemInfo);
-        // TODO }
 
         if (syncWeapon != null) {
             syncWeapon.synchronize(syncBaseItemInfo);
@@ -201,7 +195,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         syncBaseItemInfo.setHealth(health);
         syncBaseItemInfo.setBuildup(buildup);
         syncBaseItemInfo.setContainedIn(containedIn);
-        syncBaseItemInfo.setKilledBy(killedBy);
 
         // TODO if (syncMovable != null) {
         // TODO     syncMovable.fillSyncItemInfo(syncItemInfo);
@@ -538,14 +531,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public boolean isContainedIn() {
         return containedIn != null;
-    }
-
-    public PlayerBase getKilledBy() {
-        return killedBy;
-    }
-
-    public void setKilledBy(PlayerBase killedBy) {
-        this.killedBy = killedBy;
     }
 
     private boolean pickSyncBoxItem() {

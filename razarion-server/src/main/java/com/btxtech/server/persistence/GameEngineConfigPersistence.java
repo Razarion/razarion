@@ -1,13 +1,19 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
@@ -64,6 +70,7 @@ public class GameEngineConfigPersistence {
         gameEngineConfig.setPlanetConfig(entityManager.find(PlanetEntity.class, (long) 2).toPlanetConfig());
         gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.MASTER);// TODO move to DB
         TemporaryPersistenceUtils.completePlanetConfigMultiPlayer(gameEngineConfig.getPlanetConfig());// TODO move to DB
+        gameEngineConfig.getPlanetConfig().setBotConfigs(setupServerBots());
         return gameEngineConfig;
     }
 
@@ -269,5 +276,16 @@ public class GameEngineConfigPersistence {
         List<InventoryItem> inventoryItems = new ArrayList<>();
         inventoryItems.add(new InventoryItem().setId(GameEngineConfigPersistence.INVENTORY_ITEM).setBaseItemType(GameEngineConfigPersistence.BASE_ITEM_TYPE_ATTACKER).setBaseItemTypeCount(3).setItemFreeRange(5).setName("3 Attacker pack").setImageId(272484));
         return inventoryItems;
+    }
+
+    private List<BotConfig> setupServerBots() {
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(GameEngineConfigPersistence.BASE_ITEM_TYPE_ATTACKER).setCount(10).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(new Polygon2D(Arrays.asList(new DecimalPosition(80, 140),new DecimalPosition(160, 140),new DecimalPosition(160, 230),new DecimalPosition(80, 230))))).setNoSpawn(true).setNoRebuild(false));
+        // botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 246))).setNoSpawn(true).setNoRebuild(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(GameUiControlConfigPersistence.PLANET_BOT_1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        return botConfigs;
     }
 }

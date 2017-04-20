@@ -213,6 +213,13 @@ public class SyncPhysicalArea {
         angle = syncPhysicalAreaInfo.getAngle();
     }
 
+    public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {
+        SyncPhysicalAreaInfo syncPhysicalAreaInfo = new SyncPhysicalAreaInfo();
+        syncPhysicalAreaInfo.setAngle(angle);
+        syncPhysicalAreaInfo.setPosition(position2d);
+        return syncPhysicalAreaInfo;
+    }
+
     @Override
     public String toString() {
         return "SyncPhysicalArea{" +

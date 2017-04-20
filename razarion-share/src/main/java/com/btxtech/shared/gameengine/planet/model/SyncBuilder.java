@@ -188,7 +188,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
     @Override
     public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
-        // syncItemInfo.setToBeBuildPosition(toBeBuildPosition);
+        syncBaseItemInfo.setToBeBuildPosition(toBeBuildPosition);
         if (toBeBuiltType != null) {
             syncBaseItemInfo.setToBeBuiltTypeId(toBeBuiltType.getId());
         }

@@ -42,7 +42,6 @@ import java.util.Map;
  */
 @Singleton // Rename to BaseService
 public class BaseItemService {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -172,15 +171,15 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    public void spawnSyncBaseItem(int baseItemTypeId, Collection<DecimalPosition> positions, PlayerBaseFull base) throws ItemLimitExceededException, HouseSpaceExceededException {
+    public void spawnSyncBaseItems(int baseItemTypeId, Collection<DecimalPosition> positions, PlayerBaseFull base) throws ItemLimitExceededException, HouseSpaceExceededException {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
         for (DecimalPosition position : positions) {
             spawnSyncBaseItem(baseItemType, position, 0, base, false);
         }
     }
 
-    public SyncBaseItem spawnSyncBaseItem(BaseItemType baseItemTypeId, DecimalPosition position, double zRotation, PlayerBaseFull base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
-        SyncBaseItem syncBaseItem = createSyncBaseItem(baseItemTypeId, position, zRotation, base);
+    public SyncBaseItem spawnSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, double zRotation, PlayerBaseFull base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
+        SyncBaseItem syncBaseItem = createSyncBaseItem(baseItemType, position, zRotation, base);
         syncBaseItem.setBuildup(1.0);
 
         if (noSpawn) {

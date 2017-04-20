@@ -32,7 +32,6 @@ import javax.inject.Inject;
 public abstract class SyncItem {
     public static final String SYNC_PHYSICAL_AREA = "SYNC_PHYSICAL_AREA";
     public static final String SYNC_PHYSICAL_MOVABLE = "SYNC_PHYSICAL_MOVABLE";
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     private int id;
@@ -57,7 +56,7 @@ public abstract class SyncItem {
     public SyncBaseItemInfo getSyncInfo() {
         SyncBaseItemInfo syncItemInfo = new SyncBaseItemInfo();
         syncItemInfo.setId(id);
-        // TODO SyncPhysicalAreaInfo;
+        syncItemInfo.setSyncPhysicalAreaInfo(syncPhysicalArea.getSyncPhysicalAreaInfo());
         syncItemInfo.setItemTypeId(itemType.getId());
         syncItemInfo.setAlive(isAlive());
         return syncItemInfo;

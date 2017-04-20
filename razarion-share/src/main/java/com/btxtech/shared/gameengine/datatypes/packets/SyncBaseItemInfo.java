@@ -32,7 +32,6 @@ public class SyncBaseItemInfo {
     private boolean isAlive = true;
     private SyncPhysicalAreaInfo syncPhysicalAreaInfo;
     private int baseId;
-    private PlayerBase killedBy;
     private DecimalPosition toBeBuildPosition;
     private Integer toBeBuiltTypeId;
     private Integer currentBuildup;
@@ -89,15 +88,6 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo setAlive(boolean alive) {
         isAlive = alive;
-        return this;
-    }
-
-    public PlayerBase getKilledBy() {
-        return killedBy;
-    }
-
-    public SyncBaseItemInfo setKilledBy(PlayerBase killedBy) {
-        this.killedBy = killedBy;
         return this;
     }
 

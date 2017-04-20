@@ -82,6 +82,7 @@ public class PlayerBase {
         playerBaseInfo.setCharacter(character);
         playerBaseInfo.setName(name);
         playerBaseInfo.setUserId(userId);
+        playerBaseInfo.setResources(resources);
         return playerBaseInfo;
     }
 
