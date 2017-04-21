@@ -32,7 +32,7 @@ public abstract class AbstractTerrainScenario extends Scenario {
         TerrainTypeService terrainTypeService = weldContainer.instance().select(TerrainTypeService.class).get();
         terrainTypeService.onGameEngineInit(new GameEngineInitEvent(gameEngineConfig));
         TerrainService terrainService = weldContainer.instance().select(TerrainService.class).get();
-        terrainService.onPlanetActivation(new PlanetActivationEvent(gameEngineConfig.getPlanetConfig()));
+        terrainService.setup(gameEngineConfig.getPlanetConfig());
     }
 
     protected TerrainService getTerrainService() {

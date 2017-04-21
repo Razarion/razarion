@@ -45,6 +45,7 @@ public class TemporaryPersistenceUtils {
         planetConfig.setWaterLevel(-0.7);
         planetConfig.setStartRazarion(550);
         planetConfig.setStartBaseItemTypeId(GameEngineConfigPersistence.BASE_ITEM_TYPE_BULLDOZER);
+        planetConfig.setStartRegion(PLANET_1_SPAWN);
     }
 
 }

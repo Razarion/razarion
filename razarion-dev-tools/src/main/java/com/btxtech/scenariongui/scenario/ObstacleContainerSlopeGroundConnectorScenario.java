@@ -4,7 +4,6 @@ import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -12,12 +11,10 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -91,7 +88,7 @@ public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 30, 30));
-        terrainService.onPlanetActivation(new PlanetActivationEvent(planetConfig));
+        terrainService.setup(planetConfig);
     }
 
     @Override

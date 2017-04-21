@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -28,6 +29,7 @@ public class PlanetConfig {
     private Integer actualBaseId;
     private int startRazarion;
     private int startBaseItemTypeId;
+    private Polygon2D startRegion;
     private Rectangle2D playGround;
     private List<SyncBaseItemInfo> syncBaseItemInfos;
     private List<PlayerBaseInfo> playerBaseInfos;
@@ -119,6 +121,15 @@ public class PlanetConfig {
 
     public PlanetConfig setStartBaseItemTypeId(int startBaseItemTypeId) {
         this.startBaseItemTypeId = startBaseItemTypeId;
+        return this;
+    }
+
+    public Polygon2D getStartRegion() {
+        return startRegion;
+    }
+
+    public PlanetConfig setStartRegion(Polygon2D startRegion) {
+        this.startRegion = startRegion;
         return this;
     }
 

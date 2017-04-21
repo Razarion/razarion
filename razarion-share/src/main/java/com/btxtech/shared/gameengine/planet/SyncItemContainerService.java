@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 public class SyncItemContainerService {
     private static final int MAX_TRIES = 10000;
     private Logger logger = Logger.getLogger(SyncItemContainerService.class.getName());
-    private int lastItemId = 0;
+    private int lastItemId = 1;
     private final HashMap<Integer, SyncItem> items = new HashMap<>();
     @Inject
     private Instance<SyncItem> syncItemInstance;
@@ -56,7 +56,7 @@ public class SyncItemContainerService {
 
     public void clear() {
         items.clear();
-        lastItemId = 0;
+        lastItemId = 1;
     }
 
     public <T> T iterateOverItems(boolean includeNoPosition, boolean includeDead, T defaultReturn, ItemIteratorHandler<T> itemIteratorHandler) {

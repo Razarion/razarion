@@ -14,7 +14,6 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
@@ -65,7 +64,7 @@ public class TerrainServiceTestBase {
         planetConfig.setTerrainSlopePositions(terrainSlopePositions).setWaterLevel(-0.7);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setWaterLevel(-0.7);
-        terrainService.onPlanetActivation(new PlanetActivationEvent(planetConfig));
+        terrainService.setup(planetConfig);
     }
 
     protected TerrainTile generateTerrainTile(Index terrainTileIndex) {

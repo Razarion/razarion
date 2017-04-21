@@ -132,7 +132,7 @@ public class SimpleTerrainScenario extends Scenario {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
-        terrainService.onPlanetActivation(new PlanetActivationEvent(planetConfig));
+        terrainService.setup(planetConfig);
 
         return terrainService.generateTerrainTile(terrainTileIndex);
     }

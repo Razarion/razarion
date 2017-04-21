@@ -91,7 +91,6 @@ public class GameUiControlConfigPersistence {
             gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.SLAVE);// TODO move to DB
             gameEngineService.fillSyncItems(gameEngineConfig.getPlanetConfig(), userContext);
             TemporaryPersistenceUtils.completePlanetConfigMultiPlayer(gameEngineConfig.getPlanetConfig());// TODO move to DB
-            gameUiControlConfig.setSceneConfigs(setupPlanet1()); // TODO move to DB
         } else {
             // Tutorial
             gameUiControlConfig = getGameUiControlConfig4Level(1).toGameUiControlConfig(gameEngineConfig);
@@ -906,24 +905,4 @@ public class GameUiControlConfigPersistence {
         // Go to than you page
         sceneConfigs.add(new SceneConfig().setInternalName("script: forward to ThankYou page").setForwardUrl("ThankYou.html"));
     }
-
-    // Planet 1 -----------------------------------------------------------------------------
-    private List<SceneConfig> setupPlanet1() {
-        List<SceneConfig> sceneConfigs = new ArrayList<>();
-        DecimalPosition position = TemporaryPersistenceUtils.PLANET_1_SPAWN.toAabb().center();
-        // Set camera Position
-        sceneConfigs.add(new SceneConfig().setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
-        // Fade out
-        addFadeOutLoadingCover(sceneConfigs);
-        // User Spawn
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10).setSuggestedPosition(position);
-        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
-        buildupItemTypeCount.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_BULLDOZER, 1);
-        ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setInternalName("Planet 1 Spawn").setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(0)));
-
-        return sceneConfigs;
-    }
-
-
 }

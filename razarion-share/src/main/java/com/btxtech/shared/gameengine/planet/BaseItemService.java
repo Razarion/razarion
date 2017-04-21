@@ -57,7 +57,7 @@ public class BaseItemService {
     @Inject
     private ItemTypeService itemTypeService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
-    private int lastBaseItId;
+    private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
     private final Collection<SyncBaseItem> guardingItems = new ArrayList<>();
@@ -68,7 +68,7 @@ public class BaseItemService {
         activeItemQueue.clear();
         bases.clear();
         guardingItems.clear();
-        lastBaseItId = 0;
+        lastBaseItId = 1;
         planetConfig = planetActivationEvent.getPlanetConfig();
         if (getGameEngineMode() == GameEngineMode.SLAVE) {
             for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getPlanetConfig().getPlayerBaseInfos()) {

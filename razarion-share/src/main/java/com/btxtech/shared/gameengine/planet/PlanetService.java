@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -49,6 +50,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private BotService botService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private TerrainService terrainService;
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
@@ -62,6 +65,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public void initialise(PlanetConfig planetConfig) {
         this.planetConfig = planetConfig;
         syncItemContainerService.clear();
+        terrainService.setup(planetConfig);
         activationEvent.fire(new PlanetActivationEvent(planetConfig));
     }
 

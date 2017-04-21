@@ -45,8 +45,8 @@ public class TerrainService {
     private TerrainTileFactory terrainTileFactory;
     private PlanetConfig planetConfig;
 
-    public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
-        this.planetConfig = planetActivationEvent.getPlanetConfig();
+    public void setup(PlanetConfig planetConfig) {
+        this.planetConfig = planetConfig;
         setup(planetConfig.getTerrainSlopePositions(), planetConfig.getTerrainObjectPositions());
     }
 
