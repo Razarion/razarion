@@ -26,7 +26,6 @@ public class PlanetConfig {
     private double waterLevel;
     private int houseSpace;
     private Integer actualBaseId;
-    private Double actualRazarion;
     private int startRazarion;
     private int startBaseItemTypeId;
     private Rectangle2D playGround;
@@ -174,13 +173,5 @@ public class PlanetConfig {
 
     public void setActualBaseId(Integer actualBase) {
         this.actualBaseId = actualBase;
-    }
-
-    public Double getActualRazarion() {
-        return actualRazarion;
-    }
-
-    public void setActualRazarion(Double actualRazarion) {
-        this.actualRazarion = actualRazarion;
     }
 }

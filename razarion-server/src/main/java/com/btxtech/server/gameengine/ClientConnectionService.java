@@ -1,0 +1,59 @@
+package com.btxtech.server.gameengine;
+
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
+
+/**
+ * Created by Beat
+ * 21.04.2017.
+ */
+@Singleton
+public class ClientConnectionService {
+    @Inject
+    private ExceptionHandler exceptionHandler;
+    private final Collection<ClientConnection> clientConnections = new ArrayList<>();
+    private ObjectMapper mapper = new ObjectMapper();
+
+    public void onOpen(ClientConnection clientConnection) {
+        synchronized (clientConnections) {
+            clientConnections.add(clientConnection);
+        }
+    }
+
+    public void onClose(ClientConnection clientConnection) {
+        synchronized (clientConnections) {
+            clientConnections.remove(clientConnection);
+        }
+    }
+
+    public void onBaseCreated(PlayerBaseInfo playerBaseInfo) {
+        sendToClients(ConnectionMarshaller.Package.BASE_CREATED, playerBaseInfo);
+    }
+
+    private void sendToClients(ConnectionMarshaller.Package aPackage, Object object) {
+        String text;
+        try {
+            text = ConnectionMarshaller.marshall(aPackage, mapper.writeValueAsString(object));
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+            return;
+        }
+
+        synchronized (clientConnections) {
+            for (ClientConnection clientConnection : clientConnections) {
+                try {
+                    clientConnection.sendToClient(text);
+                } catch (Throwable throwable) {
+                    exceptionHandler.handleException(throwable);
+                }
+            }
+        }
+    }
+}

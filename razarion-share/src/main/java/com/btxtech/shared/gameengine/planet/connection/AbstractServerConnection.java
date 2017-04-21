@@ -1,33 +1,43 @@
 package com.btxtech.shared.gameengine.planet.connection;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.GameEngineWorker;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+
+import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 20.04.2017.
  */
 public abstract class AbstractServerConnection {
-    public static final String PACKAGE_DELIMITER = "#";
+    @Inject
+    private GameEngineWorker gameEngineWorker;
 
-    public enum Package {
-        CREATE_BASE(DecimalPosition.class);
+    protected abstract void sendToServer(String text);
 
-        private Class theClass;
+    protected abstract String toJson(Object param);
 
-        Package(Class theClass) {
-            this.theClass = theClass;
-        }
-
-        public Class getTheClass() {
-            return theClass;
-        }
-    }
-
-    protected abstract void sendToServer(Package aPackage, Object param);
+    protected abstract Object fromJson(String jsonString, ConnectionMarshaller.Package aPackage);
 
     public abstract void init();
 
     public void createHumanBaseWithBaseItem(DecimalPosition position) {
-        sendToServer(Package.CREATE_BASE, position);
+        sendToServer(ConnectionMarshaller.marshall(ConnectionMarshaller.Package.CREATE_BASE, toJson(position)));
     }
+
+    public void handleMessage(String text) {
+        ConnectionMarshaller.Package aPackage = ConnectionMarshaller.deMarshallPackage(text);
+        String jsonString = ConnectionMarshaller.deMarshallPayload(text);
+        Object param = fromJson(jsonString, aPackage);
+        switch (aPackage) {
+
+            case BASE_CREATED:
+                gameEngineWorker.onServerBaseCreated((PlayerBaseInfo)param);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown Packet: " + aPackage);
+        }
+    }
+
 }

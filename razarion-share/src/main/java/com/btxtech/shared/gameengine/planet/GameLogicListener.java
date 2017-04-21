@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -12,7 +13,9 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
  * 08.01.2017.
  */
 public interface GameLogicListener {
-    void onBaseCreated(PlayerBase playerBase);
+    void onBaseCreated(PlayerBaseFull playerBase);
+
+    void onBaseSlaveCreated(PlayerBase playerBase);
 
     void onBaseDeleted(PlayerBase playerBase);
 

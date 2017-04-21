@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -99,7 +100,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private int xpFromKills;
     private boolean sendTickUpdate;
     private AbstractServerConnection serverConnection;
-    private boolean initializing;
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
 
@@ -190,7 +190,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void initialise(GameEngineConfig gameEngineConfig, UserContext userContext) {
         try {
-            initializing = true;
             this.userContext = userContext;
             if (gameEngineConfig.getPlanetConfig().getGameEngineMode() == GameEngineMode.SLAVE) {
                 serverConnection = connectionInstance.get();
@@ -201,11 +200,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             planetService.addTickListener(this);
             if (gameEngineConfig.getPlanetConfig().getActualBaseId() != null) {
                 PlayerBase playerBase = baseItemService.getPlayerBase4BaseId(gameEngineConfig.getPlanetConfig().getActualBaseId());
-                this.playerBaseFull = new PlayerBaseFull(playerBase.getBaseId(), userContext.getName(), playerBase.getCharacter(), gameEngineConfig.getPlanetConfig().getStartRazarion(), userContext.getLevelId(), userContext.getUserId());
+                this.playerBaseFull = new PlayerBaseFull(playerBase.getBaseId(), userContext.getName(), playerBase.getCharacter(), playerBase.getResources(), userContext.getLevelId(), userContext.getUserId());
                 baseItemService.replaceBase(playerBaseFull);
             }
             sendToClient(GameEngineControlPackage.Command.INITIALIZED);
-            initializing = false;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));
@@ -308,11 +306,26 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onBaseCreated(PlayerBase playerBase) {
-        if (!initializing && playerBase.getUserId() != null && playerBase.getUserId() == userContext.getUserId()) {
+    public void onBaseCreated(PlayerBaseFull playerBase) {
+        if (playerBase.getUserId() != null && playerBase.getUserId() == userContext.getUserId()) {
             playerBaseFull = new PlayerBaseFull(playerBase.getBaseId(), playerBase.getName(), playerBase.getCharacter(), playerBase.getResources(), userContext.getLevelId(), playerBase.getUserId());
-            baseItemService.replaceBase(playerBaseFull);
         }
+        sendBaseToClient(playerBase);
+    }
+
+    @Override
+    public void onBaseSlaveCreated(PlayerBase playerBase) {
+        sendBaseToClient(playerBase);
+    }
+
+    public void onServerBaseCreated(PlayerBaseInfo playerBaseInfo) {
+        if (playerBaseInfo.getUserId() != null && playerBaseInfo.getUserId() == userContext.getUserId()) {
+            playerBaseFull = new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), userContext.getLevelId(), playerBaseInfo.getUserId());
+        }
+        baseItemService.createBaseSlave(playerBaseInfo);
+    }
+
+    private void sendBaseToClient(PlayerBase playerBase) {
         PlayerBaseDto playerBaseDto = new PlayerBaseDto();
         playerBaseDto.setBaseId(playerBase.getBaseId());
         playerBaseDto.setName(playerBase.getName());
@@ -408,5 +421,4 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
 
     }
-
 }

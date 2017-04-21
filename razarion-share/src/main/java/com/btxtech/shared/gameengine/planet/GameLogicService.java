@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
@@ -92,9 +93,14 @@ public class GameLogicService {
 
     }
 
-    public void onBaseCreated(PlayerBase playerBase) {
+    public void onBaseCreated(PlayerBaseFull playerBase) {
         System.out.println("GameLogicService.onBaseCreated(): " + playerBase);
         gameLogicListener.ifPresent(listener -> listener.onBaseCreated(playerBase));
+    }
+
+    public void onBaseSlaveCreated(PlayerBase playerBase) {
+        System.out.println("GameLogicService.onBaseSlaveCreated(): " + playerBase);
+        gameLogicListener.ifPresent(listener -> listener.onBaseSlaveCreated(playerBase));
     }
 
     public void onBaseKilled(PlayerBase playerBase, SyncBaseItem actor) {

@@ -1,14 +1,18 @@
 package com.btxtech.worker;
 
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerConnection;
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.system.ExceptionHandler;
 import elemental.client.Browser;
 import elemental.events.Event;
 import elemental.events.EventListener;
+import elemental.events.MessageEvent;
 import elemental.html.WebSocket;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import java.util.logging.Logger;
 
 /**
@@ -17,6 +21,8 @@ import java.util.logging.Logger;
  */
 @Dependent
 public class ClientServerConnection extends AbstractServerConnection {
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Logger logger = Logger.getLogger(ClientServerConnection.class.getName());
     private WebSocket webSocket;
 
@@ -42,6 +48,7 @@ public class ClientServerConnection extends AbstractServerConnection {
         webSocket = Browser.getWindow().newWebSocket(url);
         webSocket.setOnerror(evt -> logger.severe("WebSocket OnError: " + evt));
         webSocket.setOnclose(evt -> logger.severe("WebSocket Close: " + evt));
+        webSocket.setOnmessage(this::handleMessage);
         webSocket.setOnopen(new EventListener() {
             @Override
             public void handleEvent(Event evt) {
@@ -50,14 +57,27 @@ public class ClientServerConnection extends AbstractServerConnection {
         });
     }
 
-    @Override
-    protected void sendToServer(Package aPackage, Object param) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(aPackage.name());
-        stringBuilder.append("#");
-        if(param != null) {
-            stringBuilder.append(MarshallingWrapper.toJSON(param));
+    private void handleMessage(Event event) {
+        try {
+            MessageEvent messageEvent = (MessageEvent) event;
+            handleMessage((String)messageEvent.getData());
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException("ClientServerConnection.handleMessage() failed", throwable);
         }
-        webSocket.send(stringBuilder.toString());
+    }
+
+    @Override
+    protected void sendToServer(String text) {
+        webSocket.send(text);
+    }
+
+    @Override
+    protected String toJson(Object param) {
+        return MarshallingWrapper.toJSON(param);
+    }
+
+    @Override
+    protected Object fromJson(String jsonString, ConnectionMarshaller.Package aPackage) {
+        return MarshallingWrapper.fromJSON(jsonString, aPackage.getTheClass());
     }
 }

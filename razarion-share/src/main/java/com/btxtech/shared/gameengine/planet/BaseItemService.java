@@ -143,14 +143,14 @@ public class BaseItemService {
         }
     }
 
-    private void createBaseSlave(PlayerBaseInfo playerBaseInfo) {
+    public void createBaseSlave(PlayerBaseInfo playerBaseInfo) {
         synchronized (bases) {
             if (bases.containsKey(playerBaseInfo.getBaseId())) {
                 throw new IllegalStateException("createBaseSlave: Base with Id already exits: " + playerBaseInfo.getBaseId());
             }
             PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getUserId());
             bases.put(playerBaseInfo.getBaseId(), playerBase);
-            gameLogicService.onBaseCreated(playerBase);
+            gameLogicService.onBaseSlaveCreated(playerBase);
         }
     }
 

@@ -125,7 +125,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
         PlayerBaseFull playerBaseFull = baseItemService.getPlayerBase4UserId(userContext.getUserId());
         if (playerBaseFull != null) {
             planetConfig.setActualBaseId(playerBaseFull.getBaseId());
-            planetConfig.setActualRazarion(playerBaseFull.getResources());
         }
     }
 }
