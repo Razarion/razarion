@@ -136,6 +136,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 }
                 return true;
             } else {
+                building = false;
                 gameLogicService.onBuilderNoMoney(getSyncBaseItem());
                 return true;
             }
@@ -185,6 +186,9 @@ public class SyncBuilder extends SyncBaseAbility {
             currentBuildup = syncItemContainerService.getSyncBaseItemSave(currentBuildupId);
         } else {
             currentBuildup = null;
+        }
+        if (currentBuildup == null) {
+            building = false;
         }
     }
 
