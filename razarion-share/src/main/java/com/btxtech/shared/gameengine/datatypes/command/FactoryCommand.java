@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+
 /**
  * User: beat
  * Date: Aug 1, 2009
@@ -27,6 +29,11 @@ public class FactoryCommand extends BaseCommand {
 
     public void setToBeBuiltId(int toBeBuiltId) {
         this.toBeBuiltId = toBeBuiltId;
+    }
+
+    @Override
+    public ConnectionMarshaller.Package connectionPackage() {
+        return ConnectionMarshaller.Package.FACTORY_COMMAND;
     }
 
     @Override

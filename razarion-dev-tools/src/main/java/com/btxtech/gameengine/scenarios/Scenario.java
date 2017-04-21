@@ -4,9 +4,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.datatypes.Path;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -118,7 +117,7 @@ public class Scenario {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, angle, playerBase, true);
             if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
-                Path path = pathingService.setupPathToDestination(syncBaseItem, destination);
+                SimplePath path = pathingService.setupPathToDestination(syncBaseItem, destination);
                 ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setPath(path);
             }
             createdSyncBaseItems.add(syncBaseItem);

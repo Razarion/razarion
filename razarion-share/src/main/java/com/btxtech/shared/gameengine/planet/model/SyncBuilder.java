@@ -211,7 +211,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
         toBeBuiltType = tmpToBeBuiltType;
         toBeBuildPosition = builderCommand.getPositionToBeBuilt();
-        getSyncPhysicalMovable().setPath(builderCommand.getPathToDestination());
+        getSyncPhysicalMovable().setPath(builderCommand.getSimplePath());
     }
 
     public synchronized void executeCommand(BuilderFinalizeCommand builderFinalizeCommand) throws NoSuchItemTypeException, ItemDoesNotExistException {
@@ -222,7 +222,7 @@ public class SyncBuilder extends SyncBaseAbility {
 
         currentBuildup = syncBaseItem;
         toBeBuiltType = syncBaseItem.getBaseItemType();
-        getSyncPhysicalMovable().setPath(builderFinalizeCommand.getPathToDestination());
+        getSyncPhysicalMovable().setPath(builderFinalizeCommand.getSimplePath());
     }
 
     public BuilderType getBuilderType() {

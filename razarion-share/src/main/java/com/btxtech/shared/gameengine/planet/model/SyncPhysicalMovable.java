@@ -16,6 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.Path;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -216,8 +217,9 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         return path != null;
     }
 
-    public void setPath(Path path) {
-        this.path = path;
+    public void setPath(SimplePath path) {
+        this.path = instancePath.get();
+        this.path.init(path);
     }
 
     public Path getPath() {

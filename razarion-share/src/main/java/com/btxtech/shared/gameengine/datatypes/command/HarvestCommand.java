@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+
 /**
  * User: beat
  * Date: Aug 1, 2009
@@ -27,6 +29,11 @@ public class HarvestCommand extends PathToDestinationCommand {
 
     public void setTarget(int target) {
         this.target = target;
+    }
+
+    @Override
+    public ConnectionMarshaller.Package connectionPackage() {
+        return ConnectionMarshaller.Package.HARVESTER_COMMAND;
     }
 
     @Override

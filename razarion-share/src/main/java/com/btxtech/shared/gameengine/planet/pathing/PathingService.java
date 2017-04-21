@@ -4,6 +4,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.Path;
+import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -35,27 +37,28 @@ public class PathingService {
     @Inject
     private Instance<Path> instancePath;
 
-    public Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
+    public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, destination, 0);
     }
 
-    public Path setupPathToDestination(SyncBaseItem syncBaseItem, double range, SyncItem target) {
+    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, SyncItem target) {
         return setupPathToDestination(syncBaseItem, range, target.getSyncPhysicalArea().getPosition2d(), target.getSyncPhysicalArea().getRadius());
     }
 
-    public Path setupPathToDestination(SyncBaseItem syncBaseItem, double range, DecimalPosition targetPosition, double targetRadius) {
+    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, DecimalPosition targetPosition, double targetRadius) {
         double totalRange = syncBaseItem.getSyncPhysicalArea().getRadius() + targetRadius + range;
         return setupPathToDestination(syncBaseItem, targetPosition, totalRange);
     }
 
-    private Path setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange) {
-        Path path = instancePath.get();
+    private SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange) {
+        SimplePath path = new SimplePath();
         List<DecimalPosition> positions = new ArrayList<>();
         Index startTile = obstacleContainer.toNode(syncItem.getSyncPhysicalArea().getPosition2d());
         Index destinationTile = obstacleContainer.toNode(destination);
         if (startTile.equals(destinationTile)) {
             positions.add(destination);
-            path.init(positions, totalRange);
+            path.setWayPositions(positions);
+            path.setTotalRange(totalRange);
             return path;
         }
 
@@ -66,7 +69,8 @@ public class PathingService {
             positions.add(obstacleContainer.toAbsoluteMiddle(index));
         }
         positions.add(destination);
-        path.init(positions, totalRange);
+        path.setWayPositions(positions);
+        path.setTotalRange(totalRange);
         return path;
     }
 

@@ -13,14 +13,20 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+
+import java.util.Date;
+
 /**
  * User: beat
  * Date: Aug 1, 2009
  * Time: 12:56:55 PM
  */
-public class BaseCommand {
+public abstract class BaseCommand {
     private int id;
-    private long timeStamp;
+    private Date timeStamp;
+
+    public abstract ConnectionMarshaller.Package connectionPackage();
 
     public int getId() {
         return id;
@@ -30,12 +36,12 @@ public class BaseCommand {
         this.id = id;
     }
 
-    public long getTimeStamp() {
+    public Date getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp() {
-        timeStamp = System.currentTimeMillis();
+    public void updateTimeStamp() {
+        timeStamp = new Date();
     }
 
     @Override

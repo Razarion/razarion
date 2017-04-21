@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.command;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
 
 /**
  * User: beat
@@ -29,5 +30,10 @@ public class UnloadContainerCommand extends BaseCommand {
 
     public void setUnloadPos(DecimalPosition unloadPos) {
         this.unloadPos = unloadPos;
+    }
+
+    @Override
+    public ConnectionMarshaller.Package connectionPackage() {
+        return ConnectionMarshaller.Package.UNLOAD_CONTAINER_COMMAND;
     }
 }

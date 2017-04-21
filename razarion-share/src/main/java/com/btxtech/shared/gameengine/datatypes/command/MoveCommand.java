@@ -13,10 +13,16 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+
 /**
  * User: beat
  * Date: Aug 1, 2009
  * Time: 1:04:35 PM
  */
 public class MoveCommand extends PathToDestinationCommand {
+    @Override
+    public ConnectionMarshaller.Package connectionPackage() {
+        return ConnectionMarshaller.Package.MOVE_COMMAND;
+    }
 }

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -40,4 +41,6 @@ public interface GameLogicListener {
     void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection);
 
     void onProjectileDetonation(int baseItemTypeId, Vertex position);
+
+    void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand);
 }

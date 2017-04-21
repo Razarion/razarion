@@ -14,6 +14,8 @@
 package com.btxtech.shared.gameengine.datatypes.command;
 
 
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+
 /**
  * User: beat
  * Date: Aug 1, 2009
@@ -37,6 +39,11 @@ public class AttackCommand extends PathToDestinationCommand {
 
     public void setFollowTarget(boolean followTarget) {
         this.followTarget = followTarget;
+    }
+
+    @Override
+    public ConnectionMarshaller.Package connectionPackage() {
+        return ConnectionMarshaller.Package.ATTACK_COMMAND;
     }
 
     @Override

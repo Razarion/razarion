@@ -3,7 +3,9 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -35,6 +37,8 @@ public class ClientConnection {
     private UserService userService;
     @Inject
     private ClientConnectionService clientConnectionService;
+    @Inject
+    private CommandService commandService;
     private ObjectMapper mapper = new ObjectMapper();
     private EndpointConfig config;
     private RemoteEndpoint.Async async;
@@ -73,7 +77,18 @@ public class ClientConnection {
         UserContext userContext = getUser();
         switch (aPackage) {
             case CREATE_BASE:
-                baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), (int) userContext.getUserId(), userContext.getName(), (DecimalPosition) param);
+                baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(),  userContext.getUserId(), userContext.getName(), (DecimalPosition) param);
+                break;
+            case FACTORY_COMMAND:
+            case UNLOAD_CONTAINER_COMMAND:
+            case ATTACK_COMMAND:
+            case BUILDER_COMMAND:
+            case BUILDER_FINALIZE_COMMAND:
+            case HARVESTER_COMMAND:
+            case LOAD_CONTAINER_COMMAND:
+            case MOVE_COMMAND:
+            case PICK_BOX_COMMAND:
+                commandService.executeCommand((BaseCommand) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + aPackage);

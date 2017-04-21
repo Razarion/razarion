@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.command;
 
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+
 /**
  * User: beat
  * Date: 21.05.12
@@ -14,5 +16,10 @@ public class PickupBoxCommand extends PathToDestinationCommand {
 
     public void setSynBoxItemId(int synBoxItemId) {
         this.synBoxItemId = synBoxItemId;
+    }
+
+    @Override
+    public ConnectionMarshaller.Package connectionPackage() {
+        return ConnectionMarshaller.Package.PICK_BOX_COMMAND;
     }
 }

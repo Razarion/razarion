@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -374,6 +375,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
         sendToClient(GameEngineControlPackage.Command.PROJECTILE_DETONATION, baseItemTypeId, position);
+    }
+
+    @Override
+    public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
+        if(serverConnection != null) {
+            serverConnection.onCommandSent(baseCommand);
+        }
     }
 
     private void onPerfmonRequest() {

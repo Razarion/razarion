@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
@@ -33,15 +34,14 @@ public class Path {
     private double totalRange;
 
     /**
-     * @param path       the path
-     * @param totalRange radius SyncItem + radius target + weapon range
+     * @param path the path
      */
-    public void init(List<DecimalPosition> path, double totalRange) {
-        if (path.isEmpty()) {
+    public void init(SimplePath path) {
+        if (path.getWayPositions().isEmpty()) {
             throw new IllegalArgumentException("At least one way point must be available");
         }
-        this.totalRange = totalRange;
-        wayPositions = path;
+        this.totalRange = path.getTotalRange();
+        wayPositions = path.getWayPositions();
         currentWayPointIndex = 0;
     }
 

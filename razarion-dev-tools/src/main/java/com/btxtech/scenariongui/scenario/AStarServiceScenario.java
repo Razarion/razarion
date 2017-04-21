@@ -3,7 +3,7 @@ package com.btxtech.scenariongui.scenario;
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.datatypes.Path;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.model.DevToolHelper;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
  */
 public class AStarServiceScenario extends AbstractTerrainScenario {
     private DecimalPosition start;
-    private Path path;
+    private SimplePath path;
 
     @Override
     public void render(ExtendedGraphicsContext extendedGraphicsContext) {

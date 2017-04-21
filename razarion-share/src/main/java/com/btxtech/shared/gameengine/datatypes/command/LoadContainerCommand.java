@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+
 /**
  * User: beat
  * Date: 01.05.2010
@@ -27,5 +29,10 @@ public class LoadContainerCommand extends PathToDestinationCommand {
 
     public void setItemContainer(int itemContainer) {
         this.itemContainer = itemContainer;
+    }
+
+    @Override
+    public ConnectionMarshaller.Package connectionPackage() {
+        return ConnectionMarshaller.Package.LOAD_CONTAINER_COMMAND;
     }
 }

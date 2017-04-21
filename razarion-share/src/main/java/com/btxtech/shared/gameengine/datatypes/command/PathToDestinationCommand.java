@@ -1,26 +1,24 @@
 package com.btxtech.shared.gameengine.datatypes.command;
 
 
-import com.btxtech.shared.gameengine.datatypes.Path;
-
 /**
  * User: beat
  * Date: 07.10.2011
  * Time: 13:33:30
  */
 public abstract class PathToDestinationCommand extends BaseCommand {
-    private Path path;
+    private SimplePath simplePath;
 
-    public Path getPathToDestination() {
-        return path;
+    public SimplePath getSimplePath() {
+        return simplePath;
     }
 
-    public void setPathToDestination(Path path) {
-        this.path = path;
+    public void setSimplePath(SimplePath simplePath) {
+        this.simplePath = simplePath;
     }
 
     @Override
     public String toString() {
-        return super.toString() + " " + path;
+        return super.toString() + " simplePath: " + simplePath;
     }
 }

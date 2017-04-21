@@ -69,13 +69,8 @@ public class GameLogicService {
     }
 
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
-        // TODO connectionService.sendSyncInfo(syncItem);
         System.out.println("GameLogicService.onCommandSent() " + syncItem + " " + baseCommand);
-    }
-
-    public void onInvalidPath(BaseCommand baseCommand) {
-        logger.severe("Path is invalid: " + ((PathToDestinationCommand) baseCommand).getPathToDestination());
-        // TODO  connectionService.sendSyncInfo(syncItem);
+        gameLogicListener.ifPresent(listener -> listener.onCommandSent(syncItem, baseCommand));
     }
 
     public void onSyncItemDeactivated(SyncItem activeItem) {

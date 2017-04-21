@@ -151,7 +151,7 @@ public class SyncWeapon extends SyncBaseAbility {
 
     @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
-        if(syncBaseItemInfo.getTarget() != null) {
+        if (syncBaseItemInfo.getTarget() != null) {
             target = syncItemContainerService.getSyncBaseItemSave(syncBaseItemInfo.getTarget());
         } else {
             target = null;
@@ -189,7 +189,7 @@ public class SyncWeapon extends SyncBaseAbility {
         this.target = target;
         followTarget = attackCommand.isFollowTarget();
         if (followTarget) {
-            getSyncPhysicalMovable().setPath(attackCommand.getPathToDestination());
+            getSyncPhysicalMovable().setPath(attackCommand.getSimplePath());
         }
         targetPosition = target.getSyncPhysicalArea().getPosition2d();
         targetPositionLastCheck = System.currentTimeMillis();

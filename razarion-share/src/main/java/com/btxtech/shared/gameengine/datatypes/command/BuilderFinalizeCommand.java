@@ -13,6 +13,8 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
+import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+
 /**
  * User: beat
  * Date: Sep 12, 2010
@@ -27,6 +29,11 @@ public class BuilderFinalizeCommand extends PathToDestinationCommand {
 
     public void setBuildingId(int buildingId) {
         this.buildingId = buildingId;
+    }
+
+    @Override
+    public ConnectionMarshaller.Package connectionPackage() {
+        return ConnectionMarshaller.Package.BUILDER_FINALIZE_COMMAND;
     }
 
     @Override
