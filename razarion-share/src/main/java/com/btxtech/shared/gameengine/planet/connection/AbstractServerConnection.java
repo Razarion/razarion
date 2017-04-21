@@ -3,6 +3,8 @@ package com.btxtech.shared.gameengine.planet.connection;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 
 import javax.inject.Inject;
 
@@ -13,6 +15,8 @@ import javax.inject.Inject;
 public abstract class AbstractServerConnection {
     @Inject
     private GameEngineWorker gameEngineWorker;
+    @Inject
+    private BaseItemService baseItemService;
 
     protected abstract void sendToServer(String text);
 
@@ -33,7 +37,10 @@ public abstract class AbstractServerConnection {
         switch (aPackage) {
 
             case BASE_CREATED:
-                gameEngineWorker.onServerBaseCreated((PlayerBaseInfo)param);
+                gameEngineWorker.onServerBaseCreated((PlayerBaseInfo) param);
+                break;
+            case SYNC_BASE_ITEM_CHANGED:
+                baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + aPackage);

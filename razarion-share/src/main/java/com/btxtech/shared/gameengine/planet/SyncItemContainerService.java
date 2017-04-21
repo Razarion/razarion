@@ -21,7 +21,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 
-import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -244,12 +243,20 @@ public class SyncItemContainerService {
     }
 
     private SyncItem getSyncItem(int id) {
-        SyncItem syncItem = items.get(id);
+        return items.get(id);
+    }
+
+    private SyncItem getSyncItemSave(int id) {
+        SyncItem syncItem = getSyncItem(id);
         if (syncItem != null) {
             return syncItem;
         } else {
             throw new ItemDoesNotExistException(id);
         }
+    }
+
+    public SyncBaseItem getSyncBaseItemSave(int id) {
+        return (SyncBaseItem) getSyncItemSave(id);
     }
 
     public SyncBaseItem getSyncBaseItem(int id) {

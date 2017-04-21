@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.connection;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
 /**
  * Created by Beat
@@ -12,7 +13,8 @@ public interface ConnectionMarshaller {
 
     enum Package {
         CREATE_BASE(DecimalPosition.class),
-        BASE_CREATED(PlayerBaseInfo.class);
+        BASE_CREATED(PlayerBaseInfo.class),
+        SYNC_BASE_ITEM_CHANGED(SyncBaseItemInfo.class);
 
         private Class theClass;
 

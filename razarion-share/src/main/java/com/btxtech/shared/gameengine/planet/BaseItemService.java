@@ -207,6 +207,15 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
+    public void onSlaveSyncBaseItemChanged(SyncBaseItemInfo syncBaseItemInfo) {
+        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getId());
+        if (syncBaseItem == null) {
+            PlayerBase playerBase = getPlayerBase4BaseId(syncBaseItemInfo.getBaseId());
+            syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, playerBase);
+        }
+        synchronizeActivateSlave(syncBaseItem, syncBaseItemInfo);
+    }
+
     private SyncBaseItem createSyncBaseItemSlave(SyncBaseItemInfo syncBaseItemInfo, PlayerBase playerBase) {
         BaseItemType toBeBuilt = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
         SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItemSlave(toBeBuilt, syncBaseItemInfo.getId(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());

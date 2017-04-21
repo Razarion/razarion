@@ -51,7 +51,7 @@ public class CommandService { // Is part of the Base service
 
     public void move(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
         for (int syncBaseItemId : syncBaseItemIds) {
-            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemId);
+            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(syncBaseItemId);
             move(syncBaseItem, destination);
         }
     }
@@ -65,7 +65,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void build(int builderId, DecimalPosition positionToBeBuild, int itemTypeIdToBuild) {
-        SyncBaseItem builder = syncItemContainerService.getSyncBaseItem(builderId);
+        SyncBaseItem builder = syncItemContainerService.getSyncBaseItemSave(builderId);
         BaseItemType toBuild = itemTypeService.getBaseItemType(itemTypeIdToBuild);
         build(builder, positionToBeBuild, toBuild);
     }
@@ -98,9 +98,9 @@ public class CommandService { // Is part of the Base service
     }
 
     public void finalizeBuild(Collection<Integer> builderIds, int buildingId) {
-        SyncBaseItem building = syncItemContainerService.getSyncBaseItem(buildingId);
+        SyncBaseItem building = syncItemContainerService.getSyncBaseItemSave(buildingId);
         for (int builderId : builderIds) {
-            SyncBaseItem builder = syncItemContainerService.getSyncBaseItem(builderId);
+            SyncBaseItem builder = syncItemContainerService.getSyncBaseItemSave(builderId);
             finalizeBuild(builder, building);
         }
     }
@@ -108,7 +108,7 @@ public class CommandService { // Is part of the Base service
     public void fabricate(Collection<Integer> factoryIds, int itemTypeToBuildId) {
         BaseItemType toBuild = itemTypeService.getBaseItemType(itemTypeToBuildId);
         for (int factoryId : factoryIds) {
-            SyncBaseItem factory = syncItemContainerService.getSyncBaseItem(factoryId);
+            SyncBaseItem factory = syncItemContainerService.getSyncBaseItemSave(factoryId);
             fabricate(factory, toBuild);
         }
     }
@@ -124,7 +124,7 @@ public class CommandService { // Is part of the Base service
     public void harvest(Collection<Integer> harvesterIds, int resourceId) {
         SyncResourceItem resource = resourceService.getSyncResourceItem(resourceId);
         for (int harvesterId : harvesterIds) {
-            SyncBaseItem harvester = syncItemContainerService.getSyncBaseItem(harvesterId);
+            SyncBaseItem harvester = syncItemContainerService.getSyncBaseItemSave(harvesterId);
             harvest(harvester, resource);
         }
     }
@@ -143,9 +143,9 @@ public class CommandService { // Is part of the Base service
     }
 
     public void attack(Collection<Integer> attackerIds, int targetId) {
-        SyncBaseItem target = syncItemContainerService.getSyncBaseItem(targetId);
+        SyncBaseItem target = syncItemContainerService.getSyncBaseItemSave(targetId);
         for (int attackerId : attackerIds) {
-            SyncBaseItem attacker = syncItemContainerService.getSyncBaseItem(attackerId);
+            SyncBaseItem attacker = syncItemContainerService.getSyncBaseItemSave(attackerId);
             attack(attacker, target, attacker.getSyncPhysicalArea().canMove());
         }
     }
@@ -170,7 +170,7 @@ public class CommandService { // Is part of the Base service
     public void pickupBox(Collection<Integer> pickerIds, int boxId) {
         SyncBoxItem box = boxService.getSyncBoxItem(boxId);
         for (int pickerId : pickerIds) {
-            SyncBaseItem picker = syncItemContainerService.getSyncBaseItem(pickerId);
+            SyncBaseItem picker = syncItemContainerService.getSyncBaseItemSave(pickerId);
             pickupBox(picker, box);
         }
     }
@@ -194,7 +194,7 @@ public class CommandService { // Is part of the Base service
 
     private void executeCommand(BaseCommand baseCommand) {
         try {
-            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(baseCommand.getId());
+            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(baseCommand.getId());
             syncBaseItem.stop();
             syncBaseItem.executeCommand(baseCommand);
             baseItemService.addToActiveItemQueue(syncBaseItem);

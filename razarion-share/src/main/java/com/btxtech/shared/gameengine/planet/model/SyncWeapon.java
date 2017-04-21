@@ -152,7 +152,7 @@ public class SyncWeapon extends SyncBaseAbility {
     @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
         if(syncBaseItemInfo.getTarget() != null) {
-            target = syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getTarget());
+            target = syncItemContainerService.getSyncBaseItemSave(syncBaseItemInfo.getTarget());
         } else {
             target = null;
         }
@@ -168,7 +168,7 @@ public class SyncWeapon extends SyncBaseAbility {
     }
 
     public void executeCommand(AttackCommand attackCommand) throws ItemDoesNotExistException {
-        SyncBaseItem target = syncItemContainerService.getSyncBaseItem(attackCommand.getTarget());
+        SyncBaseItem target = syncItemContainerService.getSyncBaseItemSave(attackCommand.getTarget());
 
         if (!getSyncBaseItem().isEnemy(target)) {
             throw new IllegalArgumentException("Can not attack friendly target. Own: " + getSyncBaseItem() + " target: " + target);

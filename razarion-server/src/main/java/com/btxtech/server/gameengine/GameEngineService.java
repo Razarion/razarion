@@ -59,7 +59,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
-        clientConnectionService.onBaseCreated(new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName(playerBase.getName()).setCharacter(playerBase.getCharacter()).setUserId(playerBase.getUserId()).setResources(playerBase.getResources()));
+        clientConnectionService.onBaseCreated(playerBase);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-
+        clientConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-
+        clientConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 
     @Override

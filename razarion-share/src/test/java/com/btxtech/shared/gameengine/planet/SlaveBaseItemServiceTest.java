@@ -54,7 +54,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         setup(planetConfig);
 
         // Verify
-        SyncBaseItem builder = getSyncItemContainerService().getSyncBaseItem(15);
+        SyncBaseItem builder = getSyncItemContainerService().getSyncBaseItemSave(15);
         // Verify Builder
         Assert.assertEquals(99, builder.getBase().getBaseId());
         Assert.assertEquals("Test human base 1", builder.getBase().getName());
@@ -75,7 +75,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         Assert.assertNull(builder.getSyncBuilder().getCurrentBuildup());
         Assert.assertEquals(0.5, builder.getSpawnProgress(), 0.0001);
         // Verify Factory
-        SyncBaseItem factory = getSyncItemContainerService().getSyncBaseItem(107);
+        SyncBaseItem factory = getSyncItemContainerService().getSyncBaseItemSave(107);
         Assert.assertEquals(99, factory.getBase().getBaseId());
         Assert.assertEquals("Test human base 1", factory.getBase().getName());
         Assert.assertEquals(Character.HUMAN, factory.getBase().getCharacter());
@@ -96,7 +96,7 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         Assert.assertEquals(new DecimalPosition(300, 150), SimpleTestEnvironment.readField("rallyPoint", factory.getSyncFactory()));
         Assert.assertEquals(0.0, factory.getSpawnProgress(), 0.0001);
         // Attacker
-        SyncBaseItem attacker = getSyncItemContainerService().getSyncBaseItem(203);
+        SyncBaseItem attacker = getSyncItemContainerService().getSyncBaseItemSave(203);
         Assert.assertEquals(40, attacker.getBase().getBaseId());
         Assert.assertEquals("Test bot base 1", attacker.getBase().getName());
         Assert.assertEquals(Character.BOT, attacker.getBase().getCharacter());

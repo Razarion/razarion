@@ -1,7 +1,10 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,8 +36,14 @@ public class ClientConnectionService {
         }
     }
 
-    public void onBaseCreated(PlayerBaseInfo playerBaseInfo) {
+    public void onBaseCreated(PlayerBaseFull playerBase) {
+        PlayerBaseInfo playerBaseInfo = new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName(playerBase.getName()).setCharacter(playerBase.getCharacter()).setUserId(playerBase.getUserId()).setResources(playerBase.getResources());
         sendToClients(ConnectionMarshaller.Package.BASE_CREATED, playerBaseInfo);
+    }
+
+    public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
+        SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
+        sendToClients(ConnectionMarshaller.Package.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);
     }
 
     private void sendToClients(ConnectionMarshaller.Package aPackage, Object object) {

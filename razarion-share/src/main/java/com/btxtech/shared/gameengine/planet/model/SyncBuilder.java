@@ -180,7 +180,7 @@ public class SyncBuilder extends SyncBaseAbility {
         }
         Integer currentBuildupId = syncBaseItemInfo.getCurrentBuildup();
         if (currentBuildupId != null) {
-            currentBuildup = syncItemContainerService.getSyncBaseItem(currentBuildupId);
+            currentBuildup = syncItemContainerService.getSyncBaseItemSave(currentBuildupId);
         } else {
             currentBuildup = null;
         }
@@ -215,7 +215,7 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     public synchronized void executeCommand(BuilderFinalizeCommand builderFinalizeCommand) throws NoSuchItemTypeException, ItemDoesNotExistException {
-        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(builderFinalizeCommand.getBuildingId());
+        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(builderFinalizeCommand.getBuildingId());
         if (!builderType.checkAbleToBuild(syncBaseItem.getItemType().getId())) {
             throw new IllegalArgumentException(this + " can not build: " + builderFinalizeCommand.getBuildingId());
         }
