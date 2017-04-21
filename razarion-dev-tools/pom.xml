@@ -78,6 +78,11 @@
             <artifactId>facebook-java-ads-sdk</artifactId>
             <version>0.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <version>9.4.4.v20170414</version>
+        </dependency>
         <!-- Mock is allowd in main code because this is a test util-->
         <dependency>
             <groupId>org.easymock</groupId>

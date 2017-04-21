@@ -6,7 +6,6 @@ import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental.client.Browser;
 import elemental.events.Event;
-import elemental.events.EventListener;
 import elemental.events.MessageEvent;
 import elemental.html.WebSocket;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
@@ -49,18 +48,13 @@ public class ClientServerConnection extends AbstractServerConnection {
         webSocket.setOnerror(evt -> logger.severe("WebSocket OnError: " + evt));
         webSocket.setOnclose(evt -> logger.severe("WebSocket Close: " + evt));
         webSocket.setOnmessage(this::handleMessage);
-        webSocket.setOnopen(new EventListener() {
-            @Override
-            public void handleEvent(Event evt) {
-                logger.severe("WebSocket Open");
-            }
-        });
+        webSocket.setOnopen(evt -> logger.severe("WebSocket Open"));
     }
 
     private void handleMessage(Event event) {
         try {
             MessageEvent messageEvent = (MessageEvent) event;
-            handleMessage((String)messageEvent.getData());
+            handleMessage((String) messageEvent.getData());
         } catch (Throwable throwable) {
             exceptionHandler.handleException("ClientServerConnection.handleMessage() failed", throwable);
         }

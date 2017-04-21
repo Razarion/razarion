@@ -4,18 +4,24 @@ import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.webglemulator.razarion.HttpConnectionEmu;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientResponseContext;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -75,11 +81,20 @@ public class JsonProviderEmulator {
         }
     }
 
-    public GameUiControlConfig fromServer() {
+    public HttpConnectionEmu fromServer() {
         try {
+            HttpConnectionEmu emu = new HttpConnectionEmu();
             Client client = ClientBuilder.newClient();
+            client.register((ClientResponseFilter) (requestContext, responseContext) -> {
+                for (Map.Entry<String, NewCookie> entry : responseContext.getCookies().entrySet()) {
+                    if (entry.getKey().equals(HttpConnectionEmu.SESSION_KEY)) {
+                        emu.setSessionCookie(entry.getValue());
+                    }
+                }
+            });
             String string = client.target(URL).request(MediaType.APPLICATION_JSON).post(Entity.entity(FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER, MediaType.APPLICATION_JSON_TYPE), String.class);
-            return new ObjectMapper().readValue(string, GameUiControlConfig.class);
+            emu.setGameUiControlConfig(new ObjectMapper().readValue(string, GameUiControlConfig.class));
+            return emu;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

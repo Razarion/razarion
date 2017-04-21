@@ -36,11 +36,13 @@ public class RazarionEmulator {
     private DevToolShape3DUiService devToolShape3DUiService;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private boolean showRenderTime;
+    private HttpConnectionEmu httpConnectionEmu;
 
     public void run() {
         try {
             // gameUiControl.setGameUiControlConfig(jsonProviderEmulator.readFromFile(false));
-            gameUiControl.setGameUiControlConfig(jsonProviderEmulator.fromServer());
+            httpConnectionEmu = jsonProviderEmulator.fromServer();
+            gameUiControl.setGameUiControlConfig(httpConnectionEmu.getGameUiControlConfig());
             gameUiControl.init();
             gameEngineControl.init(gameUiControl.getGameUiControlConfig().getGameEngineConfig(), null);
             devToolShape3DUiService.loadBuffer();
@@ -75,5 +77,9 @@ public class RazarionEmulator {
                 throwable.printStackTrace();
             }
         }), RENDER_DELAY, RENDER_DELAY, TimeUnit.MILLISECONDS);
+    }
+
+    public HttpConnectionEmu getHttpConnectionEmu() {
+        return httpConnectionEmu;
     }
 }
