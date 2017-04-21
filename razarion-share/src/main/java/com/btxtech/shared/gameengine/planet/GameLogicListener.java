@@ -14,33 +14,54 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
  * 08.01.2017.
  */
 public interface GameLogicListener {
-    void onBaseCreated(PlayerBaseFull playerBase);
+    default void onBaseCreated(PlayerBaseFull playerBase) {
+    }
 
-    void onBaseSlaveCreated(PlayerBase playerBase);
+    default void onBaseSlaveCreated(PlayerBase playerBase) {
+    }
 
-    void onBaseDeleted(PlayerBase playerBase);
+    default void onBaseDeleted(PlayerBase playerBase) {
+    }
 
-    void onSpawnSyncItemStart(SyncBaseItem syncBaseItem);
+    default void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
+    }
 
-    void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor);
+    default void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
+    }
 
-    void onSyncItemRemoved(SyncBaseItem target);
+    default void onSyncItemRemoved(SyncBaseItem target) {
+    }
 
-    void onResourceCreated(SyncResourceItem syncResourceItem);
+    default void onResourceCreated(SyncResourceItem syncResourceItem) {
+    }
 
-    void onResourceDeleted(SyncResourceItem syncResourceItem);
+    default void onResourceDeleted(SyncResourceItem syncResourceItem) {
+    }
 
-    void onBoxCreated(SyncBoxItem syncBoxItem);
+    default void onBoxCreated(SyncBoxItem syncBoxItem) {
+    }
 
-    void onBoxPicked(int userId, BoxContent boxContent);
+    default void onBoxPicked(int userId, BoxContent boxContent) {
+    }
 
-    void onSyncBoxDeleted(SyncBoxItem box);
+    default void onSyncBoxDeleted(SyncBoxItem box) {
+    }
 
-    void onSyncBaseItemIdle(SyncBaseItem syncBaseItem);
+    default void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
+    }
 
-    void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection);
+    default void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection) {
+    }
 
-    void onProjectileDetonation(int baseItemTypeId, Vertex position);
+    default void onProjectileDetonation(int baseItemTypeId, Vertex position) {
+    }
 
-    void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand);
+    default void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
+    }
+
+    default void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
+    }
+
+    default void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
+    }
 }

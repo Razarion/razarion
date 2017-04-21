@@ -116,10 +116,12 @@ public class GameLogicService {
 
     public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
         System.out.println("GameLogicService.onStartBuildingSyncBaseItem(): " + createdBy + " " + syncBaseItem);
+        gameLogicListener.ifPresent(listener -> listener.onStartBuildingSyncBaseItem(createdBy, syncBaseItem));
     }
 
     public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
         System.out.println("GameLogicService.onSynBuilderStopped(): " + syncBaseItem + " currentBuildup: " + currentBuildup);
+        gameLogicListener.ifPresent(listener -> listener.onSynBuilderStopped(syncBaseItem, currentBuildup));
     }
 
     public void onSyncItemUnloaded(SyncBaseItem syncItem) {

@@ -152,7 +152,7 @@ public class SyncBaseItemInfo {
         return this;
     }
 
-    public SyncBaseItemInfo setCurrentBuildup(int currentBuildup) {
+    public SyncBaseItemInfo setCurrentBuildup(Integer currentBuildup) {
         this.currentBuildup = currentBuildup;
         return this;
     }

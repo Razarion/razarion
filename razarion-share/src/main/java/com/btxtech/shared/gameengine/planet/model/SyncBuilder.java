@@ -161,13 +161,15 @@ public class SyncBuilder extends SyncBaseAbility {
     }
 
     public synchronized void stop() {
-        if (currentBuildup != null) {
-            gameLogicService.onSynBuilderStopped(getSyncBaseItem(), currentBuildup);
-        }
+        boolean propagationNeeded = isActive();
+        SyncBaseItem tmpCurrentBuildup = currentBuildup;
         currentBuildup = null;
         toBeBuiltType = null;
         toBeBuildPosition = null;
         building = false;
+        if (propagationNeeded) {
+            gameLogicService.onSynBuilderStopped(getSyncBaseItem(), tmpCurrentBuildup);
+        }
     }
 
     @Override

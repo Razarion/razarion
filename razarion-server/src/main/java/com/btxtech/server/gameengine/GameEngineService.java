@@ -2,7 +2,6 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.GameEngineConfigPersistence;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.GameEngineInitEvent;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -63,11 +62,6 @@ public class GameEngineService implements GameLogicListener {
     }
 
     @Override
-    public void onBaseSlaveCreated(PlayerBase playerBase) {
-
-    }
-
-    @Override
     public void onBaseDeleted(PlayerBase playerBase) {
 
     }
@@ -118,17 +112,21 @@ public class GameEngineService implements GameLogicListener {
     }
 
     @Override
-    public void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection) {
-
-    }
-
-    @Override
-    public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
-
-    }
-
-    @Override
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
+        clientConnectionService.sendSyncBaseItem(syncItem);
+    }
 
+    @Override
+    public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
+        if (currentBuildup != null) {
+            clientConnectionService.sendSyncBaseItem(syncBaseItem);
+        }
+        clientConnectionService.sendSyncBaseItem(currentBuildup);
+    }
+
+    @Override
+    public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
+        clientConnectionService.sendSyncBaseItem(syncBaseItem);
+        clientConnectionService.sendSyncBaseItem(createdBy);
     }
 }

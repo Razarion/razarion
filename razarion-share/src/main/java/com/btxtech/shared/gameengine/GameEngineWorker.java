@@ -419,7 +419,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
     }
 
-
     private void overrideTerrain4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         try {
             terrainService.override4Editor(terrainSlopePositions, terrainObjectPositions);
