@@ -13,7 +13,8 @@ public class GameEngineControlPackage {
         INITIALISING_FAILED,
         START,
         TICK_UPDATE_REQUEST,
-        TICK_UPDATE,
+        TICK_UPDATE_RESPONSE,
+        TICK_UPDATE_RESPONSE_FAIL,
         PERFMON_REQUEST,
         PERFMON_RESPONSE,
         // Bot

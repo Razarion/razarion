@@ -290,7 +290,10 @@ public class BaseItemService {
     }
 
     public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, int itemCount2Add, PlayerBaseFull playerBase) throws NoSuchItemTypeException {
-        return playerBase.getCharacter().isBot() || getItemCount(playerBase, newItemType) + itemCount2Add > getLimitation4ItemType(newItemType.getId(), playerBase.getLevelId());
+        if( playerBase.getCharacter().isBot()) {
+            return false;
+        }
+        return getItemCount(playerBase, newItemType) + itemCount2Add > getLimitation4ItemType(newItemType.getId(), playerBase.getLevelId());
     }
 
     public int getItemCount(PlayerBaseFull playerBase, BaseItemType baseItemType) {

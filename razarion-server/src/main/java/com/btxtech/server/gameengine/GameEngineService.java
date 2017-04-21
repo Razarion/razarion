@@ -119,9 +119,9 @@ public class GameEngineService implements GameLogicListener {
     @Override
     public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
         if (currentBuildup != null) {
-            clientConnectionService.sendSyncBaseItem(syncBaseItem);
+            clientConnectionService.sendSyncBaseItem(currentBuildup);
         }
-        clientConnectionService.sendSyncBaseItem(currentBuildup);
+        clientConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 
     @Override

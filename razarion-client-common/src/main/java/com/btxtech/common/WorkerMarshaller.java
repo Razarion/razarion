@@ -44,6 +44,7 @@ public class WorkerMarshaller {
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
             case INITIALIZED:
+            case TICK_UPDATE_RESPONSE_FAIL:
                 break;
             // Single JSON data
             case START_BOTS:
@@ -95,7 +96,7 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
             // Quadruple JSON data
-            case TICK_UPDATE:
+            case TICK_UPDATE_RESPONSE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
@@ -131,6 +132,7 @@ public class WorkerMarshaller {
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
             case INITIALIZED:
+            case TICK_UPDATE_RESPONSE_FAIL:
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));
@@ -154,7 +156,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_2), String.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_3), DecimalPosition.class));
                 break;
-            case TICK_UPDATE:
+            case TICK_UPDATE_RESPONSE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), List.class));

@@ -233,28 +233,33 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             return;
         }
         sendTickUpdate = false;
-        List<SyncBaseItemSimpleDto> syncItems = new ArrayList<>();
-        syncItemContainerService.iterateOverItems(false, false, null, syncItem -> {
-            if (syncItem instanceof SyncBaseItem) {
-                SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                SyncBaseItemSimpleDto simpleDto = syncBaseItem.createSyncBaseItemSimpleDto();
-                syncItems.add(simpleDto);
+        try {
+            List<SyncBaseItemSimpleDto> syncItems = new ArrayList<>();
+            syncItemContainerService.iterateOverItems(false, false, null, syncItem -> {
+                if (syncItem instanceof SyncBaseItem) {
+                    SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
+                    SyncBaseItemSimpleDto simpleDto = syncBaseItem.createSyncBaseItemSimpleDto();
+                    syncItems.add(simpleDto);
+                }
+                return null;
+            });
+            GameInfo gameInfo = new GameInfo();
+            gameInfo.setXpFromKills(xpFromKills);
+            xpFromKills = 0;
+            List<SyncBaseItemSimpleDto> tmpKilled = killed;
+            killed = new ArrayList<>();
+            List<SyncBaseItemSimpleDto> tmpRemoved = removed;
+            removed = new ArrayList<>();
+            if (playerBaseFull != null) {
+                gameInfo.setHouseSpace(playerBaseFull.getHouseSpace());
+                gameInfo.setUsedHouseSpace(playerBaseFull.getUsedHouseSpace());
+                gameInfo.setResources((int) playerBaseFull.getResources());
             }
-            return null;
-        });
-        GameInfo gameInfo = new GameInfo();
-        gameInfo.setXpFromKills(xpFromKills);
-        xpFromKills = 0;
-        List<SyncBaseItemSimpleDto> tmpKilled = killed;
-        killed = new ArrayList<>();
-        List<SyncBaseItemSimpleDto> tmpRemoved = removed;
-        removed = new ArrayList<>();
-        if (playerBaseFull != null) {
-            gameInfo.setHouseSpace(playerBaseFull.getHouseSpace());
-            gameInfo.setUsedHouseSpace(playerBaseFull.getUsedHouseSpace());
-            gameInfo.setResources((int) playerBaseFull.getResources());
+            sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE, syncItems, gameInfo, tmpRemoved, tmpKilled);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+            sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE_FAIL);
         }
-        sendToClient(GameEngineControlPackage.Command.TICK_UPDATE, syncItems, gameInfo, tmpRemoved, tmpKilled);
     }
 
     @Override
@@ -379,7 +384,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
-        if(serverConnection != null) {
+        if (serverConnection != null) {
             serverConnection.onCommandSent(baseCommand);
         }
     }

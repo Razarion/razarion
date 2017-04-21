@@ -38,7 +38,7 @@ public class TemporaryPersistenceUtils {
         itemTypeLimitation.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_BULLDOZER, 1);
         itemTypeLimitation.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_ATTACKER, 20);
         itemTypeLimitation.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_HARVESTER, 3);
-        itemTypeLimitation.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_FACTORY, 1);
+        itemTypeLimitation.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_FACTORY, 10);
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 2500, 2500));
         planetConfig.setPlayGround(new Rectangle2D(50, 40, 19900, 19920));

@@ -208,6 +208,10 @@ public abstract class GameEngineControl {
 //        }
     }
 
+    private void onTickUpdateFailed() {
+        sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
+    }
+
     private void onPerfmonResponse(Collection<PerfmonStatistic> statisticEntries) {
         if (perfmonConsumer != null) {
             perfmonConsumer.accept(statisticEntries);
@@ -240,9 +244,12 @@ public abstract class GameEngineControl {
             case INITIALISING_FAILED:
                 onInitialisingFailed((String) controlPackage.getSingleData());
                 break;
-            case TICK_UPDATE:
+            case TICK_UPDATE_RESPONSE:
                 onTickUpdate((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(0), (GameInfo) controlPackage.getData(1),
                         (Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2), (Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
+                break;
+            case TICK_UPDATE_RESPONSE_FAIL:
+                onTickUpdateFailed();
                 break;
             case SYNC_ITEM_START_SPAWNED:
                 audioService.onSpawnSyncItem((SyncBaseItemSimpleDto) controlPackage.getSingleData());
