@@ -17,8 +17,8 @@ public class PlayerBaseFull extends PlayerBase {
     private int usedHouseSpace = 0;
     private Integer levelId;
 
-    public PlayerBaseFull(int baseId, String name, Character character, int resources, Integer levelId, Integer userId) {
-        super(baseId, name, character, resources, userId);
+    public PlayerBaseFull(int baseId, String name, Character character, double startRazarion, Integer levelId, Integer userId) {
+        super(baseId, name, character, startRazarion, userId);
         this.levelId = levelId;
     }
 

@@ -112,11 +112,13 @@ public class Scene implements TerrainScrollListener {
             gameEngineControl.executeBotCommands(sceneConfig.getKillBotCommandConfigs());
         }
         if (sceneConfig.getStartPointPlacerConfig() != null) {
+            sceneConfig.getStartPointPlacerConfig().setBaseItemCount(1);
+            sceneConfig.getStartPointPlacerConfig().setBaseItemTypeId(gameUiControl.getPlanetConfig().getStartBaseItemTypeId());
             baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), decimalPositions -> {
                 if (decimalPositions.size() != 1) {
                     throw new IllegalArgumentException("To create a new human base, only one base item is allowed. Given: " + decimalPositions.size());
                 }
-                gameEngineControl.createHumanBaseWithBaseItem(sceneConfig.getStartPointPlacerConfig().getBaseItemTypeId(), CollectionUtils.getFirst(decimalPositions));
+                gameEngineControl.createHumanBaseWithBaseItem(CollectionUtils.getFirst(decimalPositions));
             });
         }
         if (sceneConfig.getQuestConfig() != null) {

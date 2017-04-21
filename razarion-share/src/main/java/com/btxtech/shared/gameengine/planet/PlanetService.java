@@ -1,6 +1,8 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
@@ -117,8 +119,13 @@ public class PlanetService implements Runnable { // Only available in worker. On
         }
     }
 
-    public void fillPlanetConfig(PlanetConfig planetConfig) {
+    public void fillSyncItems(PlanetConfig planetConfig, UserContext userContext) {
         planetConfig.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
         planetConfig.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
+        PlayerBaseFull playerBaseFull = baseItemService.getPlayerBase4UserId(userContext.getUserId());
+        if (playerBaseFull != null) {
+            planetConfig.setActualBaseId(playerBaseFull.getBaseId());
+            planetConfig.setActualRazarion(playerBaseFull.getResources());
+        }
     }
 }

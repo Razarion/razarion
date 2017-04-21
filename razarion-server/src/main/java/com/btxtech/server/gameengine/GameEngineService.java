@@ -1,6 +1,7 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.GameEngineConfigPersistence;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.GameEngineInitEvent;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -37,8 +38,8 @@ public class GameEngineService {
         planetService.stop();
     }
 
-    public void fillPlanetConfig(PlanetConfig planetConfig) {
-        planetService.fillPlanetConfig(planetConfig);
+    public void fillSyncItems(PlanetConfig planetConfig, UserContext userContext) {
+        planetService.fillSyncItems(planetConfig, userContext);
     }
 
 }

@@ -8,6 +8,7 @@ public class User {
     private long userId;
     private int levelId;
     private boolean admin;
+    private String name;
 
     public User(long userId, int levelId, boolean admin) {
         this.userId = userId;
@@ -25,6 +26,14 @@ public class User {
 
     public boolean isAdmin() {
         return admin;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

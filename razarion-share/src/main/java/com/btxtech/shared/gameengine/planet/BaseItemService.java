@@ -98,10 +98,9 @@ public class BaseItemService {
         throw new IllegalStateException("No human base found");
     }
 
-    public PlayerBaseFull createHumanBase(int resources, int levelId, int userId, String name) {
-        return createBaseMaster(name, Character.HUMAN, resources, levelId, userId);
+    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, int userId, String name) {
+        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, userId);
     }
-
 
     private void surrenderHumanBase(int userId) {
         PlayerBaseFull playerBase = getPlayerBase4UserId(userId);
@@ -113,10 +112,10 @@ public class BaseItemService {
         }
     }
 
-    public void createHumanBaseWithBaseItem(int levelId, int userId, String name, int baseItemTypeId, DecimalPosition position) {
+    public void createHumanBaseWithBaseItem(int levelId, int userId, String name, DecimalPosition position) {
         surrenderHumanBase(userId);
         PlayerBaseFull playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, userId, name);
-        spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, 0, playerBase, false);
+        spawnSyncBaseItem(itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId()), position, 0, playerBase, false);
     }
 
     public void updateLevel(int userId, int levelId) {
@@ -131,13 +130,13 @@ public class BaseItemService {
         return createBaseMaster(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null);
     }
 
-    private PlayerBaseFull createBaseMaster(String name, Character character, int resources, Integer levelId, Integer userId) {
+    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Integer userId) {
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("createBaseMaster: Base with Id already exits: " + lastBaseItId);
             }
-            PlayerBaseFull playerBase = new PlayerBaseFull(lastBaseItId, name, character, resources, levelId, userId);
+            PlayerBaseFull playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, userId);
             bases.put(lastBaseItId, playerBase);
             gameLogicService.onBaseCreated(playerBase);
             return playerBase;
@@ -151,7 +150,23 @@ public class BaseItemService {
             }
             PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getUserId());
             bases.put(playerBaseInfo.getBaseId(), playerBase);
+            gameLogicService.onBaseCreated(playerBase);
         }
+    }
+
+    public void replaceBase(PlayerBaseFull playerBaseFull) {
+        synchronized (bases) {
+            if (!bases.containsKey(playerBaseFull.getBaseId())) {
+                throw new IllegalStateException("replaceBase: Base with Id does not already exits: " + playerBaseFull.getBaseId());
+            }
+            bases.put(playerBaseFull.getBaseId(), playerBaseFull);
+        }
+        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (syncBaseItem.getBase().equals(playerBaseFull)) {
+                playerBaseFull.addItem(syncBaseItem);
+            }
+            return null;
+        });
     }
 
     public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {

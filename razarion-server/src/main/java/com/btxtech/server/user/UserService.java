@@ -6,22 +6,24 @@ import com.btxtech.server.web.Session;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 21.02.2017.
  */
-@ApplicationScoped
+@Singleton
 public class UserService {
     @PersistenceContext
     private EntityManager entityManager;
@@ -31,13 +33,14 @@ public class UserService {
     private Session session;
     @Inject
     private FilePropertiesService filePropertiesService;
+    private Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     public UserContext handleUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
         // TODO verify facebook signedRequest
 
         // facebookUserLoginInfo is never null. Errai Jackson JAX-RS does not accept null value in POST rest call
         if (facebookUserLoginInfo.getUserId() == null) {
-            return createUserContext(null);
+            return createAndLoginUserContext(null);
         }
 
         UserEntity userEntity = getUserForFacebookId(facebookUserLoginInfo.getUserId());
@@ -46,10 +49,10 @@ public class UserService {
         }
         User user = userEntity.createUser();
         session.setUser(user);
-        return createUserContext(user);
+        return createAndLoginUserContext(user);
     }
 
-    private UserContext createUserContext(User user) {
+    private UserContext createAndLoginUserContext(User user) {
         UserContext userContext = new UserContext();
         if (user != null) {
             userContext.setUserId((int) user.getUserId());
@@ -63,6 +66,7 @@ public class UserService {
             userContext.setAdmin(true);
         }
         userContext.setName("Emulator Name");// TODO
+        loginUser(session.getId(), userContext);
         return userContext;
     }
 
@@ -91,4 +95,21 @@ public class UserService {
             return list.get(0);
         }
     }
+
+    private void loginUser(String sessionId, UserContext userContext) {
+        loggedInUserContext.put(sessionId, userContext);
+    }
+
+    public void logoutUserUser(String sessionId) {
+        loggedInUserContext.remove(sessionId);
+    }
+
+    public UserContext getLoggedInUser(String sessionId) {
+        UserContext userContext = loggedInUserContext.get(sessionId);
+        if (userContext == null) {
+            throw new IllegalArgumentException("No User for sessionId: " + sessionId);
+        }
+        return userContext;
+    }
+
 }

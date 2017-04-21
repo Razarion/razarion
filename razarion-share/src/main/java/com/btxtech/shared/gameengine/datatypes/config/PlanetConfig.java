@@ -25,7 +25,10 @@ public class PlanetConfig {
     private Map<Integer, Integer> itemTypeLimitation;
     private double waterLevel;
     private int houseSpace;
+    private Integer actualBaseId;
+    private Double actualRazarion;
     private int startRazarion;
+    private int startBaseItemTypeId;
     private Rectangle2D playGround;
     private List<SyncBaseItemInfo> syncBaseItemInfos;
     private List<PlayerBaseInfo> playerBaseInfos;
@@ -111,6 +114,15 @@ public class PlanetConfig {
         return this;
     }
 
+    public int getStartBaseItemTypeId() {
+        return startBaseItemTypeId;
+    }
+
+    public PlanetConfig setStartBaseItemTypeId(int startBaseItemTypeId) {
+        this.startBaseItemTypeId = startBaseItemTypeId;
+        return this;
+    }
+
     public int getStartRazarion() {
         return startRazarion;
     }
@@ -154,5 +166,21 @@ public class PlanetConfig {
     public PlanetConfig setBotConfigs(List<BotConfig> botConfigs) {
         this.botConfigs = botConfigs;
         return this;
+    }
+
+    public Integer getActualBaseId() {
+        return actualBaseId;
+    }
+
+    public void setActualBaseId(Integer actualBase) {
+        this.actualBaseId = actualBase;
+    }
+
+    public Double getActualRazarion() {
+        return actualRazarion;
+    }
+
+    public void setActualRazarion(Double actualRazarion) {
+        this.actualRazarion = actualRazarion;
     }
 }

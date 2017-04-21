@@ -101,13 +101,12 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 break;
-            // Quintuple JSON data
+            // Quadruple JSON data
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
-                array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
                 break;
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
@@ -139,6 +138,7 @@ public class WorkerMarshaller {
                 break;
             case INITIALISING_FAILED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), String.class));
+                break;
             case START_BOTS:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 break;
@@ -152,8 +152,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), String.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_3), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_4), DecimalPosition.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_3), DecimalPosition.class));
                 break;
             case TICK_UPDATE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));

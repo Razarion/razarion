@@ -106,12 +106,11 @@ public abstract class GameEngineControl {
     }
 
     // Needs to be public or userUiService is not set
-    public void createHumanBaseWithBaseItem(int baseItemTypeId, DecimalPosition position) {
+    public void createHumanBaseWithBaseItem(DecimalPosition position) {
         sendToWorker(GameEngineControlPackage.Command.CREATE_HUMAN_BASE_WITH_BASE_ITEM,
                 userUiService.getUserContext().getLevelId(),
                 userUiService.getUserContext().getUserId(),
                 userUiService.getUserContext().getName(),
-                baseItemTypeId,
                 position);
     }
 

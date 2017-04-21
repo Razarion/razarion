@@ -5,6 +5,7 @@ package com.btxtech.shared.rest;
  * 16.06.2016.
  */
 public class RestUrl {
+    public static final String GAME_CONNECTION_WEB_SOCKET_ENDPOINT = "/gameconnection";
     public static final String APPLICATION_PATH = "rest";
     public static final String G_ZIPPED = "gz"; // Must be configured on the webserver. (Wildfly standalone.xml set gzipFilter)
     public static final String REMOTE_LOGGING = "remote_logging";
