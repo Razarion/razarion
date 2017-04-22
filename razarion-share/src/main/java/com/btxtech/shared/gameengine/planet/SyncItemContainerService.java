@@ -326,7 +326,7 @@ public class SyncItemContainerService {
     }
 
     private boolean isFree(DecimalPosition position, double radius) {
-        return !obstacleContainer.overlap(position, radius) && !hasItemsInRange(position, radius);
+        return obstacleContainer.isFree(position, radius) && !hasItemsInRange(position, radius);
     }
 
     public boolean isFree(DecimalPosition position, BaseItemType baseItemType) {

@@ -404,14 +404,14 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     private void getTerrainOverlap(DecimalPosition position) {
-        sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_ANSWER, position, obstacleContainer.overlap(position, 1.0));
+        sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_ANSWER, position, !obstacleContainer.isFree(position));
     }
 
     private void getTerrainOverlapBaseItemType(int uuid, List<DecimalPosition> positions, int baseItemType) {
         boolean overlaps = false;
         double radius = itemTypeService.getBaseItemType(baseItemType).getPhysicalAreaConfig().getRadius();
         for (DecimalPosition position : positions) {
-            if (obstacleContainer.overlap(position, radius)) {
+            if (!obstacleContainer.isFree(position, radius)) {
                 overlaps = true;
                 break;
             }

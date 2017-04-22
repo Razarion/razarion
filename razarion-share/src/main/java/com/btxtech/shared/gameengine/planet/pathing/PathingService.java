@@ -61,7 +61,12 @@ public class PathingService {
             path.setTotalRange(totalRange);
             return path;
         }
-
+        if(!obstacleContainer.isFree(startTile)) {
+            throw new IllegalArgumentException("Start start tile is not free: " + startTile);
+        }
+        if(!obstacleContainer.isFree(destinationTile)) {
+            throw new IllegalArgumentException("Destination start tile is not free: " + destinationTile);
+        }
         AStar aStar = instanceAStar.get();
         aStar.init(startTile, destinationTile);
         aStar.expandAllNodes();

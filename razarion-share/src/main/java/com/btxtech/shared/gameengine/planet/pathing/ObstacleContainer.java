@@ -231,15 +231,26 @@ public class ObstacleContainer {
         return obstacles;
     }
 
-    public boolean overlap(DecimalPosition position, double radius) {
+    public boolean isFree(Index index) {
+        ObstacleContainerNode obstacleContainerNode = getObstacleContainerNodeIncludeOffset(index);
+        return obstacleContainerNode == null || obstacleContainerNode.isFree();
+    }
+
+    public boolean isFree(DecimalPosition position) {
+        Index index = toNode(position);
+        ObstacleContainerNode obstacleContainerNode = getObstacleContainerNode(index);
+        return obstacleContainerNode == null || obstacleContainerNode.isFree();
+    }
+
+    public boolean isFree(DecimalPosition position, double radius) {
         List<Index> nodes = absoluteCircleToNodes(new Circle2D(position, radius));
         for (Index node : nodes) {
             ObstacleContainerNode obstacleContainerNode = getObstacleContainerNode(node);
-            if (obstacleContainerNode != null && obstacleContainerNode.getObstacles() != null) {
-                return true;
+            if (obstacleContainerNode != null && !obstacleContainerNode.isFree()) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public boolean hasNorthSuccessorNode(int currentNodePositionY) {
@@ -256,10 +267,6 @@ public class ObstacleContainer {
 
     public boolean hasWestSuccessorNode(int currentNodePositionX) {
         return currentNodePositionX > 0;
-    }
-
-    public boolean hasBlockingTerrain(int nodeX, int nodeY) {
-        return obstacleContainerNodes[nodeX][nodeY] != null;
     }
 
     public boolean isInSight(SyncPhysicalArea syncPhysicalArea, DecimalPosition target) {

@@ -78,7 +78,7 @@ public class AStar {
     }
 
     private void handleSuccessorNode(AStarNode current, Index successorTilePosition) {
-        if (obstacleContainer.hasBlockingTerrain(successorTilePosition.getX(), successorTilePosition.getY())) {
+        if (!obstacleContainer.isFree(successorTilePosition)) {
             return;
         }
 

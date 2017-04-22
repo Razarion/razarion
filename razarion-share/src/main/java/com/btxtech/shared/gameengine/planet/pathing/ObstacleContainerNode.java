@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 
 import java.util.ArrayList;
@@ -146,5 +145,9 @@ public class ObstacleContainerNode {
 
     public Collection<List<DecimalPosition>> getOuterSlopeGroundPiercingLine() {
         return outerSlopeGroundPiercingLine;
+    }
+
+    public boolean isFree() {
+        return slopHeight == null && !belongsToSlope && !fullWater && !fractionWater && obstacles == null;
     }
 }
