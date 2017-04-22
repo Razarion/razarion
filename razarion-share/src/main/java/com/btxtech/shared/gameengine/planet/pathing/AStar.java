@@ -16,18 +16,21 @@ import java.util.Map;
  */
 @Dependent
 public class AStar {
+    private static final int MAX_CLOSED_LIST_SIZE = 100000;
     @Inject
     private ObstacleContainer obstacleContainer;
     private Map<Index, AStarNode> closedList = new HashMap<>();
     private AStarOpenList openList = new AStarOpenList();
-    private AStarNode destinatioNode;
+    private Index startTile;
+    private AStarNode destinationNode;
     private boolean pathFound;
     private List<Index> tilePath;
     private double smallestHeuristic = Double.MAX_VALUE;
     private AStarNode bestFitNode;
 
     public void init(Index startTile, Index destinationTile) {
-        destinatioNode = new AStarNode(destinationTile);
+        this.startTile = startTile;
+        destinationNode = new AStarNode(destinationTile);
         openList.add(new AStarNode(startTile));
     }
 
@@ -38,7 +41,7 @@ public class AStar {
                 return;
             }
             AStarNode current = openList.removeFirst();
-            if (current.equals(destinatioNode)) {
+            if (current.equals(destinationNode)) {
                 pathFound = true;
                 return;
             } else {
@@ -50,6 +53,9 @@ public class AStar {
     private void expandNode(AStarNode current) {
         handleAllSuccessorNodes(current);
         closedList.put(current.getTileIndex(), current);
+        if (closedList.size() > MAX_CLOSED_LIST_SIZE) {
+            throw new IllegalStateException("AStar max closed list size reached. startTile: " + startTile + " destinationTile: " + destinationNode.getTileIndex());
+        }
     }
 
     private void handleAllSuccessorNodes(AStarNode current) {
@@ -81,8 +87,8 @@ public class AStar {
             AStarNode successor = openList.get(successorTilePosition);
             if (successor == null || tentativeG < successor.getG()) {
                 if (successor == null) {
-                    if (successorTilePosition.equals(destinatioNode.getTileIndex())) {
-                        successor = destinatioNode;
+                    if (successorTilePosition.equals(destinationNode.getTileIndex())) {
+                        successor = destinationNode;
                     } else {
                         successor = new AStarNode(successorTilePosition);
                     }
@@ -91,7 +97,7 @@ public class AStar {
                 }
                 successor.setPredecessor(current);
                 successor.setG(tentativeG);
-                double heuristic = successorTilePosition.getDistanceDouble(destinatioNode.getTileIndex());
+                double heuristic = successorTilePosition.getDistanceDouble(destinationNode.getTileIndex());
                 successor.setF(tentativeG + heuristic);
                 openList.add(successor);
                 if (smallestHeuristic > heuristic) {
@@ -118,7 +124,7 @@ public class AStar {
         tilePath = new ArrayList<>();
         AStarNode tempNode;
         if (pathFound) {
-            tempNode = destinatioNode.getPredecessor();
+            tempNode = destinationNode.getPredecessor();
         } else {
             if (bestFitNode == null) {
                 throw new IllegalStateException("AStarService: bestFitNode == null");
