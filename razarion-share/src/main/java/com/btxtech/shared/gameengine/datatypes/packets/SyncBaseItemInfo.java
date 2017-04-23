@@ -29,14 +29,12 @@ import java.util.List;
 public class SyncBaseItemInfo {
     private int id;
     private int itemTypeId;
-    private boolean isAlive = true;
     private SyncPhysicalAreaInfo syncPhysicalAreaInfo;
     private int baseId;
     private DecimalPosition toBeBuildPosition;
     private Integer toBeBuiltTypeId;
     private Integer currentBuildup;
     private Double factoryBuildupProgress;
-    private Double projectileBuildupProgress;
     private Integer target;
     private double health;
     private double buildup;
@@ -83,15 +81,6 @@ public class SyncBaseItemInfo {
         return this;
     }
 
-    public boolean isAlive() {
-        return isAlive;
-    }
-
-    public SyncBaseItemInfo setAlive(boolean alive) {
-        isAlive = alive;
-        return this;
-    }
-
     public int getBaseId() {
         return baseId;
     }
@@ -115,15 +104,6 @@ public class SyncBaseItemInfo {
 
     public Double getFactoryBuildupProgress() {
         return factoryBuildupProgress;
-    }
-
-    public Double getProjectileBuildupProgress() {
-        return projectileBuildupProgress;
-    }
-
-    public SyncBaseItemInfo setProjectileBuildupProgress(Double projectileBuildupProgress) {
-        this.projectileBuildupProgress = projectileBuildupProgress;
-        return this;
     }
 
     public Integer getTarget() {
@@ -330,7 +310,6 @@ public class SyncBaseItemInfo {
     public String toString() {
         return "SyncItemInfo: " + id +
                 " itemTypeId:" + itemTypeId +
-                " isAlive:" + isAlive +
                 baseId +
                 " syncPhysicalAreaInfo:" + syncPhysicalAreaInfo +
                 " toBeBuildPosition:" + toBeBuildPosition +

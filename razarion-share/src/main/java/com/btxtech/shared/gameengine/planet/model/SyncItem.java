@@ -58,7 +58,6 @@ public abstract class SyncItem {
         syncItemInfo.setId(id);
         syncItemInfo.setSyncPhysicalAreaInfo(syncPhysicalArea.getSyncPhysicalAreaInfo());
         syncItemInfo.setItemTypeId(itemType.getId());
-        syncItemInfo.setAlive(isAlive());
         return syncItemInfo;
     }
 

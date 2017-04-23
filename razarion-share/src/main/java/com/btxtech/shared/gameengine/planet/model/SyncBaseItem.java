@@ -198,10 +198,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         syncBaseItemInfo.setContainedIn(containedIn);
         syncBaseItemInfo.setSpawnProgress(spawnProgress);
 
-        // TODO if (syncMovable != null) {
-        // TODO     syncMovable.fillSyncItemInfo(syncItemInfo);
-        // TODO }
-
         if (syncWeapon != null) {
             syncWeapon.fillSyncItemInfo(syncBaseItemInfo);
         }

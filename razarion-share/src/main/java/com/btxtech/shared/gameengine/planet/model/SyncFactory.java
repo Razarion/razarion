@@ -118,7 +118,7 @@ public class SyncFactory extends SyncBaseAbility {
             syncBaseItemInfo.setToBeBuiltTypeId(toBeBuiltType.getId());
         }
         syncBaseItemInfo.setFactoryBuildupProgress(buildup);
-        // TODO syncItemInfo.setRallyPoint(rallyPoint);
+        syncBaseItemInfo.setRallyPoint(rallyPoint);
     }
 
     public void stop() {

@@ -162,7 +162,9 @@ public class SyncWeapon extends SyncBaseAbility {
 
     @Override
     public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
-        // syncItemInfo.setTarget(target);
+        if (target != null) {
+            syncBaseItemInfo.setTarget(target.getId());
+        }
         syncBaseItemInfo.setFollowTarget(followTarget);
         syncBaseItemInfo.setReloadProgress(reloadProgress);
     }
