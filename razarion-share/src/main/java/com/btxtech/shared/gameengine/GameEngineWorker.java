@@ -201,8 +201,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             planetService.initialise(gameEngineConfig.getPlanetConfig());
             planetService.addTickListener(this);
             if (gameEngineConfig.getPlanetConfig().getActualBaseId() != null) {
-                PlayerBase playerBase = baseItemService.getPlayerBase4BaseId(gameEngineConfig.getPlanetConfig().getActualBaseId());
-                this.playerBase = new PlayerBaseFull(playerBase.getBaseId(), userContext.getName(), playerBase.getCharacter(), playerBase.getResources(), userContext.getLevelId(), userContext.getHumanPlayerId());
+                playerBase = baseItemService.getPlayerBase4BaseId(gameEngineConfig.getPlanetConfig().getActualBaseId());
             }
             sendToClient(GameEngineControlPackage.Command.INITIALIZED);
         } catch (Throwable t) {
