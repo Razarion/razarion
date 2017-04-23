@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +51,8 @@ public class UserService {
             userEntity = createUser(facebookUserLoginInfo);
         }
         //TODO remove if all do have a HumanPlayerId
-        if(userEntity.getHumanPlayerIdEntity() == null) {
-           fixHumanPlayerIdEntity(userEntity);
+        if (userEntity.getHumanPlayerIdEntity() == null) {
+            fixHumanPlayerIdEntity(userEntity);
         }
         //TODO ends
         UserContext userContext = userEntity.createUser();
@@ -110,6 +111,8 @@ public class UserService {
     @Transactional
     public HumanPlayerIdEntity createHumanPlayerId() {
         HumanPlayerIdEntity humanPlayerIdEntity = new HumanPlayerIdEntity();
+        humanPlayerIdEntity.setTimeStamp(new Date());
+        humanPlayerIdEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         entityManager.persist(humanPlayerIdEntity);
         return humanPlayerIdEntity;
     }

@@ -1,9 +1,11 @@
 package com.btxtech.server.user;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * Created by Beat
@@ -15,11 +17,20 @@ public class HumanPlayerIdEntity {
     @Id
     @GeneratedValue
     private Integer id;
-//    @OneToOne
-//    private UserEntity userEntity;
+    private Date timeStamp;
+    @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    private String sessionId;
 
     public Integer getId() {
         return id;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     @Override
