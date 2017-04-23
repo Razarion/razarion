@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
 /**
@@ -7,5 +8,5 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
  * 26.10.2016.
  */
 public interface QuestListener {
-    void onQuestPassed(int userId, QuestConfig questConfig);
+    void onQuestPassed(HumanPlayerId humanPlayerId, QuestConfig questConfig);
 }

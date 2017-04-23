@@ -28,7 +28,7 @@ import java.util.List;
 public class PerfmonStatisticEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private Date timeStamp;
     @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String sessionId;

@@ -2,7 +2,8 @@ package com.btxtech.server.user;
 
 import com.btxtech.server.persistence.GameEngineConfigPersistence;
 import com.btxtech.server.system.FilePropertiesService;
-import com.btxtech.server.web.Session;
+import com.btxtech.server.web.SessionHolder;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
@@ -30,11 +31,12 @@ public class UserService {
     @Inject
     private Logger logger;
     @Inject
-    private Session session;
+    private SessionHolder sessionHolder;
     @Inject
     private FilePropertiesService filePropertiesService;
     private Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
+    @Transactional
     public UserContext handleUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
         // TODO verify facebook signedRequest
 
@@ -47,33 +49,42 @@ public class UserService {
         if (userEntity == null) {
             userEntity = createUser(facebookUserLoginInfo);
         }
-        User user = userEntity.createUser();
-        session.setUser(user);
-        return createAndLoginUserContext(user);
+        //TODO remove if all do have a HumanPlayerId
+        if(userEntity.getHumanPlayerIdEntity() == null) {
+           fixHumanPlayerIdEntity(userEntity);
+        }
+        //TODO ends
+        UserContext userContext = userEntity.createUser();
+        return createAndLoginUserContext(userContext);
     }
 
-    private UserContext createAndLoginUserContext(User user) {
-        UserContext userContext = new UserContext();
-        if (user != null) {
-            userContext.setUserId((int) user.getUserId());
-            userContext.setAdmin(user.isAdmin());
-            userContext.setLevelId(user.getLevelId());
-        } else {
-            userContext.setUserId(999999999); // TODO
-            userContext.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
+    private void fixHumanPlayerIdEntity(UserEntity userEntity) {
+        userEntity.setHumanPlayerIdEntity(createHumanPlayerId());
+        entityManager.merge(userEntity);
+    }
+
+    private UserContext createAndLoginUserContext(UserContext userContext) {
+        if (userContext == null) {
+            userContext = sessionHolder.getPlayerSession().getUserContext();
+            if (userContext == null) {
+                userContext = new UserContext();
+                userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
+                userContext.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
+            }
         }
         if (filePropertiesService.isDeveloperMode()) {
             userContext.setAdmin(true);
         }
+        sessionHolder.getPlayerSession().setUserContext(userContext);
         userContext.setName("Emulator Name");// TODO
-        loginUser(session.getId(), userContext);
+        loginUser(sessionHolder.getPlayerSession().getHttpSessionId(), userContext);
         return userContext;
     }
 
     @Transactional
     private UserEntity createUser(FacebookUserLoginInfo facebookUserLoginInfo) {
         UserEntity userEntity = new UserEntity();
-        userEntity.fromFacebookUserLoginInfo(facebookUserLoginInfo);
+        userEntity.fromFacebookUserLoginInfo(facebookUserLoginInfo, createHumanPlayerId());
         userEntity.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
         entityManager.persist(userEntity);
         return userEntity;
@@ -94,6 +105,13 @@ public class UserService {
         } else {
             return list.get(0);
         }
+    }
+
+    @Transactional
+    public HumanPlayerIdEntity createHumanPlayerId() {
+        HumanPlayerIdEntity humanPlayerIdEntity = new HumanPlayerIdEntity();
+        entityManager.persist(humanPlayerIdEntity);
+        return humanPlayerIdEntity;
     }
 
     private void loginUser(String sessionId, UserContext userContext) {

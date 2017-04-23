@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class GroundSplattingEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private int xIndex;
     private int yIndex;
     private double splatting;

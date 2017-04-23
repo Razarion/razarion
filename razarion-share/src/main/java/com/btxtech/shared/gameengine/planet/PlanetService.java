@@ -126,7 +126,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public void fillSyncItems(PlanetConfig planetConfig, UserContext userContext) {
         planetConfig.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
         planetConfig.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
-        PlayerBaseFull playerBaseFull = baseItemService.getPlayerBase4UserId(userContext.getUserId());
+        PlayerBaseFull playerBaseFull = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
         if (playerBaseFull != null) {
             planetConfig.setActualBaseId(playerBaseFull.getBaseId());
         }

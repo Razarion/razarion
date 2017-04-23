@@ -20,7 +20,7 @@ import javax.persistence.Table;
 public class ResourceItemTypeEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity shape3DId;
@@ -30,9 +30,9 @@ public class ResourceItemTypeEntity {
 
     public ResourceItemType toResourceItemType() {
         ResourceItemType resourceItemType = new ResourceItemType();
-        resourceItemType.setRadius(radius).setAmount(amount).setId(id.intValue()).setName(name);
+        resourceItemType.setRadius(radius).setAmount(amount).setId(id).setName(name);
         if (shape3DId != null) {
-            resourceItemType.setShape3DId(shape3DId.getId().intValue());
+            resourceItemType.setShape3DId(shape3DId.getId());
         }
         return resourceItemType;
     }

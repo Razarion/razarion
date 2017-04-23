@@ -7,7 +7,7 @@ package com.btxtech.server.persistence;
 public interface PersistenceUtil {
     static Integer getImageIdSafe(ImageLibraryEntity imageLibraryEntity) {
         if (imageLibraryEntity != null) {
-            return imageLibraryEntity.getId().intValue();
+            return imageLibraryEntity.getId();
         } else {
             return null;
         }

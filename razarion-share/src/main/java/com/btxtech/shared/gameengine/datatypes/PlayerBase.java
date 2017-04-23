@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes;
 
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 
 /**
@@ -25,15 +26,15 @@ public class PlayerBase {
     private double resources;
     private String name;
     private Character character;
-    private Integer userId;
+    private HumanPlayerId humanPlayerId;
     private boolean abandoned;
 
-    public PlayerBase(int baseId, String name, Character character, double resources, Integer userId) {
+    public PlayerBase(int baseId, String name, Character character, double resources, HumanPlayerId humanPlayerId) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
         this.resources = resources;
-        this.userId = userId;
+        this.humanPlayerId = humanPlayerId;
     }
 
     public int getBaseId() {
@@ -56,8 +57,8 @@ public class PlayerBase {
         return !equals(playerBase) && character.isEnemy(playerBase.character);
     }
 
-    public Integer getUserId() {
-        return userId;
+    public HumanPlayerId getHumanPlayerId() {
+        return humanPlayerId;
     }
 
     public double getResources() {
@@ -81,7 +82,7 @@ public class PlayerBase {
         playerBaseInfo.setBaseId(baseId);
         playerBaseInfo.setCharacter(character);
         playerBaseInfo.setName(name);
-        playerBaseInfo.setUserId(userId);
+        playerBaseInfo.setHumanPlayerId(humanPlayerId);
         playerBaseInfo.setResources(resources);
         return playerBaseInfo;
     }

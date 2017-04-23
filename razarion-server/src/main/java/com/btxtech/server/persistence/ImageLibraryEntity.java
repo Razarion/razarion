@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class ImageLibraryEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @Lob
     private byte[] data;
     private String internalName;
@@ -26,14 +26,14 @@ public class ImageLibraryEntity {
 
     public ImageGalleryItem toImageGalleryItem() {
         ImageGalleryItem imageGalleryItem = new ImageGalleryItem();
-        imageGalleryItem.setId(id.intValue());
+        imageGalleryItem.setId(id);
         imageGalleryItem.setSize((int)size);
         imageGalleryItem.setType(type);
         imageGalleryItem.setInternalName(internalName);
         return imageGalleryItem;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

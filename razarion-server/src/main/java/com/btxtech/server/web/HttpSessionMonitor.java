@@ -1,6 +1,7 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
+import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -20,7 +21,7 @@ public class HttpSessionMonitor implements HttpSessionListener {
     @Inject
     private Logger logger;
     @Inject
-    private Session session;
+    private SessionHolder sessionHolder;
     @Inject
     private HttpServletRequest httpRequest;
     @Inject
@@ -29,15 +30,17 @@ public class HttpSessionMonitor implements HttpSessionListener {
     private ExceptionHandler exceptionHandler;
     @Inject
     private UserService userService;
+    @Inject
+    private SessionService sessionService;
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
         try {
-            if (session.getId() != null) {
-                logger.warning("Session already set: " + session);
+            if (sessionHolder.getPlayerSession() != null) {
+                logger.warning("SessionHolder already set: " + sessionHolder.getPlayerSession().getHttpSessionId());
             }
-            session.setId(se.getSession().getId());
-            session.setLocale(httpRequest.getLocale());
+            PlayerSession playerSession = sessionService.sessionCreated(se.getSession().getId(), httpRequest.getLocale());
+            sessionHolder.setPlayerSession(playerSession);
             trackerPersistence.onNewSession(httpRequest);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
@@ -47,5 +50,6 @@ public class HttpSessionMonitor implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         userService.logoutUserUser(se.getSession().getId());
+        sessionService.sessionDestroyed(se.getSession().getId());
     }
 }

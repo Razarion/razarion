@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.tracker;
 
-import com.btxtech.server.web.Session;
+import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
@@ -29,14 +29,14 @@ public class TrackerPersistence {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private Session session;
+    private SessionHolder sessionHolder;
     @PersistenceContext
     private EntityManager entityManager;
 
     @Transactional
     public void onNewSession(HttpServletRequest request) {
         SessionTrackerEntity sessionTrackerEntity = new SessionTrackerEntity();
-        sessionTrackerEntity.setSessionId(session.getId());
+        sessionTrackerEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         sessionTrackerEntity.setUserAgent(request.getHeader("user-agent"));
         sessionTrackerEntity.setRemoteAddr(request.getRemoteAddr());
         sessionTrackerEntity.setReferer(request.getHeader("Referer"));
@@ -54,7 +54,7 @@ public class TrackerPersistence {
     @Transactional
     public void onPage(String page, HttpServletRequest request) {
         PageTrackerEntity pageTrackerEntity = new PageTrackerEntity();
-        pageTrackerEntity.setSessionId(session.getId());
+        pageTrackerEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         pageTrackerEntity.setPage(page);
         pageTrackerEntity.setTimeStamp(new Date());
         pageTrackerEntity.setUri(request.getRequestURI());
@@ -83,7 +83,7 @@ public class TrackerPersistence {
     public void onStartupTask(StartupTaskJson startupTaskJson) {
         StartupTaskEntity startupTaskEntity = new StartupTaskEntity();
         startupTaskEntity.setStartTime(new Date());
-        startupTaskEntity.setSessionId(session.getId());
+        startupTaskEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         startupTaskEntity.setGameSessionUuid(startupTaskJson.getGameSessionUuid());
         startupTaskEntity.setClientStartTime(startupTaskJson.getStartTime());
         startupTaskEntity.setDuration(startupTaskJson.getDuration());
@@ -96,7 +96,7 @@ public class TrackerPersistence {
     public void onStartupTerminated(StartupTerminatedJson startupTerminatedJson) {
         StartupTerminatedEntity startupTerminatedEntity = new StartupTerminatedEntity();
         startupTerminatedEntity.setTimeStamp(new Date());
-        startupTerminatedEntity.setSessionId(session.getId());
+        startupTerminatedEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         startupTerminatedEntity.setGameSessionUuid(startupTerminatedJson.getGameSessionUuid());
         startupTerminatedEntity.setTotalTime(startupTerminatedJson.getTotalTime());
         startupTerminatedEntity.setSuccessful(startupTerminatedJson.isSuccessful());
@@ -107,7 +107,7 @@ public class TrackerPersistence {
     public void onGameUiControlTrackerInfo(GameUiControlTrackerInfo gameUiControlTrackerInfo) {
         GameUiControlTrackerEntity gameUiControlTrackerEntity = new GameUiControlTrackerEntity();
         gameUiControlTrackerEntity.setTimeStamp(new Date());
-        gameUiControlTrackerEntity.setSessionId(session.getId());
+        gameUiControlTrackerEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         gameUiControlTrackerEntity.setClientStartTime(gameUiControlTrackerInfo.getStartTime());
         gameUiControlTrackerEntity.setGameSessionUuid(gameUiControlTrackerInfo.getGameSessionUuid());
         gameUiControlTrackerEntity.setDuration(gameUiControlTrackerInfo.getDuration());
@@ -118,7 +118,7 @@ public class TrackerPersistence {
     public void onSceneTrackerInfo(SceneTrackerInfo sceneTrackerInfo) {
         SceneTrackerEntity sceneTrackerEntity = new SceneTrackerEntity();
         sceneTrackerEntity.setTimeStamp(new Date());
-        sceneTrackerEntity.setSessionId(session.getId());
+        sceneTrackerEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         sceneTrackerEntity.setClientStartTime(sceneTrackerInfo.getStartTime());
         sceneTrackerEntity.setGameSessionUuid(sceneTrackerInfo.getGameSessionUuid());
         sceneTrackerEntity.setInternalName(sceneTrackerInfo.getInternalName());
@@ -129,7 +129,7 @@ public class TrackerPersistence {
     @Transactional
     public void onPerformanceTracker(PerfmonStatistic perfmonStatistic) {
         PerfmonStatisticEntity fromPerfmonStatistic = new PerfmonStatisticEntity();
-        fromPerfmonStatistic.fromPerfmonStatistic(session.getId(), new Date(), perfmonStatistic);
+        fromPerfmonStatistic.fromPerfmonStatistic(sessionHolder.getPlayerSession().getHttpSessionId(), new Date(), perfmonStatistic);
         entityManager.persist(fromPerfmonStatistic);
     }
 }

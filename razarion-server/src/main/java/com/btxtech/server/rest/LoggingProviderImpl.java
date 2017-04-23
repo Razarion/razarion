@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.web.Session;
+import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
 import com.btxtech.shared.dto.ThrownLogInfo;
@@ -22,13 +22,13 @@ public class LoggingProviderImpl implements LoggingProvider {
 //    private final static String SIMPLE_MODULE_NAME = "razarion_client";
     private Logger logger = Logger.getLogger(LoggingProviderImpl.class.getName());
     @Inject
-    private Session session;
+    private SessionHolder sessionHolder;
     // @Inject
     // private FilePropertiesService filePropertiesService;
 
     @Override
     public void simpleLogger(String logString) {
-        logger.severe("SimpleLogger: SessionId: " + session.getId() + " User " + session.getUser());
+        logger.severe("SimpleLogger: SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
         logger.severe("SimpleLogger: " + logString);
     }
 
@@ -36,7 +36,7 @@ public class LoggingProviderImpl implements LoggingProvider {
     public void jsonLogger(LogRecordInfo logRecordInfo) {
         try {
             LogRecord logRecord = toLogRecord(logRecordInfo);
-            logger.log(logRecord.getLevel(), "jsonLogger: GWT Modul: " + logRecordInfo.getGwtModuleName() + " SessionId: " + session.getId() + " User " + session.getUser());
+            logger.log(logRecord.getLevel(), "jsonLogger: GWT Modul: " + logRecordInfo.getGwtModuleName() + " SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
             logger.log(logRecord);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Logging from client failed. LogRecordInfo: " + logRecordInfo, throwable);

@@ -51,7 +51,7 @@ public class ImagePersistence {
 
     @Transactional
     public ImageGalleryItem getImageGalleryItem(int id) {
-        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, (long) id);
+        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
         return imageLibraryEntity.toImageGalleryItem();
     }
 
@@ -68,7 +68,7 @@ public class ImagePersistence {
     @Transactional
     @SecurityCheck
     public void save(int id, DataUrlDecoder dataUrlDecoder) {
-        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, (long) id);
+        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
         imageLibraryEntity.setType(dataUrlDecoder.getType());
         imageLibraryEntity.setData(dataUrlDecoder.getData());
         imageLibraryEntity.setSize(dataUrlDecoder.getDataLength());

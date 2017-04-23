@@ -21,7 +21,7 @@ import javax.persistence.Table;
 public class TerrainObjectPositionEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn
     private TerrainObjectEntity terrainObjectEntity;
@@ -30,14 +30,14 @@ public class TerrainObjectPositionEntity {
     private double scale;
     private double rotationZ;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     public TerrainObjectPosition toTerrainObjectPosition() {
         TerrainObjectPosition objectPosition = new TerrainObjectPosition();
-        objectPosition.setId(id.intValue());
-        objectPosition.setTerrainObjectId(terrainObjectEntity.getId().intValue());
+        objectPosition.setId(id);
+        objectPosition.setTerrainObjectId(terrainObjectEntity.getId());
         objectPosition.setScale(scale);
         objectPosition.setRotationZ(rotationZ);
         objectPosition.setPosition(position);

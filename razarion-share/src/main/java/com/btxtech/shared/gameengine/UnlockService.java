@@ -17,7 +17,7 @@ public class UnlockService {
         return false;
 //        return baseItemType.unlockNeeded()
 //                && !playerBase.getCharacter().isBot()
-//                && playerBase.getUserContext().containsUnlockedItemTypeId(baseItemType.getId());
+//                && playerBase.getHumanPlayerId().containsUnlockedItemTypeId(baseItemType.getId());
     }
 
     // TODO boolean isQuestLocked(QuestInfo questInfo, PlayerBase simpleBase);

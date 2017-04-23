@@ -4,6 +4,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -58,7 +59,7 @@ public class ExperimentalTask extends AbstractStartupTask {
         gameEngineConfig.setLevelConfigs(Collections.emptyList());
         gameEngineConfig.setPlanetConfig(defaultPlanetConfig());
         GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
-        gameUiControlConfig.setUserContext(new UserContext().setUserId(1).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.emptyList()));
+        gameUiControlConfig.setUserContext(new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.emptyList()));
         gameUiControlConfig.setVisualConfig(defaultVisualConfig());
         gameUiControlConfig.setAudioConfig(new AudioConfig());
         gameUiControlConfig.setGameEngineConfig(gameEngineConfig);

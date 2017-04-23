@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.planet.quest;
 
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -26,7 +27,6 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -53,12 +53,12 @@ public class QuestService {
     @Inject
     private LevelService levelService;
     private Collection<QuestListener> questListeners = new ArrayList<>();
-    private final Map<Integer, AbstractConditionProgress> progressMap = new HashMap<>();
+    private final Map<HumanPlayerId, AbstractConditionProgress> progressMap = new HashMap<>();
 
-    public void activateCondition(int userId, QuestConfig questConfig) {
+    public void activateCondition(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
         AbstractComparison abstractComparison = null;
         if (questConfig.getConditionConfig().getConditionTrigger().isComparisonNeeded()) {
-            abstractComparison = createAbstractComparison(userId, questConfig.getConditionConfig());
+            abstractComparison = createAbstractComparison(humanPlayerId, questConfig.getConditionConfig());
 //            if (abstractComparison instanceof AbstractUpdatingComparison) {
 //                ((AbstractUpdatingComparison) abstractComparison).setGlobalServices(getGlobalServices());
 //            }
@@ -70,19 +70,19 @@ public class QuestService {
 //   TODO         }
         }
         AbstractConditionProgress conditionProgress = questConfig.getConditionConfig().getConditionTrigger().createConditionProgress(abstractComparison);
-        conditionProgress.setUserId(userId);
+        conditionProgress.setHumanPlayerId(humanPlayerId);
         conditionProgress.setQuestConfig(questConfig);
         synchronized (progressMap) {
-            progressMap.put(userId, conditionProgress);
+            progressMap.put(humanPlayerId, conditionProgress);
         }
         if (conditionProgress.isFulfilled()) {
             conditionPassed(conditionProgress);
         }
     }
 
-    public void deactivateActorCondition(int userId) {
+    public void deactivateActorCondition(HumanPlayerId humanPlayerId) {
         synchronized (progressMap) {
-            progressMap.remove(userId);
+            progressMap.remove(humanPlayerId);
         }
         // TODO if (abstractConditionTrigger != null) {
         // TODO handleTimerRemoval(abstractConditionTrigger);
@@ -94,7 +94,7 @@ public class QuestService {
         synchronized (progressMap) {
             for (AbstractConditionProgress abstractConditionProgress : progressMap.values()) {
                 if (abstractConditionProgress.getConditionTrigger().equals(ConditionTrigger.SYNC_ITEM_POSITION)) {
-                    playerBases.add(baseItemService.getPlayerBase4UserId(abstractConditionProgress.getUserId()));
+                    playerBases.add(baseItemService.getPlayerBase4HumanPlayerId(abstractConditionProgress.getHumanPlayerId()));
                     break;
                 }
             }
@@ -106,38 +106,38 @@ public class QuestService {
             if (!playerBases.contains(syncBaseItem.getBase())) {
                 return null;
             }
-            triggerSyncItem(syncBaseItem.getBase().getUserId(), ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
+            triggerSyncItem(syncBaseItem.getBase().getHumanPlayerId(), ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
             return null;
         });
     }
 
     public void onSyncItemBuilt(SyncBaseItem syncBaseItem) {
-        Integer userId = syncBaseItem.getBase().getUserId();
-        if (userId == null) {
+        HumanPlayerId humanPlayerId = syncBaseItem.getBase().getHumanPlayerId();
+        if (humanPlayerId == null) {
             return;
         }
-        triggerSyncItem(userId, ConditionTrigger.SYNC_ITEM_CREATED, syncBaseItem);
-        triggerSyncItem(userId, ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
+        triggerSyncItem(humanPlayerId, ConditionTrigger.SYNC_ITEM_CREATED, syncBaseItem);
+        triggerSyncItem(humanPlayerId, ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
     }
 
     public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
-        Integer userId = actor.getBase().getUserId();
-        if (userId == null) {
+        HumanPlayerId humanPlayerId = actor.getBase().getHumanPlayerId();
+        if (humanPlayerId == null) {
             return;
         }
-        triggerSyncItem(userId, ConditionTrigger.SYNC_ITEM_KILLED, target);
+        triggerSyncItem(humanPlayerId, ConditionTrigger.SYNC_ITEM_KILLED, target);
     }
 
     public void onSyncBoxItemPicked(SyncBaseItem picker) {
-        Integer userId = picker.getBase().getUserId();
-        if (userId == null) {
+        HumanPlayerId humanPlayerId = picker.getBase().getHumanPlayerId();
+        if (humanPlayerId == null) {
             return;
         }
-        triggerValue(userId, ConditionTrigger.BOX_PICKED, 1.0);
+        triggerValue(humanPlayerId, ConditionTrigger.BOX_PICKED, 1.0);
     }
 
-    public void onInventoryItemPlaced(int userId, InventoryItem inventoryItem) {
-        InventoryItemConditionProgress inventoryItemConditionProgress = (InventoryItemConditionProgress) findProgress(userId, ConditionTrigger.INVENTORY_ITEM_PLACED);
+    public void onInventoryItemPlaced(HumanPlayerId humanPlayerId, InventoryItem inventoryItem) {
+        InventoryItemConditionProgress inventoryItemConditionProgress = (InventoryItemConditionProgress) findProgress(humanPlayerId, ConditionTrigger.INVENTORY_ITEM_PLACED);
         if (inventoryItemConditionProgress == null) {
             return;
         }
@@ -148,19 +148,19 @@ public class QuestService {
     }
 
     public void onHarvested(SyncBaseItem harvester, double amount) {
-        Integer userId = harvester.getBase().getUserId();
-        if (userId == null) {
+        HumanPlayerId humanPlayerId = harvester.getBase().getHumanPlayerId();
+        if (humanPlayerId == null) {
             return;
         }
-        triggerValue(userId, ConditionTrigger.HARVEST, amount);
+        triggerValue(humanPlayerId, ConditionTrigger.HARVEST, amount);
     }
 
     public void onBaseKilled(SyncBaseItem actor) {
-        Integer userId = actor.getBase().getUserId();
-        if (userId == null) {
+        HumanPlayerId humanPlayerId = actor.getBase().getHumanPlayerId();
+        if (humanPlayerId == null) {
             return;
         }
-        triggerValue(userId, ConditionTrigger.BASE_KILLED, 1.0);
+        triggerValue(humanPlayerId, ConditionTrigger.BASE_KILLED, 1.0);
     }
 
     public void addQuestListener(QuestListener questListener) {
@@ -171,7 +171,7 @@ public class QuestService {
         questListeners.remove(questListener);
     }
 
-    private AbstractComparison createAbstractComparison(Integer userId, ConditionConfig conditionConfig) {
+    private AbstractComparison createAbstractComparison(HumanPlayerId humanPlayerId, ConditionConfig conditionConfig) {
         ComparisonConfig comparisonConfig = conditionConfig.getComparisonConfig();
         switch (conditionConfig.getConditionTrigger().getType()) {
             case BASE_ITEM: {
@@ -181,7 +181,7 @@ public class QuestService {
                     return baseItemCountComparison;
                 } else if (comparisonConfig.getPlaceConfig() != null) {
                     BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
-                    baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), userId);
+                    baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), humanPlayerId);
                     return baseItemPositionComparison;
                 } else if (comparisonConfig.getTypeCount() != null) {
                     BaseItemTypeComparison syncItemTypeComparison = instance.select(BaseItemTypeComparison.class).get();
@@ -212,10 +212,10 @@ public class QuestService {
         }
     }
 
-    private AbstractConditionProgress findProgress(int userId, ConditionTrigger conditionTrigger) {
+    private AbstractConditionProgress findProgress(HumanPlayerId humanPlayerId, ConditionTrigger conditionTrigger) {
         AbstractConditionProgress abstractConditionProgress;
         synchronized (progressMap) {
-            abstractConditionProgress = progressMap.get(userId);
+            abstractConditionProgress = progressMap.get(humanPlayerId);
         }
         if (abstractConditionProgress == null) {
             return null;
@@ -226,8 +226,8 @@ public class QuestService {
         return abstractConditionProgress;
     }
 
-    private void triggerValue(int userId, ConditionTrigger conditionTrigger, double value) {
-        ValueConditionProgress valueConditionProgress = (ValueConditionProgress) findProgress(userId, conditionTrigger);
+    private void triggerValue(HumanPlayerId humanPlayerId, ConditionTrigger conditionTrigger, double value) {
+        ValueConditionProgress valueConditionProgress = (ValueConditionProgress) findProgress(humanPlayerId, conditionTrigger);
         if (valueConditionProgress == null) {
             return;
         }
@@ -237,8 +237,8 @@ public class QuestService {
         }
     }
 
-    private void triggerSyncItem(int userId, ConditionTrigger conditionTrigger, SyncBaseItem syncBaseItem) {
-        BaseItemConditionProgress baseItemConditionProgress = (BaseItemConditionProgress) findProgress(userId, conditionTrigger);
+    private void triggerSyncItem(HumanPlayerId humanPlayerId, ConditionTrigger conditionTrigger, SyncBaseItem syncBaseItem) {
+        BaseItemConditionProgress baseItemConditionProgress = (BaseItemConditionProgress) findProgress(humanPlayerId, conditionTrigger);
         if (baseItemConditionProgress == null) {
             return;
         }
@@ -249,9 +249,9 @@ public class QuestService {
     }
 
     private void conditionPassed(AbstractConditionProgress abstractConditionProgress) {
-        deactivateActorCondition(abstractConditionProgress.getUserId());
-        questListeners.forEach(questListener -> questListener.onQuestPassed(abstractConditionProgress.getUserId(), abstractConditionProgress.getQuestConfig()));
-        // TODO levelService.increaseXp(abstractConditionProgress.getUserId(), abstractConditionProgress.getQuestConfig().getXp());
+        deactivateActorCondition(abstractConditionProgress.getHumanPlayerId());
+        questListeners.forEach(questListener -> questListener.onQuestPassed(abstractConditionProgress.getHumanPlayerId(), abstractConditionProgress.getQuestConfig()));
+        // TODO levelService.increaseXp(abstractConditionProgress.getHumanPlayerId(), abstractConditionProgress.getQuestConfig().getXp());
     }
 
     private Map<BaseItemType, Integer> convertItemCount(Map<Integer, Integer> itemIdCount) {

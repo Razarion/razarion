@@ -5,7 +5,6 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
@@ -228,7 +227,7 @@ public class GameLogicService {
 
     public void onBoxPicket(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
         System.out.println("GameLogicService.onBoxPicket(): " + box + " picker: " + picker + " boxContent: " + boxContent);
-        gameLogicListener.ifPresent(listener -> listener.onBoxPicked(picker.getBase().getUserId(), boxContent));
+        gameLogicListener.ifPresent(listener -> listener.onBoxPicked(picker.getBase().getHumanPlayerId(), boxContent));
         gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeleted(box));
         questService.onSyncBoxItemPicked(picker);
     }

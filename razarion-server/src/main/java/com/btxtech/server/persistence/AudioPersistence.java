@@ -37,7 +37,7 @@ public class AudioPersistence {
 
     @Transactional
     public AudioItemConfig getAudioItemConfig(int id) {
-        return entityManager.find(AudioLibraryEntity.class, (long) id).toAudioConfig();
+        return entityManager.find(AudioLibraryEntity.class, id).toAudioConfig();
     }
 
     @Transactional
@@ -68,7 +68,7 @@ public class AudioPersistence {
     @SecurityCheck
     public void save(List<AudioItemConfig> audioItemConfigs) {
         for (AudioItemConfig audioItemConfig : audioItemConfigs) {
-            AudioLibraryEntity audioLibraryEntity = entityManager.find(AudioLibraryEntity.class, (long) audioItemConfig.getId());
+            AudioLibraryEntity audioLibraryEntity = entityManager.find(AudioLibraryEntity.class, audioItemConfig.getId());
             if (audioItemConfig.getInternalName() != null) {
                 audioLibraryEntity.setInternalName(audioItemConfig.getInternalName());
             }
@@ -87,7 +87,7 @@ public class AudioPersistence {
         List<AudioLibraryEntity> audioLibraryEntities = new ArrayList<>();
         if (audioIds != null) {
             for (Integer audioId : audioIds) {
-                audioLibraryEntities.add(entityManager.find(AudioLibraryEntity.class, (long) audioId));
+                audioLibraryEntities.add(entityManager.find(AudioLibraryEntity.class, audioId));
             }
         }
         return audioLibraryEntities;

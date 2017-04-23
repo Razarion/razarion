@@ -54,7 +54,7 @@ public class ItemTypePersistence {
     @Transactional
     @SecurityCheck
     public void updateBaseItemType(BaseItemType baseItemType) {
-        BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, (long) baseItemType.getId());
+        BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, baseItemType.getId());
         baseItemTypeEntity.fromBaseItemType(baseItemType);
         baseItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(baseItemType.getShape3DId()));
         baseItemTypeEntity.setSpawnShape3DId(shape3DPersistence.getColladaEntity(baseItemType.getSpawnShape3DId()));
@@ -64,7 +64,7 @@ public class ItemTypePersistence {
     @Transactional
     @SecurityCheck
     public void deleteBaseItemType(int id) {
-        entityManager.remove(entityManager.find(BaseItemTypeEntity.class, (long) id));
+        entityManager.remove(entityManager.find(BaseItemTypeEntity.class, id));
     }
 
     @Transactional
@@ -89,7 +89,7 @@ public class ItemTypePersistence {
     @Transactional
     @SecurityCheck
     public void updateResourceItemType(ResourceItemType resourceItemType) {
-        ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, (long) resourceItemType.getId());
+        ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, resourceItemType.getId());
         resourceItemTypeEntity.fromBaseItemType(resourceItemType);
         resourceItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(resourceItemType.getShape3DId()));
         entityManager.merge(resourceItemTypeEntity);
@@ -98,7 +98,7 @@ public class ItemTypePersistence {
     @Transactional
     @SecurityCheck
     public void deleteResourceItemType(int id) {
-        entityManager.remove(entityManager.find(ResourceItemTypeEntity.class, (long) id));
+        entityManager.remove(entityManager.find(ResourceItemTypeEntity.class, id));
     }
 
     @Transactional
@@ -123,13 +123,13 @@ public class ItemTypePersistence {
     @Transactional
     @SecurityCheck
     public void deleteBoxItemType(int id) {
-        entityManager.remove(entityManager.find(BoxItemTypeEntity.class, (long) id));
+        entityManager.remove(entityManager.find(BoxItemTypeEntity.class, id));
     }
 
     @Transactional
     @SecurityCheck
     public void updateBoxItemType(BoxItemType boxItemType) {
-        BoxItemTypeEntity boxItemTypeEntity = entityManager.find(BoxItemTypeEntity.class, (long) boxItemType.getId());
+        BoxItemTypeEntity boxItemTypeEntity = entityManager.find(BoxItemTypeEntity.class, boxItemType.getId());
         boxItemTypeEntity.fromBoxItemType(boxItemType);
         boxItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(boxItemType.getShape3DId()));
         entityManager.merge(boxItemTypeEntity);

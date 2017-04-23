@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.Character;
@@ -98,30 +99,30 @@ public class BaseItemService {
         throw new IllegalStateException("No human base found");
     }
 
-    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, int userId, String name) {
-        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, userId);
+    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, HumanPlayerId humanPlayerId, String name) {
+        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, humanPlayerId);
     }
 
-    private void surrenderHumanBase(int userId) {
-        PlayerBaseFull playerBase = getPlayerBase4UserId(userId);
-        if (playerBase != null) {
-            gameLogicService.onSurrenderBase(playerBase);
-            while (!playerBase.getItems().isEmpty()) {
-                removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
-            }
+    private void surrenderHumanBase(PlayerBaseFull playerBase) {
+        gameLogicService.onSurrenderBase(playerBase);
+        while (!playerBase.getItems().isEmpty()) {
+            removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
         }
     }
 
-    public void createHumanBaseWithBaseItem(int levelId, int userId, String name, DecimalPosition position) {
-        surrenderHumanBase(userId);
-        PlayerBaseFull playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, userId, name);
+    public PlayerBaseFull createHumanBaseWithBaseItem(PlayerBaseFull existingBase, int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
+        if (existingBase != null) {
+            surrenderHumanBase(existingBase);
+        }
+        PlayerBaseFull playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, humanPlayerId, name);
         spawnSyncBaseItem(itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId()), position, 0, playerBase, false);
+        return playerBase;
     }
 
-    public void updateLevel(int userId, int levelId) {
-        PlayerBaseFull playerBase = getPlayerBase4UserId(userId);
+    public void updateLevel(HumanPlayerId humanPlayerId, int levelId) {
+        PlayerBaseFull playerBase = getPlayerBase4HumanPlayerId(humanPlayerId);
         if (playerBase == null) {
-            throw new IllegalArgumentException("No base for userId: " + userId);
+            throw new IllegalArgumentException("No base for humanPlayerId: " + humanPlayerId);
         }
         playerBase.setLevelId(levelId);
     }
@@ -130,13 +131,13 @@ public class BaseItemService {
         return createBaseMaster(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null);
     }
 
-    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Integer userId) {
+    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, HumanPlayerId humanPlayerId) {
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("createBaseMaster: Base with Id already exits: " + lastBaseItId);
             }
-            PlayerBaseFull playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, userId);
+            PlayerBaseFull playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, humanPlayerId);
             bases.put(lastBaseItId, playerBase);
             gameLogicService.onBaseCreated(playerBase);
             return playerBase;
@@ -148,7 +149,7 @@ public class BaseItemService {
             if (bases.containsKey(playerBaseInfo.getBaseId())) {
                 throw new IllegalStateException("createBaseSlave: Base with Id already exits: " + playerBaseInfo.getBaseId());
             }
-            PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getUserId());
+            PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getHumanPlayerId());
             bases.put(playerBaseInfo.getBaseId(), playerBase);
             gameLogicService.onBaseSlaveCreated(playerBase);
         }
@@ -290,7 +291,7 @@ public class BaseItemService {
     }
 
     public boolean isLevelLimitation4ItemTypeExceeded(BaseItemType newItemType, int itemCount2Add, PlayerBaseFull playerBase) throws NoSuchItemTypeException {
-        if( playerBase.getCharacter().isBot()) {
+        if (playerBase.getCharacter().isBot()) {
             return false;
         }
         return getItemCount(playerBase, newItemType) + itemCount2Add > getLimitation4ItemType(newItemType.getId(), playerBase.getLevelId());
@@ -359,10 +360,10 @@ public class BaseItemService {
         return playerBase.getUsedHouseSpace() + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetConfig.getHouseSpace();
     }
 
-    public PlayerBaseFull getPlayerBase4UserId(int userId) {
+    public PlayerBaseFull getPlayerBase4HumanPlayerId(HumanPlayerId humanPlayerId) {
         synchronized (bases) {
             for (PlayerBase playerBase : bases.values()) {
-                if (playerBase.getUserId() != null && playerBase.getUserId() == userId) {
+                if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(humanPlayerId)) {
                     return (PlayerBaseFull) playerBase;
                 }
             }

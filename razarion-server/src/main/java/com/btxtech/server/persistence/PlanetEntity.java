@@ -25,7 +25,7 @@ import java.util.List;
 public class PlanetEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<TerrainSlopePositionEntity> terrainSlopePositionEntities;
@@ -44,7 +44,7 @@ public class PlanetEntity {
         }
 
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setPlanetId(id.intValue());
+        planetConfig.setPlanetId(id);
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setTerrainObjectPositions(terrainObjectPositions);
         return planetConfig;

@@ -22,7 +22,7 @@ import javax.persistence.Table;
 public class SceneEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private String internalName;
     private String introText;
     @Deprecated

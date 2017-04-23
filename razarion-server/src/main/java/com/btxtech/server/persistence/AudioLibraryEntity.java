@@ -17,14 +17,14 @@ import javax.persistence.Table;
 public class AudioLibraryEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @Lob
     private byte[] data;
     private String type;
     private String internalName;
     private long size;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -45,7 +45,7 @@ public class AudioLibraryEntity {
     }
 
     AudioItemConfig toAudioConfig() {
-        return new AudioItemConfig().setId(id.intValue()).setInternalName(internalName).setSize((int) size).setType(type);
+        return new AudioItemConfig().setId(id).setInternalName(internalName).setSize((int) size).setType(type);
     }
 
     @Override

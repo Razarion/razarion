@@ -22,7 +22,7 @@ import java.util.List;
 public class HistoryAdEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private long campaignId;
     private long adSetId;
     private long adId;

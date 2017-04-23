@@ -28,7 +28,7 @@ import java.util.List;
 public class GroundConfigEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @Embedded
     private LightConfigEmbeddable lightConfigEmbeddable;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,7 +74,7 @@ public class GroundConfigEntity {
     @JoinColumn(nullable = false)
     private List<GroundHeightEntity> heights;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -138,7 +138,7 @@ public class GroundConfigEntity {
 
     public GroundSkeletonConfig generateGroundSkeleton() {
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        groundSkeletonConfig.setId(id.intValue());
+        groundSkeletonConfig.setId(id);
         groundSkeletonConfig.setTopTextureId(PersistenceUtil.getImageIdSafe(topTexture));
         groundSkeletonConfig.setTopTextureScale(topTextureScale);
         groundSkeletonConfig.setTopBmId(PersistenceUtil.getImageIdSafe(topBm));

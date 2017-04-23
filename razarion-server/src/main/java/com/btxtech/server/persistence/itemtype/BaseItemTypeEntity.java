@@ -21,7 +21,7 @@ import javax.persistence.Table;
 public class BaseItemTypeEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private String name;
     private double radius;
     private int health;
@@ -33,18 +33,18 @@ public class BaseItemTypeEntity {
     private ColladaEntity spawnShape3DId;
     private int spawnDurationMillis;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     public BaseItemType toBaseItemType() {
-        BaseItemType baseItemType = (BaseItemType) new BaseItemType().setName(name).setId(id.intValue());
+        BaseItemType baseItemType = (BaseItemType) new BaseItemType().setName(name).setId(id);
         baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(radius));
         if (shape3DId != null) {
-            baseItemType.setShape3DId(shape3DId.getId().intValue());
+            baseItemType.setShape3DId(shape3DId.getId());
         }
         if (spawnShape3DId != null) {
-            baseItemType.setSpawnShape3DId(spawnShape3DId.getId().intValue());
+            baseItemType.setSpawnShape3DId(spawnShape3DId.getId());
         }
         baseItemType.setSpawnDurationMillis(spawnDurationMillis);
         return baseItemType.setHealth(health);

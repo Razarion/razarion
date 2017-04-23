@@ -29,7 +29,7 @@ public class CurrentAdEntity {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @Enumerated(EnumType.STRING)
     private State state;
     private Date dateStart;

@@ -25,7 +25,7 @@ import java.util.Map;
 public class ColladaEntity implements ColladaConverterMapper {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @Lob
     private String colladaString;
     @ManyToMany
@@ -38,7 +38,7 @@ public class ColladaEntity implements ColladaConverterMapper {
     @Enumerated(EnumType.STRING)
     private Map<String, AnimationTrigger> animations;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -54,7 +54,7 @@ public class ColladaEntity implements ColladaConverterMapper {
     public Integer getTextureId(String materialId) {
         ImageLibraryEntity imageLibraryEntity = textures.get(materialId);
         if (imageLibraryEntity != null) {
-            return imageLibraryEntity.getId().intValue();
+            return imageLibraryEntity.getId();
         } else {
             return null;
         }

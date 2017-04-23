@@ -1,38 +1,25 @@
-package com.btxtech.server.marketing;
+package com.btxtech.server.user;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * Created by Beat
- * 22.03.2017.
+ * 23.04.2017.
  */
 @Entity
-@Table(name = "FB_MARKETING_CLICK_TRACKER")
-public class ClickTrackerEntity {
+@Table(name = "HUMAN_PLAYER_ENTITY")
+public class HumanPlayerIdEntity {
     @Id
     @GeneratedValue
     private Integer id;
-    private Date timeStamp;
-    private String adId;
+//    @OneToOne
+//    private UserEntity userEntity;
 
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public String getAdId() {
-        return adId;
-    }
-
-    public void setAdId(String adId) {
-        this.adId = adId;
+    public Integer getId() {
+        return id;
     }
 
     @Override
@@ -44,7 +31,7 @@ public class ClickTrackerEntity {
             return false;
         }
 
-        ClickTrackerEntity that = (ClickTrackerEntity) o;
+        HumanPlayerIdEntity that = (HumanPlayerIdEntity) o;
         return id != null && id.equals(that.id);
     }
 

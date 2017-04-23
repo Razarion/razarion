@@ -1,9 +1,12 @@
 package com.btxtech.server.user;
 
+import javax.enterprise.context.Dependent;
+
 /**
  * Created by Beat
  * 21.02.2017.
  */
+@Deprecated
 public class User {
     private long userId;
     private int levelId;

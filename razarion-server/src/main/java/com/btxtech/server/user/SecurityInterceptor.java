@@ -1,6 +1,6 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.web.Session;
+import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.system.FilePropertiesService;
 
 import javax.inject.Inject;
@@ -16,19 +16,22 @@ import javax.interceptor.InvocationContext;
 @SecurityCheck
 public class SecurityInterceptor {
     @Inject
-    private Session session;
+    private SessionHolder sessionHolder;
     @Inject
     private FilePropertiesService filePropertiesService;
 
     @AroundInvoke
     public Object logMethodEntry(InvocationContext invocationContext) throws Exception {
         if (!filePropertiesService.isDeveloperMode()) {
-            if (session.getUser() == null) {
-                throw new SecurityException("session.getUser() == null", invocationContext.getMethod());
+            if (sessionHolder.getPlayerSession() == null) {
+                throw new SecurityException("sessionHolder.getPlayerSession() == null", invocationContext.getMethod());
+            }
+            if (sessionHolder.getPlayerSession().getUserContext() == null) {
+                throw new SecurityException("sessionHolder.getPlayerSession().getUserContext() == null", invocationContext.getMethod());
             }
 
-            if (!session.getUser().isAdmin()) {
-                throw new SecurityException(session.getUser(), invocationContext.getMethod());
+            if (!sessionHolder.getPlayerSession().getUserContext().isAdmin()) {
+                throw new SecurityException(sessionHolder.getPlayerSession().getUserContext(), invocationContext.getMethod());
             }
         }
 

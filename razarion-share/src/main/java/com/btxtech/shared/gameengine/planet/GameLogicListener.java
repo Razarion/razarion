@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -41,7 +42,7 @@ public interface GameLogicListener {
     default void onBoxCreated(SyncBoxItem syncBoxItem) {
     }
 
-    default void onBoxPicked(int userId, BoxContent boxContent) {
+    default void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
     }
 
     default void onSyncBoxDeleted(SyncBoxItem box) {

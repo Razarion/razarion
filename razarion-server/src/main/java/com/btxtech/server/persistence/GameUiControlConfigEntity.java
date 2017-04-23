@@ -25,7 +25,7 @@ import java.util.List;
 public class GameUiControlConfigEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private PlanetEntity planetEntity;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)

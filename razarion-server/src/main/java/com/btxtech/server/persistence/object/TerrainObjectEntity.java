@@ -20,22 +20,22 @@ import javax.persistence.Table;
 public class TerrainObjectEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity colladaEntity;
     private double radius;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     public TerrainObjectConfig toTerrainObjectConfig() {
         TerrainObjectConfig terrainObjectConfig = new TerrainObjectConfig();
-        terrainObjectConfig.setId(id.intValue()).setInternalName(internalName).setRadius(radius);
+        terrainObjectConfig.setId(id).setInternalName(internalName).setRadius(radius);
         if (colladaEntity != null) {
-            terrainObjectConfig.setShape3DId(colladaEntity.getId().intValue());
+            terrainObjectConfig.setShape3DId(colladaEntity.getId());
         }
         return terrainObjectConfig;
     }

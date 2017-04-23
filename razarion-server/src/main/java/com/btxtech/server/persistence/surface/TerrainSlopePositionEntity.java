@@ -25,7 +25,7 @@ import java.util.List;
 public class TerrainSlopePositionEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn
     private SlopeConfigEntity slopeConfigEntity;
@@ -34,12 +34,12 @@ public class TerrainSlopePositionEntity {
     @OrderColumn(name = "orderColumn")
     private List<DecimalPosition> polygon;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     public TerrainSlopePosition toTerrainSlopePosition() {
-        return new TerrainSlopePosition().setId(id.intValue()).setSlopeConfigEntity(slopeConfigEntity.getId().intValue()).setPolygon(new ArrayList<>(polygon));
+        return new TerrainSlopePosition().setId(id).setSlopeConfigEntity(slopeConfigEntity.getId()).setPolygon(new ArrayList<>(polygon));
     }
 
     public void setSlopeConfigEntity(SlopeConfigEntity slopeConfigEntity) {

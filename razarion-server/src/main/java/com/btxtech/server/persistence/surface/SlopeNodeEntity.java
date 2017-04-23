@@ -18,7 +18,7 @@ import javax.persistence.Table;
 public class SlopeNodeEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private int segmentIndex;
     private int rowIndex;
     @Embedded

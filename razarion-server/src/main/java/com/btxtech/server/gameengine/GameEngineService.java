@@ -1,6 +1,7 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.GameEngineConfigPersistence;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.GameEngineInitEvent;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -97,7 +98,7 @@ public class GameEngineService implements GameLogicListener {
     }
 
     @Override
-    public void onBoxPicked(int userId, BoxContent boxContent) {
+    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
 
     }
 

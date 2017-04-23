@@ -109,7 +109,7 @@ public abstract class GameEngineControl {
     public void createHumanBaseWithBaseItem(DecimalPosition position) {
         sendToWorker(GameEngineControlPackage.Command.CREATE_HUMAN_BASE_WITH_BASE_ITEM,
                 userUiService.getUserContext().getLevelId(),
-                userUiService.getUserContext().getUserId(),
+                userUiService.getUserContext().getHumanPlayerId(),
                 userUiService.getUserContext().getName(),
                 position);
     }

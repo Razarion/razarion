@@ -1,6 +1,7 @@
 package com.btxtech.gameengine.scenarios;
 
 import com.btxtech.persistence.JsonProviderEmulator;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -258,20 +259,20 @@ public class ScenarioService implements QuestListener {
             gameEngineConfig = setupGameEngineConfig();
         }
         currentScenario.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
-        UserContext userContext = new UserContext().setUserId(1).setName("User 1").setLevelId(LEVEL_1_ID);
+        UserContext userContext = new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("User 1").setLevelId(LEVEL_1_ID);
         try {
             gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
             planetService.initialise(gameEngineConfig.getPlanetConfig());
             currentScenario.setupBots(botService);
             planetService.start();
-            PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getUserId(), userContext.getName());
+            PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName());
             currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService);
             List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
             currentScenario.setupBotCommands(botCommandConfigs);
             botService.executeCommands(botCommandConfigs);
             QuestConfig questConfig = currentScenario.setupQuest();
             if (questConfig != null) {
-                questService.activateCondition(userContext.getUserId(), questConfig);
+                questService.activateCondition(userContext.getHumanPlayerId(), questConfig);
             }
             currentScenario.executeCommands(commandService);
         } catch (Throwable throwable) {
@@ -378,7 +379,7 @@ public class ScenarioService implements QuestListener {
     }
 
     @Override
-    public void onQuestPassed(int userId, QuestConfig questConfig) {
+    public void onQuestPassed(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
         System.out.println("************************************************");
         System.out.println("**************** Quest passed ******************");
         System.out.println("************************************************");

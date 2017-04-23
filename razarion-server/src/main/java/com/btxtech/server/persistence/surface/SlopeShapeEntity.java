@@ -18,7 +18,7 @@ import javax.persistence.Table;
 public class SlopeShapeEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @Embedded
     private DecimalPosition position;
     /**

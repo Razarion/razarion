@@ -37,7 +37,7 @@ public class ClientConnectionService {
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {
-        PlayerBaseInfo playerBaseInfo = new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName(playerBase.getName()).setCharacter(playerBase.getCharacter()).setUserId(playerBase.getUserId()).setResources(playerBase.getResources());
+        PlayerBaseInfo playerBaseInfo = new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName(playerBase.getName()).setCharacter(playerBase.getCharacter()).setHumanPlayerId(playerBase.getHumanPlayerId()).setResources(playerBase.getResources());
         sendToClients(ConnectionMarshaller.Package.BASE_CREATED, playerBaseInfo);
     }
 

@@ -2,7 +2,6 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity_;
-import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
@@ -80,7 +79,7 @@ public class TerrainElementPersistence {
         Root<SlopeConfigEntity> root = cq.from(SlopeConfigEntity.class);
         cq.multiselect(root.get(SlopeConfigEntity_.id), root.get(SlopeConfigEntity_.internalName));
         List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
-        return tupleResult.stream().map(t -> new ObjectNameId(((Long) t.get(0)).intValue(), (String) t.get(1))).collect(Collectors.toList());
+        return tupleResult.stream().map(t -> new ObjectNameId(((int) t.get(0)), (String) t.get(1))).collect(Collectors.toList());
     }
 
     @Transactional
@@ -94,7 +93,7 @@ public class TerrainElementPersistence {
 
     @Transactional
     public SlopeConfig readSlopeConfig(int id) {
-        return entityManager.find(SlopeConfigEntity.class, (long) id).toSlopeConfig();
+        return entityManager.find(SlopeConfigEntity.class, id).toSlopeConfig();
     }
 
     @Transactional
@@ -122,7 +121,7 @@ public class TerrainElementPersistence {
     @Transactional
     @SecurityCheck
     public void updateSlopeConfig(SlopeConfig slopeConfig) {
-        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) slopeConfig.getId());
+        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, slopeConfig.getId());
         slopeConfigEntity.fromSlopeConfig(slopeConfig, imagePersistence);
         entityManager.merge(slopeConfigEntity);
     }
@@ -130,7 +129,7 @@ public class TerrainElementPersistence {
     @Transactional
     @SecurityCheck
     public void deleteSlopeConfig(int id) {
-        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, (long) id);
+        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, id);
         entityManager.remove(slopeConfigEntity);
     }
 
@@ -141,12 +140,12 @@ public class TerrainElementPersistence {
         Root<TerrainObjectEntity> root = cq.from(TerrainObjectEntity.class);
         cq.multiselect(root.get(TerrainObjectEntity_.id), root.get(TerrainObjectEntity_.internalName));
         List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
-        return tupleResult.stream().map(t -> new ObjectNameId(((Long) t.get(0)).intValue(), (String) t.get(1))).collect(Collectors.toList());
+        return tupleResult.stream().map(t -> new ObjectNameId((int) t.get(0), (String) t.get(1))).collect(Collectors.toList());
     }
 
     @Transactional
     public TerrainObjectConfig readTerrainObjectConfig(int id) {
-        return entityManager.find(TerrainObjectEntity.class, (long) id).toTerrainObjectConfig();
+        return entityManager.find(TerrainObjectEntity.class, id).toTerrainObjectConfig();
     }
 
     @Transactional
@@ -164,14 +163,14 @@ public class TerrainElementPersistence {
     @Transactional
     @SecurityCheck
     public void saveTerrainObject(TerrainObjectConfig terrainObjectConfig) {
-        TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
+        TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, terrainObjectConfig.getId());
         terrainObjectEntity.fromTerrainObjectConfig(terrainObjectConfig, shape3DPersistence.getColladaEntity(terrainObjectConfig.getShape3DId()));
     }
 
     @Transactional
     @SecurityCheck
     public void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
-        TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, (long) terrainObjectConfig.getId());
+        TerrainObjectEntity terrainObjectEntity = entityManager.find(TerrainObjectEntity.class, terrainObjectConfig.getId());
         entityManager.remove(terrainObjectEntity);
     }
 

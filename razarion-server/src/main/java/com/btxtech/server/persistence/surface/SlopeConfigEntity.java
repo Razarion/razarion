@@ -37,7 +37,7 @@ import java.util.List;
 public class SlopeConfigEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private String internalName;
     @Embedded
     private LightConfigEmbeddable lightConfigEmbeddable;
@@ -69,13 +69,13 @@ public class SlopeConfigEntity {
     private double bmScale;
     private double bmDepth;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     public SlopeSkeletonConfig toSlopeSkeleton() {
         SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
-        slopeSkeletonConfig.setId(id.intValue());
+        slopeSkeletonConfig.setId(id);
         slopeSkeletonConfig.setInternalName(internalName);
         slopeSkeletonConfig.setSegments(segments);
         Shape shape = new Shape(toSlopeShapes());
@@ -101,7 +101,7 @@ public class SlopeConfigEntity {
 
     public SlopeConfig toSlopeConfig() {
         SlopeConfig slopeConfig = new SlopeConfig();
-        slopeConfig.setId(id.intValue());
+        slopeConfig.setId(id);
         slopeConfig.setFractalMin(fractalMin);
         slopeConfig.setFractalMax(fractalMax);
         slopeConfig.setFractalClampMin(fractalClampMin);

@@ -11,7 +11,7 @@ import java.util.Set;
  * 30.08.2016.
  */
 public class UserContext {
-    private int userId;
+    private HumanPlayerId humanPlayerId;
     private String name;
     private boolean admin;
     private int levelId;
@@ -23,12 +23,12 @@ public class UserContext {
     private Set<Integer> unlockedQuests = new HashSet<Integer>();
     private Set<Integer> unlockedPlanets = new HashSet<Integer>();
 
-    public int getUserId() {
-        return userId;
+    public HumanPlayerId getHumanPlayerId() {
+        return humanPlayerId;
     }
 
-    public UserContext setUserId(int userId) {
-        this.userId = userId;
+    public UserContext setHumanPlayerId(HumanPlayerId humanPlayerId) {
+        this.humanPlayerId = humanPlayerId;
         return this;
     }
 

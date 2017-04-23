@@ -14,7 +14,7 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 
-import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
@@ -27,7 +27,7 @@ public class AbstractConditionProgress {
     private ConditionTrigger conditionTrigger;
     private AbstractComparison abstractComparison;
     private boolean fulfilled = false;
-    private int userId;
+    private HumanPlayerId humanPlayerId;
     private QuestConfig questConfig;
 
     public AbstractConditionProgress(ConditionTrigger conditionTrigger, AbstractComparison abstractComparison) {
@@ -39,8 +39,8 @@ public class AbstractConditionProgress {
         }
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setHumanPlayerId(HumanPlayerId humanPlayerId) {
+        this.humanPlayerId = humanPlayerId;
     }
 
     public ConditionTrigger getConditionTrigger() {
@@ -59,8 +59,8 @@ public class AbstractConditionProgress {
         fulfilled = true;
     }
 
-    public int getUserId() {
-        return userId;
+    public HumanPlayerId getHumanPlayerId() {
+        return humanPlayerId;
     }
 
     public void setQuestConfig(QuestConfig questConfig) {

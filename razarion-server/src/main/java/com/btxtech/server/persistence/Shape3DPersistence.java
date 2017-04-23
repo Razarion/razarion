@@ -47,7 +47,7 @@ public class Shape3DPersistence {
     public List<Shape3D> getShape3Ds() throws ParserConfigurationException, SAXException, IOException {
         List<Shape3D> shape3Ds = new ArrayList<>();
         for (ColladaEntity colladaEntity : readColladaEntities()) {
-            shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createShape3D(colladaEntity.getId().intValue()));
+            shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createShape3D(colladaEntity.getId()));
         }
         return shape3Ds;
     }
@@ -56,7 +56,7 @@ public class Shape3DPersistence {
     public List<VertexContainerBuffer> getVertexContainerBuffers() throws ParserConfigurationException, SAXException, IOException {
         List<VertexContainerBuffer> vertexContainerBuffers = new ArrayList<>();
         for (ColladaEntity colladaEntity : readColladaEntities()) {
-            vertexContainerBuffers.addAll(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createVertexContainerBuffer(colladaEntity.getId().intValue()));
+            vertexContainerBuffers.addAll(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createVertexContainerBuffer(colladaEntity.getId()));
         }
         return vertexContainerBuffers;
     }
@@ -66,7 +66,7 @@ public class Shape3DPersistence {
     public Shape3D create() throws ParserConfigurationException, SAXException, IOException {
         ColladaEntity colladaEntity = new ColladaEntity();
         entityManager.persist(colladaEntity);
-        return new Shape3D().setDbId(colladaEntity.getId().intValue());
+        return new Shape3D().setDbId(colladaEntity.getId());
     }
 
     @Transactional
@@ -81,7 +81,7 @@ public class Shape3DPersistence {
     @Transactional
     @SecurityCheck
     public void save(Shape3DConfig shape3DConfig) throws ParserConfigurationException, SAXException, IOException {
-        ColladaEntity colladaEntity = entityManager.find(ColladaEntity.class, (long) shape3DConfig.getDbId());
+        ColladaEntity colladaEntity = entityManager.find(ColladaEntity.class, shape3DConfig.getDbId());
         if (shape3DConfig.getColladaString() != null) {
             ColladaConverter.createShape3DBuilder(shape3DConfig.getColladaString(), null); // Verification
             colladaEntity.setColladaString(shape3DConfig.getColladaString());
@@ -106,6 +106,6 @@ public class Shape3DPersistence {
     @Transactional
     @SecurityCheck
     public void delete(int id) {
-        entityManager.remove(entityManager.find(ColladaEntity.class, (long) id));
+        entityManager.remove(entityManager.find(ColladaEntity.class, id));
     }
 }

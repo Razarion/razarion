@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.packets;
 
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.Character;
 
 /**
@@ -11,7 +12,7 @@ public class PlayerBaseInfo {
     private String name;
     private Character character;
     private double resources;
-    private Integer userId;
+    private HumanPlayerId humanPlayerId;
 
     public int getBaseId() {
         return baseId;
@@ -49,12 +50,12 @@ public class PlayerBaseInfo {
         return this;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public HumanPlayerId getHumanPlayerId() {
+        return humanPlayerId;
     }
 
-    public PlayerBaseInfo setUserId(Integer userId) {
-        this.userId = userId;
+    public PlayerBaseInfo setHumanPlayerId(HumanPlayerId humanPlayerId) {
+        this.humanPlayerId = humanPlayerId;
         return this;
     }
 }

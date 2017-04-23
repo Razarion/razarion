@@ -1,8 +1,8 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.user.UserService;
+import com.btxtech.server.user.PlayerSession;
+import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
@@ -34,7 +34,7 @@ public class ClientConnection {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private UserService userService;
+    private SessionService sessionService;
     @Inject
     private ClientConnectionService clientConnectionService;
     @Inject
@@ -42,6 +42,7 @@ public class ClientConnection {
     private ObjectMapper mapper = new ObjectMapper();
     private EndpointConfig config;
     private RemoteEndpoint.Async async;
+    private Session session;
 
     @OnMessage
     public void onMessage(Session session, String text) {
@@ -74,10 +75,10 @@ public class ClientConnection {
     }
 
     protected void onPackageReceived(ConnectionMarshaller.Package aPackage, Object param) {
-        UserContext userContext = getUser();
+        PlayerSession playerSession = getSession();
         switch (aPackage) {
             case CREATE_BASE:
-                baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(),  userContext.getUserId(), userContext.getName(), (DecimalPosition) param);
+                baseItemService.createHumanBaseWithBaseItem(playerSession.getPlayerBaseFull(), playerSession.getUserContext().getLevelId(), playerSession.getUserContext().getHumanPlayerId(), playerSession.getUserContext().getName(), (DecimalPosition) param);
                 break;
             case FACTORY_COMMAND:
             case UNLOAD_CONTAINER_COMMAND:
@@ -100,8 +101,8 @@ public class ClientConnection {
     }
 
 
-    private UserContext getUser() {
+    private PlayerSession getSession() {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
-        return userService.getLoggedInUser(httpSession.getId());
+        return sessionService.getSession(httpSession.getId());
     }
 }

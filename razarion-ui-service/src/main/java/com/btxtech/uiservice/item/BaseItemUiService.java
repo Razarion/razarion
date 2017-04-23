@@ -186,7 +186,7 @@ public class BaseItemUiService {
             if (bases.put(playerBase.getBaseId(), playerBase) != null) {
                 logger.warning("Base already exists: " + playerBase);
             }
-            if (playerBase.getUserId() != null && playerBase.getUserId() == userUiService.getUserContext().getUserId()) {
+            if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId() == userUiService.getUserContext().getHumanPlayerId()) {
                 myBase = playerBase;
             }
         }

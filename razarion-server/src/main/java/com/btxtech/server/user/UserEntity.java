@@ -1,5 +1,7 @@
 package com.btxtech.server.user;
 
+import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
 import javax.persistence.Column;
@@ -7,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -15,28 +18,32 @@ import java.util.Date;
  * 16.08.2016.
  */
 @Entity
-@Table(name = "USER", indexes = { @Index(columnList = "facebookUserId") })
+@Table(name = "USER", indexes = {@Index(columnList = "facebookUserId")})
 public class UserEntity {
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String facebookUserId;
     private Date registerDate;
     private boolean admin;
     private int levelId;
+    @OneToOne
+    private HumanPlayerIdEntity humanPlayerIdEntity;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void fromFacebookUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
-        facebookUserId = facebookUserLoginInfo.getUserId();
+    public void fromFacebookUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo, HumanPlayerIdEntity humanPlayerId) {
         registerDate = new Date();
+        facebookUserId = facebookUserLoginInfo.getUserId();
+        this.humanPlayerIdEntity = humanPlayerId;
     }
 
-    public User createUser() {
-        return new User(id, levelId, admin);
+    public UserContext createUser() {
+        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
+        return new UserContext().setHumanPlayerId(humanPlayerId).setLevelId(levelId).setAdmin(admin);
     }
 
     public int getLevelId() {
@@ -45,6 +52,14 @@ public class UserEntity {
 
     public void setLevelId(int levelId) {
         this.levelId = levelId;
+    }
+
+    public HumanPlayerIdEntity getHumanPlayerIdEntity() {
+        return humanPlayerIdEntity;
+    }
+
+    public void setHumanPlayerIdEntity(HumanPlayerIdEntity humanPlayerIdEntity) {
+        this.humanPlayerIdEntity = humanPlayerIdEntity;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -152,7 +153,7 @@ public class WorkerMarshaller {
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), HumanPlayerId.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), String.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_3), DecimalPosition.class));
                 break;

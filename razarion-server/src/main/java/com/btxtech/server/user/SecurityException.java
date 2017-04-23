@@ -1,5 +1,7 @@
 package com.btxtech.server.user;
 
+import com.btxtech.shared.datatypes.UserContext;
+
 import java.lang.reflect.Method;
 
 /**
@@ -11,7 +13,7 @@ public class SecurityException extends RuntimeException {
         super(message + " Method " + method);
     }
 
-    public SecurityException(User user, Method method) {
-        super("User '" + user.getUserId() + "' does not have admin rights to call: " + method);
+    public SecurityException(UserContext userContext, Method method) {
+        super("User '" + userContext.getHumanPlayerId() + "' does not have admin rights to call: " + method);
     }
 }
