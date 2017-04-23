@@ -13,7 +13,6 @@ public class PlayerSession {
     private String httpSessionId;
     private UserContext userContext;
     private Locale locale;
-    private PlayerBaseFull playerBaseFull;
 
     public PlayerSession(String httpSessionId, Locale locale) {
         this.httpSessionId = httpSessionId;
@@ -36,20 +35,11 @@ public class PlayerSession {
         return locale;
     }
 
-    public PlayerBaseFull getPlayerBaseFull() {
-        return playerBaseFull;
-    }
-
-    public void setPlayerBaseFull(PlayerBaseFull playerBaseFull) {
-        this.playerBaseFull = playerBaseFull;
-    }
-
     @Override
     public String toString() {
         return "SessionHolder{" +
                 "id='" + httpSessionId + '\'' +
                 ", userContext=" + userContext +
-                ", playerBaseFull=" + playerBaseFull +
                 '}';
     }
 

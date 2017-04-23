@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
  * 16.04.2017.
  */
 public class PlayerBaseFull extends PlayerBase {
+    public static final int HOUSE_SPACE = 0;
     private final Collection<SyncBaseItem> items = new ArrayList<>();
     private int usedHouseSpace = 0;
     private Integer levelId;
@@ -51,7 +52,7 @@ public class PlayerBaseFull extends PlayerBase {
 
     public int getHouseSpace() {
         // TODO no houses yet
-        return 0;
+        return HOUSE_SPACE;
     }
 
     public Integer getLevelId() {

@@ -78,7 +78,7 @@ public class ClientConnection {
         PlayerSession playerSession = getSession();
         switch (aPackage) {
             case CREATE_BASE:
-                baseItemService.createHumanBaseWithBaseItem(playerSession.getPlayerBaseFull(), playerSession.getUserContext().getLevelId(), playerSession.getUserContext().getHumanPlayerId(), playerSession.getUserContext().getName(), (DecimalPosition) param);
+                baseItemService.createHumanBaseWithBaseItem(playerSession.getUserContext().getLevelId(), playerSession.getUserContext().getHumanPlayerId(), playerSession.getUserContext().getName(), (DecimalPosition) param);
                 break;
             case FACTORY_COMMAND:
             case UNLOAD_CONTAINER_COMMAND:

@@ -120,12 +120,14 @@ public class BaseItemUiService {
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
         int tmpItemCount = 0;
+        int usedHouseSpace = 0;
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (isMyOwnProperty(syncBaseItem)) {
                 tmpItemCount++;
+                usedHouseSpace += baseItemType.getConsumingHouseSpace();
             }
             updateSyncItemMonitor(syncBaseItem);
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
                 continue;
@@ -175,6 +177,10 @@ public class BaseItemUiService {
             updateItemCountOnSideCockput();
             itemCockpitService.onStateChanged();
         }
+        if (this.usedHouseSpace != usedHouseSpace) {
+            this.usedHouseSpace = usedHouseSpace;
+            itemCockpitService.onStateChanged();
+        }
     }
 
     private void updateItemCountOnSideCockput() {
@@ -186,7 +192,7 @@ public class BaseItemUiService {
             if (bases.put(playerBase.getBaseId(), playerBase) != null) {
                 logger.warning("Base already exists: " + playerBase);
             }
-            if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId() == userUiService.getUserContext().getHumanPlayerId()) {
+            if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userUiService.getUserContext().getHumanPlayerId())) {
                 myBase = playerBase;
             }
         }
@@ -285,10 +291,6 @@ public class BaseItemUiService {
             houseSpace = gameInfo.getHouseSpace();
             itemCockpitService.onStateChanged();
             updateItemCountOnSideCockput();
-        }
-        if (usedHouseSpace != gameInfo.getUsedHouseSpace()) {
-            usedHouseSpace = gameInfo.getUsedHouseSpace();
-            itemCockpitService.onStateChanged();
         }
     }
 

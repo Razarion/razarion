@@ -103,17 +103,18 @@ public class BaseItemService {
         return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, humanPlayerId);
     }
 
-    private void surrenderHumanBase(PlayerBaseFull playerBase) {
-        gameLogicService.onSurrenderBase(playerBase);
-        while (!playerBase.getItems().isEmpty()) {
-            removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
+    private void surrenderHumanBase(HumanPlayerId humanPlayerId) {
+        PlayerBaseFull playerBase = getPlayerBase4HumanPlayerId(humanPlayerId);
+        if (playerBase != null) {
+            gameLogicService.onSurrenderBase(playerBase);
+            while (!playerBase.getItems().isEmpty()) {
+                removeSyncItem(CollectionUtils.getFirst(playerBase.getItems()));
+            }
         }
     }
 
-    public PlayerBaseFull createHumanBaseWithBaseItem(PlayerBaseFull existingBase, int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
-        if (existingBase != null) {
-            surrenderHumanBase(existingBase);
-        }
+    public PlayerBaseFull createHumanBaseWithBaseItem(int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
+        surrenderHumanBase(humanPlayerId);
         PlayerBaseFull playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, humanPlayerId, name);
         spawnSyncBaseItem(itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId()), position, 0, playerBase, false);
         return playerBase;
@@ -153,21 +154,6 @@ public class BaseItemService {
             bases.put(playerBaseInfo.getBaseId(), playerBase);
             gameLogicService.onBaseSlaveCreated(playerBase);
         }
-    }
-
-    public void replaceBase(PlayerBaseFull playerBaseFull) {
-        synchronized (bases) {
-            if (!bases.containsKey(playerBaseFull.getBaseId())) {
-                throw new IllegalStateException("replaceBase: Base with Id does not already exits: " + playerBaseFull.getBaseId());
-            }
-            bases.put(playerBaseFull.getBaseId(), playerBaseFull);
-        }
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            if (syncBaseItem.getBase().equals(playerBaseFull)) {
-                playerBaseFull.addItem(syncBaseItem);
-            }
-            return null;
-        });
     }
 
     public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {

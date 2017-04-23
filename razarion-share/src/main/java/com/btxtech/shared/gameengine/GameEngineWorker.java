@@ -96,7 +96,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Inject
     private Instance<AbstractServerConnection> connectionInstance;
     private UserContext userContext;
-    private PlayerBaseFull playerBaseFull;
+    private PlayerBase playerBase;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
     private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
     private int xpFromKills;
@@ -135,7 +135,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (HumanPlayerId) controlPackage.getData(1), (String) controlPackage.getData(2), (DecimalPosition) controlPackage.getData(3));
                 break;
             case SPAWN_BASE_ITEMS:
-                baseItemService.spawnSyncBaseItems((Integer) controlPackage.getData(0), (Collection<DecimalPosition>) controlPackage.getData(1), playerBaseFull);
+                baseItemService.spawnSyncBaseItems((Integer) controlPackage.getData(0), (Collection<DecimalPosition>) controlPackage.getData(1), (PlayerBaseFull) playerBase);
                 break;
             case CREATE_BOXES:
                 boxService.dropBoxes((List<BoxItemPosition>) controlPackage.getSingleData());
@@ -202,8 +202,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             planetService.addTickListener(this);
             if (gameEngineConfig.getPlanetConfig().getActualBaseId() != null) {
                 PlayerBase playerBase = baseItemService.getPlayerBase4BaseId(gameEngineConfig.getPlanetConfig().getActualBaseId());
-                this.playerBaseFull = new PlayerBaseFull(playerBase.getBaseId(), userContext.getName(), playerBase.getCharacter(), playerBase.getResources(), userContext.getLevelId(), userContext.getHumanPlayerId());
-                baseItemService.replaceBase(playerBaseFull);
+                this.playerBase = new PlayerBaseFull(playerBase.getBaseId(), userContext.getName(), playerBase.getCharacter(), playerBase.getResources(), userContext.getLevelId(), userContext.getHumanPlayerId());
             }
             sendToClient(GameEngineControlPackage.Command.INITIALIZED);
         } catch (Throwable t) {
@@ -216,7 +215,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (serverConnection != null) {
             serverConnection.createHumanBaseWithBaseItem(position);
         } else {
-            playerBaseFull = baseItemService.createHumanBaseWithBaseItem(playerBaseFull, levelId, humanPlayerId, name, position);
+            playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, humanPlayerId, name, position);
         }
     }
 
@@ -251,10 +250,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             killed = new ArrayList<>();
             List<SyncBaseItemSimpleDto> tmpRemoved = removed;
             removed = new ArrayList<>();
-            if (playerBaseFull != null) {
-                gameInfo.setHouseSpace(playerBaseFull.getHouseSpace());
-                gameInfo.setUsedHouseSpace(playerBaseFull.getUsedHouseSpace());
-                gameInfo.setResources((int) playerBaseFull.getResources());
+            if (playerBase != null) {
+                gameInfo.setHouseSpace(PlayerBaseFull.HOUSE_SPACE);
+                gameInfo.setResources((int) playerBase.getResources());
             }
             sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE, syncItems, gameInfo, tmpRemoved, tmpKilled);
         } catch (Throwable throwable) {
@@ -292,7 +290,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
-        if (userContext.getHumanPlayerId() == humanPlayerId) {
+        if (userContext.getHumanPlayerId().equals(humanPlayerId)) {
             sendToClient(GameEngineControlPackage.Command.BOX_PICKED, boxContent);
         }
     }
@@ -314,8 +312,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
-        if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId() == userContext.getHumanPlayerId()) {
-            playerBaseFull = new PlayerBaseFull(playerBase.getBaseId(), playerBase.getName(), playerBase.getCharacter(), playerBase.getResources(), userContext.getLevelId(), playerBase.getHumanPlayerId());
+        if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+            this.playerBase = new PlayerBaseFull(playerBase.getBaseId(), playerBase.getName(), playerBase.getCharacter(), playerBase.getResources(), userContext.getLevelId(), playerBase.getHumanPlayerId());
         }
         sendBaseToClient(playerBase);
     }
@@ -326,8 +324,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     public void onServerBaseCreated(PlayerBaseInfo playerBaseInfo) {
-        if (playerBaseInfo.getHumanPlayerId() != null && playerBaseInfo.getHumanPlayerId() == userContext.getHumanPlayerId()) {
-            playerBaseFull = new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), userContext.getLevelId(), playerBaseInfo.getHumanPlayerId());
+        if (playerBaseInfo.getHumanPlayerId() != null && playerBaseInfo.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+            playerBase = new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), userContext.getLevelId(), playerBaseInfo.getHumanPlayerId());
         }
         baseItemService.createBaseSlave(playerBaseInfo);
     }
@@ -343,15 +341,15 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onBaseDeleted(PlayerBase playerBase) {
-        if (playerBase.getHumanPlayerId() == userContext.getHumanPlayerId()) {
-            playerBaseFull = null;
+        if (playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+            this.playerBase = null;
         }
         sendToClient(GameEngineControlPackage.Command.BASE_DELETED, playerBase.getBaseId());
     }
 
     @Override
     public void onQuestPassed(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
-        if (userContext.getHumanPlayerId() == humanPlayerId) {
+        if (userContext.getHumanPlayerId().equals(humanPlayerId)) {
             sendToClient(GameEngineControlPackage.Command.QUEST_PASSED);
         }
     }
@@ -363,7 +361,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
         killed.add(target.createSyncBaseItemSimpleDto());
-        if (actor.getBase().getHumanPlayerId() != null && actor.getBase().getHumanPlayerId() == userContext.getHumanPlayerId()) {
+        if (actor.getBase().getHumanPlayerId() != null && actor.getBase().getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
             xpFromKills += target.getBaseItemType().getXpOnKilling();
         }
     }
