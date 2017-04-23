@@ -97,7 +97,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void start() {
         startTimeStamp = new Date();
-        cockpitService.show();
+        cockpitService.show(userUiService.getUserContext());
         nextSceneNumber = 0;
         if (getPlanetConfig().getGameEngineMode() == GameEngineMode.SLAVE) {
             scenes = setupSlaveScenes();

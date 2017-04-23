@@ -312,7 +312,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
         if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
-            this.playerBase = new PlayerBaseFull(playerBase.getBaseId(), playerBase.getName(), playerBase.getCharacter(), playerBase.getResources(), userContext.getLevelId(), playerBase.getHumanPlayerId());
+            this.playerBase = playerBase;
         }
         sendBaseToClient(playerBase);
     }
@@ -323,10 +323,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     public void onServerBaseCreated(PlayerBaseInfo playerBaseInfo) {
-        if (playerBaseInfo.getHumanPlayerId() != null && playerBaseInfo.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
-            playerBase = new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), userContext.getLevelId(), playerBaseInfo.getHumanPlayerId());
-        }
         baseItemService.createBaseSlave(playerBaseInfo);
+        if (playerBaseInfo.getHumanPlayerId() != null && playerBaseInfo.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+            this.playerBase = baseItemService.getPlayerBase4BaseId(playerBaseInfo.getBaseId());
+        }
     }
 
     private void sendBaseToClient(PlayerBase playerBase) {

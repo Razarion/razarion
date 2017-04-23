@@ -35,8 +35,9 @@ public class CockpitService {
         sideCockpit = sideCockpitInstance.get();
     }
 
-    public void show() {
+    public void show(UserContext userContext) {
         sideCockpit.show();
+        updateLevelAndXp(userContext);
     }
 
     public void updateLevelAndXp(UserContext userContext) {

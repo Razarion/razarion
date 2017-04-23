@@ -152,7 +152,7 @@ public class GameLogicService {
     }
 
     public void onSyncFactoryProgress(SyncBaseItem syncBaseItem) {
-        System.out.println("GameLogicService.onSyncFactoryProgress(): " + syncBaseItem);
+        // System.out.println("GameLogicService.onSyncFactoryProgress(): " + syncBaseItem);
     }
 
     public void onSyncFactoryStopped(SyncBaseItem syncBaseItem) {
