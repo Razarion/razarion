@@ -389,7 +389,6 @@ public class BaseItemService {
                 SyncBaseItem activeItem = iterator.next();
                 if (!activeItem.isAlive()) {
                     iterator.remove();
-                    gameLogicService.onSyncBaseItemIdle(activeItem);
                     continue;
                 }
                 if (activeItem.isIdle()) {

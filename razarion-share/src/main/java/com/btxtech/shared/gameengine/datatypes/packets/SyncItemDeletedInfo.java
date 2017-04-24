@@ -25,4 +25,12 @@ public class SyncItemDeletedInfo {
         this.explode = explode;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "SyncItemDeletedInfo{" +
+                "id=" + id +
+                ", explode=" + explode +
+                '}';
+    }
 }

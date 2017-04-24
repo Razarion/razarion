@@ -449,9 +449,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (syncItem instanceof SyncBaseItem) {
             baseItemService.onSlaveSyncBaseItemDeleted((SyncBaseItem) syncItem, syncItemDeletedInfo);
         } else if (syncItem instanceof SyncResourceItem) {
-            resourceService.resourceExhausted((SyncResourceItem)syncItem);
+            resourceService.resourceExhausted((SyncResourceItem) syncItem);
         } else if (syncItem instanceof SyncBoxItem) {
-boxService.removeSyncBoxSlave((SyncBoxItem)syncItem);
+            boxService.removeSyncBoxSlave((SyncBoxItem) syncItem);
         } else {
             throw new IllegalArgumentException("GameEngineWorker.onServerSyncItemDeleted(): unknown type: " + syncItem);
         }
