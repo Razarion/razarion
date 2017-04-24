@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -37,6 +38,7 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerConnection;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
@@ -300,6 +302,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
+    public void onSyncBoxDeletedSlave(SyncBoxItem syncBoxItem) {
+        sendToClient(GameEngineControlPackage.Command.BOX_DELETED, syncBoxItem.getId());
+    }
+
+    @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
         sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createSyncBaseItemSimpleDto());
     }
@@ -358,7 +365,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
+    public void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
         killed.add(target.createSyncBaseItemSimpleDto());
         if (actor.getBase().getHumanPlayerId() != null && actor.getBase().getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
             xpFromKills += target.getBaseItemType().getXpOnKilling();
@@ -366,7 +373,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onSyncItemRemoved(SyncBaseItem syncBaseItem) {
+    public void onSyncBaseItemKilledSlave(SyncBaseItem target) {
+        killed.add(target.createSyncBaseItemSimpleDto());
+    }
+
+    @Override
+    public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
         removed.add(syncBaseItem.createSyncBaseItemSimpleDto());
     }
 
@@ -430,5 +442,18 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             exceptionHandler.handleException("overrideTerrain4Editor failed", e);
         }
 
+    }
+
+    public void onServerSyncItemDeleted(SyncItemDeletedInfo syncItemDeletedInfo) {
+        SyncItem syncItem = syncItemContainerService.getSyncItem(syncItemDeletedInfo.getId());
+        if (syncItem instanceof SyncBaseItem) {
+            baseItemService.onSlaveSyncBaseItemDeleted((SyncBaseItem) syncItem, syncItemDeletedInfo);
+        } else if (syncItem instanceof SyncResourceItem) {
+            resourceService.resourceExhausted((SyncResourceItem)syncItem);
+        } else if (syncItem instanceof SyncBoxItem) {
+boxService.removeSyncBoxSlave((SyncBoxItem)syncItem);
+        } else {
+            throw new IllegalArgumentException("GameEngineWorker.onServerSyncItemDeleted(): unknown type: " + syncItem);
+        }
     }
 }

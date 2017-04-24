@@ -73,13 +73,13 @@ public class GameEngineService implements GameLogicListener {
     }
 
     @Override
-    public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
-
+    public void onSyncBaseItemKilledMaster(SyncBaseItem syncBaseItem, SyncBaseItem actor) {
+        clientConnectionService.onSyncItemRemoved(syncBaseItem, true);
     }
 
     @Override
-    public void onSyncItemRemoved(SyncBaseItem target) {
-
+    public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
+        clientConnectionService.onSyncItemRemoved(syncBaseItem, false);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
-
+        clientConnectionService.onSyncItemRemoved(syncResourceItem, false);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onSyncBoxDeleted(SyncBoxItem box) {
-
+        clientConnectionService.onSyncItemRemoved(box, false);
     }
 
     @Override

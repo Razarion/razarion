@@ -242,7 +242,7 @@ public class SyncItemContainerService {
         }
     }
 
-    private SyncItem getSyncItem(int id) {
+    public SyncItem getSyncItem(int id) {
         return items.get(id);
     }
 

@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -215,6 +216,16 @@ public class BaseItemService {
         addToActiveItemQueue(syncBaseItem);
     }
 
+    public void onSlaveSyncBaseItemDeleted(SyncBaseItem syncBaseItem, SyncItemDeletedInfo syncItemDeletedInfo) {
+        syncBaseItem.clearHealth();
+        syncItemContainerService.destroySyncItem(syncBaseItem);
+        if(syncItemDeletedInfo.isExplode()) {
+            gameLogicService.onSyncBaseItemKilledSlave(syncBaseItem);
+        } else {
+            gameLogicService.onSyncBaseItemRemoved(syncBaseItem);
+        }
+    }
+
     private SyncBaseItem createSyncBaseItem(BaseItemType toBeBuilt, DecimalPosition position2d, double zRotation, PlayerBaseFull base) throws ItemLimitExceededException, HouseSpaceExceededException {
         if (!isAlive(base)) {
             throw new BaseDoesNotExistException(base);
@@ -241,7 +252,7 @@ public class BaseItemService {
         if (getGameEngineMode() != GameEngineMode.MASTER) {
             return;
         }
-        gameLogicService.onKilledSyncBaseItem(target, actor);
+        gameLogicService.onSyncBaseItemKilledMaster(target, actor);
         PlayerBaseFull base = (PlayerBaseFull) target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);

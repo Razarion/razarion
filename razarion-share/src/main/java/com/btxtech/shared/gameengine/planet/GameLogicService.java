@@ -180,18 +180,23 @@ public class GameLogicService {
         questService.onSyncItemBuilt(syncBaseItem);
     }
 
-    public void onKilledSyncBaseItem(SyncBaseItem target, SyncBaseItem actor) {
-        System.out.println("GameLogicService.onKilledSyncBaseItem(). target: " + target + " actor: " + actor);
+    public void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
+        System.out.println("GameLogicService.onSyncBaseItemKilledMaster(). target: " + target + " actor: " + actor);
         questService.onSyncItemKilled(target, actor);
-        gameLogicListener.ifPresent(listener -> listener.onSyncItemKilled(target, actor));
+        gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemKilledMaster(target, actor));
         if (target.getBase().getCharacter().isBot()) {
             botService.enrageOnKill(target, actor.getBase());
         }
     }
 
+    public void onSyncBaseItemKilledSlave(SyncBaseItem target) {
+        System.out.println("GameLogicService.onSyncBaseItemKilledSlave(). target: " + target);
+        gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemKilledSlave(target));
+    }
+
     public void onSyncBaseItemRemoved(SyncBaseItem target) {
         System.out.println("GameLogicService.onSyncBaseItemRemoved(). target: " + target);
-        gameLogicListener.ifPresent(listener -> listener.onSyncItemRemoved(target));
+        gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemRemoved(target));
     }
 
     // TODO when to call?
@@ -230,6 +235,11 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onBoxPicked(picker.getBase().getHumanPlayerId(), boxContent));
         gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeleted(box));
         questService.onSyncBoxItemPicked(picker);
+    }
+
+
+    public void onBoxDeletedSlave(SyncBoxItem box) {
+        gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeletedSlave(box));
     }
 
     public void onBuilderNoMoney(SyncBaseItem syncBaseItem) {

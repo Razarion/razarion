@@ -27,10 +27,14 @@ public interface GameLogicListener {
     default void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
     }
 
-    default void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
+    default void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
     }
 
-    default void onSyncItemRemoved(SyncBaseItem target) {
+    default void onSyncBaseItemKilledSlave(SyncBaseItem target) {
+
+    }
+
+    default void onSyncBaseItemRemoved(SyncBaseItem target) {
     }
 
     default void onResourceCreated(SyncResourceItem syncResourceItem) {
@@ -46,6 +50,9 @@ public interface GameLogicListener {
     }
 
     default void onSyncBoxDeleted(SyncBoxItem box) {
+    }
+
+    default void onSyncBoxDeletedSlave(SyncBoxItem box) {
     }
 
     default void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {

@@ -45,6 +45,6 @@ public class DevToolBuildupItemPanel extends BuildupItemPanel {
 
     @Override
     public void onResourcesChanged(int resources) {
-        System.out.println("+++ DevToolBuildupItemPanel on resource changed: " + resources);
+        // System.out.println("+++ DevToolBuildupItemPanel on resource changed: " + resources);
     }
 }

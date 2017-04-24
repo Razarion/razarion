@@ -63,11 +63,9 @@ public class BoxService {
     }
 
     public void onSyncBoxItemPicked(SyncBoxItem box, SyncBaseItem picker) {
-        syncItemContainerService.destroySyncItem(box);
-        synchronized (boxes) {
-            boxes.remove(box.getId());
-        }
+        removeSyncBox(box);
         if (picker.getBase().isAbandoned()) {
+            gameLogicService.onBoxDeletedSlave(box);
             return;
         }
 
@@ -75,6 +73,19 @@ public class BoxService {
         box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> setupBoxContent(boxItemTypePossibility, boxContent));
 
         gameLogicService.onBoxPicket(box, picker, boxContent);
+    }
+
+    public void removeSyncBoxSlave(SyncBoxItem box) {
+        removeSyncBox(box);
+        gameLogicService.onBoxDeletedSlave(box);
+    }
+
+
+    private void removeSyncBox(SyncBoxItem box) {
+        syncItemContainerService.destroySyncItem(box);
+        synchronized (boxes) {
+            boxes.remove(box.getId());
+        }
     }
 
     private void setupBoxContent(BoxItemTypePossibility boxItemTypePossibility, BoxContent boxContent) {

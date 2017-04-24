@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 
 /**
@@ -26,6 +27,7 @@ public interface ConnectionMarshaller {
         BASE_CREATED(PlayerBaseInfo.class),
         // Items
         SYNC_BASE_ITEM_CHANGED(SyncBaseItemInfo.class),
+        SYNC_ITEM_DELETED(SyncItemDeletedInfo.class),
         // Commands
         FACTORY_COMMAND(FactoryCommand.class),
         UNLOAD_CONTAINER_COMMAND(UnloadContainerCommand.class),
