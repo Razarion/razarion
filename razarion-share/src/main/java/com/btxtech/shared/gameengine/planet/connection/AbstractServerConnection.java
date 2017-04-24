@@ -45,6 +45,9 @@ public abstract class AbstractServerConnection {
             case BASE_CREATED:
                 gameEngineWorker.onServerBaseCreated((PlayerBaseInfo) param);
                 break;
+            case BASE_DELETED:
+                gameEngineWorker.onServerBaseDeleted((int) param);
+                break;
             case SYNC_BASE_ITEM_CHANGED:
                 baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) param);
                 break;

@@ -64,7 +64,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onBaseDeleted(PlayerBase playerBase) {
-
+        clientConnectionService.onBaseDeleted(playerBase);
     }
 
     @Override

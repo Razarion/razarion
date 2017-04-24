@@ -25,6 +25,7 @@ public interface ConnectionMarshaller {
         // Base
         CREATE_BASE(DecimalPosition.class),
         BASE_CREATED(PlayerBaseInfo.class),
+        BASE_DELETED(Integer.class),
         // Items
         SYNC_BASE_ITEM_CHANGED(SyncBaseItemInfo.class),
         SYNC_ITEM_DELETED(SyncItemDeletedInfo.class),

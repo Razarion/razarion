@@ -1,5 +1,6 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
@@ -41,6 +42,10 @@ public class ClientConnectionService {
     public void onBaseCreated(PlayerBaseFull playerBase) {
         PlayerBaseInfo playerBaseInfo = new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName(playerBase.getName()).setCharacter(playerBase.getCharacter()).setHumanPlayerId(playerBase.getHumanPlayerId()).setResources(playerBase.getResources());
         sendToClients(ConnectionMarshaller.Package.BASE_CREATED, playerBaseInfo);
+    }
+
+    public void onBaseDeleted(PlayerBase playerBase) {
+        sendToClients(ConnectionMarshaller.Package.BASE_DELETED, playerBase.getBaseId());
     }
 
     public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {

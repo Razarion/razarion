@@ -157,6 +157,17 @@ public class BaseItemService {
         }
     }
 
+    public void deleteBaseSlave(int baseId) {
+        synchronized (bases) {
+            if (!bases.containsKey(baseId)) {
+                throw new IllegalStateException("deleteBaseSlave: Base with Id does not exits: " + baseId);
+            }
+            PlayerBase playerBase = bases.remove(baseId);
+            gameLogicService.onBaseRemoved(playerBase);
+        }
+    }
+
+
     public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
         syncBaseItem.setSpawnProgress(1.0);
@@ -219,7 +230,7 @@ public class BaseItemService {
     public void onSlaveSyncBaseItemDeleted(SyncBaseItem syncBaseItem, SyncItemDeletedInfo syncItemDeletedInfo) {
         syncBaseItem.clearHealth();
         syncItemContainerService.destroySyncItem(syncBaseItem);
-        if(syncItemDeletedInfo.isExplode()) {
+        if (syncItemDeletedInfo.isExplode()) {
             gameLogicService.onSyncBaseItemKilledSlave(syncBaseItem);
         } else {
             gameLogicService.onSyncBaseItemRemoved(syncBaseItem);

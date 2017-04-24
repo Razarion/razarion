@@ -336,6 +336,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
+    public void onServerBaseDeleted(int baseId) {
+        baseItemService.deleteBaseSlave(baseId);
+    }
+
     private void sendBaseToClient(PlayerBase playerBase) {
         PlayerBaseDto playerBaseDto = new PlayerBaseDto();
         playerBaseDto.setBaseId(playerBase.getBaseId());
@@ -347,7 +351,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onBaseDeleted(PlayerBase playerBase) {
-        if (playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
+        if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
             this.playerBase = null;
         }
         sendToClient(GameEngineControlPackage.Command.BASE_DELETED, playerBase.getBaseId());
