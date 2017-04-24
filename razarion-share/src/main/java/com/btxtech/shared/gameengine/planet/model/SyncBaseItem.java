@@ -155,12 +155,12 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return base;
     }
 
-    @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws ItemDoesNotExistException {
         health = syncBaseItemInfo.getHealth();
         spawnProgress = syncBaseItemInfo.getSpawnProgress();
         setBuildup(syncBaseItemInfo.getBuildup());
         containedIn = syncBaseItemInfo.getContainedIn();
+        getSyncPhysicalArea().synchronize(syncBaseItemInfo.getSyncPhysicalAreaInfo());
 
         if (syncWeapon != null) {
             syncWeapon.synchronize(syncBaseItemInfo);
@@ -185,13 +185,13 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (syncItemContainer != null) {
             syncItemContainer.synchronize(syncBaseItemInfo);
         }
-
-        super.synchronize(syncBaseItemInfo);
     }
 
-    @Override
     public SyncBaseItemInfo getSyncInfo() {
-        SyncBaseItemInfo syncBaseItemInfo = super.getSyncInfo();
+        SyncBaseItemInfo syncBaseItemInfo = new SyncBaseItemInfo();
+        syncBaseItemInfo.setId(getId());
+        syncBaseItemInfo.setSyncPhysicalAreaInfo(getSyncPhysicalArea().getSyncPhysicalAreaInfo());
+        syncBaseItemInfo.setItemTypeId(getItemType().getId());
         syncBaseItemInfo.setBaseId(base.getBaseId());
         syncBaseItemInfo.setHealth(health);
         syncBaseItemInfo.setBuildup(buildup);

@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
@@ -30,6 +31,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,12 +53,14 @@ public class ResourceService {
     private Instance<ResourceRegion> instance;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
     private final Collection<ResourceRegion> resourceRegions = new ArrayList<>();
+    private GameEngineMode gameEngineMode;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
+        gameEngineMode = planetActivationEvent.getPlanetConfig().getGameEngineMode();
         synchronized (resources) {
             resources.clear();
         }
-        if (planetActivationEvent.getPlanetConfig().getResourceRegionConfigs() != null && planetActivationEvent.getPlanetConfig().getGameEngineMode() == GameEngineMode.MASTER) {
+        if (planetActivationEvent.getPlanetConfig().getResourceRegionConfigs() != null && gameEngineMode == GameEngineMode.MASTER) {
             synchronized (resourceRegions) {
                 for (ResourceRegionConfig resourceRegionConfig : planetActivationEvent.getPlanetConfig().getResourceRegionConfigs()) {
                     ResourceRegion resourceRegion = instance.get();
@@ -65,6 +69,30 @@ public class ResourceService {
                 }
             }
         }
+        if (planetActivationEvent.getPlanetConfig().getSyncResourceItemInfos() != null && gameEngineMode != GameEngineMode.MASTER) {
+            for (SyncResourceItemInfo syncResourceItemInfo : planetActivationEvent.getPlanetConfig().getSyncResourceItemInfos()) {
+                createSyncResourceItemSlave(syncResourceItemInfo);
+            }
+        }
+    }
+
+    public void onSlaveSyncResourceItemChanged(SyncResourceItemInfo syncResourceItemInfo) {
+        SyncResourceItem syncResourceItem = resources.get(syncResourceItemInfo.getId());
+        if (syncResourceItem == null) {
+            createSyncResourceItemSlave(syncResourceItemInfo);
+        } else {
+            syncResourceItem.synchronize(syncResourceItemInfo);
+        }
+    }
+
+    private void createSyncResourceItemSlave(SyncResourceItemInfo syncResourceItemInfo) {
+        ResourceItemType resourceItemType = itemTypeService.getResourceItemType(syncResourceItemInfo.getResourceItemTypeId());
+        SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItemType, syncResourceItemInfo.getSyncPhysicalAreaInfo().getPosition(), syncResourceItemInfo.getSyncPhysicalAreaInfo().getAngle());
+        syncResourceItem.setAmount(syncResourceItemInfo.getAmount());
+        synchronized (resources) {
+            resources.put(syncResourceItem.getId(), syncResourceItem);
+        }
+        gameLogicService.onResourceCreated(syncResourceItem);
     }
 
     public void createResources(Collection<ResourceItemPosition> resourceItemPositions) {
@@ -85,11 +113,10 @@ public class ResourceService {
     }
 
     public void resourceExhausted(SyncResourceItem syncResourceItem) {
-        gameLogicService.onResourceExhausted(syncResourceItem);
-        synchronized (resources) {
-            resources.remove(syncResourceItem.getId());
+        if (gameEngineMode != GameEngineMode.MASTER) {
+            return;
         }
-        syncItemContainerService.destroySyncItem(syncResourceItem);
+        removeSyncResourceItem(syncResourceItem);
         synchronized (resourceRegions) {
             for (ResourceRegion resourceRegion : resourceRegions) {
                 if (resourceRegion.onResourceItemRemoved(syncResourceItem)) {
@@ -99,11 +126,29 @@ public class ResourceService {
         }
     }
 
+    public void removeSyncResourceItem(SyncResourceItem syncResourceItem) {
+        gameLogicService.onResourceExhausted(syncResourceItem);
+        synchronized (resources) {
+            resources.remove(syncResourceItem.getId());
+        }
+        syncItemContainerService.destroySyncItem(syncResourceItem);
+    }
+
     public SyncResourceItem getSyncResourceItem(int id) {
         SyncResourceItem syncResourceItem = resources.get(id);
         if (syncResourceItem == null) {
             throw new ItemDoesNotExistException(id);
         }
         return syncResourceItem;
+    }
+
+    public List<SyncResourceItemInfo> getSyncResourceItemInfos() {
+        List<SyncResourceItemInfo> syncResourceItemInfos = new ArrayList<>();
+        synchronized (resources) {
+            for (SyncResourceItem syncResourceItem : resources.values()) {
+                syncResourceItemInfos.add(syncResourceItem.getSyncInfo());
+            }
+        }
+        return syncResourceItemInfos;
     }
 }

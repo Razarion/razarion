@@ -5,9 +5,11 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,6 +59,10 @@ public class ClientConnectionService {
         SyncItemDeletedInfo syncItemDeletedInfo = new SyncItemDeletedInfo();
         syncItemDeletedInfo.setId(syncItem.getId()).setExplode(explode);
         sendToClients(ConnectionMarshaller.Package.SYNC_ITEM_DELETED, syncItemDeletedInfo);
+    }
+
+    public void onSyncResourceItemCreated(SyncResourceItem syncResourceItem) {
+        sendToClients(ConnectionMarshaller.Package.SYNC_RESOURCE_ITEM_CHANGED, syncResourceItem.getSyncInfo());
     }
 
     private void sendToClients(ConnectionMarshaller.Package aPackage, Object object) {

@@ -3,6 +3,7 @@ package com.btxtech.webglemulator.razarion;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerConnection;
 import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.util.HttpCookieStore;
@@ -28,6 +29,8 @@ import java.net.URI;
  */
 @WebSocket(maxTextMessageSize = 64 * 1024)
 public class DevToolServerConnection extends AbstractServerConnection {
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private RemoteEndpoint remoteEndpoint;
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -60,7 +63,11 @@ public class DevToolServerConnection extends AbstractServerConnection {
 
     @OnWebSocketMessage
     public void onMessage(String msg) {
-        handleMessage(msg);
+        try {
+            handleMessage(msg);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     @Override

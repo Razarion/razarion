@@ -17,8 +17,8 @@ import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 
@@ -85,12 +85,19 @@ public class SyncHarvester extends SyncBaseAbility {
 
     @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
-        // resource = syncItemInfo.getTarget();
+        if (syncBaseItemInfo.getTarget() != null) {
+            resource = resourceService.getSyncResourceItem(syncBaseItemInfo.getTarget());
+        } else {
+            resource = null;
+            harvesting = false;
+        }
     }
 
     @Override
     public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
-        // syncItemInfo.setTarget(resource);
+        if (resource != null) {
+            syncBaseItemInfo.setTarget(resource.getId());
+        }
     }
 
     public void executeCommand(HarvestCommand harvestCommand) {

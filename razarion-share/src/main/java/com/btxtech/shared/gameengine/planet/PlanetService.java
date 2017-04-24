@@ -52,6 +52,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private ResourceService resourceService;
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
@@ -130,5 +132,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
         if (playerBaseFull != null) {
             planetConfig.setActualBaseId(playerBaseFull.getBaseId());
         }
+        planetConfig.setSyncResourceItemInfos(resourceService.getSyncResourceItemInfos());
     }
 }

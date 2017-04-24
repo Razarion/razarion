@@ -49,18 +49,6 @@ public abstract class SyncItem {
         return id;
     }
 
-    public void synchronize(SyncBaseItemInfo syncItemInfo) throws NoSuchItemTypeException, ItemDoesNotExistException {
-        syncPhysicalArea.synchronize(syncItemInfo.getSyncPhysicalAreaInfo());
-    }
-
-    public SyncBaseItemInfo getSyncInfo() {
-        SyncBaseItemInfo syncItemInfo = new SyncBaseItemInfo();
-        syncItemInfo.setId(id);
-        syncItemInfo.setSyncPhysicalAreaInfo(syncPhysicalArea.getSyncPhysicalAreaInfo());
-        syncItemInfo.setItemTypeId(itemType.getId());
-        return syncItemInfo;
-    }
-
     public ItemType getItemType() {
         return itemType;
     }

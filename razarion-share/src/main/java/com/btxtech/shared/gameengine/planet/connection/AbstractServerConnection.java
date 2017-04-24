@@ -6,7 +6,9 @@ import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.ResourceService;
 
 import javax.inject.Inject;
 
@@ -19,6 +21,8 @@ public abstract class AbstractServerConnection {
     private GameEngineWorker gameEngineWorker;
     @Inject
     private BaseItemService baseItemService;
+    @Inject
+    private ResourceService resourceService;
 
     protected abstract void sendToServer(String text);
 
@@ -50,6 +54,9 @@ public abstract class AbstractServerConnection {
                 break;
             case SYNC_BASE_ITEM_CHANGED:
                 baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) param);
+                break;
+            case SYNC_RESOURCE_ITEM_CHANGED:
+                resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) param);
                 break;
             case SYNC_ITEM_DELETED:
                  gameEngineWorker.onServerSyncItemDeleted((SyncItemDeletedInfo) param);

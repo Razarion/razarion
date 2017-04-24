@@ -16,7 +16,6 @@ package com.btxtech.shared.gameengine.datatypes.packets;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +37,6 @@ public class SyncBaseItemInfo {
     private Integer target;
     private double health;
     private double buildup;
-    private Double amount;
     private Boolean followTarget;
     private Boolean operationState;
     private double reloadProgress;
@@ -48,10 +46,6 @@ public class SyncBaseItemInfo {
     private Integer containedIn;
     private DecimalPosition unloadPos;
     private Index targetPosition;
-    private Double destinationAngel;
-    private Long clientTimeStamp;
-    private String startUuid;
-    private Integer syncBoxItemId;
     private double spawnProgress;
 
     public int getId() {
@@ -114,10 +108,6 @@ public class SyncBaseItemInfo {
         return health;
     }
 
-    public Double getAmount() {
-        return amount;
-    }
-
     public Boolean isFollowTarget() {
         return followTarget;
     }
@@ -149,11 +139,6 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo setHealth(double health) {
         this.health = health;
-        return this;
-    }
-
-    public SyncBaseItemInfo setAmount(Double amount) {
-        this.amount = amount;
         return this;
     }
 
@@ -243,15 +228,6 @@ public class SyncBaseItemInfo {
         return this;
     }
 
-    public SyncBaseItemInfo setDestinationAngel(Double destinationAngel) {
-        this.destinationAngel = destinationAngel;
-        return this;
-    }
-
-    public Double getDestinationAngel() {
-        return destinationAngel;
-    }
-
     private String intCollectionAsString() {
         StringBuilder builder = new StringBuilder();
         if (containedItems != null) {
@@ -268,33 +244,6 @@ public class SyncBaseItemInfo {
             builder.append("{-}");
         }
         return builder.toString();
-    }
-
-    public Long getClientTimeStamp() {
-        return clientTimeStamp;
-    }
-
-    public SyncBaseItemInfo setClientTimeStamp() {
-        clientTimeStamp = System.currentTimeMillis();
-        return this;
-    }
-
-    public String getStartUuid() {
-        return startUuid;
-    }
-
-    public SyncBaseItemInfo setStartUuid(String startUuid) {
-        this.startUuid = startUuid;
-        return this;
-    }
-
-    public Integer getSyncBoxItemId() {
-        return syncBoxItemId;
-    }
-
-    public SyncBaseItemInfo setSyncBoxItemId(Integer syncBoxItemId) {
-        this.syncBoxItemId = syncBoxItemId;
-        return this;
     }
 
     public double getSpawnProgress() {
@@ -319,7 +268,6 @@ public class SyncBaseItemInfo {
                 " target:" + target +
                 " health:" + health +
                 " buildup:" + buildup +
-                " amount:" + amount +
                 " followTarget:" + followTarget +
                 " operationState:" + operationState +
                 " reloadProgress:" + reloadProgress +
@@ -328,9 +276,6 @@ public class SyncBaseItemInfo {
                 " targetContainer:" + targetContainer +
                 " containedIn:" + containedIn +
                 " unloadPos:" + unloadPos +
-                " targetPosition:" + targetPosition +
-                " destinationAngel:" + destinationAngel +
-                " clientTimeStamp:" + clientTimeStamp +
-                " syncBoxItemId:" + syncBoxItemId;
+                " targetPosition:" + targetPosition;
     }
 }

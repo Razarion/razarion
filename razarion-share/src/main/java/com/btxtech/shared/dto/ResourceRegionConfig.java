@@ -31,31 +31,35 @@ public class ResourceRegionConfig {
         return count;
     }
 
-    public void setCount(int count) {
+    public ResourceRegionConfig setCount(int count) {
         this.count = count;
+        return this;
     }
 
     public PlaceConfig getRegion() {
         return region;
     }
 
-    public void setRegion(PlaceConfig region) {
+    public ResourceRegionConfig setRegion(PlaceConfig region) {
         this.region = region;
+        return this;
     }
 
     public int getMinDistanceToItems() {
         return minDistanceToItems;
     }
 
-    public void setMinDistanceToItems(int minDistanceToItems) {
+    public ResourceRegionConfig setMinDistanceToItems(int minDistanceToItems) {
         this.minDistanceToItems = minDistanceToItems;
+        return this;
     }
 
     public int getResourceItemTypeId() {
         return resourceItemTypeId;
     }
 
-    public void setResourceItemTypeId(int resourceItemTypeId) {
+    public ResourceRegionConfig setResourceItemTypeId(int resourceItemTypeId) {
         this.resourceItemTypeId = resourceItemTypeId;
+        return this;
     }
 }

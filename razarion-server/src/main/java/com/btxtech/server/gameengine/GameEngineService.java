@@ -84,7 +84,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
-
+        clientConnectionService.onSyncResourceItemCreated(syncResourceItem);
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 
 /**
  * Created by Beat
@@ -28,6 +29,7 @@ public interface ConnectionMarshaller {
         BASE_DELETED(Integer.class),
         // Items
         SYNC_BASE_ITEM_CHANGED(SyncBaseItemInfo.class),
+        SYNC_RESOURCE_ITEM_CHANGED(SyncResourceItemInfo.class),
         SYNC_ITEM_DELETED(SyncItemDeletedInfo.class),
         // Commands
         FACTORY_COMMAND(FactoryCommand.class),

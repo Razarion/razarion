@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class PlanetConfig {
     private List<PlayerBaseInfo> playerBaseInfos;
     private List<BotConfig> botConfigs;
     private List<ResourceRegionConfig> resourceRegionConfigs;
+    private List<SyncResourceItemInfo> syncResourceItemInfos;
 
     public int getPlanetId() {
         return planetId;
@@ -194,6 +196,15 @@ public class PlanetConfig {
 
     public PlanetConfig setResourceRegionConfigs(List<ResourceRegionConfig> resourceRegionConfigs) {
         this.resourceRegionConfigs = resourceRegionConfigs;
+        return this;
+    }
+
+    public List<SyncResourceItemInfo> getSyncResourceItemInfos() {
+        return syncResourceItemInfos;
+    }
+
+    public PlanetConfig setSyncResourceItemInfos(List<SyncResourceItemInfo> syncResourceItemInfos) {
+        this.syncResourceItemInfos = syncResourceItemInfos;
         return this;
     }
 }
