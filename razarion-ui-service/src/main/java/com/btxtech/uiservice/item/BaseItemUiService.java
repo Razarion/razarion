@@ -174,7 +174,7 @@ public class BaseItemUiService {
         }
         if (itemCount != tmpItemCount) {
             itemCount = tmpItemCount;
-            updateItemCountOnSideCockput();
+            updateItemCountOnSideCockpit();
             itemCockpitService.onStateChanged();
         }
         if (this.usedHouseSpace != usedHouseSpace) {
@@ -183,7 +183,7 @@ public class BaseItemUiService {
         }
     }
 
-    private void updateItemCountOnSideCockput() {
+    private void updateItemCountOnSideCockpit() {
         cockpitService.onItemCountChanged(itemCount, getMyTotalHouseSpace());
     }
 
@@ -227,10 +227,6 @@ public class BaseItemUiService {
 
     public PlayerBaseDto getBase(SyncBaseItemSimpleDto syncBaseItem) {
         return getBase(syncBaseItem.getBaseId());
-    }
-
-    public PlayerBaseDto getMyBase() {
-        return myBase;
     }
 
     public boolean isMyOwnProperty(SyncBaseItemSimpleDto syncBaseItem) {
@@ -290,7 +286,7 @@ public class BaseItemUiService {
         if (houseSpace != gameInfo.getHouseSpace()) {
             houseSpace = gameInfo.getHouseSpace();
             itemCockpitService.onStateChanged();
-            updateItemCountOnSideCockput();
+            updateItemCountOnSideCockpit();
         }
     }
 

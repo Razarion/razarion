@@ -234,7 +234,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         sendTickUpdate = false;
         try {
             List<SyncBaseItemSimpleDto> syncItems = new ArrayList<>();
-            syncItemContainerService.iterateOverItems(false, false, null, syncItem -> {
+            syncItemContainerService.iterateOverItems(false, true, null, syncItem -> {
                 if (syncItem instanceof SyncBaseItem) {
                     SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
                     SyncBaseItemSimpleDto simpleDto = syncBaseItem.createSyncBaseItemSimpleDto();
